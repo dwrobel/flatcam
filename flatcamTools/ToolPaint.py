@@ -205,7 +205,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- 'V-shape'\n"
               "- Circular")
         )
-        self.tool_type_radio.setObjectName(_("Tool Type"))
+        self.tool_type_radio.setObjectName('p_tool_type')
 
         self.grid3.addWidget(self.tool_type_label, 2, 0)
         self.grid3.addWidget(self.tool_type_radio, 2, 1)
@@ -218,7 +218,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tipdia_entry.set_precision(self.decimals)
         self.tipdia_entry.set_range(0.0000, 9999.9999)
         self.tipdia_entry.setSingleStep(0.1)
-        self.tipdia_entry.setObjectName(_("V-Tip Dia"))
+        self.tipdia_entry.setObjectName('p_vtip_dia')
 
         self.grid3.addWidget(self.tipdialabel, 3, 0)
         self.grid3.addWidget(self.tipdia_entry, 3, 1)
@@ -232,7 +232,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tipangle_entry.set_precision(self.decimals)
         self.tipangle_entry.set_range(0.0000, 180.0000)
         self.tipangle_entry.setSingleStep(5)
-        self.tipangle_entry.setObjectName(_("V-Tip Angle"))
+        self.tipangle_entry.setObjectName('p_vtip_angle')
 
         self.grid3.addWidget(self.tipanglelabel, 4, 0)
         self.grid3.addWidget(self.tipangle_entry, 4, 1)
@@ -246,7 +246,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.set_range(-99999.9999, 0.0000)
-        self.cutz_entry.setObjectName(_("Cut Z"))
+        self.cutz_entry.setObjectName('p_cutz')
 
         self.cutz_entry.setToolTip(
             _("Depth of cut into material. Negative value.\n"
@@ -265,7 +265,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.set_range(0.000, 9999.9999)
-        self.addtool_entry.setObjectName(_("Tool Dia"))
+        self.addtool_entry.setObjectName('p_tool_dia')
 
         self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
         self.grid3.addWidget(self.addtool_entry, 6, 1)
@@ -339,7 +339,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
-        self.paintoverlap_entry.setObjectName(_("Overlap"))
+        self.paintoverlap_entry.setObjectName('p_overlap')
 
         grid4.addWidget(ovlabel, 1, 0)
         grid4.addWidget(self.paintoverlap_entry, 1, 1)
@@ -354,7 +354,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
-        self.paintmargin_entry.setObjectName(_("Margin"))
+        self.paintmargin_entry.setObjectName('p_margin')
 
         grid4.addWidget(marginlabel, 2, 0)
         grid4.addWidget(self.paintmargin_entry, 2, 1)
@@ -373,45 +373,38 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
         # self.paintmethod_combo = RadioSet([
         #     {"label": _("Standard"), "value": "standard"},
-        #     {"label": _("Seed-based"), "value": "seed"},
-        #     {"label": _("Straight lines"), "value": "lines"},
-        #     {"label": _("Laser lines"), "value": "laser_lines"},
-        #     {"label": _("Combo"), "value": "combo"}
+        #     {"label": _("Seed-based"), "value": _("Seed")},
+        #     {"label": _("Straight lines"), "value": _("Lines")},
+        #     {"label": _("Laser lines"), "value": _("Laser_lines")},
+        #     {"label": _("Combo"), "value": _("Combo")}
         # ], orientation='vertical', stretch=False)
 
         # for choice in self.paintmethod_combo.choices:
-        #     if choice['value'] == "laser_lines":
+        #     if choice['value'] == _("Laser_lines"):
         #         choice["radio"].setEnabled(False)
 
         self.paintmethod_combo = FCComboBox()
         self.paintmethod_combo.addItems(
-            [_("Standard"), _("Seed-based"), _("Straight lines"), _("Laser lines"), _("Combo")]
+            [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
-        self.p_mth = {
-            _("Standard"): "standard",
-            _("Seed-based"): "seed",
-            _("Straight lines"): "lines",
-            _("Laser lines"): "laser_lines",
-            _("Combo"): "combo"
-        }
-        idx = self.paintmethod_combo.findText(_("Laser lines"))
+        idx = self.paintmethod_combo.findText(_("Laser_lines"))
         self.paintmethod_combo.model().item(idx).setEnabled(False)
 
-        self.paintmethod_combo.setObjectName(_("Method"))
+        self.paintmethod_combo.setObjectName('p_method')
 
         grid4.addWidget(methodlabel, 7, 0)
         grid4.addWidget(self.paintmethod_combo, 7, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
-        self.pathconnect_cb.setObjectName(_("Connect"))
+        self.pathconnect_cb.setObjectName('p_connect')
         self.pathconnect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
 
         self.paintcontour_cb = FCCheckBox('%s' % _("Contour"))
-        self.paintcontour_cb.setObjectName(_("Contour"))
+        self.paintcontour_cb.setObjectName('p_contour')
         self.paintcontour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
@@ -445,7 +438,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid4.addWidget(self.gen_param_label, 15, 0, 1, 2)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
-        self.rest_cb.setObjectName(_("Rest Machining"))
+        self.rest_cb.setObjectName('p_rest_machining')
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -476,7 +469,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             {"label": _("All Polygons"), "value": "all"},
             {"label": _("Reference Object"), "value": "ref"}
         ], orientation='vertical', stretch=False)
-        self.selectmethod_combo.setObjectName(_("Selection"))
+        self.selectmethod_combo.setObjectName('p_selection')
         self.selectmethod_combo.setToolTip(
             _("How to select Polygons to be painted.\n"
               "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
@@ -574,7 +567,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.select_method = None
 
         self.units = ''
-        self.paint_tools = {}
+        self.paint_tools = dict()
         self.tooluid = 0
         self.first_click = False
         self.cursor_pos = None
@@ -584,7 +577,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.mp = None
         self.mr = None
 
-        self.sel_rect = []
+        self.sel_rect = list()
 
         # store here if the grid snapping is active
         self.grid_status_memory = False
@@ -606,11 +599,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         }
 
         self.name2option = {
-            _('Overlap'): "paintoverlap",
-            _('Margin'): "paintmargin",
-            _('Method'): "paintmethod",
-            _("Connect"): "pathconnect",
-            _("Contour"): "paintcontour",
+            'p_overlap': "paintoverlap",
+            'p_margin': "paintmargin",
+            'p_method': "paintmethod",
+            'p_connect': "pathconnect",
+            'p_contour': "paintcontour",
         }
 
         self.old_tool_dia = None
@@ -628,7 +621,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         # self.tools_table.itemChanged.connect(self.on_tool_edit)
-        self.tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        self.tools_table.clicked.connect(self.on_row_selection_change)
 
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
@@ -637,6 +630,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.type_obj_combo.activated_custom.connect(self.on_type_obj_changed)
+
+        self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
         self.reset_button.clicked.connect(self.set_tool_ui)
 
         # #############################################################################
@@ -660,13 +656,13 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
 
-        idx = self.paintmethod_combo.findText(_("Laser lines"))
+        idx = self.paintmethod_combo.findText(_("Laser_lines"))
         if self.type_obj_combo.get_value().lower() == 'gerber':
             self.paintmethod_combo.model().item(idx).setEnabled(True)
         else:
             self.paintmethod_combo.model().item(idx).setEnabled(False)
-            if self.paintmethod_combo.get_value() == _("Laser lines"):
-                self.paintmethod_combo.set_value(_("Straight lines"))
+            if self.paintmethod_combo.get_value() == _("Laser_lines"):
+                self.paintmethod_combo.set_value(_("Lines"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -700,48 +696,46 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
     def on_row_selection_change(self):
-        self.update_ui()
-
-    def update_ui(self, row=None):
         self.blockSignals(True)
 
-        if row is None:
+        sel_rows = [it.row() for it in self.tools_table.selectedItems()]
+        # sel_rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        for current_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
             try:
-                current_row = self.tools_table.currentRow()
-            except Exception:
-                current_row = 0
-        else:
-            current_row = row
-
-        if current_row < 0:
-            current_row = 0
-
-        # populate the form with the data from the tool associated with the row parameter
-        try:
-            item = self.tools_table.item(current_row, 3)
-            if item is not None:
+                item = self.tools_table.item(current_row, 3)
+                if item is None:
+                    return 'fail'
                 tooluid = int(item.text())
-            else:
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 return
-        except Exception as e:
-            log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-            return
 
-        # update the QLabel that shows for which Tool we have the parameters in the UI form
-        self.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), (current_row + 1))
-        )
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                cr = self.tools_table.item(current_row, 0).text()
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %s</font></b>" % (_('Parameters for'), _("Tool"), cr)
+                )
 
-        try:
-            # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in list(self.paint_tools.items()):
-                if int(tooluid_key) == tooluid:
-                    for key, value in tooluid_value.items():
-                        if key == 'data':
-                            form_value_storage = tooluid_value[key]
-                            self.storage_to_form(form_value_storage)
-        except Exception as e:
-            log.debug("ToolPaint ---> update_ui() " + str(e))
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.paint_tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            for key, value in tooluid_value.items():
+                                if key == 'data':
+                                    form_value_storage = tooluid_value[key]
+                                    self.storage_to_form(form_value_storage)
+                except Exception as e:
+                    log.debug("ToolPaint ---> update_ui() " + str(e))
+            else:
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
 
         self.blockSignals(False)
 
@@ -765,18 +759,20 @@ class ToolPaint(FlatCAMTool, Gerber):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-        row = self.tools_table.currentRow()
-        if row < 0:
-            row = 0
-        tooluid_item = int(self.tools_table.item(row, 3).text())
+        # row = self.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.tools_table.item(row, 3).text())
 
-        for tooluid_key, tooluid_val in self.paint_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                new_option_value = self.form_fields[option_changed].get_value()
-                if option_changed in tooluid_val:
-                    tooluid_val[option_changed] = new_option_value
-                if option_changed in tooluid_val['data']:
-                    tooluid_val['data'][option_changed] = new_option_value
+            for tooluid_key, tooluid_val in self.paint_tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
 
         self.blockSignals(False)
 
@@ -788,40 +784,24 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.blockSignals(True)
 
-        # row = self.tools_table.currentRow()
-        # if row < 0:
-        #     row = 0
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
 
-        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        temp_tools = {}
-        temp_dia = {}
-        temp_data = {}
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+        temp_tool_data = dict()
 
-        for tooluid_key, tooluid_value in self.paint_tools.items():
-            for key, value in tooluid_value.items():
-                if key == 'data':
-                    # update the 'data' section
-                    for data_key in tooluid_value[key].keys():
-                        for form_key, form_value in self.form_fields.items():
-                            if form_key == data_key:
-                                temp_data[data_key] = form_value.get_value()
-                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-                        # updated from self.app.defaults
-                        if data_key not in self.form_fields:
-                            temp_data[data_key] = value[data_key]
-                    temp_dia[key] = deepcopy(temp_data)
-                    temp_data.clear()
+        for tooluid_key, tooluid_val in self.paint_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
 
-                elif key == 'solid_geometry':
-                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
-                else:
-                    temp_dia[key] = deepcopy(value)
+        for tooluid_key, tooluid_val in self.paint_tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
 
-                temp_tools[tooluid_key] = deepcopy(temp_dia)
-
-        self.paint_tools.clear()
-        self.paint_tools = deepcopy(temp_tools)
-        temp_tools.clear()
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
 
         self.blockSignals(False)
 
@@ -1682,7 +1662,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         :param outname: Name of the resulting Geometry Object.
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
+        :param method: choice out of _("Seed"), 'normal', 'lines'
         :param tools_storage: whether to use the current tools_storage self.paints_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :return: None
@@ -1717,7 +1697,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
-        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
         paint_margin = float(self.paintmargin_entry.get_value()) if margin is None else margin
         # determine if to use the progressive plotting
         prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
@@ -1757,7 +1737,17 @@ class ToolPaint(FlatCAMTool, Gerber):
             def paint_p(polyg, tooldiameter):
                 cpoly = None
                 try:
-                    if paint_method == "seed":
+                    if paint_method == _("Standard"):
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon(polyg,
+                                                   tooldia=tooldiameter,
+                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                   overlap=over,
+                                                   contour=cont,
+                                                   connect=conn,
+                                                   prog_plot=prog_plot)
+
+                    elif paint_method == _("Seed"):
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon2(polyg,
                                                     tooldia=tooldiameter,
@@ -1767,7 +1757,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     connect=conn,
                                                     prog_plot=prog_plot)
 
-                    elif paint_method == "lines":
+                    elif paint_method == _("Lines"):
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon3(polyg,
                                                     tooldia=tooldiameter,
@@ -1777,16 +1767,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     connect=conn,
                                                     prog_plot=prog_plot)
 
-                    elif paint_method == "standard":
-                        # Type(cp) == FlatCAMRTreeStorage | None
-                        cpoly = self.clear_polygon(polyg,
-                                                   tooldia=tooldiameter,
-                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                   overlap=over,
-                                                   contour=cont,
-                                                   connect=conn,
-                                                   prog_plot=prog_plot)
-                    elif paint_method == "laser_lines":
+                    elif paint_method == _("Laser_lines"):
                         # line = None
                         # aperture_size = None
 
@@ -1833,7 +1814,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         pads_lines_list = list()
 
                         # process the flashes found in the selected polygon with the 'lines' method for rectangular
-                        # flashes and with 'seed' for oblong and circular flashes
+                        # flashes and with _("Seed") for oblong and circular flashes
                         # and pads (flahes) need the contour therefore I override the GUI settings with always True
                         for ap_type in flash_el_dict:
                             for elem in flash_el_dict[ap_type]:
@@ -1933,7 +1914,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         #                                  connect=conn,
                         #                                  prog_plot=prog_plot)
 
-                    elif paint_method == "combo":
+                    elif paint_method == _("Combo"):
                         self.app.inform.emit(_("Painting polygon with method: lines."))
                         cpoly = self.clear_polygon3(polyg,
                                                     tooldia=tooldiameter,
@@ -2127,12 +2108,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         :param outname: name of the resulting object
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
+        :param method: choice out of _("Seed"), 'normal', 'lines'
         :param tools_storage: whether to use the current tools_storage self.paints_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
 
         if margin is not None:
             paint_margin = margin
@@ -2306,7 +2287,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             for pol in poly_buf:
                                 if pol is not None and isinstance(pol, Polygon):
                                     cp = None
-                                    if paint_method == 'standard':
+                                    if paint_method == _("Standard"):
                                         cp = self.clear_polygon(pol,
                                                                 tooldia=tool_dia,
                                                                 steps_per_circle=self.app.defaults[
@@ -2315,7 +2296,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                 contour=cont,
                                                                 connect=conn,
                                                                 prog_plot=prog_plot)
-                                    elif paint_method == 'seed':
+                                    elif paint_method == _("Seed"):
                                         cp = self.clear_polygon2(pol,
                                                                  tooldia=tool_dia,
                                                                  steps_per_circle=self.app.defaults[
@@ -2324,7 +2305,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                  contour=cont,
                                                                  connect=conn,
                                                                  prog_plot=prog_plot)
-                                    elif paint_method == "standard":
+                                    elif paint_method == _("Lines"):
                                         cp = self.clear_polygon3(pol,
                                                                  tooldia=tool_dia,
                                                                  steps_per_circle=self.app.defaults[
@@ -2333,7 +2314,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                  contour=cont,
                                                                  connect=conn,
                                                                  prog_plot=prog_plot)
-                                    elif paint_method == "laser_lines":
+                                    elif paint_method == _("Laser_lines"):
                                         # line = None
                                         # aperture_size = None
 
@@ -2381,7 +2362,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         pads_lines_list = list()
 
                                         # process the flashes found in the selected polygon with the 'lines' method
-                                        # for rectangular flashes and with 'seed' for oblong and circular flashes
+                                        # for rectangular flashes and with _("Seed") for oblong and circular flashes
                                         # and pads (flahes) need the contour therefore I override the GUI settings
                                         # with always True
                                         for ap_type in flash_el_dict:
@@ -2459,7 +2440,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     cp.insert(lin)
                                         except TypeError:
                                             cp.insert(lines_union)
-                                    elif paint_method == "combo":
+                                    elif paint_method == _("Combo"):
                                         self.app.inform.emit(_("Painting polygons with method: lines."))
                                         cp = self.clear_polygon3(pol,
                                                                  tooldia=tool_dia,
@@ -2508,7 +2489,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         except TypeError:
                             if isinstance(poly_buf, Polygon):
                                 cp = None
-                                if paint_method == 'standard':
+                                if paint_method == _("Standard"):
                                     cp = self.clear_polygon(poly_buf,
                                                             tooldia=tool_dia,
                                                             steps_per_circle=self.app.defaults[
@@ -2517,7 +2498,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                             contour=cont,
                                                             connect=conn,
                                                             prog_plot=prog_plot)
-                                elif paint_method == 'seed':
+                                elif paint_method == _("Seed"):
                                     cp = self.clear_polygon2(poly_buf,
                                                              tooldia=tool_dia,
                                                              steps_per_circle=self.app.defaults[
@@ -2526,7 +2507,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                              contour=cont,
                                                              connect=conn,
                                                              prog_plot=prog_plot)
-                                elif paint_method == 'standard':
+                                elif paint_method == _("Lines"):
                                     cp = self.clear_polygon3(poly_buf,
                                                              tooldia=tool_dia,
                                                              steps_per_circle=self.app.defaults[
@@ -2535,7 +2516,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                              contour=cont,
                                                              connect=conn,
                                                              prog_plot=prog_plot)
-                                elif paint_method == "laser_lines":
+                                elif paint_method == _("Laser_lines"):
                                     # line = None
                                     # aperture_size = None
 
@@ -2583,7 +2564,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     pads_lines_list = list()
 
                                     # process the flashes found in the selected polygon with the 'lines' method
-                                    # for rectangular flashes and with 'seed' for oblong and circular flashes
+                                    # for rectangular flashes and with _("Seed") for oblong and circular flashes
                                     # and pads (flahes) need the contour therefore I override the GUI settings
                                     # with always True
                                     for ap_type in flash_el_dict:
@@ -2661,7 +2642,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                 cp.insert(lin)
                                     except TypeError:
                                         cp.insert(lines_union)
-                                elif paint_method == "combo":
+                                elif paint_method == _("Combo"):
                                     self.app.inform.emit(_("Painting polygons with method: lines."))
                                     cp = self.clear_polygon3(poly_buf,
                                                              tooldia=tool_dia,
@@ -2721,7 +2702,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     #         continue
                     #     poly_buf = geo.buffer(-paint_margin)
                     #
-                    #     if paint_method == "seed":
+                    #     if paint_method == _("Seed"):
                     #         # Type(cp) == FlatCAMRTreeStorage | None
                     #         cp = self.clear_polygon2(poly_buf,
                     #                                  tooldia=tool_dia,
@@ -2731,7 +2712,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     #                                  connect=conn,
                     #                                  prog_plot=prog_plot)
                     #
-                    #     elif paint_method == "lines":
+                    #     elif paint_method == _("Lines"):
                     #         # Type(cp) == FlatCAMRTreeStorage | None
                     #         cp = self.clear_polygon3(poly_buf,
                     #                                  tooldia=tool_dia,
@@ -2893,27 +2874,27 @@ class ToolPaint(FlatCAMTool, Gerber):
                         poly_buf = geo.buffer(-paint_margin)
                         cp = None
 
-                        if paint_method == "standard":
+                        if paint_method == _("Standard"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over, contour=cont, connect=conn,
                                                     prog_plot=prog_plot)
 
-                        elif paint_method == "seed":
+                        elif paint_method == _("Seed"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
 
-                        elif paint_method == "lines":
+                        elif paint_method == _("Lines"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
-                        elif paint_method == "laser_lines":
+                        elif paint_method == _("Laser_lines"):
                             # line = None
                             # aperture_size = None
 
@@ -2961,7 +2942,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             pads_lines_list = list()
 
                             # process the flashes found in the selected polygon with the 'lines' method
-                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # for rectangular flashes and with _("Seed") for oblong and circular flashes
                             # and pads (flahes) need the contour therefore I override the GUI settings
                             # with always True
                             for ap_type in flash_el_dict:
@@ -3039,7 +3020,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         cp.insert(lin)
                             except TypeError:
                                 cp.insert(lines_union)
-                        elif paint_method == "combo":
+                        elif paint_method == _("Combo"):
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
                                                      tooldia=tool_dia,
@@ -3192,12 +3173,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         :param outname: name of the resulting object
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
+        :param method: choice out of _("Seed"), 'normal', 'lines'
         :param tools_storage: whether to use the current tools_storage self.paints_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
 
         if margin is not None:
             paint_margin = margin
@@ -3364,7 +3345,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         poly_buf = geo.buffer(-paint_margin)
 
                         cp = None
-                        if paint_method == "seed":
+                        if paint_method == _("Seed"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf,
                                                      tooldia=tool_dia,
@@ -3374,7 +3355,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      connect=conn,
                                                      prog_plot=prog_plot)
 
-                        elif paint_method == "lines":
+                        elif paint_method == _("Lines"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf,
                                                      tooldia=tool_dia,
@@ -3384,7 +3365,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      connect=conn,
                                                      prog_plot=prog_plot)
 
-                        elif paint_method == 'standard':
+                        elif paint_method == _("Standard"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf,
                                                     tooldia=tool_dia,
@@ -3393,7 +3374,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     contour=cont,
                                                     connect=conn,
                                                     prog_plot=prog_plot)
-                        elif paint_method == "laser_lines":
+                        elif paint_method == _("Laser_lines"):
                             # line = None
                             # aperture_size = None
 
@@ -3441,7 +3422,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             pads_lines_list = list()
 
                             # process the flashes found in the selected polygon with the 'lines' method
-                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # for rectangular flashes and with _("Seed") for oblong and circular flashes
                             # and pads (flahes) need the contour therefore I override the GUI settings
                             # with always True
                             for ap_type in flash_el_dict:
@@ -3519,7 +3500,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         cp.insert(lin)
                             except TypeError:
                                 cp.insert(lines_union)
-                        elif paint_method == "combo":
+                        elif paint_method == _("Combo"):
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
                                                      tooldia=tool_dia,
@@ -3693,27 +3674,27 @@ class ToolPaint(FlatCAMTool, Gerber):
                         poly_buf = geo.buffer(-paint_margin)
                         cp = None
 
-                        if paint_method == "standard":
+                        if paint_method == _("Standard"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over, contour=cont, connect=conn,
                                                     prog_plot=prog_plot)
 
-                        elif paint_method == "seed":
+                        elif paint_method == _("Seed"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
 
-                        elif paint_method == "lines":
+                        elif paint_method == _("Lines"):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
-                        elif paint_method == "laser_lines":
+                        elif paint_method == _("Laser_lines"):
                             # line = None
                             # aperture_size = None
 
@@ -3761,7 +3742,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             pads_lines_list = list()
 
                             # process the flashes found in the selected polygon with the 'lines' method
-                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # for rectangular flashes and with _("Seed") for oblong and circular flashes
                             # and pads (flahes) need the contour therefore I override the GUI settings
                             # with always True
                             for ap_type in flash_el_dict:
@@ -3839,7 +3820,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         cp.insert(lin)
                             except TypeError:
                                 cp.insert(lines_union)
-                        elif paint_method == "combo":
+                        elif paint_method == _("Combo"):
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
                                                      tooldia=tool_dia,
@@ -3989,7 +3970,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         :param outname: name of the resulting object
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
+        :param method: choice out of _("Seed"), 'normal', 'lines'
         :param tools_storage: whether to use the current tools_storage self.paints_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
@@ -4026,6 +4007,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def ui_connect(self):
         self.tools_table.itemChanged.connect(self.on_tool_edit)
+
+        # rows selected
+        self.tools_table.clicked.connect(self.on_row_selection_change)
+        self.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
 
         for row in range(self.tools_table.rowCount()):
             try:
@@ -4068,6 +4053,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                 current_widget.activated_custom.connect(self.form_to_storage)
             elif isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCComboBox):
+                current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.order_radio.activated_custom[str].connect(self.on_order_changed)
@@ -4076,6 +4063,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # rows selected
+        try:
+            self.tools_table.clicked.disconnect(self.on_row_selection_change)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.tools_table.horizontalHeader().sectionClicked.disconnect(self.on_row_selection_change)
         except (TypeError, AttributeError):
             pass
 
@@ -4096,17 +4094,22 @@ class ToolPaint(FlatCAMTool, Gerber):
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    current_widget.stateChanged.disconnect()
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
-                    current_widget.activated_custom.disconnect()
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    current_widget.returnPressed.disconnect()
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCComboBox):
+                try:
+                    current_widget.currentIndexChanged.connect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
 

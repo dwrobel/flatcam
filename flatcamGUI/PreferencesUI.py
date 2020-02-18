@@ -5826,7 +5826,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ], orientation='vertical', stretch=False)
         self.paintmethod_combo = FCComboBox()
         self.paintmethod_combo.addItems(
-            [_("Standard"), _("Seed-based"), _("Straight lines"), _("Laser lines"), _("Combo")]
+            [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
 
         grid0.addWidget(methodlabel, 11, 0)

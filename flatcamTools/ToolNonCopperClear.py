@@ -8,7 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, FCComboBox
+from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, FCComboBox, \
+    OptionalInputSection
 from flatcamParsers.ParseGerber import Gerber
 
 import FlatCAMApp
@@ -70,7 +71,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ################################################
         # ##### Type of object to be copper cleaned ######
         # ################################################
-        # self.type_obj_combo = QtWidgets.QComboBox()
+        # self.type_obj_combo = FCComboBox()
         # self.type_obj_combo.addItem("Gerber")
         # self.type_obj_combo.addItem("Excellon")
         # self.type_obj_combo.addItem("Geometry")
@@ -97,7 +98,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ################################################
         # ##### The object to be copper cleaned ##########
         # ################################################
-        self.object_combo = QtWidgets.QComboBox()
+        self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
@@ -439,14 +440,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.grid3.addWidget(self.ncc_choice_offset_cb, 19, 0)
 
-        # ## NCC Offset value
-        # self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
-        # self.ncc_offset_label.setToolTip(
-        #     _("If used, it will add an offset to the copper features.\n"
-        #       "The copper clearing will finish to a distance\n"
-        #       "from the copper features.\n"
-        #       "The value can be between 0 and 10 FlatCAM units.")
-        # )
+        # ## NCC Offset Entry
         self.ncc_offset_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.ncc_offset_spinner.set_range(0.00, 10.00)
         self.ncc_offset_spinner.set_precision(4)
@@ -459,12 +453,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             self.ncc_offset_spinner.setSingleStep(0.01)
 
-        # self.grid3.addWidget(self.ncc_offset_label, 20, 0)
         self.grid3.addWidget(self.ncc_offset_spinner, 19, 1)
-
-        # self.ncc_offset_label.hide()
-        self.ncc_offset_spinner.setEnabled(False)
-
+        
+        self.ois_ncc_offset = OptionalInputSection(self.ncc_choice_offset_cb, [self.ncc_offset_spinner])
+        
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -530,7 +522,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type = FCComboBox()
         self.box_combo_type.addItem(_("Reference Gerber"))
         self.box_combo_type.addItem(_("Reference Excellon"))
         self.box_combo_type.addItem(_("Reference Geometry"))
@@ -540,7 +532,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
@@ -683,11 +675,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
-        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
+
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
         self.type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+
+        self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_index_changed(self, val):
@@ -696,48 +691,46 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.object_combo.setCurrentIndex(0)
 
     def on_row_selection_change(self):
-        self.update_ui()
-
-    def update_ui(self, row=None):
         self.blockSignals(True)
 
-        if row is None:
+        sel_rows = [it.row() for it in self.tools_table.selectedItems()]
+        # sel_rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        for current_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
             try:
-                current_row = self.tools_table.currentRow()
-            except Exception:
-                current_row = 0
-        else:
-            current_row = row
-
-        if current_row < 0:
-            current_row = 0
-
-        # populate the form with the data from the tool associated with the row parameter
-        try:
-            item = self.tools_table.item(current_row, 3)
-            if item is not None:
-                tooluid = int(item.text())
-            else:
+                item = self.tools_table.item(current_row, 3)
+                if item is not None:
+                    tooluid = int(item.text())
+                else:
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
                 return
-        except Exception as e:
-            log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-            return
 
-        # update the QLabel that shows for which Tool we have the parameters in the UI form
-        self.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), (current_row + 1))
-        )
-
-        try:
-            # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in list(self.ncc_tools.items()):
-                if int(tooluid_key) == tooluid:
-                    for key, value in tooluid_value.items():
-                        if key == 'data':
-                            form_value_storage = tooluid_value[key]
-                            self.storage_to_form(form_value_storage)
-        except Exception as e:
-            log.debug("NonCopperClear ---> update_ui() " + str(e))
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                cr = current_row + 1
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
+                )
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.ncc_tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            for key, value in tooluid_value.items():
+                                if key == 'data':
+                                    form_value_storage = tooluid_value[key]
+                                    self.storage_to_form(form_value_storage)
+                except Exception as e:
+                    log.debug("NonCopperClear ---> update_ui() " + str(e))
+            else:
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
 
         self.blockSignals(False)
 
@@ -761,19 +754,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-        row = self.tools_table.currentRow()
+        # row = self.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.tools_table.item(row, 3).text())
 
-        if row < 0:
-            row = 0
-        tooluid_item = int(self.tools_table.item(row, 3).text())
-
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                new_option_value = self.form_fields[option_changed].get_value()
-                if option_changed in tooluid_val:
-                    tooluid_val[option_changed] = new_option_value
-                if option_changed in tooluid_val['data']:
-                    tooluid_val['data'][option_changed] = new_option_value
+            for tooluid_key, tooluid_val in self.ncc_tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
 
         self.blockSignals(False)
 
@@ -827,6 +821,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_tools.clear()
         self.ncc_tools = deepcopy(temp_tools)
         temp_tools.clear()
+
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
 
         self.blockSignals(False)
 
@@ -1027,16 +1023,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
-                    tool_type_item = QtWidgets.QComboBox()
-                    for item in self.tool_type_item_options:
-                        tool_type_item.addItem(item)
+                    tool_type_item = FCComboBox()
+                    tool_type_item.addItems(self.tool_type_item_options)
+
                         # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
 
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
 
-                    operation_type = QtWidgets.QComboBox()
+                    operation_type = FCComboBox()
                     operation_type.addItem('iso_op')
                     # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
                     operation_type.addItem('clear_op')
@@ -1081,6 +1077,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_table.setMaximumHeight(self.tools_table.getHeight())
 
         self.ui_connect()
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = list()
+        sel_items = self.tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+        if len(sel_rows) > 1:
+            self.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
     def ui_connect(self):
         self.tools_table.itemChanged.connect(self.on_tool_edit)
@@ -1221,15 +1227,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.box_combo_label.show()
             self.box_combo_type.show()
             self.box_combo_type_label.show()
-
-    def on_offset_choice(self, state):
-        # if state:
-        #     self.ncc_offset_label.show()
-        #     self.ncc_offset_spinner.show()
-        # else:
-        #     self.ncc_offset_label.hide()
-        #     self.ncc_offset_spinner.hide()
-        self.ncc_offset_spinner.setEnabled(state)
 
     def on_order_changed(self, order):
         if order != 'no':

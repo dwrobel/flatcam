@@ -17,9 +17,12 @@ CAD program, and create G-Code for Isolation routing.
 - updated all FlatCAM tools to use the new confirmation message that show if the entered value is within range or outside
 - updated all FlatCAM tools to use the new confirmation message for QSpinBoxes, too
 - in Excellon UI protected the values that are common parameters from change on tool selection change
-- fixed some issues realted to the usage of the new confirmation message in FlatCAM Tools
+- fixed some issues related to the usage of the new confirmation message in FlatCAM Tools
 - made sure that the FlatCAM Tools UI initialization is done only in set_tool_ui() method and not in the constructor
 - adapted the GCode generation from Excellon to work with multiple tools data and modified the preprocessors header
+- when multiple tools are selected in Excellon UI and parameters are modified it will applied to all selected
+- in Excellon UI, Paint Tool and NCC Tool finished the "Apply parameters to all tools" functionality
+- updated Paint Tool and NCC Tool in the UI functionality
 
 16.02.2020
 

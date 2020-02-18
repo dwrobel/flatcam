@@ -806,7 +806,7 @@ class App(QtCore.QObject):
             "tools_paintorder": 'rev',
             "tools_paintoverlap": 20,
             "tools_paintmargin": 0.0,
-            "tools_paintmethod": _("Seed-based"),
+            "tools_paintmethod": _("Seed"),
             "tools_selectmethod": "all",
             "tools_pathconnect": True,
             "tools_paintcontour": True,

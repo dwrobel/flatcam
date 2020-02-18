@@ -2778,10 +2778,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.generate_milling_slots_button.show()
 
         # set the text on tool_data_label after loading the object
-        sel_rows = list()
         sel_items = self.ui.tools_table.selectedItems()
-        for it in sel_items:
-            sel_rows.append(it.row())
+        sel_rows = [it.row() for it in sel_items]
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -2909,7 +2907,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.operation_radio.activated_custom.connect(self.on_operation_type)
 
         self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
+
+        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
         self.units_found = self.app.defaults['units']
+
+        # ########################################
+        # #######3 TEMP SETTINGS #################
+        # ########################################
+        self.ui.operation_radio.set_value("drill")
+        self.ui.operation_radio.setEnabled(False)
 
     def ui_connect(self):
 
@@ -3029,7 +3036,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key and form_key not in \
-                        ["toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
+                        ["toolchange", "toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
@@ -3047,19 +3054,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-        row = self.ui.tools_table.currentRow()
+        # row = self.ui.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.ui.tools_table.item(row, 0).text())
 
-        if row < 0:
-            row = 0
-        tooluid_item = int(self.ui.tools_table.item(row, 0).text())
-
-        for tooluid_key, tooluid_val in self.tools.items():
-            if int(tooluid_key) == tooluid_item:
-                new_option_value = self.form_fields[option_changed].get_value()
-                if option_changed in tooluid_val:
-                    tooluid_val[option_changed] = new_option_value
-                if option_changed in tooluid_val['data']:
-                    tooluid_val['data'][option_changed] = new_option_value
+            for tooluid_key, tooluid_val in self.tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
 
         self.ui_connect()
 
@@ -3858,57 +3866,33 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.shapes.clear(update=True)
 
     def on_apply_param_to_all_clicked(self):
-        if self.tools_table.rowCount() == 0:
+        if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            log.debug("FlatCAMExcellon.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
-        self.blockSignals(True)
+        self.ui_disconnect()
 
-        row = self.tools_table.currentRow()
+        row = self.ui.tools_table.currentRow()
         if row < 0:
             row = 0
 
-        # store all the data associated with the row parameter to the self.tools storage
-        tooldia_item = float(self.tools_table.item(row, 1).text())
-        type_item = self.tools_table.cellWidget(row, 2).currentText()
-        operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
+        tooluid_item = int(self.ui.tools_table.item(row, 0).text())
+        temp_tool_data = dict()
 
-        nccoffset_item = self.ncc_choice_offset_cb.get_value()
-        nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
+        for tooluid_key, tooluid_val in self.tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
 
-        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        temp_tools = {}
-        temp_dia = {}
-        temp_data = {}
+        for tooluid_key, tooluid_val in self.tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
 
-        for tooluid_key, tooluid_value in self.ncc_tools.items():
-            for key, value in tooluid_value.items():
-                if key == 'data':
-                    # update the 'data' section
-                    for data_key in tooluid_value[key].keys():
-                        for form_key, form_value in self.form_fields.items():
-                            if form_key == data_key:
-                                temp_data[data_key] = form_value.get_value()
-                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-                        # updated from self.app.defaults
-                        if data_key not in self.form_fields:
-                            temp_data[data_key] = value[data_key]
-                    temp_dia[key] = deepcopy(temp_data)
-                    temp_data.clear()
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
 
-                elif key == 'solid_geometry':
-                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
-                else:
-                    temp_dia[key] = deepcopy(value)
-
-                temp_tools[tooluid_key] = deepcopy(temp_dia)
-
-        self.ncc_tools.clear()
-        self.ncc_tools = deepcopy(temp_tools)
-        temp_tools.clear()
-
-        self.blockSignals(False)
+        self.ui_connect()
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):
@@ -4584,41 +4568,42 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
                 )
+
+                # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+                # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+                try:
+                    item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+                    if item is not None:
+                        tool_type_txt = item.currentText()
+                        self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                    else:
+                        self.ui_connect()
+                        return
+                except Exception as e:
+                    log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                    return
+
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in self.tools.items():
+                        if int(tooluid_key) == tooluid:
+                            for key, value in tooluid_value.items():
+                                if key == 'data':
+                                    form_value_storage = tooluid_value['data']
+                                    self.update_form(form_value_storage)
+                                if key == 'offset_value':
+                                    # update the offset value in the entry even if the entry is hidden
+                                    self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
+
+                                if key == 'tool_type' and value == 'V':
+                                    self.update_cutz()
+                except Exception as e:
+                    log.debug("FlatCAMGeometry.update_ui() -> %s " % str(e))
+
             else:
                 self.ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
                 )
-
-            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
-            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-            try:
-                item = self.ui.geo_tools_table.cellWidget(current_row, 4)
-                if item is not None:
-                    tool_type_txt = item.currentText()
-                    self.ui_update_v_shape(tool_type_txt=tool_type_txt)
-                else:
-                    self.ui_connect()
-                    return
-            except Exception as e:
-                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
-                return
-
-            try:
-                # set the form with data from the newly selected tool
-                for tooluid_key, tooluid_value in self.tools.items():
-                    if int(tooluid_key) == tooluid:
-                        for key, value in tooluid_value.items():
-                            if key == 'data':
-                                form_value_storage = tooluid_value['data']
-                                self.update_form(form_value_storage)
-                            if key == 'offset_value':
-                                # update the offset value in the entry even if the entry is hidden
-                                self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
-
-                            if key == 'tool_type' and value == 'V':
-                                self.update_cutz()
-            except Exception as e:
-                log.debug("FlatCAMGeometry.update_ui() -> %s " % str(e))
 
         self.ui_connect()
 
