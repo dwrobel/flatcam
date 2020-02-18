@@ -33,8 +33,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :rtype: PlotCanvas
         """
 
-        super(PlotCanvas, self).__init__()
+        # super(PlotCanvas, self).__init__()
+        # QtCore.QObject.__init__(self)
         # VisPyCanvas.__init__(self)
+        super().__init__()
 
         # VisPyCanvas does not allow new attributes. Override.
         self.unfreeze()
@@ -137,15 +139,12 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             c_color = Color(self.fcapp.defaults["global_cursor_color"]).rgba
         else:
             c_color = self.line_color
+
         self.cursor_v_line = InfiniteLine(pos=None, color=c_color, vertical=True,
                                           parent=self.line_parent)
 
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
-
-        # if self.app.defaults['global_workspace'] is True:
-        #     if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-        #         self.wkspace_t = Line(pos=)
 
         self.shape_collections = []
 
@@ -161,6 +160,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
         self.fit_view()
+
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     def draw_workspace(self, workspace_size):

@@ -1786,6 +1786,8 @@ class App(QtCore.QObject):
         self.app_cursor = None
         self.hover_shapes = None
 
+        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
+
         # setup the PlotCanvas
         self.on_plotcanvas_setup()
 
