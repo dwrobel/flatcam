@@ -3045,6 +3045,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # A QTimer
         self.plot_thread = None
 
+        # a QThread for the edit process
+        self.thread = QtCore.QThread()
+
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
 
@@ -3106,6 +3109,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def pool_recreated(self, pool):
         self.shapes.pool = pool
         self.tool_shape.pool = pool
+        self.pool = pool
 
     def set_ui(self):
         # updated units
@@ -3927,96 +3931,125 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #     # and add the first aperture to have something to play with
         #     self.on_aperture_add('10')
 
-        def worker_job(app_obj):
-            with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
-                # ############################################################# ##
-                # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-                # ############################################################# ##
+        # self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
 
-                # list of clear geos that are to be applied to the entire file
-                global_clear_geo = []
+        class Execute_Edit(QtCore.QObject):
 
-                # create one big geometry made out of all 'negative' (clear) polygons
-                for apid in app_obj.gerber_obj.apertures:
-                    # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
-                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
-                            if 'clear' in elem:
-                                global_clear_geo.append(elem['clear'])
-                log.warning("Found %d clear polygons." % len(global_clear_geo))
+            start = QtCore.pyqtSignal(str)
 
-                global_clear_geo = MultiPolygon(global_clear_geo)
-                if isinstance(global_clear_geo, Polygon):
-                    global_clear_geo = list(global_clear_geo)
+            def __init__(self, app):
+                super(Execute_Edit, self).__init__()
+                self.app = app
+                self.start.connect(self.run)
 
-                # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
-                # clear geometry that fits inside the solid. otherwise we may loose the solid
-                for apid in app_obj.gerber_obj.apertures:
-                    temp_solid_geometry = []
-                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
-                        # for elem in self.gerber_obj.apertures[apid]['geometry']:
-                        #     if 'solid' in elem:
-                        #         solid_geo = elem['solid']
-                        #         for clear_geo in global_clear_geo:
-                        #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                        #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                        #             # delete it
-                        #             if clear_geo.within(solid_geo):
-                        #                 solid_geo = solid_geo.difference(clear_geo)
-                        #         try:
-                        #             for poly in solid_geo:
-                        #                 new_elem = dict()
-                        #
-                        #                 new_elem['solid'] = poly
-                        #                 if 'clear' in elem:
-                        #                     new_elem['clear'] = poly
-                        #                 if 'follow' in elem:
-                        #                     new_elem['follow'] = poly
-                        #                 temp_elem.append(deepcopy(new_elem))
-                        #         except TypeError:
-                        #             new_elem = dict()
-                        #             new_elem['solid'] = solid_geo
-                        #             if 'clear' in elem:
-                        #                 new_elem['clear'] = solid_geo
-                        #             if 'follow' in elem:
-                        #                 new_elem['follow'] = solid_geo
-                        #             temp_elem.append(deepcopy(new_elem))
-                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
-                            new_elem = dict()
-                            if 'solid' in elem:
-                                solid_geo = elem['solid']
+            @staticmethod
+            def worker_job(app_obj):
+                with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
+                    # ############################################################# ##
+                    # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
+                    # ############################################################# ##
 
-                                for clear_geo in global_clear_geo:
-                                    # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                    # the solid_geometry. We want for clear_geometry just to cut into solid_geometry
-                                    # not to delete it
-                                    if clear_geo.within(solid_geo):
-                                        solid_geo = solid_geo.difference(clear_geo)
+                    # list of clear geos that are to be applied to the entire file
+                    global_clear_geo = list()
 
-                                new_elem['solid'] = solid_geo
-                            if 'clear' in elem:
-                                new_elem['clear'] = elem['clear']
-                            if 'follow' in elem:
-                                new_elem['follow'] = elem['follow']
-                            temp_solid_geometry.append(deepcopy(new_elem))
+                    # create one big geometry made out of all 'negative' (clear) polygons
+                    for apid in app_obj.gerber_obj.apertures:
+                        # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
+                        if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                            for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                                if 'clear' in elem:
+                                    global_clear_geo.append(elem['clear'])
+                    log.warning("Found %d clear polygons." % len(global_clear_geo))
 
-                        app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
-                log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
+                    if global_clear_geo:
+                        global_clear_geo = MultiPolygon(global_clear_geo)
+                        if isinstance(global_clear_geo, Polygon):
+                            global_clear_geo = list(global_clear_geo)
 
-                # Loading the Geometry into Editor Storage
-                for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
-                    app_obj.results.append(app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict)))
+                    # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
+                    # clear geometry that fits inside the solid. otherwise we may loose the solid
+                    for apid in app_obj.gerber_obj.apertures:
+                        temp_solid_geometry = list()
+                        if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                            # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                            #     if 'solid' in elem:
+                            #         solid_geo = elem['solid']
+                            #         for clear_geo in global_clear_geo:
+                            #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                            #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                            #             # delete it
+                            #             if clear_geo.within(solid_geo):
+                            #                 solid_geo = solid_geo.difference(clear_geo)
+                            #         try:
+                            #             for poly in solid_geo:
+                            #                 new_elem = dict()
+                            #
+                            #                 new_elem['solid'] = poly
+                            #                 if 'clear' in elem:
+                            #                     new_elem['clear'] = poly
+                            #                 if 'follow' in elem:
+                            #                     new_elem['follow'] = poly
+                            #                 temp_elem.append(deepcopy(new_elem))
+                            #         except TypeError:
+                            #             new_elem = dict()
+                            #             new_elem['solid'] = solid_geo
+                            #             if 'clear' in elem:
+                            #                 new_elem['clear'] = solid_geo
+                            #             if 'follow' in elem:
+                            #                 new_elem['follow'] = solid_geo
+                            #             temp_elem.append(deepcopy(new_elem))
+                            for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                                new_elem = dict()
+                                if 'solid' in elem:
+                                    solid_geo = elem['solid']
+                                    if not global_clear_geo or global_clear_geo.is_empty:
+                                        pass
+                                    else:
+                                        for clear_geo in global_clear_geo:
+                                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                            # the solid_geometry. We want for clear_geometry just to cut into
+                                            # solid_geometry not to delete it
+                                            if clear_geo.within(solid_geo):
+                                                solid_geo = solid_geo.difference(clear_geo)
 
-                output = list()
-                for p in app_obj.results:
-                    output.append(p.get())
+                                    new_elem['solid'] = solid_geo
+                                if 'clear' in elem:
+                                    new_elem['clear'] = elem['clear']
+                                if 'follow' in elem:
+                                    new_elem['follow'] = elem['follow']
+                                temp_solid_geometry.append(deepcopy(new_elem))
 
-                for elem in output:
-                    app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
+                            app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
+                    log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
-                app_obj.mp_finished.emit(output)
+                    try:
+                        # Loading the Geometry into Editor Storage
+                        for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
+                            app_obj.results.append(
+                                app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict))
+                            )
+                    except Exception as e:
+                        log.debug(
+                            "FlatCAMGrbEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(e))
+                        traceback.print_exc()
 
-        self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
+                    output = list()
+                    for p in app_obj.results:
+                        output.append(p.get())
+
+                    for elem in output:
+                        app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
+
+                    app_obj.mp_finished.emit(output)
+
+            def run(self):
+                self.worker_job(self.app)
+
+        self.thread.start(QtCore.QThread.NormalPriority)
+
+        executable_edit = Execute_Edit(app=self)
+        executable_edit.moveToThread(self.thread)
+        executable_edit.start.emit("Started")
 
     @staticmethod
     def add_apertures(aperture_id, aperture_dict):

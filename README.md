@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 19.02.2020
 
 - fixed some issues in the Geometry Editor; the jump sigmal disconnect was failing for repeated Editor tool operation
+- fixed an issue in Gerber Editor where the multiprocessing pool was reported as closed and an ValueError exception was raised in a certain scneraio
 
 17.02.2020
 
