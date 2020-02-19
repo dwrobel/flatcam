@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed some issues in the Geometry Editor; the jump sigmal disconnect was failing for repeated Editor tool operation
 - fixed an issue in Gerber Editor where the multiprocessing pool was reported as closed and an ValueError exception was raised in a certain scneraio
+- on Set Origin, Move to Origin and Move actions for Gerber and Excellon objects the source file will be also updated (the export functions will export an updated object)
 
 17.02.2020
 

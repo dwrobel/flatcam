@@ -7307,7 +7307,9 @@ class App(QtCore.QObject):
 
         def worker_task():
             with self.proc_container.new(_("Setting Origin...")):
-                for obj in self.collection.get_list():
+                obj_list = self.collection.get_list()
+
+                for obj in obj_list:
                     obj.offset((x, y))
                     self.object_changed.emit(obj)
 
@@ -7318,6 +7320,17 @@ class App(QtCore.QObject):
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
                 self.inform.emit('[success] %s...' % _('Origin set'))
+
+                for obj in obj_list:
+                    out_name = obj.options["name"]
+
+                    if obj.kind == 'gerber':
+                        obj.source_file = self.export_gerber(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'excellon':
+                        obj.source_file = self.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+
                 if noplot_sig is False:
                     self.replot_signal.emit([])
 
@@ -7400,6 +7413,17 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.plot()
+
+                for obj in obj_list:
+                    out_name = obj.options["name"]
+
+                    if obj.kind == 'gerber':
+                        obj.source_file = self.export_gerber(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'excellon':
+                        obj.source_file = self.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+
                 self.inform.emit('[success] %s...' % _('Origin set'))
 
         if use_thread is True:
