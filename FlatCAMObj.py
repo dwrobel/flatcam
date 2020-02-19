@@ -2233,6 +2233,63 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
                                             gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+                                    elif isinstance(geo, Polygon):
+                                        geo_coords = list(geo.exterior.coords)
+                                        # first command is a move with pen-up D02 at the beginning of the geo
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
+                                        for coord in geo_coords[1:]:
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+
+                                            prev_coord = coord
+
+                                        for geo_int in geo.interiors:
+                                            geo_coords = list(geo_int.coords)
+                                            # first command is a move with pen-up D02 at the beginning of the geo
+                                            if g_zeros == 'T':
+                                                x_formatted, y_formatted = tz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+                                            else:
+                                                x_formatted, y_formatted = lz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+
+                                            prev_coord = geo_coords[0]
+                                            for coord in geo_coords[1:]:
+                                                if coord != prev_coord:
+                                                    if g_zeros == 'T':
+                                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+                                                    else:
+                                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+
+                                                prev_coord = coord
                                     else:
                                         geo_coords = list(geo.coords)
                                         # first command is a move with pen-up D02 at the beginning of the geo
