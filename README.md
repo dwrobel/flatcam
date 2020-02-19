@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.02.2020
+
+- fixed some issues in the Geometry Editor; the jump sigmal disconnect was failing for repeated Editor tool operation
+
 17.02.2020
 
 - updated the Excellon UI to hold data for each tool

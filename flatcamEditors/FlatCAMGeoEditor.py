@@ -1924,6 +1924,12 @@ class FCCircle(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -2003,6 +2009,12 @@ class FCArc(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -2227,6 +2239,12 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -2294,6 +2312,12 @@ class FCPolygon(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.draw_app.in_action = True
         self.points.append(point)
 
@@ -2609,6 +2633,7 @@ class FCMove(FCShapeTool):
             return
         else:
             self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
@@ -2616,6 +2641,12 @@ class FCMove(FCShapeTool):
         self.origin = origin
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         if len(self.draw_app.get_selected()) == 0:
             # self.complete = True
             # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
@@ -2647,7 +2678,10 @@ class FCMove(FCShapeTool):
             self.draw_app.delete_selected()
             self.complete = True
             self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Move completed."))
-            self.draw_app.app.jump_signal.disconnect()
+            try:
+                self.draw_app.app.jump_signal.disconnect()
+            except TypeError:
+                pass
 
     def selection_bbox(self):
         geo_list = []
@@ -2777,7 +2811,10 @@ class FCCopy(FCMove):
                          for geom in self.draw_app.get_selected()]
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def clean_up(self):
         self.draw_app.selected = list()
@@ -2812,6 +2849,12 @@ class FCText(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         # Create new geometry
         dx = point[0]
         dy = point[1]
@@ -2831,7 +2874,10 @@ class FCText(FCShapeTool):
                 return
         else:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No text to add."))
-            self.draw_app.app.jump_signal.disconnect()
+            try:
+                self.draw_app.app.jump_signal.disconnect()
+            except (TypeError, AttributeError):
+                pass
             return
 
         self.text_gui.text_path = []
@@ -2909,13 +2955,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2939,13 +2983,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2969,8 +3011,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Ext Tool completed."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -2992,6 +3033,10 @@ class FCBuffer(FCShapeTool):
         self.complete = True
         self.draw_app.select_tool("select")
         self.buff_tool.hide_tool()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def clean_up(self):
         self.draw_app.selected = list()
@@ -3001,7 +3046,6 @@ class FCBuffer(FCShapeTool):
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
-
 
 
 class FCEraser(FCShapeTool):
@@ -3031,6 +3075,12 @@ class FCEraser(FCShapeTool):
         self.origin = origin
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         if len(self.draw_app.get_selected()) == 0:
             for obj_shape in self.storage.get_objects():
                 try:
@@ -3078,7 +3128,10 @@ class FCEraser(FCShapeTool):
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def utility_geometry(self, data=None):
         """

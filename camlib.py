@@ -2850,14 +2850,16 @@ class CNCjob(Geometry):
                                     self.app.inform.emit('[WARNING] %s' %
                                                          _("The Cut Z parameter has positive value. "
                                                            "It is the depth value to drill into material.\n"
-                                                           "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                           "The Cut Z parameter needs to have a negative value, "
+                                                           "assuming it is a typo "
                                                            "therefore the app will convert the value to negative. "
                                                            "Check the resulting CNC code (Gcode etc)."))
                                     self.z_cut = -self.z_cut
                                 elif self.z_cut == 0:
                                     self.app.inform.emit('[WARNING] %s: %s' %
                                                          (_(
-                                                             "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                             "The Cut Z parameter is zero. There will be no cut, "
+                                                             "skipping file"),
                                                           exobj.options['name']))
                                     return 'fail'
 
@@ -3063,14 +3065,16 @@ class CNCjob(Geometry):
                                     self.app.inform.emit('[WARNING] %s' %
                                                          _("The Cut Z parameter has positive value. "
                                                            "It is the depth value to drill into material.\n"
-                                                           "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                           "The Cut Z parameter needs to have a negative value, "
+                                                           "assuming it is a typo "
                                                            "therefore the app will convert the value to negative. "
                                                            "Check the resulting CNC code (Gcode etc)."))
                                     self.z_cut = -self.z_cut
                                 elif self.z_cut == 0:
                                     self.app.inform.emit('[WARNING] %s: %s' %
                                                          (_(
-                                                             "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                             "The Cut Z parameter is zero. There will be no cut, "
+                                                             "skipping file"),
                                                           exobj.options['name']))
                                     return 'fail'
 
@@ -3269,14 +3273,16 @@ class CNCjob(Geometry):
                                 self.app.inform.emit('[WARNING] %s' %
                                                      _("The Cut Z parameter has positive value. "
                                                        "It is the depth value to drill into material.\n"
-                                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                       "The Cut Z parameter needs to have a negative value, "
+                                                       "assuming it is a typo "
                                                        "therefore the app will convert the value to negative. "
                                                        "Check the resulting CNC code (Gcode etc)."))
                                 self.z_cut = -self.z_cut
                             elif self.z_cut == 0:
                                 self.app.inform.emit('[WARNING] %s: %s' %
                                                      (_(
-                                                         "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                         "The Cut Z parameter is zero. There will be no cut, "
+                                                         "skipping file"),
                                                       exobj.options['name']))
                                 return 'fail'
 
