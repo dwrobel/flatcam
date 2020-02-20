@@ -463,25 +463,31 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
 
         # grid3 = QtWidgets.QGridLayout()
-        self.selectmethod_combo = RadioSet([
-            {"label": _("Polygon Selection"), "value": "single"},
-            {"label": _("Area Selection"), "value": "area"},
-            {"label": _("All Polygons"), "value": "all"},
-            {"label": _("Reference Object"), "value": "ref"}
-        ], orientation='vertical', stretch=False)
-        self.selectmethod_combo.setObjectName('p_selection')
-        self.selectmethod_combo.setToolTip(
-            _("How to select Polygons to be painted.\n"
-              "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
-              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-              "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' - will do non copper clearing within the area\n"
-              "specified by another object.")
-        )
+        # self.selectmethod_combo = RadioSet([
+        #     {"label": _("Polygon Selection"), "value": "single"},
+        #     {"label": _("Area Selection"), "value": "area"},
+        #     {"label": _("All Polygons"), "value": "all"},
+        #     {"label": _("Reference Object"), "value": "ref"}
+        # ], orientation='vertical', stretch=False)
+        # self.selectmethod_combo.setObjectName('p_selection')
+        # self.selectmethod_combo.setToolTip(
+        #     _("How to select Polygons to be painted.\n"
+        #       "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
+        #       "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+        #       "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+        #       "- 'All Polygons' - the Paint will start after click.\n"
+        #       "- 'Reference Object' - will do non copper clearing within the area\n"
+        #       "specified by another object.")
+        # )
 
-        grid4.addWidget(selectlabel, 18, 0, 1, 2)
-        grid4.addWidget(self.selectmethod_combo, 19, 0, 1, 2)
+        self.selectmethod_combo = FCComboBox()
+        self.selectmethod_combo.addItems(
+            [_("Polygon Selection"), _("Area Selection"), _("All Polygons"), _("Reference Object")]
+        )
+        self.selectmethod_combo.setObjectName('p_selection')
+
+        grid4.addWidget(selectlabel, 18, 0)
+        grid4.addWidget(self.selectmethod_combo, 18, 1)
 
         form1 = QtWidgets.QFormLayout()
         grid4.addLayout(form1, 20, 0, 1, 2)
@@ -624,7 +630,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_table.clicked.connect(self.on_row_selection_change)
 
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
-        self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
+        self.selectmethod_combo.currentIndexChanged.connect(self.on_selection)
         self.order_radio.activated_custom[str].connect(self.on_order_changed)
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
@@ -881,8 +887,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         else:
             return float(self.addtool_entry.get_value())
 
-    def on_radio_selection(self):
-        if self.selectmethod_combo.get_value() == "ref":
+    def on_selection(self):
+        if self.selectmethod_combo.get_value() == _("Reference Object"):
             self.box_combo.show()
             self.box_combo_label.show()
             self.box_combo_type.show()
@@ -893,11 +899,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.box_combo_type.hide()
             self.box_combo_type_label.hide()
 
-        if self.selectmethod_combo.get_value() == 'single':
+        if self.selectmethod_combo.get_value() == _("Polygon Selection"):
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
-        if self.selectmethod_combo.get_value() == 'area':
+        if self.selectmethod_combo.get_value() == _("Area Selection"):
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
@@ -1362,7 +1368,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
 
-        if self.select_method == "all":
+        if self.select_method == _("All Polygons"):
             self.paint_poly_all(self.paint_obj,
                                 tooldia=self.tooldia_list,
                                 outname=self.o_name,
@@ -1370,7 +1376,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 connect=self.connect,
                                 contour=self.contour)
 
-        elif self.select_method == "single":
+        elif self.select_method == _("Polygon Selection"):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to paint it."))
 
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
@@ -1389,7 +1395,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.app.mp)
 
-        elif self.select_method == "area":
+        elif self.select_method == _("Area Selection"):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the paint area."))
 
             if self.app.is_legacy is False:
@@ -1403,7 +1409,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
-        elif self.select_method == 'ref':
+        elif self.select_method == _("Reference Object"):
             self.bound_obj_name = self.box_combo.currentText()
             # Get source object.
             try:

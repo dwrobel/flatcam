@@ -5877,16 +5877,21 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        self.selectmethod_combo = RadioSet(
-            [
-                {"label": _("Polygon Selection"), "value": "single"},
-                {"label": _("Area Selection"), "value": "area"},
-                {"label": _("All Polygons"), "value": "all"},
-                {"label": _("Reference Object"), "value": "ref"}
-            ],
-            orientation='vertical',
-            stretch=None
+        # self.selectmethod_combo = RadioSet(
+        #     [
+        #         {"label": _("Polygon Selection"), "value": "single"},
+        #         {"label": _("Area Selection"), "value": "area"},
+        #         {"label": _("All Polygons"), "value": "all"},
+        #         {"label": _("Reference Object"), "value": "ref"}
+        #     ],
+        #     orientation='vertical',
+        #     stretch=None
+        # )
+        self.selectmethod_combo = FCComboBox()
+        self.selectmethod_combo.addItems(
+            [_("Polygon Selection"), _("Area Selection"), _("All Polygons"), _("Reference Object")]
         )
+
         grid0.addWidget(selectlabel, 15, 0)
         grid0.addWidget(self.selectmethod_combo, 15, 1)
 

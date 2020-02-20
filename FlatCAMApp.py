@@ -807,7 +807,7 @@ class App(QtCore.QObject):
             "tools_paintoverlap": 20,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": _("Seed"),
-            "tools_selectmethod": "all",
+            "tools_selectmethod": _("All Polygons"),
             "tools_pathconnect": True,
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
