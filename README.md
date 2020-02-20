@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 20.02.2020
 
 - in Paint Tool replaced the Selection radio with a combobox GUI element that is more compact
+- in NCC Tool modified the UI
 
 19.02.2020
 

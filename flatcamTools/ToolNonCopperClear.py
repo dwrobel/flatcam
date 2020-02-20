@@ -124,8 +124,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_table = FCTable()
         self.tools_box.addWidget(self.tools_table)
 
-        self.tools_table.setColumnCount(5)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), '', _("Operation")])
+        self.tools_table.setColumnCount(4)
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
         self.tools_table.setColumnHidden(3, True)
         self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -155,36 +155,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
               "in the resulting geometry as Isolation."))
 
-        self.tools_table.horizontalHeaderItem(4).setToolTip(
-            _("The 'Operation' can be:\n"
-              "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
-              "If it's not successful then the non-copper clearing will fail, too.\n"
-              "- Clear -> the regular non-copper clearing."))
+        # self.tools_table.horizontalHeaderItem(4).setToolTip(
+        #     _("The 'Operation' can be:\n"
+        #       "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
+        #       "If it's not successful then the non-copper clearing will fail, too.\n"
+        #       "- Clear -> the regular non-copper clearing."))
 
         grid1 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
-
-        # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
-        self.milling_type_label.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
-              "- climb / best for precision milling and to reduce tool usage\n"
-              "- conventional / useful when there is no backlash compensation")
-        )
-
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
-        self.milling_type_radio.setToolTip(
-            _("Milling type when the selected tool is of type: 'iso_op':\n"
-              "- climb / best for precision milling and to reduce tool usage\n"
-              "- conventional / useful when there is no backlash compensation")
-        )
-        self.milling_type_radio.setObjectName(_("Milling Type"))
-
-        grid1.addWidget(self.milling_type_label, 0, 0)
-        grid1.addWidget(self.milling_type_radio, 0, 1)
 
         # Tool order
         self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
@@ -212,9 +192,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid1.addWidget(separator_line, 2, 0, 1, 2)
-
-        self.milling_type_label.hide()
-        self.milling_type_radio.hide()
 
         # #############################################################
         # ############### Tool selection ##############################
@@ -356,6 +333,47 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
+        # Operation
+        op_label = QtWidgets.QLabel('%s:' % _('Operation'))
+        op_label.setToolTip(
+            _("The 'Operation' can be:\n"
+              "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
+              "If it's not successful then the non-copper clearing will fail, too.\n"
+              "- Clear -> the regular non-copper clearing.")
+        )
+
+        self.op_radio = RadioSet([
+            {"label": _("Clear"), "value": "clear"},
+            {"label": _("Isolation"), "value": "iso"}
+        ], orientation='horizontal', stretch=False)
+        self.op_radio.setObjectName("n_operation")
+
+        self.grid3.addWidget(op_label, 13, 0)
+        self.grid3.addWidget(self.op_radio, 13, 1)
+
+        # Milling Type Radio Button
+        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conventional'), 'value': 'cv'}])
+        self.milling_type_radio.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+        self.milling_type_radio.setObjectName("n_milling_type")
+
+        self.milling_type_label.setEnabled(False)
+        self.milling_type_radio.setEnabled(False)
+
+        self.grid3.addWidget(self.milling_type_label, 14, 0)
+        self.grid3.addWidget(self.milling_type_radio, 14, 1)
+
         # Overlap Entry
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         nccoverlabel.setToolTip(
@@ -372,10 +390,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
-        self.ncc_overlap_entry.setObjectName(_("Overlap"))
+        self.ncc_overlap_entry.setObjectName("n_overlap")
 
-        self.grid3.addWidget(nccoverlabel, 13, 0)
-        self.grid3.addWidget(self.ncc_overlap_entry, 13, 1)
+        self.grid3.addWidget(nccoverlabel, 15, 0)
+        self.grid3.addWidget(self.ncc_overlap_entry, 15, 1)
 
         # Margin
         nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -385,10 +403,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ncc_margin_entry.set_precision(self.decimals)
         self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
-        self.ncc_margin_entry.setObjectName(_("Margin"))
+        self.ncc_margin_entry.setObjectName("n_margin")
 
-        self.grid3.addWidget(nccmarginlabel, 14, 0)
-        self.grid3.addWidget(self.ncc_margin_entry, 14, 1)
+        self.grid3.addWidget(nccmarginlabel, 16, 0)
+        self.grid3.addWidget(self.ncc_margin_entry, 16, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -403,34 +421,34 @@ class NonCopperClear(FlatCAMTool, Gerber):
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
-        self.ncc_method_radio.setObjectName(_("Method"))
+        self.ncc_method_radio.setObjectName("n_method")
 
-        self.grid3.addWidget(methodlabel, 15, 0)
-        self.grid3.addWidget(self.ncc_method_radio, 15, 1)
+        self.grid3.addWidget(methodlabel, 17, 0)
+        self.grid3.addWidget(self.ncc_method_radio, 17, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
-        self.ncc_connect_cb.setObjectName(_("Connect"))
+        self.ncc_connect_cb.setObjectName("n_connect")
 
         self.ncc_connect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        self.grid3.addWidget(self.ncc_connect_cb, 16, 0)
+        self.grid3.addWidget(self.ncc_connect_cb, 18, 0)
 
         # Contour
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
-        self.ncc_contour_cb.setObjectName(_("Contour"))
+        self.ncc_contour_cb.setObjectName("n_contour")
 
         self.ncc_contour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        self.grid3.addWidget(self.ncc_contour_cb, 16, 1)
+        self.grid3.addWidget(self.ncc_contour_cb, 18, 1)
 
         # ## NCC Offset choice
         self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
-        self.ncc_choice_offset_cb.setObjectName(_("Offset"))
+        self.ncc_choice_offset_cb.setObjectName("n_offset")
 
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
@@ -445,7 +463,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_offset_spinner.set_range(0.00, 10.00)
         self.ncc_offset_spinner.set_precision(4)
         self.ncc_offset_spinner.setWrapping(True)
-        self.ncc_offset_spinner.setObjectName(_("Offset value"))
+        self.ncc_offset_spinner.setObjectName("n_offset_value")
 
         units = self.app.defaults['units'].upper()
         if units == 'MM':
@@ -483,7 +501,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # Rest Machining
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
-        self.ncc_rest_cb.setObjectName(_("Rest Machining"))
+        self.ncc_rest_cb.setObjectName("n_rest_machining")
 
         self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
@@ -503,7 +521,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             {"label": _("Area Selection"), "value": "area"},
             {'label': _("Reference Object"), 'value': 'box'}
         ], orientation='vertical', stretch=False)
-        self.reference_radio.setObjectName(_("Reference"))
+        self.reference_radio.setObjectName("n_reference")
 
         self.reference_label = QtWidgets.QLabel('%s:' % _("Reference"))
         self.reference_label.setToolTip(
@@ -638,6 +656,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tooldia = None
 
         self.form_fields = {
+            "nccoperation":self.op_radio,
             "nccoverlap": self.ncc_overlap_entry,
             "nccmargin": self.ncc_margin_entry,
             "nccmethod": self.ncc_method_radio,
@@ -649,14 +668,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         }
 
         self.name2option = {
-            _('Overlap'): "nccoverlap",
-            _('Margin'): "nccmargin",
-            _('Method'): "nccmethod",
-            _("Connect"): "nccconnect",
-            _("Contour"): "ncccontour",
-            _("Offset"): "nccoffset",
-            _("Offset value"): "nccoffset_value",
-            _('Milling Type'): "milling_type",
+            "n_operation": "nccoperation",
+            "n_overlap": "nccoverlap",
+            "n_margin": "nccmargin",
+            "n_method": "nccmethod",
+            "n_connect": "nccconnect",
+            "n_contour": "ncccontour",
+            "n_offset": "nccoffset",
+            "n_offset_value": "nccoffset_value",
+            "n_milling_type": "milling_type",
         }
 
         self.old_tool_dia = None
@@ -672,6 +692,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
         self.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
         self.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
+
+        self.op_radio.activated_custom.connect(self.on_operation_change)
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
@@ -689,6 +711,21 @@ class NonCopperClear(FlatCAMTool, Gerber):
         obj_type = 0 if val == 'gerber' else 2
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+
+    def on_operation_change(self, val):
+        if val == 'iso':
+            self.milling_type_label.setEnabled(True)
+            self.milling_type_radio.setEnabled(True)
+        else:
+            self.milling_type_label.setEnabled(False)
+            self.milling_type_radio.setEnabled(False)
+
+        current_row = self.tools_table.currentRow()
+        try:
+            current_uid = int(self.tools_table.item(current_row, 3).text())
+            self.ncc_tools[current_uid]['data']['nccoperation'] = val
+        except AttributeError:
+            return
 
     def on_row_selection_change(self):
         self.blockSignals(True)
@@ -740,7 +777,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if form_key == storage_key:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception:
+                    except Exception as e:
+                        log.debug("NonCopperClear.storage_to_form() --> %s" % str(e))
                         pass
 
     def form_to_storage(self):
@@ -783,6 +821,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if row < 0:
             row = 0
 
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+        temp_tool_data = dict()
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
+
+
         # store all the data associated with the row parameter to the self.tools storage
         tooldia_item = float(self.tools_table.item(row, 1).text())
         type_item = self.tools_table.cellWidget(row, 2).currentText()
@@ -792,35 +844,35 @@ class NonCopperClear(FlatCAMTool, Gerber):
         nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        temp_tools = {}
-        temp_dia = {}
-        temp_data = {}
-
-        for tooluid_key, tooluid_value in self.ncc_tools.items():
-            for key, value in tooluid_value.items():
-                if key == 'data':
-                    # update the 'data' section
-                    for data_key in tooluid_value[key].keys():
-                        for form_key, form_value in self.form_fields.items():
-                            if form_key == data_key:
-                                temp_data[data_key] = form_value.get_value()
-                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-                        # updated from self.app.defaults
-                        if data_key not in self.form_fields:
-                            temp_data[data_key] = value[data_key]
-                    temp_dia[key] = deepcopy(temp_data)
-                    temp_data.clear()
-
-                elif key == 'solid_geometry':
-                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
-                else:
-                    temp_dia[key] = deepcopy(value)
-
-                temp_tools[tooluid_key] = deepcopy(temp_dia)
-
-        self.ncc_tools.clear()
-        self.ncc_tools = deepcopy(temp_tools)
-        temp_tools.clear()
+        # temp_tools = {}
+        # temp_dia = {}
+        # temp_data = {}
+        #
+        # for tooluid_key, tooluid_value in self.ncc_tools.items():
+        #     for key, value in tooluid_value.items():
+        #         if key == 'data':
+        #             # update the 'data' section
+        #             for data_key in tooluid_value[key].keys():
+        #                 for form_key, form_value in self.form_fields.items():
+        #                     if form_key == data_key:
+        #                         temp_data[data_key] = form_value.get_value()
+        #                 # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+        #                 # updated from self.app.defaults
+        #                 if data_key not in self.form_fields:
+        #                     temp_data[data_key] = value[data_key]
+        #             temp_dia[key] = deepcopy(temp_data)
+        #             temp_data.clear()
+        #
+        #         elif key == 'solid_geometry':
+        #             temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+        #         else:
+        #             temp_dia[key] = deepcopy(value)
+        #
+        #         temp_tools[tooluid_key] = deepcopy(temp_dia)
+        #
+        # self.ncc_tools.clear()
+        # self.ncc_tools = deepcopy(temp_tools)
+        # temp_tools.clear()
 
         self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
 
@@ -887,6 +939,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.type_obj_combo.set_value('gerber')
 
+        self.op_radio.set_value(self.app.defaults["tools_nccoperation"])
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
         self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
         self.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
@@ -935,6 +988,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
+            "nccoperation": self.app.defaults["tools_nccoperation"],
             "nccmargin": self.app.defaults["tools_nccmargin"],
             "nccmethod": self.app.defaults["tools_nccmethod"],
             "nccconnect": self.app.defaults["tools_nccconnect"],
@@ -968,7 +1022,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     'offset_value': 0.0,
                     'type': 'Iso',
                     'tool_type': self.tool_type_radio.get_value(),
-                    'operation': 'clear_op',
                     'data': deepcopy(self.default_data),
                     'solid_geometry': []
                 }
@@ -1032,13 +1085,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
 
-                    operation_type = FCComboBox()
-                    operation_type.addItem('iso_op')
-                    # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
-                    operation_type.addItem('clear_op')
-                    # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
-                    op_idx = operation_type.findText(tooluid_value['operation'])
-                    operation_type.setCurrentIndex(op_idx)
+                    # operation_type = FCComboBox()
+                    # operation_type.addItems(['iso_op', 'clear_op'])
+                    #
+                    # # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
+                    # op_idx = operation_type.findText(tooluid_value['operation'])
+                    # operation_type.setCurrentIndex(op_idx)
 
                     self.tools_table.setItem(row_no, 1, dia)  # Diameter
                     self.tools_table.setCellWidget(row_no, 2, tool_type_item)
@@ -1046,7 +1098,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                     self.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID
 
-                    self.tools_table.setCellWidget(row_no, 4, operation_type)
+                    # self.tools_table.setCellWidget(row_no, 4, operation_type)
 
         # make the diameter column editable
         for row in range(tool_id):
@@ -1237,19 +1289,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 'tool_type': tt,
             })
 
-        if cw_col == 4:
-            op = cw.currentText()
-
-            if op == 'iso_op':
-                self.milling_type_label.show()
-                self.milling_type_radio.show()
-            else:
-                self.milling_type_label.hide()
-                self.milling_type_radio.hide()
-
-            self.ncc_tools[current_uid].update({
-                'operation': op
-            })
+        # if cw_col == 4:
+        #     op = cw.currentText()
+        #
+        #     if op == 'iso_op':
+        #         self.milling_type_label.show()
+        #         self.milling_type_radio.show()
+        #     else:
+        #         self.milling_type_label.hide()
+        #         self.milling_type_radio.hide()
+        #
+        #     self.ncc_tools[current_uid].update({
+        #         'operation': op
+        #     })
 
     def on_tool_type(self, val):
         if val == 'V':
@@ -1350,7 +1402,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     'offset_value': 0.0,
                     'type': 'Iso',
                     'tool_type': self.tool_type_radio.get_value(),
-                    'operation': 'clear_op',
                     'data': deepcopy(self.default_data),
                     'solid_geometry': []
                 }
@@ -2022,9 +2073,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 else:
                     sorted_tools = ncctooldia
         else:
-            for row in range(self.tools_table.rowCount()):
-                if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
-                    sorted_tools.append(float(self.tools_table.item(row, 1).text()))
+            # for row in range(self.tools_table.rowCount()):
+            #     if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
+            #         sorted_tools.append(float(self.tools_table.item(row, 1).text()))
+            for tooluid in self.ncc_tools:
+                if self.ncc_tools[tooluid]['data']['nccoperation'] == 'clear':
+                    sorted_tools.append(self.ncc_tools[tooluid]['tooldia'])
 
         # ########################################################################################################
         # set the name for the future Geometry object

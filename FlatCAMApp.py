@@ -773,6 +773,7 @@ class App(QtCore.QObject):
             # NCC Tool
             "tools_ncctools": "1.0, 0.5",
             "tools_nccorder": 'rev',
+            "tools_nccoperation": 'clear',
             "tools_nccoverlap": 40,
             "tools_nccmargin": 1.0,
             "tools_nccmethod": "seed",
