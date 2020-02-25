@@ -456,7 +456,12 @@ class Gerber(Geometry):
                     new_polarity = match.group(1)
                     # log.info("Polarity CHANGE, LPC = %s, poly_buff = %s" % (self.is_lpc, poly_buffer))
                     self.is_lpc = True if new_polarity == 'C' else False
-                    if len(path) > 1 and current_polarity != new_polarity:
+                    try:
+                        path_length = len(path)
+                    except TypeError:
+                        path_length = 1
+
+                    if path_length > 1 and current_polarity != new_polarity:
 
                         # finish the current path and add it to the storage
                         # --- Buffered ----
@@ -491,7 +496,12 @@ class Gerber(Geometry):
                     # --- Apply buffer ---
                     # If added for testing of bug #83
                     # TODO: Remove when bug fixed
-                    if len(poly_buffer) > 0:
+                    try:
+                        buff_length = len(poly_buffer)
+                    except TypeError:
+                        buff_length = 1
+
+                    if buff_length > 0:
                         if current_polarity == 'D':
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
@@ -714,7 +724,12 @@ class Gerber(Geometry):
                     # log.debug(self.apertures[current_aperture])
 
                     # Take care of the current path with the previous tool
-                    if len(path) > 1:
+                    try:
+                        path_length = len(path)
+                    except TypeError:
+                        path_length = 1
+
+                    if path_length > 1:
                         if self.apertures[last_path_aperture]["type"] == 'R':
                             # do nothing because 'R' type moving aperture is none at once
                             pass
@@ -751,7 +766,12 @@ class Gerber(Geometry):
                 # ################  G36* - Begin region   ########################
                 # ################################################################
                 if self.regionon_re.search(gline):
-                    if len(path) > 1:
+                    try:
+                        path_length = len(path)
+                    except TypeError:
+                        path_length = 1
+
+                    if path_length > 1:
                         # Take care of what is left in the path
 
                         geo_dict = dict()
@@ -799,7 +819,12 @@ class Gerber(Geometry):
                     # if D02 happened before G37 we now have a path with 1 element only; we have to add the current
                     # geo to the poly_buffer otherwise we loose it
                     if current_operation_code == 2:
-                        if len(path) == 1:
+                        try:
+                            path_length = len(path)
+                        except TypeError:
+                            path_length = 1
+
+                        if path_length == 1:
                             # this means that the geometry was prepared previously and we just need to add it
                             geo_dict = dict()
                             if geo_f:
@@ -825,7 +850,12 @@ class Gerber(Geometry):
                     # Only one path defines region?
                     # This can happen if D02 happened before G37 and
                     # is not and error.
-                    if len(path) < 3:
+                    try:
+                        path_length = len(path)
+                    except TypeError:
+                        path_length = 1
+
+                    if path_length < 3:
                         # print "ERROR: Path contains less than 3 points:"
                         # path = [[current_x, current_y]]
                         continue
@@ -974,7 +1004,12 @@ class Gerber(Geometry):
                                                  _("GERBER file might be CORRUPT. Check the file !!!"))
 
                     elif current_operation_code == 2:
-                        if len(path) > 1:
+                        try:
+                            path_length = len(path)
+                        except TypeError:
+                            path_length = 1
+
+                        if path_length > 1:
                             geo_s = None
 
                             geo_dict = dict()
@@ -1073,7 +1108,12 @@ class Gerber(Geometry):
                     elif current_operation_code == 3:
 
                         # Create path draw so far.
-                        if len(path) > 1:
+                        try:
+                            path_length = len(path)
+                        except TypeError:
+                            path_length = 1
+
+                        if path_length > 1:
                             # --- Buffered ----
                             geo_dict = dict()
 
@@ -1229,7 +1269,12 @@ class Gerber(Geometry):
                     # Nothing created! Pen Up.
                     if current_operation_code == 2:
                         log.warning("Arc with D2. (%d)" % line_num)
-                        if len(path) > 1:
+                        try:
+                            path_length = len(path)
+                        except TypeError:
+                            path_length = 1
+
+                        if path_length > 1:
                             geo_dict = dict()
 
                             if last_path_aperture is None:
@@ -1372,7 +1417,12 @@ class Gerber(Geometry):
                 # ################################################################
                 log.warning("Line ignored (%d): %s" % (line_num, gline))
 
-            if len(path) > 1:
+            try:
+                path_length = len(path)
+            except TypeError:
+                path_length = 1
+
+            if path_length > 1:
                 # In case that G01 (moving) aperture is rectangular, there is no need to still create
                 # another geo since we already created a shapely box using the start and end coordinates found in
                 # path variable. We do it only for other apertures than 'R' type
@@ -1415,15 +1465,25 @@ class Gerber(Geometry):
 
             # this treats the case when we are storing geometry as solids
             try:
-                if len(poly_buffer) == 0 and len(self.solid_geometry) == 0:
+                buff_length = len(poly_buffer)
+            except TypeError:
+                buff_length = 1
+
+            try:
+                sol_geo_length = len(self.solid_geometry)
+            except TypeError:
+                sol_geo_length = 1
+
+            try:
+                if buff_length == 0 and sol_geo_length == 0:
                     log.error("Object is not Gerber file or empty. Aborting Object creation.")
                     return 'fail'
             except TypeError as e:
                 log.error("Object is not Gerber file or empty. Aborting Object creation. %s" % str(e))
                 return 'fail'
 
-            log.warning("Joining %d polygons." % len(poly_buffer))
-            self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), len(poly_buffer)))
+            log.warning("Joining %d polygons." % buff_length)
+            self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), buff_length))
 
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
@@ -1729,7 +1789,12 @@ class Gerber(Geometry):
 
         if type(geos) == list:
             # HACK for importing QRCODE exported by FlatCAM
-            if len(geos) == 1:
+            try:
+                geos_length = len(geos)
+            except TypeError:
+                geos_length = 1
+
+            if geos_length == 1:
                 geo_qrcode = list()
                 geo_qrcode.append(Polygon(geos[0].exterior))
                 for i_el in geos[0].interiors:
