@@ -961,6 +961,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
             "endz": float(self.app.defaults["geometry_endz"]),
+            "endxy": self.app.defaults["geometry_endxy"],
+
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],

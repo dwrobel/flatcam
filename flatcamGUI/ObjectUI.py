@@ -1220,6 +1220,18 @@ class ExcellonObjectUI(ObjectUI):
         self.grid5.addWidget(self.endz_label, 11, 0)
         self.grid5.addWidget(self.endz_entry, 11, 1)
 
+        # End Move X,Y
+        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label.setToolTip(
+            _("End move X,Y position.\n"
+              "If no value is entered then there is no move\n"
+              "on X,Y plane at the end of the job.")
+        )
+        self.endxy_entry = FCEntry()
+
+        self.grid5.addWidget(endmove_xy_label, 12, 0)
+        self.grid5.addWidget(self.endxy_entry, 12, 1)
+
         # Probe depth
         self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
@@ -1232,8 +1244,8 @@ class ExcellonObjectUI(ObjectUI):
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
 
-        self.grid5.addWidget(self.pdepth_label, 12, 0)
-        self.grid5.addWidget(self.pdepth_entry, 12, 1)
+        self.grid5.addWidget(self.pdepth_label, 13, 0)
+        self.grid5.addWidget(self.pdepth_entry, 13, 1)
 
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
@@ -1250,8 +1262,8 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setObjectName(_("e_fr_probe"))
 
-        self.grid5.addWidget(self.feedrate_probe_label, 13, 0)
-        self.grid5.addWidget(self.feedrate_probe_entry, 13, 1)
+        self.grid5.addWidget(self.feedrate_probe_label, 14, 0)
+        self.grid5.addWidget(self.feedrate_probe_entry, 14, 1)
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
@@ -1265,8 +1277,8 @@ class ExcellonObjectUI(ObjectUI):
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.grid5.addWidget(pp_excellon_label, 14, 0)
-        self.grid5.addWidget(self.pp_excellon_name_cb, 14, 1)
+        self.grid5.addWidget(pp_excellon_label, 15, 0)
+        self.grid5.addWidget(self.pp_excellon_name_cb, 15, 1)
 
         # Preprocessor Geometry selection
         pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor G"))
@@ -1277,13 +1289,13 @@ class ExcellonObjectUI(ObjectUI):
         self.pp_geo_name_cb = FCComboBox()
         self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.grid5.addWidget(pp_geo_label, 15, 0)
-        self.grid5.addWidget(self.pp_geo_name_cb, 15, 1)
+        self.grid5.addWidget(pp_geo_label, 16, 0)
+        self.grid5.addWidget(self.pp_geo_name_cb, 16, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid5.addWidget(separator_line, 16, 0, 1, 2)
+        self.grid5.addWidget(separator_line, 17, 0, 1, 2)
 
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################
@@ -1973,6 +1985,18 @@ class GeometryObjectUI(ObjectUI):
 
         self.grid4.addWidget(self.endz_label, 9, 0)
         self.grid4.addWidget(self.endz_entry, 9, 1)
+
+        # End Move X,Y
+        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label.setToolTip(
+            _("End move X,Y position.\n"
+              "If no value is entered then there is no move\n"
+              "on X,Y plane at the end of the job.")
+        )
+        self.endxy_entry = FCEntry()
+
+        self.grid4.addWidget(endmove_xy_label, 10, 0)
+        self.grid4.addWidget(self.endxy_entry, 10, 1)
 
         # preprocessor selection
         pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))

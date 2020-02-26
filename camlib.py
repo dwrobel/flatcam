@@ -2415,7 +2415,7 @@ class CNCjob(Geometry):
                  depthpercut=0.1, z_pdepth=-0.02,
                  spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
-                 endz=2.0,
+                 endz=2.0, endxy='',
                  segx=None,
                  segy=None,
                  steps_per_circle=None):
@@ -2447,6 +2447,7 @@ class CNCjob(Geometry):
 
         self.startz = None
         self.z_end = endz
+        self.xy_end = endxy
 
         self.multidepth = False
         self.z_depthpercut = depthpercut
@@ -2655,6 +2656,12 @@ class CNCjob(Geometry):
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
+
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+        if len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
 
         self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
@@ -3438,7 +3445,7 @@ class CNCjob(Geometry):
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
             multidepth=False, depthpercut=None,
             toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
-            startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
+            startz=None, endz=2.0, endxy='', pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
 
@@ -3472,6 +3479,7 @@ class CNCjob(Geometry):
         :param extracut_length:     Extra cut legth at the end of the path
         :param startz:
         :param endz:
+        :param endxy:
         :param pp_geometry_name:
         :param tool_no:
         :return:                    GCode - string
@@ -3510,6 +3518,12 @@ class CNCjob(Geometry):
 
         self.startz = float(startz) if startz is not None else None
         self.z_end = float(endz) if endz is not None else None
+
+        self.xy_end = [float(eval(a)) for a in endxy.split(",")]
+        if len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
 
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
@@ -3747,7 +3761,7 @@ class CNCjob(Geometry):
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=None,
             multidepth=False, depthpercut=None,
             toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0",
-            extracut=False, extracut_length=None, startz=None, endz=None,
+            extracut=False, extracut_length=None, startz=None, endz=None, endxy='',
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3872,6 +3886,13 @@ class CNCjob(Geometry):
 
         self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
         self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
+        self.xy_end = endxy if endxy != '' else self.app.defaults["geometry_endxy"]
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+        if len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
+
         self.z_depthpercut = float(depthpercut) if depthpercut is not None else 0.0
         self.multidepth = multidepth
         self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]

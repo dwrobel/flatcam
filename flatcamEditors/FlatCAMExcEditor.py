@@ -2209,6 +2209,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             "extracut": self.app.defaults["geometry_extracut"],
             "extracut_length": self.app.defaults["geometry_extracut_length"],
             "endz": self.app.defaults["excellon_endz"],
+            "endxy": self.app.defaults["excellon_endxy"],
             "startz": self.app.defaults["excellon_startz"],
             "offset": self.app.defaults["excellon_offset"],
             "spindlespeed": self.app.defaults["excellon_spindlespeed"],

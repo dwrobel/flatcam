@@ -173,10 +173,10 @@ M6
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
-        coords_xy = p['xy_toolchange']
+        coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
-        if coords_xy is not None:
+        if coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 

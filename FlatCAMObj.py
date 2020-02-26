@@ -2401,6 +2401,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "extracut": self.app.defaults["geometry_extracut"],
             "extracut_length":self.app.defaults["geometry_extracut_length"],
             "endz": 2.0,
+            "endxy": '',
+
             "startz": None,
             "offset": 0.0,
             "spindlespeed": 0,
@@ -2887,6 +2889,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             "startz": self.ui.estartz_entry,
             "endz": self.ui.endz_entry,
+            "endxy": self.ui.endxy_entry,
+
             "offset": self.ui.offset_entry,
 
             "ppname_e": self.ui.pp_excellon_name_cb,
@@ -3744,6 +3748,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.z_toolchange = float(self.options["toolchangez"])
             job_obj.startz = float(self.options["startz"]) if self.options["startz"] else None
             job_obj.endz = float(self.options["endz"])
+            job_obj.xy_end = self.options["endxy"]
             job_obj.excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
 
             tools_csv = ','.join(tools)
@@ -3987,6 +3992,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "extracut": False,
             "extracut_length": 0.1,
             "endz": 2.0,
+            "endxy": '',
+
             "startz": None,
             "toolchange": False,
             "toolchangez": 1.0,
@@ -4259,6 +4266,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
             "endz": self.ui.endz_entry,
+            "endxy": self.ui.endxy_entry,
             "cnctooldia": self.ui.addtool_entry
         })
 
@@ -4298,6 +4306,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchange": None,
             "toolchangez": None,
             "endz": None,
+            "endxy": '',
             "spindlespeed": 0,
             "toolchangexy": None,
             "startz": None
@@ -5645,6 +5654,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["startz"]
                 endz = tools_dict[tooluid_key]['data']["endz"]
+                endxy = self.options["endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
@@ -5670,7 +5680,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5797,6 +5807,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["startz"]
                 endz = tools_dict[tooluid_key]['data']["endz"]
+                endxy = self.options["endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
@@ -5822,7 +5833,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5932,6 +5943,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
+        endxy = self.options["endxy"]
 
         toolchangez = toolchangez if toolchangez else float(self.options["toolchangez"])
         toolchangexy = toolchangexy if toolchangexy else self.options["toolchangexy"]
@@ -5981,7 +5993,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
                 multidepth=multidepth, depthpercut=depthperpass,
                 toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                 pp_geometry_name=ppname_g
             )
 

@@ -643,6 +643,7 @@ class App(QtCore.QObject):
             "excellon_depthperpass": 0.7,
             "excellon_travelz": 2,
             "excellon_endz": 0.5,
+            "excellon_endxy": None,
             "excellon_feedrate_z": 300,
             "excellon_spindlespeed": 0,
             "excellon_dwell": False,
@@ -710,6 +711,8 @@ class App(QtCore.QObject):
             "geometry_toolchange": False,
             "geometry_toolchangez": 15.0,
             "geometry_endz": 15.0,
+            "geometry_endxy": None,
+
             "geometry_feedrate": 120,
             "geometry_feedrate_z": 60,
             "geometry_spindlespeed": 0,
@@ -1326,6 +1329,8 @@ class App(QtCore.QObject):
             "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
+            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
+
             "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
@@ -1404,6 +1409,7 @@ class App(QtCore.QObject):
             "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
             "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
+            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
             "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
@@ -5959,13 +5965,15 @@ class App(QtCore.QObject):
 
                       'excellon_cutz',  'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
                       'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
-                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', "excellon_feedrate_probe",
+                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', 'excellon_endxy',
+                      "excellon_feedrate_probe",
                       "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",
                       "excellon_editor_slot_lin_pitch",
 
                       'geometry_cutz',  "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
                       'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
-                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', "geometry_z_pdepth",
+                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
+                      "geometry_z_pdepth",
                       "geometry_feedrate_probe", "geometry_startz",
 
                       'cncjob_tooldia',
@@ -6013,6 +6021,20 @@ class App(QtCore.QObject):
                     coords_xy[1] *= sfactor
                     self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
                                                                              self.decimals, coords_xy[1])
+                elif dim == 'excellon_endxy':
+                    coordinates = self.defaults["excellon_endxy"].split(",")
+                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    end_coords_xy[0] *= sfactor
+                    end_coords_xy[1] *= sfactor
+                    self.defaults['excellon_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
+                                                                      self.decimals, end_coords_xy[1])
+                elif dim == 'geometry_endxy':
+                    coordinates = self.defaults["geometry_endxy"].split(",")
+                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    end_coords_xy[0] *= sfactor
+                    end_coords_xy[1] *= sfactor
+                    self.defaults['geometry_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
+                                                                      self.decimals, end_coords_xy[1])
                 elif dim == 'geometry_cnctooldia':
                     if type(self.defaults["geometry_cnctooldia"]) == float:
                         tools_diameters = [self.defaults["geometry_cnctooldia"]]

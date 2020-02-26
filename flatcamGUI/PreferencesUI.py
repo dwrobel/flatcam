@@ -3229,6 +3229,18 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(endz_label, 8, 0)
         grid2.addWidget(self.endz_entry, 8, 1)
 
+        # End Move X,Y
+        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label.setToolTip(
+            _("End move X,Y position.\n"
+              "If no value is entered then there is no move\n"
+              "on X,Y plane at the end of the job.")
+        )
+        self.endxy_entry = FCEntry()
+
+        grid2.addWidget(endmove_xy_label, 9, 0)
+        grid2.addWidget(self.endxy_entry, 9, 1)
+
         # Feedrate Z
         frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frlabel.setToolTip(
@@ -3241,8 +3253,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.set_range(0, 99999.9999)
 
-        grid2.addWidget(frlabel, 9, 0)
-        grid2.addWidget(self.feedrate_z_entry, 9, 1)
+        grid2.addWidget(frlabel, 10, 0)
+        grid2.addWidget(self.feedrate_z_entry, 10, 1)
 
         # Spindle speed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle Speed'))
@@ -3255,8 +3267,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.set_step(100)
 
-        grid2.addWidget(spdlabel, 10, 0)
-        grid2.addWidget(self.spindlespeed_entry, 10, 1)
+        grid2.addWidget(spdlabel, 11, 0)
+        grid2.addWidget(self.spindlespeed_entry, 11, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s' % _('Enable Dwell'))
@@ -3265,7 +3277,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "speed before cutting.")
         )
 
-        grid2.addWidget(self.dwell_cb, 11, 0, 1, 2)
+        grid2.addWidget(self.dwell_cb, 12, 0, 1, 2)
 
         # Dwell Time
         dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
@@ -3274,8 +3286,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 99999.9999)
 
-        grid2.addWidget(dwelltime, 12, 0)
-        grid2.addWidget(self.dwelltime_entry, 12, 1)
+        grid2.addWidget(dwelltime, 13, 0)
+        grid2.addWidget(self.dwelltime_entry, 13, 1)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -3367,6 +3379,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
 
+        # Offset Z
         offsetlabel = QtWidgets.QLabel('%s:' % _('Offset Z'))
         offsetlabel.setToolTip(
             _("Some drill bits (the larger ones) need to drill deeper\n"
@@ -3379,21 +3392,25 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(offsetlabel, 0, 0)
         grid1.addWidget(self.offset_entry, 0, 1)
 
+        # ToolChange X,Y
         toolchange_xy_label = QtWidgets.QLabel('%s:' % _('Toolchange X,Y'))
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
-        grid1.addWidget(toolchange_xy_label, 1, 0)
         self.toolchangexy_entry = FCEntry()
+
+        grid1.addWidget(toolchange_xy_label, 1, 0)
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
 
+        # Start Z
         startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
             _("Height of the tool just after start.\n"
               "Delete the value if you don't need this feature.")
         )
-        grid1.addWidget(startzlabel, 2, 0)
         self.estartz_entry = FloatEntry()
+
+        grid1.addWidget(startzlabel, 2, 0)
         grid1.addWidget(self.estartz_entry, 2, 1)
 
         # Feedrate Rapids
@@ -4165,6 +4182,18 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(endz_label, 6, 0)
         grid1.addWidget(self.endz_entry, 6, 1)
 
+        # End Move X,Y
+        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label.setToolTip(
+            _("End move X,Y position.\n"
+              "If no value is entered then there is no move\n"
+              "on X,Y plane at the end of the job.")
+        )
+        self.endxy_entry = FCEntry()
+
+        grid1.addWidget(endmove_xy_label, 7, 0)
+        grid1.addWidget(self.endxy_entry, 7, 1)
+
         # Feedrate X-Y
         frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         frlabel.setToolTip(
@@ -4177,8 +4206,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
 
-        grid1.addWidget(frlabel, 7, 0)
-        grid1.addWidget(self.cncfeedrate_entry, 7, 1)
+        grid1.addWidget(frlabel, 8, 0)
+        grid1.addWidget(self.cncfeedrate_entry, 8, 1)
 
         # Feedrate Z (Plunge)
         frz_label = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -4193,8 +4222,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.setSingleStep(0.1)
         self.feedrate_z_entry.setWrapping(True)
 
-        grid1.addWidget(frz_label, 8, 0)
-        grid1.addWidget(self.feedrate_z_entry, 8, 1)
+        grid1.addWidget(frz_label, 9, 0)
+        grid1.addWidget(self.feedrate_z_entry, 9, 1)
 
         # Spindle Speed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
@@ -4205,12 +4234,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
                 "this value is the power of laser."
             )
         )
-        grid1.addWidget(spdlabel, 9, 0)
         self.cncspindlespeed_entry = FCSpinner()
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.set_step(100)
 
-        grid1.addWidget(self.cncspindlespeed_entry, 9, 1)
+        grid1.addWidget(spdlabel, 10, 0)
+        grid1.addWidget(self.cncspindlespeed_entry, 10, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox(label='%s' % _('Enable Dwell'))
@@ -4228,9 +4257,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.dwelltime_entry.setSingleStep(0.1)
         self.dwelltime_entry.setWrapping(True)
 
-        grid1.addWidget(self.dwell_cb, 10, 0)
-        grid1.addWidget(dwelltime, 11, 0)
-        grid1.addWidget(self.dwelltime_entry, 11, 1)
+        grid1.addWidget(self.dwell_cb, 11, 0)
+        grid1.addWidget(dwelltime, 12, 0)
+        grid1.addWidget(self.dwelltime_entry, 12, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -4240,10 +4269,11 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")
         )
-        grid1.addWidget(pp_label, 12, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid1.addWidget(self.pp_geometry_name_cb, 12, 1)
+
+        grid1.addWidget(pp_label, 13, 0)
+        grid1.addWidget(self.pp_geometry_name_cb, 13, 1)
 
         self.layout.addStretch()
 

@@ -444,6 +444,8 @@ class FCEntry(QtWidgets.QLineEdit):
         decimal_digits = decimals if decimals is not None else self.decimals
         if type(val) is float:
             self.setText('%.*f' % (decimal_digits, val))
+        elif val is None:
+            self.setText('')
         else:
             self.setText(str(val))
 

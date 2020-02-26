@@ -72,6 +72,8 @@ class HPGL2:
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],
+            "endxy": self.app.defaults["geometry_endxy"],
+
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
