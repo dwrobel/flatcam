@@ -1223,7 +1223,7 @@ class ExcellonObjectUI(ObjectUI):
         # End Move X,Y
         endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
         endmove_xy_label.setToolTip(
-            _("End move X,Y position.\n"
+            _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
@@ -1989,7 +1989,7 @@ class GeometryObjectUI(ObjectUI):
         # End Move X,Y
         endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
         endmove_xy_label.setToolTip(
-            _("End move X,Y position.\n"
+            _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
