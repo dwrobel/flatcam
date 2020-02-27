@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class Marlin_laser_use_FAN_pin(FlatCAMPostProc):
+class Marlin_laser_FAN_pin(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -107,7 +107,7 @@ class Marlin_laser_use_FAN_pin(FlatCAMPostProc):
 
     def spindle_code(self, p):
         if p.spindlespeed:
-            return '%s S%s' % ('M106 ', str(p.spindlespeed))
+            return 'M106 S%s' % str(p.spindlespeed)
         else:
             return 'M106'
 
@@ -116,5 +116,5 @@ class Marlin_laser_use_FAN_pin(FlatCAMPostProc):
 
     def spindle_stop_code(self, p):
         gcode = 'M400\n'
-        gcode += 'M107'
+        gcode += 'M106 S0'
         return gcode

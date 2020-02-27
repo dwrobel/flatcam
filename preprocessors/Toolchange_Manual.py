@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class Toolchange_manual(FlatCAMPostProc):
+class Toolchange_Manual(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"

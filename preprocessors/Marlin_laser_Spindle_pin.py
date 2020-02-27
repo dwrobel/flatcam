@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class Marlin_laser_use_Spindle_pin(FlatCAMPostProc):
+class Marlin_laser_Spindle_pin(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
