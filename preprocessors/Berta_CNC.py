@@ -230,7 +230,7 @@ M0""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolcha
         coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
-        if coords_xy != '':
+        if coords_xy and coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
 
         gcode += '(Berta)\n'

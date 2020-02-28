@@ -2647,8 +2647,8 @@ class CNCjob(Geometry):
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
-                if len(self.xy_toolchange) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",") if self.xy_toolchange != '']
+                if self.xy_toolchange and len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
@@ -2657,8 +2657,8 @@ class CNCjob(Geometry):
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
-        if len(self.xy_end) < 2:
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'
@@ -2783,23 +2783,25 @@ class CNCjob(Geometry):
         class CreateDistanceCallback(object):
             """Create callback to calculate distances between points."""
 
-            def __init__(self):
+            def __init__(self, tool):
                 """Initialize distance array."""
-                locations = create_data_array()
-                size = len(locations)
+                locations = create_data_array(tool)
                 self.matrix = dict()
 
-                for from_node in range(size):
-                    self.matrix[from_node] = {}
-                    for to_node in range(size):
-                        if from_node == to_node:
-                            self.matrix[from_node][to_node] = 0
-                        else:
-                            x1 = locations[from_node][0]
-                            y1 = locations[from_node][1]
-                            x2 = locations[to_node][0]
-                            y2 = locations[to_node][1]
-                            self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
+                if locations:
+                    size = len(locations)
+
+                    for from_node in range(size):
+                        self.matrix[from_node] = {}
+                        for to_node in range(size):
+                            if from_node == to_node:
+                                self.matrix[from_node][to_node] = 0
+                            else:
+                                x1 = locations[from_node][0]
+                                y1 = locations[from_node][1]
+                                x2 = locations[to_node][0]
+                                y2 = locations[to_node][1]
+                                self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
 
             # def Distance(self, from_node, to_node):
             #     return int(self.matrix[from_node][to_node])
@@ -2810,11 +2812,15 @@ class CNCjob(Geometry):
                 return self.matrix[from_node][to_node]
 
         # Create the data.
-        def create_data_array():
-            locations = []
+        def create_data_array(tool):
+            loc_list = list()
+
+            if tool not in points:
+                return None
+
             for point in points[tool]:
-                locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-            return locations
+                loc_list.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+            return loc_list
 
         if self.xy_toolchange is not None:
             self.oldx = self.xy_toolchange[0]
@@ -2884,7 +2890,12 @@ class CNCjob(Geometry):
                         # ###############################################
 
                         node_list = []
-                        locations = create_data_array()
+                        locations = create_data_array(tool=tool)
+
+                        # if there are no locations then go to the next tool
+                        if not locations:
+                            continue
+
                         tsp_size = len(locations)
                         num_routes = 1  # The number of routes, which is 1 in the TSP.
                         # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
@@ -2906,7 +2917,12 @@ class CNCjob(Geometry):
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback()
+                            dist_between_locations = CreateDistanceCallback(tool=tool)
+
+                            # if there are no distances then go to the next tool
+                            if not dist_between_locations:
+                                continue
+
                             dist_callback = dist_between_locations.Distance
                             transit_callback_index = routing.RegisterTransitCallback(dist_callback)
                             routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -3088,7 +3104,7 @@ class CNCjob(Geometry):
                             old_zcut = deepcopy(self.z_cut)
 
                             self.z_move = exobj.tools[tool]['data']['travelz']
-                            print(self.z_move)
+
                             self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
                             self.dwell = exobj.tools[tool]['data']['dwell']
                             self.dwelltime = exobj.tools[tool]['data']['dwelltime']
@@ -3100,7 +3116,12 @@ class CNCjob(Geometry):
                         # ###############################################
 
                         node_list = []
-                        locations = create_data_array()
+                        locations = create_data_array(tool=tool)
+
+                        # if there are no locations then go to the next tool
+                        if not locations:
+                            continue
+
                         tsp_size = len(locations)
                         num_routes = 1  # The number of routes, which is 1 in the TSP.
 
@@ -3115,7 +3136,12 @@ class CNCjob(Geometry):
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback()
+                            dist_between_locations = CreateDistanceCallback(tool=tool)
+
+                            # if there are no distances then go to the next tool
+                            if not dist_between_locations:
+                                continue
+
                             dist_callback = dist_between_locations.Distance
                             transit_callback_index = routing.RegisterTransitCallback(dist_callback)
                             routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -3519,8 +3545,8 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else None
         self.z_end = float(endz) if endz is not None else None
 
-        self.xy_end = [float(eval(a)) for a in endxy.split(",")]
-        if len(self.xy_end) < 2:
+        self.xy_end = [float(eval(a)) for a in endxy.split(",") if endxy != '']
+        if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'
@@ -3887,8 +3913,8 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
         self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
         self.xy_end = endxy if endxy != '' else self.app.defaults["geometry_endxy"]
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
-        if len(self.xy_end) < 2:
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'

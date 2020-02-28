@@ -125,7 +125,7 @@ G00 Z{z_toolchange}
         coords_xy = [float(eval(a)) for a in p['xy_end'].split(",") if a != '']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, float(p['z_toolchange'])) + "\n")
 
-        if coords_xy != '':
+        if coords_xy and coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 

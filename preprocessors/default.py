@@ -220,7 +220,7 @@ G00 Z{z_toolchange}
         end_coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
-        if end_coords_xy != '':
+        if end_coords_xy and end_coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=end_coords_xy[0], y=end_coords_xy[1]) + "\n"
         return gcode
 

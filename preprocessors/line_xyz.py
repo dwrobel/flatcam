@@ -207,7 +207,7 @@ M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolcha
 
     def end_code(self, p):
         coords_xy = p['xy_end']
-        if coords_xy != '':
+        if coords_xy and coords_xy != '':
             g = 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         else:
             g = ('G00 ' + self.position_code(p)).format(**p)

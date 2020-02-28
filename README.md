@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 28.02.2020
 
 - some small changes in preprocessors
+- solved issue #381 where there was an error when trying to generate CNCJob out of an Excellon file that have a tool with only slots and no drills
+- solved some issues in the preprocessors regarding the newly introduced feature that allow control of the final move X,Y positions
 
 25.02.2020
 
