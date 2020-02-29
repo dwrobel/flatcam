@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 29.02.2020
 
 - compacted the NCC Tool UI by replacing some Radio buttons with Combo boxes due of too many elements
+- fixed error in CutOut Tool when trying to create a FreeFrom Cutout out of a Gerber object with the Convex Shape checked
 
 28.02.2020
 

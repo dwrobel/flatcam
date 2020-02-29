@@ -5407,12 +5407,12 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.select_combo.addItems(
             [_("Itself"), _("Area Selection"), _("Reference Object")]
         )
-        select_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        select_label = QtWidgets.QLabel('%s:' % _("Selection"))
         select_label.setToolTip(
-            _("Selection of area to be cleared of copper."
-              "- 'Itself' - the non copper clearing extent is based on the object that is copper cleared.\n "
-              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
+            _("Selection of area to be processed.\n"
+              "- 'Itself' - the processing extent is based on the object that is processed.\n "
+              "- 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
+              "- 'Reference Object' - will process the area specified by another object.")
         )
 
         grid0.addWidget(select_label, 18, 0)
@@ -5905,14 +5905,14 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
-            _("How to select Polygons to be painted.\n"
-              "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
-              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+            _("Selection of area to be processed.\n"
+              "- 'Polygon Selection' - left mouse click to add/remove polygons to be processed.\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
               "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-              "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' - will do non copper clearing within the area\n"
-              "specified by another object.")
+              "- 'All Polygons' - the process will start after click.\n"
+              "- 'Reference Object' - will process the area specified by another object.")
         )
+
         # self.selectmethod_combo = RadioSet(
         #     [
         #         {"label": _("Polygon Selection"), "value": "single"},

@@ -534,10 +534,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(
-            _("Selection of area to be cleared of copper."
-              "- 'Itself' - the non copper clearing extent is based on the object that is copper cleared.\n "
-              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
+            _("Selection of area to be processed.\n"
+              "- 'Itself' - the processing extent is based on the object that is processed.\n "
+              "- 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
+              "- 'Reference Object' - will process the area specified by another object.")
         )
         self.grid3.addWidget(self.select_label, 26, 0,)
         self.grid3.addWidget(self.select_combo, 26, 1)

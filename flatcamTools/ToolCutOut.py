@@ -521,13 +521,19 @@ class CutOut(FlatCAMTool):
         gapsize = gapsize / 2 + (dia / 2)
 
         def geo_init(geo_obj, app_obj):
-            solid_geo = []
+            solid_geo = list()
 
             if isinstance(cutout_obj, FlatCAMGerber):
-                if convex_box:
-                    object_geo = cutout_obj.solid_geometry.convex_hull
-                else:
-                    object_geo = cutout_obj.solid_geometry
+                if isinstance(cutout_obj.solid_geometry, list):
+                    cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
+
+                try:
+                    if convex_box:
+                        object_geo = cutout_obj.solid_geometry.convex_hull
+                    else:
+                        object_geo = cutout_obj.solid_geometry
+                except Exception as e:
+                    log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(e))
             else:
                 object_geo = cutout_obj.solid_geometry
 
