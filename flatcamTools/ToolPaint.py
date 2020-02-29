@@ -561,7 +561,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.tooldia_list = list()
+        self.tooldia_list = []
         self.tooldia = None
 
         self.sel_rect = None
@@ -572,7 +572,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.select_method = None
 
         self.units = ''
-        self.paint_tools = dict()
+        self.paint_tools = {}
         self.tooluid = 0
         self.first_click = False
         self.cursor_pos = None
@@ -582,16 +582,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.mp = None
         self.mr = None
 
-        self.sel_rect = list()
+        self.sel_rect = []
 
         # store here if the grid snapping is active
         self.grid_status_memory = False
 
         # dict to store the polygons selected for painting; key is the shape added to be plotted and value is the poly
-        self.poly_dict = dict()
+        self.poly_dict = {}
 
         # store here the default data for Geometry Data
-        self.default_data = dict()
+        self.default_data = {}
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
@@ -794,7 +794,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             row = 0
 
         tooluid_item = int(self.tools_table.item(row, 3).text())
-        temp_tool_data = dict()
+        temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.paint_tools.items():
             if int(tooluid_key) == tooluid_item:
@@ -1352,7 +1352,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.o_name = '%s_mt_paint' % self.obj_name
 
         # use the selected tools in the tool table; get diameters
-        self.tooldia_list = list()
+        self.tooldia_list = []
         if self.tools_table.selectedItems():
             for x in self.tools_table.selectedItems():
                 try:
@@ -1739,7 +1739,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Initializes the new geometry object
         def gen_paintarea(geo_obj, app_obj):
-            geo_obj.solid_geometry = list()
+            geo_obj.solid_geometry = []
 
             def paint_p(polyg, tooldiameter):
                 cpoly = None
@@ -1779,9 +1779,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                         # aperture_size = None
 
                         # the key is the aperture type and the val is a list of geo elements
-                        flash_el_dict = dict()
+                        flash_el_dict = {}
                         # the key is the aperture size, the val is a list of geo elements
-                        traces_el_dict = dict()
+                        traces_el_dict = {}
 
                         # find the flashes and the lines that are in the selected polygon and store them separately
                         for apid, apval in obj.apertures.items():
@@ -1818,7 +1818,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                             traces_el_dict[aperture_size] = [geo_el]
 
                         cpoly = FlatCAMRTreeStorage()
-                        pads_lines_list = list()
+                        pads_lines_list = []
 
                         # process the flashes found in the selected polygon with the 'lines' method for rectangular
                         # flashes and with _("Seed") for oblong and circular flashes
@@ -1868,7 +1868,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         except TypeError:
                             cpoly.insert(pads_lines_list)
 
-                        copper_lines_list = list()
+                        copper_lines_list = []
                         # process the traces found in the selected polygon using the 'laser_lines' method,
                         # method which will follow the 'follow' line therefore use the longer path possible for the
                         # laser, therefore the acceleration will play a smaller factor
@@ -1976,14 +1976,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             try:
                 poly_buf = [pol.buffer(-paint_margin) for pol in polygon_list]
-                cp = list()
+                cp = []
                 try:
                     for pp in poly_buf:
                         cp.append(paint_p(pp, tooldiameter=tool_dia))
                 except TypeError:
                     cp = paint_p(poly_buf, tooldiameter=tool_dia)
 
-                total_geometry = list()
+                total_geometry = []
                 if cp:
                     try:
                         for x in cp:
@@ -2289,7 +2289,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     poly_buf = geo.buffer(-paint_margin)
 
                     if geo is not None and geo.is_valid:
-                        poly_processed = list()
+                        poly_processed = []
                         try:
                             for pol in poly_buf:
                                 if pol is not None and isinstance(pol, Polygon):
@@ -2326,9 +2326,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         # aperture_size = None
 
                                         # the key is the aperture type and the val is a list of geo elements
-                                        flash_el_dict = dict()
+                                        flash_el_dict = {}
                                         # the key is the aperture size, the val is a list of geo elements
-                                        traces_el_dict = dict()
+                                        traces_el_dict = {}
 
                                         # find the flashes and the lines that are in the selected polygon and store
                                         # them separately
@@ -2366,7 +2366,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                             traces_el_dict[aperture_size] = [geo_el]
 
                                         cp = FlatCAMRTreeStorage()
-                                        pads_lines_list = list()
+                                        pads_lines_list = []
 
                                         # process the flashes found in the selected polygon with the 'lines' method
                                         # for rectangular flashes and with _("Seed") for oblong and circular flashes
@@ -2417,7 +2417,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         except TypeError:
                                             cp.insert(pads_lines_list)
 
-                                        copper_lines_list = list()
+                                        copper_lines_list = []
                                         # process the traces found in the selected polygon using the 'laser_lines'
                                         # method, method which will follow the 'follow' line therefore use the longer
                                         # path possible for the laser, therefore the acceleration will play
@@ -2528,9 +2528,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     # aperture_size = None
 
                                     # the key is the aperture type and the val is a list of geo elements
-                                    flash_el_dict = dict()
+                                    flash_el_dict = {}
                                     # the key is the aperture size, the val is a list of geo elements
-                                    traces_el_dict = dict()
+                                    traces_el_dict = {}
 
                                     # find the flashes and the lines that are in the selected polygon and store
                                     # them separately
@@ -2568,7 +2568,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                         traces_el_dict[aperture_size] = [geo_el]
 
                                     cp = FlatCAMRTreeStorage()
-                                    pads_lines_list = list()
+                                    pads_lines_list = []
 
                                     # process the flashes found in the selected polygon with the 'lines' method
                                     # for rectangular flashes and with _("Seed") for oblong and circular flashes
@@ -2619,7 +2619,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     except TypeError:
                                         cp.insert(pads_lines_list)
 
-                                    copper_lines_list = list()
+                                    copper_lines_list = []
                                     # process the traces found in the selected polygon using the 'laser_lines'
                                     # method, method which will follow the 'follow' line therefore use the longer
                                     # path possible for the laser, therefore the acceleration will play
@@ -2906,9 +2906,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # aperture_size = None
 
                             # the key is the aperture type and the val is a list of geo elements
-                            flash_el_dict = dict()
+                            flash_el_dict = {}
                             # the key is the aperture size, the val is a list of geo elements
-                            traces_el_dict = dict()
+                            traces_el_dict = {}
 
                             # find the flashes and the lines that are in the selected polygon and store
                             # them separately
@@ -2946,7 +2946,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                 traces_el_dict[aperture_size] = [geo_el]
 
                             cp = FlatCAMRTreeStorage()
-                            pads_lines_list = list()
+                            pads_lines_list = []
 
                             # process the flashes found in the selected polygon with the 'lines' method
                             # for rectangular flashes and with _("Seed") for oblong and circular flashes
@@ -2997,7 +2997,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             except TypeError:
                                 cp.insert(pads_lines_list)
 
-                            copper_lines_list = list()
+                            copper_lines_list = []
                             # process the traces found in the selected polygon using the 'laser_lines'
                             # method, method which will follow the 'follow' line therefore use the longer
                             # path possible for the laser, therefore the acceleration will play
@@ -3386,9 +3386,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # aperture_size = None
 
                             # the key is the aperture type and the val is a list of geo elements
-                            flash_el_dict = dict()
+                            flash_el_dict = {}
                             # the key is the aperture size, the val is a list of geo elements
-                            traces_el_dict = dict()
+                            traces_el_dict = {}
 
                             # find the flashes and the lines that are in the selected polygon and store
                             # them separately
@@ -3426,7 +3426,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                 traces_el_dict[aperture_size] = [geo_el]
 
                             cp = FlatCAMRTreeStorage()
-                            pads_lines_list = list()
+                            pads_lines_list = []
 
                             # process the flashes found in the selected polygon with the 'lines' method
                             # for rectangular flashes and with _("Seed") for oblong and circular flashes
@@ -3477,7 +3477,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             except TypeError:
                                 cp.insert(pads_lines_list)
 
-                            copper_lines_list = list()
+                            copper_lines_list = []
                             # process the traces found in the selected polygon using the 'laser_lines'
                             # method, method which will follow the 'follow' line therefore use the longer
                             # path possible for the laser, therefore the acceleration will play
@@ -3706,9 +3706,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # aperture_size = None
 
                             # the key is the aperture type and the val is a list of geo elements
-                            flash_el_dict = dict()
+                            flash_el_dict = {}
                             # the key is the aperture size, the val is a list of geo elements
-                            copper_el_dict = dict()
+                            copper_el_dict = {}
 
                             # find the flashes and the lines that are in the selected polygon and store
                             # them separately
@@ -3746,7 +3746,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                 copper_el_dict[aperture_size] = [geo_el]
 
                             cp = FlatCAMRTreeStorage()
-                            pads_lines_list = list()
+                            pads_lines_list = []
 
                             # process the flashes found in the selected polygon with the 'lines' method
                             # for rectangular flashes and with _("Seed") for oblong and circular flashes
@@ -3797,7 +3797,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             except TypeError:
                                 cp.insert(pads_lines_list)
 
-                            copper_lines_list = list()
+                            copper_lines_list = []
                             # process the traces found in the selected polygon using the 'laser_lines'
                             # method, method which will follow the 'follow' line therefore use the longer
                             # path possible for the laser, therefore the acceleration will play

@@ -655,8 +655,8 @@ class RulesCheck(FlatCAMTool):
 
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
@@ -667,8 +667,8 @@ class RulesCheck(FlatCAMTool):
 
         obj_violations['name'] = gerber_obj['name']
 
-        solid_geo = list()
-        clear_geo = list()
+        solid_geo = []
+        clear_geo = []
         for apid in gerber_obj['apertures']:
             if 'geometry' in gerber_obj['apertures'][apid]:
                 geometry = gerber_obj['apertures'][apid]['geometry']
@@ -679,7 +679,7 @@ class RulesCheck(FlatCAMTool):
                         clear_geo.append(geo_el['clear'])
 
         if clear_geo:
-            total_geo = list()
+            total_geo = []
             for geo_c in clear_geo:
                 for geo_s in solid_geo:
                     if geo_c.within(geo_s):
@@ -696,7 +696,7 @@ class RulesCheck(FlatCAMTool):
             iterations = (iterations * (iterations - 1)) / 2
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         idx = 1
         for geo in total_geo:
             for s_geo in total_geo[idx:]:
@@ -729,8 +729,8 @@ class RulesCheck(FlatCAMTool):
         log.debug("RulesCheck.check_gerber_clearance()")
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
@@ -739,7 +739,7 @@ class RulesCheck(FlatCAMTool):
         if len(gerber_list) == 2:
             gerber_1 = gerber_list[0]
             # added it so I won't have errors of using before declaring
-            gerber_2 = dict()
+            gerber_2 = {}
 
             gerber_3 = gerber_list[1]
         elif len(gerber_list) == 3:
@@ -749,7 +749,7 @@ class RulesCheck(FlatCAMTool):
         else:
             return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
 
-        total_geo_grb_1 = list()
+        total_geo_grb_1 = []
         for apid in gerber_1['apertures']:
             if 'geometry' in gerber_1['apertures'][apid]:
                 geometry = gerber_1['apertures'][apid]['geometry']
@@ -766,7 +766,7 @@ class RulesCheck(FlatCAMTool):
                         if 'solid' in geo_el and geo_el['solid'] is not None:
                             total_geo_grb_1.append(geo_el['solid'])
 
-        total_geo_grb_3 = list()
+        total_geo_grb_3 = []
         for apid in gerber_3['apertures']:
             if 'geometry' in gerber_3['apertures'][apid]:
                 geometry = gerber_3['apertures'][apid]['geometry']
@@ -795,7 +795,7 @@ class RulesCheck(FlatCAMTool):
         iterations = len_1 * len_3
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         for geo in total_geo_grb_1:
             for s_geo in total_geo_grb_3:
                 # minimize the number of distances by not taking into considerations those that are too small
@@ -817,7 +817,7 @@ class RulesCheck(FlatCAMTool):
             for location in min_dict[dist]:
                 points_list.add(location)
 
-        name_list = list()
+        name_list = []
         if gerber_1:
             name_list.append(gerber_1['name'])
         if gerber_2:
@@ -837,8 +837,8 @@ class RulesCheck(FlatCAMTool):
 
         rule = _("Hole Size")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'dia': list()
@@ -863,14 +863,14 @@ class RulesCheck(FlatCAMTool):
         log.debug("RulesCheck.check_holes_clearance()")
         rule = _("Hole to Hole Clearance")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
         })
 
-        total_geo = list()
+        total_geo = []
         for elem in elements:
             for tool in elem['tools']:
                 if 'solid_geometry' in elem['tools'][tool]:
@@ -878,7 +878,7 @@ class RulesCheck(FlatCAMTool):
                     for geo in geometry:
                         total_geo.append(geo)
 
-        min_dict = dict()
+        min_dict = {}
         idx = 1
         for geo in total_geo:
             for s_geo in total_geo[idx:]:
@@ -903,7 +903,7 @@ class RulesCheck(FlatCAMTool):
                 for location in min_dict[dist]:
                     points_list.add(location)
 
-        name_list = list()
+        name_list = []
         for elem in elements:
             name_list.append(elem['name'])
 
@@ -919,8 +919,8 @@ class RulesCheck(FlatCAMTool):
 
         rule = _("Trace Size")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'size': list(),
@@ -957,18 +957,18 @@ class RulesCheck(FlatCAMTool):
     def check_gerber_annular_ring(obj_list, size, rule):
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
         })
 
         # added it so I won't have errors of using before declaring
-        gerber_obj = dict()
-        gerber_extra_obj = dict()
-        exc_obj = dict()
-        exc_extra_obj = dict()
+        gerber_obj = {}
+        gerber_extra_obj = {}
+        exc_obj = {}
+        exc_extra_obj = {}
 
         if len(obj_list) == 2:
             gerber_obj = obj_list[0]
@@ -997,7 +997,7 @@ class RulesCheck(FlatCAMTool):
         else:
             return 'Fail. Not enough objects to check Minimum Annular Ring'
 
-        total_geo_grb = list()
+        total_geo_grb = []
         for apid in gerber_obj['apertures']:
             if 'geometry' in gerber_obj['apertures'][apid]:
                 geometry = gerber_obj['apertures'][apid]['geometry']
@@ -1017,7 +1017,7 @@ class RulesCheck(FlatCAMTool):
         total_geo_grb = MultiPolygon(total_geo_grb)
         total_geo_grb = total_geo_grb.buffer(0)
 
-        total_geo_exc = list()
+        total_geo_exc = []
         for tool in exc_obj['tools']:
             if 'solid_geometry' in exc_obj['tools'][tool]:
                 geometry = exc_obj['tools'][tool]['solid_geometry']
@@ -1047,7 +1047,7 @@ class RulesCheck(FlatCAMTool):
         iterations = len_1 * len_2
         log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         dist = None
         for geo in total_geo_grb:
             for s_geo in total_geo_exc:
@@ -1075,12 +1075,12 @@ class RulesCheck(FlatCAMTool):
                     else:
                         min_dict[dist] = [s_geo.representative_point()]
 
-        points_list = list()
+        points_list = []
         for dist in min_dict.keys():
             for location in min_dict[dist]:
                 points_list.append(location)
 
-        name_list = list()
+        name_list = []
         try:
             if gerber_obj:
                 name_list.append(gerber_obj['name'])
@@ -1110,7 +1110,7 @@ class RulesCheck(FlatCAMTool):
         return rule_title, violations
 
     def execute(self):
-        self.results = list()
+        self.results = []
 
         log.debug("RuleCheck() executing")
 
@@ -1119,17 +1119,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Trace Size
             if self.trace_size_cb.get_value():
-                copper_list = list()
+                copper_list = []
                 copper_name_1 = self.copper_t_object.currentText()
                 if copper_name_1 is not '' and self.copper_t_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_1)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_1).apertures)
                     copper_list.append(elem_dict)
 
                 copper_name_2 = self.copper_b_object.currentText()
                 if copper_name_2 is not '' and self.copper_b_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_2)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_2).apertures)
                     copper_list.append(elem_dict)
@@ -1151,7 +1151,7 @@ class RulesCheck(FlatCAMTool):
 
                 if self.copper_t_cb.get_value():
                     copper_t_obj = self.copper_t_object.currentText()
-                    copper_t_dict = dict()
+                    copper_t_dict = {}
 
                     if copper_t_obj is not '':
                         copper_t_dict['name'] = deepcopy(copper_t_obj)
@@ -1163,7 +1163,7 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Copper to Copper clearance"))))
                 if self.copper_b_cb.get_value():
                     copper_b_obj = self.copper_b_object.currentText()
-                    copper_b_dict = dict()
+                    copper_b_dict = {}
                     if copper_b_obj is not '':
                         copper_b_dict['name'] = deepcopy(copper_b_obj)
                         copper_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_b_obj).apertures)
@@ -1181,9 +1181,9 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Copper to Outline Clearance
             if self.clearance_copper2ol_cb.get_value() and self.out_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                outline_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                outline_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
                 if copper_top is not '' and self.copper_t_cb.get_value():
@@ -1235,7 +1235,7 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Silk Clearance
             if self.clearance_silk2silk_cb.get_value():
-                silk_dict = dict()
+                silk_dict = {}
 
                 try:
                     silk_silk_clearance = float(self.clearance_silk2silk_entry.get_value())
@@ -1275,10 +1275,10 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Solder Mask Clearance
             if self.clearance_silk2sm_cb.get_value():
-                silk_t_dict = dict()
-                sm_t_dict = dict()
-                silk_b_dict = dict()
-                sm_b_dict = dict()
+                silk_t_dict = {}
+                sm_t_dict = {}
+                silk_b_dict = {}
+                sm_b_dict = {}
 
                 top_ss = False
                 bottom_ss = False
@@ -1344,9 +1344,9 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Outline Clearance
             if self.clearance_silk2ol_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                outline_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                outline_dict = {}
 
                 silk_top = self.ss_t_object.currentText()
                 if silk_top is not '' and self.ss_t_cb.get_value():
@@ -1399,7 +1399,7 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Minimum Solder Mask Sliver
             if self.clearance_silk2silk_cb.get_value():
-                sm_dict = dict()
+                sm_dict = {}
 
                 try:
                     sm_sm_clearance = float(self.clearance_sm2sm_entry.get_value())
@@ -1439,10 +1439,10 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Minimum Annular Ring
             if self.ring_integrity_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                exc_1_dict = dict()
-                exc_2_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                exc_1_dict = {}
+                exc_2_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
                 if copper_top is not '' and self.copper_t_cb.get_value():
@@ -1504,17 +1504,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Hole to Hole Clearance
             if self.clearance_d2d_cb.get_value():
-                exc_list = list()
+                exc_list = []
                 exc_name_1 = self.e1_object.currentText()
                 if exc_name_1 is not '' and self.e1_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
                 if exc_name_2 is not '' and self.e2_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
                     exc_list.append(elem_dict)
@@ -1524,17 +1524,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Holes Size
             if self.drill_size_cb.get_value():
-                exc_list = list()
+                exc_list = []
                 exc_name_1 = self.e1_object.currentText()
                 if exc_name_1 is not '' and self.e1_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
                 if exc_name_2 is not '' and self.e2_cb.get_value():
-                    elem_dict = dict()
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
                     exc_list.append(elem_dict)
@@ -1542,7 +1542,7 @@ class RulesCheck(FlatCAMTool):
                 drill_size = float(self.drill_size_entry.get_value())
                 self.results.append(self.pool.apply_async(self.check_holes_size, args=(exc_list, drill_size)))
 
-            output = list()
+            output = []
             for p in self.results:
                 output.append(p.get())
 

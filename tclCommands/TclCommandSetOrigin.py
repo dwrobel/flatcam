@@ -66,7 +66,7 @@ class TclCommandSetOrigin(TclCommand):
         :return:
         """
 
-        loc = list()
+        loc = []
         if 'auto' in args:
             if bool(args['auto']) is True:
                 objs = self.app.collection.get_list()

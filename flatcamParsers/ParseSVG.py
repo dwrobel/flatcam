@@ -135,7 +135,7 @@ def path2shapely(path, object_type, res=1.0):
             try:
                 geo_element = Polygon(rings[0], rings[1:])
             except Exception:
-                coords = list()
+                coords = []
                 for line in rings:
                     coords.append(line.coords[0])
                     coords.append(line.coords[1])
@@ -305,7 +305,7 @@ def getsvggeo(node, object_type, root=None):
         root = node
 
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
-    geo = list()
+    geo = []
 
     # Recurse
     if len(node) > 0:

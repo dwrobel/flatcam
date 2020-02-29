@@ -1037,7 +1037,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.workspace_type_lbl, 7, 0)
         grid0.addWidget(self.wk_cb, 7, 1)
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'A0': (841, 1189),
@@ -6184,7 +6184,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.pagesize_combo = FCComboBox()
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'Bounds': None,

@@ -606,10 +606,10 @@ class DblSidedTool(FlatCAMTool):
                                  _("No value or wrong format in Drill Dia entry. Add it and retry."))
             return
 
-        tools = dict()
-        tools["1"] = dict()
+        tools = {}
+        tools["1"] = {}
         tools["1"]["C"] = dia
-        tools["1"]['solid_geometry'] = list()
+        tools["1"]['solid_geometry'] = []
 
         # holes = self.alignment_holes.get_value()
         holes = eval('[{}]'.format(self.alignment_holes.text()))
@@ -618,7 +618,7 @@ class DblSidedTool(FlatCAMTool):
                                                           "Add them and retry."))
             return
 
-        drills = list()
+        drills = []
 
         for hole in holes:
             point = Point(hole)

@@ -206,7 +206,7 @@ class AlignObjects(FlatCAMTool):
         self.target_obj = None
 
         # here store the alignment points
-        self.clicked_points = list()
+        self.clicked_points = []
 
         self.align_type = None
 
@@ -249,7 +249,7 @@ class AlignObjects(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.clicked_points = list()
+        self.clicked_points = []
         self.target_obj = None
         self.aligned_obj = None
         self.aligner_obj = None
@@ -373,7 +373,7 @@ class AlignObjects(FlatCAMTool):
 
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.reset_color()
-            self.clicked_points = list()
+            self.clicked_points = []
             self.disconnect_cal_events()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
 

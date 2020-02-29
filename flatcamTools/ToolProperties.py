@@ -277,7 +277,7 @@ class Properties(FlatCAMTool):
                         # calculate copper area
 
                         # create a complete solid_geometry from the tools
-                        geo_tools = list()
+                        geo_tools = []
                         for tool_k in obj_prop.tools:
                             if 'solid_geometry' in obj_prop.tools[tool_k]:
                                 for geo_el in obj_prop.tools[tool_k]['solid_geometry']:
@@ -351,7 +351,7 @@ class Properties(FlatCAMTool):
 
         # Items that depend on the object type
         if obj.kind.lower() == 'gerber':
-            temp_ap = dict()
+            temp_ap = {}
             for ap in obj.apertures:
                 temp_ap.clear()
                 temp_ap = deepcopy(obj.apertures[ap])

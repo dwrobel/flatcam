@@ -223,7 +223,7 @@ class ToolImage(FlatCAMTool):
         :type type_of_obj: str
         :return: None
         """
-        mask = list()
+        mask = []
         self.app.log.debug("on_file_importimage()")
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \

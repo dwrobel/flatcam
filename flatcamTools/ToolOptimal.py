@@ -259,7 +259,7 @@ class ToolOptimal(FlatCAMTool):
 
         # dict to hold the distances between every two elements in Gerber as keys and the actual locations where that
         # distances happen as values
-        self.min_dict = dict()
+        self.min_dict = {}
 
         # ############################################################################
         # ############################ Signals #######################################
@@ -354,7 +354,7 @@ class ToolOptimal(FlatCAMTool):
                 old_disp_number = 0
                 pol_nr = 0
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = list()
+                total_geo = []
 
                 for ap in list(fcobj.apertures.keys()):
                     if 'geometry' in fcobj.apertures[ap]:
@@ -388,7 +388,7 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                self.min_dict = dict()
+                self.min_dict = {}
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:

@@ -521,7 +521,7 @@ class CutOut(FlatCAMTool):
         gapsize = gapsize / 2 + (dia / 2)
 
         def geo_init(geo_obj, app_obj):
-            solid_geo = list()
+            solid_geo = []
 
             if isinstance(cutout_obj, FlatCAMGerber):
                 if isinstance(cutout_obj.solid_geometry, list):
@@ -639,7 +639,7 @@ class CutOut(FlatCAMTool):
 
         cutout_obj.plot()
         self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
     def on_rectangular_cutout(self):
@@ -798,7 +798,7 @@ class CutOut(FlatCAMTool):
         # cutout_obj.plot()
         self.app.inform.emit('[success] %s' %
                              _("Any form CutOut operation finished."))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
     def on_manual_gap_click(self):

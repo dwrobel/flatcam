@@ -178,7 +178,7 @@ class TclCommandPaint(TclCommand):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
-        paint_tools = dict()
+        paint_tools = {}
 
         tooluid = 0
         for tool in tools:

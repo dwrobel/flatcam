@@ -433,7 +433,7 @@ class Distance(FlatCAMTool):
                             pos = (center_pt.x, center_pt.y)
 
                 elif self.original_call_source == 'grb_editor':
-                    clicked_pads = list()
+                    clicked_pads = []
                     for storage in self.app.grb_editor.storage_dict:
                         try:
                             for shape_stored in self.app.grb_editor.storage_dict[storage]['geometry']:

@@ -124,7 +124,7 @@ class FCDrillAdd(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -359,7 +359,7 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -562,7 +562,7 @@ class FCSlot(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -888,7 +888,7 @@ class FCSlotArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1128,7 +1128,7 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.select_tool("drill_select")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1268,7 +1268,7 @@ class FCDrillMove(FCShapeTool):
             return DrawToolUtilityShape(ss_el)
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1323,7 +1323,7 @@ class FCDrillCopy(FCDrillMove):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1371,7 +1371,7 @@ class FCDrillSelect(DrawTool):
         if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
-            self.exc_editor_app.selected = list()
+            self.exc_editor_app.selected = []
 
     def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()
@@ -1425,7 +1425,7 @@ class FCDrillSelect(DrawTool):
                 else:
                     self.exc_editor_app.selected.append(closest_shape)
             else:
-                self.exc_editor_app.selected = list()
+                self.exc_editor_app.selected = []
                 self.exc_editor_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
@@ -2060,31 +2060,31 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.in_action = False
 
-        self.storage_dict = dict()
+        self.storage_dict = {}
 
-        self.current_storage = list()
+        self.current_storage = []
 
         # build the data from the Excellon point into a dictionary
         #  {tool_dia: [geometry_in_points]}
-        self.points_edit = dict()
-        self.slot_points_edit = dict()
+        self.points_edit = {}
+        self.slot_points_edit = {}
 
-        self.sorted_diameters = list()
+        self.sorted_diameters = []
 
-        self.new_drills = list()
-        self.new_tools = dict()
-        self.new_slots = list()
+        self.new_drills = []
+        self.new_tools = {}
+        self.new_slots = []
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
-        self.olddia_newdia = dict()
+        self.olddia_newdia = {}
 
-        self.tool2tooldia = dict()
+        self.tool2tooldia = {}
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
         self.last_tool_selected = None
-        self.utility = list()
+        self.utility = []
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
@@ -3069,8 +3069,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.exc_obj = exc_obj
         exc_obj.visible = False
 
-        self.points_edit = dict()
-        self.slot_points_edit = dict()
+        self.points_edit = {}
+        self.slot_points_edit = {}
 
         # Set selection tolerance
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
@@ -3353,7 +3353,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             # add a 'data' dict for each tool with the default values
             for tool in excellon_obj.tools:
-                excellon_obj.tools[tool]['data'] = dict()
+                excellon_obj.tools[tool]['data'] = {}
                 excellon_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
 
             try:

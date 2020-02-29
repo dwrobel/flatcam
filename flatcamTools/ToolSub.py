@@ -303,14 +303,14 @@ class ToolSub(FlatCAMTool):
 
         # crate the new_apertures dict structure
         for apid in self.target_grb_obj.apertures:
-            self.new_apertures[apid] = dict()
+            self.new_apertures[apid] = {}
             self.new_apertures[apid]['type'] = 'C'
             self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['geometry'] = list()
+            self.new_apertures[apid]['geometry'] = []
 
-        geo_solid_union_list = list()
-        geo_follow_union_list = list()
-        geo_clear_union_list = list()
+        geo_solid_union_list = []
+        geo_follow_union_list = []
+        geo_clear_union_list = []
 
         for apid1 in self.sub_grb_obj.apertures:
             if 'geometry' in self.sub_grb_obj.apertures[apid1]:
@@ -339,14 +339,14 @@ class ToolSub(FlatCAMTool):
             self.app.worker_task.emit({'fcn': self.aperture_intersection, 'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
-        new_geometry = list()
+        new_geometry = []
 
         log.debug("Working on promise: %s" % str(apid))
 
         with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture"), str(apid))):
 
             for geo_el in geo:
-                new_el = dict()
+                new_el = {}
 
                 if 'solid' in geo_el:
                     work_geo = geo_el['solid']
@@ -513,14 +513,14 @@ class ToolSub(FlatCAMTool):
             return
 
         # create the target_options obj
-        # self.target_options = dict()
+        # self.target_options = {}
         # for k, v in self.target_geo_obj.options.items():
         #     if k != 'name':
         #         self.target_options[k] = v
 
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
-            self.new_tools[tool] = dict()
+            self.new_tools[tool] = {}
             for key in self.target_geo_obj.tools[tool]:
                 if key == 'solid_geometry':
                     self.new_tools[tool][key] = []

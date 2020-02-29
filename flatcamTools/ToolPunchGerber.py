@@ -515,7 +515,7 @@ class ToolPunchGerber(FlatCAMTool):
 
         punch_method = self.method_punch.get_value()
 
-        new_options = dict()
+        new_options = {}
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
@@ -549,7 +549,7 @@ class ToolPunchGerber(FlatCAMTool):
             new_apid = max([int(x) for x, __ in new_apertures_items])
 
             # store here the clear geometry, the key is the drill size
-            holes_apertures = dict()
+            holes_apertures = {}
 
             for apid, val in new_apertures_items:
                 for elem in val['geometry']:
@@ -560,14 +560,14 @@ class ToolPunchGerber(FlatCAMTool):
 
                             # since there may be drills that do not drill into a pad we test only for drills in a pad
                             if drill['point'].within(elem['solid']):
-                                geo_elem = dict()
+                                geo_elem = {}
                                 geo_elem['clear'] = drill['point']
 
                                 if clear_apid_size not in holes_apertures:
-                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size] = {}
                                     holes_apertures[clear_apid_size]['type'] = 'C'
                                     holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                    holes_apertures[clear_apid_size]['geometry'] = list()
+                                    holes_apertures[clear_apid_size]['geometry'] = []
 
                                 holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -597,7 +597,7 @@ class ToolPunchGerber(FlatCAMTool):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("The value of the fixed diameter is 0.0. Aborting."))
                 return 'fail'
 
-            punching_geo = list()
+            punching_geo = []
             for apid in grb_obj.apertures:
                 if grb_obj.apertures[apid]['type'] == 'C' and self.circular_cb.get_value():
                     if punch_size >= float(grb_obj.apertures[apid]['size']):
@@ -663,7 +663,7 @@ class ToolPunchGerber(FlatCAMTool):
             new_apid = max([int(x) for x, __ in new_apertures_items])
 
             # store here the clear geometry, the key is the drill size
-            holes_apertures = dict()
+            holes_apertures = {}
 
             for apid, val in new_apertures_items:
                 for elem in val['geometry']:
@@ -674,14 +674,14 @@ class ToolPunchGerber(FlatCAMTool):
 
                             # since there may be drills that do not drill into a pad we test only for drills in a pad
                             if geo.within(elem['solid']):
-                                geo_elem = dict()
+                                geo_elem = {}
                                 geo_elem['clear'] = geo.centroid
 
                                 if clear_apid_size not in holes_apertures:
-                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size] = {}
                                     holes_apertures[clear_apid_size]['type'] = 'C'
                                     holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                    holes_apertures[clear_apid_size]['geometry'] = list()
+                                    holes_apertures[clear_apid_size]['geometry'] = []
 
                                 holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -727,11 +727,11 @@ class ToolPunchGerber(FlatCAMTool):
             new_apid = max([int(x) for x, __ in new_apertures_items])
 
             # store here the clear geometry, the key is the new aperture size
-            holes_apertures = dict()
+            holes_apertures = {}
 
             for apid, apid_value in grb_obj.apertures.items():
                 ap_type = apid_value['type']
-                punching_geo = list()
+                punching_geo = []
 
                 if ap_type == 'C' and self.circular_cb.get_value():
                     dia = float(apid_value['size']) - (2 * circ_r_val)
@@ -816,14 +816,14 @@ class ToolPunchGerber(FlatCAMTool):
 
                             # since there may be drills that do not drill into a pad we test only for geos in a pad
                             if geo.within(elem['solid']):
-                                geo_elem = dict()
+                                geo_elem = {}
                                 geo_elem['clear'] = geo.centroid
 
                                 if clear_apid_size not in holes_apertures:
-                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size] = {}
                                     holes_apertures[clear_apid_size]['type'] = 'C'
                                     holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                    holes_apertures[clear_apid_size]['geometry'] = list()
+                                    holes_apertures[clear_apid_size]['geometry'] = []
 
                                 holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
@@ -866,11 +866,11 @@ class ToolPunchGerber(FlatCAMTool):
             new_apid = max([int(x) for x, __ in new_apertures_items])
 
             # store here the clear geometry, the key is the new aperture size
-            holes_apertures = dict()
+            holes_apertures = {}
 
             for apid, apid_value in grb_obj.apertures.items():
                 ap_type = apid_value['type']
-                punching_geo = list()
+                punching_geo = []
 
                 if ap_type == 'C' and self.circular_cb.get_value():
                     dia = float(apid_value['size']) * prop_factor
@@ -955,14 +955,14 @@ class ToolPunchGerber(FlatCAMTool):
 
                             # since there may be drills that do not drill into a pad we test only for geos in a pad
                             if geo.within(elem['solid']):
-                                geo_elem = dict()
+                                geo_elem = {}
                                 geo_elem['clear'] = geo.centroid
 
                                 if clear_apid_size not in holes_apertures:
-                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size] = {}
                                     holes_apertures[clear_apid_size]['type'] = 'C'
                                     holes_apertures[clear_apid_size]['size'] = clear_apid_size
-                                    holes_apertures[clear_apid_size]['geometry'] = list()
+                                    holes_apertures[clear_apid_size]['geometry'] = []
 
                                 holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 

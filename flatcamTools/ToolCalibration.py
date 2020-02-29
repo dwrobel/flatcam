@@ -926,7 +926,7 @@ class ToolCalibration(FlatCAMTool):
             self.disconnect_cal_events()
 
     def reset_calibration_points(self):
-        self.click_points = list()
+        self.click_points = []
 
         self.bottom_left_coordx_tgt.set_value('')
         self.bottom_left_coordy_tgt.set_value('')

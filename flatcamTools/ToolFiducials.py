@@ -333,7 +333,7 @@ class ToolFiducials(FlatCAMTool):
         self.sm_obj_set = set()
 
         # store the flattened geometry here:
-        self.flat_geometry = list()
+        self.flat_geometry = []
 
         # Events ID
         self.mr = None
@@ -353,7 +353,7 @@ class ToolFiducials(FlatCAMTool):
         self.sec_position = None
         self.geo_steps_per_circle = 128
 
-        self.click_points = list()
+        self.click_points = []
 
         # SIGNALS
         self.add_cfid_button.clicked.connect(self.add_fiducials)
@@ -404,7 +404,7 @@ class ToolFiducials(FlatCAMTool):
         self.fid_type_radio.set_value(self.app.defaults["tools_fiducials_type"])
         self.line_thickness_entry.set_value(float(self.app.defaults["tools_fiducials_line_thickness"]))
 
-        self.click_points = list()
+        self.click_points = []
         self.bottom_left_coords_entry.set_value('')
         self.top_right_coords_entry.set_value('')
         self.sec_points_coords_entry.set_value('')
@@ -429,7 +429,7 @@ class ToolFiducials(FlatCAMTool):
         :return: None
         """
         if val == 'auto':
-            self.click_points = list()
+            self.click_points = []
 
             try:
                 self.disconnect_event_handlers()
@@ -451,7 +451,7 @@ class ToolFiducials(FlatCAMTool):
         self.sec_position = self.pos_radio.get_value()
         fid_type = self.fid_type_radio.get_value()
 
-        self.click_points = list()
+        self.click_points = []
 
         # get the Gerber object on which the Fiducial will be inserted
         selection_index = self.grb_object_combo.currentIndex()
@@ -547,7 +547,7 @@ class ToolFiducials(FlatCAMTool):
 
             if aperture_found:
                 for geo in geo_list:
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo.centroid
                     dict_el['solid'] = geo
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
@@ -558,18 +558,18 @@ class ToolFiducials(FlatCAMTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid] = {}
                 g_obj.apertures[new_apid]['type'] = 'C'
                 g_obj.apertures[new_apid]['size'] = fid_size
-                g_obj.apertures[new_apid]['geometry'] = list()
+                g_obj.apertures[new_apid]['geometry'] = []
 
                 for geo in geo_list:
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo.centroid
                     dict_el['solid'] = geo
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
-            s_list = list()
+            s_list = []
             if g_obj.solid_geometry:
                 try:
                     for poly in g_obj.solid_geometry:
@@ -580,7 +580,7 @@ class ToolFiducials(FlatCAMTool):
             s_list += geo_list
             g_obj.solid_geometry = MultiPolygon(s_list)
         elif fid_type == 'cross':
-            geo_list = list()
+            geo_list = []
 
             for pt in points_list:
                 x = pt[0]
@@ -599,7 +599,7 @@ class ToolFiducials(FlatCAMTool):
                     aperture_found = ap_id
                     break
 
-            geo_buff_list = list()
+            geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
                     geo_buff_h = geo[0].buffer(line_thickness / 2.0)
@@ -607,7 +607,7 @@ class ToolFiducials(FlatCAMTool):
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo_buff_h.centroid
                     dict_el['solid'] = geo_buff_h
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
@@ -621,10 +621,10 @@ class ToolFiducials(FlatCAMTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid] = {}
                 g_obj.apertures[new_apid]['type'] = 'C'
                 g_obj.apertures[new_apid]['size'] = line_thickness
-                g_obj.apertures[new_apid]['geometry'] = list()
+                g_obj.apertures[new_apid]['geometry'] = []
 
                 for geo in geo_list:
                     geo_buff_h = geo[0].buffer(line_thickness / 2.0)
@@ -632,7 +632,7 @@ class ToolFiducials(FlatCAMTool):
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo_buff_h.centroid
                     dict_el['solid'] = geo_buff_h
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
@@ -640,7 +640,7 @@ class ToolFiducials(FlatCAMTool):
                     dict_el['solid'] = geo_buff_v
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
-            s_list = list()
+            s_list = []
             if g_obj.solid_geometry:
                 try:
                     for poly in g_obj.solid_geometry:
@@ -655,7 +655,7 @@ class ToolFiducials(FlatCAMTool):
             g_obj.solid_geometry = MultiPolygon(s_list)
         else:
             # chess pattern fiducial type
-            geo_list = list()
+            geo_list = []
 
             def make_square_poly(center_pt, side_size):
                 half_s = side_size / 2
@@ -684,12 +684,12 @@ class ToolFiducials(FlatCAMTool):
                     aperture_found = ap_id
                     break
 
-            geo_buff_list = list()
+            geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
                     geo_buff_list.append(geo)
 
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo.centroid
                     dict_el['solid'] = geo
                     g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
@@ -700,22 +700,22 @@ class ToolFiducials(FlatCAMTool):
                 else:
                     new_apid = '10'
 
-                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid] = {}
                 g_obj.apertures[new_apid]['type'] = 'R'
                 g_obj.apertures[new_apid]['size'] = new_ap_size
                 g_obj.apertures[new_apid]['width'] = fid_size
                 g_obj.apertures[new_apid]['height'] = fid_size
-                g_obj.apertures[new_apid]['geometry'] = list()
+                g_obj.apertures[new_apid]['geometry'] = []
 
                 for geo in geo_list:
                     geo_buff_list.append(geo)
 
-                    dict_el = dict()
+                    dict_el = {}
                     dict_el['follow'] = geo.centroid
                     dict_el['solid'] = geo
                     g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
-            s_list = list()
+            s_list = []
             if g_obj.solid_geometry:
                 try:
                     for poly in g_obj.solid_geometry:

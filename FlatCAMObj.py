@@ -114,7 +114,7 @@ class FlatCAMObj(QtCore.QObject):
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
-        self.mark_shapes = dict()
+        self.mark_shapes = {}
 
         self.item = None  # Link with project view item
 
@@ -654,7 +654,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.mp = None
 
         # dict to store the polygons selected for isolation; key is the shape added to be plotted and value is the poly
-        self.poly_dict = dict()
+        self.poly_dict = {}
 
         # store the status of grid snapping
         self.grid_status_memory = None
@@ -1331,7 +1331,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
                 geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
 
-                geo_obj.solid_geometry = list()
+                geo_obj.solid_geometry = []
 
                 # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
                 if self.ui.tool_type_radio.get_value() == 'v':
@@ -1372,8 +1372,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     "startz": self.app.defaults['geometry_startz']
                 })
 
-                geo_obj.tools = dict()
-                geo_obj.tools['1'] = dict()
+                geo_obj.tools = {}
+                geo_obj.tools['1'] = {}
                 geo_obj.tools.update({
                     '1': {
                         'tooldia': float(self.options["isotooldia"]),
@@ -1520,8 +1520,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         "startz": self.app.defaults['geometry_startz']
                     })
 
-                    geo_obj.tools = dict()
-                    geo_obj.tools['1'] = dict()
+                    geo_obj.tools = {}
+                    geo_obj.tools['1'] = {}
                     geo_obj.tools.update({
                         '1': {
                             'tooldia': float(self.options["isotooldia"]),
@@ -2416,15 +2416,15 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         })
 
         # TODO: Document this.
-        self.tool_cbs = dict()
+        self.tool_cbs = {}
 
         # dict that holds the object names and the option name
         # the key is the object name (defines in ObjectUI) for each UI element that is a parameter
         # particular for a tool and the value is the actual name of the option that the UI element is changing
-        self.name2option = dict()
+        self.name2option = {}
 
         # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
-        self.default_data = dict()
+        self.default_data = {}
 
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():
@@ -2629,7 +2629,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
             # delete the exc_final tools, drills and slots
-            exc_final.tools = dict()
+            exc_final.tools = {}
             exc_final.drills[:] = []
             exc_final.slots[:] = []
 
@@ -2669,7 +2669,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
         tools = [i[0] for i in sorted_tools]
 
-        new_options = dict()
+        new_options = {}
         for opt in self.options:
             new_options[opt] = self.options[opt]
 
@@ -3046,7 +3046,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def on_row_selection_change(self):
         self.ui_disconnect()
 
-        sel_rows = list()
+        sel_rows = []
         sel_items = self.ui.tools_table.selectedItems()
         for it in sel_items:
             sel_rows.append(it.row())
@@ -3181,7 +3181,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # from the columnCount we subtract a value of 1 which represent the last column (plot column)
             # which does not have text
             txt = ''
-            elem = list()
+            elem = []
 
             for column in range(0, self.ui.tools_table.columnCount() - 1):
                 try:
@@ -3940,7 +3940,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             row = 0
 
         tooluid_item = int(self.ui.tools_table.item(row, 0).text())
-        temp_tool_data = dict()
+        temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.tools.items():
             if int(tooluid_key) == tooluid_item:
@@ -4220,7 +4220,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.e_cut_entry.setDisabled(True)
 
         # set the text on tool_data_label after loading the object
-        sel_rows = list()
+        sel_rows = []
         sel_items = self.ui.geo_tools_table.selectedItems()
         for it in sel_items:
             sel_rows.append(it.row())
@@ -4285,7 +4285,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.cutz_entry.setDisabled(False)
 
         # store here the default data for Geometry Data
-        self.default_data = dict()
+        self.default_data = {}
         self.default_data.update({
             "name": None,
             "plot": None,
@@ -4603,7 +4603,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui_disconnect()
 
         if row is None:
-            sel_rows = list()
+            sel_rows = []
             sel_items = self.ui.geo_tools_table.selectedItems()
             for it in sel_items:
                 sel_rows.append(it.row())
@@ -4684,7 +4684,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             tooldia = float(self.ui.addtool_entry.get_value())
 
         # construct a list of all 'tooluid' in the self.tools
-        # tool_uid_list = list()
+        # tool_uid_list = []
         # for tooluid_key in self.tools:
         #     tool_uid_list.append(int(tooluid_key))
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
@@ -5329,7 +5329,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         table_tools_items = []
         if self.multigeo:
             for x in self.ui.geo_tools_table.selectedItems():
-                elem = list()
+                elem = []
                 txt = ''
 
                 for column in range(0, self.ui.geo_tools_table.columnCount()):
@@ -5482,7 +5482,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # this reads the values in the UI form to the self.options dictionary
         self.read_form()
 
-        self.sel_tools = dict()
+        self.sel_tools = {}
 
         try:
             if self.special_group:
@@ -5588,7 +5588,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = dict()
+            dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -5731,7 +5731,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = dict()
+            dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -6065,7 +6065,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def scale_recursion(geom):
             if type(geom) is list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(scale_recursion(local_geom))
                 return geoms
@@ -6142,7 +6142,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def translate_recursion(geom):
             if type(geom) is list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
@@ -6419,16 +6419,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         if geo_final.solid_geometry is None:
-            geo_final.solid_geometry = list()
+            geo_final.solid_geometry = []
 
         try:
             __ = iter(geo_final.solid_geometry)
         except TypeError:
             geo_final.solid_geometry = [geo_final.solid_geometry]
 
-        new_solid_geometry = list()
-        new_options = dict()
-        new_tools = dict()
+        new_solid_geometry = []
+        new_options = {}
+        new_tools = {}
 
         for geo_obj in geo_list:
             for option in geo_obj.options:
@@ -6564,7 +6564,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             It is populated in the FlatCAMGeometry.mtool_gen_cncjob()
             BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
         '''
-        self.cnc_tools = dict()
+        self.cnc_tools = {}
 
         '''
            This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
@@ -6585,7 +6585,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
            it's done in camlib.CNCJob.generate_from_excellon_by_tool()
            BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
        '''
-        self.exc_cnc_tools = dict()
+        self.exc_cnc_tools = {}
 
         # flag to store if the CNCJob is part of a special group of CNCJob objects that can't be processed by the
         # default engine of FlatCAM. They generated by some of tools and are special cases of CNCJob objects.

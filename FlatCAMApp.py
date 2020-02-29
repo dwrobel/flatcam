@@ -54,7 +54,7 @@ from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, color_variant
+from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, ToolsDB2, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -1076,7 +1076,7 @@ class App(QtCore.QObject):
         self.current_units = self.defaults['units']
 
         # store here the current self.defaults so it can be restored if Preferences changes are cancelled
-        self.current_defaults = dict()
+        self.current_defaults = {}
         self.current_defaults.update(self.defaults)
 
         # ##########################################################################
@@ -1755,7 +1755,7 @@ class App(QtCore.QObject):
 
         # make sure that always the 'default' preprocessor is the first item in the dictionary
         if 'default' in self.preprocessors.keys():
-            new_ppp_dict = dict()
+            new_ppp_dict = {}
 
             # add the 'default' name first in the dict after removing from the preprocessor's dictionary
             default_pp = self.preprocessors.pop('default')
@@ -2673,10 +2673,10 @@ class App(QtCore.QObject):
 
         # List to store the objects that are currently loaded in FlatCAM
         # This list is updated on each object creation or object delete
-        self.all_objects_list = list()
+        self.all_objects_list = []
 
         # List to store the objects that are selected
-        self.sel_objects_list = list()
+        self.sel_objects_list = []
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
@@ -2752,7 +2752,7 @@ class App(QtCore.QObject):
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
 
-        self.pagesize = dict()
+        self.pagesize = {}
 
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
@@ -7410,8 +7410,8 @@ class App(QtCore.QObject):
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
                     return
 
-                xminlist = list()
-                yminlist = list()
+                xminlist = []
+                yminlist = []
 
                 # first get a bounding box to fit all
                 for obj in obj_list:
@@ -7896,7 +7896,7 @@ class App(QtCore.QObject):
             apertures[str(apid)] = {}
             apertures[str(apid)]['geometry'] = []
             for obj_orig in obj.solid_geometry:
-                new_elem = dict()
+                new_elem = {}
                 new_elem['solid'] = obj_orig
                 try:
                     new_elem['follow'] = obj_orig.exterior
@@ -7917,7 +7917,7 @@ class App(QtCore.QObject):
                 apertures[str(apid)] = {}
                 apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = dict()
+                    new_el = {}
                     new_el['solid'] = geo
                     new_el['follow'] = geo.exterior
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
@@ -8072,7 +8072,7 @@ class App(QtCore.QObject):
                 # there can be only one instance of Tools Database at one time
                 return
 
-        self.tools_db_tab = ToolsDB(
+        self.tools_db_tab = ToolsDB2(
             app=self,
             parent=self.ui,
             callback_on_edited=self.on_tools_db_edited,
@@ -8458,7 +8458,7 @@ class App(QtCore.QObject):
             return
 
         # get the name of the selected objects and add them to a list
-        name_list = list()
+        name_list = []
         for obj in self.collection.get_selected():
             name_list.append(obj.options['name'])
 
@@ -8495,12 +8495,12 @@ class App(QtCore.QObject):
                     pass
             self.ui.menuobjects.clear()
 
-            gerber_list = list()
-            exc_list = list()
-            cncjob_list = list()
-            geo_list = list()
-            script_list = list()
-            doc_list = list()
+            gerber_list = []
+            exc_list = []
+            cncjob_list = []
+            geo_list = []
+            script_list = []
+            doc_list = []
 
             for name in self.collection.get_names():
                 obj_named = self.collection.get_by_name(name)
@@ -8780,7 +8780,7 @@ class App(QtCore.QObject):
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
         """
-        self.pos = list()
+        self.pos = []
 
         if self.is_legacy is False:
             event_pos = event.pos
@@ -10631,7 +10631,7 @@ class App(QtCore.QObject):
         color = 'black'
         transparency_level = 1.0
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'Bounds': None,
@@ -10685,7 +10685,7 @@ class App(QtCore.QObject):
             }
         )
 
-        exported_svg = list()
+        exported_svg = []
         for obj in obj_selection:
             svg_obj = obj.export_svg(scale_stroke_factor=0.0,
                                      scale_factor_x=None, scale_factor_y=None,

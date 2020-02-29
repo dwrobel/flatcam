@@ -473,13 +473,13 @@ class Panelize(FlatCAMTool):
 
         if isinstance(panel_obj, FlatCAMExcellon) or isinstance(panel_obj, FlatCAMGeometry):
             # make a copy of the panelized Excellon or Geometry tools
-            copied_tools = dict()
+            copied_tools = {}
             for tt, tt_val in list(panel_obj.tools.items()):
                 copied_tools[tt] = deepcopy(tt_val)
 
         if isinstance(panel_obj, FlatCAMGerber):
             # make a copy of the panelized Gerber apertures
-            copied_apertures = dict()
+            copied_apertures = {}
             for tt, tt_val in list(panel_obj.apertures.items()):
                 copied_apertures[tt] = deepcopy(tt_val)
 
@@ -577,7 +577,7 @@ class Panelize(FlatCAMTool):
 
                     def translate_recursion(geom):
                         if type(geom) == list:
-                            geoms = list()
+                            geoms = []
                             for local_geom in geom:
                                 res_geo = translate_recursion(local_geom)
                                 try:
@@ -600,7 +600,7 @@ class Panelize(FlatCAMTool):
                     elif isinstance(panel_obj, FlatCAMGerber):
                         obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
-                            obj_fin.apertures[ap]['geometry'] = list()
+                            obj_fin.apertures[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
@@ -736,7 +736,7 @@ class Panelize(FlatCAMTool):
                                                 # graceful abort requested by the user
                                                 raise FlatCAMApp.GracefulException
 
-                                            new_el = dict()
+                                            new_el = {}
                                             if 'solid' in el:
                                                 geo_aper = translate_recursion(el['solid'])
                                                 new_el['solid'] = geo_aper

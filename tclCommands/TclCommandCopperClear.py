@@ -188,7 +188,7 @@ class TclCommandCopperClear(TclCommand):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
-        ncc_tools = dict()
+        ncc_tools = {}
 
         tooluid = 0
         for tool in tools:

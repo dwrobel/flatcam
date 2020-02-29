@@ -1755,7 +1755,7 @@ class DrawToolShape(object):
 
         def translate_recursion(geom):
             if type(geom) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
@@ -1802,7 +1802,7 @@ class DrawToolShape(object):
 
         def scale_recursion(geom):
             if type(geom) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(scale_recursion(local_geom))
                 return geoms
@@ -1972,7 +1972,7 @@ class FCCircle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2212,7 +2212,7 @@ class FCArc(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2285,7 +2285,7 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2374,7 +2374,7 @@ class FCPolygon(FCShapeTool):
                 return _("Backtracked one point ...")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2439,7 +2439,7 @@ class FCPath(FCPolygon):
                 return _("Backtracked one point ...")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2573,8 +2573,8 @@ class FCExplode(FCShapeTool):
             self.make()
 
     def make(self):
-        to_be_deleted_list = list()
-        lines = list()
+        to_be_deleted_list = []
+        lines = []
 
         for shape in self.draw_app.get_selected():
             to_be_deleted_list.append(shape)
@@ -2596,7 +2596,7 @@ class FCExplode(FCShapeTool):
             if shape in self.draw_app.selected:
                 self.draw_app.selected.remove(shape)
 
-        geo_list = list()
+        geo_list = []
         for line in lines:
             geo_list.append(DrawToolShape(line))
         self.geometry = geo_list
@@ -2604,7 +2604,7 @@ class FCExplode(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2793,7 +2793,7 @@ class FCMove(FCShapeTool):
             raise
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2821,7 +2821,7 @@ class FCCopy(FCMove):
             pass
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2906,7 +2906,7 @@ class FCText(FCShapeTool):
             return
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -3043,7 +3043,7 @@ class FCBuffer(FCShapeTool):
             pass
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -3165,7 +3165,7 @@ class FCEraser(FCShapeTool):
         return DrawToolUtilityShape(geo_list)
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -3484,7 +3484,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         #     pass
 
         iterator = QtWidgets.QTreeWidgetItemIterator(self.geo_parent)
-        to_delete = list()
+        to_delete = []
         while iterator.value():
             item = iterator.value()
             to_delete.append(item)
@@ -3521,7 +3521,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pass
 
     def on_tree_selection_change(self):
-        self.selected = list()
+        self.selected = []
         selected_tree_items = self.tw.selectedItems()
         for sel in selected_tree_items:
             for obj_shape in self.storage.get_objects():
@@ -4528,7 +4528,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
-        shape_list = list()
+        shape_list = []
         try:
             for geo in geom:
                 shape_list.append(DrawToolShape(geo))

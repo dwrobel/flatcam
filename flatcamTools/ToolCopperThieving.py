@@ -494,11 +494,11 @@ class ToolCopperThieving(FlatCAMTool):
         # Objects involved in Copper thieving
         self.grb_object = None
         self.ref_obj = None
-        self.sel_rect = list()
+        self.sel_rect = []
         self.sm_object = None
 
         # store the flattened geometry here:
-        self.flat_geometry = list()
+        self.flat_geometry = []
 
         # Events ID
         self.mr = None
@@ -517,7 +517,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.geo_steps_per_circle = 128
 
         # Thieving geometry storage
-        self.new_solid_geometry = list()
+        self.new_solid_geometry = []
 
         # Robber bar geometry storage
         self.robber_geo = None
@@ -681,7 +681,7 @@ class ToolCopperThieving(FlatCAMTool):
                 break
 
         if aperture_found:
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.robber_geo
             geo_elem['follow'] = self.robber_line
             self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
@@ -692,19 +692,19 @@ class ToolCopperThieving(FlatCAMTool):
             else:
                 new_apid = '10'
 
-            self.grb_object.apertures[new_apid] = dict()
+            self.grb_object.apertures[new_apid] = {}
             self.grb_object.apertures[new_apid]['type'] = 'C'
             self.grb_object.apertures[new_apid]['size'] = self.rb_thickness
-            self.grb_object.apertures[new_apid]['geometry'] = list()
+            self.grb_object.apertures[new_apid]['geometry'] = []
 
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.robber_geo
             geo_elem['follow'] = self.robber_line
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         geo_obj = self.grb_object.solid_geometry
         if isinstance(geo_obj, MultiPolygon):
-            s_list = list()
+            s_list = []
             for pol in geo_obj.geoms:
                 s_list.append(pol)
             s_list.append(self.robber_geo)
@@ -1127,7 +1127,7 @@ class ToolCopperThieving(FlatCAMTool):
 
             if fill_type == 'dot' or fill_type == 'square':
                 # build the MultiPolygon of dots/squares that will fill the entire bounding box
-                thieving_list = list()
+                thieving_list = []
 
                 if fill_type == 'dot':
                     radius = dot_dia / 2.0
@@ -1169,7 +1169,7 @@ class ToolCopperThieving(FlatCAMTool):
                 except TypeError:
                     thieving_box_geo = [thieving_box_geo]
 
-                thieving_geo = list()
+                thieving_geo = []
                 for dot_geo in thieving_box_geo:
                     for geo_t in app_obj.new_solid_geometry:
                         if dot_geo.within(geo_t):
@@ -1212,7 +1212,7 @@ class ToolCopperThieving(FlatCAMTool):
                 app_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
                 outline_geometry = unary_union(outline_geometry)
 
-                outline_line = list()
+                outline_line = []
                 try:
                     for geo_o in outline_geometry:
                         outline_line.append(
@@ -1238,7 +1238,7 @@ class ToolCopperThieving(FlatCAMTool):
                 )
 
                 bx0, by0, bx1, by1 = box_outline_geo.bounds
-                thieving_lines_geo = list()
+                thieving_lines_geo = []
                 new_x = bx0
                 new_y = by0
                 while new_x <= x1 - half_thick_line:
@@ -1258,7 +1258,7 @@ class ToolCopperThieving(FlatCAMTool):
                     new_y += line_size + line_spacing
 
                 # merge everything together
-                diff_lines_geo = list()
+                diff_lines_geo = []
                 for line_poly in thieving_lines_geo:
                     rest_line = line_poly.difference(clearance_geometry)
                     diff_lines_geo.append(rest_line)
@@ -1271,8 +1271,8 @@ class ToolCopperThieving(FlatCAMTool):
                 geo_list = list(app_obj.grb_object.solid_geometry.geoms)
 
             if '0' not in app_obj.grb_object.apertures:
-                app_obj.grb_object.apertures['0'] = dict()
-                app_obj.grb_object.apertures['0']['geometry'] = list()
+                app_obj.grb_object.apertures['0'] = {}
+                app_obj.grb_object.apertures['0']['geometry'] = []
                 app_obj.grb_object.apertures['0']['type'] = 'REG'
                 app_obj.grb_object.apertures['0']['size'] = 0.0
 
@@ -1282,7 +1282,7 @@ class ToolCopperThieving(FlatCAMTool):
                     geo_list.append(poly)
 
                     # append into the '0' aperture
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = poly
                     geo_elem['follow'] = poly.exterior
                     app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1291,7 +1291,7 @@ class ToolCopperThieving(FlatCAMTool):
                 geo_list.append(app_obj.new_solid_geometry)
 
                 # append into the '0' aperture
-                geo_elem = dict()
+                geo_elem = {}
                 geo_elem['solid'] = app_obj.new_solid_geometry
                 geo_elem['follow'] = app_obj.new_solid_geometry.exterior
                 app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1350,7 +1350,7 @@ class ToolCopperThieving(FlatCAMTool):
 
         # if the clearance is negative apply it to the original soldermask too
         if ppm_clearance < 0:
-            temp_geo_list = list()
+            temp_geo_list = []
             for geo in geo_list:
                 temp_geo_list.append(geo.buffer(ppm_clearance))
             geo_list = temp_geo_list
@@ -1372,11 +1372,11 @@ class ToolCopperThieving(FlatCAMTool):
 
         def obj_init(grb_obj, app_obj):
             grb_obj.multitool = False
-            grb_obj.source_file = list()
+            grb_obj.source_file = []
             grb_obj.multigeo = False
             grb_obj.follow = False
-            grb_obj.apertures = dict()
-            grb_obj.solid_geometry = list()
+            grb_obj.apertures = {}
+            grb_obj.solid_geometry = []
 
             # try:
             #     grb_obj.options['xmin'] = 0
@@ -1389,8 +1389,8 @@ class ToolCopperThieving(FlatCAMTool):
             # if we have copper thieving geometry, add it
             if thieving_solid_geo:
                 if '0' not in grb_obj.apertures:
-                    grb_obj.apertures['0'] = dict()
-                    grb_obj.apertures['0']['geometry'] = list()
+                    grb_obj.apertures['0'] = {}
+                    grb_obj.apertures['0']['geometry'] = []
                     grb_obj.apertures['0']['type'] = 'REG'
                     grb_obj.apertures['0']['size'] = 0.0
 
@@ -1402,7 +1402,7 @@ class ToolCopperThieving(FlatCAMTool):
                         geo_list.append(poly_b)
 
                         # append into the '0' aperture
-                        geo_elem = dict()
+                        geo_elem = {}
                         geo_elem['solid'] = poly_b
                         geo_elem['follow'] = poly_b.exterior
                         grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1411,7 +1411,7 @@ class ToolCopperThieving(FlatCAMTool):
                     geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
                     # append into the '0' aperture
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = thieving_solid_geo.buffer(ppm_clearance)
                     geo_elem['follow'] = thieving_solid_geo.buffer(ppm_clearance).exterior
                     grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1425,7 +1425,7 @@ class ToolCopperThieving(FlatCAMTool):
                         break
 
                 if aperture_found:
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = robber_solid_geo
                     geo_elem['follow'] = robber_line
                     grb_obj.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
@@ -1437,12 +1437,12 @@ class ToolCopperThieving(FlatCAMTool):
                     else:
                         new_apid = '10'
 
-                    grb_obj.apertures[new_apid] = dict()
+                    grb_obj.apertures[new_apid] = {}
                     grb_obj.apertures[new_apid]['type'] = 'C'
                     grb_obj.apertures[new_apid]['size'] = rb_thickness + ppm_clearance
-                    grb_obj.apertures[new_apid]['geometry'] = list()
+                    grb_obj.apertures[new_apid]['geometry'] = []
 
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = robber_solid_geo.buffer(ppm_clearance)
                     geo_elem['follow'] = Polygon(robber_line).buffer(ppm_clearance / 2.0).exterior
                     grb_obj.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
@@ -1510,7 +1510,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.grb_object = None
         self.sm_object = None
         self.ref_obj = None
-        self.sel_rect = list()
+        self.sel_rect = []
 
         # Events ID
         self.mr = None

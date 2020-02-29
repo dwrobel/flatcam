@@ -434,7 +434,7 @@ class Film(FlatCAMTool):
 
         self.pagesize_combo = FCComboBox()
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'Bounds': None,
@@ -786,7 +786,7 @@ class Film(FlatCAMTool):
 
             punch_size = float(self.punch_size_spinner.get_value())
 
-            punching_geo = list()
+            punching_geo = []
             for apid in film_obj.apertures:
                 if film_obj.apertures[apid]['type'] == 'C':
                     if punch_size >= float(film_obj.apertures[apid]['size']):

@@ -227,19 +227,19 @@ class ToolInvertGerber(FlatCAMTool):
         for poly in grb_obj.solid_geometry:
             new_solid_geometry = new_solid_geometry.difference(poly)
 
-        new_options = dict()
+        new_options = {}
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
-        new_apertures = dict()
+        new_apertures = {}
 
         # for apid, val in grb_obj.apertures.items():
-        #     new_apertures[apid] = dict()
+        #     new_apertures[apid] = {}
         #     for key in val:
         #         if key == 'geometry':
-        #             new_apertures[apid]['geometry'] = list()
+        #             new_apertures[apid]['geometry'] = []
         #             for elem in val['geometry']:
-        #                 geo_elem = dict()
+        #                 geo_elem = {}
         #                 if 'follow' in elem:
         #                     try:
         #                         geo_elem['clear'] = elem['follow'].buffer(val['size'] / 2.0).exterior
@@ -260,19 +260,19 @@ class ToolInvertGerber(FlatCAMTool):
         #             new_apertures[apid][key] = deepcopy(val[key])
 
         if '0' not in new_apertures:
-            new_apertures['0'] = dict()
+            new_apertures['0'] = {}
             new_apertures['0']['type'] = 'C'
             new_apertures['0']['size'] = 0.0
-            new_apertures['0']['geometry'] = list()
+            new_apertures['0']['geometry'] = []
 
         try:
             for poly in new_solid_geometry:
-                new_el = dict()
+                new_el = {}
                 new_el['solid'] = poly
                 new_el['follow'] = poly.exterior
                 new_apertures['0']['geometry'].append(new_el)
         except TypeError:
-            new_el = dict()
+            new_el = {}
             new_el['solid'] = new_solid_geometry
             new_el['follow'] = new_solid_geometry.exterior
             new_apertures['0']['geometry'].append(new_el)

@@ -625,22 +625,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ########################## VARIABLES ########################################
         # #############################################################################
         self.units = ''
-        self.ncc_tools = dict()
+        self.ncc_tools = {}
         self.tooluid = 0
 
         # store here the default data for Geometry Data
-        self.default_data = dict()
+        self.default_data = {}
 
         self.obj_name = ""
         self.ncc_obj = None
 
-        self.sel_rect = list()
+        self.sel_rect = []
 
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.ncc_dia_list = list()
-        self.iso_dia_list = list()
+        self.ncc_dia_list = []
+        self.iso_dia_list = []
         self.has_offset = None
         self.o_name = None
         self.overlap = None
@@ -656,10 +656,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.mr = None
 
         # store here solid_geometry when there are tool with isolation job
-        self.solid_geometry = list()
+        self.solid_geometry = []
 
         self.select_method = None
-        self.tool_type_item_options = list()
+        self.tool_type_item_options = []
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
@@ -832,7 +832,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             row = 0
 
         tooluid_item = int(self.tools_table.item(row, 3).text())
-        temp_tool_data = dict()
+        temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.ncc_tools.items():
             if int(tooluid_key) == tooluid_item:
@@ -1143,7 +1143,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ui_connect()
 
         # set the text on tool_data_label after loading the object
-        sel_rows = list()
+        sel_rows = []
         sel_items = self.tools_table.selectedItems()
         for it in sel_items:
             sel_rows.append(it.row())
@@ -1550,9 +1550,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return
 
         # use the selected tools in the tool table; get diameters for non-copper clear
-        self.iso_dia_list = list()
+        self.iso_dia_list = []
         # use the selected tools in the tool table; get diameters for non-copper clear
-        self.ncc_dia_list = list()
+        self.ncc_dia_list = []
         if self.tools_table.selectedItems():
             for x in self.tools_table.selectedItems():
                 try:
@@ -1834,7 +1834,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             bounding_box = cascaded_union(geo_buff_list)
         elif ncc_select == _("Reference Object"):
             if box_kind == 'geometry':
-                geo_buff_list = list()
+                geo_buff_list = []
                 for poly in env_obj:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
@@ -2223,7 +2223,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             p = p.buffer(0)
 
                             if p is not None and p.is_valid:
-                                poly_processed = list()
+                                poly_processed = []
                                 try:
                                     for pol in p:
                                         if pol is not None and isinstance(pol, Polygon):
@@ -2368,7 +2368,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     return
 
                 # create the solid_geometry
-                geo_obj.solid_geometry = list()
+                geo_obj.solid_geometry = []
                 for tooluid in geo_obj.tools:
                     if geo_obj.tools[tooluid]['solid_geometry']:
                         try:
@@ -2653,7 +2653,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     return
 
                 # create the solid_geometry
-                geo_obj.solid_geometry = list()
+                geo_obj.solid_geometry = []
                 for tooluid in geo_obj.tools:
                     if geo_obj.tools[tooluid]['solid_geometry']:
                         try:
@@ -2961,7 +2961,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 milling_type = self.app.defaults["tools_nccmilling_type"]
 
                 for tool_iso in isotooldia:
-                    new_geometry = list()
+                    new_geometry = []
 
                     if milling_type == 'cl':
                         isolated_geo = self.generate_envelope(tool_iso / 2, 1)
@@ -3129,7 +3129,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             p = p.buffer(0)
 
                             if p is not None and p.is_valid:
-                                poly_processed = list()
+                                poly_processed = []
                                 try:
                                     for pol in p:
                                         if pol is not None and isinstance(pol, Polygon):
@@ -3267,7 +3267,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     return
 
                 # create the solid_geometry
-                geo_obj.solid_geometry = list()
+                geo_obj.solid_geometry = []
                 for tooluid in geo_obj.tools:
                     if geo_obj.tools[tooluid]['solid_geometry']:
                         try:
@@ -3650,7 +3650,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     return
 
                 # create the solid_geometry
-                geo_obj.solid_geometry = list()
+                geo_obj.solid_geometry = []
                 for tooluid in geo_obj.tools:
                     if geo_obj.tools[tooluid]['solid_geometry']:
                         try:

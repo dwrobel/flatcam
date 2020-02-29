@@ -496,7 +496,7 @@ class QRCode(FlatCAMTool):
             mask_geo = box(a, b, c, d).buffer(buff_val, join_style=2)
 
         # update the solid geometry with the cutout (if it is the case)
-        new_solid_geometry = list()
+        new_solid_geometry = []
         offset_mask_geo = translate(mask_geo, xoff=pos[0], yoff=pos[1])
         for poly in geo_list:
             if poly.contains(offset_mask_geo):
@@ -523,7 +523,7 @@ class QRCode(FlatCAMTool):
 
         box_size = float(self.bsize_entry.get_value()) / 10.0
 
-        sort_apid = list()
+        sort_apid = []
         new_apid = '10'
         if self.grb_object.apertures:
             for k, v in list(self.grb_object.apertures.items()):
@@ -537,8 +537,8 @@ class QRCode(FlatCAMTool):
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.apertures:
-            self.grb_object.apertures[new_apid] = dict()
-            self.grb_object.apertures[new_apid]['geometry'] = list()
+            self.grb_object.apertures[new_apid] = {}
+            self.grb_object.apertures[new_apid]['geometry'] = []
             self.grb_object.apertures[new_apid]['type'] = 'R'
             # TODO: HACK
             # I've artificially added 1% to the height and width because otherwise after loading the
@@ -549,14 +549,14 @@ class QRCode(FlatCAMTool):
             self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
         if '0' not in self.grb_object.apertures:
-            self.grb_object.apertures['0'] = dict()
-            self.grb_object.apertures['0']['geometry'] = list()
+            self.grb_object.apertures['0'] = {}
+            self.grb_object.apertures['0']['geometry'] = []
             self.grb_object.apertures['0']['type'] = 'REG'
             self.grb_object.apertures['0']['size'] = 0.0
 
         # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
         # make sure that I place a cutout there
-        zero_elem = dict()
+        zero_elem = {}
         zero_elem['clear'] = offset_mask_geo
         self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
 
@@ -571,12 +571,12 @@ class QRCode(FlatCAMTool):
 
         try:
             for geo in self.qrcode_geometry:
-                geo_elem = dict()
+                geo_elem = {}
                 geo_elem['solid'] = translate(geo, xoff=pos[0], yoff=pos[1])
                 geo_elem['follow'] = translate(geo.centroid, xoff=pos[0], yoff=pos[1])
                 self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.qrcode_geometry
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
@@ -592,7 +592,7 @@ class QRCode(FlatCAMTool):
         # face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
         outline = '#0000FFAF'
 
-        offset_geo = list()
+        offset_geo = []
 
         # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
         # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...

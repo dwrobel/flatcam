@@ -95,11 +95,11 @@ class Excellon(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
-        self.tools = dict()
+        self.tools = {}
         # list to store the drills, see above for description
-        self.drills = list()
+        self.drills = []
         # self.slots (list) to store the slots; each is a dictionary
-        self.slots = list()
+        self.slots = []
 
         self.source_file = ''
 
@@ -110,8 +110,8 @@ class Excellon(Geometry):
         self.match_routing_start = None
         self.match_routing_stop = None
 
-        self.num_tools = list()  # List for keeping the tools sorted
-        self.index_per_tool = dict()  # Dictionary to store the indexed points for each tool
+        self.num_tools = []  # List for keeping the tools sorted
+        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -962,8 +962,8 @@ class Excellon(Geometry):
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                self.tools[tool]['solid_geometry'] = list()
-                self.tools[tool]['data'] = dict()
+                self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['data'] = {}
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)

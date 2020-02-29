@@ -176,8 +176,34 @@ class FCTree(QtWidgets.QTreeWidget):
             item.setFont(0, font)
         return item
 
-    def addChild(self, parent, title, column1=None, font=None, font_items=None):
+    def addParentEditable(self, parent, title, color=None, font=None, font_items=None, editable=False):
         item = QtWidgets.QTreeWidgetItem(parent)
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.DontShowIndicator)
+        if editable:
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+        for t in range(len(title)):
+            item.setText(t, title[t])
+
+        if color is not None:
+            # item.setTextColor(0, color) # PyQt4
+            item.setForeground(0, QtGui.QBrush(color))
+
+        if font and font_items:
+            try:
+                for fi in font_items:
+                    item.setFont(fi, font)
+            except TypeError:
+                item.setFont(font_items, font)
+        elif font:
+            item.setFont(0, font)
+        return item
+
+    def addChild(self, parent, title, column1=None, font=None, font_items=None, editable=False):
+        item = QtWidgets.QTreeWidgetItem(parent)
+        if editable:
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
         item.setText(0, str(title[0]))
         if column1 is not None:
             item.setText(1, str(title[1]))
@@ -2108,7 +2134,7 @@ class FCTable(QtWidgets.QTableWidget):
             self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
             self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
 
-        self.rows_not_for_drag_and_drop = list()
+        self.rows_not_for_drag_and_drop = []
         if protected_rows:
             try:
                 for r in protected_rows:
@@ -2116,7 +2142,7 @@ class FCTable(QtWidgets.QTableWidget):
             except TypeError:
                 self.rows_not_for_drag_and_drop = [protected_rows]
 
-        self.rows_to_move = list()
+        self.rows_to_move = []
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -2172,7 +2198,7 @@ class FCTable(QtWidgets.QTableWidget):
     #         # ]
     #         self.rows_to_move[:] = []
     #         for row_index in rows:
-    #             row_items = list()
+    #             row_items = []
     #             for column_index in range(self.columnCount()):
     #                 r_item = self.item(row_index, column_index)
     #                 w_item = self.cellWidget(row_index, column_index)
@@ -2253,7 +2279,7 @@ class FCTable(QtWidgets.QTableWidget):
             for _ in range(len(rows)):
                 self.insertRow(targetRow)
 
-            rowMapping = dict()  # Src row to target row.
+            rowMapping = {}  # Src row to target row.
             for idx, row in enumerate(rows):
                 if row < targetRow:
                     rowMapping[row] = targetRow + idx

@@ -423,8 +423,8 @@ class ToolExtractDrills(FlatCAMTool):
 
         prop_factor = self.factor_entry.get_value() / 100.0
 
-        drills = list()
-        tools = dict()
+        drills = []
+        tools = {}
 
         selection_index = self.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
@@ -469,7 +469,7 @@ class ToolExtractDrills(FlatCAMTool):
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         drills.append({"point": geo_el['follow'], "tool": "1"})
                         if 'solid_geometry' not in tools["1"]:
-                            tools["1"]['solid_geometry'] = list()
+                            tools["1"]['solid_geometry'] = []
                         else:
                             tools["1"]['solid_geometry'].append(geo_el['follow'])
 
@@ -548,7 +548,7 @@ class ToolExtractDrills(FlatCAMTool):
                         drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = list()
+                            tools[tool_in_drills]['solid_geometry'] = []
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 
@@ -633,7 +633,7 @@ class ToolExtractDrills(FlatCAMTool):
                         drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = list()
+                            tools[tool_in_drills]['solid_geometry'] = []
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 

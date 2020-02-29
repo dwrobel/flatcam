@@ -917,7 +917,7 @@ class Geometry(object):
             # graceful abort requested by the user
             raise FlatCAMApp.GracefulException
 
-        geo_iso = list()
+        geo_iso = []
 
         if follow:
             return geometry
@@ -1016,7 +1016,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = list()
+            self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
             if type(geos) is list:
@@ -1031,7 +1031,7 @@ class Geometry(object):
 
         geos_text = getsvgtext(svg_root, object_type, units=units)
         if geos_text is not None:
-            geos_text_f = list()
+            geos_text_f = []
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:
@@ -1100,8 +1100,8 @@ class Geometry(object):
 
         scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
 
-        geos = list()
-        unscaled_geos = list()
+        geos = []
+        unscaled_geos = []
 
         with rasterio.open(filename) as src:
             # if filename.lower().rpartition('.')[-1] == 'bmp':
@@ -1148,7 +1148,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = list()
+            self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
             # self.solid_geometry.append(cascaded_union(geos))
@@ -2694,7 +2694,7 @@ class CNCjob(Geometry):
         # running this method from a Tcl Command
         build_tools_in_use_list = False
         if 'Tools_in_use' not in self.options:
-            self.options['Tools_in_use'] = list()
+            self.options['Tools_in_use'] = []
 
         # if the list is empty (either we just added the key or it was already there but empty) signal to build it
         if not self.options['Tools_in_use']:
@@ -2705,7 +2705,7 @@ class CNCjob(Geometry):
             for to_ol in tools:
                 if to_ol == it[0]:
                     drill_no = 0
-                    sol_geo = list()
+                    sol_geo = []
                     for dr in exobj.drills:
                         if dr['tool'] == it[0]:
                             drill_no += 1
@@ -2725,11 +2725,11 @@ class CNCjob(Geometry):
                     except KeyError:
                         z_off = 0
 
-                    default_data = dict()
+                    default_data = {}
                     for k, v in list(self.options.items()):
                         default_data[k] = deepcopy(v)
 
-                    self.exc_cnc_tools[it[1]] = dict()
+                    self.exc_cnc_tools[it[1]] = {}
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
@@ -2747,7 +2747,7 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
         # Points (Group by tool)
-        points = dict()
+        points = {}
         for drill in exobj.drills:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -2761,7 +2761,7 @@ class CNCjob(Geometry):
 
         # log.debug("Found %d drills." % len(points))
 
-        self.gcode = list()
+        self.gcode = []
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
         self.f_retract = self.app.defaults["excellon_f_retract"]
@@ -2786,7 +2786,7 @@ class CNCjob(Geometry):
             def __init__(self, tool):
                 """Initialize distance array."""
                 locations = create_data_array(tool)
-                self.matrix = dict()
+                self.matrix = {}
 
                 if locations:
                     size = len(locations)
@@ -2813,7 +2813,7 @@ class CNCjob(Geometry):
 
         # Create the data.
         def create_data_array(tool):
-            loc_list = list()
+            loc_list = []
 
             if tool not in points:
                 return None
@@ -3820,7 +3820,7 @@ class CNCjob(Geometry):
                 '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
             )
 
-        temp_solid_geometry = list()
+        temp_solid_geometry = []
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -4725,8 +4725,8 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
         else:
-            text = list()
-            pos = list()
+            text = []
+            pos = []
             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -6156,7 +6156,7 @@ def dict2obj(d):
 #             cells[pIdx].append((startIdx, endIdx))
 #
 #     # then, form polygons by storing vertex indices in (counter-)clockwise order
-#     polys = dict()
+#     polys = {}
 #     for pIdx, lineIndices_ in cells.items():
 #         # get a directed graph which contains both directions and arbitrarily follow one of both
 #         directedGraph = lineIndices_ + [(i2, i1) for (i1, i2) in lineIndices_]
