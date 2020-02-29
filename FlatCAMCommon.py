@@ -1422,9 +1422,16 @@ class ToolsDB2(QtWidgets.QWidget):
         tree_layout = QtWidgets.QVBoxLayout()
         grid_layout.addLayout(tree_layout, 0, 0)
 
-        self.tree_widget = FCTree(columns=2, header_hidden=False)
+        self.tree_widget = FCTree(columns=2, header_hidden=False, protected_column=[0])
         self.tree_widget.setHeaderLabels(["ID", "Tool Name"])
         self.tree_widget.setIndentation(0)
+
+        # set alternating colors
+        # self.tree_widget.setAlternatingRowColors(True)
+        # p = QtGui.QPalette()
+        # p.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(226, 237, 253) )
+        # self.tree_widget.setPalette(p)
+
         self.tree_widget.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         tree_layout.addWidget(self.tree_widget)
 
@@ -1516,16 +1523,21 @@ class ToolsDB2(QtWidgets.QWidget):
         self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
         self.cancel_tool_from_db.clicked.connect(self.on_cancel_tool)
 
-        self.tree_widget.selectionModel().selectionChanged.connect(self.on_list_selection_change)
+        # self.tree_widget.selectionModel().selectionChanged.connect(self.on_list_selection_change)
+        self.tree_widget.currentItemChanged.connect(self.on_list_selection_change)
         self.tree_widget.itemChanged.connect(self.on_list_item_edited)
+
         self.setup_db_ui()
 
-    def on_list_selection_change(self, current):
-        return
-        for idx in current.indexes():
-            print(idx.data())
+    def on_list_selection_change(self, current, previous):
+        # for idx in current.indexes():
+        #     print(idx.data())
+        print(current.text(0))
+        self.table_widget.selectRow(int(current.text(0))-1)
 
-    def on_list_item_edited(self, item, idx):
+    def on_list_item_edited(self, item, column):
+        if column == 0:
+            return
         row = int(item.text(0)) - 1
         self.table_widget.item(row, 1).setText(item.text(1))
 

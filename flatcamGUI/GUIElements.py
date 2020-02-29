@@ -154,7 +154,7 @@ class RadioSet(QtWidgets.QWidget):
 
 class FCTree(QtWidgets.QTreeWidget):
 
-    def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False):
+    def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False, protected_column=None):
         super(FCTree, self).__init__(parent)
 
         self.setColumnCount(columns)
@@ -164,6 +164,20 @@ class FCTree(QtWidgets.QTreeWidget):
 
         if extended_sel:
             self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.protected_column = protected_column
+        self.itemDoubleClicked.connect(self.on_double_click)
+
+    def on_double_click(self, item, column):
+        # from here: https://stackoverflow.com/questions/2801959/making-only-one-column-of-a-qtreewidgetitem-editable
+        tmp_flags = item.flags()
+        if self.is_editable(column):
+            item.setFlags(tmp_flags | QtCore.Qt.ItemIsEditable)
+        elif tmp_flags & QtCore.Qt.ItemIsEditable:
+            item.setFlags(tmp_flags ^ QtCore.Qt.ItemIsEditable)
+
+    def is_editable(self, tested_col):
+        return False if tested_col in self.protected_column else True
 
     def addParent(self, parent, title, expanded=False, color=None, font=None):
         item = QtWidgets.QTreeWidgetItem(parent, [title])
