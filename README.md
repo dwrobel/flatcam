@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.02.2020
+
+- compacted the NCC Tool UI by replacing some Radio buttons with Combo boxes due of too many elements
+
 28.02.2020
 
 - some small changes in preprocessors

@@ -5313,20 +5313,24 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
-            _("Algorithm for non-copper clearing:<BR>"
-              "<B>Standard</B>: Fixed step inwards.<BR>"
-              "<B>Seed-based</B>: Outwards from seed.<BR>"
-              "<B>Line-based</B>: Parallel lines.")
+            _("Algorithm for copper clearing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
         )
 
-        self.ncc_method_radio = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
-        ], orientation='vertical', stretch=False)
+        # self.ncc_method_radio = RadioSet([
+        #     {"label": _("Standard"), "value": "standard"},
+        #     {"label": _("Seed-based"), "value": "seed"},
+        #     {"label": _("Straight lines"), "value": "lines"}
+        # ], orientation='vertical', stretch=False)
+        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
 
         grid0.addWidget(methodlabel, 12, 0)
-        grid0.addWidget(self.ncc_method_radio, 12, 1)
+        grid0.addWidget(self.ncc_method_combo, 12, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
@@ -5394,23 +5398,25 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_rest_cb, 17, 0, 1, 2)
 
         # ## Reference
-        self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
-                                         {"label": _("Area Selection"), "value": "area"},
-                                         {'label': _('Reference Object'), 'value': 'box'}],
-                                        orientation='vertical',
-                                        stretch=None)
-        reference_label = QtWidgets.QLabel('%s:' % _("Reference"))
-        reference_label.setToolTip(
-            _("- 'Itself' -  the non copper clearing extent\n"
-              "is based on the object that is copper cleared.\n "
+        # self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
+        #                                  {"label": _("Area Selection"), "value": "area"},
+        #                                  {'label': _('Reference Object'), 'value': 'box'}],
+        #                                 orientation='vertical',
+        #                                 stretch=None)
+        self.select_combo = FCComboBox()
+        self.select_combo.addItems(
+            [_("Itself"), _("Area Selection"), _("Reference Object")]
+        )
+        select_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        select_label.setToolTip(
+            _("Selection of area to be cleared of copper."
+              "- 'Itself' - the non copper clearing extent is based on the object that is copper cleared.\n "
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
-              "specified by another object.")
+              "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
         )
 
-        grid0.addWidget(reference_label, 18, 0)
-        grid0.addWidget(self.reference_radio, 18, 1)
+        grid0.addWidget(select_label, 18, 0)
+        grid0.addWidget(self.select_combo, 18, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

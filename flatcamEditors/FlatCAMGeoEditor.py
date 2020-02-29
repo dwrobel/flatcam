@@ -487,15 +487,20 @@ class PaintOptionsTool(FlatCAMTool):
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
-            _("Algorithm to paint the polygon:<BR>"
-              "<B>Standard</B>: Fixed step inwards.<BR>"
-              "<B>Seed-based</B>: Outwards from seed.")
+            _("Algorithm to paint the polygons:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
         )
-        self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
-        ], orientation='vertical', stretch=False)
+        # self.paintmethod_combo = RadioSet([
+        #     {"label": _("Standard"), "value": "standard"},
+        #     {"label": _("Seed-based"), "value": "seed"},
+        #     {"label": _("Straight lines"), "value": "lines"}
+        # ], orientation='vertical', stretch=False)
+        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
 
         grid.addWidget(methodlabel, 3, 0)
         grid.addWidget(self.paintmethod_combo, 3, 1)
@@ -564,7 +569,7 @@ class PaintOptionsTool(FlatCAMTool):
         if self.app.defaults["tools_paintmethod"]:
             self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
         else:
-            self.paintmethod_combo.set_value("seed")
+            self.paintmethod_combo.set_value(_("Seed"))
 
         if self.app.defaults["tools_pathconnect"]:
             self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
@@ -578,8 +583,7 @@ class PaintOptionsTool(FlatCAMTool):
 
     def on_paint(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Paint cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Paint cancelled. No shape selected."))
             return
 
         tooldia = self.painttooldia_entry.get_value()
@@ -5037,11 +5041,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     else:
                         poly_buf = Polygon(geo_obj).buffer(-margin)
 
-                    if method == "seed":
+                    if method == _("Seed"):
                         cp = Geometry.clear_polygon2(self, polygon_to_clear=poly_buf, tooldia=tooldia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
-                    elif method == "lines":
+                    elif method == _("Lines"):
                         cp = Geometry.clear_polygon3(self, polygon=poly_buf, tooldia=tooldia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
@@ -5054,12 +5058,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         local_results += list(cp.get_objects())
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit('[ERROR] %s\n%s' %
-                                         (_("Could not do Paint. Try a different combination of"
-                                            " parameters. Or a different method of Paint"),
-                                          str(e)
-                                          )
-                                         )
+                    self.app.inform.emit(
+                        '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
+                                              "Or a different method of Paint"), str(e))
+                    )
                     return
 
                 # add the result to the results list
@@ -5068,8 +5070,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # This is a dirty patch:
         for r in results:
             self.add_shape(DrawToolShape(r))
-        self.app.inform.emit(
-            '[success] %s' % _("Paint done."))
+        self.app.inform.emit('[success] %s' % _("Paint done."))
         self.replot()
 
     def flatten(self, geometry, orient_val=1, reset=True, pathonly=False):
