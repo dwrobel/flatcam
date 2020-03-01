@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 01.03.2020
 
 - updated the CutOut Tool such that while adding manual gaps, the cutting geometry is updated on-the-fly if the gap size or tool diameter parameters are adjusted
+- updated the UI in Geometry Editor
 
 29.02.2020
 

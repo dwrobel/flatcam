@@ -3252,15 +3252,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.title_box.addWidget(self.title_label, stretch=1)
         self.title_box.addWidget(QtWidgets.QLabel(''))
 
-        self.tw = FCTree(extended_sel=True)
+        self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
+        self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
+        self.tw.setIndentation(0)
+        self.tw.header().setStretchLastSection(True)
+        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.tools_box.addWidget(self.tw)
 
         self.geo_font = QtGui.QFont()
         self.geo_font.setBold(True)
 
-        parent = self.tw.invisibleRootItem()
-        self.geo_parent = self.tw.addParent(
-            parent, _('Geometry Elements'), expanded=True, color=QtGui.QColor("#000000"), font=self.geo_font)
+        self.geo_parent = self.tw.invisibleRootItem()
 
         # ## Toolbar events and properties
         self.tools = {
@@ -3494,28 +3496,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         for elem in self.storage.get_objects():
             geo_type = type(elem.geo)
-            title = None
+            el_type = None
             if geo_type is LinearRing:
-                title = _('ID Ring')
+                el_type = _('Ring')
             elif geo_type is LineString:
-                title = _('ID Line')
+                el_type = _('Line')
             elif geo_type is Polygon:
-                title = _('ID Polygon')
+                el_type = _('Polygon')
             elif geo_type is MultiLineString:
-                title = _('ID Multi-Line')
+                el_type = _('Multi-Line')
             elif geo_type is MultiPolygon:
-                title = _('ID Multi-Polygon')
+                el_type = _('Multi-Polygon')
 
-            self.tw.addChild(
+            self.tw.addParentEditable(
                 self.geo_parent,
                 [
-                    '%s:' % title,
-                    str(id(elem))
+                    str(id(elem)),
+                    '%s' % el_type,
+                    _("Geo Elem")
                 ],
-                True,
                 font=self.geo_font,
-                font_items=1
+                font_items=2,
+                # color=QtGui.QColor("#FF0000"),
+                editable=True
             )
+
+        self.tw.resize_sig.emit()
 
     def on_geo_elem_selected(self):
         pass
@@ -3526,7 +3532,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for sel in selected_tree_items:
             for obj_shape in self.storage.get_objects():
                 try:
-                    if id(obj_shape) == int(sel.text(1)):
+                    if id(obj_shape) == int(sel.text(0)):
                         self.selected.append(obj_shape)
                 except ValueError:
                     pass
@@ -3686,9 +3692,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # clear the Tree
         self.tw.clear()
-        parent = self.tw.invisibleRootItem()
-        self.geo_parent = self.tw.addParent(
-            parent, _('Geometry Elements'), expanded=True, color=QtGui.QColor("#000000"), font=self.geo_font)
+        self.geo_parent = self.tw.invisibleRootItem()
 
         # hide the UI
         self.geo_frame.hide()

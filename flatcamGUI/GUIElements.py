@@ -153,6 +153,7 @@ class RadioSet(QtWidgets.QWidget):
 
 
 class FCTree(QtWidgets.QTreeWidget):
+    resize_sig = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False, protected_column=None):
         super(FCTree, self).__init__(parent)
@@ -167,6 +168,8 @@ class FCTree(QtWidgets.QTreeWidget):
 
         self.protected_column = protected_column
         self.itemDoubleClicked.connect(self.on_double_click)
+        self.header().sectionDoubleClicked.connect(self.on_header_double_click)
+        self.resize_sig.connect(self.on_resize)
 
     def on_double_click(self, item, column):
         # from here: https://stackoverflow.com/questions/2801959/making-only-one-column-of-a-qtreewidgetitem-editable
@@ -175,6 +178,13 @@ class FCTree(QtWidgets.QTreeWidget):
             item.setFlags(tmp_flags | QtCore.Qt.ItemIsEditable)
         elif tmp_flags & QtCore.Qt.ItemIsEditable:
             item.setFlags(tmp_flags ^ QtCore.Qt.ItemIsEditable)
+
+    def on_header_double_click(self, column):
+        header = self.header()
+        header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+        width = header.sectionSize(column)
+        header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+        header.resizeSection(column, width)
 
     def is_editable(self, tested_col):
         return False if tested_col in self.protected_column else True
@@ -227,6 +237,20 @@ class FCTree(QtWidgets.QTreeWidget):
                     item.setFont(fi, font)
             except TypeError:
                 item.setFont(font_items, font)
+
+    def resizeEvent(self, event):
+        """ Resize all sections to content and user interactive """
+
+        super(FCTree, self).resizeEvent(event)
+        self.on_resize()
+
+    def on_resize(self):
+        header = self.header()
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+            width = header.sectionSize(column)
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+            header.resizeSection(column, width)
 
 
 class LengthEntry(QtWidgets.QLineEdit):
