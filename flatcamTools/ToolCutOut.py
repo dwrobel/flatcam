@@ -532,8 +532,8 @@ class CutOut(FlatCAMTool):
                         object_geo = cutout_obj.solid_geometry.convex_hull
                     else:
                         object_geo = cutout_obj.solid_geometry
-                except Exception as e:
-                    log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(e))
+                except Exception as err:
+                    log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
             else:
                 object_geo = cutout_obj.solid_geometry
 
@@ -939,6 +939,9 @@ class CutOut(FlatCAMTool):
         self.app.new_object('geometry', outname, geo_init)
 
     def cutting_geo(self, pos):
+        self.cutting_dia = float(self.dia.get_value())
+        self.cutting_gapsize = float(self.gapsize.get_value())
+
         offset = self.cutting_dia / 2 + self.cutting_gapsize / 2
 
         # cutting area definition
@@ -1034,7 +1037,7 @@ class CutOut(FlatCAMTool):
         except TypeError:
             return
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             snap_x, snap_y = self.app.geo_editor.snap(x, y)
         else:
             snap_x, snap_y = x, y
@@ -1064,7 +1067,7 @@ class CutOut(FlatCAMTool):
                 else:
                     radian = math.atan(dx / dy)
                     angle = radian * 180 / math.pi
-            except Exception as e:
+            except Exception:
                 angle = 0
             return angle
 

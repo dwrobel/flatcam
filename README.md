@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+01.03.2020
+
+- updated the CutOut Tool such that while adding manual gaps, the cutting geometry is updated on-the-fly if the gap size or tool diameter parameters are adjusted
+
 29.02.2020
 
 - compacted the NCC Tool UI by replacing some Radio buttons with Combo boxes due of too many elements
