@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
 from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
 
 from numpy import Inf
@@ -56,10 +56,10 @@ class DblSidedTool(FlatCAMTool):
         grid_lay.addWidget(self.m_objects_label, 0, 0, 1, 2)
 
         # ## Gerber Object to mirror
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.set_last = True
 
         self.botlay_label = QtWidgets.QLabel("%s:" % _("GERBER"))
         self.botlay_label.setToolTip('%s.' % _("Gerber to be mirrored"))
@@ -83,10 +83,10 @@ class DblSidedTool(FlatCAMTool):
         grid_lay.addWidget(self.mirror_gerber_button, 2, 1)
 
         # ## Excellon Object to mirror
-        self.exc_object_combo = QtWidgets.QComboBox()
+        self.exc_object_combo = FCComboBox()
         self.exc_object_combo.setModel(self.app.collection)
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_object_combo.setCurrentIndex(1)
+        self.exc_object_combo.set_last = True
 
         self.excobj_label = QtWidgets.QLabel("%s:" % _("EXCELLON"))
         self.excobj_label.setToolTip(_("Excellon Object to be mirrored."))
@@ -110,10 +110,10 @@ class DblSidedTool(FlatCAMTool):
         grid_lay.addWidget(self.mirror_exc_button, 4, 1)
 
         # ## Geometry Object to mirror
-        self.geo_object_combo = QtWidgets.QComboBox()
+        self.geo_object_combo = FCComboBox()
         self.geo_object_combo.setModel(self.app.collection)
         self.geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.geo_object_combo.setCurrentIndex(1)
+        self.geo_object_combo.set_last = True
 
         self.geoobj_label = QtWidgets.QLabel("%s:" % _("GEOMETRY"))
         self.geoobj_label.setToolTip(
@@ -229,10 +229,10 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.box_type_radio, 1, 0, 1, 2)
 
         # Object used as BOX reference
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.set_last = True
 
         self.box_combo.hide()
 

@@ -206,7 +206,7 @@ class ToolCalibration(FlatCAMTool):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        self.object_combo.set_last = True
 
         self.object_label = QtWidgets.QLabel("%s:" % _("Source object selection"))
         self.object_label.setToolTip(
@@ -628,7 +628,7 @@ class ToolCalibration(FlatCAMTool):
         )
         grid_lay.addWidget(step_5, 45, 0, 1, 3)
 
-        self.adj_object_type_combo = QtWidgets.QComboBox()
+        self.adj_object_type_combo = FCComboBox()
         self.adj_object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
         self.adj_object_type_combo.setCurrentIndex(0)
 

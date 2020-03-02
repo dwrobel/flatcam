@@ -73,7 +73,7 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.object_label, 0, 0, 1, 2)
 
         # Object kind
-        self.kindlabel = QtWidgets.QLabel('%s:' % _('Object kind'))
+        self.kindlabel = QtWidgets.QLabel('%s:' % _('Kind'))
         self.kindlabel.setToolTip(
             _("Choice of what kind the object we want to cutout is.<BR>"
               "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
@@ -93,7 +93,7 @@ class CutOut(FlatCAMTool):
             {"label": _("Geometry"), "value": "geo"},
         ])
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -105,10 +105,10 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.type_obj_radio, 2, 1)
 
         # Object to be cutout
-        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
+        self.obj_combo.set_last = True
 
         grid0.addWidget(self.obj_combo, 3, 0, 1, 2)
 
@@ -318,10 +318,10 @@ class CutOut(FlatCAMTool):
         self.layout.addLayout(form_layout_3)
 
         # Manual Geo Object
-        self.man_object_combo = QtWidgets.QComboBox()
+        self.man_object_combo = FCComboBox()
         self.man_object_combo.setModel(self.app.collection)
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.man_object_combo.setCurrentIndex(1)
+        self.man_object_combo.set_last = True
 
         self.man_object_label = QtWidgets.QLabel('%s:' % _("Geometry Object"))
         self.man_object_label.setToolTip(

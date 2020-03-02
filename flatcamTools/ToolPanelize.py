@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
 
-from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
 from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
 import FlatCAMApp
 from copy import deepcopy
@@ -66,7 +66,7 @@ class Panelize(FlatCAMTool):
         self.layout.addLayout(form_layout_0)
 
         # Type of object to be panelized
-        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo = FCComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
         self.type_obj_combo.addItem("Geometry")
@@ -80,10 +80,10 @@ class Panelize(FlatCAMTool):
         form_layout_0.addRow(self.type_object_label, self.type_obj_combo)
 
         # Object to be panelized
-        self.object_combo = QtWidgets.QComboBox()
+        self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        self.object_combo.set_last = True
 
         self.object_combo.setToolTip(
             _("Object to be panelized. This means that it will\n"
@@ -114,15 +114,16 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.reference_radio)
 
         # Type of Box Object to be used as an envelope for panelization
-        self.type_box_combo = QtWidgets.QComboBox()
-        self.type_box_combo.addItem("Gerber")
-        self.type_box_combo.addItem("Excellon")
-        self.type_box_combo.addItem("Geometry")
+        self.type_box_combo = FCComboBox()
+        self.type_box_combo.addItems(["Gerber", "Geometry"])
+        # self.type_box_combo.addItem("Gerber")
+        # self.type_box_combo.addItem("Excellon")
+        # self.type_box_combo.addItem("Geometry")
 
         # we get rid of item1 ("Excellon") as it is not suitable for use as a "box" for panelizing
-        self.type_box_combo.view().setRowHidden(1, True)
+        # self.type_box_combo.view().setRowHidden(1, True)
         self.type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Type"))
         self.type_box_combo_label.setToolTip(
@@ -134,10 +135,10 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.type_box_combo_label, self.type_box_combo)
 
         # Box
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.set_last = True
 
         self.box_combo.setToolTip(
             _("The actual object that is used a container for the\n "

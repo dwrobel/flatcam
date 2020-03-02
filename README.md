@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+02.03.2020
+
+- added property that allow the FCComboBox to update the view with the last item loaded; updated the app to use this property
+
 01.03.2020
 
 - updated the CutOut Tool such that while adding manual gaps, the cutting geometry is updated on-the-fly if the gap size or tool diameter parameters are adjusted
@@ -42,7 +46,6 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an issue in Gerber Editor where the multiprocessing pool was reported as closed and an ValueError exception was raised in a certain scneraio
 - on Set Origin, Move to Origin and Move actions for Gerber and Excellon objects the source file will be also updated (the export functions will export an updated object)
 - in FlatCAMObj.export_gerber() method took into account the possibility of polygons of type 'clear' (the ones found in the Gerber files under the LPC command)
-
 17.02.2020
 
 - updated the Excellon UI to hold data for each tool

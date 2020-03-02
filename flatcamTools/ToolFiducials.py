@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable
+from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
 from shapely.geometry import box as box
@@ -250,10 +250,10 @@ class ToolFiducials(FlatCAMTool):
         grid_lay.addWidget(separator_line_1, 8, 0, 1, 2)
 
         # Copper Gerber object
-        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
+        self.grb_object_combo.set_last = True
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Copper Gerber"))
         self.grbobj_label.setToolTip(
@@ -286,10 +286,10 @@ class ToolFiducials(FlatCAMTool):
         self.sm_object_label.setToolTip(
             _("The Soldermask Gerber object.")
         )
-        self.sm_object_combo = QtWidgets.QComboBox()
+        self.sm_object_combo = FCComboBox()
         self.sm_object_combo.setModel(self.app.collection)
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.setCurrentIndex(1)
+        self.sm_object_combo.set_last = True
 
         grid_lay.addWidget(self.sm_object_label, 13, 0, 1, 2)
         grid_lay.addWidget(self.sm_object_combo, 14, 0, 1, 2)

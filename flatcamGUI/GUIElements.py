@@ -302,7 +302,7 @@ class LengthEntry(QtWidgets.QLineEdit):
             units = raw[-2:]
             units = self.scales[self.output_units][units.upper()]
             value = raw[:-2]
-            return float(eval(value))*  units
+            return float(eval(value)) * units
         except IndexError:
             value = raw
             return float(eval(value))
@@ -334,7 +334,7 @@ class FloatEntry(QtWidgets.QLineEdit):
 
     def mousePressEvent(self, e, Parent=None):
         super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit == True:
+        if self.readyToEdit is True:
             self.selectAll()
             self.readyToEdit = False
 
@@ -1285,6 +1285,8 @@ class FCComboBox(QtWidgets.QComboBox):
         self.view.viewport().installEventFilter(self)
         self.view.setContextMenuPolicy(Qt.CustomContextMenu)
 
+        self._set_last = False
+
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position
         # self = is the combobox object itself
@@ -1305,6 +1307,19 @@ class FCComboBox(QtWidgets.QComboBox):
 
     def set_value(self, val):
         self.setCurrentIndex(self.findText(str(val)))
+
+    @property
+    def set_last(self):
+        return self._set_last
+
+    @set_last.setter
+    def set_last(self, val):
+        self._set_last = val
+        if self._set_last is True:
+            self.model().rowsInserted.connect(self.on_model_changed)
+
+    def on_model_changed(self, first, last):
+        self.setCurrentIndex(last)
 
 
 class FCInputDialog(QtWidgets.QInputDialog):
@@ -1436,7 +1451,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.protect_by_name = protect_by_name if isinstance(protect_by_name, list) else None
 
         # Close all detached tabs if the application is closed explicitly
-        QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs) # @UndefinedVariable
+        QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
 
         # used by the property self.useOldIndex(param)
         self.use_old_index = None
@@ -1916,7 +1931,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if ((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged:
+            if (event.buttons() & QtCore.Qt.LeftButton) and self.dragInitiated and self.can_be_dragged:
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(

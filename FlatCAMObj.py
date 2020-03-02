@@ -733,7 +733,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # set the model for the Area Exception comboboxes
         self.ui.obj_combo.setModel(self.app.collection)
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ui.obj_combo.setCurrentIndex(1)
+        self.ui.obj_combo.set_last = True
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
         self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
@@ -4101,21 +4101,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            offset_item = QtWidgets.QComboBox()
+            offset_item = FCComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
             # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
 
-            type_item = QtWidgets.QComboBox()
+            type_item = FCComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
             # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
 
-            tool_type_item = QtWidgets.QComboBox()
+            tool_type_item = FCComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
                 # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')

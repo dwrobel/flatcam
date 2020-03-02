@@ -101,7 +101,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        # self.object_combo.setCurrentIndex(1)
+        self.object_combo.set_last = True
 
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be cleared of excess copper."))
@@ -563,7 +564,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.set_last = True
         form1.addRow(self.box_combo_label, self.box_combo)
 
         self.box_combo.hide()

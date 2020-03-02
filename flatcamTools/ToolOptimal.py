@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox
+from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
 from FlatCAMObj import FlatCAMGerber
 import FlatCAMApp
 
@@ -63,10 +63,10 @@ class ToolOptimal(FlatCAMTool):
         form_lay.addRow(QtWidgets.QLabel(""))
 
         # ## Gerber Object to mirror
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.set_last = True
 
         self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(

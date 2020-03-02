@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox
 from flatcamParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -69,10 +69,10 @@ class QRCode(FlatCAMTool):
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
 
-        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
+        self.grb_object_combo.set_last = True
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(

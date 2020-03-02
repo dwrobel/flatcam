@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCCheckBox, FCButton
+from flatcamGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
 from shapely.ops import cascaded_union
@@ -66,7 +66,7 @@ class ToolSub(FlatCAMTool):
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
-        self.target_gerber_combo = QtWidgets.QComboBox()
+        self.target_gerber_combo = FCComboBox()
         self.target_gerber_combo.setModel(self.app.collection)
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.target_gerber_combo.setCurrentIndex(1)
@@ -80,10 +80,10 @@ class ToolSub(FlatCAMTool):
         form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
 
         # Substractor Gerber Object
-        self.sub_gerber_combo = QtWidgets.QComboBox()
+        self.sub_gerber_combo = FCComboBox()
         self.sub_gerber_combo.setModel(self.app.collection)
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sub_gerber_combo.setCurrentIndex(1)
+        self.sub_gerber_combo.set_last = True
 
         self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_gerber_label.setToolTip(
@@ -118,7 +118,7 @@ class ToolSub(FlatCAMTool):
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object
-        self.target_geo_combo = QtWidgets.QComboBox()
+        self.target_geo_combo = FCComboBox()
         self.target_geo_combo.setModel(self.app.collection)
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.target_geo_combo.setCurrentIndex(1)
@@ -132,10 +132,10 @@ class ToolSub(FlatCAMTool):
         form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
 
         # Substractor Geometry Object
-        self.sub_geo_combo = QtWidgets.QComboBox()
+        self.sub_geo_combo = FCComboBox()
         self.sub_geo_combo.setModel(self.app.collection)
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.sub_geo_combo.setCurrentIndex(1)
+        self.sub_geo_combo.set_last = True
 
         self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_geo_label.setToolTip(

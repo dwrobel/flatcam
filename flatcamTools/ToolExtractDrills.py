@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 
 from shapely.geometry import Point
 
@@ -52,10 +52,10 @@ class ToolExtractDrills(FlatCAMTool):
         grid_lay.setColumnStretch(1, 0)
 
         # ## Gerber Object
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.set_last = True
 
         self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber from which to extract drill holes"))

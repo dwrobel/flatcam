@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox
 from copy import deepcopy
 
 from FlatCAMPool import *
@@ -69,10 +69,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
 
         # Copper Top object
-        self.copper_t_object = QtWidgets.QComboBox()
+        self.copper_t_object = FCComboBox()
         self.copper_t_object.setModel(self.app.collection)
         self.copper_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_t_object.setCurrentIndex(1)
+        self.copper_t_object.set_last = True
 
         self.copper_t_object_lbl = QtWidgets.QLabel('%s:' % _("Top"))
         self.copper_t_object_lbl.setToolTip(
@@ -86,10 +86,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
 
         # Copper Bottom object
-        self.copper_b_object = QtWidgets.QComboBox()
+        self.copper_b_object = FCComboBox()
         self.copper_b_object.setModel(self.app.collection)
         self.copper_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_b_object.setCurrentIndex(1)
+        self.copper_b_object.set_last = True
 
         self.copper_b_object_lbl = QtWidgets.QLabel('%s:' % _("Bottom"))
         self.copper_b_object_lbl.setToolTip(
@@ -103,10 +103,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
 
         # SolderMask Top object
-        self.sm_t_object = QtWidgets.QComboBox()
+        self.sm_t_object = FCComboBox()
         self.sm_t_object.setModel(self.app.collection)
         self.sm_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_t_object.setCurrentIndex(1)
+        self.sm_t_object.set_last = True
 
         self.sm_t_object_lbl = QtWidgets.QLabel('%s:' % _("SM Top"))
         self.sm_t_object_lbl.setToolTip(
@@ -120,10 +120,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
 
         # SolderMask Bottom object
-        self.sm_b_object = QtWidgets.QComboBox()
+        self.sm_b_object = FCComboBox()
         self.sm_b_object.setModel(self.app.collection)
         self.sm_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_b_object.setCurrentIndex(1)
+        self.sm_b_object.set_last = True
 
         self.sm_b_object_lbl = QtWidgets.QLabel('%s:' % _("SM Bottom"))
         self.sm_b_object_lbl.setToolTip(
@@ -137,10 +137,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
 
         # SilkScreen Top object
-        self.ss_t_object = QtWidgets.QComboBox()
+        self.ss_t_object = FCComboBox()
         self.ss_t_object.setModel(self.app.collection)
         self.ss_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ss_t_object.setCurrentIndex(1)
+        self.ss_t_object.set_last = True
 
         self.ss_t_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Top"))
         self.ss_t_object_lbl.setToolTip(
@@ -154,10 +154,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
 
         # SilkScreen Bottom object
-        self.ss_b_object = QtWidgets.QComboBox()
+        self.ss_b_object = FCComboBox()
         self.ss_b_object.setModel(self.app.collection)
         self.ss_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ss_b_object.setCurrentIndex(1)
+        self.ss_b_object.set_last = True
 
         self.ss_b_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Bottom"))
         self.ss_b_object_lbl.setToolTip(
@@ -171,10 +171,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
 
         # Outline object
-        self.outline_object = QtWidgets.QComboBox()
+        self.outline_object = FCComboBox()
         self.outline_object.setModel(self.app.collection)
         self.outline_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.outline_object.setCurrentIndex(1)
+        self.outline_object.set_last = True
 
         self.outline_object_lbl = QtWidgets.QLabel('%s:' % _("Outline"))
         self.outline_object_lbl.setToolTip(
@@ -197,10 +197,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
 
         # Excellon 1 object
-        self.e1_object = QtWidgets.QComboBox()
+        self.e1_object = FCComboBox()
         self.e1_object.setModel(self.app.collection)
         self.e1_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.e1_object.setCurrentIndex(1)
+        self.e1_object.set_last = True
 
         self.e1_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 1"))
         self.e1_object_lbl.setToolTip(
@@ -215,10 +215,10 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.e1_cb, 10, 2)
 
         # Excellon 2 object
-        self.e2_object = QtWidgets.QComboBox()
+        self.e2_object = FCComboBox()
         self.e2_object.setModel(self.app.collection)
         self.e2_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.e2_object.setCurrentIndex(1)
+        self.e2_object.set_last = True
 
         self.e2_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 2"))
         self.e2_object_lbl.setToolTip(

@@ -65,15 +65,16 @@ class Film(FlatCAMTool):
         grid0.setColumnStretch(1, 1)
 
         # Type of object for which to create the film
-        self.tf_type_obj_combo = QtWidgets.QComboBox()
-        self.tf_type_obj_combo.addItem("Gerber")
-        self.tf_type_obj_combo.addItem("Excellon")
-        self.tf_type_obj_combo.addItem("Geometry")
+        self.tf_type_obj_combo = FCComboBox()
+        self.tf_type_obj_combo.addItems(["Gerber", "Geometry"])
+        # self.tf_type_obj_combo.addItem("Gerber")
+        # self.tf_type_obj_combo.addItem("Excellon")
+        # self.tf_type_obj_combo.addItem("Geometry")
 
         # we get rid of item1 ("Excellon") as it is not suitable for creating film
-        self.tf_type_obj_combo.view().setRowHidden(1, True)
+        # self.tf_type_obj_combo.view().setRowHidden(1, True)
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
@@ -86,10 +87,10 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.tf_type_obj_combo, 0, 1)
 
         # List of objects for which we can create the film
-        self.tf_object_combo = QtWidgets.QComboBox()
+        self.tf_object_combo = FCComboBox()
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_object_combo.setCurrentIndex(1)
+        self.tf_object_combo.set_last = True
 
         self.tf_object_label = QtWidgets.QLabel('%s:' % _("Film Object"))
         self.tf_object_label.setToolTip(
@@ -100,15 +101,17 @@ class Film(FlatCAMTool):
 
         # Type of Box Object to be used as an envelope for film creation
         # Within this we can create negative
-        self.tf_type_box_combo = QtWidgets.QComboBox()
-        self.tf_type_box_combo.addItem("Gerber")
-        self.tf_type_box_combo.addItem("Excellon")
-        self.tf_type_box_combo.addItem("Geometry")
+        self.tf_type_box_combo = FCComboBox()
+        self.tf_type_box_combo.addItems(["Gerber", "Geometry"])
+
+        # self.tf_type_box_combo.addItem("Gerber")
+        # self.tf_type_box_combo.addItem("Excellon")
+        # self.tf_type_box_combo.addItem("Geometry")
 
         # we get rid of item1 ("Excellon") as it is not suitable for box when creating film
-        self.tf_type_box_combo.view().setRowHidden(1, True)
+        # self.tf_type_box_combo.view().setRowHidden(1, True)
         self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
@@ -121,10 +124,10 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.tf_type_box_combo, 2, 1)
 
         # Box
-        self.tf_box_combo = QtWidgets.QComboBox()
+        self.tf_box_combo = FCComboBox()
         self.tf_box_combo.setModel(self.app.collection)
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.setCurrentIndex(1)
+        self.tf_box_combo.set_last = True
 
         self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.tf_box_combo_label.setToolTip(
@@ -366,10 +369,10 @@ class Film(FlatCAMTool):
         self.exc_label.setToolTip(
             _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
-        self.exc_combo = QtWidgets.QComboBox()
+        self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.setCurrentIndex(1)
+        self.exc_combo.set_last = True
         punch_grid.addWidget(self.exc_label, 1, 0)
         punch_grid.addWidget(self.exc_combo, 1, 1)
 

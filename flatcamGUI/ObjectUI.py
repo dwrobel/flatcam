@@ -445,15 +445,17 @@ class GerberObjectUI(ObjectUI):
         # ################################################
         # ##### Type of object to be excepted ############
         # ################################################
-        self.type_obj_combo = QtWidgets.QComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
+        self.type_obj_combo = FCComboBox()
+        self.type_obj_combo.addItems(["Gerber", "Geometry"])
+
+        # self.type_obj_combo.addItem("Gerber")
+        # self.type_obj_combo.addItem("Excellon")
+        # self.type_obj_combo.addItem("Geometry")
 
         # we get rid of item1 ("Excellon") as it is not suitable
-        self.type_obj_combo.view().setRowHidden(1, True)
+        # self.type_obj_combo.view().setRowHidden(1, True)
         self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.resource_loc + "/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.resource_loc + "/geometry16.png"))
+        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.resource_loc + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -468,7 +470,7 @@ class GerberObjectUI(ObjectUI):
         # ################################################
         # ##### The object to be excepted ################
         # ################################################
-        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo = FCComboBox()
 
         self.obj_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.obj_label.setToolTip(_("Object whose area will be removed from isolation geometry."))

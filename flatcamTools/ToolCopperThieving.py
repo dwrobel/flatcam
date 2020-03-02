@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore
 
 import FlatCAMApp
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry
+from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.geometry.base as base
@@ -66,10 +66,10 @@ class ToolCopperThieving(FlatCAMTool):
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
 
-        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
+        self.grb_object_combo.set_last = True
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
@@ -140,7 +140,7 @@ class ToolCopperThieving(FlatCAMTool):
             _("The type of FlatCAM object to be used as copper thieving reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type = FCComboBox()
         self.box_combo_type.addItem(_("Reference Gerber"))
         self.box_combo_type.addItem(_("Reference Excellon"))
         self.box_combo_type.addItem(_("Reference Geometry"))
@@ -152,10 +152,10 @@ class ToolCopperThieving(FlatCAMTool):
         self.box_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.set_last = True
 
         grid_lay.addWidget(self.box_combo_label, 5, 0)
         grid_lay.addWidget(self.box_combo, 5, 1)
@@ -417,10 +417,10 @@ class ToolCopperThieving(FlatCAMTool):
               "the pattern plating mask.")
         )
 
-        self.sm_object_combo = QtWidgets.QComboBox()
+        self.sm_object_combo = FCComboBox()
         self.sm_object_combo.setModel(self.app.collection)
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.setCurrentIndex(1)
+        self.sm_object_combo.set_last = True
 
         grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
         grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)

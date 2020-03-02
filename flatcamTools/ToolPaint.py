@@ -94,10 +94,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         # ################################################
         # ##### The object to be painted #################
         # ################################################
-        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
+        self.obj_combo.set_last = True
 
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be painted."))
@@ -496,7 +496,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type = FCComboBox()
         self.box_combo_type.addItem(_("Reference Gerber"))
         self.box_combo_type.addItem(_("Reference Excellon"))
         self.box_combo_type.addItem(_("Reference Geometry"))
@@ -506,10 +506,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.set_last = True
         form1.addRow(self.box_combo_label, self.box_combo)
 
         self.box_combo.hide()
@@ -1058,7 +1058,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
-                    tool_type_item = QtWidgets.QComboBox()
+                    tool_type_item = FCComboBox()
                     for item in self.tool_type_item_options:
                         tool_type_item.addItem(item)
                         # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')

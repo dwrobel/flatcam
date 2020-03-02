@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet
+from flatcamGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox
 
 from shapely.geometry import box
 
@@ -63,10 +63,10 @@ class ToolInvertGerber(FlatCAMTool):
         grid0.addWidget(QtWidgets.QLabel(''), 0, 0, 1, 2)
 
         # Target Gerber Object
-        self.gerber_combo = QtWidgets.QComboBox()
+        self.gerber_combo = FCComboBox()
         self.gerber_combo.setModel(self.app.collection)
         self.gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_combo.setCurrentIndex(1)
+        self.gerber_combo.set_last = True
 
         self.gerber_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
         self.gerber_label.setToolTip(

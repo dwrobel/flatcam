@@ -61,7 +61,7 @@ class SolderPaste(FlatCAMTool):
         self.obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
+        self.obj_combo.set_last = True
 
         self.object_label = QtWidgets.QLabel("Gerber:   ")
         self.object_label.setToolTip(
@@ -383,7 +383,7 @@ class SolderPaste(FlatCAMTool):
         self.geo_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.geo_obj_combo.setModel(self.app.collection)
         self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.geo_obj_combo.setCurrentIndex(1)
+        self.geo_obj_combo.set_last = True
 
         self.geo_object_label = QtWidgets.QLabel('%s:' % _("Geo Result"))
         self.geo_object_label.setToolTip(
@@ -416,7 +416,7 @@ class SolderPaste(FlatCAMTool):
         self.cnc_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.cnc_obj_combo.setModel(self.app.collection)
         self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
-        self.cnc_obj_combo.setCurrentIndex(1)
+        self.cnc_obj_combo.set_last = True
 
         self.cnc_object_label = QtWidgets.QLabel('%s:' % _("CNC Result"))
         self.cnc_object_label.setToolTip(

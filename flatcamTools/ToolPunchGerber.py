@@ -8,7 +8,7 @@
 from PyQt5 import QtCore, QtWidgets
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 
 from copy import deepcopy
 import logging
@@ -55,10 +55,10 @@ class ToolPunchGerber(FlatCAMTool):
         grid_lay.setColumnStretch(1, 0)
 
         # ## Gerber Object
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.set_last = True
 
         self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
@@ -165,10 +165,10 @@ class ToolPunchGerber(FlatCAMTool):
             _("Remove the geometry of Excellon from the Gerber to create the holes in pads.")
         )
 
-        self.exc_combo = QtWidgets.QComboBox()
+        self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.setCurrentIndex(1)
+        self.exc_combo.set_last = True
 
         grid0.addWidget(self.exc_label, 3, 0, 1, 2)
         grid0.addWidget(self.exc_combo, 4, 0, 1, 2)
