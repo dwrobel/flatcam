@@ -71,15 +71,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ################################################
         # ##### Type of object to be copper cleaned ######
         # ################################################
-        # self.type_obj_combo = FCComboBox()
-        # self.type_obj_combo.addItem("Gerber")
-        # self.type_obj_combo.addItem("Excellon")
-        # self.type_obj_combo.addItem("Geometry")
+        # self.type_obj_radio = FCComboBox()
+        # self.type_obj_radio.addItem("Gerber")
+        # self.type_obj_radio.addItem("Excellon")
+        # self.type_obj_radio.addItem("Geometry")
         #
         # # we get rid of item1 ("Excellon") as it is not suitable
-        # self.type_obj_combo.view().setRowHidden(1, True)
-        # self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        # self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        # self.type_obj_radio.view().setRowHidden(1, True)
+        # self.type_obj_radio.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        # self.type_obj_radio.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -90,10 +90,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.type_obj_combo_label.setMinimumWidth(60)
 
-        self.type_obj_combo = RadioSet([{'label': "Geometry", 'value': 'geometry'},
-                                        {'label': "Gerber", 'value': 'gerber'}])
+        self.type_obj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
+                                        {'label': _("Gerber"), 'value': 'gerber'}])
 
-        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+        form_layout.addRow(self.type_obj_combo_label, self.type_obj_radio)
 
         # ################################################
         # ##### The object to be copper cleaned ##########
@@ -102,7 +102,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         # self.object_combo.setCurrentIndex(1)
-        self.object_combo.set_last = True
+        self.object_combo.is_last = True
 
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be cleared of excess copper."))
@@ -546,31 +546,30 @@ class NonCopperClear(FlatCAMTool, Gerber):
         form1 = QtWidgets.QFormLayout()
         self.grid3.addLayout(form1, 28, 0, 1, 2)
 
-        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.box_combo_type_label.setToolTip(
+        self.reference_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.reference_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = FCComboBox()
-        self.box_combo_type.addItem(_("Reference Gerber"))
-        self.box_combo_type.addItem(_("Reference Excellon"))
-        self.box_combo_type.addItem(_("Reference Geometry"))
-        form1.addRow(self.box_combo_type_label, self.box_combo_type)
+        self.reference_combo_type = FCComboBox()
+        self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.box_combo_label.setToolTip(
+        form1.addRow(self.reference_combo_type_label, self.reference_combo_type)
+
+        self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.reference_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = FCComboBox()
-        self.box_combo.setModel(self.app.collection)
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.set_last = True
-        form1.addRow(self.box_combo_label, self.box_combo)
+        self.reference_combo = FCComboBox()
+        self.reference_combo.setModel(self.app.collection)
+        self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.reference_combo.is_last = True
+        form1.addRow(self.reference_combo_label, self.reference_combo)
 
-        self.box_combo.hide()
-        self.box_combo_label.hide()
-        self.box_combo_type.hide()
-        self.box_combo_type_label.hide()
+        self.reference_combo.hide()
+        self.reference_combo_label.hide()
+        self.reference_combo_type.hide()
+        self.reference_combo_type_label.hide()
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -706,13 +705,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.op_radio.activated_custom.connect(self.on_operation_change)
 
-        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
-        self.select_combo.group_toggle_fn = self.on_toggle_reference
+        self.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
+        self.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
 
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
-        self.type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+        self.type_obj_radio.activated_custom.connect(self.on_type_obj_index_changed)
 
         self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
 
@@ -722,6 +721,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         obj_type = 0 if val == 'gerber' else 2
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            "gerber": "Gerber", "geometry": "Geometry"
+        }[self.type_obj_radio.get_value()]
 
     def on_operation_change(self, val):
         if val == 'iso':
@@ -910,6 +912,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def run(self, toggle=True):
         self.app.report_usage("ToolNonCopperClear()")
+        log.debug("ToolNCC().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -948,7 +951,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.tools_frame.show()
 
-        self.type_obj_combo.set_value('gerber')
+        self.type_obj_radio.set_value('gerber')
+
+        # run those once so the obj_type attribute is updated for the FCComboboxes
+        # so the last loaded object is displayed
+        self.on_type_obj_index_changed(val="gerber")
+        self.on_reference_combo_changed()
 
         self.op_radio.set_value(self.app.defaults["tools_nccoperation"])
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
@@ -1254,22 +1262,25 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if self.tool_type_radio.get_value() == 'C1':
             self.old_tool_dia = self.addtool_entry.get_value()
 
-    def on_combo_box_type(self):
-        obj_type = self.box_combo_type.currentIndex()
-        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(0)
+    def on_reference_combo_changed(self):
+        obj_type = self.reference_combo_type.currentIndex()
+        self.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.reference_combo.setCurrentIndex(0)
+        self.reference_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.reference_combo_type.get_value()]
 
     def on_toggle_reference(self):
         if self.select_combo.get_value() == _("Itself") or self.select_combo.get_value() == _("Area Selection"):
-            self.box_combo.hide()
-            self.box_combo_label.hide()
-            self.box_combo_type.hide()
-            self.box_combo_type_label.hide()
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_combo_type.hide()
+            self.reference_combo_type_label.hide()
         else:
-            self.box_combo.show()
-            self.box_combo_label.show()
-            self.box_combo_type.show()
-            self.box_combo_type_label.show()
+            self.reference_combo.show()
+            self.reference_combo_label.show()
+            self.reference_combo_type.show()
+            self.reference_combo_type_label.show()
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -1567,7 +1578,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                                     "use a number."))
                         continue
 
-                if self.tools_table.cellWidget(x.row(), 4).currentText() == 'iso_op':
+                if self.op_radio.get_value() == _("Isolation"):
                     self.iso_dia_list.append(self.tooldia)
                 else:
                     self.ncc_dia_list.append(self.tooldia)
@@ -1606,7 +1617,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
         elif self.select_method == 'box':
-            self.bound_obj_name = self.box_combo.currentText()
+            self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)

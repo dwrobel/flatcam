@@ -58,7 +58,8 @@ class ToolPunchGerber(FlatCAMTool):
         self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.set_last = True
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber into which to punch holes"))
@@ -168,7 +169,8 @@ class ToolPunchGerber(FlatCAMTool):
         self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.set_last = True
+        self.exc_combo.is_last = True
+        self.exc_combo.obj_type = "Excellon"
 
         grid0.addWidget(self.exc_label, 3, 0, 1, 2)
         grid0.addWidget(self.exc_combo, 4, 0, 1, 2)

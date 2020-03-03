@@ -1286,6 +1286,7 @@ class FCComboBox(QtWidgets.QComboBox):
         self.view.setContextMenuPolicy(Qt.CustomContextMenu)
 
         self._set_last = False
+        self._obj_type = None
 
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position
@@ -1309,17 +1310,27 @@ class FCComboBox(QtWidgets.QComboBox):
         self.setCurrentIndex(self.findText(str(val)))
 
     @property
-    def set_last(self):
+    def is_last(self):
         return self._set_last
 
-    @set_last.setter
-    def set_last(self, val):
+    @is_last.setter
+    def is_last(self, val):
         self._set_last = val
         if self._set_last is True:
             self.model().rowsInserted.connect(self.on_model_changed)
+        self.setCurrentIndex(1)
 
-    def on_model_changed(self, first, last):
-        self.setCurrentIndex(last)
+    @property
+    def obj_type(self):
+        return self._obj_type
+
+    @obj_type.setter
+    def obj_type(self, val):
+        self._obj_type = val
+
+    def on_model_changed(self, parent, first, last):
+        if self.model().data(parent, QtCore.Qt.DisplayRole) == self.obj_type:
+            self.setCurrentIndex(first)
 
 
 class FCInputDialog(QtWidgets.QInputDialog):

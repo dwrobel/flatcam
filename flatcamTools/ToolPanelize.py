@@ -83,7 +83,7 @@ class Panelize(FlatCAMTool):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.set_last = True
+        self.object_combo.is_last = True
 
         self.object_combo.setToolTip(
             _("Object to be panelized. This means that it will\n"
@@ -115,10 +115,7 @@ class Panelize(FlatCAMTool):
 
         # Type of Box Object to be used as an envelope for panelization
         self.type_box_combo = FCComboBox()
-        self.type_box_combo.addItems(["Gerber", "Geometry"])
-        # self.type_box_combo.addItem("Gerber")
-        # self.type_box_combo.addItem("Excellon")
-        # self.type_box_combo.addItem("Geometry")
+        self.type_box_combo.addItems([_("Gerber"), _("Geometry")])
 
         # we get rid of item1 ("Excellon") as it is not suitable for use as a "box" for panelizing
         # self.type_box_combo.view().setRowHidden(1, True)
@@ -138,7 +135,7 @@ class Panelize(FlatCAMTool):
         self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.set_last = True
+        self.box_combo.is_last = True
 
         self.box_combo.setToolTip(
             _("The actual object that is used a container for the\n "
@@ -364,10 +361,18 @@ class Panelize(FlatCAMTool):
             self.app.defaults["tools_panelize_panel_type"] else 'gerber'
         self.panel_type_radio.set_value(panel_type)
 
+        # run once the following so the obj_type attribute is updated in the FCComboBoxes
+        # such that the last loaded object is populated in the combo boxes
+        self.on_type_obj_index_changed()
+        self.on_type_box_index_changed()
+
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.type_obj_combo.get_value()]
 
         # hide the panel type for Excellons, the panel can be only of type Geometry
         if self.type_obj_combo.currentText() != 'Excellon':
@@ -382,6 +387,9 @@ class Panelize(FlatCAMTool):
         obj_type = self.type_box_combo.currentIndex()
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
+        self.box_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.type_box_combo.get_value()]
 
     def on_reference_radio_changed(self, current_val):
         if current_val == 'object':

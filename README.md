@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.03.2020
+
+- updated all the FlatCAM Tools and the Gerber UI FCComboBoxes to update the box value with the latest object loaded in the App
+- some fixes in the NCC Tool
+- modified some strings
+
 02.03.2020
 
 - added property that allow the FCComboBox to update the view with the last item loaded; updated the app to use this property

@@ -69,7 +69,8 @@ class ToolCopperThieving(FlatCAMTool):
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.set_last = True
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = 'Gerber'
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
@@ -135,35 +136,36 @@ class ToolCopperThieving(FlatCAMTool):
         grid_lay.addWidget(self.reference_label, 3, 0)
         grid_lay.addWidget(self.reference_radio, 3, 1)
 
-        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.box_combo_type_label.setToolTip(
+        self.ref_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.ref_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as copper thieving reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = FCComboBox()
-        self.box_combo_type.addItem(_("Reference Gerber"))
-        self.box_combo_type.addItem(_("Reference Excellon"))
-        self.box_combo_type.addItem(_("Reference Geometry"))
+        self.ref_combo_type = FCComboBox()
+        self.ref_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        grid_lay.addWidget(self.box_combo_type_label, 4, 0)
-        grid_lay.addWidget(self.box_combo_type, 4, 1)
+        grid_lay.addWidget(self.ref_combo_type_label, 4, 0)
+        grid_lay.addWidget(self.ref_combo_type, 4, 1)
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.box_combo_label.setToolTip(
+        self.ref_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.ref_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = FCComboBox()
-        self.box_combo.setModel(self.app.collection)
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.set_last = True
+        self.ref_combo = FCComboBox()
+        self.ref_combo.setModel(self.app.collection)
+        self.ref_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ref_combo.is_last = True
+        self.ref_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.ref_combo_type.get_value()]
 
-        grid_lay.addWidget(self.box_combo_label, 5, 0)
-        grid_lay.addWidget(self.box_combo, 5, 1)
+        grid_lay.addWidget(self.ref_combo_label, 5, 0)
+        grid_lay.addWidget(self.ref_combo, 5, 1)
 
-        self.box_combo.hide()
-        self.box_combo_label.hide()
-        self.box_combo_type.hide()
-        self.box_combo_type_label.hide()
+        self.ref_combo.hide()
+        self.ref_combo_label.hide()
+        self.ref_combo_type.hide()
+        self.ref_combo_type_label.hide()
 
         # Bounding Box Type #
         self.bbox_type_radio = RadioSet([
@@ -420,7 +422,8 @@ class ToolCopperThieving(FlatCAMTool):
         self.sm_object_combo = FCComboBox()
         self.sm_object_combo.setModel(self.app.collection)
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.set_last = True
+        self.sm_object_combo.is_last = True
+        self.sm_object_combo.obj_type = 'Gerber'
 
         grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
         grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)
@@ -526,7 +529,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_thickness = None
 
         # SIGNALS
-        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
@@ -594,22 +597,25 @@ class ToolCopperThieving(FlatCAMTool):
         self.robber_line = None
         self.new_solid_geometry = None
 
-    def on_combo_box_type(self):
-        obj_type = self.box_combo_type.currentIndex()
-        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(0)
+    def on_ref_combo_type_change(self):
+        obj_type = self.ref_combo_type.currentIndex()
+        self.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ref_combo.setCurrentIndex(0)
+        self.ref_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.ref_combo_type.get_value()]
 
     def on_toggle_reference(self):
         if self.reference_radio.get_value() == "itself" or self.reference_radio.get_value() == "area":
-            self.box_combo.hide()
-            self.box_combo_label.hide()
-            self.box_combo_type.hide()
-            self.box_combo_type_label.hide()
+            self.ref_combo.hide()
+            self.ref_combo_label.hide()
+            self.ref_combo_type.hide()
+            self.ref_combo_type_label.hide()
         else:
-            self.box_combo.show()
-            self.box_combo_label.show()
-            self.box_combo_type.show()
-            self.box_combo_type_label.show()
+            self.ref_combo.show()
+            self.ref_combo_label.show()
+            self.ref_combo_type.show()
+            self.ref_combo_type_label.show()
 
         if self.reference_radio.get_value() == "itself":
             self.bbox_type_label.show()
@@ -778,7 +784,7 @@ class ToolCopperThieving(FlatCAMTool):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
 
         elif reference_method == 'box':
-            bound_obj_name = self.box_combo.currentText()
+            bound_obj_name = self.ref_combo.currentText()
 
             # Get reference object.
             try:

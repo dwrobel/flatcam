@@ -446,11 +446,7 @@ class GerberObjectUI(ObjectUI):
         # ##### Type of object to be excepted ############
         # ################################################
         self.type_obj_combo = FCComboBox()
-        self.type_obj_combo.addItems(["Gerber", "Geometry"])
-
-        # self.type_obj_combo.addItem("Gerber")
-        # self.type_obj_combo.addItem("Excellon")
-        # self.type_obj_combo.addItem("Geometry")
+        self.type_obj_combo.addItems([_("Gerber"), _("Geometry")])
 
         # we get rid of item1 ("Excellon") as it is not suitable
         # self.type_obj_combo.view().setRowHidden(1, True)

@@ -195,7 +195,6 @@ class ToolCalibration(FlatCAMTool):
         self.obj_type_combo = FCComboBox()
         self.obj_type_combo.addItem(_("Gerber"))
         self.obj_type_combo.addItem(_("Excellon"))
-        self.obj_type_combo.setCurrentIndex(1)
 
         self.obj_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.obj_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
@@ -206,7 +205,7 @@ class ToolCalibration(FlatCAMTool):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.object_combo.set_last = True
+        self.object_combo.is_last = True
 
         self.object_label = QtWidgets.QLabel("%s:" % _("Source object selection"))
         self.object_label.setToolTip(
@@ -630,16 +629,13 @@ class ToolCalibration(FlatCAMTool):
 
         self.adj_object_type_combo = FCComboBox()
         self.adj_object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
-        self.adj_object_type_combo.setCurrentIndex(0)
 
         self.adj_object_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.adj_object_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
-        self.adj_object_type_label.setToolTip(
-            _("Type of the FlatCAM Object to be adjusted.")
-        )
+        self.adj_object_type_label.setToolTip(_("Type of the FlatCAM Object to be adjusted."))
 
         grid_lay.addWidget(self.adj_object_type_label, 46, 0, 1, 3)
         grid_lay.addWidget(self.adj_object_type_combo, 47, 0, 1, 3)
@@ -647,7 +643,10 @@ class ToolCalibration(FlatCAMTool):
         self.adj_object_combo = FCComboBox()
         self.adj_object_combo.setModel(self.app.collection)
         self.adj_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.adj_object_combo.setCurrentIndex(0)
+        self.adj_object_combo.is_last = True
+        self.adj_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.adj_object_type_combo.get_value()]
 
         self.adj_object_label = QtWidgets.QLabel("%s:" % _("Adjusted object selection"))
         self.adj_object_label.setToolTip(
@@ -787,6 +786,14 @@ class ToolCalibration(FlatCAMTool):
         self.skewx_entry.set_value(0.0)
         self.skewy_entry.set_value(0.0)
 
+        # default object selection is Excellon = index_1
+        self.obj_type_combo.setCurrentIndex(1)
+        self.on_obj_type_combo()
+
+        self.adj_object_type_combo.setCurrentIndex(0)
+        self.on_adj_obj_type_combo()
+        # self.adj_object_combo.setCurrentIndex(0)
+
         # calibrated object
         self.cal_object = None
 
@@ -795,12 +802,18 @@ class ToolCalibration(FlatCAMTool):
     def on_obj_type_combo(self):
         obj_type = self.obj_type_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(0)
+        # self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon"
+        }[self.obj_type_combo.get_value()]
 
     def on_adj_obj_type_combo(self):
         obj_type = self.adj_object_type_combo.currentIndex()
         self.adj_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.adj_object_combo.setCurrentIndex(0)
+        # self.adj_object_combo.setCurrentIndex(0)
+        self.adj_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.adj_object_type_combo.get_value()]
 
     def on_cal_source_radio(self, val):
         if val == 'object':

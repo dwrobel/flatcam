@@ -80,7 +80,7 @@ class AlignObjects(FlatCAMTool):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.set_last = True
+        self.object_combo.is_last = True
 
         self.object_combo.setToolTip(
             _("Object to be aligned.")
@@ -116,7 +116,7 @@ class AlignObjects(FlatCAMTool):
         self.aligner_object_combo = FCComboBox()
         self.aligner_object_combo.setModel(self.app.collection)
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.aligner_object_combo.set_last = True
+        self.aligner_object_combo.is_last = True
 
         self.aligner_object_combo.setToolTip(
             _("Object to be aligned to. Aligner.")
@@ -270,11 +270,13 @@ class AlignObjects(FlatCAMTool):
         obj_type = {'grb': 0, 'exc': 1}[val]
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
     def on_type_aligner_changed(self, val):
         obj_type = {'grb': 0, 'exc': 1}[val]
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.aligner_object_combo.setCurrentIndex(0)
+        self.aligner_object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
     def on_align(self):
         self.app.delete_selection_shape()

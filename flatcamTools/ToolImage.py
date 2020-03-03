@@ -46,8 +46,7 @@ class ToolImage(FlatCAMTool):
 
         # Type of object to create for the image
         self.tf_type_obj_combo = FCComboBox()
-        self.tf_type_obj_combo.addItem("Gerber")
-        self.tf_type_obj_combo.addItem("Geometry")
+        self.tf_type_obj_combo.addItems([_("Gerber"), _("Geometry")])
 
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
@@ -238,7 +237,7 @@ class ToolImage(FlatCAMTool):
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
 
         filename = str(filename)
-        type_obj = self.tf_type_obj_combo.get_value().lower()
+        type_obj = self.tf_type_obj_combo.get_value()
         dpi = self.dpi_entry.get_value()
         mode = self.image_type.get_value()
         mask = [self.mask_bw_entry.get_value(), self.mask_r_entry.get_value(), self.mask_g_entry.get_value(),
@@ -250,7 +249,7 @@ class ToolImage(FlatCAMTool):
             self.app.worker_task.emit({'fcn': self.import_image,
                                        'params': [filename, type_obj, dpi, mode, mask]})
 
-    def import_image(self, filename, o_type='gerber', dpi=96, mode='black', mask=None, outname=None):
+    def import_image(self, filename, o_type=_("Gerber"), dpi=96, mode='black', mask=None, outname=None):
         """
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the SVG file.
@@ -269,10 +268,10 @@ class ToolImage(FlatCAMTool):
         if mask is None:
             mask = [250, 250, 250, 250]
 
-        if o_type is None or o_type == "geometry":
+        if o_type is None or o_type == _("Geometry"):
             obj_type = "geometry"
-        elif o_type == "gerber":
-            obj_type = o_type
+        elif o_type == _("Gerber"):
+            obj_type = "gerber"
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Not supported type is picked as parameter. "

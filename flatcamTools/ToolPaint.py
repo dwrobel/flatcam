@@ -97,7 +97,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.set_last = True
+        self.obj_combo.is_last = True
 
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be painted."))
@@ -491,31 +491,30 @@ class ToolPaint(FlatCAMTool, Gerber):
         form1 = QtWidgets.QFormLayout()
         grid4.addLayout(form1, 20, 0, 1, 2)
 
-        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.box_combo_type_label.setToolTip(
+        self.reference_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.reference_type_label.setToolTip(
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = FCComboBox()
-        self.box_combo_type.addItem(_("Reference Gerber"))
-        self.box_combo_type.addItem(_("Reference Excellon"))
-        self.box_combo_type.addItem(_("Reference Geometry"))
-        form1.addRow(self.box_combo_type_label, self.box_combo_type)
+        self.reference_type_combo = FCComboBox()
+        self.reference_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.box_combo_label.setToolTip(
+        form1.addRow(self.reference_type_label, self.reference_type_combo)
+
+        self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.reference_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = FCComboBox()
-        self.box_combo.setModel(self.app.collection)
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.set_last = True
-        form1.addRow(self.box_combo_label, self.box_combo)
+        self.reference_combo = FCComboBox()
+        self.reference_combo.setModel(self.app.collection)
+        self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.reference_combo.is_last = True
+        form1.addRow(self.reference_combo_label, self.reference_combo)
 
-        self.box_combo.hide()
-        self.box_combo_label.hide()
-        self.box_combo_type.hide()
-        self.box_combo_type_label.hide()
+        self.reference_combo.hide()
+        self.reference_combo_label.hide()
+        self.reference_type_combo.hide()
+        self.reference_type_label.hide()
 
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
@@ -633,7 +632,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.order_radio.activated_custom[str].connect(self.on_order_changed)
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
-        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.reference_type_combo.currentIndexChanged.connect(self.on_reference_combo_changed)
         self.type_obj_combo.activated_custom.connect(self.on_type_obj_changed)
 
         self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
@@ -660,6 +659,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         obj_type = 0 if val == 'gerber' else 2
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
+        self.obj_combo.obj_type = {"gerber": "Gerber", "geometry": "Geometry"}[val]
 
         idx = self.paintmethod_combo.findText(_("Laser_lines"))
         if self.type_obj_combo.get_value().lower() == 'gerber':
@@ -668,6 +668,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.paintmethod_combo.model().item(idx).setEnabled(False)
             if self.paintmethod_combo.get_value() == _("Laser_lines"):
                 self.paintmethod_combo.set_value(_("Lines"))
+
+    def on_reference_combo_changed(self):
+        obj_type = self.reference_type_combo.currentIndex()
+        self.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.reference_combo.setCurrentIndex(0)
+        self.reference_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.reference_type_combo.get_value()]
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -888,15 +896,15 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def on_selection(self):
         if self.selectmethod_combo.get_value() == _("Reference Object"):
-            self.box_combo.show()
-            self.box_combo_label.show()
-            self.box_combo_type.show()
-            self.box_combo_type_label.show()
+            self.reference_combo.show()
+            self.reference_combo_label.show()
+            self.reference_type_combo.show()
+            self.reference_type_label.show()
         else:
-            self.box_combo.hide()
-            self.box_combo_label.hide()
-            self.box_combo_type.hide()
-            self.box_combo_type_label.hide()
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_type_combo.hide()
+            self.reference_type_label.hide()
 
         if self.selectmethod_combo.get_value() == _("Polygon Selection"):
             # disable rest-machining for single polygon painting
@@ -996,6 +1004,11 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # make the default object type, "Geometry"
         self.type_obj_combo.set_value("geometry")
+
+        # run those once so the obj_type attribute is updated in the FCComboBoxes
+        # to make sure that the last loaded object is displayed in the combobox
+        self.on_type_obj_changed(val="geometry")
+        self.on_reference_combo_changed()
 
         try:
             diameters = [float(self.app.defaults["tools_painttooldia"])]
@@ -1102,11 +1115,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_table.setMaximumHeight(self.tools_table.getHeight())
 
         self.ui_connect()
-
-    def on_combo_box_type(self):
-        obj_type = self.box_combo_type.currentIndex()
-        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(0)
 
     def on_tool_add(self, dia=None, muted=None):
         self.blockSignals(True)
@@ -1411,7 +1419,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
         elif self.select_method == _("Reference Object"):
-            self.bound_obj_name = self.box_combo.currentText()
+            self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)

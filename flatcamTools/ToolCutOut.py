@@ -108,7 +108,7 @@ class CutOut(FlatCAMTool):
         self.obj_combo = FCComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.set_last = True
+        self.obj_combo.is_last = True
 
         grid0.addWidget(self.obj_combo, 3, 0, 1, 2)
 
@@ -321,7 +321,8 @@ class CutOut(FlatCAMTool):
         self.man_object_combo = FCComboBox()
         self.man_object_combo.setModel(self.app.collection)
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.man_object_combo.set_last = True
+        self.man_object_combo.is_last = True
+        self.man_object_combo.obj_type = "Geometry"
 
         self.man_object_label = QtWidgets.QLabel('%s:' % _("Geometry Object"))
         self.man_object_label.setToolTip(
@@ -416,6 +417,7 @@ class CutOut(FlatCAMTool):
         obj_type = {'grb': 0, 'geo': 2}[val]
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
+        self.obj_combo.obj_type = {"grb": "Gerber", "geo": "Geometry"}[val]
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCutOut()")

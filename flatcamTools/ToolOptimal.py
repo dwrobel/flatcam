@@ -66,7 +66,8 @@ class ToolOptimal(FlatCAMTool):
         self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.set_last = True
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(

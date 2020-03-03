@@ -72,9 +72,10 @@ class QRCode(FlatCAMTool):
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.set_last = True
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Object"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )

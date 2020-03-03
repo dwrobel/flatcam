@@ -253,7 +253,8 @@ class ToolFiducials(FlatCAMTool):
         self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.set_last = True
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = "Gerber"
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Copper Gerber"))
         self.grbobj_label.setToolTip(
@@ -289,7 +290,8 @@ class ToolFiducials(FlatCAMTool):
         self.sm_object_combo = FCComboBox()
         self.sm_object_combo.setModel(self.app.collection)
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.set_last = True
+        self.sm_object_combo.is_last = True
+        self.sm_object_combo.obj_type = "Gerber"
 
         grid_lay.addWidget(self.sm_object_label, 13, 0, 1, 2)
         grid_lay.addWidget(self.sm_object_combo, 14, 0, 1, 2)

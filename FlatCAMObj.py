@@ -733,7 +733,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # set the model for the Area Exception comboboxes
         self.ui.obj_combo.setModel(self.app.collection)
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ui.obj_combo.set_last = True
+        self.ui.obj_combo.is_last = True
+        self.ui.obj_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.ui.type_obj_combo.get_value()]
+        self.on_type_obj_index_changed()
+
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
         self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
@@ -813,10 +818,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         tool_diameter = tdia + (2 * cutz * math.tan(math.radians(half_tip_angle)))
         self.ui.iso_tool_dia_entry.set_value(tool_diameter)
 
-    def on_type_obj_index_changed(self, index):
-        obj_type = self.ui.type_obj_combo.currentIndex()
+    def on_type_obj_index_changed(self):
+        val = self.ui.type_obj_combo.get_value()
+        obj_type = {"Gerber": 0, "Geometry": 2}[val]
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(0)
+        self.ui.obj_combo.obj_type = {_("Gerber"): "Gerber", _("Geometry"): "Geometry"}[val]
 
     def on_tool_type_change(self, state):
         if state == 'circular':

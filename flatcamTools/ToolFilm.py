@@ -66,10 +66,7 @@ class Film(FlatCAMTool):
 
         # Type of object for which to create the film
         self.tf_type_obj_combo = FCComboBox()
-        self.tf_type_obj_combo.addItems(["Gerber", "Geometry"])
-        # self.tf_type_obj_combo.addItem("Gerber")
-        # self.tf_type_obj_combo.addItem("Excellon")
-        # self.tf_type_obj_combo.addItem("Geometry")
+        self.tf_type_obj_combo.addItems([_("Gerber"), _("Geometry")])
 
         # we get rid of item1 ("Excellon") as it is not suitable for creating film
         # self.tf_type_obj_combo.view().setRowHidden(1, True)
@@ -90,7 +87,7 @@ class Film(FlatCAMTool):
         self.tf_object_combo = FCComboBox()
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_object_combo.set_last = True
+        self.tf_object_combo.is_last = True
 
         self.tf_object_label = QtWidgets.QLabel('%s:' % _("Film Object"))
         self.tf_object_label.setToolTip(
@@ -102,7 +99,7 @@ class Film(FlatCAMTool):
         # Type of Box Object to be used as an envelope for film creation
         # Within this we can create negative
         self.tf_type_box_combo = FCComboBox()
-        self.tf_type_box_combo.addItems(["Gerber", "Geometry"])
+        self.tf_type_box_combo.addItems([_("Gerber"), _("Geometry")])
 
         # self.tf_type_box_combo.addItem("Gerber")
         # self.tf_type_box_combo.addItem("Excellon")
@@ -127,7 +124,7 @@ class Film(FlatCAMTool):
         self.tf_box_combo = FCComboBox()
         self.tf_box_combo.setModel(self.app.collection)
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.set_last = True
+        self.tf_box_combo.is_last = True
 
         self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.tf_box_combo_label.setToolTip(
@@ -372,7 +369,9 @@ class Film(FlatCAMTool):
         self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.set_last = True
+        self.exc_combo.is_last = True
+        self.exc_combo.obj_type = "Excellon"
+
         punch_grid.addWidget(self.exc_label, 1, 0)
         punch_grid.addWidget(self.exc_combo, 1, 1)
 
@@ -542,15 +541,21 @@ class Film(FlatCAMTool):
         self.file_type_radio.activated_custom.connect(self.on_file_type)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self, index):
+    def on_type_obj_index_changed(self):
         obj_type = self.tf_type_obj_combo.currentIndex()
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(0)
+        self.tf_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.tf_type_obj_combo.get_value()]
 
-    def on_type_box_index_changed(self, index):
+    def on_type_box_index_changed(self):
         obj_type = self.tf_type_box_combo.currentIndex()
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_box_combo.setCurrentIndex(0)
+        self.tf_box_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.tf_type_obj_combo.get_value()]
 
     def run(self, toggle=True):
         self.app.report_usage("ToolFilm()")
@@ -612,6 +617,10 @@ class Film(FlatCAMTool):
         self.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
         self.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
         self.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
+
+        # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+        self.on_type_obj_index_changed()
+        self.on_type_box_index_changed()
 
     def on_film_type(self, val):
         type_of_film = val

@@ -69,7 +69,9 @@ class ToolSub(FlatCAMTool):
         self.target_gerber_combo = FCComboBox()
         self.target_gerber_combo.setModel(self.app.collection)
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.target_gerber_combo.setCurrentIndex(1)
+        # self.target_gerber_combo.setCurrentIndex(1)
+        self.target_gerber_combo.is_last = True
+        self.target_gerber_combo.obj_type = "Gerber"
 
         self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
@@ -83,7 +85,8 @@ class ToolSub(FlatCAMTool):
         self.sub_gerber_combo = FCComboBox()
         self.sub_gerber_combo.setModel(self.app.collection)
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sub_gerber_combo.set_last = True
+        self.sub_gerber_combo.is_last = True
+        self.sub_gerber_combo.obj_type = "Gerber"
 
         self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_gerber_label.setToolTip(
@@ -121,7 +124,9 @@ class ToolSub(FlatCAMTool):
         self.target_geo_combo = FCComboBox()
         self.target_geo_combo.setModel(self.app.collection)
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.target_geo_combo.setCurrentIndex(1)
+        # self.target_geo_combo.setCurrentIndex(1)
+        self.target_geo_combo.is_last = True
+        self.target_geo_combo.obj_type = "Geometry"
 
         self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
@@ -135,7 +140,8 @@ class ToolSub(FlatCAMTool):
         self.sub_geo_combo = FCComboBox()
         self.sub_geo_combo.setModel(self.app.collection)
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.sub_geo_combo.set_last = True
+        self.sub_geo_combo.is_last = True
+        self.sub_geo_combo.obj_type = "Geometry"
 
         self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_geo_label.setToolTip(

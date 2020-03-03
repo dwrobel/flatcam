@@ -59,7 +59,8 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.set_last = True
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.botlay_label = QtWidgets.QLabel("%s:" % _("GERBER"))
         self.botlay_label.setToolTip('%s.' % _("Gerber to be mirrored"))
@@ -86,7 +87,8 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo = FCComboBox()
         self.exc_object_combo.setModel(self.app.collection)
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_object_combo.set_last = True
+        self.exc_object_combo.is_last = True
+        self.exc_object_combo.obj_type = "Excellon"
 
         self.excobj_label = QtWidgets.QLabel("%s:" % _("EXCELLON"))
         self.excobj_label.setToolTip(_("Excellon Object to be mirrored."))
@@ -113,7 +115,8 @@ class DblSidedTool(FlatCAMTool):
         self.geo_object_combo = FCComboBox()
         self.geo_object_combo.setModel(self.app.collection)
         self.geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.geo_object_combo.set_last = True
+        self.geo_object_combo.is_last = True
+        self.geo_object_combo.obj_type = "Geometry"
 
         self.geoobj_label = QtWidgets.QLabel("%s:" % _("GEOMETRY"))
         self.geoobj_label.setToolTip(
@@ -232,7 +235,7 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.set_last = True
+        self.box_combo.is_last = True
 
         self.box_combo.hide()
 
@@ -555,14 +558,16 @@ class DblSidedTool(FlatCAMTool):
 
         self.align_ref_label_val.set_value('%.*f' % (self.decimals, 0.0))
 
+        # run once to make sure that the obj_type attribute is updated in the FCComboBox
+        self.box_type_radio.set_value('grb')
+        self.on_combo_box_type('grb')
+
     def on_combo_box_type(self, val):
-        obj_type = {
-            'grb': 0,
-            'exc': 1,
-            'geo': 2
-        }[val]
+        obj_type = {'grb': 0, 'exc': 1, 'geo': 2}[val]
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
+        self.box_combo.obj_type = {
+            "grb": "Gerber", "exc": "Excellon", "geo": "Geometry"}[val]
 
     def on_create_alignment_holes(self):
         axis = self.align_axis_radio.get_value()
