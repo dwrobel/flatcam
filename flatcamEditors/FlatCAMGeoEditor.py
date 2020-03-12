@@ -202,7 +202,7 @@ class TextInputTool(FlatCAMTool):
         self.text_path = []
         self.decimals = self.app.decimals
 
-        self.f_parse = ParseFont(self)
+        self.f_parse = ParseFont(self.app)
         self.f_parse.get_fonts_by_types()
 
         # this way I can hide/show the frame
@@ -364,12 +364,10 @@ class TextInputTool(FlatCAMTool):
         string_to_geo = self.text_input_entry.get_value()
         font_to_geo_size = self.font_size_cb.get_value()
 
-        self.text_path = self.f_parse.font_to_geometry(
-                    char_string=string_to_geo,
-                    font_name=self.font_name,
-                    font_size=font_to_geo_size,
-                    font_type=font_to_geo_type,
-                    units=self.app.defaults['units'].upper())
+        self.text_path = self.f_parse.font_to_geometry(char_string=string_to_geo, font_name=self.font_name,
+                                                       font_size=font_to_geo_size,
+                                                       font_type=font_to_geo_type,
+                                                       units=self.app.defaults['units'].upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -403,8 +401,8 @@ class TextInputTool(FlatCAMTool):
 
     def hide_tool(self):
         self.text_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        self.app.ui.splitter.setSizes([0, 1])
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # self.app.ui.splitter.setSizes([0, 1])
         self.app.ui.notebook.setTabText(2, _("Tool"))
 
 
@@ -2848,7 +2846,7 @@ class FCText(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st point ..."))
         self.origin = (0, 0)
 
-        self.text_gui = TextInputTool(self.app)
+        self.text_gui = TextInputTool(app=self.app)
         self.text_gui.run()
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 

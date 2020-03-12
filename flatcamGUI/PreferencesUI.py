@@ -1414,7 +1414,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         super(GeneralAppPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("App Preferences")))
+        self.setTitle(_("App Preferences"))
         self.decimals = decimals
 
         # Create a form layout for the Application general settings

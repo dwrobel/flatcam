@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.03.2020
+
+- working on the new database
+- fix a bug in the TextInputTool in FlatCAM Geometry Editor that crashed the sw when some fonts are not loaded correctly
+
 4.03.2020
 
 - updated all the FlatCAM Tools and the Gerber UI FCComboBoxes to update the box value with the latest object loaded in the App
@@ -52,6 +57,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an issue in Gerber Editor where the multiprocessing pool was reported as closed and an ValueError exception was raised in a certain scneraio
 - on Set Origin, Move to Origin and Move actions for Gerber and Excellon objects the source file will be also updated (the export functions will export an updated object)
 - in FlatCAMObj.export_gerber() method took into account the possibility of polygons of type 'clear' (the ones found in the Gerber files under the LPC command)
+
 17.02.2020
 
 - updated the Excellon UI to hold data for each tool
