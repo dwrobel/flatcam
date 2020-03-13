@@ -703,7 +703,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuprojectcolor.addSeparator()
 
         self.menuproject_custom = self.menuprojectcolor.addAction(
-            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Transparency'))
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Opacity'))
 
         self.menuproject_custom = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Default'))

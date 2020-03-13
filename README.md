@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 13.03.2020
 
 - fixed a bug in CNCJob generation out of a Excellon object; the plot failed in case some of the geometry of the CNCJob was invalid
+- fixed Properties Tool due of recent changes to the FCTree widget
 
 12.03.2020
 

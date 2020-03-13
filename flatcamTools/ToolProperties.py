@@ -129,6 +129,10 @@ class Properties(FlatCAMTool):
         for obj in obj_list:
             self.addItems(obj)
             self.app.inform.emit('[success] %s' % _("Object Properties are displayed."))
+
+        # make sure that the FCTree widget columns are resized to content
+        self.treeWidget.resize_sig.emit()
+
         self.app.ui.notebook.setTabText(2, _("Properties Tool"))
 
     def addItems(self, obj):

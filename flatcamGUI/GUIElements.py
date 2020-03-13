@@ -187,7 +187,11 @@ class FCTree(QtWidgets.QTreeWidget):
         header.resizeSection(column, width)
 
     def is_editable(self, tested_col):
-        return False if tested_col in self.protected_column else True
+        try:
+            ret_val = False if tested_col in self.protected_column else True
+        except TypeError:
+            ret_val = False
+        return ret_val
 
     def addParent(self, parent, title, expanded=False, color=None, font=None):
         item = QtWidgets.QTreeWidgetItem(parent, [title])

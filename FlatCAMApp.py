@@ -12727,7 +12727,7 @@ class App(QtCore.QObject):
                 )
             return
 
-        if act_name == _("Transparency"):
+        if act_name == _("Opacity"):
             alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
                 self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
 
