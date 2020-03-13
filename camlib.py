@@ -4752,6 +4752,9 @@ class CNCjob(Geometry):
                             # if the geos are travel lines it will enter into Exception
                             poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
                             poly = poly.simplify(tool_tolerance)
+                        except Exception:
+                            # deal here with unexpected plot errors due of LineStrings not valid
+                            continue
                     else:
                         # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
