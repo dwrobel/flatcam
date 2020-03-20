@@ -2521,7 +2521,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.adddim_label = QtWidgets.QLabel('%s:' % _('Aperture Dimensions'))
         self.adddim_label.setToolTip(
-            _("Diameters of the cutting tools, separated by comma.\n"
+            _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
@@ -3970,9 +3970,9 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tools_label, 2, 0, 1, 2)
 
         # Tooldia
-        tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
+        tdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         tdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by comma.\n"
+            _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
@@ -5139,7 +5139,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         ncctdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ncctdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by comma.\n"
+            _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
@@ -5418,10 +5418,21 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(select_label, 18, 0)
         grid0.addWidget(self.select_combo, 18, 1)
 
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid0.addWidget(self.area_shape_label, 19, 0)
+        grid0.addWidget(self.area_shape_radio, 19, 1)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 19, 0, 1, 2)
+        grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Plotting type
         self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -5431,8 +5442,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
               "- 'Progressive' - after each shape is generated it will be plotted.")
         )
-        grid0.addWidget(plotting_label, 20, 0)
-        grid0.addWidget(self.ncc_plotting_radio, 20, 1)
+        grid0.addWidget(plotting_label, 21, 0)
+        grid0.addWidget(self.ncc_plotting_radio, 21, 1)
 
         self.layout.addStretch()
 
@@ -5695,7 +5706,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Tool dia
         ptdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ptdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by comma.\n"
+            _("Diameters of the tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
@@ -5931,10 +5942,21 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(selectlabel, 15, 0)
         grid0.addWidget(self.selectmethod_combo, 15, 1)
 
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid0.addWidget(self.area_shape_label, 18, 0)
+        grid0.addWidget(self.area_shape_radio, 18, 1)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -5944,8 +5966,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the Paint job\n"
               "- 'Progressive' - after each shape is generated it will be plotted.")
         )
-        grid0.addWidget(plotting_label, 17, 0)
-        grid0.addWidget(self.paint_plotting_radio, 17, 1)
+        grid0.addWidget(plotting_label, 20, 0)
+        grid0.addWidget(self.paint_plotting_radio, 20, 1)
 
         self.layout.addStretch()
 
@@ -6748,9 +6770,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Nozzle Tool Diameters
-        nozzletdlabel = QtWidgets.QLabel('%s:' % _('Tools dia'))
+        nozzletdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         nozzletdlabel.setToolTip(
-            _("Diameters of nozzle tools, separated by ','")
+            _("Diameters of the tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         self.nozzle_tool_dia_entry = FCEntry()
 

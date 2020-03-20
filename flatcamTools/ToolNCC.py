@@ -22,6 +22,8 @@ from shapely.geometry import base
 from shapely.ops import cascaded_union
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
 
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
 import logging
 import traceback
 import gettext
@@ -571,10 +573,25 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.reference_combo_type.hide()
         self.reference_combo_type_label.hide()
 
+        # Area Selection shape
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        self.grid3.addWidget(self.area_shape_label, 29, 0)
+        self.grid3.addWidget(self.area_shape_radio, 29, 1)
+
+        self.area_shape_label.hide()
+        self.area_shape_radio.hide()
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 29, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 30, 0, 1, 2)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_ncc_button.setToolTip(
@@ -652,8 +669,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
+        # store here the points for the "Polygon" area selection shape
+        self.points = []
+        # set this as True when in middle of drawing a "Polygon" area selection shape
+        # it is made False by first click to signify that the shape is complete
+        self.poly_drawn = False
+
         self.mm = None
         self.mr = None
+
+        self.kp = None
 
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
@@ -666,7 +691,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tooldia = None
 
         self.form_fields = {
-            "nccoperation":self.op_radio,
+            "nccoperation": self.op_radio,
             "nccoverlap": self.ncc_overlap_entry,
             "nccmargin": self.ncc_margin_entry,
             "nccmethod": self.ncc_method_combo,
@@ -970,6 +995,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
 
         self.select_combo.set_value(self.app.defaults["tools_nccref"])
+        self.area_shape_radio.set_value(self.app.defaults["tools_ncc_area_shape"])
+
         self.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
         self.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
         self.tool_type_radio.set_value(self.app.defaults["tools_ncctool_type"])
@@ -1271,16 +1298,39 @@ class NonCopperClear(FlatCAMTool, Gerber):
         }[self.reference_combo_type.get_value()]
 
     def on_toggle_reference(self):
-        if self.select_combo.get_value() == _("Itself") or self.select_combo.get_value() == _("Area Selection"):
+        sel_combo = self.select_combo.get_value()
+
+        if sel_combo == _("Itself"):
             self.reference_combo.hide()
             self.reference_combo_label.hide()
             self.reference_combo_type.hide()
             self.reference_combo_type_label.hide()
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
+
+            # disable rest-machining for area painting
+            self.ncc_rest_cb.setDisabled(False)
+        elif sel_combo == _("Area Selection"):
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_combo_type.hide()
+            self.reference_combo_type_label.hide()
+            self.area_shape_label.show()
+            self.area_shape_radio.show()
+
+            # disable rest-machining for area painting
+            self.ncc_rest_cb.set_value(False)
+            self.ncc_rest_cb.setDisabled(True)
         else:
             self.reference_combo.show()
             self.reference_combo_label.show()
             self.reference_combo_type.show()
             self.reference_combo_type_label.show()
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
+
+            # disable rest-machining for area painting
+            self.ncc_rest_cb.setDisabled(False)
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -1616,6 +1666,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+
         elif self.select_method == 'box':
             self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
@@ -1643,52 +1695,94 @@ class NonCopperClear(FlatCAMTool, Gerber):
             right_button = 3
 
         event_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+        else:
+            curr_pos = (event_pos[0], event_pos[1])
+
+        x1, y1 = curr_pos[0], curr_pos[1]
+
+        shape_type = self.area_shape_radio.get_value()
 
         # do clear area only for left mouse clicks
         if event.button == 1:
-            if self.first_click is False:
-                self.first_click = True
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
+            if shape_type == "square":
+                if self.first_click is False:
+                    self.first_click = True
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
 
-                self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status():
-                    self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
-            else:
-                self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                self.app.delete_selection_shape()
-
-                if self.app.grid_status():
-                    curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+                    self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
+                    if self.app.grid_status():
+                        self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
                 else:
-                    curr_pos = (event_pos[0], event_pos[1])
+                    self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                    self.app.delete_selection_shape()
 
-                x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
-                x1, y1 = curr_pos[0], curr_pos[1]
-                pt1 = (x0, y0)
-                pt2 = (x1, y0)
-                pt3 = (x1, y1)
-                pt4 = (x0, y1)
+                    x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
 
-                new_rectangle = Polygon([pt1, pt2, pt3, pt4])
-                self.sel_rect.append(new_rectangle)
+                    pt1 = (x0, y0)
+                    pt2 = (x1, y0)
+                    pt3 = (x1, y1)
+                    pt4 = (x0, y1)
 
-                # add a temporary shape on canvas
-                self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
+                    new_rectangle = Polygon([pt1, pt2, pt3, pt4])
+                    self.sel_rect.append(new_rectangle)
 
-                self.first_click = False
-                return
+                    # add a temporary shape on canvas
+                    self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
 
+                    self.first_click = False
+                    return
+            else:
+                self.points.append((x1, y1))
+
+                if len(self.points) > 1:
+                    self.poly_drawn = True
+                    self.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
+
+                return ""
         elif event.button == right_button and self.mouse_is_dragging is False:
-            self.first_click = False
+
+            shape_type = self.area_shape_radio.get_value()
+
+            if shape_type == "square":
+                self.first_click = False
+            else:
+                # if we finish to add a polygon
+                if self.poly_drawn is True:
+                    try:
+                        # try to add the point where we last clicked if it is not already in the self.points
+                        last_pt = (x1, y1)
+                        if last_pt != self.points[-1]:
+                            self.points.append(last_pt)
+                    except IndexError:
+                        pass
+
+                    # we need to add a Polygon and a Polygon can be made only from at least 3 points
+                    if len(self.points) > 2:
+                        self.delete_moving_selection_shape()
+                        pol = Polygon(self.points)
+                        # do not add invalid polygons even if they are drawn by utility geometry
+                        if pol.is_valid:
+                            self.sel_rect.append(pol)
+                            self.draw_selection_shape_polygon(points=self.points)
+                            self.app.inform.emit(
+                                _("Zone added. Click to start adding next zone or right click to finish."))
+
+                    self.points = []
+                    self.poly_drawn = False
+                    return
 
             self.delete_tool_selection_shape()
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
 
             self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                   self.app.on_mouse_click_over_plot)
@@ -1710,6 +1804,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     # called on mouse move
     def on_mouse_move(self, event):
+        shape_type = self.area_shape_radio.get_value()
+
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
@@ -1749,10 +1845,69 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         # draw the utility geometry
-        if self.first_click:
-            self.app.delete_selection_shape()
-            self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                 coords=(curr_pos[0], curr_pos[1]))
+        if shape_type == "square":
+            if self.first_click:
+                self.app.delete_selection_shape()
+                self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                     coords=(curr_pos[0], curr_pos[1]))
+        else:
+            self.delete_moving_selection_shape()
+            self.draw_moving_selection_shape_poly(points=self.points, data=(curr_pos[0], curr_pos[1]))
+
+    def on_key_press(self, event):
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        matplotlib_key_flag = False
+
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        elif type(event) == QtGui.QKeyEvent:
+            key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            matplotlib_key_flag = True
+
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    modifiers = QtCore.Qt.ControlModifier
+                elif mod.lower() == 'alt':
+                    modifiers = QtCore.Qt.AltModifier
+                elif mod.lower() == 'shift':
+                    modifiers = QtCore.Qt.ShiftModifier
+                else:
+                    modifiers = QtCore.Qt.NoModifier
+                key = QtGui.QKeySequence(key_text)
+
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
+
+        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.points = []
+            self.poly_drawn = False
+            self.delete_moving_selection_shape()
+            self.delete_tool_selection_shape()
 
     def envelope_object(self, ncc_obj, ncc_select, box_obj=None):
         """

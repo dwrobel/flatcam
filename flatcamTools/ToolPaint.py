@@ -20,6 +20,8 @@ import FlatCAMApp
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString
 from shapely.ops import cascaded_union, unary_union, linemerge
 
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
 import numpy as np
 import math
 from numpy import Inf
@@ -516,6 +518,21 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.reference_type_combo.hide()
         self.reference_type_label.hide()
 
+        # Area Selection shape
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid4.addWidget(self.area_shape_label, 21, 0)
+        grid4.addWidget(self.area_shape_radio, 21, 1)
+
+        self.area_shape_label.hide()
+        self.area_shape_radio.hide()
+
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_paint_button.setToolTip(
@@ -573,6 +590,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.units = ''
         self.paint_tools = {}
         self.tooluid = 0
+
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
@@ -580,6 +598,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.mm = None
         self.mp = None
         self.mr = None
+        self.kp = None
 
         self.sel_rect = []
 
@@ -611,6 +630,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         }
 
         self.old_tool_dia = None
+
+        # store here the points for the "Polygon" area selection shape
+        self.points = []
+        # set this as True when in middle of drawing a "Polygon" area selection shape
+        # it is made False by first click to signify that the shape is complete
+        self.poly_drawn = False
 
         # #############################################################################
         # ################################# Signals ###################################
@@ -895,7 +920,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             return float(self.addtool_entry.get_value())
 
     def on_selection(self):
-        if self.selectmethod_combo.get_value() == _("Reference Object"):
+        sel_combo = self.selectmethod_combo.get_value()
+
+        if sel_combo == _("Reference Object"):
             self.reference_combo.show()
             self.reference_combo_label.show()
             self.reference_type_combo.show()
@@ -906,20 +933,26 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.reference_type_combo.hide()
             self.reference_type_label.hide()
 
-        if self.selectmethod_combo.get_value() == _("Polygon Selection"):
+        if sel_combo == _("Polygon Selection"):
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
-        if self.selectmethod_combo.get_value() == _("Area Selection"):
-            # disable rest-machining for single polygon painting
+        if sel_combo == _("Area Selection"):
+            # disable rest-machining for area painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
+
+            self.area_shape_label.show()
+            self.area_shape_radio.show()
         else:
             self.rest_cb.setDisabled(False)
             self.addtool_entry.setDisabled(False)
             self.addtool_btn.setDisabled(False)
             self.deltool_btn.setDisabled(False)
             self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -989,6 +1022,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
         self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
         self.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
+        self.area_shape_radio.set_value(self.app.defaults["tools_paint_area_shape"])
         self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
         self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
         self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
@@ -1396,6 +1430,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.grid_status_memory = False
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_single_poly_mouse_release)
+            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -1418,6 +1453,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+
         elif self.select_method == _("Reference Object"):
             self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
@@ -1498,8 +1535,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
 
             self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                   self.app.on_mouse_click_over_plot)
@@ -1540,51 +1579,93 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         event_pos = (x, y)
 
+        shape_type = self.area_shape_radio.get_value()
+
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+
+        x1, y1 = curr_pos[0], curr_pos[1]
+
         # do paint single only for left mouse clicks
         if event.button == 1:
-            if not self.first_click:
-                self.first_click = True
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Click the end point of the paint area."))
+            if shape_type == "square":
+                if not self.first_click:
+                    self.first_click = True
+                    self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                         _("Click the end point of the paint area."))
 
-                self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status():
-                    self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
+                    self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
+                    if self.app.grid_status():
+                        self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
+                else:
+                    self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                    self.app.delete_selection_shape()
+
+                    x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+                    pt1 = (x0, y0)
+                    pt2 = (x1, y0)
+                    pt3 = (x1, y1)
+                    pt4 = (x0, y1)
+
+                    new_rectangle = Polygon([pt1, pt2, pt3, pt4])
+                    self.sel_rect.append(new_rectangle)
+
+                    # add a temporary shape on canvas
+                    self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
+
+                    self.first_click = False
+                    return
             else:
-                self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                self.app.delete_selection_shape()
+                self.points.append((x1, y1))
 
-                curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status():
-                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+                if len(self.points) > 1:
+                    self.poly_drawn = True
+                    self.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
 
-                x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
-                x1, y1 = curr_pos[0], curr_pos[1]
-                pt1 = (x0, y0)
-                pt2 = (x1, y0)
-                pt3 = (x1, y1)
-                pt4 = (x0, y1)
-
-                new_rectangle = Polygon([pt1, pt2, pt3, pt4])
-                self.sel_rect.append(new_rectangle)
-
-                # add a temporary shape on canvas
-                self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
-
-                self.first_click = False
-                return
-
+                return ""
         elif event.button == right_button and self.mouse_is_dragging is False:
-            self.first_click = False
+
+            shape_type = self.area_shape_radio.get_value()
+
+            if shape_type == "square":
+                self.first_click = False
+            else:
+                # if we finish to add a polygon
+                if self.poly_drawn is True:
+                    try:
+                        # try to add the point where we last clicked if it is not already in the self.points
+                        last_pt = (x1, y1)
+                        if last_pt != self.points[-1]:
+                            self.points.append(last_pt)
+                    except IndexError:
+                        pass
+
+                    # we need to add a Polygon and a Polygon can be made only from at least 3 points
+                    if len(self.points) > 2:
+                        self.delete_moving_selection_shape()
+                        pol = Polygon(self.points)
+                        # do not add invalid polygons even if they are drawn by utility geometry
+                        if pol.is_valid:
+                            self.sel_rect.append(pol)
+                            self.draw_selection_shape_polygon(points=self.points)
+                            self.app.inform.emit(
+                                _("Zone added. Click to start adding next zone or right click to finish."))
+
+                    self.points = []
+                    self.poly_drawn = False
+                    return
 
             self.delete_tool_selection_shape()
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
 
             self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                   self.app.on_mouse_click_over_plot)
@@ -1607,6 +1688,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     # called on mouse move
     def on_mouse_move(self, event):
+        shape_type = self.area_shape_radio.get_value()
+
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
@@ -1652,10 +1735,93 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         # draw the utility geometry
-        if self.first_click:
-            self.app.delete_selection_shape()
-            self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                 coords=(curr_pos[0], curr_pos[1]))
+        if shape_type == "square":
+            if self.first_click:
+                self.app.delete_selection_shape()
+                self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                     coords=(curr_pos[0], curr_pos[1]))
+        else:
+            self.delete_moving_selection_shape()
+            self.draw_moving_selection_shape_poly(points=self.points, data=(curr_pos[0], curr_pos[1]))
+
+    def on_key_press(self, event):
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        matplotlib_key_flag = False
+
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        elif type(event) == QtGui.QKeyEvent:
+            key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            matplotlib_key_flag = True
+
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    modifiers = QtCore.Qt.ControlModifier
+                elif mod.lower() == 'alt':
+                    modifiers = QtCore.Qt.AltModifier
+                elif mod.lower() == 'shift':
+                    modifiers = QtCore.Qt.ShiftModifier
+                else:
+                    modifiers = QtCore.Qt.NoModifier
+                key = QtGui.QKeySequence(key_text)
+
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
+
+        print(key)
+        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+            try:
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.mm)
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+            except Exception as e:
+                log.debug("ToolPaint.on_key_press() _1 --> %s" % str(e))
+
+            try:
+                # restore the Grid snapping if it was active before
+                if self.grid_status_memory is True:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                self.app.tool_shapes.clear(update=True)
+            except Exception as e:
+                log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            self.points = []
+            self.poly_drawn = False
+
+            self.poly_dict.clear()
+
+            self.delete_moving_selection_shape()
+            self.delete_tool_selection_shape()
 
     def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, overlap=None, order=None,
                    margin=None, method=None, outname=None, connect=None, contour=None, tools_storage=None,
