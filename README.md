@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.03.2020
+
+- updated the "re-cut" feature in Geometry object; now if the re-cut parameter is non zero it will cut half of the entered distance before the isolation end and half of it after the isolation end
+
 13.03.2020
 
 - fixed a bug in CNCJob generation out of a Excellon object; the plot failed in case some of the geometry of the CNCJob was invalid

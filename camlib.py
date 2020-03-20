@@ -26,7 +26,7 @@ from lxml import etree as ET
 from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, polygonize
+from shapely.ops import cascaded_union, unary_union, substring
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -5166,8 +5166,8 @@ class CNCjob(Geometry):
                 next_y = pt[1]
 
             gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
-            prev_x = pt[0]
-            prev_y = pt[1]
+            prev_x = next_x
+            prev_y = next_y
 
         # this line is added to create an extra cut over the first point in patch
         # to make sure that we remove the copper leftovers
@@ -5186,23 +5186,74 @@ class CNCjob(Geometry):
         # between point 0 and point 1 is more than the distance we set for the extra cut then make an interpolation
         # along the path and find the point at the distance extracut_length
 
+        # this is an extra line therefore lift the milling bit
+        gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
+
         if extracut_length == 0.0:
-            gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
-            last_pt = path[1]
-        else:
-            if abs(distance(path[1], path[0])) > extracut_length:
-                i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
-                gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
-                last_pt = (i_point.x, i_point.y)
+            extra_path = [path[-1], path[0], path[1]]
+            new_x = path[-1][0]
+            new_y = path[-1][1]
+
+            # move fast to the new first point
+            gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
+
+            # lower the milling bit
+            # Different feedrate for vertical cut?
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)
+                gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
             else:
-                last_pt = path[0]
-                for pt in path[1:]:
-                    extracut_distance = abs(distance(pt, last_pt))
-                    if extracut_distance <= extracut_length:
-                        gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
-                        last_pt = pt
-                    else:
-                        break
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)  # Start cutting
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+        else:
+            # go to the point that is 5% in length before the end (therefore 95% length from start of the line),
+            # along the line to be cut
+            extra_line = substring(target_linear, (-extracut_length * 0.5), (extracut_length * 0.5))
+            extra_path = list(extra_line.coords)
+            new_x = extra_path[0][0]
+            new_y = extra_path[0][1]
+
+            # move fast to the new first point
+            gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
+
+            # lower the milling bit
+            # Different feedrate for vertical cut?
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)
+                gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
+            else:
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)  # Start cutting
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+
+        # if extracut_length == 0.0:
+        #     gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
+        #     last_pt = path[1]
+        # else:
+        #     if abs(distance(path[1], path[0])) > extracut_length:
+        #         i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
+        #         gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
+        #         last_pt = (i_point.x, i_point.y)
+        #     else:
+        #         last_pt = path[0]
+        #         for pt in path[1:]:
+        #             extracut_distance = abs(distance(pt, last_pt))
+        #             if extracut_distance <= extracut_length:
+        #                 gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+        #                 last_pt = pt
+        #             else:
+        #                 break
 
         # Up to travelling height.
         if up:
