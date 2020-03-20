@@ -1778,7 +1778,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         else:
             key = event.key
 
-        print(key)
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
             try:
                 if self.app.is_legacy is False:

@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the "re-cut" feature in Geometry object; now if the re-cut parameter is non zero it will cut half of the entered distance before the isolation end and half of it after the isolation end
 - added to Paint and NCC Tool a feature that allow polygon area selection when the reference is selected as Area Selection
 - in Paint Tool and NCC Tool added ability to use Escape Tool to cancel Area Selection and for Paint Tool to cancel Polygon Selection
+- fixed issue in "re-cut" feature when combined with multi-depth feature
 
 13.03.2020
 

@@ -5186,13 +5186,13 @@ class CNCjob(Geometry):
         # between point 0 and point 1 is more than the distance we set for the extra cut then make an interpolation
         # along the path and find the point at the distance extracut_length
 
-        # this is an extra line therefore lift the milling bit
-        gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
-
         if extracut_length == 0.0:
             extra_path = [path[-1], path[0], path[1]]
-            new_x = path[-1][0]
-            new_y = path[-1][1]
+            new_x = extra_path[0][0]
+            new_y = extra_path[0][1]
+
+            # this is an extra line therefore lift the milling bit
+            gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
 
             # move fast to the new first point
             gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
@@ -5211,13 +5211,27 @@ class CNCjob(Geometry):
             for pt in extra_path[1:]:
                 gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
                 last_pt = pt
+
+            # go back to the original point
+            gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])
+            last_pt = path[0]
         else:
             # go to the point that is 5% in length before the end (therefore 95% length from start of the line),
             # along the line to be cut
-            extra_line = substring(target_linear, (-extracut_length * 0.5), (extracut_length * 0.5))
+            if extracut_length >= target_linear.length:
+                extracut_length = target_linear.length
+
+            # ---------------------------------------------
+            # first half
+            # ---------------------------------------------
+            start_length = target_linear.length - (extracut_length * 0.5)
+            extra_line = substring(target_linear, start_length, target_linear.length)
             extra_path = list(extra_line.coords)
             new_x = extra_path[0][0]
             new_y = extra_path[0][1]
+
+            # this is an extra line therefore lift the milling bit
+            gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
 
             # move fast to the new first point
             gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
@@ -5230,6 +5244,28 @@ class CNCjob(Geometry):
                 gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
             else:
                 gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)  # Start cutting
+
+            # start cutting the extra line
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+
+            # ---------------------------------------------
+            # second half
+            # ---------------------------------------------
+            extra_line = substring(target_linear, 0, (extracut_length * 0.5))
+            extra_path = list(extra_line.coords)
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+
+            # ---------------------------------------------
+            # back to original start point, cutting
+            # ---------------------------------------------
+            extra_line = substring(target_linear, 0, (extracut_length * 0.5))
+            extra_path = list(extra_line.coords)[::-1]
 
             # start cutting the extra line
             last_pt = extra_path[0]
