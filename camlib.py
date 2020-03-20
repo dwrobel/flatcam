@@ -3905,7 +3905,7 @@ class CNCjob(Geometry):
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid is not None else \
             self.app.defaults["geometry_feedrate_rapid"]
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 and spindlespeed is not None else None
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
@@ -3919,7 +3919,7 @@ class CNCjob(Geometry):
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'
 
-        self.z_depthpercut = float(depthpercut) if depthpercut is not None else 0.0
+        self.z_depthpercut = float(depthpercut) if depthpercut is not None and depthpercut != 0 else abs(self.z_cut)
         self.multidepth = multidepth
         self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
         self.extracut_length = float(extracut_length) if extracut_length is not None else \

@@ -213,7 +213,12 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['feedrate_rapid'] = args["feedrate_rapid"]
                     local_tools_dict[tool_uid]['data']['multidepth'] = args["multidepth"]
                     local_tools_dict[tool_uid]['data']['extracut'] = args["extracut"]
-                    local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
+
+                    if args["extracut"] is True:
+                        local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
+                    else:
+                        local_tools_dict[tool_uid]['data']['extracut_length'] = None
+
                     local_tools_dict[tool_uid]['data']['depthperpass'] = args["depthperpass"]
                     local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
                     local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]

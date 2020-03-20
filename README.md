@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added to Paint and NCC Tool a feature that allow polygon area selection when the reference is selected as Area Selection
 - in Paint Tool and NCC Tool added ability to use Escape Tool to cancel Area Selection and for Paint Tool to cancel Polygon Selection
 - fixed issue in "re-cut" feature when combined with multi-depth feature
+- fixed bugs in cncjob TclCommand
 
 13.03.2020
 
