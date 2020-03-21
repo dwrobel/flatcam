@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.03.2020
+
+- fixed Cutout Tool to work with negative values for Margin parameter
+
 20.03.2020
 
 - updated the "re-cut" feature in Geometry object; now if the re-cut parameter is non zero it will cut half of the entered distance before the isolation end and half of it after the isolation end

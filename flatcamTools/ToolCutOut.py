@@ -536,6 +536,7 @@ class CutOut(FlatCAMTool):
                         object_geo = cutout_obj.solid_geometry
                 except Exception as err:
                     log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
+                    object_geo = cutout_obj.solid_geometry
             else:
                 object_geo = cutout_obj.solid_geometry
 
@@ -606,12 +607,14 @@ class CutOut(FlatCAMTool):
                     if isinstance(object_geo, MultiPolygon):
                         x0, y0, x1, y1 = object_geo.bounds
                         object_geo = box(x0, y0, x1, y1)
+                    if margin >= 0:
+                        geo_buf = object_geo.buffer(margin + abs(dia / 2))
+                    else:
+                        geo_buf = object_geo.buffer(margin - abs(dia / 2))
 
-                    geo_buf = object_geo.buffer(margin + abs(dia / 2))
                     geo = geo_buf.exterior
                 else:
                     geo = object_geo
-
                 solid_geo = cutout_handler(geom=geo)
             else:
                 try:
@@ -621,7 +624,11 @@ class CutOut(FlatCAMTool):
 
                 for geom_struct in object_geo:
                     if isinstance(cutout_obj, FlatCAMGerber):
-                        geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                        if margin >= 0:
+                            geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                        else:
+                            geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
+                            geom_struct = geom_struct_buff.interiors
 
                     solid_geo += cutout_handler(geom=geom_struct)
 
@@ -769,24 +776,43 @@ class CutOut(FlatCAMTool):
                 # if Gerber create a buffer at a distance
                 # if Geometry then cut through the geometry
                 if isinstance(cutout_obj, FlatCAMGerber):
-                    geo = geo.buffer(margin + abs(dia / 2))
+                    if margin >= 0:
+                        geo = geo.buffer(margin + abs(dia / 2))
+                    else:
+                        geo = geo.buffer(margin - abs(dia / 2))
 
                 solid_geo = cutout_rect_handler(geom=geo)
             else:
-                try:
-                    __ = iter(object_geo)
-                except TypeError:
-                    object_geo = [object_geo]
+                if cutout_obj.kind == 'geometry':
+                    try:
+                        __ = iter(object_geo)
+                    except TypeError:
+                        object_geo = [object_geo]
 
-                for geom_struct in object_geo:
-                    geom_struct = unary_union(geom_struct)
-                    xmin, ymin, xmax, ymax = geom_struct.bounds
-                    geom_struct = box(xmin, ymin, xmax, ymax)
+                    for geom_struct in object_geo:
+                        geom_struct = unary_union(geom_struct)
+                        xmin, ymin, xmax, ymax = geom_struct.bounds
+                        geom_struct = box(xmin, ymin, xmax, ymax)
 
-                    if isinstance(cutout_obj, FlatCAMGerber):
+                        solid_geo += cutout_rect_handler(geom=geom_struct)
+                elif cutout_obj.kind == 'gerber' and margin >= 0:
+                    try:
+                        __ = iter(object_geo)
+                    except TypeError:
+                        object_geo = [object_geo]
+
+                    for geom_struct in object_geo:
+                        geom_struct = unary_union(geom_struct)
+                        xmin, ymin, xmax, ymax = geom_struct.bounds
+                        geom_struct = box(xmin, ymin, xmax, ymax)
+
                         geom_struct = geom_struct.buffer(margin + abs(dia / 2))
 
-                    solid_geo += cutout_rect_handler(geom=geom_struct)
+                        solid_geo += cutout_rect_handler(geom=geom_struct)
+                elif cutout_obj.kind == 'gerber' and margin < 0:
+                    self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                         _("Rectangular cutout with negative margin is not possible."))
+                    return "fail"
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
@@ -795,11 +821,11 @@ class CutOut(FlatCAMTool):
             geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
-        self.app.new_object('geometry', outname, geo_init)
+        ret = self.app.new_object('geometry', outname, geo_init)
 
-        # cutout_obj.plot()
-        self.app.inform.emit('[success] %s' %
-                             _("Any form CutOut operation finished."))
+        if ret != 'fail':
+            # cutout_obj.plot()
+            self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
