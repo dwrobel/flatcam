@@ -1425,6 +1425,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.tree_widget = FCTree(columns=2, header_hidden=False, protected_column=[0])
         self.tree_widget.setHeaderLabels(["ID", "Tool Name"])
         self.tree_widget.setIndentation(0)
+        self.tree_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
         # set alternating colors
         # self.tree_widget.setAlternatingRowColors(True)
@@ -1436,7 +1438,14 @@ class ToolsDB2(QtWidgets.QWidget):
         tree_layout.addWidget(self.tree_widget)
 
         param_hlay = QtWidgets.QHBoxLayout()
-        grid_layout.addLayout(param_hlay, 0, 1)
+        param_area = QtWidgets.QScrollArea()
+        param_widget = QtWidgets.QWidget()
+        param_widget.setLayout(param_hlay)
+
+        param_area.setWidget(param_widget)
+        param_area.setWidgetResizable(True)
+
+        grid_layout.addWidget(param_area, 0, 1)
 
         # ###########################################################################
         # ############## The UI form ################################################
@@ -1450,7 +1459,6 @@ class ToolsDB2(QtWidgets.QWidget):
         }
         """)
         self.basic_vlay = QtWidgets.QVBoxLayout()
-        self.basic_box.setLayout(self.basic_vlay)
         self.basic_box.setTitle(_("Basic Parameters"))
         self.basic_box.setMinimumWidth(250)
 
@@ -1463,21 +1471,25 @@ class ToolsDB2(QtWidgets.QWidget):
                 }
                 """)
         self.advanced_vlay = QtWidgets.QVBoxLayout()
-        self.advanced_box.setLayout(self.advanced_vlay)
         self.advanced_box.setTitle(_("Advanced Parameters"))
         self.advanced_box.setMinimumWidth(250)
 
-        param_hlay.addLayout(self.basic_vlay)
-        param_hlay.addLayout(self.advanced_vlay)
+        self.basic_box.setLayout(self.basic_vlay)
+        self.advanced_box.setLayout(self.advanced_vlay)
+
+        param_hlay.addWidget(self.basic_box)
+        param_hlay.addWidget(self.advanced_box)
+        param_hlay.addStretch()
 
         # ###########################################################################
         # ############### BASIC UI form #############################################
         # ###########################################################################
 
-        grid0 = QtWidgets.QGridLayout()
-        self.advanced_vlay.addLayout(grid0)
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
+        self.grid0 = QtWidgets.QGridLayout()
+        self.basic_vlay.addLayout(self.grid0)
+        self.grid0.setColumnStretch(0, 0)
+        self.grid0.setColumnStretch(1, 1)
+        self.basic_vlay.addStretch()
 
         # Tool Name
         self.name_label = QtWidgets.QLabel('%s:' % _('Tool Name'))
@@ -1489,8 +1501,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.name_entry = FCEntry()
         self.name_entry.setObjectName('gdb_name')
 
-        grid0.addWidget(self.name_label, 0, 0)
-        grid0.addWidget(self.name_entry, 0, 1)
+        self.grid0.addWidget(self.name_label, 0, 0)
+        self.grid0.addWidget(self.name_entry, 0, 1)
 
         # Tool Dia
         self.dia_label = QtWidgets.QLabel('%s:' % _('Tool Dia'))
@@ -1502,8 +1514,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.setObjectName('gdb_dia')
 
-        grid0.addWidget(self.dia_label, 1, 0)
-        grid0.addWidget(self.dia_entry, 1, 1)
+        self.grid0.addWidget(self.dia_label, 1, 0)
+        self.grid0.addWidget(self.dia_entry, 1, 1)
 
         # Tool Shape
         self.shape_label = QtWidgets.QLabel('%s:' % _('Tool Shape'))
@@ -1518,8 +1530,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
         self.shape_combo.setObjectName('gdb_shape')
 
-        grid0.addWidget(self.shape_label, 2, 0)
-        grid0.addWidget(self.shape_combo, 2, 1)
+        self.grid0.addWidget(self.shape_label, 2, 0)
+        self.grid0.addWidget(self.shape_combo, 2, 1)
 
         # Cut Z
         self.cutz_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
@@ -1532,8 +1544,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.setObjectName('gdb_cutz')
 
-        grid0.addWidget(self.cutz_label, 4, 0)
-        grid0.addWidget(self.cutz_entry, 4, 1)
+        self.grid0.addWidget(self.cutz_label, 4, 0)
+        self.grid0.addWidget(self.cutz_entry, 4, 1)
 
         # Multi Depth
         self.multidepth_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
@@ -1545,8 +1557,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.multidepth_cb = FCCheckBox()
         self.multidepth_cb.setObjectName('gdb_multidepth')
 
-        grid0.addWidget(self.multidepth_label, 5, 0)
-        grid0.addWidget(self.multidepth_cb, 5, 1)
+        self.grid0.addWidget(self.multidepth_label, 5, 0)
+        self.grid0.addWidget(self.multidepth_cb, 5, 1)
 
         # Depth Per Pass
         self.dpp_label = QtWidgets.QLabel('%s:' % _("DPP"))
@@ -1559,8 +1571,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.multidepth_entry.set_precision(self.decimals)
         self.multidepth_entry.setObjectName('gdb_multidepth_entry')
 
-        grid0.addWidget(self.dpp_label, 7, 0)
-        grid0.addWidget(self.multidepth_entry, 7, 1)
+        self.grid0.addWidget(self.dpp_label, 7, 0)
+        self.grid0.addWidget(self.multidepth_entry, 7, 1)
 
         # Travel Z
         self.travelz_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
@@ -1574,8 +1586,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setObjectName('gdb_travel')
 
-        grid0.addWidget(self.travelz_label, 9, 0)
-        grid0.addWidget(self.travelz_entry, 9, 1)
+        self.grid0.addWidget(self.travelz_label, 9, 0)
+        self.grid0.addWidget(self.travelz_entry, 9, 1)
 
         # Feedrate X-Y
         self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
@@ -1583,11 +1595,13 @@ class ToolsDB2(QtWidgets.QWidget):
             _("Feedrate X-Y. Feedrate\n"
               "The speed on XY plane used while cutting into material."))
 
-        self.frxy_entry = FCEntry()
+        self.frxy_entry = FCDoubleSpinner()
+        self.frxy_entry.set_range(-9999.9999, 9999.9999)
+        self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setObjectName('gdb_frxy')
 
-        grid0.addWidget(self.frxy_label, 12, 0)
-        grid0.addWidget(self.frxy_entry, 12, 1)
+        self.grid0.addWidget(self.frxy_label, 12, 0)
+        self.grid0.addWidget(self.frxy_entry, 12, 1)
 
         # Feedrate Z
         self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
@@ -1600,8 +1614,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setObjectName('gdb_frz')
 
-        grid0.addWidget(self.frz_label, 14, 0)
-        grid0.addWidget(self.frz_entry, 14, 1)
+        self.grid0.addWidget(self.frz_label, 14, 0)
+        self.grid0.addWidget(self.frz_entry, 14, 1)
 
         # Spindle Spped
         self.spindle_label = QtWidgets.QLabel('%s:' % _("Spindle Speed"))
@@ -1615,8 +1629,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.spindle_entry.set_precision(self.decimals)
         self.frz_entry.setObjectName('gdb_spindle')
 
-        grid0.addWidget(self.spindle_label, 15, 0)
-        grid0.addWidget(self.spindle_entry, 15, 1)
+        self.grid0.addWidget(self.spindle_label, 15, 0)
+        self.grid0.addWidget(self.spindle_entry, 15, 1)
 
         # Dwell
         self.dwell_label = QtWidgets.QLabel('%s:' % _("Dwell"))
@@ -1628,8 +1642,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.dwell_cb = FCCheckBox()
         self.dwell_cb.setObjectName('gdb_dwell')
 
-        grid0.addWidget(self.dwell_label, 16, 0)
-        grid0.addWidget(self.dwell_cb, 16, 1)
+        self.grid0.addWidget(self.dwell_label, 16, 0)
+        self.grid0.addWidget(self.dwell_cb, 16, 1)
 
         # Dwell Time
         self.dwelltime_label = QtWidgets.QLabel('%s:' % _("Dwelltime"))
@@ -1642,17 +1656,18 @@ class ToolsDB2(QtWidgets.QWidget):
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.setObjectName('gdb_dwelltime')
 
-        grid0.addWidget(self.dwelltime_label, 17, 0)
-        grid0.addWidget(self.dwelltime_entry, 17, 1)
+        self.grid0.addWidget(self.dwelltime_label, 17, 0)
+        self.grid0.addWidget(self.dwelltime_entry, 17, 1)
 
         # ###########################################################################
         # ############### ADVANCED UI form ##########################################
         # ###########################################################################
 
-        grid1 = QtWidgets.QGridLayout()
-        self.advanced_vlay.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
+        self.grid1 = QtWidgets.QGridLayout()
+        self.advanced_vlay.addLayout(self.grid1)
+        self.grid1.setColumnStretch(0, 0)
+        self.grid1.setColumnStretch(1, 1)
+        self.advanced_vlay.addStretch()
 
         # Tool Type
         self.type_label = QtWidgets.QLabel('%s:' % _("Tool Type"))
@@ -1667,8 +1682,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.type_combo.addItems(["Iso", "Rough", "Finish"])
         self.type_combo.setObjectName('gdb_type')
 
-        grid1.addWidget(self.type_label, 0, 0)
-        grid1.addWidget(self.type_combo, 0, 1)
+        self.grid1.addWidget(self.type_label, 0, 0)
+        self.grid1.addWidget(self.type_combo, 0, 1)
 
         # Tool Offset
         self.tooloffset_label = QtWidgets.QLabel('%s:' % _('Tool Offset'))
@@ -1684,8 +1699,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
         self.tooloffset_combo.setObjectName('gdb_tool_offset')
 
-        grid1.addWidget(self.tooloffset_label, 2, 0)
-        grid1.addWidget(self.tooloffset_combo, 2, 1)
+        self.grid1.addWidget(self.tooloffset_label, 2, 0)
+        self.grid1.addWidget(self.tooloffset_combo, 2, 1)
 
         # Custom Offset
         self.custom_offset_label = QtWidgets.QLabel('%s:' % _("Custom Offset"))
@@ -1698,8 +1713,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.custom_offset_entry.set_precision(self.decimals)
         self.custom_offset_entry.setObjectName('gdb_custom_offset')
 
-        grid1.addWidget(self.custom_offset_label, 5, 0)
-        grid1.addWidget(self.custom_offset_entry, 5, 1)
+        self.grid1.addWidget(self.custom_offset_label, 5, 0)
+        self.grid1.addWidget(self.custom_offset_entry, 5, 1)
 
         # V-Dia
         self.vdia_label = QtWidgets.QLabel('%s:' % _("V-Dia"))
@@ -1712,8 +1727,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.vdia_entry.set_precision(self.decimals)
         self.vdia_entry.setObjectName('gdb_vdia')
 
-        grid1.addWidget(self.vdia_label, 7, 0)
-        grid1.addWidget(self.vdia_entry, 7, 1)
+        self.grid1.addWidget(self.vdia_label, 7, 0)
+        self.grid1.addWidget(self.vdia_entry, 7, 1)
 
         # V-Angle
         self.vangle_label = QtWidgets.QLabel('%s:' %  _("V-Angle"))
@@ -1726,8 +1741,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.vangle_entry.set_precision(self.decimals)
         self.vangle_entry.setObjectName('gdb_vangle')
 
-        grid1.addWidget(self.vangle_label, 8, 0)
-        grid1.addWidget(self.vangle_entry, 8, 1)
+        self.grid1.addWidget(self.vangle_label, 8, 0)
+        self.grid1.addWidget(self.vangle_entry, 8, 1)
 
         # Feedrate Rapids
         self.frapids_label = QtWidgets.QLabel('%s:' %  _("FR Rapids"))
@@ -1742,8 +1757,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.frapids_entry.set_precision(self.decimals)
         self.frapids_entry.setObjectName('gdb_frapids')
 
-        grid1.addWidget(self.frapids_label, 10, 0)
-        grid1.addWidget(self.frapids_entry, 10, 1)
+        self.grid1.addWidget(self.frapids_label, 10, 0)
+        self.grid1.addWidget(self.frapids_entry, 10, 1)
 
         # Extra Cut
         self.ecut_label = QtWidgets.QLabel('%s:' % _("ExtraCut"))
@@ -1757,8 +1772,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ecut_cb = FCCheckBox()
         self.ecut_cb.setObjectName('gdb_ecut')
 
-        grid1.addWidget(self.ecut_label, 12, 0)
-        grid1.addWidget(self.ecut_cb, 12, 1)
+        self.grid1.addWidget(self.ecut_label, 12, 0)
+        self.grid1.addWidget(self.ecut_cb, 12, 1)
 
         # Extra Cut Length
         self.ecut_length_label = QtWidgets.QLabel('%s:' % _("E-Cut Length"))
@@ -1775,8 +1790,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ecut_length_entry.set_precision(self.decimals)
         self.ecut_length_entry.setObjectName('gdb_ecut_length')
 
-        grid1.addWidget(self.ecut_length_label, 13, 0)
-        grid1.addWidget(self.ecut_length_entry, 13, 1)
+        self.grid1.addWidget(self.ecut_length_label, 13, 0)
+        self.grid1.addWidget(self.ecut_length_entry, 13, 1)
 
         # ####################################################################
         # ####################################################################
@@ -1862,7 +1877,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "depthperpass":     self.multidepth_entry,
             "travelz":          self.travelz_entry,
             "feedrate":         self.frxy_entry,
-            "feedrate_z":       self.frxy_entry,
+            "feedrate_z":       self.frz_entry,
             "spindlespeed":     self.spindle_entry,
             "dwell":            self.dwell_cb,
             "dwelltime":        self.dwelltime_entry,
@@ -1904,6 +1919,8 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_ecut_length":      "extracut_length"
         }
 
+        self.current_toolid = None
+
         # ##############################################################################
         # ######################## SIGNALS #############################################
         # ##############################################################################
@@ -1920,20 +1937,38 @@ class ToolsDB2(QtWidgets.QWidget):
         # self.tree_widget.selectionModel().selectionChanged.connect(self.on_list_selection_change)
         self.tree_widget.currentItemChanged.connect(self.on_list_selection_change)
         self.tree_widget.itemChanged.connect(self.on_list_item_edited)
+        self.tree_widget.customContextMenuRequested.connect(self.on_menu_request)
 
         self.setup_db_ui()
+
+    def on_menu_request(self, pos):
+
+        menu = QtWidgets.QMenu()
+        add_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/plus16.png'), _("Add to DB"))
+        add_tool.triggered.connect(self.on_tool_add)
+
+        copy_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/copy16.png'), _("Copy from DB"))
+        copy_tool.triggered.connect(self.on_tool_copy)
+
+        delete_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete from DB"))
+        delete_tool.triggered.connect(self.on_tool_delete)
+
+        # tree_item = self.tree_widget.itemAt(pos)
+        menu.exec(self.tree_widget.viewport().mapToGlobal(pos))
 
     def on_list_selection_change(self, current, previous):
         # for idx in current.indexes():
         #     print(idx.data())
-        print(current.text(0))
-        self.table_widget.selectRow(int(current.text(0))-1)
+        # print(current.text(0))
+        self.current_toolid = int(current.text(0))
+
+        self.storage_to_form(self.db_tool_dict[current.text(0)])
 
     def on_list_item_edited(self, item, column):
         if column == 0:
             return
-        row = int(item.text(0)) - 1
-        self.table_widget.item(row, 1).setText(item.text(1))
+
+        self.name_entry.set_value(item.text(1))
 
     def storage_to_form(self, dict_storage):
         for form_key in self.form_fields:
@@ -1941,8 +1976,15 @@ class ToolsDB2(QtWidgets.QWidget):
                 if form_key == storage_key:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(str(e))
+                if storage_key == 'data':
+                    for data_key in dict_storage[storage_key]:
+                        if form_key == data_key:
+                            try:
+                                self.form_fields[form_key].set_value(dict_storage['data'][data_key])
+                            except Exception as e:
+                                print(str(e))
 
     def form_to_storage(self, tool):
         self.blockSignals(True)
@@ -1988,18 +2030,8 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.build_db_ui()
 
-        self.tree_widget.setupContextMenu()
-        self.tree_widget.addContextMenu(
-            _("Add to DB"), self.on_tool_add, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
-        self.tree_widget.addContextMenu(
-            _("Copy from DB"), self.on_tool_copy, icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
-        self.tree_widget.addContextMenu(
-            _("Delete from DB"), self.on_tool_delete, icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
-
     def build_db_ui(self):
         self.ui_disconnect()
-        self.table_widget.setRowCount(len(self.db_tool_dict))
-
         nr_crt = 0
 
         parent = self.tree_widget
@@ -2013,7 +2045,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             t_name = dict_val['name']
             try:
-                self.add_tool_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
+                # self.add_tool_table_line(row, name=t_name, tooldict=dict_val)
                 self.tree_widget.blockSignals(True)
                 try:
                     self.tree_widget.addParentEditable(parent=parent, title=[str(row+1), t_name], editable=True)
@@ -2022,210 +2054,17 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.tree_widget.blockSignals(False)
             except Exception as e:
                 self.app.log.debug("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
-            vertical_header = self.table_widget.verticalHeader()
-            vertical_header.hide()
 
-            horizontal_header = self.table_widget.horizontalHeader()
-            horizontal_header.setMinimumSectionSize(10)
-            horizontal_header.setDefaultSectionSize(70)
-
-            self.table_widget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-            for x in range(27):
-                self.table_widget.resizeColumnToContents(x)
-
-            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-            # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-            # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.Fixed)
-
-            horizontal_header.resizeSection(0, 20)
-            # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-            # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        if self.current_toolid is None or self.current_toolid < 1:
+            if self.db_tool_dict:
+                self.storage_to_form(self.db_tool_dict['1'])
+        else:
+            self.storage_to_form(self.db_tool_dict[str(self.current_toolid)])
 
         self.ui_connect()
 
-    def add_tool_table_line(self, row, name, widget, tooldict):
+    def add_tool_table_line(self, row, name, tooldict):
         data = tooldict['data']
-
-        nr_crt = row + 1
-        id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-        # id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        flags = id_item.flags() & ~QtCore.Qt.ItemIsEditable
-        id_item.setFlags(flags)
-        widget.setItem(row, 0, id_item)  # Tool name/id
-
-        tool_name_item = QtWidgets.QTableWidgetItem(name)
-        widget.setItem(row, 1, tool_name_item)
-
-        dia_item = FCDoubleSpinner()
-        dia_item.set_precision(self.decimals)
-        dia_item.setSingleStep(0.1)
-        dia_item.set_range(0.0, 9999.9999)
-        dia_item.set_value(float(tooldict['tooldia']))
-        widget.setCellWidget(row, 2, dia_item)
-
-        tool_offset_item = FCComboBox()
-        for item in self.offset_item_options:
-            tool_offset_item.addItem(item)
-        tool_offset_item.set_value(tooldict['offset'])
-        widget.setCellWidget(row, 3, tool_offset_item)
-
-        c_offset_item = FCDoubleSpinner()
-        c_offset_item.set_precision(self.decimals)
-        c_offset_item.setSingleStep(0.1)
-        c_offset_item.set_range(-9999.9999, 9999.9999)
-        c_offset_item.set_value(float(tooldict['offset_value']))
-        widget.setCellWidget(row, 4, c_offset_item)
-
-        tt_item = FCComboBox()
-        for item in self.type_item_options:
-            tt_item.addItem(item)
-        tt_item.set_value(tooldict['type'])
-        widget.setCellWidget(row, 5, tt_item)
-
-        tshape_item = FCComboBox()
-        for item in self.tool_type_item_options:
-            tshape_item.addItem(item)
-        tshape_item.set_value(tooldict['tool_type'])
-        widget.setCellWidget(row, 6, tshape_item)
-
-        cutz_item = FCDoubleSpinner()
-        cutz_item.set_precision(self.decimals)
-        cutz_item.setSingleStep(0.1)
-        if self.app.defaults['global_machinist_setting']:
-            cutz_item.set_range(-9999.9999, 9999.9999)
-        else:
-            cutz_item.set_range(-9999.9999, -0.0000)
-
-        cutz_item.set_value(float(data['cutz']))
-        widget.setCellWidget(row, 7, cutz_item)
-
-        multidepth_item = FCCheckBox()
-        multidepth_item.set_value(data['multidepth'])
-        widget.setCellWidget(row, 8, multidepth_item)
-
-        # to make the checkbox centered but it can no longer have it's value accessed - needs a fix using findchild()
-        # multidepth_item = QtWidgets.QWidget()
-        # cb = FCCheckBox()
-        # cb.set_value(data['multidepth'])
-        # qhboxlayout = QtWidgets.QHBoxLayout(multidepth_item)
-        # qhboxlayout.addWidget(cb)
-        # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
-        # qhboxlayout.setContentsMargins(0, 0, 0, 0)
-        # widget.setCellWidget(row, 8, multidepth_item)
-
-        depth_per_pass_item = FCDoubleSpinner()
-        depth_per_pass_item.set_precision(self.decimals)
-        depth_per_pass_item.setSingleStep(0.1)
-        depth_per_pass_item.set_range(0.0, 9999.9999)
-        depth_per_pass_item.set_value(float(data['depthperpass']))
-        widget.setCellWidget(row, 9, depth_per_pass_item)
-
-        vtip_dia_item = FCDoubleSpinner()
-        vtip_dia_item.set_precision(self.decimals)
-        vtip_dia_item.setSingleStep(0.1)
-        vtip_dia_item.set_range(0.0, 9999.9999)
-        vtip_dia_item.set_value(float(data['vtipdia']))
-        widget.setCellWidget(row, 10, vtip_dia_item)
-
-        vtip_angle_item = FCDoubleSpinner()
-        vtip_angle_item.set_precision(self.decimals)
-        vtip_angle_item.setSingleStep(0.1)
-        vtip_angle_item.set_range(-360.0, 360.0)
-        vtip_angle_item.set_value(float(data['vtipangle']))
-        widget.setCellWidget(row, 11, vtip_angle_item)
-
-        travelz_item = FCDoubleSpinner()
-        travelz_item.set_precision(self.decimals)
-        travelz_item.setSingleStep(0.1)
-        if self.app.defaults['global_machinist_setting']:
-            travelz_item.set_range(-9999.9999, 9999.9999)
-        else:
-            travelz_item.set_range(0.0000, 9999.9999)
-
-        travelz_item.set_value(float(data['travelz']))
-        widget.setCellWidget(row, 12, travelz_item)
-
-        fr_item = FCDoubleSpinner()
-        fr_item.set_precision(self.decimals)
-        fr_item.set_range(0.0, 9999.9999)
-        fr_item.set_value(float(data['feedrate']))
-        widget.setCellWidget(row, 13, fr_item)
-
-        frz_item = FCDoubleSpinner()
-        frz_item.set_precision(self.decimals)
-        frz_item.set_range(0.0, 9999.9999)
-        frz_item.set_value(float(data['feedrate_z']))
-        widget.setCellWidget(row, 14, frz_item)
-
-        frrapids_item = FCDoubleSpinner()
-        frrapids_item.set_precision(self.decimals)
-        frrapids_item.set_range(0.0, 9999.9999)
-        frrapids_item.set_value(float(data['feedrate_rapid']))
-        widget.setCellWidget(row, 15, frrapids_item)
-
-        spindlespeed_item = FCSpinner()
-        spindlespeed_item.set_range(0, 1000000)
-        spindlespeed_item.set_value(int(data['spindlespeed']))
-        spindlespeed_item.set_step(100)
-        widget.setCellWidget(row, 16, spindlespeed_item)
-
-        dwell_item = FCCheckBox()
-        dwell_item.set_value(data['dwell'])
-        widget.setCellWidget(row, 17, dwell_item)
-
-        dwelltime_item = FCDoubleSpinner()
-        dwelltime_item.set_precision(self.decimals)
-        dwelltime_item.set_range(0.0000, 9999.9999)
-        dwelltime_item.set_value(float(data['dwelltime']))
-        widget.setCellWidget(row, 18, dwelltime_item)
-
-        pp_item = FCComboBox()
-        for item in self.app.preprocessors:
-            pp_item.addItem(item)
-        pp_item.set_value(data['ppname_g'])
-        widget.setCellWidget(row, 19, pp_item)
-
-        ecut_item = FCCheckBox()
-        ecut_item.set_value(data['extracut'])
-        widget.setCellWidget(row, 20, ecut_item)
-
-        ecut_length_item = FCDoubleSpinner()
-        ecut_length_item.set_precision(self.decimals)
-        ecut_length_item.set_range(0.0000, 9999.9999)
-        ecut_length_item.set_value(data['extracut_length'])
-        widget.setCellWidget(row, 21, ecut_length_item)
-
-        toolchange_item = FCCheckBox()
-        toolchange_item.set_value(data['toolchange'])
-        widget.setCellWidget(row, 22, toolchange_item)
-
-        toolchangexy_item = QtWidgets.QTableWidgetItem(str(data['toolchangexy']) if data['toolchangexy'] else '')
-        widget.setItem(row, 23, toolchangexy_item)
-
-        toolchangez_item = FCDoubleSpinner()
-        toolchangez_item.set_precision(self.decimals)
-        toolchangez_item.setSingleStep(0.1)
-        if self.app.defaults['global_machinist_setting']:
-            toolchangez_item.set_range(-9999.9999, 9999.9999)
-        else:
-            toolchangez_item.set_range(0.0000, 9999.9999)
-
-        toolchangez_item.set_value(float(data['toolchangez']))
-        widget.setCellWidget(row, 24, toolchangez_item)
-
-        startz_item = QtWidgets.QTableWidgetItem(str(data['startz']) if data['startz'] else '')
-        widget.setItem(row, 25, startz_item)
-
-        endz_item = FCDoubleSpinner()
-        endz_item.set_precision(self.decimals)
-        endz_item.setSingleStep(0.1)
-        if self.app.defaults['global_machinist_setting']:
-            endz_item.set_range(-9999.9999, 9999.9999)
-        else:
-            endz_item.set_range(0.0000, 9999.9999)
-
-        endz_item.set_value(float(data['endz']))
-        widget.setCellWidget(row, 26, endz_item)
 
     def on_tool_add(self):
         """
@@ -2277,11 +2116,11 @@ class ToolsDB2(QtWidgets.QWidget):
         dict_elem['data'] = default_data
 
         new_toolid = len(self.db_tool_dict) + 1
-        self.db_tool_dict[new_toolid] = deepcopy(dict_elem)
+        self.db_tool_dict[str(new_toolid)] = deepcopy(dict_elem)
 
         # add the new entry to the Tools DB table
+        self.update_storage()
         self.build_db_ui()
-        self.callback_on_edited()
         self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
@@ -2289,20 +2128,23 @@ class ToolsDB2(QtWidgets.QWidget):
         Copy a selection of Tools in the Tools DB table
         :return:
         """
-        new_tool_id = self.table_widget.rowCount() + 1
-        for model_index in self.table_widget.selectionModel().selectedRows():
-            # index = QtCore.QPersistentModelIndex(model_index)
-            old_tool_id = self.table_widget.item(model_index.row(), 0).text()
-            new_tool_id += 1
+        new_tool_id = len(self.db_tool_dict)
+        for item in self.tree_widget.selectedItems():
+            old_tool_id = item.data(0, QtCore.Qt.DisplayRole)
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
                 if int(old_tool_id) == int(toolid):
+                    new_tool_id += 1
+                    new_key = str(new_tool_id)
+
                     self.db_tool_dict.update({
-                        new_tool_id: deepcopy(dict_val)
+                        new_key: deepcopy(dict_val)
                     })
 
+        self.current_toolid = new_tool_id
+
+        self.update_storage()
         self.build_db_ui()
-        self.callback_on_edited()
         self.app.inform.emit('[success] %s' % _("Tool copied from Tools DB."))
 
     def on_tool_delete(self):
@@ -2310,17 +2152,18 @@ class ToolsDB2(QtWidgets.QWidget):
         Delete a selection of Tools in the Tools DB table
         :return:
         """
-        for model_index in self.table_widget.selectionModel().selectedRows():
-            # index = QtCore.QPersistentModelIndex(model_index)
-            toolname_to_remove = self.table_widget.item(model_index.row(), 0).text()
+        for item in self.tree_widget.selectedItems():
+            toolname_to_remove = item.data(0, QtCore.Qt.DisplayRole)
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
                 if int(toolname_to_remove) == int(toolid):
                     # remove from the storage
                     self.db_tool_dict.pop(toolid, None)
 
+        self.current_toolid -= 1
+
+        self.update_storage()
         self.build_db_ui()
-        self.callback_on_edited()
         self.app.inform.emit('[success] %s' % _("Tool removed from Tools DB."))
 
     def on_export_tools_db_file(self):
@@ -2408,7 +2251,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
             self.build_db_ui()
-            self.callback_on_edited()
+            self.update_storage()
 
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
@@ -2434,145 +2277,126 @@ class ToolsDB2(QtWidgets.QWidget):
                     self.app.inform.emit('[success] %s' % _("Saved Tools DB."))
 
     def ui_connect(self):
-        try:
-            try:
-                self.table_widget.itemChanged.disconnect(self.callback_on_edited)
-            except (TypeError, AttributeError):
-                pass
-            self.table_widget.itemChanged.connect(self.callback_on_edited)
-        except AttributeError:
-            pass
+        # make sure that we don't make multiple connections to the widgets
+        self.ui_disconnect()
 
-        for row in range(self.table_widget.rowCount()):
-            for col in range(self.table_widget.columnCount()):
-                # ComboBox
-                try:
-                    try:
-                        self.table_widget.cellWidget(row, col).currentIndexChanged.disconnect(self.callback_on_edited)
-                    except (TypeError, AttributeError):
-                        pass
-                    self.table_widget.cellWidget(row, col).currentIndexChanged.connect(self.callback_on_edited)
-                except AttributeError:
-                    pass
+        self.name_entry.editingFinished.connect(self.update_tree_name)
 
-                # CheckBox
-                try:
-                    try:
-                        self.table_widget.cellWidget(row, col).toggled.disconnect(self.callback_on_edited)
-                    except (TypeError, AttributeError):
-                        pass
-                    self.table_widget.cellWidget(row, col).toggled.connect(self.callback_on_edited)
-                except AttributeError:
-                    pass
+        for key in self.form_fields:
+            wdg = self.form_fields[key]
 
-                # SpinBox, DoubleSpinBox
-                try:
-                    try:
-                        self.table_widget.cellWidget(row, col).valueChanged.disconnect(self.callback_on_edited)
-                    except (TypeError, AttributeError):
-                        pass
-                    self.table_widget.cellWidget(row, col).valueChanged.connect(self.callback_on_edited)
-                except AttributeError:
-                    pass
+            # FCEntry
+            if isinstance(wdg, FCEntry):
+                wdg.textChanged.connect(self.update_storage)
+
+            # ComboBox
+            if isinstance(wdg, FCComboBox):
+                wdg.currentIndexChanged.connect(self.update_storage)
+
+            # CheckBox
+            if isinstance(wdg, FCCheckBox):
+                wdg.toggled.connect(self.update_storage)
+
+            # SpinBox, DoubleSpinBox
+            if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
+                wdg.valueChanged.connect(self.update_storage)
 
     def ui_disconnect(self):
         try:
-            self.table_widget.itemChanged.disconnect(self.callback_on_edited)
+            self.name_entry.editingFinished.disconnect(self.update_tree_name)
         except (TypeError, AttributeError):
             pass
 
-        for row in range(self.table_widget.rowCount()):
-            for col in range(self.table_widget.columnCount()):
-                # ComboBox
+        for key in self.form_fields:
+            wdg = self.form_fields[key]
+
+            # FCEntry
+            if isinstance(wdg, FCEntry):
                 try:
-                    self.table_widget.cellWidget(row, col).currentIndexChanged.disconnect(self.callback_on_edited)
+                    wdg.textChanged.disconnect(self.update_storage)
                 except (TypeError, AttributeError):
                     pass
 
-                # CheckBox
+            # ComboBox
+            if isinstance(wdg, FCComboBox):
                 try:
-                    self.table_widget.cellWidget(row, col).toggled.disconnect(self.callback_on_edited)
+                    wdg.currentIndexChanged.disconnect(self.update_storage)
                 except (TypeError, AttributeError):
                     pass
 
-                # SpinBox, DoubleSpinBox
+            # CheckBox
+            if isinstance(wdg, FCCheckBox):
                 try:
-                    self.table_widget.cellWidget(row, col).valueChanged.disconnect(self.callback_on_edited)
+                    wdg.toggled.disconnect(self.update_storage)
                 except (TypeError, AttributeError):
                     pass
 
-    def callback_on_edited(self):
+            # SpinBox, DoubleSpinBox
+            if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
+                try:
+                    wdg.valueChanged.disconnect(self.update_storage)
+                except (TypeError, AttributeError):
+                    pass
 
-        # update the dictionary storage self.db_tool_dict
-        self.db_tool_dict.clear()
-        dict_elem = {}
-        default_data = {}
+    def update_tree_name(self):
+        val = self.name_entry.get_value()
 
-        for row in range(self.table_widget.rowCount()):
-            new_toolid = row + 1
-            for col in range(self.table_widget.columnCount()):
-                column_header_text = self.table_widget.horizontalHeaderItem(col).text()
-                if column_header_text == _('Tool Name'):
-                    dict_elem['name'] = self.table_widget.item(row, col).text()
-                elif column_header_text == _('Tool Dia'):
-                    dict_elem['tooldia'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == _('Tool Offset'):
-                    dict_elem['offset'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == _('Custom Offset'):
-                    dict_elem['offset_value'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == _('Tool Type'):
-                    dict_elem['type'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == _('Tool Shape'):
-                    dict_elem['tool_type'] = self.table_widget.cellWidget(row, col).get_value()
-                else:
-                    if column_header_text == _('Cut Z'):
-                        default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('MultiDepth'):
-                        default_data['multidepth'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('DPP'):
-                        default_data['depthperpass'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('V-Dia'):
-                        default_data['vtipdia'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('V-Angle'):
-                        default_data['vtipangle'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Travel Z'):
-                        default_data['travelz'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('FR'):
-                        default_data['feedrate'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('FR Z'):
-                        default_data['feedrate_z'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('FR Rapids'):
-                        default_data['feedrate_rapid'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Spindle Speed'):
-                        default_data['spindlespeed'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Dwell'):
-                        default_data['dwell'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Dwelltime'):
-                        default_data['dwelltime'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Preprocessor'):
-                        default_data['ppname_g'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('ExtraCut'):
-                        default_data['extracut'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _("E-Cut Length"):
-                        default_data['extracut_length'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Toolchange'):
-                        default_data['toolchange'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Toolchange XY'):
-                        default_data['toolchangexy'] = self.table_widget.item(row, col).text()
-                    elif column_header_text == _('Toolchange Z'):
-                        default_data['toolchangez'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == _('Start Z'):
-                        default_data['startz'] = float(self.table_widget.item(row, col).text()) \
-                            if self.table_widget.item(row, col).text() is not '' else None
-                    elif column_header_text == _('End Z'):
-                        default_data['endz'] = self.table_widget.cellWidget(row, col).get_value()
+        item = self.tree_widget.currentItem()
+        # I'm setting the value for the second column (designated by 1) because first column holds the ID
+        # and second column holds the Name (this behavior is set in the build_ui method)
+        item.setData(1, QtCore.Qt.DisplayRole, val)
 
-            dict_elem['data'] = default_data
-            self.db_tool_dict.update(
-                {
-                    new_toolid: deepcopy(dict_elem)
-                }
-            )
+    def update_storage(self):
+
+        tool_id = str(self.current_toolid)
+        wdg = self.sender()
+        if wdg is None:
+            return
+        wdg_name = wdg.objectName()
+
+        if wdg_name == "gdb_name":
+            self.db_tool_dict[tool_id]['name'] = wdg.get_value()
+        elif wdg_name == "gdb_dia":
+            self.db_tool_dict[tool_id]['tooldia'] = wdg.get_value()
+        elif wdg_name == "gdb_tool_offset":
+            self.db_tool_dict[tool_id]['offset'] = wdg.get_value()
+        elif wdg_name == "gdb_custom_offset":
+            self.db_tool_dict[tool_id]['offset_value'] = wdg.get_value()
+        elif wdg_name == "gdb_type":
+            self.db_tool_dict[tool_id]['type'] = wdg.get_value()
+        elif wdg_name == "gdb_shape":
+            self.db_tool_dict[tool_id]['tool_type'] = wdg.get_value()
+        else:
+            if wdg_name == "gdb_cutz":
+                self.db_tool_dict[tool_id]['data']['cutz'] = wdg.get_value()
+            elif wdg_name == "gdb_multidepth":
+                self.db_tool_dict[tool_id]['data']['multidepth'] = wdg.get_value()
+            elif wdg_name == "gdb_multidepth_entry":
+                self.db_tool_dict[tool_id]['data']['depthperpass'] = wdg.get_value()
+
+            elif wdg_name == "gdb_travel":
+                self.db_tool_dict[tool_id]['data']['travelz'] = wdg.get_value()
+            elif wdg_name == "gdb_frxy":
+                self.db_tool_dict[tool_id]['data']['feedrate'] = wdg.get_value()
+            elif wdg_name == "gdb_frz":
+                self.db_tool_dict[tool_id]['data']['feedrate_z'] = wdg.get_value()
+            elif wdg_name == "gdb_spindle":
+                self.db_tool_dict[tool_id]['data']['spindlespeed'] = wdg.get_value()
+            elif wdg_name == "gdb_dwell":
+                self.db_tool_dict[tool_id]['data']['dwell'] = wdg.get_value()
+            elif wdg_name == "gdb_dwelltime":
+                self.db_tool_dict[tool_id]['data']['dwelltime'] = wdg.get_value()
+
+            elif wdg_name == "gdb_vdia":
+                self.db_tool_dict[tool_id]['data']['vtipdia'] = wdg.get_value()
+            elif wdg_name == "gdb_vangle":
+                self.db_tool_dict[tool_id]['data']['vtipangle'] = wdg.get_value()
+            elif wdg_name == "gdb_frapids":
+                self.db_tool_dict[tool_id]['data']['feedrate_rapid'] = wdg.get_value()
+            elif wdg_name == "gdb_ecut":
+                self.db_tool_dict[tool_id]['data']['extracut'] = wdg.get_value()
+            elif wdg_name == "gdb_ecut_length":
+                self.db_tool_dict[tool_id]['data']['extracut_length'] = wdg.get_value()
 
         self.callback_app()
 

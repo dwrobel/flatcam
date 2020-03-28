@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.03.2020
+
+- finished the new database based on a QTreeWidget
+
 21.03.2020
 
 - fixed Cutout Tool to work with negative values for Margin parameter
