@@ -4658,9 +4658,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 try:
                     # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in self.tools.items():
+                    for tooluid_key, tooluid_value in list(self.tools.items()):
                         if int(tooluid_key) == tooluid:
-                            for key, value in tooluid_value.items():
+                            for key, value in list(tooluid_value.items()):
                                 if key == 'data':
                                     form_value_storage = tooluid_value['data']
                                     self.update_form(form_value_storage)
