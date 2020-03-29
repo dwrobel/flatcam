@@ -737,8 +737,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
         self.type_obj_radio.activated_custom.connect(self.on_type_obj_index_changed)
-
         self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        self.addtool_from_db_btn.clicked.connect(self.on_ncc_tool_add_from_db_clicked)
 
         self.reset_button.clicked.connect(self.set_tool_ui)
 
@@ -1127,7 +1127,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
 
-                        # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
+                    # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
 
@@ -3965,3 +3965,98 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 log.debug("NonCopperClear.generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
+
+    def on_ncc_tool_add_from_db_executed(self, tool):
+        """
+        Here add the tool from DB  in the selected geometry object
+        :return:
+        """
+        tool_from_db = deepcopy(tool)
+
+        res = self.on_ncc_tool_from_db_inserted(tool=tool_from_db)
+
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                wdg = self.app.ui.plot_tab_area.widget(idx)
+                wdg.deleteLater()
+                self.app.ui.plot_tab_area.removeTab(idx)
+
+        if res == 'fail':
+            return
+        self.app.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
+
+    def on_ncc_tool_from_db_inserted(self, tool):
+        """
+        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        :param tool: a dict with the tool data
+        :return: None
+        """
+
+        self.ui_disconnect()
+        self.units = self.app.defaults['units'].upper()
+
+        tooldia = float(tool['tooldia'])
+
+        # construct a list of all 'tooluid' in the self.tools
+        tool_uid_list = []
+        for tooluid_key in self.ncc_tools:
+            tool_uid_item = int(tooluid_key)
+            tool_uid_list.append(tool_uid_item)
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        if not tool_uid_list:
+            max_uid = 0
+        else:
+            max_uid = max(tool_uid_list)
+        tooluid = max_uid + 1
+
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        tool_dias = []
+        for k, v in self.ncc_tools.items():
+            for tool_v in v.keys():
+                if tool_v == 'tooldia':
+                    tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
+
+        if float('%.*f' % (self.decimals, tooldia)) in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
+            self.ui_connect()
+            return 'fail'
+
+        self.ncc_tools.update({
+            tooluid: {
+                'tooldia': float('%.*f' % (self.decimals, tooldia)),
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': 'Iso',
+                'tool_type': tool['tool_type'],
+                'data': deepcopy(tool['data']),
+                'solid_geometry': []
+            }
+        })
+        self.ncc_tools[tooluid]['data']['name'] = '_ncc'
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
+
+        self.ui_connect()
+        self.build_ui()
+
+        # if self.tools_table.rowCount() != 0:
+        #     self.param_frame.setDisabled(False)
+
+    def on_ncc_tool_add_from_db_clicked(self):
+        """
+        Called when the user wants to add a new tool from Tools Database. It will create the Tools Database object
+        and display the Tools Database tab in the form needed for the Tool adding
+        :return: None
+        """
+
+        # if the Tools Database is already opened focus on it
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
+                break
+        self.app.on_tools_database(source='ncc')
+        self.app.tools_db_tab.buttons_frame.hide()
+        self.app.tools_db_tab.add_tool_from_db.show()
+        self.app.tools_db_tab.cancel_tool_from_db.show()

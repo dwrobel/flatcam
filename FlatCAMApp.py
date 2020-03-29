@@ -8066,7 +8066,7 @@ class App(QtCore.QObject):
 
             self.preferences_changed_flag = True
 
-    def on_tools_database(self):
+    def on_tools_database(self, source='app'):
         """
         Adds the Tools Database in a Tab in Plot Area
         :return:
@@ -8076,12 +8076,27 @@ class App(QtCore.QObject):
                 # there can be only one instance of Tools Database at one time
                 return
 
-        self.tools_db_tab = ToolsDB2(
-            app=self,
-            parent=self.ui,
-            callback_on_edited=self.on_tools_db_edited,
-            callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
-        )
+        if source == 'app':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
+            )
+        elif source == 'ncc':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.ncclear_tool.on_ncc_tool_add_from_db_executed
+            )
+        elif source == 'paint':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.paint_tool.on_paint_tool_add_from_db_executed
+            )
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))

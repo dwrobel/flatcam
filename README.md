@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the new database to accept data from NCC and Paint Tools
 - fixed issues in the new database when adding the tool in a Geometry object
 - fixed a bug in Geometry object that generated a change of dictionary while iterating over it
+- started to add the new database links in the NCC and Paint Tools
 
 28.03.2020
 

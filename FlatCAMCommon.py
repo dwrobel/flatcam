@@ -2394,6 +2394,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         default_data = {}
         default_data.update({
+            "plot":             True,
             "cutz":             float(self.app.defaults["geometry_cutz"]),
             "multidepth":       self.app.defaults["geometry_multidepth"],
             "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
