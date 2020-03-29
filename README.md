@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a bug in Geometry object that generated a change of dictionary while iterating over it
 - started to add the new database links in the NCC and Paint Tools
 - in the new Tools DB added ability to double click on the ID in the tree widget to execute adding a tool from DB
+- working in updating NCC Tool
 
 28.03.2020
 

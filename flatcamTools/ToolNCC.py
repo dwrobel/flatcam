@@ -691,27 +691,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tooldia = None
 
         self.form_fields = {
-            "nccoperation": self.op_radio,
-            "nccoverlap": self.ncc_overlap_entry,
-            "nccmargin": self.ncc_margin_entry,
-            "nccmethod": self.ncc_method_combo,
-            "nccconnect": self.ncc_connect_cb,
-            "ncccontour": self.ncc_contour_cb,
-            "nccoffset": self.ncc_choice_offset_cb,
-            "nccoffset_value": self.ncc_offset_spinner,
-            "milling_type": self.milling_type_radio
+            "tools_nccoperation": self.op_radio,
+            "tools_nccoverlap": self.ncc_overlap_entry,
+            "tools_nccmargin": self.ncc_margin_entry,
+            "tools_nccmethod": self.ncc_method_combo,
+            "tools_nccconnect": self.ncc_connect_cb,
+            "tools_ncccontour": self.ncc_contour_cb,
+            "tools_ncc_offset_choice": self.ncc_choice_offset_cb,
+            "tools_ncc_offset_value": self.ncc_offset_spinner,
+            "tools_nccmilling_type": self.milling_type_radio
         }
 
         self.name2option = {
-            "n_operation": "nccoperation",
-            "n_overlap": "nccoverlap",
-            "n_margin": "nccmargin",
-            "n_method": "nccmethod",
-            "n_connect": "nccconnect",
-            "n_contour": "ncccontour",
-            "n_offset": "nccoffset",
-            "n_offset_value": "nccoffset_value",
-            "n_milling_type": "milling_type",
+            "n_operation": "tools_nccoperation",
+            "n_overlap": "tools_nccoverlap",
+            "n_margin": "tools_nccmargin",
+            "n_method": "tools_nccmethod",
+            "n_connect": "tools_nccconnect",
+            "n_contour": "tools_ncccontour",
+            "n_offset": "tools_ncc_offset_choice",
+            "n_offset_value": "tools_ncc_offset_value",
+            "n_milling_type": "tools_nccmilling_type",
         }
 
         self.old_tool_dia = None
@@ -761,7 +761,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         current_row = self.tools_table.currentRow()
         try:
             current_uid = int(self.tools_table.item(current_row, 3).text())
-            self.ncc_tools[current_uid]['data']['nccoperation'] = val
+            self.ncc_tools[current_uid]['data']['tools_nccoperation'] = val
         except AttributeError:
             return
 
@@ -1036,17 +1036,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
-            "nccoperation": self.app.defaults["tools_nccoperation"],
-            "nccmargin": self.app.defaults["tools_nccmargin"],
-            "nccmethod": self.app.defaults["tools_nccmethod"],
-            "nccconnect": self.app.defaults["tools_nccconnect"],
-            "ncccontour": self.app.defaults["tools_ncccontour"],
-            "nccoverlap": self.app.defaults["tools_nccoverlap"],
+            "tools_nccoperation": self.app.defaults["tools_nccoperation"],
+            "tools_nccmargin": self.app.defaults["tools_nccmargin"],
+            "tools_nccmethod": self.app.defaults["tools_nccmethod"],
+            "tools_nccconnect": self.app.defaults["tools_nccconnect"],
+            "tools_ncccontour": self.app.defaults["tools_ncccontour"],
+            "tools_nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccrest": self.app.defaults["tools_nccrest"],
             "nccref": self.app.defaults["tools_nccref"],
-            "nccoffset": self.app.defaults["tools_ncc_offset_choice"],
-            "nccoffset_value": self.app.defaults["tools_ncc_offset_value"],
-
+            "tools_ncc_offset_choice": self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value": self.app.defaults["tools_ncc_offset_value"],
+            "tools_nccmilling_type": self.app.defaults["tools_nccmilling_type"],
         }
 
         try:
@@ -2256,7 +2256,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             #     if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
             #         sorted_tools.append(float(self.tools_table.item(row, 1).text()))
             for tooluid in self.ncc_tools:
-                if self.ncc_tools[tooluid]['data']['nccoperation'] == 'clear':
+                if self.ncc_tools[tooluid]['data']['tools_nccoperation'] == 'clear':
                     sorted_tools.append(self.ncc_tools[tooluid]['tooldia'])
 
         # ########################################################################################################
@@ -2335,13 +2335,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         tooluid = int(k)
                         break
 
-                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tooluid]["data"]["nccmargin"])
-                ncc_method = self.ncc_tools[tooluid]["data"]["nccmethod"]
-                ncc_connect = self.ncc_tools[tooluid]["data"]["nccconnect"]
-                ncc_contour = self.ncc_tools[tooluid]["data"]["ncccontour"]
-                has_offset = self.ncc_tools[tooluid]["data"]["nccoffset"]
-                ncc_offset = float(self.ncc_tools[tooluid]["data"]["nccoffset_value"])
+                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.ncc_tools[tooluid]["data"]["tools_nccmargin"])
+                ncc_method = self.ncc_tools[tooluid]["data"]["tools_nccmethod"]
+                ncc_connect = self.ncc_tools[tooluid]["data"]["tools_nccconnect"]
+                ncc_contour = self.ncc_tools[tooluid]["data"]["tools_ncccontour"]
+                has_offset = self.ncc_tools[tooluid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.ncc_tools[tooluid]["data"]["tools_ncc_offset_value"])
 
                 cleared_geo[:] = []
 
@@ -2620,13 +2620,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         tooluid = int(k)
                         break
 
-                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tooluid]["data"]["nccmargin"])
-                ncc_method = self.ncc_tools[tooluid]["data"]["nccmethod"]
-                ncc_connect = self.ncc_tools[tooluid]["data"]["nccconnect"]
-                ncc_contour = self.ncc_tools[tooluid]["data"]["ncccontour"]
-                has_offset = self.ncc_tools[tooluid]["data"]["nccoffset"]
-                ncc_offset = float(self.ncc_tools[tooluid]["data"]["nccoffset_value"])
+                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.ncc_tools[tooluid]["data"]["tools_nccmargin"])
+                ncc_method = self.ncc_tools[tooluid]["data"]["tools_nccmethod"]
+                ncc_connect = self.ncc_tools[tooluid]["data"]["tools_nccconnect"]
+                ncc_contour = self.ncc_tools[tooluid]["data"]["tools_ncccontour"]
+                has_offset = self.ncc_tools[tooluid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.ncc_tools[tooluid]["data"]["tools_ncc_offset_value"])
 
                 tool_used = tool - 1e-12
                 cleared_geo[:] = []
