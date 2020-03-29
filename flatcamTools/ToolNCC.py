@@ -3911,20 +3911,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         return ret_val
 
-    def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-
-    def reset_usage(self):
-        self.obj_name = ""
-        self.ncc_obj = None
-        self.bound_obj = None
-
-        self.first_click = False
-        self.cursor_pos = None
-        self.mouse_is_dragging = False
-
-        self.sel_rect = []
-
     @staticmethod
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]
@@ -4057,6 +4043,21 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
         self.app.on_tools_database(source='ncc')
+        self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()
         self.app.tools_db_tab.cancel_tool_from_db.show()
+
+    def reset_fields(self):
+        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+    def reset_usage(self):
+        self.obj_name = ""
+        self.ncc_obj = None
+        self.bound_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []

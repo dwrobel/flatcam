@@ -2229,6 +2229,9 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.current_toolid = None
 
+        # variable to show if double clicking and item will trigger adding a tool from DB
+        self.ok_to_add = False
+
         # ##############################################################################
         # ######################## SIGNALS #############################################
         # ##############################################################################
@@ -2247,6 +2250,8 @@ class ToolsDB2(QtWidgets.QWidget):
         self.tree_widget.itemChanged.connect(self.on_list_item_edited)
         self.tree_widget.customContextMenuRequested.connect(self.on_menu_request)
 
+        self.tree_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
+
         self.setup_db_ui()
 
     def on_menu_request(self, pos):
@@ -2263,6 +2268,11 @@ class ToolsDB2(QtWidgets.QWidget):
 
         # tree_item = self.tree_widget.itemAt(pos)
         menu.exec(self.tree_widget.viewport().mapToGlobal(pos))
+
+    def on_item_double_clicked(self, item, column):
+        if column == 0 and self.ok_to_add is True:
+            self.ok_to_add = False
+            self.on_tool_requested_from_app()
 
     def on_list_selection_change(self, current, previous):
         # for idx in current.indexes():

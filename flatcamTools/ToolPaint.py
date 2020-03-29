@@ -4423,6 +4423,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
         self.app.on_tools_database(source='paint')
+        self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()
         self.app.tools_db_tab.cancel_tool_from_db.show()
