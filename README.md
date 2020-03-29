@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 29.03.2020
 
 - modified the new database to accept data from NCC and Paint Tools
+- fixed issues in the new database when adding the tool in a Geometry object
 
 28.03.2020
 

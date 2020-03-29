@@ -1632,7 +1632,7 @@ class ToolsDB2(QtWidgets.QWidget):
               "The speed on XY plane used while cutting into material."))
 
         self.frxy_entry = FCDoubleSpinner()
-        self.frxy_entry.set_range(-9999.9999, 9999.9999)
+        self.frxy_entry.set_range(-999999.9999, 999999.9999)
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setObjectName('gdb_frxy')
 
@@ -1646,7 +1646,7 @@ class ToolsDB2(QtWidgets.QWidget):
               "The speed on Z plane."))
 
         self.frz_entry = FCDoubleSpinner()
-        self.frz_entry.set_range(-9999.9999, 9999.9999)
+        self.frz_entry.set_range(-999999.9999, 999999.9999)
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setObjectName('gdb_frz')
 
@@ -1661,9 +1661,9 @@ class ToolsDB2(QtWidgets.QWidget):
               "The speed of the spindle in RPM."))
 
         self.spindle_entry = FCDoubleSpinner()
-        self.spindle_entry.set_range(-9999.9999, 9999.9999)
+        self.spindle_entry.set_range(-999999.9999, 999999.9999)
         self.spindle_entry.set_precision(self.decimals)
-        self.frz_entry.setObjectName('gdb_spindle')
+        self.spindle_entry.setObjectName('gdb_spindle')
 
         self.grid0.addWidget(self.spindle_label, 15, 0)
         self.grid0.addWidget(self.spindle_entry, 15, 1)
@@ -1873,9 +1873,6 @@ class ToolsDB2(QtWidgets.QWidget):
               "- conventional / useful when there is no backlash compensation")
         )
         self.milling_type_radio.setObjectName("gdb_n_milling_type")
-
-        self.milling_type_label.setEnabled(False)
-        self.milling_type_radio.setEnabled(False)
 
         self.grid2.addWidget(self.milling_type_label, 14, 0)
         self.grid2.addWidget(self.milling_type_radio, 14, 1)
@@ -2179,11 +2176,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_ncc_offset_value":   self.ncc_offset_spinner,
 
             # Paint
-            "paintoverlap":     self.paintoverlap_entry,
-            "paintmargin":      self.paintmargin_entry,
-            "paintmethod":      self.paintmethod_combo,
-            "pathconnect":      self.pathconnect_cb,
-            "paintcontour":     self.paintcontour_cb,
+            "tools_paintoverlap":       self.paintoverlap_entry,
+            "tools_paintmargin":        self.paintmargin_entry,
+            "tools_paintmethod":        self.paintmethod_combo,
+            "tools_pathconnect":        self.pathconnect_cb,
+            "tools_paintcontour":       self.paintcontour_cb,
         }
 
         self.name2option = {
@@ -2212,22 +2209,22 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_ecut_length":      "extracut_length",
 
             # NCC
-            "gdb_n_operation":      "nccoperation",
-            "gdb_n_overlap":        "nccoverlap",
-            "gdb_n_margin":         "nccmargin",
-            "gdb_n_method":         "nccmethod",
-            "gdb_n_connect":        "nccconnect",
-            "gdb_n_contour":        "ncccontour",
-            "gdb_n_offset":         "nccoffset",
-            "gdb_n_offset_value":   "nccoffset_value",
-            "gdb_n_milling_type":   "milling_type",
+            "gdb_n_operation":      "tools_nccoperation",
+            "gdb_n_overlap":        "tools_nccoverlap",
+            "gdb_n_margin":         "tools_nccmargin",
+            "gdb_n_method":         "tools_nccmethod",
+            "gdb_n_connect":        "tools_nccconnect",
+            "gdb_n_contour":        "tools_ncccontour",
+            "gdb_n_offset":         "tools_ncc_offset_choice",
+            "gdb_n_offset_value":   "tools_ncc_offset_value",
+            "gdb_n_milling_type":   "tools_nccmilling_type",
 
             # Paint
-            'gdb_p_overlap':        "paintoverlap",
-            'gdb_p_margin':         "paintmargin",
-            'gdb_p_method':         "paintmethod",
-            'gdb_p_connect':        "pathconnect",
-            'gdb_p_contour':        "paintcontour",
+            'gdb_p_overlap':        "tools_paintoverlap",
+            'gdb_p_margin':         "tools_paintmargin",
+            'gdb_p_method':         "tools_paintmethod",
+            'gdb_p_connect':        "tools_pathconnect",
+            'gdb_p_contour':        "tools_paintcontour",
         }
 
         self.current_toolid = None
@@ -2376,7 +2373,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.paint_box.setEnabled(True)
 
                 self.tree_widget.setCurrentItem(self.tree_widget.topLevelItem(0))
-                self.tree_widget.setFocus()
+                # self.tree_widget.setFocus()
 
             else:
                 # Disable GUI
@@ -2430,11 +2427,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
 
             # Paint
-            "paintoverlap":             float(self.app.defaults["tools_paintoverlap"]),
-            "paintmargin":              float(self.app.defaults["tools_paintmargin"]),
-            "paintmethod":              self.app.defaults["tools_paintmethod"],
-            "pathconnect":              self.app.defaults["tools_pathconnect"],
-            "paintcontour":             self.app.defaults["tools_paintcontour"],
+            "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
+            "tools_paintmargin":        float(self.app.defaults["tools_paintmargin"]),
+            "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
+            "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
+            "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
         })
 
         dict_elem = {}
@@ -2638,6 +2635,10 @@ class ToolsDB2(QtWidgets.QWidget):
             if isinstance(wdg, FCCheckBox):
                 wdg.toggled.connect(self.update_storage)
 
+            # FCRadio
+            if isinstance(wdg, RadioSet):
+                wdg.activated_custom.connect(self.update_storage)
+
             # SpinBox, DoubleSpinBox
             if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
                 wdg.valueChanged.connect(self.update_storage)
@@ -2672,6 +2673,13 @@ class ToolsDB2(QtWidgets.QWidget):
                 except (TypeError, AttributeError):
                     pass
 
+            # FCRadio
+            if isinstance(wdg, RadioSet):
+                try:
+                    wdg.activated_custom.disconnect(self.update_storage)
+                except (TypeError, AttributeError):
+                    pass
+
             # SpinBox, DoubleSpinBox
             if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
                 try:
@@ -2688,68 +2696,109 @@ class ToolsDB2(QtWidgets.QWidget):
         item.setData(1, QtCore.Qt.DisplayRole, val)
 
     def update_storage(self):
-
+        """
+        Update the dictionary that is the storage of the tools 'database'
+        :return:
+        """
         tool_id = str(self.current_toolid)
+
         wdg = self.sender()
         if wdg is None:
             return
+
         wdg_name = wdg.objectName()
 
+        try:
+            val = wdg.get_value()
+        except AttributeError:
+            return
+
         if wdg_name == "gdb_name":
-            self.db_tool_dict[tool_id]['name'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['name'] = val
         elif wdg_name == "gdb_dia":
-            self.db_tool_dict[tool_id]['tooldia'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['tooldia'] = val
         elif wdg_name == "gdb_tool_offset":
-            self.db_tool_dict[tool_id]['offset'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['offset'] = val
         elif wdg_name == "gdb_custom_offset":
-            self.db_tool_dict[tool_id]['offset_value'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['offset_value'] = val
         elif wdg_name == "gdb_type":
-            self.db_tool_dict[tool_id]['type'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['type'] = val
         elif wdg_name == "gdb_shape":
-            self.db_tool_dict[tool_id]['tool_type'] = wdg.get_value()
+            self.db_tool_dict[tool_id]['tool_type'] = val
         else:
             if wdg_name == "gdb_cutz":
-                self.db_tool_dict[tool_id]['data']['cutz'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['cutz'] = val
             elif wdg_name == "gdb_multidepth":
-                self.db_tool_dict[tool_id]['data']['multidepth'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['multidepth'] = val
             elif wdg_name == "gdb_multidepth_entry":
-                self.db_tool_dict[tool_id]['data']['depthperpass'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['depthperpass'] = val
 
             elif wdg_name == "gdb_travel":
-                self.db_tool_dict[tool_id]['data']['travelz'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['travelz'] = val
             elif wdg_name == "gdb_frxy":
-                self.db_tool_dict[tool_id]['data']['feedrate'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['feedrate'] = val
             elif wdg_name == "gdb_frz":
-                self.db_tool_dict[tool_id]['data']['feedrate_z'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['feedrate_z'] = val
             elif wdg_name == "gdb_spindle":
-                self.db_tool_dict[tool_id]['data']['spindlespeed'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['spindlespeed'] = val
             elif wdg_name == "gdb_dwell":
-                self.db_tool_dict[tool_id]['data']['dwell'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['dwell'] = val
             elif wdg_name == "gdb_dwelltime":
-                self.db_tool_dict[tool_id]['data']['dwelltime'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['dwelltime'] = val
 
             elif wdg_name == "gdb_vdia":
-                self.db_tool_dict[tool_id]['data']['vtipdia'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['vtipdia'] = val
             elif wdg_name == "gdb_vangle":
-                self.db_tool_dict[tool_id]['data']['vtipangle'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['vtipangle'] = val
             elif wdg_name == "gdb_frapids":
-                self.db_tool_dict[tool_id]['data']['feedrate_rapid'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['feedrate_rapid'] = val
             elif wdg_name == "gdb_ecut":
-                self.db_tool_dict[tool_id]['data']['extracut'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['extracut'] = val
             elif wdg_name == "gdb_ecut_length":
-                self.db_tool_dict[tool_id]['data']['extracut_length'] = wdg.get_value()
+                self.db_tool_dict[tool_id]['data']['extracut_length'] = val
+
+            # NCC Tool
+            elif wdg_name == "gdb_n_operation":
+                self.db_tool_dict[tool_id]['data']['tools_nccoperation'] = val
+            elif wdg_name == "gdb_n_overlap":
+                self.db_tool_dict[tool_id]['data']['tools_nccoverlap'] = val
+            elif wdg_name == "gdb_n_margin":
+                self.db_tool_dict[tool_id]['data']['tools_nccmargin'] = val
+            elif wdg_name == "gdb_n_method":
+                self.db_tool_dict[tool_id]['data']['tools_nccmethod'] = val
+            elif wdg_name == "gdb_n_connect":
+                self.db_tool_dict[tool_id]['data']['tools_nccconnect'] = val
+            elif wdg_name == "gdb_n_contour":
+                self.db_tool_dict[tool_id]['data']['tools_ncccontour'] = val
+            elif wdg_name == "gdb_n_offset":
+                self.db_tool_dict[tool_id]['data']['tools_ncc_offset_choice'] = val
+            elif wdg_name == "gdb_n_offset_value":
+                self.db_tool_dict[tool_id]['data']['tools_ncc_offset_value'] = val
+            elif wdg_name == "gdb_n_milling_type":
+                self.db_tool_dict[tool_id]['data']['tools_nccmilling_type'] = val
+
+            # Paint Tool
+            elif wdg_name == "gdb_p_overlap":
+                self.db_tool_dict[tool_id]['data']['tools_paintoverlap'] = val
+            elif wdg_name == "gdb_p_margin":
+                self.db_tool_dict[tool_id]['data']['tools_paintmargin'] = val
+            elif wdg_name == "gdb_p_method":
+                self.db_tool_dict[tool_id]['data']['tools_paintmethod'] = val
+            elif wdg_name == "gdb_p_connect":
+                self.db_tool_dict[tool_id]['data']['tools_pathconnect'] = val
+            elif wdg_name == "gdb_p_contour":
+                self.db_tool_dict[tool_id]['data']['tools_paintcontour'] = val
 
         self.callback_app()
 
     def on_tool_requested_from_app(self):
-        if not self.table_widget.selectionModel().selectedRows():
+        if not self.tree_widget.selectedItems():
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("No Tool/row selected in the Tools Database table"))
             return
 
-        model_index_list = self.table_widget.selectionModel().selectedRows()
-        for model_index in model_index_list:
-            selected_row = model_index.row()
-            tool_uid = selected_row + 1
+        for item in self.tree_widget.selectedItems():
+            tool_uid = item.data(0, QtCore.Qt.DisplayRole)
+
             for key in self.db_tool_dict.keys():
                 if str(key) == str(tool_uid):
                     selected_tool = self.db_tool_dict[key]
