@@ -163,8 +163,19 @@ class FCTree(QtWidgets.QTreeWidget):
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
 
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
+                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+
+        # make inactive rows text some color as active; may be useful in the future
+        # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
+        #                  palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
+        self.setPalette(palette)
+
         if extended_sel:
             self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self.protected_column = protected_column
         self.itemDoubleClicked.connect(self.on_double_click)
@@ -209,6 +220,8 @@ class FCTree(QtWidgets.QTreeWidget):
         item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.DontShowIndicator)
         if editable:
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+        item.setFlags(item.flags() | QtCore.Qt.ItemIsSelectable)
 
         for t in range(len(title)):
             item.setText(t, title[t])

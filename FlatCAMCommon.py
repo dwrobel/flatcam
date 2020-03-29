@@ -1459,8 +1459,8 @@ class ToolsDB2(QtWidgets.QWidget):
         }
         """)
         self.basic_vlay = QtWidgets.QVBoxLayout()
-        self.basic_box.setTitle(_("Basic Parameters"))
-        self.basic_box.setMinimumWidth(250)
+        self.basic_box.setTitle(_("Basic Geo Parameters"))
+        self.basic_box.setFixedWidth(250)
 
         self.advanced_box = QtWidgets.QGroupBox()
         self.advanced_box.setStyleSheet("""
@@ -1471,14 +1471,50 @@ class ToolsDB2(QtWidgets.QWidget):
                 }
                 """)
         self.advanced_vlay = QtWidgets.QVBoxLayout()
-        self.advanced_box.setTitle(_("Advanced Parameters"))
-        self.advanced_box.setMinimumWidth(250)
+        self.advanced_box.setTitle(_("Advanced Geo Parameters"))
+        self.advanced_box.setFixedWidth(250)
+
+        self.ncc_box = QtWidgets.QGroupBox()
+        self.ncc_box.setStyleSheet("""
+                        QGroupBox
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
+        self.ncc_vlay = QtWidgets.QVBoxLayout()
+        self.ncc_box.setTitle(_("NCC Parameters"))
+        self.ncc_box.setFixedWidth(250)
+
+        self.paint_box = QtWidgets.QGroupBox()
+        self.paint_box.setStyleSheet("""
+                        QGroupBox
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
+        self.paint_vlay = QtWidgets.QVBoxLayout()
+        self.paint_box.setTitle(_("Paint Parameters"))
+        self.paint_box.setFixedWidth(250)
 
         self.basic_box.setLayout(self.basic_vlay)
         self.advanced_box.setLayout(self.advanced_vlay)
+        self.ncc_box.setLayout(self.ncc_vlay)
+        self.paint_box.setLayout(self.paint_vlay)
 
-        param_hlay.addWidget(self.basic_box)
-        param_hlay.addWidget(self.advanced_box)
+        geo_vlay = QtWidgets.QVBoxLayout()
+        geo_vlay.addWidget(self.basic_box)
+        geo_vlay.addWidget(self.advanced_box)
+        geo_vlay.addStretch()
+
+        tools_vlay = QtWidgets.QVBoxLayout()
+        tools_vlay.addWidget(self.ncc_box)
+        tools_vlay.addWidget(self.paint_box)
+        tools_vlay.addStretch()
+
+        param_hlay.addLayout(geo_vlay)
+        param_hlay.addLayout(tools_vlay)
         param_hlay.addStretch()
 
         # ###########################################################################
@@ -1492,7 +1528,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.basic_vlay.addStretch()
 
         # Tool Name
-        self.name_label = QtWidgets.QLabel('%s:' % _('Tool Name'))
+        self.name_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Tool Name'))
         self.name_label.setToolTip(
             _("Tool name.\n"
               "This is not used in the app, it's function\n"
@@ -1731,7 +1767,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.grid1.addWidget(self.vdia_entry, 7, 1)
 
         # V-Angle
-        self.vangle_label = QtWidgets.QLabel('%s:' %  _("V-Angle"))
+        self.vangle_label = QtWidgets.QLabel('%s:' % _("V-Angle"))
         self.vangle_label.setToolTip(
             _("V-Agle.\n"
               "Angle at the tip for the V-Shape Tools."))
@@ -1745,7 +1781,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.grid1.addWidget(self.vangle_entry, 8, 1)
 
         # Feedrate Rapids
-        self.frapids_label = QtWidgets.QLabel('%s:' %  _("FR Rapids"))
+        self.frapids_label = QtWidgets.QLabel('%s:' % _("FR Rapids"))
         self.frapids_label.setToolTip(
             _("FR Rapids. Feedrate Rapids\n"
               "Speed used while moving as fast as possible.\n"
@@ -1792,6 +1828,245 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.grid1.addWidget(self.ecut_length_label, 13, 0)
         self.grid1.addWidget(self.ecut_length_entry, 13, 1)
+
+        # ###########################################################################
+        # ############### NCC UI form ###############################################
+        # ###########################################################################
+
+        self.grid2 = QtWidgets.QGridLayout()
+        self.ncc_vlay.addLayout(self.grid2)
+        self.grid2.setColumnStretch(0, 0)
+        self.grid2.setColumnStretch(1, 1)
+        self.ncc_vlay.addStretch()
+
+        # Operation
+        op_label = QtWidgets.QLabel('%s:' % _('Operation'))
+        op_label.setToolTip(
+            _("The 'Operation' can be:\n"
+              "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
+              "If it's not successful then the non-copper clearing will fail, too.\n"
+              "- Clear -> the regular non-copper clearing.")
+        )
+
+        self.op_radio = RadioSet([
+            {"label": _("Clear"), "value": "clear"},
+            {"label": _("Isolation"), "value": "iso"}
+        ], orientation='horizontal', stretch=False)
+        self.op_radio.setObjectName("gdb_n_operation")
+
+        self.grid2.addWidget(op_label, 13, 0)
+        self.grid2.addWidget(self.op_radio, 13, 1)
+
+        # Milling Type Radio Button
+        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conventional'), 'value': 'cv'}])
+        self.milling_type_radio.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+        self.milling_type_radio.setObjectName("gdb_n_milling_type")
+
+        self.milling_type_label.setEnabled(False)
+        self.milling_type_radio.setEnabled(False)
+
+        self.grid2.addWidget(self.milling_type_label, 14, 0)
+        self.grid2.addWidget(self.milling_type_radio, 14, 1)
+
+        # Overlap Entry
+        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        nccoverlabel.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be cleared are still \n"
+              "not cleared.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
+        )
+        self.ncc_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.ncc_overlap_entry.set_precision(self.decimals)
+        self.ncc_overlap_entry.setWrapping(True)
+        self.ncc_overlap_entry.setRange(0.000, 99.9999)
+        self.ncc_overlap_entry.setSingleStep(0.1)
+        self.ncc_overlap_entry.setObjectName("gdb_n_overlap")
+
+        self.grid2.addWidget(nccoverlabel, 15, 0)
+        self.grid2.addWidget(self.ncc_overlap_entry, 15, 1)
+
+        # Margin
+        nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        nccmarginlabel.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.ncc_margin_entry = FCDoubleSpinner()
+        self.ncc_margin_entry.set_precision(self.decimals)
+        self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.ncc_margin_entry.setObjectName("gdb_n_margin")
+
+        self.grid2.addWidget(nccmarginlabel, 16, 0)
+        self.grid2.addWidget(self.ncc_margin_entry, 16, 1)
+
+        # Method
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel.setToolTip(
+            _("Algorithm for copper clearing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
+        )
+
+        self.ncc_method_combo = FCComboBox()
+        self.ncc_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
+        self.ncc_method_combo.setObjectName("gdb_n_method")
+
+        self.grid2.addWidget(methodlabel, 17, 0)
+        self.grid2.addWidget(self.ncc_method_combo, 17, 1)
+
+        # Connect lines
+        self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.ncc_connect_cb.setObjectName("gdb_n_connect")
+
+        self.ncc_connect_cb.setToolTip(
+            _("Draw lines between resulting\n"
+              "segments to minimize tool lifts.")
+        )
+        self.grid2.addWidget(self.ncc_connect_cb, 18, 0)
+
+        # Contour
+        self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.ncc_contour_cb.setObjectName("gdb_n_contour")
+
+        self.ncc_contour_cb.setToolTip(
+            _("Cut around the perimeter of the polygon\n"
+              "to trim rough edges.")
+        )
+        self.grid2.addWidget(self.ncc_contour_cb, 18, 1)
+
+        # ## NCC Offset choice
+        self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
+        self.ncc_choice_offset_cb.setObjectName("gdb_n_offset")
+
+        self.ncc_choice_offset_cb.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        self.grid2.addWidget(self.ncc_choice_offset_cb, 19, 0)
+
+        # ## NCC Offset Entry
+        self.ncc_offset_spinner = FCDoubleSpinner()
+        self.ncc_offset_spinner.set_range(0.00, 10.00)
+        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.setWrapping(True)
+        self.ncc_offset_spinner.setObjectName("gdb_n_offset_value")
+
+        units = self.app.defaults['units'].upper()
+        if units == 'MM':
+            self.ncc_offset_spinner.setSingleStep(0.1)
+        else:
+            self.ncc_offset_spinner.setSingleStep(0.01)
+
+        self.grid2.addWidget(self.ncc_offset_spinner, 19, 1)
+
+        # ###########################################################################
+        # ############### Paint UI form #############################################
+        # ###########################################################################
+
+        self.grid3 = QtWidgets.QGridLayout()
+        self.paint_vlay.addLayout(self.grid3)
+        self.grid3.setColumnStretch(0, 0)
+        self.grid3.setColumnStretch(1, 1)
+        self.paint_vlay.addStretch()
+
+        # Overlap
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        ovlabel.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be painted are still \n"
+              "not painted.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
+        )
+        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
+        self.paintoverlap_entry.set_precision(3)
+        self.paintoverlap_entry.setWrapping(True)
+        self.paintoverlap_entry.setRange(0.0000, 99.9999)
+        self.paintoverlap_entry.setSingleStep(0.1)
+        self.paintoverlap_entry.setObjectName('gdb_p_overlap')
+
+        self.grid3.addWidget(ovlabel, 1, 0)
+        self.grid3.addWidget(self.paintoverlap_entry, 1, 1)
+
+        # Margin
+        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        marginlabel.setToolTip(
+            _("Distance by which to avoid\n"
+              "the edges of the polygon to\n"
+              "be painted.")
+        )
+        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry.set_precision(self.decimals)
+        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.setObjectName('gdb_p_margin')
+
+        self.grid3.addWidget(marginlabel, 2, 0)
+        self.grid3.addWidget(self.paintmargin_entry, 2, 1)
+
+        # Method
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel.setToolTip(
+            _("Algorithm for painting:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.\n"
+              "- Laser-lines: Active only for Gerber objects.\n"
+              "Will create lines that follow the traces.\n"
+              "- Combo: In case of failure a new method will be picked from the above\n"
+              "in the order specified.")
+        )
+
+        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
+        )
+        idx = self.paintmethod_combo.findText(_("Laser_lines"))
+        self.paintmethod_combo.model().item(idx).setEnabled(False)
+
+        self.paintmethod_combo.setObjectName('gdb_p_method')
+
+        self.grid3.addWidget(methodlabel, 7, 0)
+        self.grid3.addWidget(self.paintmethod_combo, 7, 1)
+
+        # Connect lines
+        self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
+        self.pathconnect_cb.setObjectName('gdb_p_connect')
+        self.pathconnect_cb.setToolTip(
+            _("Draw lines between resulting\n"
+              "segments to minimize tool lifts.")
+        )
+
+        self.paintcontour_cb = FCCheckBox('%s' % _("Contour"))
+        self.paintcontour_cb.setObjectName('gdb_p_contour')
+        self.paintcontour_cb.setToolTip(
+            _("Cut around the perimeter of the polygon\n"
+              "to trim rough edges.")
+        )
+
+        self.grid3.addWidget(self.pathconnect_cb, 10, 0)
+        self.grid3.addWidget(self.paintcontour_cb, 10, 1)
 
         # ####################################################################
         # ####################################################################
@@ -1890,7 +2165,25 @@ class ToolsDB2(QtWidgets.QWidget):
             "vtipangle":        self.vangle_entry,
             "feedrate_rapid":   self.frapids_entry,
             "extracut":         self.ecut_cb,
-            "extracut_length":  self.ecut_length_entry
+            "extracut_length":  self.ecut_length_entry,
+
+            # NCC
+            "tools_nccoperation":       self.op_radio,
+            "tools_nccmilling_type":    self.milling_type_radio,
+            "tools_nccoverlap":         self.ncc_overlap_entry,
+            "tools_nccmargin":          self.ncc_margin_entry,
+            "tools_nccmethod":          self.ncc_method_combo,
+            "tools_nccconnect":         self.ncc_connect_cb,
+            "tools_ncccontour":         self.ncc_contour_cb,
+            "tools_ncc_offset_choice":  self.ncc_choice_offset_cb,
+            "tools_ncc_offset_value":   self.ncc_offset_spinner,
+
+            # Paint
+            "paintoverlap":     self.paintoverlap_entry,
+            "paintmargin":      self.paintmargin_entry,
+            "paintmethod":      self.paintmethod_combo,
+            "pathconnect":      self.pathconnect_cb,
+            "paintcontour":     self.paintcontour_cb,
         }
 
         self.name2option = {
@@ -1916,7 +2209,25 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_vangle":           "vtipangle",
             "gdb_frapids":          "feedrate_rapid",
             "gdb_ecut":             "extracut",
-            "gdb_ecut_length":      "extracut_length"
+            "gdb_ecut_length":      "extracut_length",
+
+            # NCC
+            "gdb_n_operation":      "nccoperation",
+            "gdb_n_overlap":        "nccoverlap",
+            "gdb_n_margin":         "nccmargin",
+            "gdb_n_method":         "nccmethod",
+            "gdb_n_connect":        "nccconnect",
+            "gdb_n_contour":        "ncccontour",
+            "gdb_n_offset":         "nccoffset",
+            "gdb_n_offset_value":   "nccoffset_value",
+            "gdb_n_milling_type":   "milling_type",
+
+            # Paint
+            'gdb_p_overlap':        "paintoverlap",
+            'gdb_p_margin':         "paintmargin",
+            'gdb_p_method':         "paintmethod",
+            'gdb_p_connect':        "pathconnect",
+            'gdb_p_contour':        "paintcontour",
         }
 
         self.current_toolid = None
@@ -1993,7 +2304,6 @@ class ToolsDB2(QtWidgets.QWidget):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-
         tooluid_item = int(tool)
 
         for tooluid_key, tooluid_val in self.db_tool_dict.items():
@@ -2058,13 +2368,26 @@ class ToolsDB2(QtWidgets.QWidget):
         if self.current_toolid is None or self.current_toolid < 1:
             if self.db_tool_dict:
                 self.storage_to_form(self.db_tool_dict['1'])
+
+                # Enable GUI
+                self.basic_box.setEnabled(True)
+                self.advanced_box.setEnabled(True)
+                self.ncc_box.setEnabled(True)
+                self.paint_box.setEnabled(True)
+
+                self.tree_widget.setCurrentItem(self.tree_widget.topLevelItem(0))
+                self.tree_widget.setFocus()
+
+            else:
+                # Disable GUI
+                self.basic_box.setEnabled(False)
+                self.advanced_box.setEnabled(False)
+                self.ncc_box.setEnabled(False)
+                self.paint_box.setEnabled(False)
         else:
             self.storage_to_form(self.db_tool_dict[str(self.current_toolid)])
 
         self.ui_connect()
-
-    def add_tool_table_line(self, row, name, tooldict):
-        data = tooldict['data']
 
     def on_tool_add(self):
         """
@@ -2074,26 +2397,44 @@ class ToolsDB2(QtWidgets.QWidget):
 
         default_data = {}
         default_data.update({
-            "cutz": float(self.app.defaults["geometry_cutz"]),
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
-            "vtipdia": float(self.app.defaults["geometry_vtipdia"]),
-            "vtipangle": float(self.app.defaults["geometry_vtipangle"]),
-            "travelz": float(self.app.defaults["geometry_travelz"]),
-            "feedrate": float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
-            "startz": self.app.defaults["geometry_startz"],
-            "endz": float(self.app.defaults["geometry_endz"])
+            "cutz":             float(self.app.defaults["geometry_cutz"]),
+            "multidepth":       self.app.defaults["geometry_multidepth"],
+            "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
+            "travelz":          float(self.app.defaults["geometry_travelz"]),
+            "feedrate":         float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z":       float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid":   float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
+            "dwell":            self.app.defaults["geometry_dwell"],
+            "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
+            "ppname_g":         self.app.defaults["geometry_ppname_g"],
+            "extracut":         self.app.defaults["geometry_extracut"],
+            "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
+            "toolchange":       self.app.defaults["geometry_toolchange"],
+            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
+            "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
+            "startz":           self.app.defaults["geometry_startz"],
+            "endz":             float(self.app.defaults["geometry_endz"]),
+
+            # NCC
+            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
+            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"],
+            "tools_nccoverlap":         float(self.app.defaults["tools_nccoverlap"]),
+            "tools_nccmargin":          float(self.app.defaults["tools_nccmargin"]),
+            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
+            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
+            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
+            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
+
+            # Paint
+            "paintoverlap":             float(self.app.defaults["tools_paintoverlap"]),
+            "paintmargin":              float(self.app.defaults["tools_paintmargin"]),
+            "paintmethod":              self.app.defaults["tools_paintmethod"],
+            "pathconnect":              self.app.defaults["tools_pathconnect"],
+            "paintcontour":             self.app.defaults["tools_paintcontour"],
         })
 
         dict_elem = {}

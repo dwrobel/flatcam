@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.03.2020
+
+- modified the new database to accept data from NCC and Paint Tools
+
 28.03.2020
 
 - finished the new database based on a QTreeWidget

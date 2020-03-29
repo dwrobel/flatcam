@@ -140,7 +140,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.992
-    version_date = "2020/02/22"
+    version_date = "2020/03/27"
     beta = True
     engine = '3D'
 
@@ -353,14 +353,14 @@ class App(QtCore.QObject):
             f.close()
 
         # create fctool_tools_db.FlatDB file if there is none
-        try:
-            f = open(self.data_path + '/fctool_tools_db.FlatDB')
-            f.close()
-        except IOError:
-            App.log.debug('Creating empty fctool_tool_db.FlatDB')
-            f = open(self.data_path + '/fctool_tools_db.FlatDB', 'w')
-            json.dump({}, f)
-            f.close()
+        # try:
+        #     f = open(self.data_path + '/fctool_tools_db.FlatDB')
+        #     f.close()
+        # except IOError:
+        #     App.log.debug('Creating empty fctool_tool_db.FlatDB')
+        #     f = open(self.data_path + '/fctool_tools_db.FlatDB', 'w')
+        #     json.dump({}, f)
+        #     f.close()
 
         # create current_defaults.FlatConfig file if there is none
         try:
