@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 30.03.2020
 
 - working to update the Paint Tool
+- fixed some issues in Paint Tool
 
 29.03.2020
 

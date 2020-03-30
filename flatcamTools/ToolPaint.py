@@ -984,9 +984,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "cutz": float(self.cutz_entry.get_value()),
-            "vtipdia": float(self.tipdia_entry.get_value()),
-            "vtipangle": float(self.tipangle_entry.get_value()),
+            "cutz": float(self.app.defaults["tools_paintcutz"],),
+            "vtipdia": float(self.app.defaults["tools_painttipdia"],),
+            "vtipangle": float(self.app.defaults["tools_painttipangle"],),
             "travelz": float(self.app.defaults["geometry_travelz"]),
             "feedrate": float(self.app.defaults["geometry_feedrate"]),
             "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
