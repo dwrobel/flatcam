@@ -1470,8 +1470,13 @@ class Geometry(object):
                 line = LineString([(left, y), (right, y)])
                 line = line.intersection(margin_poly)
 
-                for ll in line:
-                    lines_trimmed.append(ll)
+                try:
+                    for ll in line:
+                        lines_trimmed.append(ll)
+                        if prog_plot:
+                            self.plot_temp_shapes(ll)
+                except TypeError:
+                    lines_trimmed.append(line)
                     if prog_plot:
                         self.plot_temp_shapes(line)
             except Exception as e:
@@ -1502,8 +1507,13 @@ class Geometry(object):
                 line = LineString([(x, top), (x, bot)])
                 line = line.intersection(margin_poly)
 
-                for ll in line:
-                    lines_trimmed.append(ll)
+                try:
+                    for ll in line:
+                        lines_trimmed.append(ll)
+                        if prog_plot:
+                            self.plot_temp_shapes(ll)
+                except TypeError:
+                    lines_trimmed.append(line)
                     if prog_plot:
                         self.plot_temp_shapes(line)
             except Exception as e:

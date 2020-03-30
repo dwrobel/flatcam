@@ -128,6 +128,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)
+        # 3rd column is reserved (and hidden) for the tool ID
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
         self.tools_table.setColumnHidden(3, True)
         self.tools_table.setSortingEnabled(False)
@@ -3971,6 +3972,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return
         self.app.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
 
+        # select last tool added
+        toolid = res
+        for row in range(self.tools_table.rowCount()):
+            if int(self.tools_table.item(row, 3).text()) == toolid:
+                self.tools_table.selectRow(row)
+        self.on_row_selection_change()
+
     def on_ncc_tool_from_db_inserted(self, tool):
         """
         Called from the Tools DB object through a App method when adding a tool from Tools Database
@@ -4012,9 +4020,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_tools.update({
             tooluid: {
                 'tooldia': float('%.*f' % (self.decimals, tooldia)),
-                'offset': 'Path',
-                'offset_value': 0.0,
-                'type': 'Iso',
+                'offset': tool['offset'],
+                'offset_value': tool['offset_value'],
+                'type': tool['type'],
                 'tool_type': tool['tool_type'],
                 'data': deepcopy(tool['data']),
                 'solid_geometry': []
