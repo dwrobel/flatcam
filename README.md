@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+1.04.2020 
+
+- updated the SVG parser to take into consideration the 'Close' svg element and paths that are made from a single line (we may need to switch to svgpathtools module)
+
 30.03.2020
 
 - working to update the Paint Tool

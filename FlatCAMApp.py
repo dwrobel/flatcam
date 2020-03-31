@@ -5323,8 +5323,8 @@ class App(QtCore.QObject):
         # try to quit the Socket opened by ArgsThread class
         try:
             self.new_launch.listener.close()
-        except Exception:
-            pass
+        except Exception as err:
+            log.debug("App.quit_application() --> %s" % str(err))
 
         # quit app by signalling for self.kill_app() method
         self.close_app_signal.emit()
