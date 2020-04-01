@@ -1805,7 +1805,7 @@ class DrawToolShape(object):
                     geoms.append(scale_recursion(local_geom))
                 return geoms
             else:
-                return  affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
 
         try:
             self.geo = scale_recursion(self.geo)
@@ -3264,34 +3264,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # ## Toolbar events and properties
         self.tools = {
-            "select": {"button": self.app.ui.geo_select_btn,
-                       "constructor": FCSelect},
-            "arc": {"button": self.app.ui.geo_add_arc_btn,
-                    "constructor": FCArc},
-            "circle": {"button": self.app.ui.geo_add_circle_btn,
-                       "constructor": FCCircle},
-            "path": {"button": self.app.ui.geo_add_path_btn,
-                     "constructor": FCPath},
-            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn,
-                          "constructor": FCRectangle},
-            "polygon": {"button": self.app.ui.geo_add_polygon_btn,
-                        "constructor": FCPolygon},
-            "text": {"button": self.app.ui.geo_add_text_btn,
-                     "constructor": FCText},
-            "buffer": {"button": self.app.ui.geo_add_buffer_btn,
-                       "constructor": FCBuffer},
-            "paint": {"button": self.app.ui.geo_add_paint_btn,
-                       "constructor": FCPaint},
-            "eraser": {"button": self.app.ui.geo_eraser_btn,
-                       "constructor": FCEraser},
-            "move": {"button": self.app.ui.geo_move_btn,
-                     "constructor": FCMove},
-            "transform": {"button": self.app.ui.geo_transform_btn,
-                          "constructor": FCTransform},
-            "copy": {"button": self.app.ui.geo_copy_btn,
-                     "constructor": FCCopy},
-            "explode": {"button": self.app.ui.geo_explode_btn,
-                        "constructor": FCExplode}
+            "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
+            "arc": {"button": self.app.ui.geo_add_arc_btn, "constructor": FCArc},
+            "circle": {"button": self.app.ui.geo_add_circle_btn, "constructor": FCCircle},
+            "path": {"button": self.app.ui.geo_add_path_btn, "constructor": FCPath},
+            "rectangle": {"button": self.app.ui.geo_add_rectangle_btn, "constructor": FCRectangle},
+            "polygon": {"button": self.app.ui.geo_add_polygon_btn, "constructor": FCPolygon},
+            "text": {"button": self.app.ui.geo_add_text_btn, "constructor": FCText},
+            "buffer": {"button": self.app.ui.geo_add_buffer_btn, "constructor": FCBuffer},
+            "paint": {"button": self.app.ui.geo_add_paint_btn, "constructor": FCPaint},
+            "eraser": {"button": self.app.ui.geo_eraser_btn, "constructor": FCEraser},
+            "move": {"button": self.app.ui.geo_move_btn, "constructor": FCMove},
+            "transform": {"button": self.app.ui.geo_transform_btn, "constructor": FCTransform},
+            "copy": {"button": self.app.ui.geo_copy_btn, "constructor": FCCopy},
+            "explode": {"button": self.app.ui.geo_explode_btn, "constructor": FCExplode}
         }
 
         # # ## Data
@@ -3342,6 +3328,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # signal that there is an action active like polygon or path
         self.in_action = False
+
+        self.units = None
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False

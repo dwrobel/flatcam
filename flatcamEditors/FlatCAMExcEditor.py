@@ -398,7 +398,7 @@ class FCSlot(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_slot.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -538,7 +538,7 @@ class FCSlot(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         try:
@@ -600,7 +600,7 @@ class FCSlotArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -677,9 +677,8 @@ class FCSlotArray(FCShapeTool):
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
                 return
-        except Exception as e:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("The value is mistyped. Check the value."))
+        except Exception:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
         if self.slot_array == 'Linear':
@@ -829,7 +828,7 @@ class FCSlotArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # add the point to slots if the diameter is a key in the dict, if not, create it add the drill location
@@ -1340,7 +1339,7 @@ class FCDrillSelect(DrawTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.exc_editor_app = draw_app
@@ -1739,7 +1738,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_box.addLayout(self.linear_form)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel('%s:'% _('Direction'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -2037,22 +2036,14 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # ## Toolbar events and properties
         self.tools_exc = {
-            "drill_select": {"button": self.app.ui.select_drill_btn,
-                             "constructor": FCDrillSelect},
-            "drill_add": {"button": self.app.ui.add_drill_btn,
-                          "constructor": FCDrillAdd},
-            "drill_array": {"button": self.app.ui.add_drill_array_btn,
-                            "constructor": FCDrillArray},
-            "slot_add": {"button": self.app.ui.add_slot_btn,
-                         "constructor": FCSlot},
-            "slot_array": {"button": self.app.ui.add_slot_array_btn,
-                                "constructor": FCSlotArray},
-            "drill_resize": {"button": self.app.ui.resize_drill_btn,
-                             "constructor": FCDrillResize},
-            "drill_copy": {"button": self.app.ui.copy_drill_btn,
-                           "constructor": FCDrillCopy},
-            "drill_move": {"button": self.app.ui.move_drill_btn,
-                           "constructor": FCDrillMove},
+            "drill_select": {"button": self.app.ui.select_drill_btn, "constructor": FCDrillSelect},
+            "drill_add": {"button": self.app.ui.add_drill_btn, "constructor": FCDrillAdd},
+            "drill_array": {"button": self.app.ui.add_drill_array_btn, "constructor": FCDrillArray},
+            "slot_add": {"button": self.app.ui.add_slot_btn, "constructor": FCSlot},
+            "slot_array": {"button": self.app.ui.add_slot_array_btn, "constructor": FCSlotArray},
+            "drill_resize": {"button": self.app.ui.resize_drill_btn, "constructor": FCDrillResize},
+            "drill_copy": {"button": self.app.ui.copy_drill_btn, "constructor": FCDrillCopy},
+            "drill_move": {"button": self.app.ui.move_drill_btn, "constructor": FCDrillMove},
         }
 
         # ## Data
@@ -2192,7 +2183,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             "operation": self.app.defaults["excellon_operation"],
             "milling_type": self.app.defaults["excellon_milling_type"],
 
-            "milling_dia":self.app.defaults["excellon_milling_dia"],
+            "milling_dia": self.app.defaults["excellon_milling_dia"],
 
             "cutz": self.app.defaults["excellon_cutz"],
             "multidepth": self.app.defaults["excellon_multidepth"],
@@ -2579,9 +2570,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[tool_dia] = tool_dia
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Tool already in the original or actual tool list.\n"
-                                 "Save and reedit Excellon if you need to add this tool. "))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool already in the original or actual tool list.\n" 
+                                                          "Save and reedit Excellon if you need to add this tool. "))
             return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
@@ -2621,9 +2611,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                         deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dd)))
                 else:
                     deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dia)))
-        except Exception as e:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Select a tool in Tool Table"))
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Select a tool in Tool Table"))
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
@@ -2871,7 +2860,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # adjust the status of the menu entries related to the editor
@@ -3468,7 +3457,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -3613,7 +3602,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         pos_canvas = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -3625,7 +3614,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     try:
                         QtGui.QGuiApplication.restoreOverrideCursor()
-                    except Exception as e:
+                    except Exception:
                         pass
                     if self.active_tool.complete is False and not isinstance(self.active_tool, FCDrillSelect):
                         self.active_tool.complete = True
@@ -3704,7 +3693,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             for storage in self.storage_dict:
                 for obj in self.storage_dict[storage].get_objects():
                     if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                        (sel_type is False and poly_selection.intersects(obj.geo)):
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
 
                         if obj in self.selected:
                             # remove the shape object from the selected shapes storage
@@ -3724,7 +3713,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
-        except Exception as e:
+        except Exception:
             pass
 
         # first deselect all rows (tools) in the Tools Table
@@ -3801,7 +3790,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             return
 
         # ## Snap coordinates
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor

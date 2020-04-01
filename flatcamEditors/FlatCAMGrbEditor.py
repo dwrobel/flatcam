@@ -423,7 +423,7 @@ class FCPadArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -515,9 +515,8 @@ class FCPadArray(FCShapeTool):
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
                 return
-        except Exception as e:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("The value is mistyped. Check the value."))
+        except Exception:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
         if self.pad_array == 'Linear':
@@ -3103,6 +3102,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.conversion_factor = 1
 
+        self.apertures_row = 0
+
+        self.complete = True
+
         self.set_ui()
         log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
 
@@ -3332,8 +3335,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 self.storage_dict[ap_id]['geometry'] = []
 
-                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
-                # each time a aperture code is edited or added
+                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and
+                # gets updated on values each time a aperture code is edited or added
                 self.olddia_newdia[ap_id] = ap_id
         else:
             if ap_id not in self.olddia_newdia:
@@ -3945,9 +3948,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             @staticmethod
             def worker_job(app_obj):
                 with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
-                    # ############################################################# ##
+                    # ###############################################################
                     # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-                    # ############################################################# ##
+                    # ###############################################################
 
                     # list of clear geos that are to be applied to the entire file
                     global_clear_geo = []
@@ -3968,9 +3971,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                     # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
                     # clear geometry that fits inside the solid. otherwise we may loose the solid
-                    for apid in app_obj.gerber_obj.apertures:
+                    for ap_id in app_obj.gerber_obj.apertures:
                         temp_solid_geometry = []
-                        if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                        if 'geometry' in app_obj.gerber_obj.apertures[ap_id]:
                             # for elem in self.gerber_obj.apertures[apid]['geometry']:
                             #     if 'solid' in elem:
                             #         solid_geo = elem['solid']
@@ -3998,7 +4001,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             #             if 'follow' in elem:
                             #                 new_elem['follow'] = solid_geo
                             #             temp_elem.append(deepcopy(new_elem))
-                            for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                            for elem in app_obj.gerber_obj.apertures[ap_id]['geometry']:
                                 new_elem = {}
                                 if 'solid' in elem:
                                     solid_geo = elem['solid']
@@ -4019,7 +4022,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     new_elem['follow'] = elem['follow']
                                 temp_solid_geometry.append(deepcopy(new_elem))
 
-                            app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
+                            app_obj.gerber_obj.apertures[ap_id]['geometry'] = deepcopy(temp_solid_geometry)
+
                     log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
                     try:
@@ -4028,9 +4032,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             app_obj.results.append(
                                 app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict))
                             )
-                    except Exception as e:
+                    except Exception as ee:
                         log.debug(
-                            "FlatCAMGrbEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(e))
+                            "FlatCAMGrbEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
                         traceback.print_exc()
 
                     output = []
@@ -4222,7 +4226,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             except KeyError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Aperture definitions in the file. Aborting Gerber creation."))
-            except Exception as e:
+            except Exception:
                 msg = '[ERROR] %s' % \
                       _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
@@ -4240,7 +4244,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.results = []
                 return
 
-            self.app.inform.emit('[success] %s' %  _("Done. Gerber editing finished."))
+            self.app.inform.emit('[success] %s' % _("Done. Gerber editing finished."))
             # make sure to clean the previous results
             self.results = []
 
@@ -4395,7 +4399,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -4462,7 +4466,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -4625,7 +4629,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         # # ## Snap coordinates
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
@@ -4755,7 +4759,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0, tolerance=self.tolerance)
-        except AttributeError as e:
+        except AttributeError:
             if type(geometry) == Point:
                 return
             if len(color) == 9:
@@ -5069,12 +5073,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         area = geo_el.geo['solid'].area
                         try:
                             upper_threshold_val = self.ma_upper_threshold_entry.get_value()
-                        except Exception as e:
+                        except Exception:
                             return
 
                         try:
                             lower_threshold_val = self.ma_lower_threshold_entry.get_value()
-                        except Exception as e:
+                        except Exception:
                             lower_threshold_val = 0.0
 
                         if float(upper_threshold_val) > area > float(lower_threshold_val):

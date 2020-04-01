@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - updated the SVG parser to take into consideration the 'Close' svg element and paths that are made from a single line (we may need to switch to svgpathtools module)
 - minor changes to increase compatibility with Python 3.8
+- PEP8 changes
 
 30.03.2020
 
