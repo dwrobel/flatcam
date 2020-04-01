@@ -185,7 +185,7 @@ class TclCommandPanelize(TclCommand):
                     obj_fin.solid_geometry = []
 
                     for option in obj.options:
-                        if option is not 'name':
+                        if option != 'name':
                             try:
                                 obj_fin.options[option] = obj.options[option]
                             except Exception as e:

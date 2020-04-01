@@ -376,7 +376,7 @@ class FloatEntry(QtWidgets.QLineEdit):
             evaled = eval(raw)
             return float(evaled)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -422,7 +422,7 @@ class FloatEntry2(QtWidgets.QLineEdit):
             evaled = eval(raw)
             return float(evaled)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -602,7 +602,7 @@ class EvalEntry(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled
@@ -642,7 +642,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled

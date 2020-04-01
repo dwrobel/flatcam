@@ -349,7 +349,7 @@ class Properties(FlatCAMTool):
 
         # Options items
         for option in obj.options:
-            if option is 'name':
+            if option == 'name':
                 continue
             self.treeWidget.addChild(options, [str(option), str(obj.options[option])], True)
 

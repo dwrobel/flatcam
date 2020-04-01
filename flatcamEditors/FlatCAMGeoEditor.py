@@ -1327,11 +1327,11 @@ class TransformEditorTool(FlatCAMTool):
 
                     # execute mirroring
                     for sha in shape_list:
-                        if axis is 'X':
+                        if axis == 'X':
                             sha.mirror('X', (px, py))
                             self.app.inform.emit('[success] %s...' %
                                                  _('Flip on the Y axis done'))
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             sha.mirror('Y', (px, py))
                             self.app.inform.emit('[success] %s' %
                                                  _('Flip on the X axis done'))
@@ -1368,9 +1368,9 @@ class TransformEditorTool(FlatCAMTool):
                     yminimal = min(yminlist)
 
                     for sha in shape_list:
-                        if axis is 'X':
+                        if axis == 'X':
                             sha.skew(num, 0, point=(xminimal, yminimal))
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             sha.skew(0, num, point=(xminimal, yminimal))
                         self.draw_app.replot()
 
@@ -1449,9 +1449,9 @@ class TransformEditorTool(FlatCAMTool):
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
                     for sha in shape_list:
-                        if axis is 'X':
+                        if axis == 'X':
                             sha.offset((num, 0))
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             sha.offset((0, num))
                         self.draw_app.replot()
 

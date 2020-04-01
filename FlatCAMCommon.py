@@ -261,7 +261,7 @@ class BookmarkManager(QtWidgets.QWidget):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Title entry is empty."))
             return 'fail'
 
-        if 'link' is kwargs:
+        if 'link' in kwargs:
             link = kwargs['link']
         else:
             link = self.link_entry.get_value()
@@ -1325,7 +1325,7 @@ class ToolsDB(QtWidgets.QWidget):
                         default_data['toolchangez'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == _('Start Z'):
                         default_data['startz'] = float(self.table_widget.item(row, col).text()) \
-                            if self.table_widget.item(row, col).text() is not '' else None
+                            if self.table_widget.item(row, col).text() != '' else None
                     elif column_header_text == _('End Z'):
                         default_data['endz'] = self.table_widget.cellWidget(row, col).get_value()
 

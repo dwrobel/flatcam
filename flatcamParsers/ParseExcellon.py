@@ -967,7 +967,7 @@ class Excellon(Geometry):
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
-                if drill['tool'] is '':
+                if drill['tool'] == '':
                     self.app.inform.emit('[WARNING] %s' %
                                          _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"

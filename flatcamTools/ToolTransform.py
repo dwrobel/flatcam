@@ -760,7 +760,7 @@ class ToolTransform(FlatCAMTool):
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be mirrored/flipped."))
                         else:
-                            if axis is 'X':
+                            if axis == 'X':
                                 sel_obj.mirror('X', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
@@ -770,7 +770,7 @@ class ToolTransform(FlatCAMTool):
                                     sel_obj.options['mirror_y'] = True
                                 self.app.inform.emit('[success] %s...' %
                                                      _('Flip on the Y axis done'))
-                            elif axis is 'Y':
+                            elif axis == 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
@@ -820,11 +820,11 @@ class ToolTransform(FlatCAMTool):
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be skewed."))
                         else:
-                            if axis is 'X':
+                            if axis == 'X':
                                 sel_obj.skew(num, 0, point=(xminimal, yminimal))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['skew_x'] = num
-                            elif axis is 'Y':
+                            elif axis == 'Y':
                                 sel_obj.skew(0, num, point=(xminimal, yminimal))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['skew_y'] = num
@@ -906,11 +906,11 @@ class ToolTransform(FlatCAMTool):
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be offset."))
                         else:
-                            if axis is 'X':
+                            if axis == 'X':
                                 sel_obj.offset((num, 0))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['offset_x'] = num
-                            elif axis is 'Y':
+                            elif axis == 'Y':
                                 sel_obj.offset((0, num))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['offset_y'] = num

@@ -4254,7 +4254,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_aperture_selected is None and current_tool is not 'select':
+        if self.last_aperture_selected is None and current_tool != 'select':
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
@@ -5867,7 +5867,7 @@ class TransformEditorTool(FlatCAMTool):
                 # execute mirroring
                 for sel_el_shape in elem_list:
                     sel_el = sel_el_shape.geo
-                    if axis is 'X':
+                    if axis == 'X':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
                         if 'follow' in sel_el:
@@ -5876,7 +5876,7 @@ class TransformEditorTool(FlatCAMTool):
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' %
                                              _('Flip on the Y axis done'))
-                    elif axis is 'Y':
+                    elif axis == 'Y':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
                         if 'follow' in sel_el:
@@ -5924,14 +5924,14 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
-                        if axis is 'X':
+                        if axis == 'X':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.skew(sel_el['solid'], num, 0, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
                                 sel_el['follow'] = affinity.skew(sel_el['follow'], num, 0, origin=(xminimal, yminimal))
                             if 'clear' in sel_el:
                                 sel_el['clear'] = affinity.skew(sel_el['clear'], num, 0, origin=(xminimal, yminimal))
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.skew(sel_el['solid'], 0, num, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
@@ -6031,14 +6031,14 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
-                        if axis is 'X':
+                        if axis == 'X':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.translate(sel_el['solid'], num, 0)
                             if 'follow' in sel_el:
                                 sel_el['follow'] = affinity.translate(sel_el['follow'], num, 0)
                             if 'clear' in sel_el:
                                 sel_el['clear'] = affinity.translate(sel_el['clear'], num, 0)
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.translate(sel_el['solid'], 0, num)
                             if 'follow' in sel_el:

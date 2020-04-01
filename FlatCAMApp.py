@@ -5317,8 +5317,8 @@ class App(QtCore.QObject):
         # try to quit the QThread that run ArgsThread class
         try:
             self.th.quit()
-        except Exception:
-            pass
+        except Exception as e:
+            log.debug("App.final_save() --> %s" % str(e))
 
         # try to quit the Socket opened by ArgsThread class
         try:
@@ -5327,7 +5327,11 @@ class App(QtCore.QObject):
             log.debug("App.quit_application() --> %s" % str(err))
 
         # quit app by signalling for self.kill_app() method
-        self.close_app_signal.emit()
+        # self.close_app_signal.emit()
+        QtWidgets.qApp.quit()
+        # When the main event loop is not started yet in which case the qApp.quit() will do nothing
+        # we use the following command
+        sys.exit(0)
 
     def kill_app(self):
         QtWidgets.qApp.quit()
@@ -10178,7 +10182,7 @@ class App(QtCore.QObject):
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"),
                                                                    filter=_filter_)
 
-        if type_of_obj is not "geometry" and type_of_obj is not "gerber":
+        if type_of_obj != "geometry" and type_of_obj != "gerber":
             type_of_obj = "geometry"
 
         filenames = [str(filename) for filename in filenames]
@@ -10211,7 +10215,7 @@ class App(QtCore.QObject):
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                                    filter=_filter_)
 
-        if type_of_obj is not "geometry" and type_of_obj is not "gerber":
+        if type_of_obj != "geometry" and type_of_obj != "gerber":
             type_of_obj = "geometry"
 
         filenames = [str(filename) for filename in filenames]

@@ -1130,14 +1130,14 @@ class RulesCheck(FlatCAMTool):
             if self.trace_size_cb.get_value():
                 copper_list = []
                 copper_name_1 = self.copper_t_object.currentText()
-                if copper_name_1 is not '' and self.copper_t_cb.get_value():
+                if copper_name_1 != '' and self.copper_t_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_1)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_1).apertures)
                     copper_list.append(elem_dict)
 
                 copper_name_2 = self.copper_b_object.currentText()
-                if copper_name_2 is not '' and self.copper_b_cb.get_value():
+                if copper_name_2 !='' and self.copper_b_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_2)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_2).apertures)
@@ -1162,7 +1162,7 @@ class RulesCheck(FlatCAMTool):
                     copper_t_obj = self.copper_t_object.currentText()
                     copper_t_dict = {}
 
-                    if copper_t_obj is not '':
+                    if copper_t_obj != '':
                         copper_t_dict['name'] = deepcopy(copper_t_obj)
                         copper_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_t_obj).apertures)
 
@@ -1173,7 +1173,7 @@ class RulesCheck(FlatCAMTool):
                 if self.copper_b_cb.get_value():
                     copper_b_obj = self.copper_b_object.currentText()
                     copper_b_dict = {}
-                    if copper_b_obj is not '':
+                    if copper_b_obj != '':
                         copper_b_dict['name'] = deepcopy(copper_b_obj)
                         copper_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_b_obj).apertures)
 
@@ -1195,17 +1195,17 @@ class RulesCheck(FlatCAMTool):
                 outline_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
-                if copper_top is not '' and self.copper_t_cb.get_value():
+                if copper_top != '' and self.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
 
                 copper_bottom = self.copper_b_object.currentText()
-                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                if copper_bottom != '' and self.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
                 copper_outline = self.outline_object.currentText()
-                if copper_outline is not '' and self.out_cb.get_value():
+                if copper_outline != '' and self.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
                     outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
 
@@ -1257,7 +1257,7 @@ class RulesCheck(FlatCAMTool):
 
                 if self.ss_t_cb.get_value():
                     silk_obj = self.ss_t_object.currentText()
-                    if silk_obj is not '':
+                    if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
                         silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
 
@@ -1267,7 +1267,7 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Silk to Silk clearance"))))
                 if self.ss_b_cb.get_value():
                     silk_obj = self.ss_b_object.currentText()
-                    if silk_obj is not '':
+                    if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
                         silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
 
@@ -1295,25 +1295,25 @@ class RulesCheck(FlatCAMTool):
                 bottom_sm = False
 
                 silk_top = self.ss_t_object.currentText()
-                if silk_top is not '' and self.ss_t_cb.get_value():
+                if silk_top != '' and self.ss_t_cb.get_value():
                     silk_t_dict['name'] = deepcopy(silk_top)
                     silk_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
                     top_ss = True
 
                 silk_bottom = self.ss_b_object.currentText()
-                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                if silk_bottom != '' and self.ss_b_cb.get_value():
                     silk_b_dict['name'] = deepcopy(silk_bottom)
                     silk_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
                     bottom_ss = True
 
                 sm_top = self.sm_t_object.currentText()
-                if sm_top is not '' and self.sm_t_cb.get_value():
+                if sm_top != '' and self.sm_t_cb.get_value():
                     sm_t_dict['name'] = deepcopy(sm_top)
                     sm_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_top).apertures)
                     top_sm = True
 
                 sm_bottom = self.sm_b_object.currentText()
-                if sm_bottom is not '' and self.sm_b_cb.get_value():
+                if sm_bottom != '' and self.sm_b_cb.get_value():
                     sm_b_dict['name'] = deepcopy(sm_bottom)
                     sm_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_bottom).apertures)
                     bottom_sm = True
@@ -1358,17 +1358,17 @@ class RulesCheck(FlatCAMTool):
                 outline_dict = {}
 
                 silk_top = self.ss_t_object.currentText()
-                if silk_top is not '' and self.ss_t_cb.get_value():
+                if silk_top != '' and self.ss_t_cb.get_value():
                     top_dict['name'] = deepcopy(silk_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
 
                 silk_bottom = self.ss_b_object.currentText()
-                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                if silk_bottom !=  '' and self.ss_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(silk_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
 
                 copper_outline = self.outline_object.currentText()
-                if copper_outline is not '' and self.out_cb.get_value():
+                if copper_outline !=  '' and self.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
                     outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
 
@@ -1421,7 +1421,7 @@ class RulesCheck(FlatCAMTool):
 
                 if self.sm_t_cb.get_value():
                     solder_obj = self.sm_t_object.currentText()
-                    if solder_obj is not '':
+                    if solder_obj !=  '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1431,7 +1431,7 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Minimum Solder Mask Sliver"))))
                 if self.sm_b_cb.get_value():
                     solder_obj = self.sm_b_object.currentText()
-                    if solder_obj is not '':
+                    if solder_obj !=  '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1454,23 +1454,23 @@ class RulesCheck(FlatCAMTool):
                 exc_2_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
-                if copper_top is not '' and self.copper_t_cb.get_value():
+                if copper_top != '' and self.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
 
                 copper_bottom = self.copper_b_object.currentText()
-                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                if copper_bottom != '' and self.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
                 excellon_1 = self.e1_object.currentText()
-                if excellon_1 is not '' and self.e1_cb.get_value():
+                if excellon_1 != '' and self.e1_cb.get_value():
                     exc_1_dict['name'] = deepcopy(excellon_1)
                     exc_1_dict['tools'] = deepcopy(
                         self.app.collection.get_by_name(excellon_1).tools)
 
                 excellon_2 = self.e2_object.currentText()
-                if excellon_2 is not '' and self.e2_cb.get_value():
+                if excellon_2 != '' and self.e2_cb.get_value():
                     exc_2_dict['name'] = deepcopy(excellon_2)
                     exc_2_dict['tools'] = deepcopy(
                         self.app.collection.get_by_name(excellon_2).tools)
@@ -1515,14 +1515,14 @@ class RulesCheck(FlatCAMTool):
             if self.clearance_d2d_cb.get_value():
                 exc_list = []
                 exc_name_1 = self.e1_object.currentText()
-                if exc_name_1 is not '' and self.e1_cb.get_value():
+                if exc_name_1 != '' and self.e1_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
-                if exc_name_2 is not '' and self.e2_cb.get_value():
+                if exc_name_2 != '' and self.e2_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
@@ -1535,14 +1535,14 @@ class RulesCheck(FlatCAMTool):
             if self.drill_size_cb.get_value():
                 exc_list = []
                 exc_name_1 = self.e1_object.currentText()
-                if exc_name_1 is not '' and self.e1_cb.get_value():
+                if exc_name_1 != '' and self.e1_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
-                if exc_name_2 is not '' and self.e2_cb.get_value():
+                if exc_name_2 != '' and self.e2_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)

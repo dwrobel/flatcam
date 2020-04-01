@@ -504,7 +504,7 @@ class Panelize(FlatCAMTool):
                     obj_fin.solid_geometry = []
 
                     for option in panel_obj.options:
-                        if option is not 'name':
+                        if option != 'name':
                             try:
                                 obj_fin.options[option] = panel_obj.options[option]
                             except KeyError:

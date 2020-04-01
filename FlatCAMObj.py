@@ -567,7 +567,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 FlatCAMGerber.merge(grb, grb_final)
             else:   # If not list, just append
                 for option in grb.options:
-                    if option is not 'name':
+                    if option != 'name':
                         try:
                             grb_final.options[option] = grb.options[option]
                         except KeyError:
@@ -2507,7 +2507,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
             for option in exc.options:
-                if option is not 'name':
+                if option != 'name':
                     try:
                         exc_final.options[option] = exc.options[option]
                     except Exception:
@@ -6440,7 +6440,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         for geo_obj in geo_list:
             for option in geo_obj.options:
-                if option is not 'name':
+                if option != 'name':
                     try:
                         new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:

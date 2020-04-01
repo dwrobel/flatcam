@@ -606,7 +606,7 @@ class DblSidedTool(FlatCAMTool):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         dia = float(self.drill_dia.get_value())
-        if dia is '':
+        if dia == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("No value or wrong format in Drill Dia entry. Add it and retry."))
             return

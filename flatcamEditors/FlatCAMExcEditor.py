@@ -3393,7 +3393,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_tool_selected is None and current_tool is not 'drill_select':
+        if self.last_tool_selected is None and current_tool != 'drill_select':
             # self.draw_app.select_tool('drill_select')
             self.complete = True
             current_tool = 'drill_select'
