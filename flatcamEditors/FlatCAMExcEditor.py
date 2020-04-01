@@ -124,7 +124,7 @@ class FCDrillAdd(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -359,7 +359,7 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -562,7 +562,7 @@ class FCSlot(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -888,7 +888,7 @@ class FCSlotArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1128,7 +1128,7 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.select_tool("drill_select")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1268,7 +1268,7 @@ class FCDrillMove(FCShapeTool):
             return DrawToolUtilityShape(ss_el)
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1323,7 +1323,7 @@ class FCDrillCopy(FCDrillMove):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1334,8 +1334,8 @@ class FCDrillCopy(FCDrillMove):
 
 
 class FCDrillSelect(DrawTool):
-    def __init__(self, exc_editor_app):
-        DrawTool.__init__(self, exc_editor_app)
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
         self.name = 'drill_select'
 
         try:
@@ -1343,7 +1343,7 @@ class FCDrillSelect(DrawTool):
         except Exception as e:
             pass
 
-        self.exc_editor_app = exc_editor_app
+        self.exc_editor_app = draw_app
         self.storage = self.exc_editor_app.storage_dict
         # self.selected = self.exc_editor_app.selected
 
@@ -1368,7 +1368,7 @@ class FCDrillSelect(DrawTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
             self.exc_editor_app.selected = []
@@ -1379,8 +1379,10 @@ class FCDrillSelect(DrawTool):
 
         try:
             for storage in self.exc_editor_app.storage_dict:
-                for sh in self.exc_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(sh)
+                # for sh in self.exc_editor_app.storage_dict[storage].get_objects():
+                #     self.sel_storage.insert(sh)
+                _, st_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
+                self.sel_storage.insert(st_closest_shape)
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
@@ -1417,37 +1419,41 @@ class FCDrillSelect(DrawTool):
             else:
                 mod_key = None
 
-            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
                 if closest_shape in self.exc_editor_app.selected:
                     self.exc_editor_app.selected.remove(closest_shape)
                 else:
                     self.exc_editor_app.selected.append(closest_shape)
             else:
-                self.draw_app.selected = []
-                self.draw_app.selected.append(closest_shape)
+                self.exc_editor_app.selected = []
+                self.exc_editor_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
             try:
-                self.draw_app.tools_table_exc.cellPressed.disconnect()
+                self.exc_editor_app.tools_table_exc.cellPressed.disconnect()
             except (TypeError, AttributeError):
                 pass
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
+            #     self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.sel_tools.clear()
+
             for shape_s in self.exc_editor_app.selected:
                 for storage in self.exc_editor_app.storage_dict:
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
                         self.sel_tools.add(storage)
 
+            self.exc_editor_app.tools_table_exc.clearSelection()
             for storage in self.sel_tools:
-                for k, v in self.draw_app.tool2tooldia.items():
+                for k, v in self.exc_editor_app.tool2tooldia.items():
                     if v == storage:
                         self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)
-                        self.draw_app.last_tool_selected = int(k)
+                        self.exc_editor_app.last_tool_selected = int(k)
                         break
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-            self.draw_app.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+            self.exc_editor_app.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
 
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = FlatCAMExcEditor.make_storage()
@@ -2068,7 +2074,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = []
-        self.new_tool_offset = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -2179,6 +2184,43 @@ class FlatCAMExcEditor(QtCore.QObject):
         for option in self.options:
             if option in self.app.options:
                 self.options[option] = self.app.options[option]
+
+        self.data_defaults = {
+            "plot": self.app.defaults["excellon_plot"],
+            "solid": self.app.defaults["excellon_solid"],
+
+            "operation": self.app.defaults["excellon_operation"],
+            "milling_type": self.app.defaults["excellon_milling_type"],
+
+            "milling_dia":self.app.defaults["excellon_milling_dia"],
+
+            "cutz": self.app.defaults["excellon_cutz"],
+            "multidepth": self.app.defaults["excellon_multidepth"],
+            "depthperpass": self.app.defaults["excellon_depthperpass"],
+            "travelz": self.app.defaults["excellon_travelz"],
+            "feedrate": self.app.defaults["geometry_feedrate"],
+            "feedrate_z": self.app.defaults["excellon_feedrate_z"],
+            "feedrate_rapid": self.app.defaults["excellon_feedrate_rapid"],
+            "tooldia": self.app.defaults["excellon_tooldia"],
+            "slot_tooldia": self.app.defaults["excellon_slot_tooldia"],
+            "toolchange": self.app.defaults["excellon_toolchange"],
+            "toolchangez": self.app.defaults["excellon_toolchangez"],
+            "toolchangexy": self.app.defaults["excellon_toolchangexy"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
+            "endz": self.app.defaults["excellon_endz"],
+            "endxy": self.app.defaults["excellon_endxy"],
+            "startz": self.app.defaults["excellon_startz"],
+            "offset": self.app.defaults["excellon_offset"],
+            "spindlespeed": self.app.defaults["excellon_spindlespeed"],
+            "dwell": self.app.defaults["excellon_dwell"],
+            "dwelltime": self.app.defaults["excellon_dwelltime"],
+            "ppname_e": self.app.defaults["excellon_ppname_e"],
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "z_pdepth": self.app.defaults["excellon_z_pdepth"],
+            "feedrate_probe": self.app.defaults["excellon_feedrate_probe"],
+            "optimization_type": self.app.defaults["excellon_optimization_type"]
+        }
 
         self.rtree_exc_index = rtindex.Index()
         # flag to show if the object was modified
@@ -2586,9 +2628,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         for deleted_tool_dia in deleted_tool_dia_list:
 
-            # delete de tool offset
-            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
-
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
@@ -2789,7 +2828,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = []
-        self.new_tool_offset = {}
+
         self.olddia_newdia = {}
 
         self.shapes.enabled = True
@@ -2974,7 +3013,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_command)
         self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 
@@ -3262,13 +3301,14 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.edited_obj_name += "_1"
             else:
                 self.edited_obj_name += "_edit"
-        self.new_tool_offset = self.exc_obj.tool_offset
 
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name,
                                               self.new_drills,
                                               self.new_slots,
                                               self.new_tools]})
+
+        return self.edited_obj_name
 
     def update_options(self, obj):
         try:
@@ -3308,8 +3348,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = deepcopy(new_drills)
             excellon_obj.tools = deepcopy(new_tools)
             excellon_obj.slots = deepcopy(new_slots)
-            excellon_obj.tool_offset = self.new_tool_offset
+
             excellon_obj.options['name'] = outname
+
+            # add a 'data' dict for each tool with the default values
+            for tool in excellon_obj.tools:
+                excellon_obj.tools[tool]['data'] = {}
+                excellon_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
 
             try:
                 excellon_obj.create_geometry()

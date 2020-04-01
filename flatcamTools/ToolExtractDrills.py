@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 
 from shapely.geometry import Point
 
@@ -43,8 +43,7 @@ class ToolExtractDrills(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        self.empty_lb = QtWidgets.QLabel("")
-        self.layout.addWidget(self.empty_lb)
+        self.layout.addWidget(QtWidgets.QLabel(""))
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -53,10 +52,11 @@ class ToolExtractDrills(FlatCAMTool):
         grid_lay.setColumnStretch(1, 0)
 
         # ## Gerber Object
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber from which to extract drill holes"))
@@ -77,7 +77,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Circular Aperture Selection
         self.circular_cb = FCCheckBox('%s' % _("Circular"))
         self.circular_cb.setToolTip(
-            _("Create drills from circular pads.")
+            _("Process Circular Pads.")
         )
 
         grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
@@ -85,7 +85,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Oblong Aperture Selection
         self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
         self.oblong_cb.setToolTip(
-            _("Create drills from oblong pads.")
+            _("Process Oblong Pads.")
         )
 
         grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
@@ -93,7 +93,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Square Aperture Selection
         self.square_cb = FCCheckBox('%s' % _("Square"))
         self.square_cb.setToolTip(
-            _("Create drills from square pads.")
+            _("Process Square Pads.")
         )
 
         grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
@@ -101,7 +101,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Rectangular Aperture Selection
         self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
         self.rectangular_cb.setToolTip(
-            _("Create drills from rectangular pads.")
+            _("Process Rectangular Pads.")
         )
 
         grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
@@ -109,7 +109,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Others type of Apertures Selection
         self.other_cb = FCCheckBox('%s' % _("Others"))
         self.other_cb.setToolTip(
-            _("Create drills from other types of pad shape.")
+            _("Process pads not in the categories above.")
         )
 
         grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
@@ -126,9 +126,14 @@ class ToolExtractDrills(FlatCAMTool):
         grid1.setColumnStretch(1, 1)
 
         self.method_label = QtWidgets.QLabel('<b>%s</b>' % _("Method"))
+        self.method_label.setToolTip(
+            _("The method for processing pads. Can be:\n"
+              "- Fixed Diameter -> all holes will have a set size\n"
+              "- Fixed Annular Ring -> all holes will have a set annular ring\n"
+              "- Proportional -> each hole size will be a fraction of the pad size"))
         grid1.addWidget(self.method_label, 2, 0, 1, 2)
 
-        # ## Axis
+        # ## Holes Size
         self.hole_size_radio = RadioSet(
             [
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},
@@ -138,15 +143,7 @@ class ToolExtractDrills(FlatCAMTool):
             orientation='vertical',
             stretch=False)
 
-        self.hole_size_label = QtWidgets.QLabel('%s:' % _("Hole Size"))
-        self.hole_size_label.setToolTip(
-            _("The selected method of extracting the drills. Can be:\n"
-              "- Fixed Diameter -> all holes will have a set size\n"
-              "- Fixed Annular Ring -> all holes will have a set annular ring\n"
-              "- Proportional -> each hole size will be a fraction of the pad size"))
-
-        grid1.addWidget(self.hole_size_label, 3, 0)
-        grid1.addWidget(self.hole_size_radio, 3, 1)
+        grid1.addWidget(self.hole_size_radio, 3, 0, 1, 2)
 
         # grid_lay1.addWidget(QtWidgets.QLabel(''))
 
@@ -160,7 +157,7 @@ class ToolExtractDrills(FlatCAMTool):
         grid1.addWidget(self.fixed_label, 6, 0, 1, 2)
 
         # Diameter value
-        self.dia_entry = FCDoubleSpinner()
+        self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.set_range(0.0000, 9999.9999)
 
@@ -195,7 +192,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
-              "The copper sliver between the drill hole exterior\n"
+              "The copper sliver between the hole exterior\n"
               "and the margin of the copper pad.")
         )
         grid2.addWidget(self.ring_label, 0, 0, 1, 2)
@@ -206,7 +203,7 @@ class ToolExtractDrills(FlatCAMTool):
             _("The size of annular ring for circular pads.")
         )
 
-        self.circular_ring_entry = FCDoubleSpinner()
+        self.circular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.circular_ring_entry.set_precision(self.decimals)
         self.circular_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -219,7 +216,7 @@ class ToolExtractDrills(FlatCAMTool):
             _("The size of annular ring for oblong pads.")
         )
 
-        self.oblong_ring_entry = FCDoubleSpinner()
+        self.oblong_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.oblong_ring_entry.set_precision(self.decimals)
         self.oblong_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -232,7 +229,7 @@ class ToolExtractDrills(FlatCAMTool):
             _("The size of annular ring for square pads.")
         )
 
-        self.square_ring_entry = FCDoubleSpinner()
+        self.square_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_ring_entry.set_precision(self.decimals)
         self.square_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -245,7 +242,7 @@ class ToolExtractDrills(FlatCAMTool):
             _("The size of annular ring for rectangular pads.")
         )
 
-        self.rectangular_ring_entry = FCDoubleSpinner()
+        self.rectangular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rectangular_ring_entry.set_precision(self.decimals)
         self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -258,7 +255,7 @@ class ToolExtractDrills(FlatCAMTool):
             _("The size of annular ring for other pads.")
         )
 
-        self.other_ring_entry = FCDoubleSpinner()
+        self.other_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.other_ring_entry.set_precision(self.decimals)
         self.other_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -280,7 +277,7 @@ class ToolExtractDrills(FlatCAMTool):
         grid3.addWidget(self.prop_label, 2, 0, 1, 2)
 
         # Diameter value
-        self.factor_entry = FCDoubleSpinner(suffix='%')
+        self.factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
         self.factor_entry.set_precision(self.decimals)
         self.factor_entry.set_range(0.0000, 100.0000)
         self.factor_entry.setSingleStep(0.1)
@@ -288,7 +285,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.factor_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.factor_label.setToolTip(
             _("Proportional Diameter.\n"
-              "The drill diameter will be a fraction of the pad size.")
+              "The hole diameter will be a fraction of the pad size.")
         )
 
         grid3.addWidget(self.factor_label, 3, 0)
@@ -427,8 +424,8 @@ class ToolExtractDrills(FlatCAMTool):
 
         prop_factor = self.factor_entry.get_value() / 100.0
 
-        drills = list()
-        tools = dict()
+        drills = []
+        tools = {}
 
         selection_index = self.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
@@ -473,7 +470,7 @@ class ToolExtractDrills(FlatCAMTool):
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         drills.append({"point": geo_el['follow'], "tool": "1"})
                         if 'solid_geometry' not in tools["1"]:
-                            tools["1"]['solid_geometry'] = list()
+                            tools["1"]['solid_geometry'] = []
                         else:
                             tools["1"]['solid_geometry'].append(geo_el['follow'])
 
@@ -552,7 +549,7 @@ class ToolExtractDrills(FlatCAMTool):
                         drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = list()
+                            tools[tool_in_drills]['solid_geometry'] = []
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 
@@ -637,7 +634,7 @@ class ToolExtractDrills(FlatCAMTool):
                         drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
-                            tools[tool_in_drills]['solid_geometry'] = list()
+                            tools[tool_in_drills]['solid_geometry'] = []
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 

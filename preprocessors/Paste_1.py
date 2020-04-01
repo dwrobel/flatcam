@@ -122,10 +122,10 @@ G00 Z{z_toolchange}
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
-        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
+        coords_xy = [float(eval(a)) for a in p['xy_end'].split(",") if a != '']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, float(p['z_toolchange'])) + "\n")
 
-        if coords_xy is not None:
+        if coords_xy and coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 

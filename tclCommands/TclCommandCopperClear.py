@@ -175,6 +175,7 @@ class TclCommandCopperClear(TclCommand):
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],
+            "endxy": self.app.defaults["geometry_endxy"],
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
@@ -187,7 +188,7 @@ class TclCommandCopperClear(TclCommand):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
-        ncc_tools = dict()
+        ncc_tools = {}
 
         tooluid = 0
         for tool in tools:

@@ -17,7 +17,7 @@ from flatcamTools.ToolDistanceMin import DistanceMin
 
 from flatcamTools.ToolMove import ToolMove
 
-from flatcamTools.ToolNonCopperClear import NonCopperClear
+from flatcamTools.ToolNCC import NonCopperClear
 from flatcamTools.ToolPaint import ToolPaint
 
 from flatcamTools.ToolOptimal import ToolOptimal
@@ -38,3 +38,6 @@ from flatcamTools.ToolSolderPaste import SolderPaste
 from flatcamTools.ToolSub import ToolSub
 
 from flatcamTools.ToolTransform import ToolTransform
+from flatcamTools.ToolPunchGerber import ToolPunchGerber
+
+from flatcamTools.ToolInvertGerber import ToolInvertGerber

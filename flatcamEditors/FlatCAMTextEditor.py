@@ -29,6 +29,8 @@ class TextEditor(QtWidgets.QWidget):
         super().__init__()
 
         self.app = app
+        self.plain_text = plain_text
+
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
             QtWidgets.QSizePolicy.MinimumExpanding
@@ -45,7 +47,7 @@ class TextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
-        if plain_text:
+        if self.plain_text:
             self.editor_class = FCTextAreaLineNumber()
             self.code_editor = self.editor_class.edit
 
@@ -313,7 +315,7 @@ class TextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

@@ -62,7 +62,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
         self.workspace_line = None
 
-        self.pagesize_dict = dict()
+        self.pagesize_dict = {}
         self.pagesize_dict.update(
             {
                 'A0': (841, 1189),

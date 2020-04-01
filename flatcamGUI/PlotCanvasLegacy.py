@@ -158,7 +158,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
         self.workspace_line = None
 
-        self.pagesize_dict = dict()
+        self.pagesize_dict = {}
         self.pagesize_dict.update(
             {
                 'A0': (841, 1189),
@@ -959,8 +959,8 @@ class ShapeCollectionLegacy:
         self.app = app
         self.annotation_job = annotation_job
 
-        self._shapes = dict()
-        self.shape_dict = dict()
+        self._shapes = {}
+        self.shape_dict = {}
         self.shape_id = 0
 
         self._color = None

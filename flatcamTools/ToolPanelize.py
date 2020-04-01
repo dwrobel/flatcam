@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
 
-from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
 from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
 import FlatCAMApp
 from copy import deepcopy
@@ -49,12 +49,24 @@ class Panelize(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
+        self.object_label.setToolTip(
+            _("Specify the type of object to be panelized\n"
+              "It can be of type: Gerber, Excellon or Geometry.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Object combobox.")
+        )
+
+        self.layout.addWidget(self.object_label)
+
         # Form Layout
         form_layout_0 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout_0)
 
         # Type of object to be panelized
-        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo = FCComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
         self.type_obj_combo.addItem("Geometry")
@@ -63,27 +75,21 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
-        self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be panelized\n"
-              "It can be of type: Gerber, Excellon or Geometry.\n"
-              "The selection here decide the type of objects that will be\n"
-              "in the Object combobox.")
-        )
-        form_layout_0.addRow(self.type_obj_combo_label, self.type_obj_combo)
+        self.type_object_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+
+        form_layout_0.addRow(self.type_object_label, self.type_obj_combo)
 
         # Object to be panelized
-        self.object_combo = QtWidgets.QComboBox()
+        self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        self.object_combo.is_last = True
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(
+        self.object_combo.setToolTip(
             _("Object to be panelized. This means that it will\n"
               "be duplicated in an array of rows and columns.")
         )
-        form_layout_0.addRow(self.object_label, self.object_combo)
+        form_layout_0.addRow(self.object_combo)
         form_layout_0.addRow(QtWidgets.QLabel(""))
 
         # Form Layout
@@ -108,15 +114,13 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.reference_radio)
 
         # Type of Box Object to be used as an envelope for panelization
-        self.type_box_combo = QtWidgets.QComboBox()
-        self.type_box_combo.addItem("Gerber")
-        self.type_box_combo.addItem("Excellon")
-        self.type_box_combo.addItem("Geometry")
+        self.type_box_combo = FCComboBox()
+        self.type_box_combo.addItems([_("Gerber"), _("Geometry")])
 
         # we get rid of item1 ("Excellon") as it is not suitable for use as a "box" for panelizing
-        self.type_box_combo.view().setRowHidden(1, True)
+        # self.type_box_combo.view().setRowHidden(1, True)
         self.type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Type"))
         self.type_box_combo_label.setToolTip(
@@ -128,17 +132,16 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.type_box_combo_label, self.type_box_combo)
 
         # Box
-        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.box_combo.is_last = True
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
-        self.box_combo_label.setToolTip(
+        self.box_combo.setToolTip(
             _("The actual object that is used a container for the\n "
               "selected object that is to be panelized.")
         )
-        form_layout.addRow(self.box_combo_label, self.box_combo)
+        form_layout.addRow(self.box_combo)
         form_layout.addRow(QtWidgets.QLabel(""))
 
         panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
@@ -153,7 +156,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(panel_data_label)
 
         # Spacing Columns
-        self.spacing_columns = FCDoubleSpinner()
+        self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
         self.spacing_columns.set_range(0, 9999)
         self.spacing_columns.set_precision(4)
 
@@ -165,7 +168,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         # Spacing Rows
-        self.spacing_rows = FCDoubleSpinner()
+        self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
         self.spacing_rows.set_range(0, 9999)
         self.spacing_rows.set_precision(4)
 
@@ -177,7 +180,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         # Columns
-        self.columns = FCSpinner()
+        self.columns = FCSpinner(callback=self.confirmation_message_int)
         self.columns.set_range(0, 9999)
 
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
@@ -187,7 +190,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.columns_label, self.columns)
 
         # Rows
-        self.rows = FCSpinner()
+        self.rows = FCSpinner(callback=self.confirmation_message_int)
         self.rows.set_range(0, 9999)
 
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
@@ -220,7 +223,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FCDoubleSpinner()
+        self.x_width_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.x_width_entry.set_precision(4)
         self.x_width_entry.set_range(0, 9999)
 
@@ -231,7 +234,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FCDoubleSpinner()
+        self.y_height_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.y_height_entry.set_range(0, 9999)
         self.y_height_entry.set_precision(4)
 
@@ -358,10 +361,18 @@ class Panelize(FlatCAMTool):
             self.app.defaults["tools_panelize_panel_type"] else 'gerber'
         self.panel_type_radio.set_value(panel_type)
 
+        # run once the following so the obj_type attribute is updated in the FCComboBoxes
+        # such that the last loaded object is populated in the combo boxes
+        self.on_type_obj_index_changed()
+        self.on_type_box_index_changed()
+
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.type_obj_combo.get_value()]
 
         # hide the panel type for Excellons, the panel can be only of type Geometry
         if self.type_obj_combo.currentText() != 'Excellon':
@@ -376,18 +387,19 @@ class Panelize(FlatCAMTool):
         obj_type = self.type_box_combo.currentIndex()
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
+        self.box_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.type_box_combo.get_value()]
 
     def on_reference_radio_changed(self, current_val):
         if current_val == 'object':
             self.type_box_combo.setDisabled(False)
             self.type_box_combo_label.setDisabled(False)
             self.box_combo.setDisabled(False)
-            self.box_combo_label.setDisabled(False)
         else:
             self.type_box_combo.setDisabled(True)
             self.type_box_combo_label.setDisabled(True)
             self.box_combo.setDisabled(True)
-            self.box_combo_label.setDisabled(True)
 
     def on_panelize(self):
         name = self.object_combo.currentText()
@@ -470,13 +482,13 @@ class Panelize(FlatCAMTool):
 
         if isinstance(panel_obj, FlatCAMExcellon) or isinstance(panel_obj, FlatCAMGeometry):
             # make a copy of the panelized Excellon or Geometry tools
-            copied_tools = dict()
+            copied_tools = {}
             for tt, tt_val in list(panel_obj.tools.items()):
                 copied_tools[tt] = deepcopy(tt_val)
 
         if isinstance(panel_obj, FlatCAMGerber):
             # make a copy of the panelized Gerber apertures
-            copied_apertures = dict()
+            copied_apertures = {}
             for tt, tt_val in list(panel_obj.apertures.items()):
                 copied_apertures[tt] = deepcopy(tt_val)
 
@@ -574,7 +586,7 @@ class Panelize(FlatCAMTool):
 
                     def translate_recursion(geom):
                         if type(geom) == list:
-                            geoms = list()
+                            geoms = []
                             for local_geom in geom:
                                 res_geo = translate_recursion(local_geom)
                                 try:
@@ -597,7 +609,7 @@ class Panelize(FlatCAMTool):
                     elif isinstance(panel_obj, FlatCAMGerber):
                         obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
-                            obj_fin.apertures[ap]['geometry'] = list()
+                            obj_fin.apertures[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
@@ -733,7 +745,7 @@ class Panelize(FlatCAMTool):
                                                 # graceful abort requested by the user
                                                 raise FlatCAMApp.GracefulException
 
-                                            new_el = dict()
+                                            new_el = {}
                                             if 'solid' in el:
                                                 geo_aper = translate_recursion(el['solid'])
                                                 new_el['solid'] = geo_aper

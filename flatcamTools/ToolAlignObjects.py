@@ -50,94 +50,86 @@ class AlignObjects(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the WORKING object"))
+        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("MOVING object"))
         grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
 
-        # Type of object to be aligned
-        self.type_obj_combo = FCComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
-
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
-        self.type_obj_combo_label.setToolTip(
+        self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned.\n"
               "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
-        grid0.addWidget(self.type_obj_combo_label, 2, 0)
-        grid0.addWidget(self.type_obj_combo, 2, 1)
+
+        # Type of object to be aligned
+        self.type_obj_radio = RadioSet([
+            {"label": _("Gerber"), "value": "grb"},
+            {"label": _("Excellon"), "value": "exc"},
+        ], orientation='vertical', stretch=False)
+
+        grid0.addWidget(self.type_obj_radio, 3, 0, 1, 2)
 
         # Object to be aligned
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        self.object_combo.is_last = True
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(
+        self.object_combo.setToolTip(
             _("Object to be aligned.")
         )
 
-        grid0.addWidget(self.object_label, 3, 0)
-        grid0.addWidget(self.object_combo, 3, 1)
+        grid0.addWidget(self.object_combo, 4, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 5, 0, 1, 2)
 
-        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the TARGET object"))
+        grid0.addWidget(QtWidgets.QLabel(''), 6, 0, 1, 2)
+
+        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("TARGET object"))
         self.aligned_label.setToolTip(
-            _("Object to which the other objects will be aligned to (moved to).")
-        )
-        grid0.addWidget(self.aligned_label, 6, 0, 1, 2)
-
-        # Type of object to be aligned to = aligner
-        self.type_aligner_obj_combo = FCComboBox()
-        self.type_aligner_obj_combo.addItem("Gerber")
-        self.type_aligner_obj_combo.addItem("Excellon")
-
-        self.type_aligner_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_aligner_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
-
-        self.type_aligner_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
-        self.type_aligner_obj_combo_label.setToolTip(
             _("Specify the type of object to be aligned to.\n"
               "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
-        grid0.addWidget(self.type_aligner_obj_combo_label, 7, 0)
-        grid0.addWidget(self.type_aligner_obj_combo, 7, 1)
+        grid0.addWidget(self.aligned_label, 7, 0, 1, 2)
+
+        # Type of object to be aligned to = aligner
+        self.type_aligner_obj_radio = RadioSet([
+            {"label": _("Gerber"), "value": "grb"},
+            {"label": _("Excellon"), "value": "exc"},
+        ], orientation='vertical', stretch=False)
+
+        grid0.addWidget(self.type_aligner_obj_radio, 8, 0, 1, 2)
 
         # Object to be aligned to = aligner
         self.aligner_object_combo = FCComboBox()
         self.aligner_object_combo.setModel(self.app.collection)
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.aligner_object_combo.setCurrentIndex(1)
+        self.aligner_object_combo.is_last = True
 
-        self.aligner_object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.aligner_object_label.setToolTip(
+        self.aligner_object_combo.setToolTip(
             _("Object to be aligned to. Aligner.")
         )
 
-        grid0.addWidget(self.aligner_object_label, 8, 0)
-        grid0.addWidget(self.aligner_object_combo, 8, 1)
+        grid0.addWidget(self.aligner_object_combo, 9, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 11, 0, 1, 2)
 
         # Alignment Type
         self.a_type_lbl = QtWidgets.QLabel('<b>%s:</b>' % _("Alignment Type"))
@@ -151,17 +143,17 @@ class AlignObjects(FlatCAMTool):
                 {'label': _('Single Point'), 'value': 'sp'},
                 {'label': _('Dual Point'), 'value': 'dp'}
             ],
-            orientation='horizontal',
+            orientation='vertical',
             stretch=False
         )
 
-        grid0.addWidget(self.a_type_lbl, 10, 0, 1, 2)
-        grid0.addWidget(self.a_type_radio, 11, 0, 1, 2)
+        grid0.addWidget(self.a_type_lbl, 12, 0, 1, 2)
+        grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 12, 0, 1, 2)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Buttons
         self.align_object_button = QtWidgets.QPushButton(_("Align Object"))
@@ -195,8 +187,8 @@ class AlignObjects(FlatCAMTool):
 
         # Signals
         self.align_object_button.clicked.connect(self.on_align)
-        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.type_aligner_obj_combo.currentIndexChanged.connect(self.on_type_aligner_index_changed)
+        self.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.type_aligner_obj_radio.activated_custom.connect(self.on_type_aligner_changed)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
         self.mr = None
@@ -214,7 +206,7 @@ class AlignObjects(FlatCAMTool):
         self.target_obj = None
 
         # here store the alignment points
-        self.clicked_points = list()
+        self.clicked_points = []
 
         self.align_type = None
 
@@ -257,7 +249,7 @@ class AlignObjects(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.clicked_points = list()
+        self.clicked_points = []
         self.target_obj = None
         self.aligned_obj = None
         self.aligner_obj = None
@@ -268,19 +260,23 @@ class AlignObjects(FlatCAMTool):
         self.aligned_old_line_color = None
 
         self.a_type_radio.set_value(self.app.defaults["tools_align_objects_align_type"])
+        self.type_obj_radio.set_value('grb')
+        self.type_aligner_obj_radio.set_value('grb')
 
         if self.local_connected is True:
             self.disconnect_cal_events()
 
-    def on_type_obj_index_changed(self):
-        obj_type = self.type_obj_combo.currentIndex()
+    def on_type_obj_changed(self, val):
+        obj_type = {'grb': 0, 'exc': 1}[val]
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
-    def on_type_aligner_index_changed(self):
-        obj_type = self.type_aligner_obj_combo.currentIndex()
+    def on_type_aligner_changed(self, val):
+        obj_type = {'grb': 0, 'exc': 1}[val]
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.aligner_object_combo.setCurrentIndex(0)
+        self.aligner_object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
     def on_align(self):
         self.app.delete_selection_shape()
@@ -379,7 +375,7 @@ class AlignObjects(FlatCAMTool):
 
         elif event.button == right_button and self.app.event_is_dragging is False:
             self.reset_color()
-            self.clicked_points = list()
+            self.clicked_points = []
             self.disconnect_cal_events()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
 

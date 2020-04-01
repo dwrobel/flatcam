@@ -169,7 +169,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     return "fail"
 
-            drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else obj.options["drillz"]
+            drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else obj.options["cutz"]
 
             if "toolchangez" in args:
                 toolchange = True
@@ -185,7 +185,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
+
             job_obj.feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
+            job_obj.z_feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
+                obj.options["feedrate"]
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
@@ -225,9 +228,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 job_obj.exc_cnc_tools[t_item]['data']['offset'] = \
                     float(job_obj.exc_cnc_tools[t_item]['offset_z']) + float(drillz)
                 job_obj.exc_cnc_tools[t_item]['data']['ppname_e'] = obj.options['ppname_e']
-
-                # for now there is no tool offset support in this Tcl Command so we write the 0.0 value here
-                job_obj.tool_offset[t_item] = 0.0
 
             job_obj.origin_kind = 'excellon'
 

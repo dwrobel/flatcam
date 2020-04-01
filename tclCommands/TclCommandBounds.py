@@ -52,7 +52,7 @@ class TclCommandBounds(TclCommand):
         :return:
         """
 
-        obj_list = list()
+        obj_list = []
         if 'objects' in args:
             try:
                 obj_list = [str(obj_name) for obj_name in str(args['objects']).split(",") if obj_name != '']
@@ -68,7 +68,7 @@ class TclCommandBounds(TclCommand):
                 _("Expected a list of objects names separated by comma. Got"), str(args['objects'])))
             return 'fail'
 
-        result_list = list()
+        result_list = []
         for name in obj_list:
             obj = self.app.collection.get_by_name(name)
 

@@ -228,7 +228,7 @@ class TclCommandPanelize(TclCommand):
 
                     def translate_recursion(geom):
                         if type(geom) == list:
-                            geoms = list()
+                            geoms = []
                             for local_geom in geom:
                                 geoms.append(translate_recursion(local_geom))
                             return geoms

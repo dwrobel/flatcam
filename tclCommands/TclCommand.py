@@ -78,7 +78,7 @@ class TclCommand(object):
 
         :return: current command
         """
-        command_string = list()
+        command_string = []
         command_string.append(self.aliases[0])
 
         if self.original_args is not None:

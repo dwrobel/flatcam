@@ -68,7 +68,7 @@ class ToolTransform(FlatCAMTool):
               "Negative numbers for CCW motion.")
         )
 
-        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rotate_entry.set_precision(self.decimals)
         self.rotate_entry.setSingleStep(45)
         self.rotate_entry.setWrapping(True)
@@ -77,7 +77,6 @@ class ToolTransform(FlatCAMTool):
         # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         self.rotate_button = FCButton()
-        self.rotate_button.set_value(_("Rotate"))
         self.rotate_button.setToolTip(
             _("Rotate the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -103,13 +102,12 @@ class ToolTransform(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
         )
-        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.set_range(-360, 360)
 
         self.skewx_button = FCButton()
-        self.skewx_button.set_value(_("Skew X"))
         self.skewx_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -125,13 +123,12 @@ class ToolTransform(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
         )
-        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.set_range(-360, 360)
 
         self.skewy_button = FCButton()
-        self.skewy_button.set_value(_("Skew Y"))
         self.skewy_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -155,13 +152,12 @@ class ToolTransform(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
-        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setMinimum(-1e6)
 
         self.scalex_button = FCButton()
-        self.scalex_button.set_value(_("Scale X"))
         self.scalex_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
@@ -176,13 +172,12 @@ class ToolTransform(FlatCAMTool):
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
-        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setMinimum(-1e6)
 
         self.scaley_button = FCButton()
-        self.scaley_button.set_value(_("Scale Y"))
         self.scaley_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
@@ -194,7 +189,6 @@ class ToolTransform(FlatCAMTool):
         grid0.addWidget(self.scaley_button, 9, 2)
 
         self.scale_link_cb = FCCheckBox()
-        self.scale_link_cb.set_value(True)
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected object(s)\n"
@@ -202,7 +196,6 @@ class ToolTransform(FlatCAMTool):
         )
 
         self.scale_zero_ref_cb = FCCheckBox()
-        self.scale_zero_ref_cb.set_value(True)
         self.scale_zero_ref_cb.setText('%s' % _("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
             _("Scale the selected object(s)\n"
@@ -228,13 +221,12 @@ class ToolTransform(FlatCAMTool):
         self.offx_label.setToolTip(
             _("Distance to offset on X axis. In current units.")
         )
-        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setMinimum(-1e6)
 
         self.offx_button = FCButton()
-        self.offx_button.set_value(_("Offset X"))
         self.offx_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -249,13 +241,12 @@ class ToolTransform(FlatCAMTool):
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
-        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setMinimum(-1e6)
 
         self.offy_button = FCButton()
-        self.offy_button.set_value(_("Offset Y"))
         self.offy_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -276,13 +267,11 @@ class ToolTransform(FlatCAMTool):
         grid0.addWidget(flip_title_label, 16, 0, 1, 3)
 
         self.flipx_button = FCButton()
-        self.flipx_button.set_value(_("Flip on X"))
         self.flipx_button.setToolTip(
             _("Flip the selected object(s) over the X axis.")
         )
 
         self.flipy_button = FCButton()
-        self.flipy_button.set_value(_("Flip on Y"))
         self.flipy_button.setToolTip(
             _("Flip the selected object(s) over the X axis.")
         )
@@ -294,7 +283,6 @@ class ToolTransform(FlatCAMTool):
         hlay0.addWidget(self.flipy_button)
 
         self.flip_ref_cb = FCCheckBox()
-        self.flip_ref_cb.set_value(True)
         self.flip_ref_cb.setText('%s' % _("Mirror Reference"))
         self.flip_ref_cb.setToolTip(
             _("Flip the selected object(s)\n"
@@ -320,7 +308,6 @@ class ToolTransform(FlatCAMTool):
         # self.flip_ref_entry.setFixedWidth(70)
 
         self.flip_ref_button = FCButton()
-        self.flip_ref_button.set_value(_("Add"))
         self.flip_ref_button.setToolTip(
             _("The point coordinates can be captured by\n"
               "left click on canvas together with pressing\n"
@@ -353,14 +340,13 @@ class ToolTransform(FlatCAMTool):
               "or decreased with the 'distance'.")
         )
 
-        self.buffer_entry = FCDoubleSpinner()
+        self.buffer_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)
         self.buffer_entry.set_range(-9999.9999, 9999.9999)
 
         self.buffer_button = FCButton()
-        self.buffer_button.set_value(_("Buffer D"))
         self.buffer_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the distance.")
@@ -380,14 +366,13 @@ class ToolTransform(FlatCAMTool):
               "of the initial dimension.")
         )
 
-        self.buffer_factor_entry = FCDoubleSpinner(suffix='%')
+        self.buffer_factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
         self.buffer_factor_entry.set_range(-100.0000, 1000.0000)
         self.buffer_factor_entry.set_precision(self.decimals)
         self.buffer_factor_entry.setWrapping(True)
         self.buffer_factor_entry.setSingleStep(1)
 
         self.buffer_factor_button = FCButton()
-        self.buffer_factor_button.set_value(_("Buffer F"))
         self.buffer_factor_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the factor.")
@@ -412,6 +397,19 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.transform_lay.addWidget(self.reset_button)
+
         # ## Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
@@ -425,6 +423,8 @@ class ToolTransform(FlatCAMTool):
         self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
         self.buffer_button.clicked.connect(self.on_buffer_by_distance)
         self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
+
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         # self.rotate_entry.returnPressed.connect(self.on_rotate)
         # self.skewx_entry.returnPressed.connect(self.on_skewx)
@@ -466,6 +466,22 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
+        self.rotate_button.set_value(_("Rotate"))
+        self.skewx_button.set_value(_("Skew X"))
+        self.skewy_button.set_value(_("Skew Y"))
+        self.scalex_button.set_value(_("Scale X"))
+        self.scaley_button.set_value(_("Scale Y"))
+        self.scale_link_cb.set_value(True)
+        self.scale_zero_ref_cb.set_value(True)
+        self.offx_button.set_value(_("Offset X"))
+        self.offy_button.set_value(_("Offset Y"))
+        self.flipx_button.set_value(_("Flip on X"))
+        self.flipy_button.set_value(_("Flip on Y"))
+        self.flip_ref_cb.set_value(True)
+        self.flip_ref_button.set_value(_("Add"))
+        self.buffer_button.set_value(_("Buffer D"))
+        self.buffer_factor_button.set_value(_("Buffer F"))
+
         # ## Initialize form
         if self.app.defaults["tools_transform_rotate"]:
             self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])

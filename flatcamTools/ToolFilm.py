@@ -65,15 +65,13 @@ class Film(FlatCAMTool):
         grid0.setColumnStretch(1, 1)
 
         # Type of object for which to create the film
-        self.tf_type_obj_combo = QtWidgets.QComboBox()
-        self.tf_type_obj_combo.addItem("Gerber")
-        self.tf_type_obj_combo.addItem("Excellon")
-        self.tf_type_obj_combo.addItem("Geometry")
+        self.tf_type_obj_combo = FCComboBox()
+        self.tf_type_obj_combo.addItems([_("Gerber"), _("Geometry")])
 
         # we get rid of item1 ("Excellon") as it is not suitable for creating film
-        self.tf_type_obj_combo.view().setRowHidden(1, True)
+        # self.tf_type_obj_combo.view().setRowHidden(1, True)
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
@@ -86,10 +84,10 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.tf_type_obj_combo, 0, 1)
 
         # List of objects for which we can create the film
-        self.tf_object_combo = QtWidgets.QComboBox()
+        self.tf_object_combo = FCComboBox()
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_object_combo.setCurrentIndex(1)
+        self.tf_object_combo.is_last = True
 
         self.tf_object_label = QtWidgets.QLabel('%s:' % _("Film Object"))
         self.tf_object_label.setToolTip(
@@ -100,15 +98,17 @@ class Film(FlatCAMTool):
 
         # Type of Box Object to be used as an envelope for film creation
         # Within this we can create negative
-        self.tf_type_box_combo = QtWidgets.QComboBox()
-        self.tf_type_box_combo.addItem("Gerber")
-        self.tf_type_box_combo.addItem("Excellon")
-        self.tf_type_box_combo.addItem("Geometry")
+        self.tf_type_box_combo = FCComboBox()
+        self.tf_type_box_combo.addItems([_("Gerber"), _("Geometry")])
+
+        # self.tf_type_box_combo.addItem("Gerber")
+        # self.tf_type_box_combo.addItem("Excellon")
+        # self.tf_type_box_combo.addItem("Geometry")
 
         # we get rid of item1 ("Excellon") as it is not suitable for box when creating film
-        self.tf_type_box_combo.view().setRowHidden(1, True)
+        # self.tf_type_box_combo.view().setRowHidden(1, True)
         self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
@@ -121,10 +121,10 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.tf_type_box_combo, 2, 1)
 
         # Box
-        self.tf_box_combo = QtWidgets.QComboBox()
+        self.tf_box_combo = FCComboBox()
         self.tf_box_combo.setModel(self.app.collection)
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.setCurrentIndex(1)
+        self.tf_box_combo.is_last = True
 
         self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.tf_box_combo_label.setToolTip(
@@ -160,7 +160,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_scale_cb, 6, 0, 1, 2)
 
         self.film_scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
-        self.film_scalex_entry = FCDoubleSpinner()
+        self.film_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scalex_entry.set_range(-999.9999, 999.9999)
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
@@ -169,7 +169,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_scalex_entry, 7, 1)
 
         self.film_scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
-        self.film_scaley_entry = FCDoubleSpinner()
+        self.film_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scaley_entry.set_range(-999.9999, 999.9999)
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
@@ -199,7 +199,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_skew_cb, 10, 0, 1, 2)
 
         self.film_skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
-        self.film_skewx_entry = FCDoubleSpinner()
+        self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
@@ -208,7 +208,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_skewx_entry, 11, 1)
 
         self.film_skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
-        self.film_skewy_entry = FCDoubleSpinner()
+        self.film_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
@@ -275,7 +275,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_param_label, 18, 0, 1, 2)
 
         # Scale Stroke size
-        self.film_scale_stroke_entry = FCDoubleSpinner()
+        self.film_scale_stroke_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scale_stroke_entry.set_range(-999.9999, 999.9999)
         self.film_scale_stroke_entry.setSingleStep(0.01)
         self.film_scale_stroke_entry.set_precision(self.decimals)
@@ -308,7 +308,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_type, 21, 1)
 
         # Boundary for negative film generation
-        self.boundary_entry = FCDoubleSpinner()
+        self.boundary_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.boundary_entry.set_range(-999.9999, 999.9999)
         self.boundary_entry.setSingleStep(0.01)
         self.boundary_entry.set_precision(self.decimals)
@@ -366,10 +366,12 @@ class Film(FlatCAMTool):
         self.exc_label.setToolTip(
             _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
-        self.exc_combo = QtWidgets.QComboBox()
+        self.exc_combo = FCComboBox()
         self.exc_combo.setModel(self.app.collection)
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_combo.setCurrentIndex(1)
+        self.exc_combo.is_last = True
+        self.exc_combo.obj_type = "Excellon"
+
         punch_grid.addWidget(self.exc_label, 1, 0)
         punch_grid.addWidget(self.exc_combo, 1, 1)
 
@@ -378,7 +380,7 @@ class Film(FlatCAMTool):
 
         self.punch_size_label = QtWidgets.QLabel('%s:' % _("Punch Size"))
         self.punch_size_label.setToolTip(_("The value here will control how big is the punch hole in the pads."))
-        self.punch_size_spinner = FCDoubleSpinner()
+        self.punch_size_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.punch_size_spinner.set_range(0, 999.9999)
         self.punch_size_spinner.setSingleStep(0.1)
         self.punch_size_spinner.set_precision(self.decimals)
@@ -434,7 +436,7 @@ class Film(FlatCAMTool):
 
         self.pagesize_combo = FCComboBox()
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'Bounds': None,
@@ -539,15 +541,21 @@ class Film(FlatCAMTool):
         self.file_type_radio.activated_custom.connect(self.on_file_type)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self, index):
+    def on_type_obj_index_changed(self):
         obj_type = self.tf_type_obj_combo.currentIndex()
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(0)
+        self.tf_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.tf_type_obj_combo.get_value()]
 
-    def on_type_box_index_changed(self, index):
+    def on_type_box_index_changed(self):
         obj_type = self.tf_type_box_combo.currentIndex()
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_box_combo.setCurrentIndex(0)
+        self.tf_box_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.tf_type_obj_combo.get_value()]
 
     def run(self, toggle=True):
         self.app.report_usage("ToolFilm()")
@@ -609,6 +617,10 @@ class Film(FlatCAMTool):
         self.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
         self.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
         self.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
+
+        # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+        self.on_type_obj_index_changed()
+        self.on_type_box_index_changed()
 
     def on_film_type(self, val):
         type_of_film = val
@@ -786,7 +798,7 @@ class Film(FlatCAMTool):
 
             punch_size = float(self.punch_size_spinner.get_value())
 
-            punching_geo = list()
+            punching_geo = []
             for apid in film_obj.apertures:
                 if film_obj.apertures[apid]['type'] == 'C':
                     if punch_size >= float(film_obj.apertures[apid]['size']):

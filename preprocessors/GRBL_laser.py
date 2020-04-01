@@ -12,7 +12,7 @@ from FlatCAMPostProc import *
 # is compatible with almost any version of Grbl.
 
 
-class grbl_laser(FlatCAMPostProc):
+class GRBL_laser(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -20,7 +20,8 @@ class grbl_laser(FlatCAMPostProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        gcode = ''
+        gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware. )\n'
+        gcode += '(It is for the case when it is used together with a LASER connected on the SPINDLE connector.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -28,7 +29,9 @@ class grbl_laser(FlatCAMPostProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-        gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+        gcode += '(Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+
+        gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
 
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
@@ -40,10 +43,12 @@ class grbl_laser(FlatCAMPostProc):
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
+        gcode += '(Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + ')\n\n'
+
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
         gcode += 'G17\n'
-        gcode += 'G94\n'
+        gcode += 'G94'
 
         return gcode
 
@@ -51,19 +56,20 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def lift_code(self, p):
-        return 'M05 S0'
+        return 'M5'
 
     def down_code(self, p):
+        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return 'M03 S%d' % p.spindlespeed
+            return '%s S%s' % (sdir, str(p.spindlespeed))
         else:
-            return 'M03'
+            return sdir
 
     def toolchange_code(self, p):
         return ''
 
     def up_to_zero_code(self, p):
-        return 'M05'
+        return 'M5'
 
     def position_code(self, p):
         return ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
@@ -77,10 +83,10 @@ class grbl_laser(FlatCAMPostProc):
                ' F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
-        coords_xy = p['xy_toolchange']
+        coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
-        if coords_xy is not None:
+        if coords_xy and coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
@@ -101,4 +107,4 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def spindle_stop_code(self, p):
-        return 'M05'
+        return 'M5'

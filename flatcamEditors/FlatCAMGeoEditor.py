@@ -18,12 +18,12 @@ from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStor
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import RadioSet
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
-    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
+    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
 from flatcamParsers.ParseFont import *
 import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import cascaded_union, unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
 
@@ -202,7 +202,7 @@ class TextInputTool(FlatCAMTool):
         self.text_path = []
         self.decimals = self.app.decimals
 
-        self.f_parse = ParseFont(self)
+        self.f_parse = ParseFont(self.app)
         self.f_parse.get_fonts_by_types()
 
         # this way I can hide/show the frame
@@ -364,12 +364,10 @@ class TextInputTool(FlatCAMTool):
         string_to_geo = self.text_input_entry.get_value()
         font_to_geo_size = self.font_size_cb.get_value()
 
-        self.text_path = self.f_parse.font_to_geometry(
-                    char_string=string_to_geo,
-                    font_name=self.font_name,
-                    font_size=font_to_geo_size,
-                    font_type=font_to_geo_type,
-                    units=self.app.defaults['units'].upper())
+        self.text_path = self.f_parse.font_to_geometry(char_string=string_to_geo, font_name=self.font_name,
+                                                       font_size=font_to_geo_size,
+                                                       font_type=font_to_geo_type,
+                                                       units=self.app.defaults['units'].upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -403,8 +401,8 @@ class TextInputTool(FlatCAMTool):
 
     def hide_tool(self):
         self.text_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        self.app.ui.splitter.setSizes([0, 1])
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # self.app.ui.splitter.setSizes([0, 1])
         self.app.ui.notebook.setTabText(2, _("Tool"))
 
 
@@ -451,7 +449,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -487,15 +485,20 @@ class PaintOptionsTool(FlatCAMTool):
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
-            _("Algorithm to paint the polygon:<BR>"
-              "<B>Standard</B>: Fixed step inwards.<BR>"
-              "<B>Seed-based</B>: Outwards from seed.")
+            _("Algorithm to paint the polygons:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
         )
-        self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
-        ], orientation='vertical', stretch=False)
+        # self.paintmethod_combo = RadioSet([
+        #     {"label": _("Standard"), "value": "standard"},
+        #     {"label": _("Seed-based"), "value": "seed"},
+        #     {"label": _("Straight lines"), "value": "lines"}
+        # ], orientation='vertical', stretch=False)
+        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
 
         grid.addWidget(methodlabel, 3, 0)
         grid.addWidget(self.paintmethod_combo, 3, 1)
@@ -564,7 +567,7 @@ class PaintOptionsTool(FlatCAMTool):
         if self.app.defaults["tools_paintmethod"]:
             self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
         else:
-            self.paintmethod_combo.set_value("seed")
+            self.paintmethod_combo.set_value(_("Seed"))
 
         if self.app.defaults["tools_pathconnect"]:
             self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
@@ -578,8 +581,7 @@ class PaintOptionsTool(FlatCAMTool):
 
     def on_paint(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Paint cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Paint cancelled. No shape selected."))
             return
 
         tooldia = self.painttooldia_entry.get_value()
@@ -1751,7 +1753,7 @@ class DrawToolShape(object):
 
         def translate_recursion(geom):
             if type(geom) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
@@ -1798,7 +1800,7 @@ class DrawToolShape(object):
 
         def scale_recursion(geom):
             if type(geom) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(scale_recursion(local_geom))
                 return geoms
@@ -1924,6 +1926,12 @@ class FCCircle(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -1962,7 +1970,7 @@ class FCCircle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2003,6 +2011,12 @@ class FCArc(FCShapeTool):
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -2196,7 +2210,7 @@ class FCArc(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2227,6 +2241,12 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.points.append(point)
 
         if len(self.points) == 1:
@@ -2263,7 +2283,7 @@ class FCRectangle(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2294,6 +2314,12 @@ class FCPolygon(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.draw_app.in_action = True
         self.points.append(point)
 
@@ -2346,7 +2372,7 @@ class FCPolygon(FCShapeTool):
                 return _("Backtracked one point ...")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2411,7 +2437,7 @@ class FCPath(FCPolygon):
                 return _("Backtracked one point ...")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2494,9 +2520,33 @@ class FCSelect(DrawTool):
                     self.draw_app.selected = []
                     self.draw_app.selected.append(obj_to_add)
         except Exception as e:
-            log.error("[ERROR] Something went bad. %s" % str(e))
-            raise
+            log.error("[ERROR] FlatCAMGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
+
+        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        try:
+            self.draw_app.tw.itemSelectionChanged.disconnect(self.draw_app.on_tree_selection_change)
+        except (AttributeError, TypeError):
+            pass
+
+        self.draw_app.tw.selectionModel().clearSelection()
+        for sel_shape in self.draw_app.selected:
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.draw_app.tw)
+            while iterator.value():
+                item = iterator.value()
+                try:
+                    if int(item.text(1)) == id(sel_shape):
+                        item.setSelected(True)
+                except ValueError:
+                    pass
+
+                iterator += 1
+
+        self.draw_app.tw.itemSelectionChanged.connect(self.draw_app.on_tree_selection_change)
+
         return ""
+
+    def clean_up(self):
+        pass
 
 
 class FCExplode(FCShapeTool):
@@ -2521,8 +2571,8 @@ class FCExplode(FCShapeTool):
             self.make()
 
     def make(self):
-        to_be_deleted_list = list()
-        lines = list()
+        to_be_deleted_list = []
+        lines = []
 
         for shape in self.draw_app.get_selected():
             to_be_deleted_list.append(shape)
@@ -2544,7 +2594,7 @@ class FCExplode(FCShapeTool):
             if shape in self.draw_app.selected:
                 self.draw_app.selected.remove(shape)
 
-        geo_list = list()
+        geo_list = []
         for line in lines:
             geo_list.append(DrawToolShape(line))
         self.geometry = geo_list
@@ -2552,7 +2602,7 @@ class FCExplode(FCShapeTool):
         self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2585,6 +2635,7 @@ class FCMove(FCShapeTool):
             return
         else:
             self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
@@ -2592,6 +2643,12 @@ class FCMove(FCShapeTool):
         self.origin = origin
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         if len(self.draw_app.get_selected()) == 0:
             # self.complete = True
             # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
@@ -2623,7 +2680,10 @@ class FCMove(FCShapeTool):
             self.draw_app.delete_selected()
             self.complete = True
             self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Move completed."))
-            self.draw_app.app.jump_signal.disconnect()
+            try:
+                self.draw_app.app.jump_signal.disconnect()
+            except TypeError:
+                pass
 
     def selection_bbox(self):
         geo_list = []
@@ -2731,7 +2791,7 @@ class FCMove(FCShapeTool):
             raise
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2753,10 +2813,13 @@ class FCCopy(FCMove):
                          for geom in self.draw_app.get_selected()]
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2783,11 +2846,17 @@ class FCText(FCShapeTool):
         self.draw_app.app.inform.emit(_("Click on 1st point ..."))
         self.origin = (0, 0)
 
-        self.text_gui = TextInputTool(self.app)
+        self.text_gui = TextInputTool(app=self.app)
         self.text_gui.run()
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         # Create new geometry
         dx = point[0]
         dy = point[1]
@@ -2807,7 +2876,10 @@ class FCText(FCShapeTool):
                 return
         else:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No text to add."))
-            self.draw_app.app.jump_signal.disconnect()
+            try:
+                self.draw_app.app.jump_signal.disconnect()
+            except (TypeError, AttributeError):
+                pass
             return
 
         self.text_gui.text_path = []
@@ -2832,7 +2904,7 @@ class FCText(FCShapeTool):
             return
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -2885,13 +2957,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2915,13 +2985,11 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2945,8 +3013,7 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Buffer Ext Tool completed."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -2968,16 +3035,19 @@ class FCBuffer(FCShapeTool):
         self.complete = True
         self.draw_app.select_tool("select")
         self.buff_tool.hide_tool()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
             self.draw_app.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
-
 
 
 class FCEraser(FCShapeTool):
@@ -3007,6 +3077,12 @@ class FCEraser(FCShapeTool):
         self.origin = origin
 
     def click(self, point):
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         if len(self.draw_app.get_selected()) == 0:
             for obj_shape in self.storage.get_objects():
                 try:
@@ -3054,7 +3130,10 @@ class FCEraser(FCShapeTool):
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
-        self.draw_app.app.jump_signal.disconnect()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def utility_geometry(self, data=None):
         """
@@ -3084,7 +3163,7 @@ class FCEraser(FCShapeTool):
         return DrawToolUtilityShape(geo_list)
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.plot_all()
 
         try:
@@ -3123,6 +3202,9 @@ class FCTransform(FCShapeTool):
 # ###############################################
 class FlatCAMGeoEditor(QtCore.QObject):
 
+    # will emit the name of the object that was just selected
+    item_selected = QtCore.pyqtSignal(str)
+
     transform_complete = QtCore.pyqtSignal()
 
     draw_shape_idx = -1
@@ -3136,6 +3218,49 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
         self.decimals = app.decimals
+
+        self.geo_edit_widget = QtWidgets.QWidget()
+        # ## Box for custom widgets
+        # This gets populated in offspring implementations.
+        layout = QtWidgets.QVBoxLayout()
+        self.geo_edit_widget.setLayout(layout)
+
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        # this way I can hide/show the frame
+        self.geo_frame = QtWidgets.QFrame()
+        self.geo_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.geo_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.geo_frame.setLayout(self.tools_box)
+
+        # ## Page Title box (spacing between children)
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
+        # ## Page Title icon
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
+        self.icon = QtWidgets.QLabel()
+        self.icon.setPixmap(pixmap)
+        self.title_box.addWidget(self.icon, stretch=0)
+
+        # ## Title label
+        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
+        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_box.addWidget(self.title_label, stretch=1)
+        self.title_box.addWidget(QtWidgets.QLabel(''))
+
+        self.tw = FCTree(columns=3, header_hidden=False, protected_column=[0, 1], extended_sel=True)
+        self.tw.setHeaderLabels(["ID", _("Type"), _("Name")])
+        self.tw.setIndentation(0)
+        self.tw.header().setStretchLastSection(True)
+        self.tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tools_box.addWidget(self.tw)
+
+        self.geo_font = QtGui.QFont()
+        self.geo_font.setBold(True)
+
+        self.geo_parent = self.tw.invisibleRootItem()
 
         # ## Toolbar events and properties
         self.tools = {
@@ -3338,10 +3463,84 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.delete_selected()
         self.replot()
 
+    def set_ui(self):
+        # updated units
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
+
+        # Remove anything else in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.takeWidget()
+        # Put ourselves in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+    def build_ui(self, first_run=None):
+
+        # try:
+        #     # if connected, disconnect the signal from the slot on item_changed as it creates issues
+        #     self.apertures_table.itemChanged.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
+
+        iterator = QtWidgets.QTreeWidgetItemIterator(self.geo_parent)
+        to_delete = []
+        while iterator.value():
+            item = iterator.value()
+            to_delete.append(item)
+            iterator += 1
+        for it in to_delete:
+            self.geo_parent.removeChild(it)
+
+        for elem in self.storage.get_objects():
+            geo_type = type(elem.geo)
+            el_type = None
+            if geo_type is LinearRing:
+                el_type = _('Ring')
+            elif geo_type is LineString:
+                el_type = _('Line')
+            elif geo_type is Polygon:
+                el_type = _('Polygon')
+            elif geo_type is MultiLineString:
+                el_type = _('Multi-Line')
+            elif geo_type is MultiPolygon:
+                el_type = _('Multi-Polygon')
+
+            self.tw.addParentEditable(
+                self.geo_parent,
+                [
+                    str(id(elem)),
+                    '%s' % el_type,
+                    _("Geo Elem")
+                ],
+                font=self.geo_font,
+                font_items=2,
+                # color=QtGui.QColor("#FF0000"),
+                editable=True
+            )
+
+        self.tw.resize_sig.emit()
+
+    def on_geo_elem_selected(self):
+        pass
+
+    def on_tree_selection_change(self):
+        self.selected = []
+        selected_tree_items = self.tw.selectedItems()
+        for sel in selected_tree_items:
+            for obj_shape in self.storage.get_objects():
+                try:
+                    if id(obj_shape) == int(sel.text(0)):
+                        self.selected.append(obj_shape)
+                except ValueError:
+                    pass
+        self.replot()
+
     def activate(self):
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(True)
         self.app.ui.menueditok.setDisabled(False)
+
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(False)
         self.app.ui.popmenu_save.setVisible(True)
@@ -3379,23 +3578,34 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
 
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-        sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
-        for w in sel_tab_widget_list:
-            w.setEnabled(False)
+        # sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        # for w in sel_tab_widget_list:
+        #     w.setEnabled(False)
 
         # Tell the App that the editor is active
         self.editor_active = True
+
+        self.item_selected.connect(self.on_geo_elem_selected)
+
+        # ## GUI Events
+        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
+        # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+        # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+
+        self.geo_frame.show()
+
         log.debug("Finished activating the Geometry Editor...")
 
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
+
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(True)
         self.app.ui.popmenu_save.setVisible(False)
@@ -3454,16 +3664,37 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
 
         try:
-            # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
-            sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
-            for w in sel_tab_widget_list:
-                w.setEnabled(True)
-        except Exception as e:
-            log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
+            self.item_selected.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        try:
+            # ## GUI Events
+            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+            # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+            # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+        except (AttributeError, TypeError):
+            pass
+
+        # try:
+        #     # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
+        #     sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        #     for w in sel_tab_widget_list:
+        #         w.setEnabled(True)
+        # except Exception as e:
+        #     log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:
             self.fcgeometry.visible = True
+
+        # clear the Tree
+        self.tw.clear()
+        self.geo_parent = self.tw.invisibleRootItem()
+
+        # hide the UI
+        self.geo_frame.hide()
+
         log.debug("Finished deactivating the Geometry Editor...")
 
     def connect_canvas_event_handlers(self):
@@ -3553,7 +3784,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_command)
         self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 
@@ -3665,6 +3896,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.utility.append(shape)
         else:
             self.storage.insert(shape)  # TODO: Check performance
+            self.build_ui()
 
     def delete_utility_geometry(self):
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
@@ -3705,6 +3937,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.deactivate()
         self.activate()
 
+        self.set_ui()
+
         # Hide original geometry
         self.fcgeometry = fcgeometry
         fcgeometry.visible = False
@@ -3739,8 +3973,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 )
             )
         else:
-            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry,
-                                       orient_val=milling_type)
+            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
 
         for shape in geo_to_edit:
             if shape is not None:  # TODO: Make flatten never create a None
@@ -3827,7 +4060,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -3840,7 +4073,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
             if modifiers == QtCore.Qt.ShiftModifier:
                 self.app.clipboard.setText(
-                    self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                    self.app.defaults["global_point_clipboard_format"] %
+                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
+                )
                 return
 
             # Selection with left mouse button
@@ -3907,7 +4142,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         # ### Snap coordinates ###
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.snap(x, y)
 
             # Update cursor
@@ -3921,7 +4156,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (x, y))
+                                           "<b>Y</b>: %.4f" % (x, y))
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -3930,7 +4165,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass
@@ -3943,8 +4178,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
-                     color=self.app.defaults["global_alt_sel_line"],
-                     face_color=self.app.defaults['global_alt_sel_fill'])
+                                                     color=self.app.defaults["global_alt_sel_line"],
+                                                     face_color=self.app.defaults['global_alt_sel_fill'])
                 self.app.selection_type = False
             else:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
@@ -3993,19 +4228,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     # self.app.inform.emit(msg)
                     self.replot()
             elif event.button == right_button:  # right click
-                if self.app.ui.popMenu.mouse_is_panning == False:
+                if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
-                        except Exception as e:
+                        except Exception:
                             pass
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit('[success] %s' %
-                                                 _("Done."))
+                            self.app.inform.emit('[success] %s' % _("Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
@@ -4019,8 +4253,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_shape_complete()
-                                self.app.inform.emit('[success] %s' %
-                                                     _("Done."))
+                                self.app.inform.emit('[success] %s' % _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
             log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
@@ -4063,6 +4296,27 @@ class FlatCAMGeoEditor(QtCore.QObject):
         else:
             self.selected = []
             self.selected = sel_objects_list
+
+        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        try:
+            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+        except (AttributeError, TypeError):
+            pass
+
+        self.tw.selectionModel().clearSelection()
+        for sel_shape in self.selected:
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.tw)
+            while iterator.value():
+                item = iterator.value()
+                try:
+                    if int(item.text(1)) == id(sel_shape):
+                        item.setSelected(True)
+                except ValueError:
+                    pass
+
+                iterator += 1
+
+        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
 
         self.replot()
 
@@ -4113,6 +4367,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for shape in tempref:
             self.delete_shape(shape)
         self.selected = []
+        self.build_ui()
 
     def delete_shape(self, shape):
 
@@ -4275,7 +4530,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
-        shape_list = list()
+        shape_list = []
         try:
             for geo in geom:
                 shape_list.append(DrawToolShape(geo))
@@ -4396,13 +4651,24 @@ class FlatCAMGeoEditor(QtCore.QObject):
             fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
             # for shape in self.shape_buffer:
             for shape in self.storage.get_objects():
-                fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(shape.geo)
+                new_geo = shape.geo
+
+                # simplify the MultiLineString
+                if isinstance(new_geo, MultiLineString):
+                    new_geo = linemerge(new_geo)
+
+                fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(new_geo)
             self.multigeo_tool = None
 
         fcgeometry.solid_geometry = []
         # for shape in self.shape_buffer:
         for shape in self.storage.get_objects():
-            fcgeometry.solid_geometry.append(shape.geo)
+            new_geo = shape.geo
+
+            # simplify the MultiLineString
+            if isinstance(new_geo, MultiLineString):
+                new_geo = linemerge(new_geo)
+            fcgeometry.solid_geometry.append(new_geo)
 
     def update_options(self, obj):
         if self.paint_tooldia:
@@ -4777,11 +5043,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     else:
                         poly_buf = Polygon(geo_obj).buffer(-margin)
 
-                    if method == "seed":
+                    if method == _("Seed"):
                         cp = Geometry.clear_polygon2(self, polygon_to_clear=poly_buf, tooldia=tooldia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
-                    elif method == "lines":
+                    elif method == _("Lines"):
                         cp = Geometry.clear_polygon3(self, polygon=poly_buf, tooldia=tooldia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
@@ -4794,12 +5060,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         local_results += list(cp.get_objects())
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit('[ERROR] %s\n%s' %
-                                         (_("Could not do Paint. Try a different combination of"
-                                            " parameters. Or a different method of Paint"),
-                                          str(e)
-                                          )
-                                         )
+                    self.app.inform.emit(
+                        '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
+                                              "Or a different method of Paint"), str(e))
+                    )
                     return
 
                 # add the result to the results list
@@ -4808,8 +5072,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # This is a dirty patch:
         for r in results:
             self.add_shape(DrawToolShape(r))
-        self.app.inform.emit(
-            '[success] %s' % _("Paint done."))
+        self.app.inform.emit('[success] %s' % _("Paint done."))
         self.replot()
 
     def flatten(self, geometry, orient_val=1, reset=True, pathonly=False):

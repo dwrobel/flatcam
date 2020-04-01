@@ -371,6 +371,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit.addSeparator()
         self.menueditorigin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
+        self.menuedit_move2origin = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tSHIFT+O'))
+
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
         self.menueditlocate = self.menuedit.addAction(
@@ -686,8 +689,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject_brown = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
 
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/white32.png'), _('White'))
+
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/black32.png'), _('Black'))
+
+        self.menuprojectcolor.addSeparator()
+
         self.menuproject_custom = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Custom'))
+
+        self.menuprojectcolor.addSeparator()
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Opacity'))
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Default'))
 
         self.menuproject.addSeparator()
 
@@ -825,6 +844,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.move2origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
+
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
         self.locate_btn = self.toolbargeo.addAction(
@@ -904,6 +926,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
         self.cal_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
+        self.punch_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+        self.invert_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -1536,6 +1562,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+H</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+I</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1664,7 +1694,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Skew on Y axis"),
                 # ALT section
                 _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
-                _("Extract Drills Tool"), _("Fiducials Tool"),
+                _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
@@ -2797,7 +2827,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_tool_copy()
                         return
 
-                    self.app.on_copy_object()
+                    self.app.on_copy_command()
 
                 # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_D:
@@ -2950,6 +2980,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
                 # Align in Object Tool
+                if key == QtCore.Qt.Key_H:
+                    self.app.punch_tool.run(toggle=True)
+
+                # Extract Drills Tool
                 if key == QtCore.Qt.Key_I:
                     self.app.edrills_tool.run(toggle=True)
 

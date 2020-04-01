@@ -43,6 +43,7 @@ class Excellon(Geometry):
     ================  ====================================
     C                 Diameter of the tool
     solid_geometry    Geometry list for each tool
+    data              dictionary which holds the options for each tool
     Others            Not supported (Ignored).
     ================  ====================================
 
@@ -94,11 +95,11 @@ class Excellon(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
-        self.tools = dict()
+        self.tools = {}
         # list to store the drills, see above for description
-        self.drills = list()
+        self.drills = []
         # self.slots (list) to store the slots; each is a dictionary
-        self.slots = list()
+        self.slots = []
 
         self.source_file = ''
 
@@ -109,8 +110,8 @@ class Excellon(Geometry):
         self.match_routing_start = None
         self.match_routing_stop = None
 
-        self.num_tools = list()  # List for keeping the tools sorted
-        self.index_per_tool = dict()  # Dictionary to store the indexed points for each tool
+        self.num_tools = []  # List for keeping the tools sorted
+        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -961,10 +962,8 @@ class Excellon(Geometry):
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                try:
-                    self.tools[tool]['solid_geometry'][:] = []
-                except KeyError:
-                    self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['data'] = {}
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
@@ -979,7 +978,10 @@ class Excellon(Geometry):
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[drill['tool']]['solid_geometry'].append(poly)
+
+                tool_in_drills = drill['tool']
+                self.tools[tool_in_drills]['solid_geometry'].append(poly)
+                self.tools[tool_in_drills]['data'] = deepcopy(self.default_data)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -989,8 +991,10 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[slot['tool']]['solid_geometry'].append(poly)
 
+                tool_in_slots = slot['tool']
+                self.tools[tool_in_slots]['solid_geometry'].append(poly)
+                self.tools[tool_in_slots]['data'] = deepcopy(self.default_data)
         except Exception as e:
             log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))

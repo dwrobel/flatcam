@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox
+from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
 from FlatCAMObj import FlatCAMGerber
 import FlatCAMApp
 
@@ -63,10 +63,11 @@ class ToolOptimal(FlatCAMTool):
         form_lay.addRow(QtWidgets.QLabel(""))
 
         # ## Gerber Object to mirror
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(
@@ -78,7 +79,7 @@ class ToolOptimal(FlatCAMTool):
         self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
         self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
 
-        self.precision_spinner = FCSpinner()
+        self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
         form_lay.addRow(self.precision_label, self.precision_spinner)
@@ -259,7 +260,7 @@ class ToolOptimal(FlatCAMTool):
 
         # dict to hold the distances between every two elements in Gerber as keys and the actual locations where that
         # distances happen as values
-        self.min_dict = dict()
+        self.min_dict = {}
 
         # ############################################################################
         # ############################ Signals #######################################
@@ -281,9 +282,6 @@ class ToolOptimal(FlatCAMTool):
 
     def run(self, toggle=True):
         self.app.report_usage("ToolOptimal()")
-
-        self.result_entry.set_value(0.0)
-        self.freq_entry.set_value('0')
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -310,6 +308,9 @@ class ToolOptimal(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
 
     def set_tool_ui(self):
+        self.result_entry.set_value(0.0)
+        self.freq_entry.set_value('0')
+
         self.precision_spinner.set_value(int(self.app.defaults["tools_opt_precision"]))
         self.locations_textb.clear()
         # new cursor - select all document
@@ -354,7 +355,7 @@ class ToolOptimal(FlatCAMTool):
                 old_disp_number = 0
                 pol_nr = 0
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = list()
+                total_geo = []
 
                 for ap in list(fcobj.apertures.keys()):
                     if 'geometry' in fcobj.apertures[ap]:
@@ -388,7 +389,7 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                self.min_dict = dict()
+                self.min_dict = {}
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:

@@ -35,7 +35,9 @@ import FlatCAMApp
 from flatcamGUI.VisPyVisuals import ShapeCollection
 
 import tkinter as tk
-import os, sys, itertools
+import os
+import sys
+import itertools
 import ezdxf
 
 import math
@@ -112,7 +114,7 @@ class FlatCAMObj(QtCore.QObject):
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
-        self.mark_shapes = dict()
+        self.mark_shapes = {}
 
         self.item = None  # Link with project view item
 
@@ -246,7 +248,7 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.myKeywords.append(new_name)
                 self.app.shell._edit.set_model_data(self.app.myKeywords)
                 self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-            except Exception as e:
+            except Exception:
                 log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
@@ -652,7 +654,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.mp = None
 
         # dict to store the polygons selected for isolation; key is the shape added to be plotted and value is the poly
-        self.poly_dict = dict()
+        self.poly_dict = {}
 
         # store the status of grid snapping
         self.grid_status_memory = None
@@ -661,6 +663,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.fill_color = self.app.defaults['gerber_plot_fill']
         self.outline_color = self.app.defaults['gerber_plot_line']
+        self.alpha_level = 'bf'
 
         # keep track if the UI is built so we don't have to build it every time
         self.ui_build = False
@@ -671,7 +674,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color']
+        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level']
 
     def set_ui(self, ui):
         """
@@ -730,7 +733,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # set the model for the Area Exception comboboxes
         self.ui.obj_combo.setModel(self.app.collection)
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ui.obj_combo.setCurrentIndex(1)
+        self.ui.obj_combo.is_last = True
+        self.ui.obj_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+        }[self.ui.type_obj_combo.get_value()]
+        self.on_type_obj_index_changed()
+
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
         self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
@@ -790,15 +798,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_calculate_tooldia(self):
         try:
             tdia = float(self.ui.tipdia_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
         try:
             dang = float(self.ui.tipangle_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
         try:
             cutz = float(self.ui.cutz_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
 
         cutz *= -1
@@ -810,10 +818,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         tool_diameter = tdia + (2 * cutz * math.tan(math.radians(half_tip_angle)))
         self.ui.iso_tool_dia_entry.set_value(tool_diameter)
 
-    def on_type_obj_index_changed(self, index):
-        obj_type = self.ui.type_obj_combo.currentIndex()
+    def on_type_obj_index_changed(self):
+        val = self.ui.type_obj_combo.get_value()
+        obj_type = {"Gerber": 0, "Geometry": 2}[val]
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(0)
+        self.ui.obj_combo.obj_type = {_("Gerber"): "Gerber", _("Geometry"): "Geometry"}[val]
 
     def on_tool_type_change(self, state):
         if state == 'circular':
@@ -1003,15 +1013,21 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
             if isinstance(self.solid_geometry, list):
-                self.solid_geometry = cascaded_union(self.solid_geometry)
+                try:
+                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+                except Exception:
+                    self.solid_geometry = cascaded_union(self.solid_geometry)
 
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
             non_copper = bounding_box.difference(self.solid_geometry)
+
+            if non_copper is None or non_copper.is_empty:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                return "fail"
             geo_obj.solid_geometry = non_copper
 
-        # TODO: Check for None
         self.app.new_object("geometry", name, geo_init)
 
     def on_generatebb_button_click(self, *args):
@@ -1021,10 +1037,21 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
+
+            if isinstance(self.solid_geometry, list):
+                try:
+                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+                except Exception:
+                    self.solid_geometry = cascaded_union(self.solid_geometry)
+
             # Bounding box with rounded corners
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
             if not self.options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
+
+            if bounding_box is None or bounding_box.is_empty:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                return "fail"
             geo_obj.solid_geometry = bounding_box
 
         self.app.new_object("geometry", name, geo_init)
@@ -1138,8 +1165,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                         visible=True)
                     self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
-                        '%s: %d. %s' % (_("Added polygon"),
-                                        int(len(self.poly_dict)),
+                        '%s: %d. %s' % (_("Added polygon"), int(len(self.poly_dict)),
                                         _("Click to add next polygon or right click to start isolation."))
                     )
                 else:
@@ -1313,71 +1339,75 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
 
                 geo_obj.solid_geometry = []
-                for i in range(passes):
-                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+
+                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                if self.ui.tool_type_radio.get_value() == 'v':
+                    new_cutz = self.ui.cutz_spinner.get_value()
+                    new_vtipdia = self.ui.tipdia_spinner.get_value()
+                    new_vtipangle = self.ui.tipangle_spinner.get_value()
+                    tool_type = 'V'
+                else:
+                    new_cutz = self.app.defaults['geometry_cutz']
+                    new_vtipdia = self.app.defaults['geometry_vtipdia']
+                    new_vtipangle = self.app.defaults['geometry_vtipangle']
+                    tool_type = 'C1'
+
+                # store here the default data for Geometry Data
+                default_data = {}
+                default_data.update({
+                    "name": iso_name,
+                    "plot": self.app.defaults['geometry_plot'],
+                    "cutz": new_cutz,
+                    "vtipdia": new_vtipdia,
+                    "vtipangle": new_vtipangle,
+                    "travelz": self.app.defaults['geometry_travelz'],
+                    "feedrate": self.app.defaults['geometry_feedrate'],
+                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                    "dwell": self.app.defaults['geometry_dwell'],
+                    "dwelltime": self.app.defaults['geometry_dwelltime'],
+                    "multidepth": self.app.defaults['geometry_multidepth'],
+                    "ppname_g": self.app.defaults['geometry_ppname_g'],
+                    "depthperpass": self.app.defaults['geometry_depthperpass'],
+                    "extracut": self.app.defaults['geometry_extracut'],
+                    "extracut_length": self.app.defaults['geometry_extracut_length'],
+                    "toolchange": self.app.defaults['geometry_toolchange'],
+                    "toolchangez": self.app.defaults['geometry_toolchangez'],
+                    "endz": self.app.defaults['geometry_endz'],
+                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                    "startz": self.app.defaults['geometry_startz']
+                })
+
+                geo_obj.tools = {}
+                geo_obj.tools['1'] = {}
+                geo_obj.tools.update({
+                    '1': {
+                        'tooldia': float(self.options["isotooldia"]),
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': tool_type,
+                        'data': default_data,
+                        'solid_geometry': geo_obj.solid_geometry
+                    }
+                })
+
+                for nr_pass in range(passes):
+                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
                     geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow, nr_passes=i)
+                                                  follow=follow, nr_passes=nr_pass)
 
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    if self.ui.tool_type_radio.get_value() == 'v':
-                        new_cutz = self.ui.cutz_spinner.get_value()
-                        new_vtipdia = self.ui.tipdia_spinner.get_value()
-                        new_vtipangle = self.ui.tipangle_spinner.get_value()
-                        tool_type = 'V'
-                    else:
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['geometry_vtipdia']
-                        new_vtipangle = self.app.defaults['geometry_vtipangle']
-                        tool_type = 'C1'
-
-                    # store here the default data for Geometry Data
-                    default_data = {}
-                    default_data.update({
-                        "name": iso_name,
-                        "plot": self.app.defaults['geometry_plot'],
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                        "travelz": self.app.defaults['geometry_travelz'],
-                        "feedrate": self.app.defaults['geometry_feedrate'],
-                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                        "dwell": self.app.defaults['geometry_dwell'],
-                        "dwelltime": self.app.defaults['geometry_dwelltime'],
-                        "multidepth": self.app.defaults['geometry_multidepth'],
-                        "ppname_g": self.app.defaults['geometry_ppname_g'],
-                        "depthperpass": self.app.defaults['geometry_depthperpass'],
-                        "extracut": self.app.defaults['geometry_extracut'],
-                        "extracut_length": self.app.defaults['geometry_extracut_length'],
-                        "toolchange": self.app.defaults['geometry_toolchange'],
-                        "toolchangez": self.app.defaults['geometry_toolchangez'],
-                        "endz": self.app.defaults['geometry_endz'],
-                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                        "startz": self.app.defaults['geometry_startz']
-                    })
-
-                    geo_obj.tools = dict()
-                    geo_obj.tools['1'] = dict()
-                    geo_obj.tools.update({
-                        '1': {
-                            'tooldia': float(self.options["isotooldia"]),
-                            'offset': 'Path',
-                            'offset_value': 0.0,
-                            'type': _('Rough'),
-                            'tool_type': tool_type,
-                            'data': default_data,
-                            'solid_geometry': geo_obj.solid_geometry
-                        }
-                    })
+                    # update the geometry in the tools
+                    geo_obj.tools['1']['solid_geometry'] = geo_obj.solid_geometry
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
                 # or just looking in the lists (they are one level depth) and if any is not empty
@@ -1397,8 +1427,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
                 else:
-                    app_obj.inform.emit('[success] %s" %s' %
-                                        (_("Isolation geometry created"), geo_obj.options["name"]))
+                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
 
                 # even if combine is checked, one pass is still single-geo
                 geo_obj.multigeo = True if passes > 1 else False
@@ -1452,11 +1481,65 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                   nr_passes=i)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                            _("Isolation geometry could not be generated."))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
+
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
+                    # required to be transfered to the Geometry object
+                    if self.ui.tool_type_radio.get_value() == 'v':
+                        new_cutz = self.ui.cutz_spinner.get_value()
+                        new_vtipdia = self.ui.tipdia_spinner.get_value()
+                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        tool_type = 'V'
+                    else:
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
+
+                    # store here the default data for Geometry Data
+                    default_data = {}
+                    default_data.update({
+                        "name": iso_name,
+                        "plot": self.app.defaults['geometry_plot'],
+                        "cutz": new_cutz,
+                        "vtipdia": new_vtipdia,
+                        "vtipangle": new_vtipangle,
+                        "travelz": self.app.defaults['geometry_travelz'],
+                        "feedrate": self.app.defaults['geometry_feedrate'],
+                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                        "dwell": self.app.defaults['geometry_dwell'],
+                        "dwelltime": self.app.defaults['geometry_dwelltime'],
+                        "multidepth": self.app.defaults['geometry_multidepth'],
+                        "ppname_g": self.app.defaults['geometry_ppname_g'],
+                        "depthperpass": self.app.defaults['geometry_depthperpass'],
+                        "extracut": self.app.defaults['geometry_extracut'],
+                        "extracut_length": self.app.defaults['geometry_extracut_length'],
+                        "toolchange": self.app.defaults['geometry_toolchange'],
+                        "toolchangez": self.app.defaults['geometry_toolchangez'],
+                        "endz": self.app.defaults['geometry_endz'],
+                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                        "startz": self.app.defaults['geometry_startz']
+                    })
+
+                    geo_obj.tools = {}
+                    geo_obj.tools['1'] = {}
+                    geo_obj.tools.update({
+                        '1': {
+                            'tooldia': float(self.options["isotooldia"]),
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': tool_type,
+                            'data': default_data,
+                            'solid_geometry': geo_obj.solid_geometry
+                        }
+                    })
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2088,14 +2171,17 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                 gerber_code += 'D02*\n'
                                 gerber_code += 'G37*\n'
                                 gerber_code += '%LPD*%\n'
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() '0' aperture --> %s" % str(e))
 
-            for apid in self.apertures:
-                if apid == '0':
-                    continue
-                else:
-                    gerber_code += 'D%s*\n' % str(apid)
-                    if 'geometry' in self.apertures[apid]:
-                        for geo_elem in self.apertures[apid]['geometry']:
+        for apid in self.apertures:
+            if apid == '0':
+                continue
+            else:
+                gerber_code += 'D%s*\n' % str(apid)
+                if 'geometry' in self.apertures[apid]:
+                    for geo_elem in self.apertures[apid]['geometry']:
+                        try:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
                                 if not geo.is_empty:
@@ -2136,7 +2222,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             prev_coord = coord
 
                                         # gerber_code += "D02*\n"
+                        except Exception as e:
+                            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() 'follow' --> %s" % str(e))
 
+                        try:
                             if 'clear' in geo_elem:
                                 gerber_code += '%LPC*%\n'
 
@@ -2151,6 +2240,63 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
                                             gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+                                    elif isinstance(geo, Polygon):
+                                        geo_coords = list(geo.exterior.coords)
+                                        # first command is a move with pen-up D02 at the beginning of the geo
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
+                                        for coord in geo_coords[1:]:
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+
+                                            prev_coord = coord
+
+                                        for geo_int in geo.interiors:
+                                            geo_coords = list(geo_int.coords)
+                                            # first command is a move with pen-up D02 at the beginning of the geo
+                                            if g_zeros == 'T':
+                                                x_formatted, y_formatted = tz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+                                            else:
+                                                x_formatted, y_formatted = lz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+
+                                            prev_coord = geo_coords[0]
+                                            for coord in geo_coords[1:]:
+                                                if coord != prev_coord:
+                                                    if g_zeros == 'T':
+                                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+                                                    else:
+                                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+
+                                                prev_coord = coord
                                     else:
                                         geo_coords = list(geo.coords)
                                         # first command is a move with pen-up D02 at the beginning of the geo
@@ -2180,9 +2326,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             prev_coord = coord
                                         # gerber_code += "D02*\n"
                                     gerber_code += '%LPD*%\n'
-
-        except Exception as e:
-            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> %s" % str(e))
+                        except Exception as e:
+                            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() 'clear' --> %s" % str(e))
 
         if not self.apertures:
             log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> Gerber Object is empty: no apertures.")
@@ -2242,32 +2387,59 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.options.update({
             "plot": True,
             "solid": False,
-            "drillz": -0.1,
+
+            "operation": "drill",
+            "milling_type": "drills",
+
+            "milling_dia": 0.04,
+
+            "cutz": -0.1,
+            "multidepth": False,
+            "depthperpass": 0.7,
             "travelz": 0.1,
-            "feedrate": 5.0,
+            "feedrate": self.app.defaults["geometry_feedrate"],
+            "feedrate_z": 5.0,
             "feedrate_rapid": 5.0,
             "tooldia": 0.1,
             "slot_tooldia": 0.1,
             "toolchange": False,
             "toolchangez": 1.0,
             "toolchangexy": "0.0, 0.0",
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length":self.app.defaults["geometry_extracut_length"],
             "endz": 2.0,
+            "endxy": '',
+
             "startz": None,
+            "offset": 0.0,
             "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
-            "ppname_e": 'defaults',
+            "ppname_e": 'default',
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
             "z_pdepth": -0.02,
             "feedrate_probe": 3.0,
-            "optimization_type": "R",
-            "gcode_type": "drills"
+            "optimization_type": "B",
         })
 
         # TODO: Document this.
-        self.tool_cbs = dict()
+        self.tool_cbs = {}
 
-        # dict to hold the tool number as key and tool offset as value
-        self.tool_offset = dict()
+        # dict that holds the object names and the option name
+        # the key is the object name (defines in ObjectUI) for each UI element that is a parameter
+        # particular for a tool and the value is the actual name of the option that the UI element is changing
+        self.name2option = {}
+
+        # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
+        self.default_data = {}
+
+        # fill in self.default_data values from self.options
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('excellon_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('geometry_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
 
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
@@ -2285,6 +2457,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.multigeo = False
         self.units_found = self.app.defaults['units']
+
+        self.fill_color = self.app.defaults['excellon_plot_fill']
+        self.outline_color = self.app.defaults['excellon_plot_line']
+        self.alpha_level = 'bf'
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -2334,7 +2510,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 if option is not 'name':
                     try:
                         exc_final.options[option] = exc.options[option]
-                    except Exception as e:
+                    except Exception:
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
@@ -2460,7 +2636,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
             # delete the exc_final tools, drills and slots
-            exc_final.tools = dict()
+            exc_final.tools = {}
             exc_final.drills[:] = []
             exc_final.slots[:] = []
 
@@ -2500,7 +2676,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
         tools = [i[0] for i in sorted_tools]
 
+        new_options = {}
+        for opt in self.options:
+            new_options[opt] = self.options[opt]
+
         for tool_no in tools:
+
+            # add the data dictionary for each tool with the default values
+            self.tools[tool_no]['data'] = deepcopy(new_options)
+            # self.tools[tool_no]['data']["tooldia"] = self.tools[tool_no]["C"]
+            # self.tools[tool_no]['data']["slot_tooldia"] = self.tools[tool_no]["C"]
 
             drill_cnt = 0  # variable to store the nr of drills per tool
             slot_cnt = 0  # variable to store the nr of slots per tool
@@ -2533,18 +2718,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            try:
-                t_offset = self.tool_offset[float('%.*f' % (self.decimals, float(self.tools[tool_no]['C'])))]
-            except KeyError:
-                t_offset = self.app.defaults['excellon_offset']
-
-            tool_offset_item = FCDoubleSpinner()
-            tool_offset_item.set_precision(self.decimals)
-            tool_offset_item.set_range(-9999.9999, 9999.9999)
-            tool_offset_item.setWrapping(True)
-            tool_offset_item.setSingleStep(0.1) if self.units == 'MM' else tool_offset_item.setSingleStep(0.01)
-            tool_offset_item.set_value(t_offset)
-
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
@@ -2554,7 +2727,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
-            self.ui.tools_table.setCellWidget(self.tool_row, 4, tool_offset_item)  # Tool offset
             empty_plot_item = QtWidgets.QTableWidgetItem('')
             empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
@@ -2581,7 +2753,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
         self.ui.tools_table.setItem(self.tool_row, 3, empty_1_1)
-        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_2)
         self.ui.tools_table.setItem(self.tool_row, 5, empty_1_3)
 
         font = QtGui.QFont()
@@ -2613,7 +2784,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
         self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
         self.ui.tools_table.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
-        self.ui.tools_table.setItem(self.tool_row, 4, empty_2_2)
         self.ui.tools_table.setItem(self.tool_row, 5, empty_2_3)
 
         for kl in [1, 2, 3]:
@@ -2622,9 +2792,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # sort the tool diameter column
         # self.ui.tools_table.sortItems(1)
+
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
-        #
+
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
 
@@ -2638,13 +2809,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
-        if self.app.defaults["global_app_level"] == 'b':
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        else:
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(5, 17)
         self.ui.tools_table.setColumnWidth(5, 17)
@@ -2661,30 +2830,26 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
         if not self.drills:
-            self.ui.tdlabel.hide()
             self.ui.tooldia_entry.hide()
             self.ui.generate_milling_button.hide()
         else:
-            self.ui.tdlabel.show()
             self.ui.tooldia_entry.show()
             self.ui.generate_milling_button.show()
 
         if not self.slots:
-            self.ui.stdlabel.hide()
             self.ui.slot_tooldia_entry.hide()
             self.ui.generate_milling_slots_button.hide()
         else:
-            self.ui.stdlabel.show()
             self.ui.slot_tooldia_entry.show()
             self.ui.generate_milling_slots_button.show()
 
-        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        for row in range(self.ui.tools_table.rowCount()):
-            try:
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
-            except (TypeError, AttributeError):
-                pass
+        # set the text on tool_data_label after loading the object
+        sel_items = self.ui.tools_table.selectedItems()
+        sel_rows = [it.row() for it in sel_items]
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
         self.ui_connect()
 
@@ -2706,30 +2871,72 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
-            "drillz": self.ui.cutz_entry,
+
+            "operation": self.ui.operation_radio,
+            "milling_type": self.ui.milling_type_radio,
+
+            "milling_dia": self.ui.mill_dia_entry,
+            "cutz": self.ui.cutz_entry,
+            "multidepth": self.ui.mpass_cb,
+            "depthperpass": self.ui.maxdepth_entry,
             "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.feedrate_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
+            "feedrate": self.ui.xyfeedrate_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "tooldia": self.ui.tooldia_entry,
             "slot_tooldia": self.ui.slot_tooldia_entry,
             "toolchange": self.ui.toolchange_cb,
             "toolchangez": self.ui.toolchangez_entry,
+            "extracut": self.ui.extracut_cb,
+            "extracut_length": self.ui.e_cut_entry,
+
             "spindlespeed": self.ui.spindlespeed_entry,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
+
             "startz": self.ui.estartz_entry,
-            "endz": self.ui.eendz_entry,
+            "endz": self.ui.endz_entry,
+            "endxy": self.ui.endxy_entry,
+
+            "offset": self.ui.offset_entry,
+
             "ppname_e": self.ui.pp_excellon_name_cb,
+            "ppname_g": self.ui.pp_geo_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
-            "gcode_type": self.ui.excellon_gcode_type_radio
+            # "gcode_type": self.ui.excellon_gcode_type_radio
         })
 
+        self.name2option = {
+            "e_operation": "operation",
+            "e_milling_type": "milling_type",
+            "e_milling_dia": "milling_dia",
+            "e_cutz" : "cutz",
+            "e_multidepth" : "multidepth",
+            "e_depthperpass" : "depthperpass",
+
+            "e_travelz" : "travelz",
+            "e_feedratexy" : "feedrate",
+            "e_feedratez" : "feedrate_z",
+            "e_fr_rapid" : "feedrate_rapid",
+            "e_extracut" : "extracut",
+            "e_extracut_length" : "extracut_length",
+            "e_spindlespeed" : "spindlespeed",
+            "e_dwell" : "dwell",
+            "e_dwelltime" : "dwelltime",
+            "e_offset" : "offset",
+        }
+
+        # populate Excellon preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
             # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
             if name == 'hpgl':
                 continue
             self.ui.pp_excellon_name_cb.addItem(name)
+
+        # populate Geometry (milling) preprocessor combobox list
+        for name in list(self.app.preprocessors.keys()):
+            self.ui.pp_geo_name_cb.addItem(name)
 
         # Fill form fields
         self.to_form()
@@ -2739,18 +2946,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # self.ui.pp_excellon_name_cb combobox
         self.on_pp_changed()
 
-        # initialize the dict that holds the tools offset
-        t_default_offset = self.app.defaults["excellon_offset"]
-        if not self.tool_offset:
-            for value in self.tools.values():
-                dia = float('%.*f' % (self.decimals, float(value['C'])))
-                self.tool_offset[dia] = t_default_offset
-
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.tools_table.setColumnHidden(5, True)
             self.ui.estartz_label.hide()
             self.ui.estartz_entry.hide()
             self.ui.feedrate_rapid_label.hide()
@@ -2770,52 +2971,199 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
+        self.on_operation_type(val='drill')
+        self.ui.operation_radio.activated_custom.connect(self.on_operation_type)
+
         self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
+
+        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
         self.units_found = self.app.defaults['units']
+
+        # ########################################
+        # #######3 TEMP SETTINGS #################
+        # ########################################
+        self.ui.operation_radio.set_value("drill")
+        self.ui.operation_radio.setEnabled(False)
 
     def ui_connect(self):
 
+        # selective plotting
         for row in range(self.ui.tools_table.rowCount() - 2):
             self.ui.tools_table.cellWidget(row, 5).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
+        # rows selected
+        self.ui.tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+
+        # value changed in the particular parameters of a tool
+        for key, option in self.name2option.items():
+            current_widget = self.form_fields[option]
+
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.form_to_storage)
+            if isinstance(current_widget, RadioSet):
+                current_widget.activated_custom.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                current_widget.returnPressed.connect(self.form_to_storage)
+
     def ui_disconnect(self):
+        # selective plotting
         for row in range(self.ui.tools_table.rowCount()):
             try:
                 self.ui.tools_table.cellWidget(row, 5).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-
         try:
             self.ui.plot_cb.stateChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
-    def on_tool_offset_edit(self):
-        # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        for row in range(self.ui.tools_table.rowCount()):
+        # rows selected
+        try:
+            self.ui.tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # value changed in the particular parameters of a tool
+        for key, option in self.name2option.items():
+            current_widget = self.form_fields[option]
+
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                try:
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+
+    def on_row_selection_change(self):
+        self.ui_disconnect()
+
+        sel_rows = []
+        sel_items = self.ui.tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+
+        if not sel_rows:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.generate_milling_button.setDisabled(True)
+            self.ui.generate_milling_slots_button.setDisabled(True)
+            self.ui_connect()
+            return
+        else:
+            self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.generate_milling_button.setDisabled(False)
+            self.ui.generate_milling_slots_button.setDisabled(False)
+
+        if len(sel_rows) == 1:
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            tooluid = int(self.ui.tools_table.item(sel_rows[0], 0).text())
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            )
+        else:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
+        for c_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
             try:
-                # if connected, disconnect the signal from the slot on item_changed as it creates issues
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
+                item = self.ui.tools_table.item(c_row, 0)
+                if type(item) is not None:
+                    tooluid = item.text()
+                    self.storage_to_form(self.tools[str(tooluid)]['data'])
+                else:
+                    self.ui_connect()
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui_connect()
+                return
 
-        self.units = self.app.defaults['units'].upper()
-        self.is_modified = True
+        self.ui_connect()
 
-        row_of_item_changed = self.ui.tools_table.currentRow()
-        dia = float('%.*f' % (self.decimals, float(self.ui.tools_table.item(row_of_item_changed, 1).text())))
+    def storage_to_form(self, dict_storage):
+        for form_key in self.form_fields:
+            for storage_key in dict_storage:
+                if form_key == storage_key and form_key not in \
+                        ["toolchange", "toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
+                    try:
+                        self.form_fields[form_key].set_value(dict_storage[form_key])
+                    except Exception as e:
+                        log.debug("FlatCAMExcellon.storage_to_form() --> %s" % str(e))
+                        pass
 
-        self.tool_offset[dia] = self.sender().get_value()
+    def form_to_storage(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
 
-        # we reactivate the signals after the after the tool editing
-        for row in range(self.ui.tools_table.rowCount()):
-            try:
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
-            except (TypeError, AttributeError):
-                pass
+        self.ui_disconnect()
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        # row = self.ui.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.ui.tools_table.item(row, 0).text())
+
+            for tooluid_key, tooluid_val in self.tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
+
+        self.ui_connect()
+
+    def on_operation_type(self, val):
+        if val == 'mill':
+            self.ui.mill_type_label.show()
+            self.ui.milling_type_radio.show()
+            self.ui.mill_dia_label.show()
+            self.ui.mill_dia_entry.show()
+            self.ui.frxylabel.show()
+            self.ui.xyfeedrate_entry.show()
+            self.ui.extracut_cb.show()
+            self.ui.e_cut_entry.show()
+
+            # if 'laser' not in self.ui.pp_excellon_name_cb.get_value().lower():
+            #     self.ui.mpass_cb.show()
+            #     self.ui.maxdepth_entry.show()
+        else:
+            self.ui.mill_type_label.hide()
+            self.ui.milling_type_radio.hide()
+            self.ui.mill_dia_label.hide()
+            self.ui.mill_dia_entry.hide()
+            # self.ui.mpass_cb.hide()
+            # self.ui.maxdepth_entry.hide()
+            self.ui.frxylabel.hide()
+            self.ui.xyfeedrate_entry.hide()
+            self.ui.extracut_cb.hide()
+            self.ui.e_cut_entry.hide()
 
     def get_selected_tools_list(self):
         """
@@ -2840,7 +3188,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # from the columnCount we subtract a value of 1 which represent the last column (plot column)
             # which does not have text
             txt = ''
-            elem = list()
+            elem = []
 
             for column in range(0, self.ui.tools_table.columnCount() - 1):
                 try:
@@ -3259,6 +3607,75 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
 
+        if 'laser' in current_pp.lower():
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_entry.hide()
+            try:
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+            except AttributeError:
+                pass
+
+            if 'marlin' in current_pp.lower():
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
+            else:
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
+
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
+
+            try:
+                self.ui.frzlabel.hide()
+                self.ui.feedrate_z_entry.hide()
+            except AttributeError:
+                pass
+
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
+
+            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+
+            try:
+                self.ui.tool_offset_label.hide()
+                self.ui.offset_entry.hide()
+            except AttributeError:
+                pass
+        else:
+            self.ui.cutzlabel.show()
+            self.ui.cutz_entry.show()
+            try:
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
+
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
+
+            try:
+                self.ui.frzlabel.show()
+                self.ui.feedrate_z_entry.show()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
+
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+
+            try:
+                self.ui.tool_offset_lbl.show()
+                self.ui.offset_entry.show()
+            except AttributeError:
+                pass
+
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
         self.read_form()
@@ -3303,10 +3720,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['type'] = 'Excellon'
             job_obj.options['ppname_e'] = pp_excellon_name
 
-            job_obj.z_cut = float(self.options["drillz"])
-            job_obj.tool_offset = self.tool_offset
+            job_obj.z_cut = float(self.options["cutz"])
+
+            job_obj.multidepth = self.options["multidepth"]
+            job_obj.z_depthpercut = self.options["depthperpass"]
+
             job_obj.z_move = float(self.options["travelz"])
-            job_obj.feedrate = float(self.options["feedrate"])
+            job_obj.feedrate = float(self.options["feedrate_z"])
+            job_obj.z_feedrate = float(self.options["feedrate_z"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
             job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
@@ -3328,20 +3749,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.z_pdepth = float(self.options["z_pdepth"])
             job_obj.feedrate_probe = float(self.options["feedrate_probe"])
 
-            # There could be more than one drill size...
-            # job_obj.tooldia =   # TODO: duplicate variable!
-            # job_obj.options["tooldia"] =
+            job_obj.z_cut = float(self.options['cutz'])
+            job_obj.toolchange = self.options["toolchange"]
+            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
+            job_obj.z_toolchange = float(self.options["toolchangez"])
+            job_obj.startz = float(self.options["startz"]) if self.options["startz"] else None
+            job_obj.endz = float(self.options["endz"])
+            job_obj.xy_end = self.options["endxy"]
+            job_obj.excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
 
             tools_csv = ','.join(tools)
-            ret_val = job_obj.generate_from_excellon_by_tool(
-                self, tools_csv,
-                drillz=float(self.options['drillz']),
-                toolchange=self.options["toolchange"],
-                toolchangexy=self.app.defaults["excellon_toolchangexy"],
-                toolchangez=float(self.options["toolchangez"]),
-                startz=float(self.options["startz"]) if self.options["startz"] else None,
-                endz=float(self.options["endz"]),
-                excellon_optimization_type=self.app.defaults["excellon_optimization_type"])
+            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv, use_ui=True)
 
             if ret_val == 'fail':
                 return 'fail'
@@ -3462,17 +3880,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
 
-    # def plot_element(self, element, color='red', visible=None, layer=None):
-    #
-    #     visible = visible if visible else self.options['plot']
-    #
-    #     try:
-    #         for sub_el in element:
-    #             self.plot_element(sub_el)
-    #
-    #     except TypeError:  # Element is not iterable...
-    #         self.add_shape(shape=element, color=color, visible=visible, layer=0)
-
     def plot(self, visible=None, kind=None):
 
         # Does all the required setup and returns False
@@ -3513,8 +3920,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.options["solid"]:
                 for geo in self.solid_geometry:
                     self.add_shape(shape=geo,
-                                   color=self.app.defaults["excellon_plot_line"],
-                                   face_color=self.app.defaults["excellon_plot_fill"],
+                                   color=self.outline_color,
+                                   face_color=self.fill_color,
                                    visible=visible,
                                    layer=2)
             else:
@@ -3526,6 +3933,35 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("FlatCAMExcellon.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.ui_disconnect()
+
+        row = self.ui.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        tooluid_item = int(self.ui.tools_table.item(row, 0).text())
+        temp_tool_data = {}
+
+        for tooluid_key, tooluid_val in self.tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
+
+        for tooluid_key, tooluid_val in self.tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
+
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
+
+        self.ui_connect()
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):
@@ -3563,6 +3999,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "extracut": False,
             "extracut_length": 0.1,
             "endz": 2.0,
+            "endxy": '',
+
             "startz": None,
             "toolchange": False,
             "toolchangez": 1.0,
@@ -3634,6 +4072,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # save here the old value for the Cut Z before it is changed by selecting a V-shape type tool in the tool table
         self.old_cutz = self.app.defaults["geometry_cutz"]
 
+        self.fill_color = self.app.defaults['geometry_plot_line']
+        self.outline_color = self.app.defaults['geometry_plot_line']
+        self.alpha_level = 'FF'
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3645,7 +4087,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units']
 
-        offset = 0
         tool_idx = 0
 
         n = len(self.tools)
@@ -3667,21 +4108,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            offset_item = QtWidgets.QComboBox()
+            offset_item = FCComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
             # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
 
-            type_item = QtWidgets.QComboBox()
+            type_item = FCComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
             # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
 
-            tool_type_item = QtWidgets.QComboBox()
+            tool_type_item = FCComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
                 # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
@@ -3785,6 +4226,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
             self.ui.e_cut_entry.setDisabled(True)
 
+        # set the text on tool_data_label after loading the object
+        sel_rows = []
+        sel_items = self.ui.geo_tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -3807,8 +4258,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "vtipangle": self.ui.tipangle_entry,
             "travelz": self.ui.travelz_entry,
             "feedrate": self.ui.cncfeedrate_entry,
-            "feedrate_z": self.ui.cncplunge_entry,
-            "feedrate_rapid": self.ui.cncfeedrate_rapid_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
+            "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "spindlespeed": self.ui.cncspindlespeed_entry,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
@@ -3821,7 +4272,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "extracut_length": self.ui.e_cut_entry,
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
-            "endz": self.ui.gendz_entry,
+            "endz": self.ui.endz_entry,
+            "endxy": self.ui.endxy_entry,
             "cnctooldia": self.ui.addtool_entry
         })
 
@@ -3840,7 +4292,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.cutz_entry.setDisabled(False)
 
         # store here the default data for Geometry Data
-        self.default_data = dict()
+        self.default_data = {}
         self.default_data.update({
             "name": None,
             "plot": None,
@@ -3861,6 +4313,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchange": None,
             "toolchangez": None,
             "endz": None,
+            "endxy": '',
             "spindlespeed": 0,
             "toolchangexy": None,
             "startz": None
@@ -3951,10 +4404,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.addtool_btn.hide()
             self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
-            # self.ui.endzlabel.hide()
-            # self.ui.gendz_entry.hide()
+            # self.ui.endz_label.hide()
+            # self.ui.endz_entry.hide()
             self.ui.fr_rapidlabel.hide()
-            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.feedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
             self.ui.pdepth_label.hide()
@@ -4056,13 +4509,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
 
-        self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        # self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
         self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
+
+        # common parameters update
+        self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
 
     def ui_disconnect(self):
 
@@ -4115,7 +4574,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
-            self.ui.geo_tools_table.currentItemChanged.disconnect()
+            self.ui.geo_tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -4140,6 +4603,83 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except (TypeError, AttributeError):
             pass
 
+    def on_row_selection_change(self):
+        self.update_ui()
+
+    def update_ui(self, row=None):
+        self.ui_disconnect()
+
+        if row is None:
+            sel_rows = []
+            sel_items = self.ui.geo_tools_table.selectedItems()
+            for it in sel_items:
+                sel_rows.append(it.row())
+        else:
+            sel_rows = row if type(row) == list else [row]
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        for current_row in sel_rows:
+            self.set_tool_offset_visibility(current_row)
+
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.geo_tools_table.item(current_row, 5)
+                if type(item) is not None:
+                    tooluid = int(item.text())
+                else:
+                    self.ui_connect()
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui_connect()
+                return
+
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+                )
+
+                # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+                # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+                try:
+                    item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+                    if item is not None:
+                        tool_type_txt = item.currentText()
+                        self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                    else:
+                        self.ui_connect()
+                        return
+                except Exception as e:
+                    log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                    return
+
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            for key, value in list(tooluid_value.items()):
+                                if key == 'data':
+                                    form_value_storage = tooluid_value['data']
+                                    self.update_form(form_value_storage)
+                                if key == 'offset_value':
+                                    # update the offset value in the entry even if the entry is hidden
+                                    self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
+
+                                if key == 'tool_type' and value == 'V':
+                                    self.update_cutz()
+                except Exception as e:
+                    log.debug("FlatCAMGeometry.update_ui() -> %s " % str(e))
+
+            else:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
+
+        self.ui_connect()
+
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
 
@@ -4151,7 +4691,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             tooldia = float(self.ui.addtool_entry.get_value())
 
         # construct a list of all 'tooluid' in the self.tools
-        # tool_uid_list = list()
+        # tool_uid_list = []
         # for tooluid_key in self.tools:
         #     tool_uid_list.append(int(tooluid_key))
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
@@ -4214,6 +4754,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
+        self.ui_connect()
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -4233,6 +4774,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
         self.app.on_tools_database()
+        self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()
         self.app.tools_db_tab.cancel_tool_from_db.show()
@@ -4288,6 +4830,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui_connect()
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -4319,8 +4862,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         max_uid += 1
                         self.tools[int(max_uid)] = deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Failed. Select a tool to copy."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                        self.ui_connect()
                         self.build_ui()
                         return
                     except Exception as e:
@@ -4328,8 +4871,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Failed. Select a tool to copy."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                self.ui_connect()
                 self.build_ui()
                 return
         else:
@@ -4355,11 +4898,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui_connect()
         self.build_ui()
         self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
-
         self.ui_disconnect()
 
         current_row = current_item.row()
@@ -4385,6 +4928,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
+        self.ui_connect()
         self.build_ui()
 
     def on_tool_delete(self, all=None):
@@ -4412,8 +4956,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         self.tools = deepcopy(temp_tools)
                         temp_tools.clear()
                     except AttributeError:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Failed. Select a tool to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                        self.ui_connect()
                         self.build_ui()
                         return
                     except Exception as e:
@@ -4421,8 +4965,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Failed. Select a tool to delete."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                self.ui_connect()
                 self.build_ui()
                 return
         else:
@@ -4443,9 +4987,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui_connect()
         self.build_ui()
-        self.app.inform.emit('[success] %s' %
-                             _("Tool was deleted in Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))
 
         obj_active = self.app.collection.get_active()
         # if the object was MultiGeo and now it has no tool at all (therefore no geometry)
@@ -4464,7 +5008,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 obj_active.options['ymin'] = ymin
                 obj_active.options['xmax'] = xmax
                 obj_active.options['ymax'] = ymax
-            except Exception as e:
+            except Exception:
                 obj_active.options['xmin'] = 0
                 obj_active.options['ymin'] = 0
                 obj_active.options['xmax'] = 0
@@ -4473,72 +5017,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # if there is no tool left in the Tools Table, disable the parameters GUI
         if self.ui.geo_tools_table.rowCount() == 0:
             self.ui.geo_param_frame.setDisabled(True)
-
-    def on_row_selection_change(self):
-        self.update_ui()
-
-    def update_ui(self, row=None):
-        self.ui_disconnect()
-
-        if row is None:
-            try:
-                current_row = self.ui.geo_tools_table.currentRow()
-            except Exception:
-                current_row = 0
-        else:
-            current_row = row
-
-        if current_row < 0:
-            current_row = 0
-
-        self.set_tool_offset_visibility(current_row)
-
-        # populate the form with the data from the tool associated with the row parameter
-        try:
-            item = self.ui.geo_tools_table.item(current_row, 5)
-            if type(item) is not None:
-                tooluid = int(item.text())
-            else:
-                return
-        except Exception as e:
-            log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
-            return
-
-        # update the QLabel that shows for which Tool we have the parameters in the UI form
-        self.ui.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
-        )
-
-        # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
-        # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-        try:
-            item = self.ui.geo_tools_table.cellWidget(current_row, 4)
-            if item is not None:
-                tool_type_txt = item.currentText()
-                self.ui_update_v_shape(tool_type_txt=tool_type_txt)
-            else:
-                return
-        except Exception as e:
-            log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
-            return
-
-        try:
-            # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in list(self.tools.items()):
-                if int(tooluid_key) == tooluid:
-                    for key, value in tooluid_value.items():
-                        if key == 'data':
-                            form_value_storage = tooluid_value[key]
-                            self.update_form(form_value_storage)
-                        if key == 'offset_value':
-                            # update the offset value in the entry even if the entry is hidden
-                            self.ui.tool_offset_entry.set_value(tooluid_value[key])
-
-                        if key == 'tool_type' and value == 'V':
-                            self.update_cutz()
-        except Exception as e:
-            log.debug("FlatCAMObj ---> update_ui() " + str(e))
-        self.ui_connect()
 
     def ui_update_v_shape(self, tool_type_txt):
         if tool_type_txt == 'V':
@@ -4571,7 +5049,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             return
         tooldia = float(tool_dia_item.text())
 
-        new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
+        try:
+            new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
+        except ZeroDivisionError:
+            new_cutz = self.old_cutz
+
         new_cutz = float('%.*f' % (self.decimals, new_cutz)) * -1.0   # this value has to be negative
 
         self.ui.cutz_entry.set_value(new_cutz)
@@ -4710,7 +5192,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
-        except Exception as e:
+        except Exception:
             return
 
         # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
@@ -4787,6 +5269,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         temp_tools.clear()
         self.ui_connect()
 
+    def update_common_param_in_storage(self):
+        for tooluid_value in self.tools.values():
+            tooluid_value['data']['ppname_g'] = self.ui.pp_geometry_name_cb.get_value()
+
     def select_tools_table_row(self, row, clearsel=None):
         if clearsel:
             self.ui.geo_tools_table.clearSelection()
@@ -4851,7 +5337,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         table_tools_items = []
         if self.multigeo:
             for x in self.ui.geo_tools_table.selectedItems():
-                elem = list()
+                elem = []
                 txt = ''
 
                 for column in range(0, self.ui.geo_tools_table.columnCount()):
@@ -4923,10 +5409,79 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
             self.ui.fr_rapidlabel.show()
-            self.ui.cncfeedrate_rapid_entry.show()
+            self.ui.feedrate_rapid_entry.show()
         else:
             self.ui.fr_rapidlabel.hide()
-            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.feedrate_rapid_entry.hide()
+
+        if 'laser' in current_pp.lower():
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_entry.hide()
+            try:
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+            except AttributeError:
+                pass
+
+            if 'marlin' in current_pp.lower():
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
+            else:
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
+
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
+
+            try:
+                self.ui.frzlabel.hide()
+                self.ui.feedrate_z_entry.hide()
+            except AttributeError:
+                pass
+
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
+
+            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+
+            try:
+                self.ui.tool_offset_label.hide()
+                self.ui.offset_entry.hide()
+            except AttributeError:
+                pass
+        else:
+            self.ui.cutzlabel.show()
+            self.ui.cutz_entry.show()
+            try:
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
+
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
+
+            try:
+                self.ui.frzlabel.show()
+                self.ui.feedrate_z_entry.show()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
+
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+
+            try:
+                self.ui.tool_offset_lbl.show()
+                self.ui.offset_entry.show()
+            except AttributeError:
+                pass
 
     def on_generatecnc_button_click(self, *args):
         log.debug("Generating CNCJob from Geometry ...")
@@ -4939,12 +5494,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             if self.special_group:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s %s.' %
-                                     (_("This Geometry can't be processed because it is"),
-                                      str(self.special_group),
-                                      _("geometry")
-                                      )
-                                     )
+                self.app.inform.emit(
+                    '[WARNING_NOTCL] %s %s %s.' %
+                    (_("This Geometry can't be processed because it is"), str(self.special_group), _("geometry"))
+                )
                 return
         except AttributeError:
             pass
@@ -4984,8 +5537,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.clearSelection()
 
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed. No tool selected in the tool table ..."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
     def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
                          plot=True, use_thread=True):
@@ -5044,7 +5596,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = dict()
+            dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -5079,15 +5631,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         try:
                             offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
                         except ValueError:
-                            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                 _("Wrong value format entered, use a number."))
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                             return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
-                        self.app.inform.emit('[WARNING] %s' % _("Tool Offset is selected in Tool Table but "
-                                                                "no value is provided.\n"
-                                                                "Add a Tool Offset or change the Offset Type."))
+                        self.app.inform.emit(
+                            '[WARNING] %s' % _("Tool Offset is selected in Tool Table but no value is provided.\n"
+                                               "Add a Tool Offset or change the Offset Type.")
+                        )
                         return
                 else:
                     tool_offset = 0.0
@@ -5110,6 +5662,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["startz"]
                 endz = tools_dict[tooluid_key]['data']["endz"]
+                endxy = self.options["endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
@@ -5135,7 +5688,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5186,7 +5739,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = dict()
+            dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -5222,10 +5775,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # find the tool_dia associated with the tooluid_key
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
-                for k, v in self.tools.items():
-                    if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
-                        current_uid = int(k)
-                        break
+                # for k, v in self.tools.items():
+                #     if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
+                #         current_uid = int(k)
+                #         break
 
                 if dia_cnc_dict['offset'] == 'in':
                     tool_offset = -tooldia_val / 2
@@ -5262,13 +5815,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
                 startz = tools_dict[tooluid_key]['data']["startz"]
                 endz = tools_dict[tooluid_key]['data']["endz"]
+                endxy = self.options["endxy"]
                 spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
                 dwell = tools_dict[tooluid_key]['data']["dwell"]
                 dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
                 pp_geometry_name = tools_dict[tooluid_key]['data']["ppname_g"]
 
                 spindledir = self.app.defaults['geometry_spindledir']
-                tool_solid_geometry = self.tools[current_uid]['solid_geometry']
+                tool_solid_geometry = self.tools[tooluid_key]['solid_geometry']
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
@@ -5287,7 +5841,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5397,6 +5951,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
+        endxy = self.options["endxy"]
 
         toolchangez = toolchangez if toolchangez else float(self.options["toolchangez"])
         toolchangexy = toolchangexy if toolchangexy else self.options["toolchangexy"]
@@ -5446,7 +6001,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
                 multidepth=multidepth, depthpercut=depthperpass,
                 toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
+                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
                 pp_geometry_name=ppname_g
             )
 
@@ -5491,7 +6046,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             xfactor = float(xfactor)
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %  _("Scale factor has to be a number: integer or float."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scale factor has to be a number: integer or float."))
             return
 
         if yfactor is None:
@@ -5518,7 +6073,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def scale_recursion(geom):
             if type(geom) is list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(scale_recursion(local_geom))
                 return geoms
@@ -5595,7 +6150,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def translate_recursion(geom):
             if type(geom) is list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
@@ -5874,51 +6429,54 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if geo_final.solid_geometry is None:
             geo_final.solid_geometry = []
 
-        if type(geo_final.solid_geometry) is not list:
+        try:
+            __ = iter(geo_final.solid_geometry)
+        except TypeError:
             geo_final.solid_geometry = [geo_final.solid_geometry]
 
-        for geo in geo_list:
-            for option in geo.options:
+        new_solid_geometry = []
+        new_options = {}
+        new_tools = {}
+
+        for geo_obj in geo_list:
+            for option in geo_obj.options:
                 if option is not 'name':
                     try:
-                        geo_final.options[option] = deepcopy(geo.options[option])
+                        new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:
                         log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
-            if type(geo) is list:
-                FlatCAMGeometry.merge(self, geo_list=geo, geo_final=geo_final)
+            if type(geo_obj) is list:
+                FlatCAMGeometry.merge(self, geo_list=geo_obj, geo_final=geo_final)
             # If not list, just append
             else:
-                # merge solid_geometry, useful for singletool geometry, for multitool each is empty
                 if multigeo is None or multigeo is False:
                     geo_final.multigeo = False
-                    try:
-                        geo_final.solid_geometry.append(deepcopy(geo.solid_geometry))
-                    except Exception as e:
-                        log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
                 else:
                     geo_final.multigeo = True
-                    # if multigeo the solid_geometry is empty in the object attributes because it now lives in the
-                    # tools object attribute, as a key value
-                    geo_final.solid_geometry = []
-
-                # find the tool_uid maximum value in the geo_final
-                geo_final_uid_list = []
-                for key in geo_final.tools:
-                    geo_final_uid_list.append(int(key))
 
                 try:
-                    max_uid = max(geo_final_uid_list, key=int)
+                    new_solid_geometry += deepcopy(geo_obj.solid_geometry)
+                except Exception as e:
+                    log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
+
+                # find the tool_uid maximum value in the geo_final
+                try:
+                    max_uid = max([int(i) for i in new_tools.keys()])
                 except ValueError:
                     max_uid = 0
 
                 # add and merge tools. If what we try to merge as Geometry is Excellon's and/or Gerber's then don't try
                 # to merge the obj.tools as it is likely there is none to merge.
-                if not isinstance(geo, FlatCAMGerber) and not isinstance(geo, FlatCAMExcellon):
-                    for tool_uid in geo.tools:
+                if not isinstance(geo_obj, FlatCAMGerber) and not isinstance(geo_obj, FlatCAMExcellon):
+                    for tool_uid in geo_obj.tools:
                         max_uid += 1
-                        geo_final.tools[max_uid] = deepcopy(geo.tools[tool_uid])
+                        new_tools[max_uid] = deepcopy(geo_obj.tools[tool_uid])
+
+        geo_final.options.update(new_options)
+        geo_final.solid_geometry = new_solid_geometry
+        geo_final.tools = new_tools
 
     @staticmethod
     def get_pts(o):
@@ -6014,7 +6572,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             It is populated in the FlatCAMGeometry.mtool_gen_cncjob()
             BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
         '''
-        self.cnc_tools = dict()
+        self.cnc_tools = {}
 
         '''
            This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
@@ -6035,7 +6593,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
            it's done in camlib.CNCJob.generate_from_excellon_by_tool()
            BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
        '''
-        self.exc_cnc_tools = dict()
+        self.exc_cnc_tools = {}
 
         # flag to store if the CNCJob is part of a special group of CNCJob objects that can't be processed by the
         # default engine of FlatCAM. They generated by some of tools and are special cases of CNCJob objects.
@@ -6098,7 +6656,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_connect()
 
     def build_cnc_tools_table(self):
-        offset = 0
         tool_idx = 0
 
         n = len(self.cnc_tools)
@@ -6109,9 +6666,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             tool_idx += 1
             row_no = tool_idx - 1
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
             # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 2 decimals diameter.
@@ -6125,7 +6682,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             type_item = QtWidgets.QTableWidgetItem(str(dia_value['type']))
             tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['tool_type']))
 
-            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
             type_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -6207,13 +6764,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             tool_idx += 1
             row_no = tool_idx - 1
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
             cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset_z']) + self.z_cut))
 
-            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -6239,7 +6796,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # TODO until the feature of individual plot for an Excellon tool is implemented
             plot_item.setDisabled(True)
 
-            self.ui.exc_cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
             self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
             self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
             self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
@@ -6536,7 +7093,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         try:
             for key in self.cnc_tools:
                 ppg = self.cnc_tools[key]['data']['ppname_g']
-                if ppg == 'marlin' or ppg == 'Repetier':
+                if 'marlin' in ppg.lower() or 'repetier' in ppg.lower():
                     marlin = True
                     break
                 if ppg == 'hpgl':
@@ -6550,7 +7107,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
 
         try:
-            if self.options['ppname_e'] == 'marlin' or self.options['ppname_e'] == 'Repetier':
+            if 'marlin' in self.options['ppname_e'].lower() or 'repetier' in self.options['ppname_e'].lower():
                 marlin = True
         except KeyError:
             # log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
@@ -6903,8 +7460,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                                                  _("The used preprocessor file has to have in it's name: "
                                                    "'toolchange_custom'"))
             except KeyError:
-                self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no preprocessor file."))
+                self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
         # we need this to be able get_gcode separatelly for shell command export_gcode
@@ -7313,9 +7869,10 @@ class FlatCAMDocument(FlatCAMObj):
         self.source_file = ''
         self.doc_code = ''
 
+        self.font_name = None
         self.font_italic = None
         self.font_bold = None
-        self.font_underline =None
+        self.font_underline = None
 
         self.document_editor_tab = None
 
