@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.04.2020 
+
+- fixed the Repeated code parsing in Excellon Parse
+
 1.04.2020 
 
 - updated the SVG parser to take into consideration the 'Close' svg element and paths that are made from a single line (we may need to switch to svgpathtools module)

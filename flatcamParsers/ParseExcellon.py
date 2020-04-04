@@ -618,82 +618,92 @@ class Excellon(Geometry):
                     match = self.coordsnoperiod_re.search(eline)
                     if match:
                         matchr = self.repeat_re.search(eline)
-                        if matchr:
+                        if matchr:  # if we have a repeat command
                             repeat = int(matchr.group(1))
 
-                        try:
-                            x = self.parse_number(match.group(1))
-                            repeating_x = current_x
-                            current_x = x
-                        except TypeError:
-                            x = current_x
-                            repeating_x = 0
-                        except Exception:
-                            return
+                            if match.group(1):
+                                repeating_x = self.parse_number(match.group(1))
+                            else:
+                                repeating_x = 0
 
-                        try:
-                            y = self.parse_number(match.group(2))
-                            repeating_y = current_y
-                            current_y = y
-                        except TypeError:
-                            y = current_y
-                            repeating_y = 0
-                        except Exception:
-                            return
+                            if match.group(2):
+                                repeating_y = self.parse_number(match.group(2))
+                            else:
+                                repeating_y = 0
 
-                        if x is None or y is None:
-                            log.error("Missing coordinates")
+                            coordx = current_x
+                            coordy = current_y
+
+                            while repeat > 0:
+                                if repeating_x:
+                                    coordx += repeating_x
+                                if repeating_y:
+                                    coordy += repeating_y
+                                self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
+
+                                repeat -= 1
+                            current_x = coordx
+                            current_y = coordy
                             continue
 
-                        # ## Excellon Routing parse
-                        if len(re.findall("G00", eline)) > 0:
-                            self.match_routing_start = 'G00'
+                        else:   # those are normal coordinates
+                            try:
+                                x = self.parse_number(match.group(1))
+                                current_x = x
+                            except TypeError:
+                                x = current_x
+                            except Exception:
+                                return
 
-                            # signal that there are milling slots operations
-                            self.defaults['excellon_drills'] = False
+                            try:
+                                y = self.parse_number(match.group(2))
+                                current_y = y
+                            except TypeError:
+                                y = current_y
+                            except Exception:
+                                return
 
-                            self.routing_flag = 0
-                            slot_start_x = x
-                            slot_start_y = y
-                            continue
+                            if x is None or y is None:
+                                log.error("Missing coordinates")
+                                continue
 
-                        if self.routing_flag == 0:
-                            if len(re.findall("G01", eline)) > 0:
-                                self.match_routing_stop = 'G01'
+                            # ## Excellon Routing parse
+                            if len(re.findall("G00", eline)) > 0:
+                                self.match_routing_start = 'G00'
 
                                 # signal that there are milling slots operations
                                 self.defaults['excellon_drills'] = False
 
-                                self.routing_flag = 1
-                                slot_stop_x = x
-                                slot_stop_y = y
-                                self.slots.append(
-                                    {
-                                        'start': Point(slot_start_x, slot_start_y),
-                                        'stop': Point(slot_stop_x, slot_stop_y),
-                                        'tool': current_tool
-                                    }
-                                )
+                                self.routing_flag = 0
+                                slot_start_x = x
+                                slot_start_y = y
                                 continue
 
-                        if self.match_routing_start is None and self.match_routing_stop is None:
-                            if repeat == 0:
+                            if self.routing_flag == 0:
+                                if len(re.findall("G01", eline)) > 0:
+                                    self.match_routing_stop = 'G01'
+
+                                    # signal that there are milling slots operations
+                                    self.defaults['excellon_drills'] = False
+
+                                    self.routing_flag = 1
+                                    slot_stop_x = x
+                                    slot_stop_y = y
+                                    self.slots.append(
+                                        {
+                                            'start': Point(slot_start_x, slot_start_y),
+                                            'stop': Point(slot_stop_x, slot_stop_y),
+                                            'tool': current_tool
+                                        }
+                                    )
+                                    continue
+
+                            if self.match_routing_start is None and self.match_routing_stop is None:
                                 # signal that there are drill operations
                                 self.defaults['excellon_drills'] = True
                                 self.drills.append({'point': Point((x, y)), 'tool': current_tool})
-                            else:
-                                coordx = x
-                                coordy = y
-                                while repeat > 0:
-                                    if repeating_x:
-                                        coordx = (repeat * x) + repeating_x
-                                    if repeating_y:
-                                        coordy = (repeat * y) + repeating_y
-                                    self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
-                                    repeat -= 1
-                            repeating_x = repeating_y = 0
-                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
-                            continue
+                                # log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                                continue
 
                     # ## Coordinates with period: Use literally. # ##
                     match = self.coordsperiod_re.search(eline)
