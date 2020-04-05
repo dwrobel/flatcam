@@ -5280,7 +5280,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.save_defaults(silent=True)
-        log.debug("App.final_save() --> App Defaults saved.")
+        log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
             # save app state to file
@@ -5312,13 +5312,13 @@ class App(QtCore.QObject):
             # This will write the setting to the platform specific storage.
             del stgs
 
-        log.debug("App.final_save() --> App UI state saved.")
+        log.debug("App.quit_application() --> App UI state saved.")
 
         # try to quit the QThread that run ArgsThread class
         try:
             self.th.quit()
         except Exception as e:
-            log.debug("App.final_save() --> %s" % str(e))
+            log.debug("App.quit_application() --> %s" % str(e))
 
         # try to quit the Socket opened by ArgsThread class
         try:
@@ -5332,7 +5332,8 @@ class App(QtCore.QObject):
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        sys.exit(0)
+        # sys.exit(0)
+        os._exit(0) # fix to work with Python 3.8
 
     def kill_app(self):
         # QtCore.QCoreApplication.quit()
