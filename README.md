@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - fix for contextual menus on canvas when using PyQt versions > 5.12.1
 - decision on which mouse button to use for panning is done now once when setting the plotcanvas
 - fix to work with Python 3.8 (closing the application)
+- fixed bug in Gerber parser that allowed loading as Gerber of a file that is not a Gerber
+- fixed a bug in extension detection for Gerber files that allowed in the filtered list files that extension *.gb*
+- added a processEvents method in the Gerber parser parse_lines() method
 
 4.04.2020 
 

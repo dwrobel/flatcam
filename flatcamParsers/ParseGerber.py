@@ -1,4 +1,4 @@
-
+from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro
 import FlatCAMApp
 
@@ -1416,6 +1416,8 @@ class Gerber(Geometry):
                 # ######### Line did not match any pattern. Warn user.  ##########
                 # ################################################################
                 log.warning("Line ignored (%d): %s" % (line_num, gline))
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
 
             try:
                 path_length = len(path)
@@ -1475,7 +1477,7 @@ class Gerber(Geometry):
                 sol_geo_length = 1
 
             try:
-                if buff_length == 0 and sol_geo_length == 0:
+                if buff_length == 0 and sol_geo_length in [0, 1]:
                     log.error("Object is not Gerber file or empty. Aborting Object creation.")
                     return 'fail'
             except TypeError as e:

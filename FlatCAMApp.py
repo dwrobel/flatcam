@@ -9543,7 +9543,7 @@ class App(QtCore.QObject):
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
                    ".gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.gb*);;" \
+                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
                    "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
                    "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim " \
                    "*.mil);;" \
@@ -9570,8 +9570,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Open Gerber cancelled."))
         else:
             for filename in filenames:
                 if filename != '':

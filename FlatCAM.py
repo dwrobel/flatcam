@@ -1,7 +1,7 @@
 import sys
 import os
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
 from flatcamGUI import VisPyPatches
