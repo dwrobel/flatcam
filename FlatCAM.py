@@ -55,6 +55,11 @@ if __name__ == '__main__':
     # else:
     #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
+    if hdpi_support == 2:
+        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    else:
+        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+
     app = QtWidgets.QApplication(sys.argv)
 
     # apply style
@@ -62,11 +67,6 @@ if __name__ == '__main__':
     if settings.contains("style"):
         style = settings.value('style', type=str)
         app.setStyle(style)
-
-    if hdpi_support == 2:
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    else:
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
     fc = App()
 

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.04.2020 
+
+- made sure that the HDPI scaling attribute is set before the QApplication is started
+- made sure that when saving a project, the app will try to update the active object from UI form only if there is an active object
+
 4.04.2020 
 
 - fixed the Repeated code parsing in Excellon Parse

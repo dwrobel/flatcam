@@ -12809,7 +12809,9 @@ class App(QtCore.QObject):
             # Capture the latest changes
             # Current object
             try:
-                self.collection.get_active().read_form()
+                current_object = self.collection.get_active()
+                if current_object:
+                    current_object.read_form()
             except Exception as e:
                 self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
                 pass
