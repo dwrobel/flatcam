@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in Gerber parser that allowed loading as Gerber of a file that is not a Gerber
 - fixed a bug in extension detection for Gerber files that allowed in the filtered list files that extension *.gb*
 - added a processEvents method in the Gerber parser parse_lines() method
+- fixed issue #386 - multiple Cut operation on a edited object created a crash due of the bounds() method
+
 
 4.04.2020 
 

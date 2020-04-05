@@ -3520,7 +3520,7 @@ class App(QtCore.QObject):
 
                         # update the geo object options so it is including the bounding box values
                         try:
-                            xmin, ymin, xmax, ymax = edited_obj.bounds()
+                            xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
                             edited_obj.options['xmin'] = xmin
                             edited_obj.options['ymin'] = ymin
                             edited_obj.options['xmax'] = xmax

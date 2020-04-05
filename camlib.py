@@ -614,10 +614,12 @@ class Geometry(object):
                 log.warning("Not implemented.")
         self.solid_geometry = cascaded_union(diffs)
 
-    def bounds(self):
+    def bounds(self, flatten=False):
         """
         Returns coordinates of rectangular bounds
         of geometry: (xmin, ymin, xmax, ymax).
+        :param flatten: will flatten the solid_geometry if True
+        :return:
         """
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
@@ -661,7 +663,13 @@ class Geometry(object):
             maxy_list = []
 
             for tool in self.tools:
-                minx, miny, maxx, maxy = bounds_rec(self.tools[tool]['solid_geometry'])
+                working_geo = self.tools[tool]['solid_geometry']
+
+                if flatten:
+                    self.flatten(geometry=working_geo, reset=True)
+                    working_geo = self.flat_geometry
+
+                minx, miny, maxx, maxy = bounds_rec(working_geo)
                 minx_list.append(minx)
                 miny_list.append(miny)
                 maxx_list.append(maxx)
@@ -669,6 +677,10 @@ class Geometry(object):
 
             return(min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
         else:
+            if flatten:
+                self.flatten(reset=True)
+                self.solid_geometry = self.flat_geometry
+
             bounds_coords = bounds_rec(self.solid_geometry)
             return bounds_coords
 
