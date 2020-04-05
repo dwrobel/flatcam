@@ -1419,10 +1419,12 @@ class FCMenu(QtWidgets.QMenu):
     def __init__(self):
         super().__init__()
         self.mouse_is_panning = False
+        self.popup_active = False
 
     def popup(self, pos, action=None):
-        self.mouse_is_panning = False
         super().popup(pos)
+        self.mouse_is_panning = False
+        self.popup_active = True
 
 
 class FCTab(QtWidgets.QTabWidget):

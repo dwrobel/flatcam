@@ -5328,12 +5328,14 @@ class App(QtCore.QObject):
 
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
+
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
         sys.exit(0)
 
     def kill_app(self):
+        # QtCore.QCoreApplication.quit()
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -8667,8 +8669,8 @@ class App(QtCore.QObject):
     def populate_cmenu_grids(self):
         units = self.defaults['units'].lower()
 
-        for act in self.ui.cmenu_gridmenu.actions():
-            act.triggered.disconnect()
+        # for act in self.ui.cmenu_gridmenu.actions():
+        #     act.triggered.disconnect()
         self.ui.cmenu_gridmenu.clear()
 
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
@@ -8807,13 +8809,13 @@ class App(QtCore.QObject):
 
         if self.is_legacy is False:
             event_pos = event.pos
-            pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
-            # Set the mouse button for panning
-            self.plotcanvas.view.camera.pan_button_setting = pan_button
+            # pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
+            # # Set the mouse button for panning
+            # self.plotcanvas.view.camera.pan_button_setting = pan_button
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
+            # pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
@@ -8873,9 +8875,14 @@ class App(QtCore.QObject):
 
         self.ui.popMenu.mouse_is_panning = False
 
-        if not origin_click:
+        if origin_click is None:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
             if event.button == pan_button and self.event_is_dragging == 1:
+
+                # if a popup menu is active don't change mouse_is_panning variable because is not True
+                if self.ui.popMenu.popup_active:
+                    self.ui.popMenu.popup_active = False
+                    return
                 self.ui.popMenu.mouse_is_panning = True
                 return
 
@@ -8977,6 +8984,8 @@ class App(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         if event.button == right_button and self.ui.popMenu.mouse_is_panning is False:  # right click
+            self.ui.popMenu.mouse_is_panning = False
+
             self.cursor = QtGui.QCursor()
             self.populate_cmenu_grids()
             self.ui.popMenu.popup(self.cursor.pos())
@@ -12464,6 +12473,11 @@ class App(QtCore.QObject):
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
+
+        if self.is_legacy is False:
+            pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
+            # Set the mouse button for panning
+            self.plotcanvas.view.camera.pan_button_setting = pan_button
 
         self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
         self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)

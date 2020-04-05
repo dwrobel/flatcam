@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - made sure that the HDPI scaling attribute is set before the QApplication is started
 - made sure that when saving a project, the app will try to update the active object from UI form only if there is an active object
+- fix for contextual menus on canvas when using PyQt versions > 5.12.1
+- decision on which mouse button to use for panning is done now once when setting the plotcanvas
 
 4.04.2020 
 

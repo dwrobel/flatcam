@@ -69,5 +69,5 @@ if __name__ == '__main__':
         app.setStyle(style)
 
     fc = App()
-
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
+    app.exec_()
