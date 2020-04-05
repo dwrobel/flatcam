@@ -1112,10 +1112,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## SELECTED Tab # ##############################
         # ########################################################################
         self.selected_tab = QtWidgets.QWidget()
+        # self.selected_tab.setMinimumWidth(270)
         self.selected_tab.setObjectName("selected_tab")
         self.selected_tab_layout = QtWidgets.QVBoxLayout(self.selected_tab)
         self.selected_tab_layout.setContentsMargins(2, 2, 2, 2)
+
         self.selected_scroll_area = VerticalScrollArea()
+        # self.selected_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.selected_tab_layout.addWidget(self.selected_scroll_area)
         self.notebook.addTab(self.selected_tab, _("Selected"))
 
@@ -1128,6 +1131,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.tool_tab, _("Tool"))
         self.tool_scroll_area = VerticalScrollArea()
+        # self.tool_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tool_tab_layout.addWidget(self.tool_scroll_area)
 
         # ########################################################################

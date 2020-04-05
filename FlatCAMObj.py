@@ -233,7 +233,10 @@ class FlatCAMObj(QtCore.QObject):
             # self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         except Exception as e:
             self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
+
         self.app.ui.selected_scroll_area.setWidget(self.ui)
+        # self.ui.setMinimumWidth(100)
+        # self.ui.setMaximumWidth(self.app.ui.selected_tab.sizeHint().width())
 
         self.muted_ui = False
 
@@ -4076,6 +4079,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.outline_color = self.app.defaults['geometry_plot_line']
         self.alpha_level = 'FF'
 
+        self.param_fields = {}
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -4244,6 +4249,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
+
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
@@ -4277,6 +4283,24 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "cnctooldia": self.ui.addtool_entry
         })
 
+        self.param_fields.update({
+            "vtipdia": self.ui.tipdia_entry,
+            "vtipangle": self.ui.tipangle_entry,
+            "cutz": self.ui.cutz_entry,
+            "depthperpass": self.ui.maxdepth_entry,
+            "multidepth": self.ui.mpass_cb,
+            "travelz": self.ui.travelz_entry,
+            "feedrate": self.ui.cncfeedrate_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
+            "feedrate_rapid": self.ui.feedrate_rapid_entry,
+            "extracut": self.ui.extracut_cb,
+            "extracut_length": self.ui.e_cut_entry,
+            "spindlespeed": self.ui.cncspindlespeed_entry,
+            "dwelltime": self.ui.dwelltime_entry,
+            "dwell": self.ui.dwell_cb,
+            "pdepth": self.ui.pdepth_entry,
+            "pfeedrate": self.ui.feedrate_probe_entry,
+        })
         # Fill form fields only on object create
         self.to_form()
 
@@ -4486,8 +4510,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def ui_connect(self):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for i in range(self.ui.grid3.count()):
-            current_widget = self.ui.grid3.itemAt(i).widget()
+        for i in self.param_fields:
+            current_widget = self.param_fields[i]
             if isinstance(current_widget, FCCheckBox):
                 current_widget.stateChanged.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FCComboBox):
@@ -4527,27 +4551,28 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
-        for i in range(self.ui.grid3.count()):
-            current_widget = self.ui.grid3.itemAt(i).widget()
+        for i in self.param_fields:
+            # current_widget = self.ui.grid3.itemAt(i).widget()
+            current_widget = self.param_fields[i]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    self.ui.grid3.itemAt(i).widget().stateChanged.disconnect(self.gui_form_to_storage)
+                    current_widget.stateChanged.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, FCComboBox):
                 try:
-                    self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect(self.gui_form_to_storage)
+                    current_widget.currentIndexChanged.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
                     isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry):
                 try:
-                    self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
+                    current_widget.editingFinished.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    self.ui.grid3.itemAt(i).widget().returnPressed.disconnect(self.gui_form_to_storage)
+                    current_widget.returnPressed.disconnect(self.gui_form_to_storage)
                 except TypeError:
                     pass
 

@@ -898,6 +898,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
         self.setRange(min_val, max_val)
 
+    # def sizeHint(self):
+    #     default_hint_size = super(FCDoubleSpinner, self).sizeHint()
+    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
 
 class FCCheckBox(QtWidgets.QCheckBox):
     def __init__(self, label='', parent=None):
@@ -2076,7 +2080,7 @@ class FCDetachableTab2(FCDetachableTab):
 class VerticalScrollArea(QtWidgets.QScrollArea):
     """
     This widget extends QtGui.QScrollArea to make a vertical-only
-    scroll area that also expands horizontally to accomodate
+    scroll area that also expands horizontally to accommodate
     its contents.
     """
     def __init__(self, parent=None):
