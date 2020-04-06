@@ -16,8 +16,7 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
-from copy import deepcopy
-from datetime import datetime
+from ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
@@ -3134,23 +3133,33 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Select the object in the Tree above the current one
                 if key == QtCore.Qt.Key_Up:
-                    self.app.collection.set_all_inactive()
-                    active_name = active.options['name']
-                    active_index = names_list.index(active_name)
-                    if active_index == 0:
-                        self.app.collection.set_active(names_list[-1])
-                    else:
-                        self.app.collection.set_active(names_list[active_index-1])
+                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    focused_wdg = QtWidgets.QApplication.focusWidget()
+                    if isinstance(focused_wdg, KeySensitiveListView):
+                        self.app.collection.set_all_inactive()
+                        if active is None:
+                            return
+                        active_name = active.options['name']
+                        active_index = names_list.index(active_name)
+                        if active_index == 0:
+                            self.app.collection.set_active(names_list[-1])
+                        else:
+                            self.app.collection.set_active(names_list[active_index-1])
 
                 # Select the object in the Tree bellow the current one
                 if key == QtCore.Qt.Key_Down:
-                    self.app.collection.set_all_inactive()
-                    active_name = active.options['name']
-                    active_index = names_list.index(active_name)
-                    if active_index == len(names_list) - 1:
-                        self.app.collection.set_active(names_list[0])
-                    else:
-                        self.app.collection.set_active(names_list[active_index+1])
+                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    focused_wdg = QtWidgets.QApplication.focusWidget()
+                    if isinstance(focused_wdg, KeySensitiveListView):
+                        self.app.collection.set_all_inactive()
+                        if active is None:
+                            return
+                        active_name = active.options['name']
+                        active_index = names_list.index(active_name)
+                        if active_index == len(names_list) - 1:
+                            self.app.collection.set_active(names_list[0])
+                        else:
+                            self.app.collection.set_active(names_list[active_index+1])
 
 
                 # New Geometry

@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added key shortcuts (arrow up/down) that will select the objects in the Project tab if the focus is in that tab
 - added a minor change to the ListSys Tcl command
 - fixed an crash generated when running the Tool Database from the Menu -> Options menu entry
+- fixed a bug in handling the UP/DOWN key shortcuts that caused a crash when no object was selected in the Project Tab; also made sure that the said keys are handled only for the Project Tab
 
 5.04.2020 
 
