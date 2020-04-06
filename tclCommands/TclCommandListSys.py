@@ -60,4 +60,6 @@ class TclCommandListSys(TclCommand):
             argument = args['selection']
             return str([k for k in self.app.defaults.keys() if str(k).startswith(str(argument))])
         else:
-            return str([*self.app.defaults])
+            ret_val = list(self.app.defaults.keys())
+            return str(ret_val)
+            # return str([*self.app.defaults])

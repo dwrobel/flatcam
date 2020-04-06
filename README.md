@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 6.04.2020 
 
 - added key shortcuts (arrow up/down) that will select the objects in the Project tab if the focus is in that tab
+- added a minor change to the ListSys Tcl command
 
 5.04.2020 
 
