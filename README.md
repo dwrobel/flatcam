@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an crash generated when running the Tool Database from the Menu -> Options menu entry
 - fixed a bug in handling the UP/DOWN key shortcuts that caused a crash when no object was selected in the Project Tab; also made sure that the said keys are handled only for the Project Tab
 - some PEP8 changes and other minor changes
+- updated the requirements file
 
 5.04.2020 
 
