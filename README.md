@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a bug in handling the UP/DOWN key shortcuts that caused a crash when no object was selected in the Project Tab; also made sure that the said keys are handled only for the Project Tab
 - some PEP8 changes and other minor changes
 - updated the requirements file
+- updated the 2Sided Tool by not allowing the Gerber file to be mirrored without a valid reference and added some placeholder texts
 
 5.04.2020 
 

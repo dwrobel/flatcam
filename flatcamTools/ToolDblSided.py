@@ -187,6 +187,7 @@ class DblSidedTool(FlatCAMTool):
 
         # ## Point/Box
         self.point_entry = EvalEntry()
+        self.point_entry.setPlaceholderText(_("Point coordinates"))
 
         # Add a reference
         self.add_point_button = QtWidgets.QPushButton(_("Add"))
@@ -416,6 +417,7 @@ class DblSidedTool(FlatCAMTool):
         )
 
         self.alignment_holes = EvalEntry()
+        self.alignment_holes.setPlaceholderText(_("Drill coordinates"))
 
         grid_lay4.addWidget(self.ah_label, 0, 0, 1, 2)
         grid_lay4.addWidget(self.alignment_holes, 1, 0, 1, 2)
@@ -667,9 +669,9 @@ class DblSidedTool(FlatCAMTool):
             try:
                 px, py = self.point_entry.get_value()
             except TypeError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("'Point' coordinates missing. "
-                                                              "Using Origin (0, 0) as mirroring reference."))
-                px, py = (0, 0)
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There are no Point coordinates in the Point field. "
+                                                              "Add coords and try again ..."))
+                return
 
         else:
             selection_index_box = self.box_combo.currentIndex()
