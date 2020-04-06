@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added key shortcuts (arrow up/down) that will select the objects in the Project tab if the focus is in that tab
 - added a minor change to the ListSys Tcl command
+- fixed an crash generated when running the Tool Database from the Menu -> Options menu entry
 
 5.04.2020 
 

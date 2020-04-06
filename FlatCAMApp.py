@@ -2065,7 +2065,7 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
         self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
-        self.ui.menuoptions_tools_db.triggered.connect(self.on_tools_database)
+        self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
 
         self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
         self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
@@ -8106,8 +8106,12 @@ class App(QtCore.QObject):
             )
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
-        self.tools_db_tab.setObjectName("database_tab")
+        try:
+            self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
+            self.tools_db_tab.setObjectName("database_tab")
+        except Exception as e:
+            log.debug("App.on_tools_database() --> %s" % str(e))
+            return
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
