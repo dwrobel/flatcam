@@ -16,7 +16,7 @@ from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
 from copy import deepcopy
-from copy import copy
+# from copy import copy
 
 from io import StringIO
 import traceback
@@ -32,7 +32,7 @@ from flatcamParsers.ParseGerber import Gerber
 from camlib import Geometry, CNCjob
 import FlatCAMApp
 
-from flatcamGUI.VisPyVisuals import ShapeCollection
+# from flatcamGUI.VisPyVisuals import ShapeCollection
 
 import tkinter as tk
 import os
@@ -62,6 +62,7 @@ class ValidationError(Exception):
         super().__init__(message)
 
         self.errors = errors
+
 
 # #######################################
 # #            FlatCAMObj              ##
@@ -496,7 +497,7 @@ class FlatCAMObj(QtCore.QObject):
                 # Not all object types has annotations
                 try:
                     self.annotation.visible = value
-                except Exception as e:
+                except Exception:
                     pass
 
         if threaded is False:
@@ -1069,12 +1070,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.ui.iso_type_radio.get_value() == 'int':
             self.iso_type = 1
 
-        def worker_task(obj, app_obj):
+        def worker_task(iso_obj, app_obj):
             with self.app.proc_container.new(_("Isolating...")):
                 if self.ui.follow_cb.get_value() is True:
-                    obj.follow_geo()
+                    iso_obj.follow_geo()
                     # in the end toggle the visibility of the origin object so we can see the generated Geometry
-                    obj.ui.plot_cb.toggle()
+                    iso_obj.ui.plot_cb.toggle()
                 else:
                     app_obj.report_usage("gerber_on_iso_button")
                     self.read_form()
@@ -1999,7 +2000,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.mark_all_cb.setChecked(True)
         self.ui_connect()
 
-    def on_mark_all_click(self, signal):
+    def on_mark_all_click(self):
         self.ui_disconnect()
         mark_all = self.ui.mark_all_cb.isChecked()
         for row in range(self.ui.apertures_table.rowCount()):
@@ -2409,7 +2410,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "toolchangez": 1.0,
             "toolchangexy": "0.0, 0.0",
             "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length":self.app.defaults["geometry_extracut_length"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
             "endz": 2.0,
             "endxy": '',
 
@@ -2914,20 +2915,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "e_operation": "operation",
             "e_milling_type": "milling_type",
             "e_milling_dia": "milling_dia",
-            "e_cutz" : "cutz",
-            "e_multidepth" : "multidepth",
-            "e_depthperpass" : "depthperpass",
+            "e_cutz": "cutz",
+            "e_multidepth": "multidepth",
+            "e_depthperpass": "depthperpass",
 
-            "e_travelz" : "travelz",
-            "e_feedratexy" : "feedrate",
-            "e_feedratez" : "feedrate_z",
-            "e_fr_rapid" : "feedrate_rapid",
-            "e_extracut" : "extracut",
-            "e_extracut_length" : "extracut_length",
-            "e_spindlespeed" : "spindlespeed",
-            "e_dwell" : "dwell",
-            "e_dwelltime" : "dwelltime",
-            "e_offset" : "offset",
+            "e_travelz": "travelz",
+            "e_feedratexy": "feedrate",
+            "e_feedratez": "feedrate_z",
+            "e_fr_rapid": "feedrate_rapid",
+            "e_extracut": "extracut",
+            "e_extracut_length": "extracut_length",
+            "e_spindlespeed": "spindlespeed",
+            "e_dwell": "dwell",
+            "e_dwelltime": "dwelltime",
+            "e_offset": "offset",
         }
 
         # populate Excellon preprocessor combobox list
@@ -4249,7 +4250,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
-
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
@@ -4413,7 +4413,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             _("Copy"), self.on_tool_copy,
             icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(all=None),
+            _("Delete"), lambda: self.on_tool_delete(all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
 
         # Show/Hide Advanced Options
@@ -4862,7 +4862,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if self.ui.geo_tools_table.rowCount() != 0:
             self.ui.geo_param_frame.setDisabled(False)
 
-    def on_tool_copy(self, all=None):
+    def on_tool_copy(self, all_tools=None):
         self.ui_disconnect()
 
         # find the tool_uid maximum value in the self.tools
@@ -4874,7 +4874,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except ValueError:
             max_uid = 0
 
-        if all is None:
+        if all_tools is None:
             if self.ui.geo_tools_table.selectedItems():
                 for current_row in self.ui.geo_tools_table.selectedItems():
                     # sometime the header get selected and it has row number -1
@@ -4956,10 +4956,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui_connect()
         self.build_ui()
 
-    def on_tool_delete(self, all=None):
+    def on_tool_delete(self, all_tools=None):
         self.ui_disconnect()
 
-        if all is None:
+        if all_tools is None:
             if self.ui.geo_tools_table.selectedItems():
                 for current_row in self.ui.geo_tools_table.selectedItems():
                     # sometime the header get selected and it has row number -1
@@ -5307,29 +5307,28 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.defaults['units'].upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')
             msp = dwg.modelspace()
 
-            def g2dxf(dxf_space, geo):
-                if isinstance(geo, MultiPolygon):
-                    for poly in geo:
+            def g2dxf(dxf_space, geo_obj):
+                if isinstance(geo_obj, MultiPolygon):
+                    for poly in geo_obj:
                         ext_points = list(poly.exterior.coords)
                         dxf_space.add_lwpolyline(ext_points)
                         for interior in poly.interiors:
                             dxf_space.add_lwpolyline(list(interior.coords))
-                if isinstance(geo, Polygon):
-                    ext_points = list(geo.exterior.coords)
+                if isinstance(geo_obj, Polygon):
+                    ext_points = list(geo_obj.exterior.coords)
                     dxf_space.add_lwpolyline(ext_points)
-                    for interior in geo.interiors:
+                    for interior in geo_obj.interiors:
                         dxf_space.add_lwpolyline(list(interior.coords))
-                if isinstance(geo, MultiLineString):
-                    for line in geo:
+                if isinstance(geo_obj, MultiLineString):
+                    for line in geo_obj:
                         dxf_space.add_lwpolyline(list(line.coords))
-                if isinstance(geo, LineString) or isinstance(geo, LinearRing):
-                    dxf_space.add_lwpolyline(list(geo.coords))
+                if isinstance(geo_obj, LineString) or isinstance(geo_obj, LinearRing):
+                    dxf_space.add_lwpolyline(list(geo_obj.coords))
 
             multigeo_solid_geometry = []
             if self.multigeo:
@@ -5577,11 +5576,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param tools_in_use: the tools that are used, needed by some preprocessors
         :type list of lists, each list in the list is made out of row elements of tools table from GUI
 
-        :param segx: number of segments on the X axis, for auto-levelling
-        :param segy: number of segments on the Y axis, for auto-levelling
-        :param plot: if True the generated object will be plotted; if False will not be plotted
-        :param use_thread: if True use threading
-        :return: None
+        :param outname:
+        :param tools_dict:
+        :param tools_in_use:
+        :param segx:            number of segments on the X axis, for auto-levelling
+        :param segy:            number of segments on the Y axis, for auto-levelling
+        :param plot:            if True the generated object will be plotted; if False will not be plotted
+        :param use_thread:      if True use threading
+        :return:                None
         """
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
@@ -5890,8 +5892,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     dia_cnc_dict['solid_geometry'] = deepcopy(tool_solid_geometry)
                     self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
-                except Exception as e:
-                    self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(e)))
+                except Exception as ee:
+                    self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(ee)))
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
@@ -5943,15 +5945,31 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         work is done by the target camlib.CNCjob
         `generate_from_geometry_2()` method.
 
-        :param z_cut: Cut depth (negative)
-        :param z_move: Hight of the tool when travelling (not cutting)
-        :param feedrate: Feed rate while cutting on X - Y plane
-        :param feedrate_z: Feed rate while cutting on Z plane
-        :param feedrate_rapid: Feed rate while moving with rapids
-        :param dia: Tool diameter
-        :param outname: Name of the new object
-        :param spindlespeed: Spindle speed (RPM)
-        :param pp Name of the preprocessor
+        :param outname:         Name of the new object
+        :param dia:             Tool diameter
+        :param offset:
+        :param z_cut:           Cut depth (negative value)
+        :param z_move:          Height of the tool when travelling (not cutting)
+        :param feedrate:        Feed rate while cutting on X - Y plane
+        :param feedrate_z:      Feed rate while cutting on Z plane
+        :param feedrate_rapid:  Feed rate while moving with rapids
+        :param spindlespeed:    Spindle speed (RPM)
+        :param dwell:
+        :param dwelltime:
+        :param multidepth:
+        :param depthperpass:
+        :param toolchange:
+        :param toolchangez:
+        :param toolchangexy:
+        :param extracut:
+        :param extracut_length:
+        :param startz:
+        :param endz:
+        :param pp:              Name of the preprocessor
+        :param segx:
+        :param segy:
+        :param use_thread:
+        :param plot:
         :return: None
         """
 
@@ -6050,7 +6068,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.app.new_object("cncjob", outname, job_init, plot=plot)
 
-    # def on_plot_cb_click(self, *args):  # TODO: args not needed
+    # def on_plot_cb_click(self, *args):
     #     if self.muted_ui:
     #         return
     #     self.read_form_item('plot')
@@ -6119,8 +6137,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.tools[tool]['solid_geometry']:
-                        self.geo_len += 1
+                    self.geo_len = len(self.tools[tool]['solid_geometry'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -6196,8 +6213,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.tools[tool]['solid_geometry']:
-                        self.geo_len += 1
+                    self.geo_len = len(self.tools[tool]['solid_geometry'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -6208,10 +6224,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
+
         self.old_disp_number = 0
         self.el_count = 0
 

@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a minor change to the ListSys Tcl command
 - fixed an crash generated when running the Tool Database from the Menu -> Options menu entry
 - fixed a bug in handling the UP/DOWN key shortcuts that caused a crash when no object was selected in the Project Tab; also made sure that the said keys are handled only for the Project Tab
+- some PEP8 changes and other minor changes
 
 5.04.2020 
 
