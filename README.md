@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.04.2020 
+
+- added key shortcuts (arrow up/down) that will select the objects in the Project tab if the focus is in that tab
+
 5.04.2020 
 
 - made sure that the HDPI scaling attribute is set before the QApplication is started

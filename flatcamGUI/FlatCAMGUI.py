@@ -2778,6 +2778,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         active = self.app.collection.get_active()
         selected = self.app.collection.get_selected()
+        names_list = self.app.collection.get_names()
 
         matplotlib_key_flag = False
 
@@ -3130,6 +3131,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         select.ui.plot_cb.toggle()
                     self.app.collection.update_view()
                     self.app.delete_selection_shape()
+
+                # Select the object in the Tree above the current one
+                if key == QtCore.Qt.Key_Up:
+                    self.app.collection.set_all_inactive()
+                    active_name = active.options['name']
+                    active_index = names_list.index(active_name)
+                    if active_index == 0:
+                        self.app.collection.set_active(names_list[-1])
+                    else:
+                        self.app.collection.set_active(names_list[active_index-1])
+
+                # Select the object in the Tree bellow the current one
+                if key == QtCore.Qt.Key_Down:
+                    self.app.collection.set_all_inactive()
+                    active_name = active.options['name']
+                    active_index = names_list.index(active_name)
+                    if active_index == len(names_list) - 1:
+                        self.app.collection.set_active(names_list[0])
+                    else:
+                        self.app.collection.set_active(names_list[active_index+1])
+
 
                 # New Geometry
                 if key == QtCore.Qt.Key_B:
