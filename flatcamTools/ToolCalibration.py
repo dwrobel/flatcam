@@ -759,7 +759,7 @@ class ToolCalibration(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Calibration Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+E', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

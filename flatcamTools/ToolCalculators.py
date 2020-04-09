@@ -299,7 +299,7 @@ class ToolCalculator(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

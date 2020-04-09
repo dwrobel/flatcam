@@ -705,7 +705,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         }[self.reference_type_combo.get_value()]
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolPaint()")

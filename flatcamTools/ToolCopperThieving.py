@@ -569,7 +569,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+F', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

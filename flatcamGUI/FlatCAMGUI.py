@@ -68,7 +68,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # New Project
         self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/file16.png'),
-                                                    _('&New Project ...\tCTRL+N'), self)
+                                                    _('&New Project ...\tCtrl+N'), self)
         self.menufilenewproject.setToolTip(
             _("Will create a new, blank project")
         )
@@ -113,12 +113,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Open Gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                    _('Open &Gerber ...\tCTRL+G'), self)
+                                                    _('Open &Gerber ...\tCtrl+G'), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                      _('Open &Excellon ...\tCTRL+E'), self)
+                                                      _('Open &Excellon ...\tCtrl+E'), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
@@ -152,7 +152,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileopenscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
         self.menufilerunscript = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tSHIFT+S' % _('Run Script ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tShift+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
            _("Will run the opened Tcl Script thus\n"
              "enabling the automation of certain\n"
@@ -262,7 +262,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menufile.addSeparator()
         self.menufile_print = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCTRL+P' % _('Print (PDF)'))
+            QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCtrl+P' % _('Print (PDF)'))
         self.menufile.addAction(self.menufile_print)
 
         self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
@@ -274,7 +274,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Save Project As ...
         self.menufilesaveprojectas = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save Project &As ...\tCTRL+S'), self)
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save Project &As ...\tCtrl+S'), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
@@ -303,7 +303,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menueditedit = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit16.png'), _('Edit Object\tE'))
         self.menueditok = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'), _('Close Editor\tCTRL+S'))
+            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'), _('Close Editor\tCtrl+S'))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -359,7 +359,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menueditcopyobject = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCTRL+C'))
+            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCtrl+C'))
 
         # Separator
         self.menuedit.addSeparator()
@@ -371,24 +371,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menueditorigin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
         self.menuedit_move2origin = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tSHIFT+O'))
+            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tShift+O'))
 
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
         self.menueditlocate = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/locate16.png'), _('Locate in Object\tSHIFT+J'))
+            QtGui.QIcon(self.app.resource_location + '/locate16.png'), _('Locate in Object\tShift+J'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menuedittoggleunits = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/toggle_units16.png'), _('Toggle Units\tQ'))
         self.menueditselectall = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCTRL+A'))
+            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCtrl+A'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menueditpreferences = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tSHIFT+P'))
+            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tShift+P'))
 
         # ########################################################################
         # ########################## OPTIONS # ###################################
@@ -396,14 +396,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menuoptions = self.menu.addMenu(_('Options'))
         self.menuoptions_transform_rotate = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tSHIFT+(R)"))
+            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tShift+(R)"))
         # Separator
         self.menuoptions.addSeparator()
 
         self.menuoptions_transform_skewx = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tSHIFT+X"))
+            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tShift+X"))
         self.menuoptions_transform_skewy = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tSHIFT+Y"))
+            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tShift+Y"))
 
         # Separator
         self.menuoptions.addSeparator()
@@ -415,9 +415,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuoptions.addSeparator()
 
         self.menuoptions_view_source = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/source32.png'), _("View source\tALT+S"))
+            QtGui.QIcon(self.app.resource_location + '/source32.png'), _("View source\tAlt+S"))
         self.menuoptions_tools_db = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/database32.png'), _("Tools DataBase\tCTRL+D"))
+            QtGui.QIcon(self.app.resource_location + '/database32.png'), _("Tools DataBase\tCtrl+D"))
         # Separator
         self.menuoptions.addSeparator()
 
@@ -426,11 +426,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.menuview = self.menu.addMenu(_('View'))
         self.menuviewenable = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tALT+1'))
+            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tAlt+1'))
         self.menuviewdisableall = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tALT+2'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tAlt+2'))
         self.menuviewdisableother = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tALT+3'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+3'))
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(
@@ -447,12 +447,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview.addSeparator()
 
         self.menuview_toggle_code_editor = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tSHIFT+E'))
+            QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tShift+E'))
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tALT+F10"))
+            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tAlt+F10"))
         self.menuview_toggle_parea = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCTRL+F10"))
+            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCtrl+F10"))
         self.menuview_toggle_notebook = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
 
@@ -460,11 +460,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_grid = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Snap\tG"))
         self.menuview_toggle_grid_lines = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tALT+G"))
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tAlt+G"))
         self.menuview_toggle_axis = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tSHIFT+G"))
+            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tShift+G"))
         self.menuview_toggle_workspace = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tSHIFT+W"))
+            QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
 
         # ########################################################################
         # ########################## Objects # ###################################
@@ -566,7 +566,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/paint16.png'), _("Paint Tool\tI")
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool\tALT+R")
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool\tAlt+R")
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -621,7 +621,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_menu.addSeparator()
 
         self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize\tALT+N"))
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize\tAlt+N"))
         self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("Add SemiDisc\tE"))
         self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(
@@ -631,11 +631,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale\tS'))
         self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area\tALT+A'))
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area\tAlt+A'))
         self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser\tCTRL+E'))
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser\tCtrl+E'))
         self.grb_transform_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform\tALT+R"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform\tAlt+R"))
         self.grb_editor_menu.addSeparator()
 
         self.grb_copy_menuitem = self.grb_editor_menu.addAction(
@@ -1449,99 +1449,51 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+A</strong></td>
+                        <td height="20"><strong>Ctrl+A</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+C</strong></td>
+                        <td height="20"><strong>Ctrl+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+D</strong></td>
+                        <td height="20"><strong>Ctrl+D</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+E</strong></td>
+                        <td height="20"><strong>Ctrl+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+G</strong></td>
+                        <td height="20"><strong>Ctrl+G</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+M</strong></td>
+                        <td height="20"><strong>Ctrl+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+N</strong></td>
+                        <td height="20"><strong>Ctrl+N</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>                   
                     <tr height="20">
-                        <td height="20"><strong>CTRL+O</strong></td>
+                        <td height="20"><strong>Ctrl+O</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+P</strong></td>
+                        <td height="20"><strong>Ctrl+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr> 
                     <tr height="20">
-                        <td height="20"><strong>CTRL+Q</strong></td>
+                        <td height="20"><strong>Ctrl+Q</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
+                        <td height="20"><strong>Ctrl+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+F10</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+C</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+E</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+G</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+J</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+M</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+P</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+S</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+W</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+X</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+Y</strong></td>
+                        <td height="20"><strong>Ctrl+F10</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1549,83 +1501,47 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+A</strong></td>
+                        <td height="20"><strong>Shift+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+C</strong></td>
+                        <td height="20"><strong>Shift+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+D</strong></td>
+                        <td height="20"><strong>Shift+G</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+E</strong></td>
+                        <td height="20"><strong>Shift+J</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+H</strong></td>
+                        <td height="20"><strong>Shift+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+I</strong></td>
+                        <td height="20"><strong>Shift+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+J</strong></td>
+                        <td height="20"><strong>Shift+R</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+K</strong></td>
+                        <td height="20"><strong>Shift+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+L</strong></td>
+                        <td height="20"><strong>Shift+W</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+N</strong></td>
+                        <td height="20"><strong>Shift+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+O</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+P</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+Q</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+S</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+U</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+1</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+2</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+3</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+F10</strong></td>
+                        <td height="20"><strong>Shift+Y</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1633,7 +1549,91 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+ALT+X</strong></td>
+                        <td height="20"><strong>Alt+A</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+C</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+D</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+E</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+H</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+I</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+J</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+K</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+L</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+N</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+O</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+P</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+Q</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+R</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+U</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+1</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+2</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+3</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+F10</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+Alt+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1813,31 +1813,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+M</strong></td>
+                        <td height="20"><strong>Shift+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+X</strong></td>
+                        <td height="20"><strong>Shift+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+Y</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+X</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+Y</strong></td>
+                        <td height="20"><strong>Shift+Y</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1845,15 +1829,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+M</strong></td>
+                        <td height="20"><strong>Alt+R</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
+                        <td height="20"><strong>Alt+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+X</strong></td>
+                        <td height="20"><strong>Alt+Y</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+M</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1939,7 +1939,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>SHIFT+M</strong></td>
+                    <td height="20"><strong>Shift+M</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -1963,7 +1963,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td height="20"><strong>Ctrl+S</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
             </tbody>
@@ -2055,7 +2055,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>SHIFT+M</strong></td>
+                    <td height="20"><strong>Shift+M</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -2063,11 +2063,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+E</strong></td>
+                    <td height="20"><strong>Ctrl+E</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td height="20"><strong>Ctrl+S</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -2075,15 +2075,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                  <tr height="20">
-                    <td height="20"><strong>ALT+A</strong></td>
+                    <td height="20"><strong>Alt+A</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>ALT+N</strong></td>
+                    <td height="20"><strong>Alt+N</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>ALT+R</strong></td>
+                    <td height="20"><strong>Alt+R</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
             </tbody>
@@ -4308,12 +4308,12 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             # Open Gerber ...
             menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                _('Open &Gerber ...\tCTRL+G'), self)
+                                                _('Open &Gerber ...\tCtrl+G'), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
             menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                  _('Open &Excellon ...\tCTRL+E'), self)
+                                                  _('Open &Excellon ...\tCtrl+E'), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...

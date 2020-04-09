@@ -207,7 +207,7 @@ class Distance(FlatCAMTool):
             self.deactivate_measure_tool()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the GUI

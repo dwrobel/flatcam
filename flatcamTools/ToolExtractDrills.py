@@ -363,7 +363,7 @@ class ToolExtractDrills(FlatCAMTool):
         )
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+I', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("Extract Drills()")

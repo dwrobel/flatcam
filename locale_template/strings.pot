@@ -4542,7 +4542,7 @@ msgid "File"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:69
-msgid "&New Project ...\tCTRL+N"
+msgid "&New Project ...\tCtrl+N"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:71
@@ -4595,11 +4595,11 @@ msgid "Open &Project ..."
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:109 flatcamGUI/FlatCAMGUI.py:4121
-msgid "Open &Gerber ...\tCTRL+G"
+msgid "Open &Gerber ...\tCtrl+G"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:114 flatcamGUI/FlatCAMGUI.py:4126
-msgid "Open &Excellon ...\tCTRL+E"
+msgid "Open &Excellon ...\tCtrl+E"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:118 flatcamGUI/FlatCAMGUI.py:4131
@@ -4736,7 +4736,7 @@ msgid "&Save Project ..."
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:256
-msgid "Save Project &As ...\tCTRL+S"
+msgid "Save Project &As ...\tCtrl+S"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:261
@@ -4756,7 +4756,7 @@ msgid "Edit Object\tE"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:285
-msgid "Close Editor\tCTRL+S"
+msgid "Close Editor\tCtrl+S"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:294
@@ -4821,7 +4821,7 @@ msgid "Convert Any to Gerber"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:341
-msgid "&Copy\tCTRL+C"
+msgid "&Copy\tCtrl+C"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:346
@@ -4841,11 +4841,11 @@ msgid "Toggle Units\tQ"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:360
-msgid "&Select All\tCTRL+A"
+msgid "&Select All\tCtrl+A"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:365
-msgid "&Preferences\tSHIFT+P"
+msgid "&Preferences\tShift+P"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:371 flatcamTools/ToolProperties.py:153
@@ -4853,15 +4853,15 @@ msgid "Options"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:373
-msgid "&Rotate Selection\tSHIFT+(R)"
+msgid "&Rotate Selection\tShift+(R)"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:378
-msgid "&Skew on X axis\tSHIFT+X"
+msgid "&Skew on X axis\tShift+X"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:380
-msgid "S&kew on Y axis\tSHIFT+Y"
+msgid "S&kew on Y axis\tShift+Y"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:385
@@ -4873,11 +4873,11 @@ msgid "Flip on &Y axis\tY"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:392
-msgid "View source\tALT+S"
+msgid "View source\tAlt+S"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:394
-msgid "Tools DataBase\tCTRL+D"
+msgid "Tools DataBase\tCtrl+D"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:401 flatcamGUI/FlatCAMGUI.py:2060
@@ -4885,15 +4885,15 @@ msgid "View"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:403
-msgid "Enable all plots\tALT+1"
+msgid "Enable all plots\tAlt+1"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:405
-msgid "Disable all plots\tALT+2"
+msgid "Disable all plots\tAlt+2"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:407
-msgid "Disable non-selected\tALT+3"
+msgid "Disable non-selected\tAlt+3"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:411
@@ -4913,15 +4913,15 @@ msgid "Redraw All\tF5"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:424
-msgid "Toggle Code Editor\tSHIFT+E"
+msgid "Toggle Code Editor\tShift+E"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:427
-msgid "&Toggle FullScreen\tALT+F10"
+msgid "&Toggle FullScreen\tAlt+F10"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:429
-msgid "&Toggle Plot Area\tCTRL+F10"
+msgid "&Toggle Plot Area\tCtrl+F10"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:431
@@ -4933,15 +4933,15 @@ msgid "&Toggle Grid Snap\tG"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:437
-msgid "&Toggle Grid Lines\tALT+G"
+msgid "&Toggle Grid Lines\tAlt+G"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:439
-msgid "&Toggle Axis\tSHIFT+G"
+msgid "&Toggle Axis\tShift+G"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:441
-msgid "Toggle Workspace\tSHIFT+W"
+msgid "Toggle Workspace\tShift+W"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:446
@@ -5041,7 +5041,7 @@ msgid "Paint Tool\tI"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:543
-msgid "Transform Tool\tALT+R"
+msgid "Transform Tool\tAlt+R"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:547
@@ -5105,7 +5105,7 @@ msgid "Add Region\tN"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:598
-msgid "Poligonize\tALT+N"
+msgid "Poligonize\tAlt+N"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:600
@@ -5125,15 +5125,15 @@ msgid "Scale\tS"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:608
-msgid "Mark Area\tALT+A"
+msgid "Mark Area\tAlt+A"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:610
-msgid "Eraser\tCTRL+E"
+msgid "Eraser\tCtrl+E"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:612
-msgid "Transform\tALT+R"
+msgid "Transform\tAlt+R"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:639
@@ -11925,7 +11925,7 @@ msgid ""
 "\n"
 "The coordinates set can be obtained:\n"
 "- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
-"- press SHIFT key and left mouse clicking on canvas. Then CTRL+V in the field.\n"
+"- press SHIFT key and left mouse clicking on canvas. Then Ctrl+V in the field.\n"
 "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and "
 "click Paste.\n"
 "- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."

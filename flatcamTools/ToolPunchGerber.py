@@ -425,7 +425,7 @@ class ToolPunchGerber(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Punch Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+H', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+H', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

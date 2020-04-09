@@ -382,7 +382,7 @@ class QRCode(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("QRCode Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Q', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

@@ -322,7 +322,7 @@ class Panelize(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Panel. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+Z', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

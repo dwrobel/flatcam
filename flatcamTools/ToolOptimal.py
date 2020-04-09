@@ -278,7 +278,7 @@ class ToolOptimal(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+O', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolOptimal()")

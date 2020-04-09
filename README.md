@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 10.04.2020 
 
 - if FlatCAM is not run with Python version >= 3.5 it will exit.
+- modified all CTRL+ with Ctrl+ and all ALT+ with Alt+ and all SHIFT+ with Shift+. Fixed issue #387.
 
 9.4.2020 
 
@@ -306,8 +307,8 @@ CAD program, and create G-Code for Isolation routing.
 
 15.01.2020
 
-- added key shortcuts and toolbar icons for the new tools: Align Object Tool (ALT+A) and Extract Drills (ALT+I)
-- added new functionality (key shortcut SHIFT+J) to locate the corners of the bounding box (and center) in a selected object
+- added key shortcuts and toolbar icons for the new tools: Align Object Tool (Alt+A) and Extract Drills (Alt+I)
+- added new functionality (key shortcut Shift+J) to locate the corners of the bounding box (and center) in a selected object
 - modified the NCC Tool GUI to prepare for accepting a tool from a tool database
 - started to modify the Paint Tool to be similar to NCC Tool and to accept a tool from a database
 - work in Paint Tool GUI functionality
@@ -403,7 +404,7 @@ CAD program, and create G-Code for Isolation routing.
 - the Apply button text in Preferences is now made red when changes were made and require to be applied
 - the Gerber UI is built only once now so the process is lighter on CPU
 - the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
-- added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
+- added a new function called by shortcut key combo Ctrl+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
 - fixed a small bug where the app tried to hide a label that I've removed previously
 - in Paint Tool Preferences is allowed to add a list of initial tools separated by comma
 - in Geometry Paint Tool fixed the Overlap rate to work between 0 and 99.9999%
@@ -505,7 +506,7 @@ CAD program, and create G-Code for Isolation routing.
 - added Preferences values for PDF margins when saving text in Code Editor as PDF
 - when clicking Cancel in Preferences now the values are reverted to what they used to be before opening Preferences tab and start changing values
 - starting to work to a general Print function; for now it will generate PDF files; currently it works only for one object not for a selection
-- added shortcut key CTRL+P for printing to PDF method
+- added shortcut key Ctrl+P for printing to PDF method
 
 18.12.2019
 
@@ -681,7 +682,7 @@ CAD program, and create G-Code for Isolation routing.
 
 3.12.2019
 
-- in Preferences added an Apply button which apply the modified preferences but does not save to a file, minimizing the file IO operations; CTRL+S key combo does the Apply now.
+- in Preferences added an Apply button which apply the modified preferences but does not save to a file, minimizing the file IO operations; Ctrl+S key combo does the Apply now.
 - updated some of the default values to metric, values that were missed previously
 - remade the Gerber Editor way to import an Gerber object into the editor in such a way to use the multiprocessing
 - various small fixes
@@ -809,7 +810,7 @@ CAD program, and create G-Code for Isolation routing.
 
 11.11.2019
 
-- in Tools Database added a contextual menu to add/copy/delete tool; CTRL+C, DEL keys work too; key T for adding a tool is now only partially working
+- in Tools Database added a contextual menu to add/copy/delete tool; Ctrl+C, DEL keys work too; key T for adding a tool is now only partially working
 - in Tools Database made the status bar messages show when adding/copying/deleting tools in DB
 - changed all Except statements that were single to except Exception as recommended in some PEP
 - renamed the Copper Fill Tool to Copper Thieving Tool as this is a more appropriate name; started to add ability for more types of copper thieving besides solid
@@ -900,7 +901,7 @@ CAD program, and create G-Code for Isolation routing.
 - QRCode Tool: added ability to save the generated QRCode as SVG file or PNG file
 - QRCode Tool: added the feature to save the PNG file with transparent background
 - QRCode Tool: added GUI category in Preferences window
-- QRCode Tool: shortcut key for this tool is now ALT+Q while PDF import Tool was relegated to CTRL+Q combo key shortcut
+- QRCode Tool: shortcut key for this tool is now Alt+Q while PDF import Tool was relegated to Ctrl+Q combo key shortcut
 - added a new FlatCAM Tool: Copper Fill Tool. It will pour copper into a Gerber filling all empty space with copper, at a clearance distance of the Gerber features
 - Copper Fill Tool: added possibility to select between a bounding box rectangular or convex hull when the reference is the geometry of the source Gerber object
 - Copper Fill Tool: cleanup on not regular tool exit
@@ -998,7 +999,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a bug in the Merge functions
 - fixed the Export PNG function when using the 2D legacy graphic engine
-- added a new capability to toggle the grid lines for both graphic engines: menu link in View and key shortcut combo ALT+G
+- added a new capability to toggle the grid lines for both graphic engines: menu link in View and key shortcut combo Alt+G
 - changed the grid colors for 3D graphic engine when in Dark mode
 - enhanced the Tool Film adding the Film adjustments and added the GUI in Preferences
 - set the GUI layout in Preferences for a new category named Tools 2
@@ -1843,7 +1844,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a possible issue in Gerber Object class
 - added a new tool in Gerber Editor: Mark Area Tool. It will mark the polygons in a edited Gerber object with areas within a defined range, allowing to delete some of the not necessary  copper features
 - added new menu links in the Gerber Editor menu for Eraser Tool and Mark Area Tool
-- added key shortcuts for Eraser Tool (CTRL+E) and Mark Area Tool (ALT+A) and updated the shortcuts list
+- added key shortcuts for Eraser Tool (Ctrl+E) and Mark Area Tool (Alt+A) and updated the shortcuts list
 
 9.07.2019
 
@@ -2223,7 +2224,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the PDF import tool to work with files generated by the Microsoft PDF printer (chained subpaths)
 - in PDF import tool added support for paths filled and at the same time stroked ('B' and 'B*'commands)
-- added a shortcut key for PDF Import Tool (ALT+Q) and updated the Shortcut list (also with the 'T' and 'R' keys for Gerber Editor where they control the bend in Track and Region tool and the 'M' and 'D' keys for Add Arc tool in Geometry Editor)
+- added a shortcut key for PDF Import Tool (Alt+Q) and updated the Shortcut list (also with the 'T' and 'R' keys for Gerber Editor where they control the bend in Track and Region tool and the 'M' and 'D' keys for Add Arc tool in Geometry Editor)
 
 20.04.2019
 
@@ -2268,7 +2269,7 @@ CAD program, and create G-Code for Isolation routing.
 - Excellon Editor: update so always there is a tool selected even after the Excellon object was just edited; before it always required a click inside of the tool table, not you do it only if needed.
 - fixed the menu File -> Edit -> Edit/Close Editor entry to reflect the status of the app (Editor active or not)
 - added support in Excellon parser for autodetection of Excellon file format for the Excellon files generated by the following ECAD sw: DipTrace, Eagle, Altium, Sprint Layout
-- Gerber Editor: finished a new tool: Poligonize Tool (ALT+N in Editor). It will fuse a selection of tracks into a polygon. It will fill a selection of polygons if they are apart and it will make a single polygon if the selection is overlapped. All the newly created filled polygons will be stored in aperture '0' (if it does not exist it will be automatically created)
+- Gerber Editor: finished a new tool: Poligonize Tool (Alt+N in Editor). It will fuse a selection of tracks into a polygon. It will fill a selection of polygons if they are apart and it will make a single polygon if the selection is overlapped. All the newly created filled polygons will be stored in aperture '0' (if it does not exist it will be automatically created)
 - fixed a bug in Move command in context menu who crashed the app when triggered
 - Gerber Editor: when adding a new aperture it will be store as the last selected and it will be used for any tools that are triggered until a new aperture is selected.
 
@@ -2460,7 +2461,7 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to create new scripts and open scripts in FlatCAM Script Editor
 - the Code Editor tab name is changed according to the task; 'save' and 'open' buttons will have filters installed for the QOpenDialog fit to the task
 - added ability to run a FlatCAM Tcl script by double-clicking on the file
-- in Code Editor added shortcut combo key CTRL+SHIFT+V to function as a Special Paste that will replace the '\' char with '/' so the Windows paths will be pasted correctly for TCL Shell. Also doing SHIFT + LMB on the Paste in contextual menu is doing the same.
+- in Code Editor added shortcut combo key Ctrl+Shift+V to function as a Special Paste that will replace the '\' char with '/' so the Windows paths will be pasted correctly for TCL Shell. Also doing SHIFT + LMB on the Paste in contextual menu is doing the same.
 
 17.03.2019
 
@@ -2692,7 +2693,7 @@ CAD program, and create G-Code for Isolation routing.
 - added support for FlatCAM usage with High DPI monitors (4k). It is applied on the next app startup after change in Preferences -> General -> Gui Settings -> HDPI Support Checkbox
 - made the app not remember the window size if the app is maximized and remember in QSettings if it was maximized. This way we can restore the maximized state but restore the windows size unmaximized
 - added a button to clear the GUI preferences in Preferences -> General -> Gui Settings -> Clear GUI Settings
-- added key shortcuts for the shape transformations within Geometry Editor: X, Y keys for Flip(mirror), SHIFT+X, SHIFT+Y combo keys for Skew and ALT+X, ALT+Y combo keys for Offset
+- added key shortcuts for the shape transformations within Geometry Editor: X, Y keys for Flip(mirror), Shift+X, Shift+Y combo keys for Skew and Alt+X, Alt+Y combo keys for Offset
 - adjusted the plotcanvas.zomm_fit() function so the objects are better fit into view (with a border around) 
 - modified the GUI in Objects Selected Tab to accommodate 2 different modes: basic and Advanced. In Basic mode, some of the functionality's are hidden from the user.
 - added Tool Transform preferences in Edit -> Preferences and used them through out the app
@@ -2811,7 +2812,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon Editor added a protection for Tool_dia field in case numbers using comma as decimal separator are used. Also added a QDoubleValidator forcing a number with max 4 decimals and from 0.0000 to 9.9999
 - in Excellon Editor added a shortcut key 'T' that popup a window allowing to enter a new Tool with the set diameter
 - in App added a shortcut key 'T' that popup a windows allowing to enter a new Tool with set diameter only when the Selected tab is on focus and only if a Geometry object is selected
-- changed the shortcut key for Transform Tool from 'T' to 'ALT+T'
+- changed the shortcut key for Transform Tool from 'T' to 'Alt+T'
 - fixed bug in Geometry Selected tab that generated error when used tool offset was less than half of either total length or half of total width. Now the app signal the issue with a status bar message
 - added Double Validator for the Offset value so only float numbers can be entered.
 - in App added a shortcut key 'T' that popup a windows allowing to enter a new Tool with set diameter only when the Tool tab is on focus and only if a NCC Tool or Paint Area Tool object is installed in the Tool Tab
@@ -2918,7 +2919,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the camlib.CNCJob.scale() function so now the GCode is scaled also (quite a HACK :( it will need to be replaced at some point)). Units change work now on the GCODE also.
 - added the bounds coordinates to the GCODE header
 - FlatCAM saves now to a file in self.data_path the toolbar positions and the position of TCL Shell
-- Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key CTRL+F10
+- Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key Ctrl+F10
 - All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
 
 30.01.2019
@@ -2965,7 +2966,7 @@ CAD program, and create G-Code for Isolation routing.
 - redesigned the messagebox that is showed when quiting ot creating a New Project: now it has an option ('Cancel') to abort the process returning to the app
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
-- added shortcut key combo 'SHIFT+S' for Running a Script.
+- added shortcut key combo 'Shift+S' for Running a Script.
 - modified GRBL_laser preprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
 - remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
 
@@ -3830,7 +3831,7 @@ also the Project tab). Replaced it with the Preferences Tab launched with
 Menu -> Edit -> Preferences
 - when FlatCAM is used under MacOS, multiple selection of shapes in Editor
 mode is done using SHIFT key instead of CTRL key due of MacOS interpreting
-CTRL+LMB_click as a RMB click
+Ctrl+LMB_click as a RMB click
 - when in Editor, clicking not on a shape, reset the index of selected shapes
 to zero
 - added a new Tab in the Plot Area named Gcode Editor. It allow the user to
@@ -3889,7 +3890,7 @@ because the value has to be positive. This may have solved for some use
 cases the user complaints that on clearing the areas of copper there is
 still copper leftovers.
 
-- added shortcut "SHIFT+G" to toggle the axis presence. Useful when one
+- added shortcut "Shift+G" to toggle the axis presence. Useful when one
 wants to save a PNG file.
 - changed color of the grid from 'gray' to 'dimgray'
 
@@ -3918,7 +3919,7 @@ in a intermediary state on canvas.
 
 - added selection shape drawing in Geometry Editor preserving the
 current behavior: click to select, click on canvas clear selection,
-CTRL+click add to selection new shape but remove from selection
+Ctrl+click add to selection new shape but remove from selection
 if already selected. Drag LMB from left to right select enclosed
 shapes, drag LMB from right to left select touching shapes. Now the
 selection is made based on
@@ -4019,7 +4020,7 @@ crash
 - remade the bounds() function to work with nested lists of objects as
 per advice from JP which made the operation less performance taxing.
 - added shortcut Shift+R that is complement to 'R'
-- shorcuts 'R' and 'SHIFT+R' are working now in steps of 90 degrees
+- shorcuts 'R' and 'Shift+R' are working now in steps of 90 degrees
 instead of previous 45 degrees.
 - added filters in the open ... FlatCAM projects are saved automatically
 as *.flat, the Gerber files have few categories. So the Excellons and
@@ -4184,13 +4185,13 @@ Y      Flip on Y_axis
 ~      Show Shortcut List
 
 Space:   En(Dis)able Obj Plot
-CTRL+A   Select All
-CTRL+C   Copy Obj
-CTRL+E   Open Excellon File
-CTRL+G   Open Gerber File
-CTRL+M   Measurement Tool
-CTRL+O   Open Project
-CTRL+S   Save Project As
+Ctrl+A   Select All
+Ctrl+C   Copy Obj
+Ctrl+E   Open Excellon File
+Ctrl+G   Open Gerber File
+Ctrl+M   Measurement Tool
+Ctrl+O   Open Project
+Ctrl+S   Save Project As
 Delete   Delete Obj'''
 
 
@@ -4255,8 +4256,8 @@ promises and raise an Tcl error if there are any.
 Actually I reversed them to reflect reality.
 - for the rotate command a positive angle now rotates CW. It was reversed.
 - added shortcuts (for outside CANVAS; the CANVAS has it's own set of shortcuts)
-CTRL+C will copy to clipboard the name of the selected object
-CTRL+A will Select All objects
+Ctrl+C will copy to clipboard the name of the selected object
+Ctrl+A will Select All objects
 
 "X" key will flip the selected objects on X axis
 

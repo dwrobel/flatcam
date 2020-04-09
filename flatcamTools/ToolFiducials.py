@@ -395,7 +395,7 @@ class ToolFiducials(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Fiducials Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+J', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+J', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

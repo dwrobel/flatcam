@@ -616,7 +616,7 @@ class RulesCheck(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Rules Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+R', **kwargs)
 
     def set_tool_ui(self):
 

@@ -552,7 +552,7 @@ class SolderPaste(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("SolderPaste Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+K', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
     def on_add_tool_by_key(self):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),

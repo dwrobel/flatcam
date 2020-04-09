@@ -428,7 +428,7 @@ class DblSidedTool(FlatCAMTool):
               "on one side of the alignment axis.\n\n"
               "The coordinates set can be obtained:\n"
               "- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
-              "- press SHIFT key and left mouse clicking on canvas. Then CTRL+V in the field.\n"
+              "- press SHIFT key and left mouse clicking on canvas. Then Ctrl+V in the field.\n"
               "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
               "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
         )
@@ -512,7 +512,7 @@ class DblSidedTool(FlatCAMTool):
         self.drill_values = ""
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("Tool2Sided()")

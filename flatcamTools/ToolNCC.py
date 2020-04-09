@@ -934,7 +934,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+N', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolNonCopperClear()")

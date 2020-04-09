@@ -244,7 +244,7 @@ class AlignObjects(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Align Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+A', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+A', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

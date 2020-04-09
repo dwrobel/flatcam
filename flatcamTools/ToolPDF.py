@@ -135,7 +135,7 @@ class ToolPDF(FlatCAMTool):
         self.on_open_pdf_click()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+Q', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+Q', **kwargs)
 
     def set_tool_ui(self):
         pass

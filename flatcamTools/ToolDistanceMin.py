@@ -155,7 +155,7 @@ class DistanceMin(FlatCAMTool):
                              _("Select two objects and no more, to measure the distance between them ..."))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='SHIFT+M', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the GUI
