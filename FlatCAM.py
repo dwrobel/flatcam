@@ -32,6 +32,19 @@ if __name__ == '__main__':
     # NOTE: Never talk to the GUI from threads! This is why I commented the above.
     freeze_support()
 
+    # Supported Python version is >= 3.5
+    if sys.version_info.major >= 3:
+        if sys.version_info.minor >= 5:
+            pass
+        else:
+            print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
+                  "Your Python version is: %s" % str(sys.version_info))
+            os._exit(0)
+    else:
+        print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
+              "Your Python version is: %s" % str(sys.version_info))
+        os._exit(0)
+
     debug_trace()
     VisPyPatches.apply_patches()
 
