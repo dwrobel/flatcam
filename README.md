@@ -9,12 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
-10.04.2020 
+9.04.2020 
 
 - if FlatCAM is not run with Python version >= 3.5 it will exit.
 - modified all CTRL+ with Ctrl+ and all ALT+ with Alt+ and all SHIFT+ with Shift+. Fixed issue #387.
+- removed some packages from setup_ubuntu.sh as they are not needed in FlatCAM beta
 
-9.4.2020 
+8.4.2020 
 
 - fixed the Tcl Command Delete to have an argument -f that will force deletion evading the popup (if the popup is enabled). The sme command without a name now will delete all objects
 - fixed the Tcl Command JoinExcellons
