@@ -31,10 +31,12 @@ class TclCommandOpenGCode(TclCommandSignaled):
     help = {
         'main': "Opens a G-Code file.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
             ('outname', 'Name of the resulting CNCJob object.')
         ]),
-        'examples': []
+        'examples': ['open_gcode D:\\my_gcode_file.NC',
+                     'open_gcode "D:\\my_gcode_file with spaces in the name.TXT"']
     }
 
     def execute(self, args, unnamed_args):
@@ -48,6 +50,8 @@ class TclCommandOpenGCode(TclCommandSignaled):
         """
         args['plot'] = False
         filename = args["filename"]
-        # filename = filename.replace(' ', '')
+        if ' ' in filename:
+            return "The absolute path to the project file contain spaces which is not allowed.\n" \
+                   "Please enclose the path within quotes."
 
         self.app.open_gcode(filename, **args)

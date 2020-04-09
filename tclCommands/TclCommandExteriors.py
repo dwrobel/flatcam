@@ -29,10 +29,10 @@ class TclCommandExteriors(TclCommandSignaled):
     help = {
         'main': "Get exteriors of polygons.",
         'args':  collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
+            ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': []
+        'examples': ['ext geo_source_name -outname "final_geo"']
     }
 
     def execute(self, args, unnamed_args):

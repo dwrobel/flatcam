@@ -9,6 +9,19 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.4.2020 
+
+- fixed the Tcl Command Delete to have an argument -f that will force deletion evading the popup (if the popup is enabled). The sme command without a name now will delete all objects
+- fixed the Tcl Command JoinExcellons
+- fixed the Tcl Command JoinGeometry
+- fixed the Tcl Command Mirror
+- updated the Tcl Command Mirror to use a (X,Y) origin parameter. Works if the -box parameter is not used.
+- updated the Tcl Command Offset. Now it can use only -x or -y parameter no longer is mandatory to have both. The one that is not present will be assumed 0.0
+- updated the Tcl Command Panelize. The -rows and -columns parameters are no longer both required. If one is not present then it is assumed to be zero.
+- updated the Tcl Command Scale. THe -origin parameter can now be a tuple of (x,y) coordinates.
+- updated the Tcl Command Skew. Now it can use only -x or -y parameter no longer is mandatory to have both. The one that is not present will be assumed 0.0
+- updated the help for all the Tcl Commands
+
 6.04.2020 
 
 - added key shortcuts (arrow up/down) that will select the objects in the Project tab if the focus is in that tab

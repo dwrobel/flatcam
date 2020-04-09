@@ -31,7 +31,7 @@ class TclCommandExportGerber(TclCommand):
     help = {
         'main': "Export a Gerber Object as a Gerber File.",
         'args': collections.OrderedDict([
-            ('obj_name', 'Name of the object to export.'),
+            ('obj_name', 'Name of the object to export. Required.'),
             ('filename', 'Path to the file to export.')
         ]),
         'examples': ['export_gerber my_gerber path/my_file.gbr']

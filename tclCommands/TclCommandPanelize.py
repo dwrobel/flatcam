@@ -38,7 +38,7 @@ class TclCommandPanelize(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name', 'rows', 'columns']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
@@ -54,7 +54,14 @@ class TclCommandPanelize(TclCommand):
             ('outname', 'Name of the new geometry object.'),
             ('run_threaded', 'False = non-threaded || True = threaded')
         ]),
-        'examples': []
+        'examples': [
+            'panelize obj_name',
+
+            'panel obj_name -rows 2 -columns 2 -spacing_columns 0.4 -spacing_rows 1.3 -box box_obj_name '
+            '-outname panelized_name',
+
+            'panel obj_name -columns 2 -box box_obj_name -outname panelized_name',
+        ]
     }
 
     def execute(self, args, unnamed_args):
@@ -85,8 +92,18 @@ class TclCommandPanelize(TclCommand):
         else:
             box = obj
 
-        if 'columns' not in args or 'rows' not in args:
-            return "ERROR: Specify -columns and -rows"
+        if 'columns' in args:
+            columns = int(args['columns'])
+        else:
+            columns = int(0)
+
+        if 'rows' in args:
+            rows = int(args['rows'])
+        else:
+            rows = int(0)
+
+        if 'columns' not in args and 'rows' not in args:
+            return "ERROR: Specify either -columns or -rows. The one not specified it will assumed to be 0"
 
         if 'outname' in args:
             outname = args['outname']
@@ -107,9 +124,6 @@ class TclCommandPanelize(TclCommand):
             spacing_rows = int(args['spacing_rows'])
         else:
             spacing_rows = 5
-
-        rows = int(args['rows'])
-        columns = int(args['columns'])
 
         xmin, ymin, xmax, ymax = box.bounds()
         lenghtx = xmax - xmin + spacing_columns

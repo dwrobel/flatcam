@@ -49,13 +49,15 @@ class TclCommandSetOrigin(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Will set the origin at the specified x,y location.",
+        'main': "Will set the origin at the specified x,y location.\n"
+                "If it is called without arguments it will set origin at (0, 0)",
         'args': collections.OrderedDict([
-            ('loc', 'Location to offset all the selected objects. No spaces between x and y pair. Use like this: 2,3'),
+            ('loc', 'Location to offset all the selected objects. NO SPACES ALLOWED in X and Y pair.\n'
+                    'Use like this: 2,3'),
             ('auto', 'If set to True it will set the origin to the minimum x, y of the object selection bounding box.'
                      '-auto=True is not correct but -auto 1 or -auto True is correct.')
         ]),
-        'examples': ['set_origin 3,2', 'set_origin -auto 1']
+        'examples': ['set_origin 3,2', 'set_origin -auto 1', 'origin']
     }
 
     def execute(self, args, unnamed_args):

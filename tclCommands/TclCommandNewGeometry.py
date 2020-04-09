@@ -28,11 +28,12 @@ class TclCommandNewGeometry(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a new empty geometry object.",
+        'main': "Creates a new empty Geometry object.",
         'args': collections.OrderedDict([
             ('name', 'New object name.'),
         ]),
-        'examples': []
+        'examples': ['new_geometry\n'
+                     'new_geometry my_new_geo']
     }
 
     def execute(self, args, unnamed_args):

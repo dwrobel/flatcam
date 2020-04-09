@@ -36,9 +36,10 @@ class TclCommandSubtractRectangle(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Subtract rectange from the given Geometry object.",
+        'main': "Subtract a rectangle from the given Geometry object. The coordinates are provided in X Y pairs.\n"
+                "If the number of coordinates is not even then the 'Incomplete coordinates' error is raised.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the Geometry object from which to subtract.'),
+            ('name', 'Name of the Geometry object from which to subtract. Required.'),
             ('x0 y0', 'Bottom left corner coordinates.'),
             ('x1 y1', 'Top right corner coordinates.')
         ]),

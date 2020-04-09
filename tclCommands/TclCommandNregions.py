@@ -41,13 +41,13 @@ class TclCommandNregions(TclCommand):
     help = {
         'main': "Creates a geometry object with the non-copper regions.",
         'args': collections.OrderedDict([
-            ('name', 'Object name for which to create non-copper regions. String'),
+            ('name', 'Object name for which to create non-copper regions. String. Required.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
             ('margin', "Specify the edge of the PCB by drawing a box around all objects with this minimum distance. "
                        "Float number."),
             ('rounded', "Resulting geometry will have rounded corners. True or False.")
         ]),
-        'examples': ['ncr name -outname name_ncr']
+        'examples': ['ncr name -margin 0.1 -rounded True -outname name_ncr']
     }
 
     def execute(self, args, unnamed_args):

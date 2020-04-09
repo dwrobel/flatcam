@@ -27,12 +27,12 @@ class TclCommandInteriors(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Get interiors of polygons.",
+        'main': "Return the interiors of polygons as a list of Shapely geometry elements.",
         'args':  collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
+            ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': []
+        'examples': ['interiors my_geo_name -outname "outputed_geo"']
     }
 
     def execute(self, args, unnamed_args):

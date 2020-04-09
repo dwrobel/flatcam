@@ -31,9 +31,9 @@ class TclCommandSetActive(TclCommand):
     help = {
         'main': 'Sets an object as active.',
         'args': collections.OrderedDict([
-            ('name', 'Name of the Object.'),
+            ('name', 'Name of the FlatCAM object to be set as active (selected). Required.'),
         ]),
-        'examples': []
+        'examples': ['set_active object_name']
     }
 
     def execute(self, args, unnamed_args):

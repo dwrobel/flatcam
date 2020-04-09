@@ -34,7 +34,7 @@ class TclCommandMillSlots(TclCommandSignaled):
         ('milled_dias', str),
         ('outname', str),
         ('tooldia', float),
-        ('use_threads', bool),
+        ('use_thread', bool),
         ('diatol', float)
     ])
 
@@ -45,10 +45,13 @@ class TclCommandMillSlots(TclCommandSignaled):
     help = {
         'main': "Create Geometry Object for milling slot holes from Excellon.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the Excellon Object.'),
-            ('milled_dias', 'Comma separated tool diameters of the slots to be milled (example: 0.6, 1.0 or 3.125).'),
+            ('name', 'Name of the Excellon Object. Required.'),
+            ('milled_dias', 'Comma separated tool diameters of the slots to be milled (example: 0.6, 1.0 or 3.125).\n'
+                            'Exception: if you enter "all" then the slots for all tools will be milled.\n'
+                            'WARNING: no spaces are allowed in the list of tools.\n'
+                            'As a precaution you can enclose them with quotes.'),
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
-            ('outname', 'Name of object to create.'),
+            ('outname', 'Name of object to be created holding the milled geometries.'),
             ('use_thread', 'If to use multithreading: True or False.'),
             ('diatol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in milled_dias will be judged to be '
                        'the same as the ones in the tools from the Excellon object. E.g: if in milled_dias we have a '
@@ -56,7 +59,8 @@ class TclCommandMillSlots(TclCommandSignaled):
                        'diatol = 5.0 then the slots with the dia = (0.95 ... 1.05) '
                        'in Excellon will be processed. Float number.')
         ]),
-        'examples': ['millslots mydrills', 'mills my_excellon.drl']
+        'examples': ['millslots myslots -milled_dias "0.6,0.8" -tooldia 0.1 -diatol 10 -outname milled_slots',
+                     'mills my_excellon.drl']
     }
 
     def execute(self, args, unnamed_args):

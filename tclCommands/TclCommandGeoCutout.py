@@ -45,14 +45,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
     help = {
         'main': 'Creates board cutout from an object (Gerber or Geometry) of any shape',
         'args': collections.OrderedDict([
-            ('name', 'Name of the object.'),
+            ('name', 'Name of the object to be cutout. Required'),
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'size of gap.'),
             ('gaps', "type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right, '2tb' = 2top-2bottom, "
                      "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts")
         ]),
-        'examples': ["      #isolate margin for example from fritzing arduino shield or any svg etc\n" +
+        'examples': ["      #isolate margin for example from Fritzing arduino shield or any svg etc\n" +
                      "      isolate BCu_margin -dia 3 -overlap 1\n" +
                      "\n" +
                      "      #create exteriors from isolated object\n" +

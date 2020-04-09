@@ -38,7 +38,7 @@ class TclCommandClearShell(TclCommand):
         'main': "Clear the text in the Tcl Shell browser.",
         'args': collections.OrderedDict([
         ]),
-        'examples': []
+        'examples': ['clear']
     }
 
     def execute(self, args, unnamed_args):

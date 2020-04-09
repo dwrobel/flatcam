@@ -28,11 +28,11 @@ class TclCommandOptions(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Shows the settings for an object.",
+        'main': "Will return the options (settings) for an object as a string with values separated by \\n.",
         'args': collections.OrderedDict([
-            ('name', 'Object name.'),
+            ('name', 'Object name for which to return the options. Required.'),
         ]),
-        'examples': []
+        'examples': ['options obj_name']
     }
 
     def execute(self, args, unnamed_args):

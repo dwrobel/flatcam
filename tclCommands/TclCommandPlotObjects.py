@@ -32,15 +32,15 @@ class TclCommandPlotObjects(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = []
+    required = ['names']
 
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Plot a list of objects.",
         'args': collections.OrderedDict([
-            ('names', "UA list of object names to be plotted.")
+            ('names', "A list of object names to be plotted separated by comma. Required.")
         ]),
-        'examples': ["plot_objects"]
+        'examples': ["plot_objects gerber_obj.GRB, excellon_obj.DRL"]
     }
 
     def execute(self, args, unnamed_args):
@@ -51,7 +51,7 @@ class TclCommandPlotObjects(TclCommand):
         :return:
         """
         if self.app.cmd_line_headless != 1:
-            names = [x.strip() for x in args['names'].split(",")]
+            names = [x.strip() for x in args['names'].split(",") if x != '']
             objs = []
             for name in names:
                 objs.append(self.app.collection.get_by_name(name))

@@ -39,7 +39,7 @@ class TclCommandNewExcellon(TclCommandSignaled):
         'args': collections.OrderedDict([
             ('name', 'New object name.'),
         ]),
-        'examples': []
+        'examples': ['new_excellon my_excellon', 'new_excellon']
     }
 
     def execute(self, args, unnamed_args):

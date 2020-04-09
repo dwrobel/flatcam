@@ -36,9 +36,9 @@ class TclCommandGetSys(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Returns the value of the system variable.",
+        'main': "Returns the value of the targeted system variable.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the system variable.'),
+            ('name', 'Name of the system variable. Required.'),
         ]),
         'examples': ['get_sys excellon_zeros']
     }

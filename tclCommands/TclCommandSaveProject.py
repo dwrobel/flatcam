@@ -30,9 +30,12 @@ class TclCommandSaveProject(TclCommandSignaled):
     help = {
         'main': "Saves the FlatCAM project to file.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
-        'examples': []
+        'examples': ['save_project D:\\my_project_file.FlatPrj',
+                     'save_project "D:\\my_project_file with spaces in the name.FlatPrj"',
+                     'save_project path_to_where_the_file_is_stored']
     }
 
     def execute(self, args, unnamed_args):

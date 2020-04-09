@@ -33,7 +33,7 @@ class TclCommandExportSVG(TclCommand):
     help = {
         'main': "Export a Geometry Object as a SVG File.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the object export.'),
+            ('name', 'Name of the object export. Required.'),
             ('filename', 'Path to the file to export.'),
             ('scale_factor', 'Multiplication factor used for scaling line widths during export.')
         ]),

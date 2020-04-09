@@ -29,11 +29,11 @@ class TclCommandGetNames(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Lists the names of objects in the project.',
+        'main': 'Lists the names of objects in the project. It returns a string with names separated by \n',
         'args': collections.OrderedDict([
 
         ]),
-        'examples': []
+        'examples': ['get_names']
     }
 
     def execute(self, args, unnamed_args):

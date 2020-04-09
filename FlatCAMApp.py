@@ -1033,7 +1033,7 @@ class App(QtCore.QObject):
                                           'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
-                                          'extracut_length, '
+                                          'extracut_length, f, '
                                           'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
                                           'minoffset, name, offset, opt_type, order, outname, overlap, '
@@ -2305,7 +2305,8 @@ class App(QtCore.QObject):
         # #####################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
-                                  'delete', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon', 'ee', 'export_exc',
+                                  'del', 'delete', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon', 'ee',
+                                  'export_exc',
                                   'export_gcode', 'export_gerber', 'egr', 'export_svg', 'ext', 'exteriors', 'follow',
                                   'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
                                   'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
@@ -2326,7 +2327,7 @@ class App(QtCore.QObject):
                                  'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
-                                 'dwelltime', 'extracut_length',
+                                 'dwelltime', 'extracut_length', 'f',
                                  'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
@@ -7201,10 +7202,11 @@ class App(QtCore.QObject):
     # Hovering over Selected tab, if the selected tab is a Geometry it will delete tools in tool table. But even if
     # there is a Selected tab in focus with a Geometry inside, if you hover over canvas it will delete an object.
     # Complicated, I know :)
-    def on_delete(self):
+    def on_delete(self, force_deletion=False):
         """
         Delete the currently selected FlatCAMObjs.
 
+        :param force_deletion:  used by Tcl command
         :return: None
         """
         self.report_usage("on_delete()")
@@ -7216,7 +7218,7 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
                 and self.grb_editor.editor_active is False:
-            if self.defaults["global_delete_confirmation"] is True:
+            if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
@@ -7230,7 +7232,10 @@ class App(QtCore.QObject):
                 msgbox.exec_()
                 response = msgbox.clickedButton()
 
-            if response == bt_ok or self.defaults["global_delete_confirmation"] is False:
+            if self.defaults["global_delete_confirmation"] is False or force_deletion is True:
+                response = bt_ok
+
+            if response == bt_ok:
                 if self.collection.get_active():
                     self.log.debug("App.on_delete()")
 
@@ -9539,6 +9544,7 @@ class App(QtCore.QObject):
         File menu callback for opening a Gerber.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :param name:
         :return: None
         """
 
@@ -9585,6 +9591,7 @@ class App(QtCore.QObject):
         File menu callback for opening an Excellon file.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :param name:
         :return: None
         """
 
@@ -9619,10 +9626,12 @@ class App(QtCore.QObject):
 
     def on_fileopengcode(self, signal: bool = None, name=None):
         """
+
         File menu call back for opening gcode.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
-        :return: None
+        :param name:
+        :return:
         """
 
         self.report_usage("on_fileopengcode")

@@ -40,7 +40,7 @@ class TclCommandListSys(TclCommand):
                 "of the system variable.\n"
                 "In that case it will list only the system variables that starts with that string.\n"
                 "Main categories start with: gerber or excellon or geometry or cncjob or global.\n"
-                "Note: Use get_sys TclCommand to get the value and set_sys TclCommand to set it.\n",
+                "Note: Use 'get_sys system variable' to get the value and 'set_sys system variable value' to set it.\n",
         'args': collections.OrderedDict([
         ]),
         'examples': ['list_sys',

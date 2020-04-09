@@ -12,6 +12,7 @@ if '_' not in builtins.__dict__:
 
 log = logging.getLogger('base')
 
+
 class TclCommandBounds(TclCommand):
     """
     Tcl shell command to return the bounds values for a supplied list of objects (identified by their names).

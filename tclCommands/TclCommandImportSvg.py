@@ -30,11 +30,11 @@ class TclCommandImportSvg(TclCommandSignaled):
     help = {
         'main': "Import an SVG file as a Geometry Object..",
         'args':  collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.'),
             ('type', 'Import as gerber or geometry(default).'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': []
+        'examples': ['import_svg D:\\my_beautiful_svg_file.SVG']
     }
 
     def execute(self, args, unnamed_args):

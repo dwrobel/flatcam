@@ -29,7 +29,7 @@ class TclCommandIsolate(TclCommandSignaled):
         ('dia', float),
         ('passes', int),
         ('overlap', float),
-        ('combine', int),
+        ('combine', bool),
         ('outname', str),
         ('follow', str),
         ('iso_type', int)
@@ -43,18 +43,18 @@ class TclCommandIsolate(TclCommandSignaled):
     help = {
         'main': "Creates isolation routing geometry for the given Gerber.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the source object.'),
+            ('name', 'Name of the source object. Required.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
-            ('combine', 'Combine all passes into one geometry.'),
+            ('combine', 'Combine all passes into one geometry. Can be True or False, 1 or 0'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('follow', 'Create a Geometry that follows the Gerber path.'),
             ('iso_type', 'A value of 0 will isolate exteriors, a value of 1 will isolate interiors '
                          'and a value of 2 will do full isolation.')
         ]),
-        'examples': []
+        'examples': ['isolate my_geo -dia 0.1 -passes 2 -overlap 10 -combine True -iso_type 2 -outname out_geo']
     }
 
     def execute(self, args, unnamed_args):
@@ -79,6 +79,10 @@ class TclCommandIsolate(TclCommandSignaled):
 
         if 'follow' not in args:
             args['follow'] = None
+
+        # evaluate this parameter so True, False, 0 and 1 works
+        if "combine" in args:
+            args['combine'] = eval(args['combine'])
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

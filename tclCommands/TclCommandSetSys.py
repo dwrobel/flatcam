@@ -32,10 +32,10 @@ class TclCommandSetSys(TclCommand):
     help = {
         'main': "Sets the value of the system variable.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the system variable.'),
+            ('name', 'Name of the system variable. Required.'),
             ('value', 'Value to set.')
         ]),
-        'examples': []
+        'examples': ['set_sys global_gridx 1.0']
     }
 
     def execute(self, args, unnamed_args):

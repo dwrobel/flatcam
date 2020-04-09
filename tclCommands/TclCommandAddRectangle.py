@@ -37,7 +37,7 @@ class TclCommandAddRectangle(TclCommandSignaled):
             ('x0 y0', 'Bottom left corner coordinates.'),
             ('x1 y1', 'Top right corner coordinates.')
         ]),
-        'examples': []
+        'examples': ["add_rectangle geo_name 0 0 10 10"]
     }
 
     def execute(self, args, unnamed_args):

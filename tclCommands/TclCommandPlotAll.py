@@ -33,7 +33,7 @@ class TclCommandPlotAll(TclCommand):
         'args': collections.OrderedDict([
 
         ]),
-        'examples': []
+        'examples': ['plot_all']
     }
 
     def execute(self, args, unnamed_args):

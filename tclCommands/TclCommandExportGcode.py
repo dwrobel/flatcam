@@ -48,11 +48,11 @@ class TclCommandExportGcode(TclCommandSignaled):
     help = {
         'main': "Export gcode into console output.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the source Geometry object.'),
+            ('name', 'Name of the source Geometry object. Required.'),
             ('preamble', 'Prepend GCODE.'),
             ('postamble', 'Append GCODE.')
         ]),
-        'examples': []
+        'examples': ['export_gcode geo_name -preamble "G01 X10 Y10" -postamble "G00 X20 Y20\nM04"']
     }
 
     def execute(self, args, unnamed_args):

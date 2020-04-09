@@ -34,8 +34,8 @@ class TclCommandWriteGCode(TclCommandSignaled):
     help = {
         'main': "Saves G-code of a CNC Job object to file.",
         'args': collections.OrderedDict([
-            ('name', 'Source CNC Job object.'),
-            ('filename', 'Output filename.'),
+            ('name', 'Source CNC Job object. Required.'),
+            ('filename', 'Output filename. Required.'),
             ('preamble', 'Text to append at the beginning.'),
             ('postamble', 'Text to append at the end.'),
             ('muted', 'It will not put errors in the Shell or status bar.')

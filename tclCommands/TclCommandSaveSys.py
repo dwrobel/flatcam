@@ -33,9 +33,9 @@ class TclCommandSaveSys(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Saves the FlatCAM system paramaters to defaults file.",
+        'main': "Saves the FlatCAM system parameters to defaults file.",
         'args': collections.OrderedDict([]),
-        'examples': []
+        'examples': ['save_sys']
     }
 
     def execute(self, args, unnamed_args):

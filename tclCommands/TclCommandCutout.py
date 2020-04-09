@@ -48,7 +48,7 @@ class TclCommandCutout(TclCommand):
             ('gapsize', 'Size of gap. Default = 0.1'),
             ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side. Default = 4"),
         ]),
-        'examples': []
+        'examples': ['cutout new_geo -dia 1.2 -margin 0.1 -gapsize 1 -gaps "tb" ']
     }
 
     def execute(self, args, unnamed_args):

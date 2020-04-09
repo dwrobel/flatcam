@@ -17,28 +17,27 @@ class TclCommandSkew(TclCommand):
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
-        ('angle_x', float),
-        ('angle_y', float)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-
+        ('x', float),
+        ('y', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name', 'angle_x', 'angle_y']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Shear/Skew an object by angles along x and y dimensions. The reference point is the left corner of "
                 "the bounding box of the object.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the object to skew.'),
-            ('angle_x', 'Angle in degrees by which to skew on the X axis.'),
-            ('angle_y', 'Angle in degrees by which to skew on the Y axis.')
+            ('name', 'Name of the object (Gerber, Geometry or Excellon) to be deformed (skewed). Required.'),
+            ('x', 'Angle in degrees by which to skew on the X axis. If it is not used it will be assumed to be 0.0'),
+            ('y', 'Angle in degrees by which to skew on the Y axis. If it is not used it will be assumed to be 0.0')
         ]),
-        'examples': ['skew my_geometry 10.2 3.5']
+        'examples': ['skew my_geometry -x 10.2 -y 3.5', 'skew my_geo -x 3.0']
     }
 
     def execute(self, args, unnamed_args):
@@ -50,8 +49,20 @@ class TclCommandSkew(TclCommand):
         """
 
         name = args['name']
-        angle_x = float(args['angle_x'])
-        angle_y = float(args['angle_y'])
+
+        if 'x' in args:
+            angle_x = float(args['x'])
+        else:
+            angle_x = 0.0
+
+        if 'y' in args:
+            angle_y = float(args['y'])
+        else:
+            angle_y = 0.0
+
+        if angle_x == 0.0 and angle_y == 0.0:
+            # nothing to be done
+            return
 
         obj_to_skew = self.app.collection.get_by_name(name)
         xmin, ymin, xmax, ymax = obj_to_skew.bounds()

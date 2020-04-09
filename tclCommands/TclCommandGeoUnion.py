@@ -32,12 +32,12 @@ class TclCommandGeoUnion(TclCommand):
     help = {
         'main': ('Runs a union operation (addition) on the components '
                  'of the geometry object. For example, if it contains '
-                 '2 intersecting polygons, this opperation adds them into'
+                 '2 intersecting polygons, this operation adds them into'
                  'a single larger polygon.'),
         'args': collections.OrderedDict([
-            ('name', 'Name of the Geometry Object.'),
+            ('name', 'Name of the Geometry Object that contain the components to be joined. Required.'),
         ]),
-        'examples': []
+        'examples': ['geo_union target_geo']
     }
 
     def execute(self, args, unnamed_args):

@@ -38,7 +38,7 @@ class TclCommandAddCircle(TclCommand):
             ('center_y', 'Y coordinates of the center of the circle.'),
             ('radius', 'Radius of the circle.')
         ]),
-        'examples': []
+        'examples': ['add_circle geo_name 1.0 2.0 3']
     }
 
     def execute(self, args, unnamed_args):

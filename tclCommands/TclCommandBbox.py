@@ -38,7 +38,7 @@ class TclCommandBbox(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a Geometry object that surrounds the object.",
+        'main': "Creates a rectangular Geometry object that surrounds the object.",
         'args': collections.OrderedDict([
             ('name', 'Object name for which to create bounding box. String'),
             ('outname', 'Name of the resulting Geometry object. String.'),

@@ -39,7 +39,7 @@ class TclCommandNewGerber(TclCommandSignaled):
         'args': collections.OrderedDict([
             ('name', 'New object name.'),
         ]),
-        'examples': []
+        'examples': ['new_gerber', 'new_gerber my_new_gerber_name']
     }
 
     def execute(self, args, unnamed_args):

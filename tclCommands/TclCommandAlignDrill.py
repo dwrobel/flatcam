@@ -41,7 +41,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create excellon with drills for aligment.",
+        'main': "Create an Excellon object with drills for alignment.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
             ('dia', 'Tool diameter'),

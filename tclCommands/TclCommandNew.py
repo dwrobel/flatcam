@@ -24,7 +24,7 @@ class TclCommandNew(TclCommand):
     help = {
         'main': "Starts a new project. Clears objects from memory.",
         'args': collections.OrderedDict(),
-        'examples': []
+        'examples': ['new']
     }
 
     def execute(self, args, unnamed_args):

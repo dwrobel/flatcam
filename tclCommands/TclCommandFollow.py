@@ -29,10 +29,10 @@ class TclCommandFollow(TclCommandSignaled):
     help = {
         'main': "Creates a geometry object following gerber paths.",
         'args': collections.OrderedDict([
-            ('name', 'Object name to follow.'),
+            ('name', 'Object name to follow. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': ['follow name -outname name_follow']
+        'examples': ['follow name -outname "name_follow"']
     }
 
     def execute(self, args, unnamed_args):

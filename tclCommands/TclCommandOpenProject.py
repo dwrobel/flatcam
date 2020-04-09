@@ -30,9 +30,11 @@ class TclCommandOpenProject(TclCommandSignaled):
     help = {
         'main': "Opens a FlatCAM project.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
-        'examples': []
+        'examples': ['open_project D:\\my_project_file.FlatPrj',
+                     'open_project "D:\\my_project_file with spaces in the name.FlatPrj"']
     }
 
     def execute(self, args, unnamed_args):
@@ -45,6 +47,8 @@ class TclCommandOpenProject(TclCommandSignaled):
         :return: None or exception
         """
         filename = args['filename']
-        filename = filename.replace(' ', '')
+        if ' ' in filename:
+            return "The absolute path to the project file contain spaces which is not allowed.\n" \
+                   "Please enclose the path within quotes."
 
         self.app.open_project(filename, cli=True, plot=False)
