@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.04.2020 
+
+- made sure that the timeout parameter used by some Tcl Commands is seen as an integer in all cases
+- minor changes in Paint Tool
+
+
 9.04.2020 
 
 - if FlatCAM is not run with Python version >= 3.5 it will exit.

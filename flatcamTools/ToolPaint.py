@@ -12,12 +12,11 @@ from FlatCAMTool import FlatCAMTool
 from copy import deepcopy
 # from ObjectCollection import *
 from flatcamParsers.ParseGerber import Gerber
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
 from camlib import Geometry, FlatCAMRTreeStorage
 from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox
 import FlatCAMApp
 
-from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString
+from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import cascaded_union, unary_union, linemerge
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -2075,7 +2074,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         :return: None
         """
 
-        if isinstance(obj, FlatCAMGerber):
+        if obj.kind == 'gerber':
             # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
             if self.app.defaults["gerber_buffering"] == 'no':
                 self.app.inform.emit('%s %s %s' %
@@ -2417,7 +2416,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Normal painting all task started.")
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if app_obj.defaults["gerber_buffering"] == 'no':
                     app_obj.inform.emit('%s %s' %
                                         (_("Paint Tool. Normal painting all task started."),
@@ -2435,7 +2434,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 pass
 
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':
                     if isinstance(obj.solid_geometry, list):
                         obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
@@ -2629,7 +2628,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Rest machining painting all task started.")
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if app_obj.defaults["gerber_buffering"] == 'no':
                     app_obj.inform.emit('%s %s %s' %
                                         (_("Paint Tool."), _("Rest machining painting all task started."),
@@ -2644,7 +2643,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             tool_dia = None
             sorted_tools.sort(reverse=True)
 
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':
                     if isinstance(obj.solid_geometry, list):
                         obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
@@ -3079,7 +3078,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Normal painting area task started.")
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if app_obj.defaults["gerber_buffering"] == 'no':
                     app_obj.inform.emit('%s %s' %
                                         (_("Paint Tool. Normal painting area task started."),
@@ -3100,13 +3099,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             # this is were heavy lifting is done and creating the geometry to be painted
             target_geo = MultiPolygon(obj.solid_geometry)
 
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':
                     if isinstance(target_geo, list):
                         target_geo = MultiPolygon(target_geo).buffer(0)
                     else:
                         target_geo = target_geo.buffer(0)
-
 
             geo_to_paint = target_geo.intersection(sel_obj)
             painted_area = recurse(geo_to_paint)
@@ -3444,7 +3442,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Rest machining painting area task started.")
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if app_obj.defaults["gerber_buffering"] == 'no':
                     app_obj.inform.emit('%s %s %s' %
                                         (_("Paint Tool."), _("Rest machining painting area task started."),
@@ -3468,7 +3466,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # this is were heavy lifting is done and creating the geometry to be painted
             target_geo = obj.solid_geometry
 
-            if isinstance(obj, FlatCAMGerber):
+            if obj.kind == 'gerber':
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':
                     if isinstance(target_geo, list):
                         target_geo = MultiPolygon(target_geo).buffer(0)
@@ -3532,7 +3530,6 @@ class ToolPaint(FlatCAMTool, Gerber):
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 pol_nr = 0
-
 
                 for geo in poly_buf:
                     try:
@@ -3952,7 +3949,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         for row in range(self.tools_table.rowCount()):
             for col in [2, 4]:
                 try:
-                    self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
+                    self.tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
                 except (TypeError, AttributeError):
                     pass
 

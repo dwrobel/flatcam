@@ -387,7 +387,8 @@ class TclCommandSignaled(TclCommand):
 
             # Terminate on timeout
             if timeout is not None:
-                QtCore.QTimer.singleShot(timeout, report_quit)
+                time_val = int(timeout)
+                QtCore.QTimer.singleShot(time_val, report_quit)
 
             # Block
             loop.exec_()
