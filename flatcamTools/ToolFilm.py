@@ -9,7 +9,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, OptionalInputSection, FCComboBox
+    OptionalHideInputSection, OptionalInputSection, FCComboBox, FCFileSaveDialog
 
 from copy import deepcopy
 import logging
@@ -741,12 +741,12 @@ class Film(FlatCAMTool):
                          "All Files (*.*)"
 
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export positive film"),
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 filter=filter_ext)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export positive film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export positive film"))
 
         filename = str(filename)
 
@@ -887,12 +887,12 @@ class Film(FlatCAMTool):
                          "All Files (*.*)"
 
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export negative film"),
                 directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 filter=filter_ext)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export negative film"))
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export negative film"))
 
         filename = str(filename)
 

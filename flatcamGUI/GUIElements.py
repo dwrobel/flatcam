@@ -2853,6 +2853,30 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
         self.edit.setLineWrapMode(mode)
 
 
+class FCFileSaveDialog(QtWidgets.QFileDialog):
+
+    def __init__(self, *args):
+        super(FCFileSaveDialog, self).__init__(*args)
+
+    @staticmethod
+    def get_saved_filename(parent=None, caption='', directory='', filter='', initialFilter=''):
+        filename, _filter = QtWidgets.QFileDialog.getSaveFileName(parent=parent, caption=caption,
+                                                                  directory=directory, filter=filter,
+                                                                  initialFilter=initialFilter)
+
+        filename = str(filename)
+        if filename == '':
+            return filename, _filter
+
+        extension = '.' + _filter.strip(')').rpartition('.')[2]
+
+        if filename.endswith(extension) or extension == '.*':
+            return filename, _filter
+        else:
+            filename += extension
+            return filename, _filter
+
+
 def rreplace(s, old, new, occurrence):
     """
     Credits go here:

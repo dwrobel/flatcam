@@ -9,11 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.04.2020 
+
+- fixed issue #394 - the saveDialog in Linux did not added the selected extension
+
 10.04.2020 
 
-- made sure that the timeout parameter used by some Tcl Commands is seen as an integer in all cases
+- made sure that the timeout parameter used by some Tcl Commands is seen as an integer in all cases - fixed issue #389
 - minor changes in Paint Tool
-- minor changes in GUI (Save locations in Menu -> File) and the key shortcuts
+- minor changes in GUI (Save locations in Menu -> File) and the key shortcuts - fixed issue #391
 
 
 9.04.2020 

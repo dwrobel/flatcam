@@ -53,6 +53,7 @@ from camlib import to_dict, dict2obj, ET, ParseError
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
+from flatcamGUI.GUIElements import FCFileSaveDialog
 
 from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, ToolsDB2, color_variant
 from FlatCAMPostProc import load_preprocessors
@@ -4134,13 +4135,13 @@ class App(QtCore.QObject):
 
         filter__ = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + self.date,
                 filter=filter__
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
+            filename, _f = FCFileSaveDialog.get_saved_filename( caption=_("Export FlatCAM Preferences"),
                                                                  filter=filter__)
 
         filename = str(filename)
@@ -9800,12 +9801,12 @@ class App(QtCore.QObject):
 
         _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 
@@ -9837,12 +9838,12 @@ class App(QtCore.QObject):
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG Image"),
                 directory=self.get_last_save_folder() + '/png_' + self.date,
                 filter=filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), filter=filter_)
 
         filename = str(filename)
 
@@ -9884,12 +9885,12 @@ class App(QtCore.QObject):
 
         _filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -9928,12 +9929,12 @@ class App(QtCore.QObject):
 
         _filter = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Script source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Script source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -9972,12 +9973,12 @@ class App(QtCore.QObject):
 
         _filter = "FlatCAM Documents (*.FlatDoc);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Document source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Document source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -10016,12 +10017,12 @@ class App(QtCore.QObject):
 
         _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Excellon source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -10060,12 +10061,12 @@ class App(QtCore.QObject):
 
         _filter = self.defaults["excellon_save_filters"]
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), filter=_filter)
 
         filename = str(filename)
 
@@ -10107,12 +10108,12 @@ class App(QtCore.QObject):
 
         _filter_ = self.defaults['gerber_save_filters']
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Gerber"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Gerber"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), filter=_filter_)
 
         filename = str(filename)
 
@@ -10166,12 +10167,12 @@ class App(QtCore.QObject):
 
         _filter_ = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export DXF"),
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"),
                                                                  filter=_filter_)
 
         filename = str(filename)
@@ -10588,14 +10589,14 @@ class App(QtCore.QObject):
 
         filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Project As ..."),
                 directory='{l_save}/{proj}_{date}'.format(l_save=str(self.get_last_save_folder()), date=self.date,
                                                           proj=_("Project")),
                 filter=filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), filter=filter_)
 
         filename = str(filename)
 
@@ -10642,7 +10643,7 @@ class App(QtCore.QObject):
 
         filter_ = "PDF File (*.PDF);; All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Object as PDF ..."),
                 directory='{l_save}/{obj_name}_{date}'.format(l_save=str(self.get_last_save_folder()),
                                                               obj_name=obj_name,
@@ -10650,7 +10651,7 @@ class App(QtCore.QObject):
                 filter=filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Object as PDF ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), filter=filter_)
 
         filename = str(filename)
 

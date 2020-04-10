@@ -13,7 +13,7 @@
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from flatcamGUI.GUIElements import FCTable, FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet
+    FCTree, RadioSet, FCFileSaveDialog
 from camlib import to_dict
 
 import sys
@@ -358,7 +358,7 @@ class BookmarkManager(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Bookmarks"),
+        filename, _f = FCFileSaveDialog.get_saved_filename( caption=_("Export FlatCAM Bookmarks"),
                                                              directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
                                                                  n=_("Bookmarks"),
@@ -1094,7 +1094,7 @@ class ToolsDB(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Tools Database"),
+        filename, _f = FCFileSaveDialog.get_saved_filename( caption=_("Export Tools Database"),
                                                              directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
                                                                  n=_("Tools_Database"),
@@ -2524,7 +2524,7 @@ class ToolsDB2(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Tools Database"),
+        filename, _f = FCFileSaveDialog.get_saved_filename( caption=_("Export Tools Database"),
                                                              directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
                                                                  n=_("Tools_Database"),

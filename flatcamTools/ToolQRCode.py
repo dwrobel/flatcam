@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog
 from flatcamParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -778,12 +778,12 @@ class QRCode(FlatCAMTool):
 
         _filter = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG"),
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_png',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG"), filter=_filter)
 
         filename = str(filename)
 
@@ -825,12 +825,12 @@ class QRCode(FlatCAMTool):
 
         _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 

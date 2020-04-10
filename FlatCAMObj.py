@@ -25,6 +25,7 @@ from datetime import datetime
 
 from flatcamEditors.FlatCAMTextEditor import TextEditor
 from flatcamGUI.ObjectUI import *
+from flatcamGUI.GUIElements import FCFileSaveDialog
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from flatcamParsers.ParseExcellon import Excellon
@@ -7024,13 +7025,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Machine Code ..."),
                 directory=dir_file_to_save,
                 filter=_filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Machine Code ..."), filter=_filter_)
 
         filename = str(filename)
 
