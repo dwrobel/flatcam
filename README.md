@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - made sure that the timeout parameter used by some Tcl Commands is seen as an integer in all cases
 - minor changes in Paint Tool
+- minor changes in GUI (Save locations in Menu -> File) and the key shortcuts
 
 
 9.04.2020 

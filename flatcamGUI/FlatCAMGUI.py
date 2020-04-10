@@ -51,7 +51,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ######### ##
         self.menu = self.menuBar()
 
-        self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Panel"))
+        self.menu_toggle_nb = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Panel"))
         self.menu_toggle_nb.setToolTip(
             _("Toggle Panel")
         )
@@ -138,6 +139,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent projects"))
         self.recent = self.menufile.addMenu(
             QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent files"))
+
+        # SAVE category
+        self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
+
+        # Save Project
+        self.menufilesaveproject = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...\tCtrl+S'), self)
+        self.menufile_save.addAction(self.menufilesaveproject)
+
+        # Save Project As ...
+        self.menufilesaveprojectas = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project &As ...\tCtrl+Shift+S'), self)
+        self.menufile_save.addAction(self.menufilesaveprojectas)
+
+        # Save Project Copy ...
+        # self.menufilesaveprojectcopy = QtWidgets.QAction(
+        #     QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
+        # self.menufile_save.addAction(self.menufilesaveprojectcopy)
+
+        self.menufile_save.addSeparator()
 
         # Separator
         self.menufile.addSeparator()
@@ -264,25 +285,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_print = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCtrl+P' % _('Print (PDF)'))
         self.menufile.addAction(self.menufile_print)
-
-        self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
-
-        # Save Project
-        self.menufilesaveproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...'), self)
-        self.menufile_save.addAction(self.menufilesaveproject)
-
-        # Save Project As ...
-        self.menufilesaveprojectas = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save Project &As ...\tCtrl+S'), self)
-        self.menufile_save.addAction(self.menufilesaveprojectas)
-
-        # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
-        self.menufile_save.addAction(self.menufilesaveprojectcopy)
-
-        self.menufile_save.addSeparator()
 
         # Separator
         self.menufile.addSeparator()
@@ -541,7 +543,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text\tT'))
         self.geo_editor_menu.addSeparator()
         self.geo_union_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/union16.png'),_('Polygon Union\tU'))
+            QtGui.QIcon(self.app.resource_location + '/union16.png'), _('Polygon Union\tU'))
         self.geo_intersection_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/intersection16.png'), _('Polygon Intersection\tE'))
         self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
@@ -550,7 +552,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath16.png'), _('Cut Path\tX'))
-        # self.move_menuitem = self.menu.addAction(QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
+        # self.move_menuitem = self.menu.addAction(
+        #   QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
         self.geo_copy_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy16.png'), _("Copy Geom\tC"))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
@@ -1641,6 +1644,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Ctrl+Shift+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>F1</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1687,7 +1698,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # CTRL section
                 _("Select All"), _("Copy Obj"), _("Open Tools Database"),
                 _("Open Excellon File"), _("Open Gerber File"), _("Distance Tool"), _("New Project"),
-                _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
+                _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project"), _("Toggle Plot Area"),
 
                 # SHIFT section
                 _("Copy Obj_Name"),
@@ -1707,6 +1718,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # CTRL + ALT section
                 _("Abort current task (gracefully)"),
+
+                # CTRL + SHIFT section
+                _("Save Project As"),
 
                 # F keys section
                 _("Open Online Manual"),
@@ -2816,7 +2830,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
-
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_file_saveprojectas()
+                    return
             elif modifiers == QtCore.Qt.ControlModifier:
                 # Select All
                 if key == QtCore.Qt.Key_A:
@@ -2942,7 +2959,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_skewy()
                     return
             elif modifiers == QtCore.Qt.AltModifier:
-
                 # Eanble all plots
                 if key == Qt.Key_1:
                     self.app.enable_all_plots()
@@ -3161,7 +3177,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         else:
                             self.app.collection.set_active(names_list[active_index+1])
 
-
                 # New Geometry
                 if key == QtCore.Qt.Key_B:
                     self.app.new_gerber_object()
@@ -3350,7 +3365,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
-                    # TODO: ...?
                     # self.on_tool_select("select")
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
