@@ -7087,6 +7087,14 @@ class App(QtCore.QObject):
         # This will write the setting to the platform specific storage.
         del settgs
 
+        if save_to_file:
+            # close the tab and delete it
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                    self.ui.plot_tab_area.closeTab(idx)
+                    break
+
     def on_pref_close_button(self):
         # Preferences saved, update flag
         self.preferences_changed_flag = False
@@ -8149,6 +8157,7 @@ class App(QtCore.QObject):
         if isinstance(obj, FlatCAMGeometry):
             obj.on_tool_from_db_inserted(tool=tool_from_db)
 
+            # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                     wdg = self.ui.plot_tab_area.widget(idx)

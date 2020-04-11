@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 11.04.2020 
 
 - fixed issue #394 - the saveDialog in Linux did not added the selected extension
+- when the Save button is clicked in the Edit -> Preferences the Preferences tab is closed.
 
 10.04.2020 
 
