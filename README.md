@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.04.2020 
+
+- added the outname parameter for the geocutout Tcl command
+
 11.04.2020 
 
 - fixed issue #394 - the saveDialog in Linux did not added the selected extension

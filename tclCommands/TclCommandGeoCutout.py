@@ -35,7 +35,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
         ('dia', float),
         ('margin', float),
         ('gapsize', float),
-        ('gaps', str)
+        ('gaps', str),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -50,7 +51,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'size of gap.'),
             ('gaps', "type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right, '2tb' = 2top-2bottom, "
-                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts")
+                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
+            ('outname', 'Name of the resulting Geometry object.'),
         ]),
         'examples': ["      #isolate margin for example from Fritzing arduino shield or any svg etc\n" +
                      "      isolate BCu_margin -dia 3 -overlap 1\n" +
@@ -62,7 +64,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                      "      delete BCu_margin_iso\n" +
                      "\n" +
                      "      #finally cut holding gaps\n" +
-                     "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4\n"]
+                     "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4 -outname cutout_geo\n"]
     }
 
     flat_geometry = []
@@ -155,6 +157,11 @@ class TclCommandGeoCutout(TclCommandSignaled):
             gapsize = float(args['gapsize'])
         else:
             gapsize = 0.1
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = str(name) + "_cutout"
 
         # Get source object.
         try:
@@ -283,7 +290,6 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
                 app_obj.inform.emit("[success] Any-form Cutout operation finished.")
 
-            outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
             # cutout_obj.plot()
@@ -342,7 +348,6 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 geo_obj.options['ymax'] = cutout_obj.options['ymax']
                 app_obj.inform.emit("[success] Any-form Cutout operation finished.")
 
-            outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
             cutout_obj = self.app.collection.get_by_name(outname)
