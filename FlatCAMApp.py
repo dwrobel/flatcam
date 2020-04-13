@@ -1033,7 +1033,7 @@ class App(QtCore.QObject):
                                           'Marius, My Documents, Paste_1, '
                                           'Repetier, Roland_MDX_20, True, Users, Toolchange_Custom, '
                                           'Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
+                                          'Toolchange_manual, Users, all, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
                                           'extracut_length, f, '
@@ -2328,7 +2328,7 @@ class App(QtCore.QObject):
                                  'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
                                  'Toolchange_manual', 'True', 'Users',
-                                 'all', 'angle_x', 'angle_y', 'auto', 'axis',
+                                 'all', 'auto', 'axis',
                                  'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
                                  'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
