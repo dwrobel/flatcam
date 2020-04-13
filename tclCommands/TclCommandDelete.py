@@ -23,7 +23,7 @@ class TclCommandDelete(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('f', bool)
+        ('f', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -34,7 +34,9 @@ class TclCommandDelete(TclCommand):
         'main': 'Deletes the given object. If no name is given will delete all objects.',
         'args': collections.OrderedDict([
             ('name', 'Name of the Object.'),
-            ('f', 'Use this parameter to force deletion.')
+            ('f', 'Use this parameter to force deletion.\n'
+                  'Can be used without value which will be auto assumed to be True.\n'
+                  'Or it can have a value: True (1) or False (0).')
         ]),
         'examples': ['del new_geo -f True\n'
                      'delete new_geo -f 1\n'
@@ -63,7 +65,7 @@ class TclCommandDelete(TclCommand):
                 if args['f'] is None:
                     is_forced = True
                 else:
-                    is_forced = True if eval(str(args['f'])) else False
+                    is_forced = True if bool(eval(str(args['f']))) else False
             except KeyError:
                 is_forced = True
 

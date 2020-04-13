@@ -1,9 +1,9 @@
-from tclCommands.TclCommand import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 import collections
 
 
-class TclCommandPlotAll(TclCommand):
+class TclCommandPlotAll(TclCommandSignaled):
     """
     Tcl shell command to update the plot on the user interface.
 
@@ -23,7 +23,7 @@ class TclCommandPlotAll(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-
+        ('use_thread', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -33,7 +33,7 @@ class TclCommandPlotAll(TclCommand):
     help = {
         'main': "Plots all objects on GUI.",
         'args': collections.OrderedDict([
-
+            ('use_thread', 'If to use multithreading: True (1) or False (0).')
         ]),
         'examples': ['plot_all']
     }
@@ -45,5 +45,11 @@ class TclCommandPlotAll(TclCommand):
         :param unnamed_args:
         :return:
         """
+
+        if 'use_thread' in args:
+            threaded = bool(eval(args['use_thread']))
+        else:
+            threaded = False
+
         if self.app.cmd_line_headless != 1:
-            self.app.plot_all()
+            self.app.plot_all(use_thread=threaded)

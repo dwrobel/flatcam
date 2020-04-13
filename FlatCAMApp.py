@@ -11888,11 +11888,13 @@ class App(QtCore.QObject):
                         if silent is False:
                             self.log.debug("  " + param + " OK!")
 
-    def plot_all(self, zoom=True):
+    def plot_all(self, fit_view=True, use_thread=True):
         """
         Re-generates all plots from all objects.
 
-        :return: None
+        :param fit_view:    if True will plot the objects and will adjust the zoom to fit all plotted objects into view
+        :param use_thread:  if True will use threading for plotting the objects
+        :return:
         """
         self.log.debug("Plot_all()")
         self.inform.emit('[success] %s...' % _("Redrawing all objects"))
@@ -11901,11 +11903,14 @@ class App(QtCore.QObject):
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     obj.plot(kind=self.defaults["cncjob_plot_kind"])
-                    if zoom:
+                    if fit_view is True:
                         self.object_plotted.emit(obj)
 
-            # Send to worker
-            self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
+            if use_thread is True:
+                # Send to worker
+                self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
+            else:
+                worker_task(obj)
 
     def register_folder(self, filename):
         self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
