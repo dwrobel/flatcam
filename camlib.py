@@ -2742,9 +2742,12 @@ class CNCjob(Geometry):
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
 
-                    try:
-                        z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
-                    except KeyError:
+                    if self.use_ui:
+                        try:
+                            z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
+                        except KeyError:
+                            z_off = 0
+                    else:
                         z_off = 0
 
                     default_data = {}
@@ -2790,7 +2793,7 @@ class CNCjob(Geometry):
 
         # Initialization
         gcode = self.doformat(p.start_code)
-        if not use_ui:
+        if use_ui is False:
             gcode += self.doformat(p.z_feedrate_code)
 
         if self.toolchange is False:
@@ -2873,7 +2876,7 @@ class CNCjob(Geometry):
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        if use_ui:
+                        if self.use_ui:
                             self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
                             self.feedrate = exobj.tools[tool]['data']['feedrate']
                             gcode += self.doformat(p.z_feedrate_code)
@@ -2906,6 +2909,8 @@ class CNCjob(Geometry):
                             self.dwelltime = exobj.tools[tool]['data']['dwelltime']
                             self.multidepth = exobj.tools[tool]['data']['multidepth']
                             self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                        else:
+                            old_zcut = deepcopy(self.z_cut)
 
                         # ###############################################
                         # ############ Create the data. #################
@@ -3000,8 +3005,10 @@ class CNCjob(Geometry):
                                                str(self.units))
                             )
 
-                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
                                 z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
@@ -3099,7 +3106,7 @@ class CNCjob(Geometry):
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        if use_ui:
+                        if self.use_ui:
                             self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
                             self.feedrate = exobj.tools[tool]['data']['feedrate']
                             gcode += self.doformat(p.z_feedrate_code)
@@ -3132,6 +3139,8 @@ class CNCjob(Geometry):
                             self.dwelltime = exobj.tools[tool]['data']['dwelltime']
                             self.multidepth = exobj.tools[tool]['data']['multidepth']
                             self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                        else:
+                            old_zcut = deepcopy(self.z_cut)
 
                         # ###############################################
                         # ############ Create the data. #################
@@ -3215,8 +3224,10 @@ class CNCjob(Geometry):
                                                str(self.units))
                             )
 
-                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
                                 z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
@@ -3316,7 +3327,7 @@ class CNCjob(Geometry):
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
                     self.tooldia = exobj.tools[tool]["C"]
 
-                    if use_ui:
+                    if self.use_ui:
                         self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
                         self.feedrate = exobj.tools[tool]['data']['feedrate']
                         gcode += self.doformat(p.z_feedrate_code)
@@ -3349,6 +3360,8 @@ class CNCjob(Geometry):
                         self.dwelltime = exobj.tools[tool]['data']['dwelltime']
                         self.multidepth = exobj.tools[tool]['data']['multidepth']
                         self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                    else:
+                        old_zcut = deepcopy(self.z_cut)
 
                     # Only if tool has points.
                     if tool in points:
@@ -3375,8 +3388,10 @@ class CNCjob(Geometry):
                                            str(self.units))
                         )
 
-                        # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # APPLY Offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         try:
                             z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                         except KeyError:

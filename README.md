@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - minor update to the autocomplete dictionary
 - the Show Shell in Edit -> Preferences will now toggle the Tcl shell based on the current status of the Tcl Shell
 - updated the Tcl command Isolate help for follow parameter 
+- updated DrillCncJob Tcl Command with new parameters and fixed it to work in the new format of the Excellon methods
+- changed CncJob Tcl Command parameter 'depthperpass' to a shorter 'dpp'
 
 11.04.2020 
 

@@ -36,7 +36,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('feedrate_z', float),
         ('feedrate_rapid', float),
         ('extracut_length', float),
-        ('depthperpass', float),
+        ('dpp', float),
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('startz', float),
@@ -63,7 +63,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
             ('extracut_length', 'The value for extra cnccut over the first point in path,in the job end; float'),
-            ('depthperpass', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
+            ('dpp', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
@@ -141,12 +141,12 @@ class TclCommandCncjob(TclCommandSignaled):
         else:
             args["extracut"] = False
 
-        if "depthperpass" in args:
+        if "dpp" in args:
             args["multidepth"] = True
-            if args["depthperpass"] is None:
-                args["depthperpass"] = obj.options["depthperpass"]
+            if args["dpp"] is None:
+                args["dpp"] = obj.options["dpp"]
             else:
-                args["depthperpass"] = float(args["depthperpass"])
+                args["dpp"] = float(args["dpp"])
         else:
             args["multidepth"] = False
 
@@ -221,7 +221,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     else:
                         local_tools_dict[tool_uid]['data']['extracut_length'] = None
 
-                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["depthperpass"]
+                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["dpp"]
                     local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
                     local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]
                     local_tools_dict[tool_uid]['data']['toolchangexy'] = args["toolchangexy"]

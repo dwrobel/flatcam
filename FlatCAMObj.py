@@ -3725,8 +3725,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['type'] = 'Excellon'
             job_obj.options['ppname_e'] = pp_excellon_name
 
-            job_obj.z_cut = float(self.options["cutz"])
-
             job_obj.multidepth = self.options["multidepth"]
             job_obj.z_depthpercut = self.options["depthperpass"]
 

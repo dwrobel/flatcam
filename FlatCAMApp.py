@@ -1035,15 +1035,15 @@ class App(QtCore.QObject):
                                           'Toolchange_Probe_MACH3, '
                                           'Toolchange_manual, Users, all, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
-                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
-                                          'extracut_length, f, '
+                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dpp, dwelltime, '
+                                          'endxy, endz, extracut_length, f, feedrate, '
                                           'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
                                           'minoffset, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                           'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'toolchange_xy, toolchangez, '
-                                          'tooldia, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
+                                          'startz, startxy, toolchange_xy, toolchangez, '
+                                          'tooldia, travelz, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
                                           'z_move',
             "script_autocompleter": True,
             "script_text": "",
@@ -2331,15 +2331,16 @@ class App(QtCore.QObject):
                                  'all', 'auto', 'axis',
                                  'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
                                  'contour', 'default',
-                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
-                                 'dwelltime', 'extracut_length', 'f',
+                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
+                                 'dwelltime', 'extracut_length', 'endxy', 'enz', 'f', 'feedrate',
                                  'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
-                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'toolchangez',
+                                 'spacing_rows', 'spindlespeed', 'startz', 'startxy',
+                                 'toolchange_xy', 'toolchangez', 'travelz',
                                  'tooldia', 'use_threads', 'value',
                                  'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                  ]
