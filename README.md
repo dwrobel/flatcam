@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Tcl Shell, the 'help' command will add also a brief description for each command in the list
 - updated the App.plot_all() method giving it the possibility to be run as threaded or not
 - updated the Tcl command PlotAll to be able to run threaded or not
+- updated the Tcl commands PlotAll and PlotObjects to have a parameter that control if the objects are to be plotted or not on canvas; it serve as a disable/enable
 
 11.04.2020 
 

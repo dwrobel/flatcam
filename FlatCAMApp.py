@@ -1029,8 +1029,10 @@ class App(QtCore.QObject):
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
-            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
-                                          'Repetier, Roland_MDX_20, Users, Toolchange_Custom, Toolchange_Probe_MACH3, '
+            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, False, '
+                                          'Marius, My Documents, Paste_1, '
+                                          'Repetier, Roland_MDX_20, True, Users, Toolchange_Custom, '
+                                          'Toolchange_Probe_MACH3, '
                                           'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
@@ -2305,28 +2307,30 @@ class App(QtCore.QObject):
         # ######################### Auto-complete KEYWORDS ####################################
         # #####################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
-                                  'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
-                                  'del', 'delete', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon', 'ee',
+                                  'aligndrill', 'aligndrillgrid', 'bbox', 'clear', 'cncjob', 'cutout',
+                                  'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
                                   'export_exc',
-                                  'export_gcode', 'export_gerber', 'egr', 'export_svg', 'ext', 'exteriors', 'follow',
-                                  'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
-                                  'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
-                                  'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
+                                  'export_gcode', 'export_gerber', 'export_svg', 'ext', 'exteriors', 'follow',
+                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_sys', 'help', 'import_svg',
+                                  'interiors', 'isolate', 'join_excellon',
+                                  'join_geometry', 'list_sys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
-                                  'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
+                                  'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
-                                  'paint', 'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_flatcam',
                                   'save', 'save_project',
                                   'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
-                                  'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
-        self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
+        self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'False', 'Marius', 'My Documents',
+                                 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis',
-                                 'axisoffset',
-                                 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
+                                 'Toolchange_manual', 'True', 'Users',
+                                 'all', 'angle_x', 'angle_y', 'auto', 'axis',
+                                 'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
+                                 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
                                  'dwelltime', 'extracut_length', 'f',
                                  'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',

@@ -912,6 +912,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 raise
 
     def get_list(self):
+        """
+        Will return a list of all objects currently opened.
+
+        :return:
+        """
         obj_list = []
         for group in self.root_item.child_items:
             for item in group.child_items:
