@@ -5453,6 +5453,21 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.show()
 
+    def on_toggle_shell_from_settings(self, state):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.report_usage("on_toggle_shell_from_settings()")
+
+        if state is True:
+            if not self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.show()
+        else:
+            if self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.hide()
+
     def on_register_files(self, obj_type=None):
         """
         Called whenever there is a need to register file extensions with FlatCAM.

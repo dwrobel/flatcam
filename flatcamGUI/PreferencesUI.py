@@ -1736,7 +1736,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.splash_cb.stateChanged.connect(self.on_splash_changed)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.shell_startup_cb.clicked.connect(self.app.on_toggle_shell)
+        self.shell_startup_cb.clicked.connect(self.app.on_toggle_shell_from_settings)
 
         self.language_apply_btn.clicked.connect(lambda: fcTranslate.on_language_apply_click(app=self.app, restart=True))
 

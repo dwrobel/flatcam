@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - updated the Tcl command PlotAll to be able to run threaded or not
 - updated the Tcl commands PlotAll and PlotObjects to have a parameter that control if the objects are to be plotted or not on canvas; it serve as a disable/enable
 - minor update to the autocomplete dictionary
+- the Show Shell in Edit -> Preferences will now toggle the Tcl shell based on the current status of the Tcl Shell
+- updated the Tcl command Isolate help for follow parameter 
 
 11.04.2020 
 
