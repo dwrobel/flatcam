@@ -11,6 +11,8 @@ class TclCommandSaveProject(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['save_project']
 
+    description = '%s %s' % ("--", "Saves the FlatCAM project to file.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -30,7 +32,7 @@ class TclCommandSaveProject(TclCommandSignaled):
     help = {
         'main': "Saves the FlatCAM project to file.",
         'args': collections.OrderedDict([
-            ('filename', 'Absolute path to file to open. Required.\n'
+            ('filename', 'Absolute path to file to save. Required.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
         'examples': ['save_project D:\\my_project_file.FlatPrj',

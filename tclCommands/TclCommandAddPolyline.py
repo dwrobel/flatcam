@@ -11,6 +11,8 @@ class TclCommandAddPolyline(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['add_polyline']
 
+    description = '%s %s' % ("--", "Creates a polyline in the given Geometry object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)

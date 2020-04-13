@@ -11,6 +11,8 @@ class TclCommandNewGeometry(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['new_geometry']
 
+    description = '%s %s' % ("--", "Creates a new empty Geometry object.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([

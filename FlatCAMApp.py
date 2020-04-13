@@ -11927,9 +11927,22 @@ class App(QtCore.QObject):
 
         def shelp(p=None):
             if not p:
-                return _("Available commands:\n") + \
-                       '\n'.join(['  ' + cmd for cmd in sorted(commands)]) + \
-                       _("\n\nType help <command_name> for usage.\n Example: help open_gerber")
+                cmd_enum = _("Available commands:\n")
+
+                displayed_text = []
+                try:
+                    for cmd_name in sorted(commands):
+                        cmd_description = commands[cmd_name]['description']
+
+                        cmd_line_txt = ' %s\t\t%s' % (str(cmd_name), cmd_description)
+                        displayed_text.append(cmd_line_txt)
+                except Exception as err:
+                    log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))
+                    displayed_text = [' %s' % cmd for cmd in sorted(commands)]
+
+                cmd_enum += '\n'.join(displayed_text)
+                cmd_enum += '\n\n%s\n%s' % (_("Type help <command_name> for usage."), _("Example: help open_gerber"))
+                return cmd_enum
 
             if p not in commands:
                 return "Unknown command: %s" % p
@@ -12079,7 +12092,8 @@ class App(QtCore.QObject):
         commands = {
             'help': {
                 'fcn': shelp,
-                'help': _("Shows list of commands.")
+                'help': _("Shows list of commands."),
+                'description': ''
             },
         }
 

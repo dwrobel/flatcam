@@ -11,6 +11,8 @@ class TclCommandNew(TclCommand):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['new']
 
+    description = '%s %s' % ("--", "Starts a new project. Clears objects from memory.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict()
 

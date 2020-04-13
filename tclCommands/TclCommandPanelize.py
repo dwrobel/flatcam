@@ -19,7 +19,10 @@ class TclCommandPanelize(TclCommand):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['panelize','pan', 'panel']
+    aliases = ['panelize', 'pan', 'panel']
+
+    description = '%s %s' % ("--", "Create a new object with an array of duplicates of the original geometry, "
+                                   "arranged in a grid.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -34,7 +37,7 @@ class TclCommandPanelize(TclCommand):
         ('spacing_rows', float),
         ('box', str),
         ('outname', str),
-        ('run_threaded', bool)
+        ('run_threaded', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -42,7 +45,7 @@ class TclCommandPanelize(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Rectangular panelizing.',
+        'main': 'Create a new object with an array of duplicates of the original geometry, arranged in a grid.',
         'args': collections.OrderedDict([
             ('name', 'Name of the object to panelize.'),
             ('box', 'Name of object which acts as box (cutout for example.)'
@@ -52,7 +55,7 @@ class TclCommandPanelize(TclCommand):
             ('columns', 'Number of columns.'),
             ('rows', 'Number of rows;'),
             ('outname', 'Name of the new geometry object.'),
-            ('run_threaded', 'False = non-threaded || True = threaded')
+            ('run_threaded', 'False (0) = non-threaded execution or True (1) = threaded execution')
         ]),
         'examples': [
             'panelize obj_name',
@@ -77,7 +80,7 @@ class TclCommandPanelize(TclCommand):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except Exception as e:
+        except Exception:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -111,7 +114,7 @@ class TclCommandPanelize(TclCommand):
             outname = name + '_panelized'
 
         if 'run_threaded' in args:
-            threaded = bool(args['run_threaded'])
+            threaded = bool(eval(args['run_threaded']))
         else:
             threaded = False
 

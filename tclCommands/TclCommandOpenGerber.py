@@ -13,6 +13,8 @@ class TclCommandOpenGerber(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_gerber']
 
+    description = '%s %s' % ("--", "Opens an Gerber file, parse it and create a Gerber object from it.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('filename', str)

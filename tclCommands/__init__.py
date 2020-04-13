@@ -99,7 +99,12 @@ def register_all_commands(app, commands):
             command_instance = class_type(app)
 
             for alias in command_instance.aliases:
+                try:
+                    description = command_instance.description
+                except AttributeError:
+                    description = ''
                 commands[alias] = {
                     'fcn': command_instance.execute_wrapper,
-                    'help': command_instance.get_decorated_help()
+                    'help': command_instance.get_decorated_help(),
+                    'description': description
                 }

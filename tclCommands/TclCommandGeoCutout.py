@@ -24,6 +24,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
     # names for backward compatibility (add_poly, add_polygon)
     aliases = ['geocutout', 'geoc']
 
+    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) of any shape.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -44,7 +46,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Creates board cutout from an object (Gerber or Geometry) of any shape',
+        'main': 'Creates board cutout from an object (Gerber or Geometry) of any shape.',
         'args': collections.OrderedDict([
             ('name', 'Name of the object to be cutout. Required'),
             ('dia', 'Tool diameter.'),
@@ -141,22 +143,22 @@ class TclCommandGeoCutout(TclCommandSignaled):
         if 'margin' in args:
             margin = float(args['margin'])
         else:
-            margin = 0.001
+            margin = float(self.app.defaults["tools_cutoutmargin"])
 
         if 'dia' in args:
             dia = float(args['dia'])
         else:
-            dia = 0.1
+            dia = float(self.app.defaults["tools_cutouttooldia"])
 
         if 'gaps' in args:
             gaps = args['gaps']
         else:
-            gaps = 4
+            gaps = str(self.app.defaults["tools_gaps_ff"])
 
         if 'gapsize' in args:
             gapsize = float(args['gapsize'])
         else:
-            gapsize = 0.1
+            gapsize = float(self.app.defaults["tools_cutoutgapsize"])
 
         if 'outname' in args:
             outname = args['outname']

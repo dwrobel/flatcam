@@ -58,6 +58,8 @@ class TclCommand(object):
             raise TypeError('Expected FlatCAMApp, got %s.' % type(app))
 
         self.log = self.app.log
+        self.error_info = None
+        self.error = None
 
     def raise_tcl_error(self, text):
         """

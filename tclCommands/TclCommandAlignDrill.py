@@ -15,6 +15,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrill']
 
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([

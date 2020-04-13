@@ -22,6 +22,8 @@ class TclCommandPaint(TclCommand):
     # Array of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['paint']
 
+    description = '%s %s' % ("--", "Paint polygons in the specified object by covering them with toolpaths.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -34,12 +36,12 @@ class TclCommandPaint(TclCommand):
         ('order', str),
         ('margin', float),
         ('method', str),
-        ('connect', bool),
-        ('contour', bool),
+        ('connect', str),
+        ('contour', str),
 
-        ('all', bool),
-        ('single', bool),
-        ('ref', bool),
+        ('all', str),
+        ('single', str),
+        ('ref', str),
         ('box', str),
         ('x', float),
         ('y', float),
@@ -51,7 +53,7 @@ class TclCommandPaint(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Paint polygons",
+        'main': "Paint polygons in the specified object by covering them with toolpaths.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
@@ -65,11 +67,12 @@ class TclCommandPaint(TclCommand):
                       '"fwd" -> tools are ordered from smallest to biggest.'
                       '"rev" -> tools are ordered from biggest to smallest.'),
             ('method', 'Algorithm for painting. Can be: "standard", "seed" or "lines".'),
-            ('connect', 'Draw lines to minimize tool lifts. True or False'),
-            ('contour', 'Cut around the perimeter of the painting. True or False'),
-            ('all', 'Paint all polygons in the object. True or False'),
-            ('single', 'Paint a single polygon specified by "x" and "y" parameters. True or False'),
-            ('ref', 'Paint all polygons within a specified object with the name in "box" parameter. True or False'),
+            ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
+            ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
+            ('all', 'Paint all polygons in the object. True (1) or False (0)'),
+            ('single', 'Paint a single polygon specified by "x" and "y" parameters. True (1) or False (0)'),
+            ('ref', 'Paint all polygons within a specified object with the name in "box" parameter. '
+                    'True (1) or False (0)'),
             ('box', 'name of the object to be used as paint reference when selecting "ref"" True. String.'),
             ('x', 'X value of coordinate for the selection of a single polygon. Float number.'),
             ('y', 'Y value of coordinate for the selection of a single polygon. Float number.'),
@@ -124,12 +127,12 @@ class TclCommandPaint(TclCommand):
             method = str(self.app.defaults["tools_paintmethod"])
 
         if 'connect' in args:
-            connect = bool(args['connect'])
+            connect = bool(eval(args['connect']))
         else:
             connect = eval(str(self.app.defaults["tools_pathconnect"]))
 
         if 'contour' in args:
-            contour = bool(args['contour'])
+            contour = bool(eval(args['contour']))
         else:
             contour = eval(str(self.app.defaults["tools_paintcontour"]))
 
@@ -199,7 +202,7 @@ class TclCommandPaint(TclCommand):
             return "Object not found: %s" % name
 
         # Paint all polygons in the painted object
-        if 'all' in args and bool(args['all']) is True:
+        if 'all' in args and bool(eval(args['all'])) is True:
             self.app.paint_tool.paint_poly_all(obj=obj,
                                                tooldia=tooldia,
                                                overlap=overlap,
@@ -215,7 +218,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint single polygon in the painted object
-        elif 'single' in args and bool(args['single']) is True:
+        elif 'single' in args and bool(eval(args['single'])) is True:
             if 'x' not in args or 'y' not in args:
                 self.raise_tcl_error('%s' % _("Expected -x <value> and -y <value>."))
             else:
@@ -238,7 +241,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint all polygons found within the box object from the the painted object
-        elif 'ref' in args and bool(args['ref']) is True:
+        elif 'ref' in args and bool(eval(args['ref'])) is True:
             if 'box' not in args:
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
             else:

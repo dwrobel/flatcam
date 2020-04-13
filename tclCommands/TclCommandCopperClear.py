@@ -22,6 +22,8 @@ class TclCommandCopperClear(TclCommand):
     # Array of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['ncc_clear', 'ncc']
 
+    description = '%s %s' % ("--", "Clear excess copper.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -34,13 +36,13 @@ class TclCommandCopperClear(TclCommand):
         ('order', str),
         ('margin', float),
         ('method', str),
-        ('connect', bool),
-        ('contour', bool),
-        ('has_offset', bool),
+        ('connect', str),
+        ('contour', str),
+        ('has_offset', str),
         ('offset', float),
-        ('rest', bool),
+        ('rest', str),
         ('all', int),
-        ('ref', int),
+        ('ref', str),
         ('box', str),
         ('outname', str),
     ])
@@ -64,15 +66,15 @@ class TclCommandCopperClear(TclCommand):
                       '"fwd" -> tools are ordered from smallest to biggest.'
                       '"rev" -> tools are ordered from biggest to smallest.'),
             ('method', 'Algorithm for copper clearing. Can be: "standard", "seed" or "lines".'),
-            ('connect', 'Draw lines to minimize tool lifts. True or False'),
-            ('contour', 'Cut around the perimeter of the painting. True or False'),
-            ('rest', 'Use rest-machining. True or False'),
-            ('has_offset', 'The offset will used only if this is set True or present in args. True or False.'),
+            ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
+            ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
+            ('rest', 'Use rest-machining. True (1) or False (0)'),
+            ('has_offset', 'The offset will used only if this is set True or present in args. True (1) or False (0).'),
             ('offset', 'The copper clearing will finish to a distance from copper features. Float number.'),
             ('all', 'Will copper clear the whole object. 1 or True = enabled, anything else = disabled'),
             ('ref', 'Will clear of extra copper all polygons within a specified object with the name in "box" '
-                    'parameter. 1 or True = enabled, anything else = disabled'),
-            ('box', 'Name of the object to be used as reference. Required when selecting "ref" = 1. String.'),
+                    'parameter. 1 or True = enabled, 0 or False = disabled'),
+            ('box', 'Name of the object to be used as reference. Required when selecting "ref" = 1 or True. String.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
         'examples': ["ncc obj_name -tooldia 0.3,1 -overlap 10 -margin 1.0 -method 'lines' -all True"]
@@ -127,18 +129,18 @@ class TclCommandCopperClear(TclCommand):
             method = str(self.app.defaults["tools_nccmethod"])
 
         if 'connect' in args:
-            connect = bool(args['connect'])
+            connect = bool(eval(args['connect']))
         else:
-            connect = eval(str(self.app.defaults["tools_nccconnect"]))
+            connect = bool(eval(str(self.app.defaults["tools_nccconnect"])))
 
         if 'contour' in args:
-            contour = bool(args['contour'])
+            contour = bool(eval(args['contour']))
         else:
-            contour = eval(str(self.app.defaults["tools_ncccontour"]))
+            contour = bool(eval(str(self.app.defaults["tools_ncccontour"])))
 
         offset = 0.0
         if 'has_offset' in args:
-            has_offset = bool(args['has_offset'])
+            has_offset = bool(eval(args['has_offset']))
             if args['has_offset'] is True:
                 if 'offset' in args:
                     offset = float(args['margin'])
@@ -206,9 +208,9 @@ class TclCommandCopperClear(TclCommand):
             })
 
         if 'rest' in args:
-            rest = bool(args['rest'])
+            rest = bool(eval(args['rest']))
         else:
-            rest = eval(str(self.app.defaults["tools_nccrest"]))
+            rest = bool(eval(str(self.app.defaults["tools_nccrest"])))
 
         if 'outname' in args:
             outname = args['outname']
@@ -239,7 +241,7 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
-        elif 'ref' in args and bool(args['ref']):
+        elif 'ref' in args and bool(eval(args['ref'])):
             if 'box' not in args:
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
             else:

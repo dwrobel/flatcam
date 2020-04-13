@@ -15,6 +15,8 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrillgrid']
 
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment arranged in a grid.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -41,7 +43,6 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
     help = {
         'main': "Create an Excellon object with drills for alignment arranged in a grid.",
         'args': collections.OrderedDict([
-            ('outname', 'Name of the object to create.'),
             ('dia', 'Tool diameter.'),
             ('gridx', 'Grid size in X axis.'),
             ('gridoffsetx', 'Move grid  from origin.'),
@@ -49,6 +50,7 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             ('gridoffsety', 'Move grid  from origin.'),
             ('colums', 'Number of grid holes on X axis.'),
             ('rows', 'Number of grid holes on Y axis.'),
+            ('outname', 'Name of the object to create.')
         ]),
         'examples': ['aligndrillgrid -rows 2 -columns 2 -gridoffsetx 10 -gridoffsety 10 -gridx 2.54 -gridy 5.08']
     }

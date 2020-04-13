@@ -19,6 +19,8 @@ class TclCommandListSys(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['list_sys', 'listsys']
 
+    description = '%s %s' % ("--", "Outputs in Tcl Shell the list with the names of system variables.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('selection', str),

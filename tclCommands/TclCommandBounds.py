@@ -23,6 +23,8 @@ class TclCommandBounds(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['get_bounds', 'bounds']
 
+    description = '%s %s' % ("--", "Return in the console a list of bounds values for a list of objects.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('objects', str)
@@ -38,7 +40,7 @@ class TclCommandBounds(TclCommand):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Will return a list of bounds values, each set of bound values is "
-                "a list itself: [xmin, ymin, xmax, ymax].",
+                "a list itself: [xmin, ymin, xmax, ymax] corresponding to each of the provided objects.",
         'args': collections.OrderedDict([
             ('objects', 'A list of object names separated by comma without spaces.'),
         ]),

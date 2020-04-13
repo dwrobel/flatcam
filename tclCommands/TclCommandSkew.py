@@ -14,6 +14,8 @@ class TclCommandSkew(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['skew']
 
+    description = '%s %s' % ("--", "Will deform (skew) the geometry of a named object. Does not create a new object.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -30,7 +32,7 @@ class TclCommandSkew(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Shear/Skew an object by angles along x and y dimensions. The reference point is the left corner of "
+        'main': "Shear/Skew an object along x and y dimensions. The reference point is the left corner of "
                 "the bounding box of the object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber, Geometry or Excellon) to be deformed (skewed). Required.'),

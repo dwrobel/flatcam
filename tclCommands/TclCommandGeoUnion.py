@@ -15,6 +15,8 @@ class TclCommandGeoUnion(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['geo_union']
 
+    description = '%s %s' % ("--", "Run the Union (join) geometry operation on the elements of a Geometry object.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),

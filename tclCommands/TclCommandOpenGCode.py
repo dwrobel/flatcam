@@ -12,6 +12,8 @@ class TclCommandOpenGCode(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['open_gcode']
 
+    description = '%s %s' % ("--", "Opens an GCode file, parse it and create a GCode object from it.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -29,7 +31,7 @@ class TclCommandOpenGCode(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens a G-Code file.",
+        'main': "Opens an GCode file, parse it and create a GCode object from it.",
         'args': collections.OrderedDict([
             ('filename', 'Absolute path to file to open. Required.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),

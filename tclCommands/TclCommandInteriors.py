@@ -12,6 +12,9 @@ class TclCommandInteriors(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['interiors']
 
+    description = '%s %s' % ("--", "Create a new Geometry object with the 'interiors' geo "
+                                   "elements of the source object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -27,7 +30,8 @@ class TclCommandInteriors(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Return the interiors of polygons as a list of Shapely geometry elements.",
+        'main': "Create a new Geometry object with the 'interiors' geometric elements of "
+                "the specified source Geometry object.",
         'args':  collections.OrderedDict([
             ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')

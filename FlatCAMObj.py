@@ -7505,7 +7505,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
-        # we need this to be able get_gcode separatelly for shell command export_gcode
+        # we need this to be able get_gcode separately for shell command export_gcode
         return preamble + '\n' + self.gcode + "\n" + postamble
 
     def get_svg(self):

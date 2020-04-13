@@ -11,6 +11,9 @@ class TclCommandSubtractPoly(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['subtract_poly']
 
+    description = '%s %s' % ("--", "Subtract polygon from the given Geometry object. "
+                                   "The coordinates are provided in X Y pairs.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([

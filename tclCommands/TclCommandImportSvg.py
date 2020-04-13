@@ -12,6 +12,8 @@ class TclCommandImportSvg(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['import_svg']
 
+    description = '%s %s' % ("--", "Import a SVG file as a Geometry (or Gerber) Object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('filename', str)
@@ -28,10 +30,11 @@ class TclCommandImportSvg(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Import an SVG file as a Geometry Object..",
+        'main': "Import a SVG file as a Geometry (or Gerber) Object.",
         'args':  collections.OrderedDict([
-            ('filename', 'Absolute path to file to open. Required.'),
-            ('type', 'Import as gerber or geometry(default).'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
+            ('type', 'Import as a Gerber or Geometry (default) object. Values can be: "geometry" or "gerber"'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
         'examples': ['import_svg D:\\my_beautiful_svg_file.SVG']
@@ -63,12 +66,12 @@ class TclCommandImportSvg(TclCommandSignaled):
             outname = filename.split('/')[-1].split('\\')[-1]
 
         if 'type' in args:
-            obj_type = args['type']
+            obj_type = args['type'].lower()
         else:
             obj_type = 'geometry'
 
         if obj_type != "geometry" and obj_type != "gerber":
-            self.raise_tcl_error("Option type can be 'geopmetry' or 'gerber' only, got '%s'." % obj_type)
+            self.raise_tcl_error("Option type can be 'geometry' or 'gerber' only, got '%s'." % obj_type)
 
         with self.app.proc_container.new("Import SVG"):
 

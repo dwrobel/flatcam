@@ -13,6 +13,8 @@ class TclCommandMirror(TclCommandSignaled):
     # old names for backward compatibility (add_poly, add_polygon)
     aliases = ['mirror']
 
+    description = '%s %s' % ("--", "Will mirror the geometry of a named object. Does not create a new object.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -32,7 +34,7 @@ class TclCommandMirror(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Will mirror an named object.",
+        'main': "Will mirror the geometry of a named object. Does not create a new object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber, Geometry or Excellon) to be mirrored. Required.'),
             ('axis', 'Mirror axis parallel to the X or Y axis.'),

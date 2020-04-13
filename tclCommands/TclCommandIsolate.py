@@ -19,6 +19,8 @@ class TclCommandIsolate(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['isolate']
 
+    description = '%s %s' % ("--", "Creates isolation routing Geometry for the specified Gerber object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -29,7 +31,7 @@ class TclCommandIsolate(TclCommandSignaled):
         ('dia', float),
         ('passes', int),
         ('overlap', float),
-        ('combine', bool),
+        ('combine', str),
         ('outname', str),
         ('follow', str),
         ('iso_type', int)
@@ -41,14 +43,14 @@ class TclCommandIsolate(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates isolation routing geometry for the given Gerber.",
+        'main': "Creates isolation routing Geometry for the specified Gerber object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source object. Required.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
-            ('combine', 'Combine all passes into one geometry. Can be True or False, 1 or 0'),
+            ('combine', 'Combine all passes into one geometry. Can be True (1) or False (0)'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('follow', 'Create a Geometry that follows the Gerber path.'),
             ('iso_type', 'A value of 0 will isolate exteriors, a value of 1 will isolate interiors '
@@ -82,7 +84,9 @@ class TclCommandIsolate(TclCommandSignaled):
 
         # evaluate this parameter so True, False, 0 and 1 works
         if "combine" in args:
-            args['combine'] = eval(args['combine'])
+            args['combine'] = bool(eval(args['combine']))
+        else:
+            args['combine'] = bool(eval(self.app.defaults["gerber_combine_passes"]))
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

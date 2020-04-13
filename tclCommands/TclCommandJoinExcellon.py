@@ -15,6 +15,9 @@ class TclCommandJoinExcellon(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['join_excellon', 'join_excellons']
 
+    description = '%s %s' % ("--", "Merge two or more Excellon objects drills and create "
+                                   "a new Excellon object with them.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('outname', str),
@@ -61,7 +64,7 @@ class TclCommandJoinExcellon(TclCommand):
         def initialize(obj_, app):
             FlatCAMExcellon.merge(self, objs, obj_)
 
-        if objs:
+        if objs and len(objs) >= 2:
             self.app.new_object("excellon", outname, initialize, plot=False)
         else:
-            return "No Excellon objects to be joined."
+            return "No Excellon objects to be joined or less than two Excellon objects specified for merging."

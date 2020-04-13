@@ -14,9 +14,11 @@ class TclCommandExportDXF(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['export_dxf', 'edxf']
 
+    description = '%s %s' % ("--", "Export a Geometry object as a DXF File.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
-        ('obj_name', str),
+        ('name', str),
         ('filename', str)
     ])
 
@@ -29,12 +31,13 @@ class TclCommandExportDXF(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Export a Geometry Object as a DXF File.",
+        'main': "Export a Geometry object as a DXF File.",
         'args': collections.OrderedDict([
-            ('obj_name', 'Name of the object to export.'),
-            ('filename', 'Path to the file to export.')
+            ('name', 'Name of the Geometry object to export.'),
+            ('filename', 'Absolute path to file to export.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
-        'examples': ['export_dxf my_geo path/my_file.dxf']
+        'examples': ['export_dxf my_geo path/my_file.dxf', 'export_dxf my_geo D:/my_file.dxf']
     }
 
     def execute(self, args, unnamed_args):
@@ -44,6 +47,6 @@ class TclCommandExportDXF(TclCommand):
         :param unnamed_args:
         :return:
         """
-        if  'filename' not in args:
-            args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['obj_name']
-        self.app.export_dxf(use_thread=False,**args)
+        if 'filename' not in args:
+            args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['name']
+        self.app.export_dxf(use_thread=False, **args)

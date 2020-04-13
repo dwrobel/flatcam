@@ -23,6 +23,8 @@ class TclCommandMillSlots(TclCommandSignaled):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['millslots', 'mills']
 
+    description = '%s %s' % ("--", "Create a Geometry Object for milling slot holes from Excellon.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -34,7 +36,7 @@ class TclCommandMillSlots(TclCommandSignaled):
         ('milled_dias', str),
         ('outname', str),
         ('tooldia', float),
-        ('use_thread', bool),
+        ('use_thread', str),
         ('diatol', float)
     ])
 
@@ -43,7 +45,7 @@ class TclCommandMillSlots(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create Geometry Object for milling slot holes from Excellon.",
+        'main': "Create a Geometry Object for milling slot holes from Excellon.",
         'args': collections.OrderedDict([
             ('name', 'Name of the Excellon Object. Required.'),
             ('milled_dias', 'Comma separated tool diameters of the slots to be milled (example: 0.6, 1.0 or 3.125).\n'
@@ -52,7 +54,7 @@ class TclCommandMillSlots(TclCommandSignaled):
                             'As a precaution you can enclose them with quotes.'),
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
             ('outname', 'Name of object to be created holding the milled geometries.'),
-            ('use_thread', 'If to use multithreading: True or False.'),
+            ('use_thread', 'If to use multithreading: True (1) or False (0).'),
             ('diatol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in milled_dias will be judged to be '
                        'the same as the ones in the tools from the Excellon object. E.g: if in milled_dias we have a '
                        'diameter with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance '
@@ -84,12 +86,14 @@ class TclCommandMillSlots(TclCommandSignaled):
             args['outname'] = name + "_mill_slots"
 
         if 'use_thread' in args:
-            args['use_thread'] = bool(args['use_thread'])
+            args['use_thread'] = bool(eval(args['use_thread']))
+        else:
+            args['use_thread'] = False
 
         if not obj.slots:
             self.raise_tcl_error("The Excellon object has no slots: %s" % name)
 
-        units = self.app.defaults['units'].upper()
+        # units = self.app.defaults['units'].upper()
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
                 diameters = [x.strip() for x in args['milled_dias'].split(",")]

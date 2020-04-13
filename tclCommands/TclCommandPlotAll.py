@@ -14,6 +14,8 @@ class TclCommandPlotAll(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['plot_all']
 
+    description = '%s %s' % ("--", "Plots all objects on GUI.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
 
@@ -29,7 +31,7 @@ class TclCommandPlotAll(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Updates the plot on the user interface.",
+        'main': "Plots all objects on GUI.",
         'args': collections.OrderedDict([
 
         ]),

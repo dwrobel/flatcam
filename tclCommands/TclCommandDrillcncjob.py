@@ -13,6 +13,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['drillcncjob']
 
+    description = '%s %s' % ("--", "Generates a Drill CNC Job object from a Excellon Object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -31,10 +33,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('endz', float),
         ('dwelltime', float),
         ('pp', str),
-        ('outname', str),
         ('opt_type', str),
         ('diatol', float),
-        ('muted', int)
+        ('muted', str),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -60,7 +62,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
-            ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
                          'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
                          'T works only for 32bit version of FlatCAM'),
@@ -69,7 +70,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                        'diameter with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance '
                        'diatol = 5.0 then the drills with the dia = (0.95 ... 1.05) '
                        'in Excellon will be processed. Float number.'),
-            ('muted', 'It will not put errors in the Shell or status bar.')
+            ('muted', 'It will not put errors in the Shell or status bar. Can be True (1) or False (0).'),
+            ('outname', 'Name of the resulting Geometry object.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
                      ' -toolchangez 33 -endz 22 -pp default\n'
@@ -94,7 +96,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             args['outname'] = name + "_cnc"
 
         if 'muted' in args:
-            muted = bool(args['muted'])
+            muted = bool(eval(args['muted']))
         else:
             muted = False
 
@@ -105,7 +107,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 return "fail"
 
         if not isinstance(obj, FlatCAMExcellon):
-            if muted == 0:
+            if muted is False:
                 self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
             else:
                 return "fail"
@@ -143,7 +145,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                     nr_diameters -= 1
 
                     if nr_diameters > 0:
-                        if muted == 0:
+                        if muted is False:
                             self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
                                                  "TclCommand are not actual tool diameters in the Excellon object.")
                         else:
@@ -164,7 +166,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             except Exception as e:
                 tools = 'all'
 
-                if muted == 0:
+                if muted is False:
                     self.raise_tcl_error("Bad tools: %s" % str(e))
                 else:
                     return "fail"

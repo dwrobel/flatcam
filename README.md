@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 13.04.2020 
 
 - added the outname parameter for the geocutout Tcl command
+- multiple fixes in the Tcl commands (especially regarding the interchange between True/false and 1/0 values)
+- updated the help for all Tcl Commands
+- in Tcl Shell, the 'help' command will add also a brief description for each command in the list
 
 11.04.2020 
 

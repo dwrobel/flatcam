@@ -12,6 +12,9 @@ class TclCommandExteriors(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['exteriors', 'ext']
 
+    description = '%s %s' % ("--", "Get exteriors of polygons from a Geometry object and "
+                                   "from them create a new Geometry object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -27,7 +30,7 @@ class TclCommandExteriors(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Get exteriors of polygons.",
+        'main': "Get exteriors of polygons from a Geometry object and from them create a new Geometry object.",
         'args':  collections.OrderedDict([
             ('name', 'Name of the source Geometry object. Required.'),
             ('outname', 'Name of the resulting Geometry object.')

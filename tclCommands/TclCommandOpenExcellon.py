@@ -11,6 +11,8 @@ class TclCommandOpenExcellon(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_excellon']
 
+    description = '%s %s' % ("--", "Opens an Excellon file, parse it and create a Excellon object from it.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -28,7 +30,7 @@ class TclCommandOpenExcellon(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens an Excellon file.",
+        'main': "Opens an Excellon file, parse it and create a Excellon object from it.",
         'args': collections.OrderedDict([
             ('filename', 'Absolute path to file to open. Required.\n'
                          'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),

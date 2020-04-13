@@ -15,6 +15,8 @@ class TclCommandJoinGeometry(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['join_geometries', 'join_geometry']
 
+    description = '%s %s' % ("--", "Merge two or more Geometry objects and create a new Geometry object.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('outname', str),
@@ -62,7 +64,7 @@ class TclCommandJoinGeometry(TclCommand):
         def initialize(obj_, app):
             FlatCAMGeometry.merge(self, objs, obj_)
 
-        if objs:
+        if objs and len(objs) >= 2:
             self.app.new_object("geometry", outname, initialize, plot=False)
         else:
-            return "No Geometry objects to be joined."
+            return "No Geometry objects to be joined or less than two Geometry objects specified for merging."
