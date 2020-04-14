@@ -545,23 +545,24 @@ class App(QtCore.QObject):
 
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
-            "gerber_save_filters": "Gerber File (*.gbr);;Gerber File (*.bot);;Gerber File (*.bsm);;"
-                                   "Gerber File (*.cmp);;Gerber File (*.crc);;Gerber File (*.crs);;"
-                                   "Gerber File (*.gb0);;Gerber File (*.gb1);;Gerber File (*.gb2);;"
-                                   "Gerber File (*.gb3);;Gerber File (*.gb4);;Gerber File (*.gb5);;"
-                                   "Gerber File (*.gb6);;Gerber File (*.gb7);;Gerber File (*.gb8);;"
-                                   "Gerber File (*.gb9);;Gerber File (*.gbd);;Gerber File (*.gbl);;"
-                                   "Gerber File (*.gbo);;Gerber File (*.gbp);;Gerber File (*.gbs);;"
-                                   "Gerber File (*.gdo);;Gerber File (*.ger);;Gerber File (*.gko);;"
-                                   "Gerber File (*.gm1);;Gerber File (*.gm2);;Gerber File (*.gm3);;"
-                                   "Gerber File (*.grb);;Gerber File (*.gtl);;Gerber File (*.gto);;"
-                                   "Gerber File (*.gtp);;Gerber File (*.gts);;Gerber File (*.ly15);;"
-                                   "Gerber File (*.ly2);;Gerber File (*.mil);;Gerber File (*.pho);;"
-                                   "Gerber File (*.plc);;Gerber File (*.pls);;Gerber File (*.smb);;"
-                                   "Gerber File (*.smt);;Gerber File (*.sol);;Gerber File (*.spb);;"
-                                   "Gerber File (*.spt);;Gerber File (*.ssb);;Gerber File (*.sst);;"
-                                   "Gerber File (*.stc);;Gerber File (*.sts);;Gerber File (*.top);;"
-                                   "Gerber File (*.tsm);;Gerber File (*.art)"
+            "gerber_save_filters": "Gerber File .gbr (*.gbr);;Gerber File .bot (*.bot);;Gerber File .bsm (*.bsm);;"
+                                   "Gerber File .cmp (*.cmp);;Gerber File .crc (*.crc);;Gerber File .crs (*.crs);;"
+                                   "Gerber File .gb0 (*.gb0);;Gerber File .gb1 (*.gb1);;Gerber File .gb2 (*.gb2);;"
+                                   "Gerber File .gb3 (*.gb3);;Gerber File .gb4 (*.gb4);;Gerber File .gb5 (*.gb5);;"
+                                   "Gerber File .gb6 (*.gb6);;Gerber File .gb7 (*.gb7);;Gerber File .gb8 (*.gb8);;"
+                                   "Gerber File .gb9 (*.gb9);;Gerber File .gbd (*.gbd);;Gerber File .gbl (*.gbl);;"
+                                   "Gerber File .gbo (*.gbo);;Gerber File .gbp (*.gbp);;Gerber File .gbs (*.gbs);;"
+                                   "Gerber File .gdo (*.gdo);;Gerber File .ger (*.ger);;Gerber File .gko (*.gko);;"
+                                   "Gerber File .gm1 (*.gm1);;Gerber File .gm2 (*.gm2);;Gerber File .gm3 (*.gm3);;"
+                                   "Gerber File .grb (*.grb);;Gerber File .gtl (*.gtl);;Gerber File .gto (*.gto);;"
+                                   "Gerber File .gtp (*.gtp);;Gerber File .gts (*.gts);;Gerber File .ly15 (*.ly15);;"
+                                   "Gerber File .ly2 (*.ly2);;Gerber File .mil (*.mil);;"
+                                   "Gerber File .outline (*.outline);;Gerber File .pho (*.pho);;"
+                                   "Gerber File .plc (*.plc);;Gerber File .pls (*.pls);;Gerber File .smb (*.smb);;"
+                                   "Gerber File .smt (*.smt);;Gerber File .sol (*.sol);;Gerber File .spb (*.spb);;"
+                                   "Gerber File .spt (*.spt);;Gerber File .ssb (*.ssb);;Gerber File .sst (*.sst);;"
+                                   "Gerber File .stc (*.stc);;Gerber File .sts (*.sts);;Gerber File .top (*.top);;"
+                                   "Gerber File .tsm (*.tsm);;Gerber File .art (*.art)"
                                    "All Files (*.*)",
 
             # Gerber Options
@@ -627,9 +628,11 @@ class App(QtCore.QObject):
             "excellon_optimization_type": 'B',
 
             "excellon_search_time": 3,
-            "excellon_save_filters": "Excellon File (*.txt);;Excellon File (*.drd);;Excellon File (*.drl);;"
-                                     "Excellon File (*.exc);;Excellon File (*.ncd);;Excellon File (*.tap);;"
-                                     "Excellon File (*.xln);;All Files (*.*)",
+            "excellon_save_filters": "Excellon File .txt (*.txt);;Excellon File .drd (*.drd);;"
+                                     "Excellon File .drill (*.drill);;"
+                                     "Excellon File .drl (*.drl);;Excellon File .exc (*.exc);;"
+                                     "Excellon File .ncd (*.ncd);;Excellon File .tap (*.tap);;"
+                                     "Excellon File .xln (*.xln);;All Files (*.*)",
             "excellon_plot_fill": '#C40000BF',
             "excellon_plot_line": '#750000BF',
 
@@ -749,15 +752,15 @@ class App(QtCore.QObject):
             "cncjob_steps_per_circle": 64,
             "cncjob_footer": False,
             "cncjob_line_ending": False,
-            "cncjob_save_filters": "G-Code Files (*.nc);;G-Code Files (*.din);;G-Code Files (*.dnc);;"
-                                   "G-Code Files (*.ecs);;G-Code Files (*.eia);;G-Code Files (*.fan);;"
-                                   "G-Code Files (*.fgc);;G-Code Files (*.fnc);;G-Code Files (*.gc);;"
-                                   "G-Code Files (*.gcd);;G-Code Files (*.gcode);;G-Code Files (*.h);;"
-                                   "G-Code Files (*.hnc);;G-Code Files (*.i);;G-Code Files (*.min);;"
-                                   "G-Code Files (*.mpf);;G-Code Files (*.mpr);;G-Code Files (*.cnc);;"
-                                   "G-Code Files (*.ncc);;G-Code Files (*.ncg);;G-Code Files (*.ncp);;"
-                                   "G-Code Files (*.ngc);;G-Code Files (*.out);;G-Code Files (*.ply);;"
-                                   "G-Code Files (*.sbp);;G-Code Files (*.tap);;G-Code Files (*.xpi);;"
+            "cncjob_save_filters": "G-Code Files .nc (*.nc);;G-Code Files .din (*.din);;G-Code Files .dnc (*.dnc);;"
+                                   "G-Code Files .ecs (*.ecs);;G-Code Files .eia (*.eia);;G-Code Files .fan (*.fan);;"
+                                   "G-Code Files .fgc (*.fgc);;G-Code Files .fnc (*.fnc);;G-Code Files . gc (*.gc);;"
+                                   "G-Code Files .gcd (*.gcd);;G-Code Files .gcode (*.gcode);;G-Code Files .h (*.h);;"
+                                   "G-Code Files .hnc (*.hnc);;G-Code Files .i (*.i);;G-Code Files .min (*.min);;"
+                                   "G-Code Files .mpf (*.mpf);;G-Code Files .mpr (*.mpr);;G-Code Files .cnc (*.cnc);;"
+                                   "G-Code Files .ncc (*.ncc);;G-Code Files .ncg (*.ncg);;G-Code Files .ncp (*.ncp);;"
+                                   "G-Code Files .ngc (*.ngc);;G-Code Files .out (*.out);;G-Code Files .ply (*.ply);;"
+                                   "G-Code Files .sbp (*.sbp);;G-Code Files .tap (*.tap);;G-Code Files .xpi (*.xpi);;"
                                    "All Files (*.*)",
             "cncjob_plot_line": '#4650BDFF',
             "cncjob_plot_fill": '#5E6CFFFF',
@@ -1022,12 +1025,12 @@ class App(QtCore.QObject):
 
             # Utilities
             # file associations
-            "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
+            "fa_excellon": 'drd, drill, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
                         'ncg, ncp, ngc, out, ply, rol, sbp, tap, xpi',
             "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, gb0, gb1, gb2, gb3, gb4, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
-                         'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
+                         'mil, outline, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, False, '
                                           'Marius, My Documents, Paste_1, '
@@ -2726,10 +2729,11 @@ class App(QtCore.QObject):
 
         self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
                          'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
-                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'pho',
-                         'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top', 'tsm']
+                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'outline',
+                         'pho', 'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top',
+                         'tsm']
 
-        self.exc_list = ['drd', 'drl', 'exc', 'ncd', 'tap', 'txt', 'xln']
+        self.exc_list = ['drd', 'drl', 'drill', 'exc', 'ncd', 'tap', 'txt', 'xln']
 
         self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
                            'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'ply', 'rol',
@@ -10082,8 +10086,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -10100,8 +10103,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export Excellon cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Export Excellon cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -10147,8 +10149,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Export Gerber cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -10170,8 +10171,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -10182,8 +10182,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGeometry):
-            msg = '[ERROR_NOTCL] %s' % \
-                  _("Only Geometry objects can be used.")
+            msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -10194,21 +10193,19 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        _filter_ = "DXF File (*.DXF);;All Files (*.*)"
+        _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"),
-                                                                 filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), filter=_filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Export DXF cancelled."))
             return
         else:
             self.export_dxf(name, filename)
@@ -10226,7 +10223,7 @@ class App(QtCore.QObject):
         self.report_usage("on_file_importsvg")
         App.log.debug("on_file_importsvg()")
 
-        _filter_ = "SVG File (*.svg);;All Files (*.*)"
+        _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"),
                                                                    directory=self.get_last_folder(), filter=_filter_)
@@ -10240,8 +10237,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open SVG cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Open SVG cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10258,7 +10254,7 @@ class App(QtCore.QObject):
         self.report_usage("on_file_importdxf")
         App.log.debug("on_file_importdxf()")
 
-        _filter_ = "DXF File (*.DXF);;All Files (*.*)"
+        _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                                    directory=self.get_last_folder(),
@@ -10273,8 +10269,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Open DXF cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10332,11 +10327,11 @@ class App(QtCore.QObject):
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "Gerber Files .gbr (*.GBR);;PDF Files .pdf (*.PDF);;All Files (*.*)"
         elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "Excellon Files .drl (*.DRL);;PDF Files .pdf (*.PDF);;All Files (*.*)"
         elif obj.kind == 'cncjob':
-            flt = "GCode Files (*.NC);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "GCode Files .nc (*.NC);;PDF Files .pdf (*.PDF);;All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
@@ -10497,7 +10492,8 @@ class App(QtCore.QObject):
         self.report_usage("on_fileopenscript")
         App.log.debug("on_fileopenscript()")
 
-        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+        _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
+                   "All Files (*.*)"
 
         if name:
             filenames = [name]
@@ -10539,7 +10535,8 @@ class App(QtCore.QObject):
                                         alignment=Qt.AlignBottom | Qt.AlignLeft,
                                         color=QtGui.QColor("gray"))
         else:
-            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+            _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
+                       "All Files (*.*)"
             try:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
                                                                      directory=self.get_last_folder(), filter=_filter_)
@@ -10616,7 +10613,7 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
+        filter_ = "FlatCAM Project .FlatPrj (*.FlatPrj);; All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Project As ..."),
@@ -10670,7 +10667,7 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
             return
 
-        filter_ = "PDF File (*.PDF);; All Files (*.*)"
+        filter_ = "PDF File .pdf (*.PDF);; All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Object as PDF ..."),
@@ -11542,10 +11539,11 @@ class App(QtCore.QObject):
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the name to be that of the file.
-        :param filename: G-code file filename
-        :type filename: str
-        :return: None
+        :param filename:        G-code file filename
+        :param outname:         Name of the resulting object. None causes the name to be that of the file.
+        :param force_parsing:
+        :param plot:
+        :return:                None
         """
         App.log.debug("open_gcode()")
 
@@ -11605,11 +11603,9 @@ class App(QtCore.QObject):
         Opens a HPGL2 file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
-        :param filename: HPGL2 file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    HPGL2 file filename
+        :return:            None
         """
         filename = filename
 
@@ -11672,10 +11668,9 @@ class App(QtCore.QObject):
         Opens a Script file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the name to be that of the file.
-        :param filename: Script file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    Script file filename
+        :return:            None
         """
         App.log.debug("open_script()")
 
@@ -11709,9 +11704,9 @@ class App(QtCore.QObject):
         """
         Loads a config file from the specified file.
 
-        :param filename:  Name of the file from which to load.
-        :type filename: str
-        :return: None
+        :param filename:        Name of the file from which to load.
+        :param run_from_arg:    if True the FlatConfig file will be open as an command line argument
+        :return:                None
         """
         App.log.debug("Opening config file: " + filename)
 
@@ -11760,12 +11755,11 @@ class App(QtCore.QObject):
         5) Calls new_object() with the object's from_dict() as init method.
         6) Calls plot_all() if plot=True
 
-        :param filename:  Name of the file from which to load.
-        :type filename: str
-        :param run_from_arg: True if run for arguments
-        :param plot: If True plot all objects in the project
-        :param cli: run from command line
-        :return: None
+        :param filename:        Name of the file from which to load.
+        :param run_from_arg:    True if run for arguments
+        :param plot:            If True plot all objects in the project
+        :param cli:             Run from command line
+        :return:                None
         """
         App.log.debug("Opening project: " + filename)
 
@@ -11870,7 +11864,8 @@ class App(QtCore.QObject):
         an alternative to project options but allows the use
         of values invisible to the user.
 
-        :return: None
+        :param silent:  No messages
+        :return:        None
         """
 
         if silent is False:
@@ -11914,7 +11909,7 @@ class App(QtCore.QObject):
 
         :param fit_view:    if True will plot the objects and will adjust the zoom to fit all plotted objects into view
         :param use_thread:  if True will use threading for plotting the objects
-        :return:
+        :return:            None
         """
         self.log.debug("Plot_all()")
         self.inform.emit('[success] %s...' % _("Redrawing all objects"))
@@ -11933,12 +11928,31 @@ class App(QtCore.QObject):
                 worker_task(obj)
 
     def register_folder(self, filename):
+        """
+        Register the last folder used by the app to open something
+
+        :param filename:    the last folder is extracted from the filename
+        :return:            None
+        """
         self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
+        """
+        Register the last folder used by the app to save something
+
+        :param filename:    the last folder is extracted from the filename
+        :return:            None
+        """
         self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
 
     def set_progress_bar(self, percentage, text=""):
+        """
+        Set a progress bar to a value (percentage)
+
+        :param percentage:  Value set to the progressbar
+        :param text:        Not used
+        :return:            None
+        """
         self.ui.progress_bar.setValue(int(percentage))
 
     def setup_shell(self):
@@ -12143,7 +12157,11 @@ class App(QtCore.QObject):
             ''')
 
     def setup_recent_items(self):
+        """
+        Setup a dictionary with the recent files accessed, organized by type
 
+        :return:
+        """
         # TODO: Move this to constructor
         icons = {
             "gerber": self.resource_location + "/flatcam_icon16.png",
@@ -12309,6 +12327,11 @@ class App(QtCore.QObject):
         self.log.debug("Recent items list has been populated.")
 
     def setup_component_editor(self):
+        """
+        Default text for the Selected tab when is not taken by the Object UI.
+
+        :return:
+        """
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
@@ -12423,7 +12446,8 @@ class App(QtCore.QObject):
 
     def setup_obj_classes(self):
         """
-        Sets up application specifics on the FlatCAMObj class.
+        Sets up application specifics on the FlatCAMObj class. This way the object.app attribute will point to the App
+        class.
 
         :return: None
         """
@@ -12504,10 +12528,10 @@ class App(QtCore.QObject):
 
     def on_plotcanvas_setup(self, container=None):
         """
-        This is doing the setup for the plot area (canvas)
+        This is doing the setup for the plot area (canvas).
 
-        :param container: widget where to install the canvas
-        :return: None
+        :param container:   QT Widget where to install the canvas
+        :return:            None
         """
         if container:
             plot_container = container
@@ -12571,8 +12595,8 @@ class App(QtCore.QObject):
         toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
         with axes limits from the geometry bounds of all objects.
 
-        :param event: Ignored.
-        :return: None
+        :param event:   Ignored.
+        :return:        None
         """
         if self.is_legacy is False:
             self.plotcanvas.fit_view()
@@ -12723,8 +12747,9 @@ class App(QtCore.QObject):
     def toggle_plots(self, objects):
         """
         Toggle plots visibility
-        :param objects: list of Objects for which to be toggled the visibility
-        :return:
+
+        :param objects:     list of Objects for which to be toggled the visibility
+        :return:            None
         """
 
         # if no objects selected then do nothing
@@ -12741,6 +12766,11 @@ class App(QtCore.QObject):
         self.plots_updated.emit()
 
     def clear_plots(self):
+        """
+        Clear the plots
+
+        :return:            None
+        """
 
         objects = self.collection.get_list()
 

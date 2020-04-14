@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 14.04.2020 
 
 - lightened the hue of the color for 'success' messages printed in the Tcl Shell browser
+- modified the extensions all over such the names include also the extension name. For Linux who does not display the extensions in the native FileDialog.
+- added descriptions for some of the methods in the app.
+- added lightened icons for the dark theme from Leandro Heck 
 
 13.04.2020 
 
