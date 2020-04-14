@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.04.2020 
+
+- lightened the hue of the color for 'success' messages printed in the Tcl Shell browser
+
 13.04.2020 
 
 - added the outname parameter for the geocutout Tcl command
@@ -22,6 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - the Show Shell in Edit -> Preferences will now toggle the Tcl shell based on the current status of the Tcl Shell
 - updated the Tcl command Isolate help for follow parameter 
 - updated DrillCncJob Tcl Command with new parameters and fixed it to work in the new format of the Excellon methods
+- fixed issue #399
 - changed CncJob Tcl Command parameter 'depthperpass' to a shorter 'dpp'
 
 11.04.2020 

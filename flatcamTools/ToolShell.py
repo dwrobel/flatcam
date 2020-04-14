@@ -102,7 +102,7 @@ class TermWidget(QWidget):
         elif style == 'warning':
             text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
         elif style == 'success':
-            text = '<span style="font-weight: bold; color: #084400;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
         elif style == 'selected':
             text = ''
         else:
