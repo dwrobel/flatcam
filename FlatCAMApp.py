@@ -11976,6 +11976,7 @@ class App(QtCore.QObject):
                         curr_len = len(cmd_name)
                         if curr_len > max_len:
                             max_len = curr_len
+                    max_tabs = math.ceil(max_len / 8)
 
                     for cmd_name in sorted(commands):
                         cmd_description = commands[cmd_name]['description']
@@ -11988,7 +11989,6 @@ class App(QtCore.QObject):
                         if curr_len == max_len:
                             cmd_line_txt = ' %s%s%s' % (str(cmd_name), tabs, cmd_description)
                         else:
-                            max_tabs = math.ceil(max_len/8)
                             nr_tabs = 0
 
                             for x in range(max_tabs):
