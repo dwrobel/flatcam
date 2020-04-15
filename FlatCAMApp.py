@@ -11970,10 +11970,34 @@ class App(QtCore.QObject):
 
                 displayed_text = []
                 try:
+                    # find the maximum length of a command name
+                    max_len = 0
+                    for cmd_name in commands:
+                        curr_len = len(cmd_name)
+                        if curr_len > max_len:
+                            max_len = curr_len
+
                     for cmd_name in sorted(commands):
                         cmd_description = commands[cmd_name]['description']
 
-                        cmd_line_txt = ' %s\t\t%s' % (str(cmd_name), cmd_description)
+                        curr_len = len(cmd_name)
+                        tabs = '\t'
+
+                        # make sure to add the right number of tabs (1 tab = 8 spaces) so all the commands
+                        # descriptions are aligned
+                        if curr_len == max_len:
+                            cmd_line_txt = ' %s%s%s' % (str(cmd_name), tabs, cmd_description)
+                        else:
+                            max_tabs = math.ceil(max_len/8)
+                            nr_tabs = 0
+
+                            for x in range(max_tabs):
+                                if curr_len <= (x*8):
+                                    nr_tabs += 1
+
+                            # nr_tabs = 2 if curr_len <= 8 else 1
+                            cmd_line_txt = ' %s%s%s' % (str(cmd_name), nr_tabs*tabs, cmd_description)
+
                         displayed_text.append(cmd_line_txt)
                 except Exception as err:
                     log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))

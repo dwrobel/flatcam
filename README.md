@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.04.2020 
+
+- made sure that the Tcl commands descriptions listed on help command are aligned
+
 14.04.2020 
 
 - lightened the hue of the color for 'success' messages printed in the Tcl Shell browser
