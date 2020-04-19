@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.04.2020 
+
+- fixed a bug that did not allow to edit GUI elements of type FCDoubleSpinner if it contained the percent symbol
+- some small optimizations in the GUI of Cutout Tool
+
 15.04.2020 
 
 - made sure that the Tcl commands descriptions listed on help command are aligned

@@ -726,6 +726,14 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.readyToEdit = True
             self.prev_readyToEdit = True
 
+    def valueFromText(self, text: str) -> int:
+        txt = text.strip('%%')
+        try:
+            ret_val = int(txt)
+        except ValueError:
+            ret_val = 0
+        return ret_val
+
     def get_value(self):
         return int(self.value())
 
@@ -847,11 +855,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')
+        text = text.strip('%%')
         try:
             ret_val = float(text)
         except ValueError:
             ret_val = 0.0
-
         return ret_val
 
     def validate(self, p_str, p_int):

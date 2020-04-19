@@ -343,8 +343,8 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(pp_label, self.pp_combo)
 
         # ## Buttons
-        grid1 = QtWidgets.QGridLayout()
-        self.gcode_box.addLayout(grid1)
+        # grid1 = QtWidgets.QGridLayout()
+        # self.gcode_box.addLayout(grid1)
 
         self.solder_gcode_btn = QtWidgets.QPushButton(_("Generate GCode"))
         self.solder_gcode_btn.setToolTip(

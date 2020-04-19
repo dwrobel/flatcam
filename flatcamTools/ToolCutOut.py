@@ -240,11 +240,11 @@ class CutOut(FlatCAMTool):
         title_param_label.setToolTip(
             _("This section handle creation of automatic bridge gaps.")
         )
-        self.layout.addWidget(title_param_label)
+        grid0.addWidget(title_param_label, 18, 0, 1, 2)
 
         # Form Layout
         form_layout_2 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_2)
+        grid0.addLayout(form_layout_2, 19, 0, 1, 2)
 
         # Gaps
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
@@ -260,7 +260,7 @@ class CutOut(FlatCAMTool):
               "- 2tb  - 2*top + 2*bottom\n"
               "- 8     - 2*left + 2*right +2*top + 2*bottom")
         )
-        gaps_label.setMinimumWidth(60)
+        # gaps_label.setMinimumWidth(60)
 
         self.gaps = FCComboBox()
         gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
@@ -282,7 +282,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.layout.addWidget(self.ff_cutout_object_btn)
+        grid0.addWidget(self.ff_cutout_object_btn, 20, 0, 1, 2)
 
         self.rect_cutout_object_btn = QtWidgets.QPushButton(_("Generate Rectangular Geometry"))
         self.rect_cutout_object_btn.setToolTip(
@@ -302,7 +302,7 @@ class CutOut(FlatCAMTool):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.layout.addWidget(separator_line)
+        grid0.addWidget(separator_line, 21, 0, 1, 2)
 
         # Title5
         title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('B. Manual Bridge Gaps'))
@@ -311,11 +311,11 @@ class CutOut(FlatCAMTool):
               "This is done by mouse clicking on the perimeter of the\n"
               "Geometry object that is used as a cutout object. ")
         )
-        self.layout.addWidget(title_manual_label)
+        grid0.addWidget(title_manual_label, 22, 0, 1, 2)
 
         # Form Layout
         form_layout_3 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_3)
+        grid0.addLayout(form_layout_3, 23, 0, 1, 2)
 
         # Manual Geo Object
         self.man_object_combo = FCComboBox()
@@ -328,7 +328,7 @@ class CutOut(FlatCAMTool):
         self.man_object_label.setToolTip(
             _("Geometry object used to create the manual cutout.")
         )
-        self.man_object_label.setMinimumWidth(60)
+        # self.man_object_label.setMinimumWidth(60)
 
         form_layout_3.addRow(self.man_object_label)
         form_layout_3.addRow(self.man_object_combo)
@@ -348,7 +348,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.layout.addWidget(self.man_geo_creation_btn)
+        grid0.addWidget(self.man_geo_creation_btn, 24, 0, 1, 2)
 
         self.man_gaps_creation_btn = QtWidgets.QPushButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setToolTip(
@@ -364,7 +364,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.layout.addWidget(self.man_gaps_creation_btn)
+        grid0.addWidget(self.man_gaps_creation_btn, 27, 0, 1, 2)
 
         self.layout.addStretch()
 
