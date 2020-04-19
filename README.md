@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 20.04.2020
 
 - made the Grid icon in the status bar clickable and it will toggle the snap to grid function
+- some mods in the Distance Tool
 
 19.04.2020 
 

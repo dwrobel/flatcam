@@ -178,7 +178,6 @@ class Distance(FlatCAMTool):
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='measurement')
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)
-        self.snap_center_cb.toggled.connect(self.on_snap_toggled)
 
     def run(self, toggle=False):
         self.app.report_usage("ToolDistance()")
@@ -236,8 +235,16 @@ class Distance(FlatCAMTool):
         # snap center works only for Gerber and Execellon Editor's
         if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
             self.snap_center_cb.show()
+            snap_center = self.app.defaults['tools_dist_snap_center']
+            self.on_snap_toggled(snap_center)
+
+            self.snap_center_cb.toggled.connect(self.on_snap_toggled)
         else:
             self.snap_center_cb.hide()
+            try:
+                self.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
+            except (TypeError, AttributeError):
+                pass
 
         # this is a hack; seems that triggering the grid will make the visuals better
         # trigger it twice to return to the original state
@@ -266,9 +273,6 @@ class Distance(FlatCAMTool):
 
         self.clicked_meas = 0
         self.original_call_source = copy(self.app.call_source)
-
-        snap_center = self.app.defaults['tools_dist_snap_center']
-        self.on_snap_toggled(snap_center)
 
         self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
         self.units = self.app.defaults['units'].lower()
@@ -480,7 +484,7 @@ class Distance(FlatCAMTool):
             self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
             self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
         elif len(self.points) == 2:
-            self.app.app_cursor.enabled = False
+            # self.app.app_cursor.enabled = False
             dx = self.points[1][0] - self.points[0][0]
             dy = self.points[1][1] - self.points[0][1]
             d = math.sqrt(dx ** 2 + dy ** 2)
