@@ -396,6 +396,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # don't translate the QCombo items as they are used in QSettings and identified by name
         self.layout_combo.addItem("standard")
         self.layout_combo.addItem("compact")
+        self.layout_combo.addItem("minimal")
 
         grid0.addWidget(self.layout_label, 4, 0)
         grid0.addWidget(self.layout_combo, 4, 1)
@@ -732,6 +733,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.proj_color_dis_entry.editingFinished.connect(self.on_proj_color_dis_entry)
         self.proj_color_dis_button.clicked.connect(self.on_proj_color_dis_button)
 
+        self.layout_combo.activated.connect(self.on_layout)
+
+
     def on_theme_change(self):
         val = self.theme_radio.get_value()
         t_settings = QSettings("Open Source", "FlatCAM")
@@ -946,6 +950,156 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         new_val_sel = str(proj_color.name())
         self.proj_color_dis_entry.set_value(new_val_sel)
         self.app.defaults['global_proj_item_dis_color'] = new_val_sel
+
+    def on_layout(self, index=None, lay=None):
+        """
+        Set the toolbars layout (location)
+
+        :param index:
+        :param lay:     Type of layout to be set on the toolbard
+        :return:        None
+        """
+        self.app.report_usage("on_layout()")
+        if lay:
+            current_layout = lay
+        else:
+            current_layout = self.layout_combo.get_value()
+
+        lay_settings = QSettings("Open Source", "FlatCAM")
+        lay_settings.setValue('layout', current_layout)
+
+        # This will write the setting to the platform specific storage.
+        del lay_settings
+
+        # first remove the toolbars:
+        try:
+            self.app.ui.removeToolBar(self.app.ui.toolbarfile)
+            self.app.ui.removeToolBar(self.app.ui.toolbargeo)
+            self.app.ui.removeToolBar(self.app.ui.toolbarview)
+            self.app.ui.removeToolBar(self.app.ui.toolbarshell)
+            self.app.ui.removeToolBar(self.app.ui.toolbartools)
+            self.app.ui.removeToolBar(self.app.ui.exc_edit_toolbar)
+            self.app.ui.removeToolBar(self.app.ui.geo_edit_toolbar)
+            self.app.ui.removeToolBar(self.app.ui.grb_edit_toolbar)
+            self.app.ui.removeToolBar(self.app.ui.snap_toolbar)
+            self.app.ui.removeToolBar(self.app.ui.toolbarshell)
+        except Exception:
+            pass
+
+        if current_layout == 'compact':
+            # ## TOOLBAR INSTALLATION # ##
+            self.app.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.app.ui.toolbarfile.setObjectName('File_TB')
+            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarfile)
+
+            self.app.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.app.ui.toolbargeo.setObjectName('Edit_TB')
+            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbargeo)
+
+            self.app.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.app.ui.toolbarshell.setObjectName('Shell_TB')
+            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarshell)
+
+            self.app.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.app.ui.toolbartools.setObjectName('Tools_TB')
+            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbartools)
+
+            self.app.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            # self.app.ui.geo_edit_toolbar.setVisible(False)
+            self.app.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.geo_edit_toolbar)
+
+            self.app.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.app.ui.toolbarview.setObjectName('View_TB')
+            self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.toolbarview)
+
+            self.app.ui.addToolBarBreak(area=Qt.RightToolBarArea)
+
+            self.app.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.app.ui.grb_edit_toolbar.setVisible(False)
+            self.app.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.grb_edit_toolbar)
+
+            self.app.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.app.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.exc_edit_toolbar)
+
+            self.app.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.app.ui.snap_toolbar.setObjectName('Snap_TB')
+            self.app.ui.snap_toolbar.setMaximumHeight(30)
+            self.app.ui.splitter_left.addWidget(self.app.ui.snap_toolbar)
+
+            self.app.ui.corner_snap_btn.setVisible(True)
+            self.app.ui.snap_magnet.setVisible(True)
+        else:
+            # ## TOOLBAR INSTALLATION # ##
+            self.app.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.app.ui.toolbarfile.setObjectName('File_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbarfile)
+
+            self.app.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.app.ui.toolbargeo.setObjectName('Edit_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbargeo)
+
+            self.app.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.app.ui.toolbarview.setObjectName('View_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbarview)
+
+            self.app.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.app.ui.toolbarshell.setObjectName('Shell_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbarshell)
+
+            self.app.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.app.ui.toolbartools.setObjectName('Tools_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbartools)
+
+            self.app.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            # self.app.ui.exc_edit_toolbar.setVisible(False)
+            self.app.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.app.ui.addToolBar(self.app.ui.exc_edit_toolbar)
+
+            self.app.ui.addToolBarBreak()
+
+            self.app.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            # self.app.ui.geo_edit_toolbar.setVisible(False)
+            self.app.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.app.ui.addToolBar(self.app.ui.geo_edit_toolbar)
+
+            self.app.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.app.ui.grb_edit_toolbar.setVisible(False)
+            self.app.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.app.ui.addToolBar(self.app.ui.grb_edit_toolbar)
+
+            self.app.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.app.ui.snap_toolbar.setObjectName('Snap_TB')
+            # self.app.ui.snap_toolbar.setMaximumHeight(30)
+            self.app.ui.addToolBar(self.app.ui.snap_toolbar)
+
+            self.app.ui.corner_snap_btn.setVisible(False)
+            self.app.ui.snap_magnet.setVisible(False)
+
+        if current_layout == 'minimal':
+            self.app.ui.toolbarview.setVisible(False)
+            self.app.ui.toolbarshell.setVisible(False)
+            self.app.ui.snap_toolbar.setVisible(False)
+            self.app.ui.geo_edit_toolbar.setVisible(False)
+            self.app.ui.grb_edit_toolbar.setVisible(False)
+            self.app.ui.exc_edit_toolbar.setVisible(False)
+            self.app.ui.lock_toolbar(lock=True)
+
+        # add all the actions to the toolbars
+        self.app.ui.populate_toolbars()
+
+        # reconnect all the signals to the toolbar actions
+        self.app.connect_toolbar_signals()
+
+        self.app.ui.grid_snap_btn.setChecked(True)
+        self.app.on_grid_snap_triggered(state=True)
+
+        self.app.ui.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
+        self.app.ui.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))
+        self.app.ui.snap_max_dist_entry.setText(str(self.app.defaults["global_snap_max"]))
+        self.app.ui.grid_gap_link_cb.setChecked(True)
 
 
 class GeneralAPPSetGroupUI(OptionsGroupUI):

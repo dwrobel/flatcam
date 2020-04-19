@@ -798,9 +798,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                pass
-            elif layout == 'compact':
+            if layout == 'compact':
                 self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
@@ -2347,41 +2345,34 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         QtWidgets.qApp.installEventFilter(self)
 
-        # restore the Toolbar State from file
+        # ########################################################################
+        # ################## RESTORE THE TOOLBAR STATE from file #################
+        # ########################################################################
+
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("saved_gui_state"):
             saved_gui_state = settings.value('saved_gui_state')
             self.restoreState(saved_gui_state)
-            log.debug("FlatCAMGUI.__init__() --> UI state restored.")
+            log.debug("FlatCAMGUI.__init__() --> UI state restored from QSettings.")
 
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                # self.exc_edit_toolbar.setVisible(False)
-                self.exc_edit_toolbar.setDisabled(True)
-                # self.geo_edit_toolbar.setVisible(False)
-                self.geo_edit_toolbar.setDisabled(True)
-                # self.grb_edit_toolbar.setVisible(False)
-                self.grb_edit_toolbar.setDisabled(True)
+            self.exc_edit_toolbar.setDisabled(True)
+            self.geo_edit_toolbar.setDisabled(True)
+            self.grb_edit_toolbar.setDisabled(True)
 
+            if layout == 'standard':
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setDisabled(True)
-
+            else:
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setDisabled(True)
                 self.corner_snap_btn.setDisabled(True)
-            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings.")
+            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
         else:
-            # self.exc_edit_toolbar.setVisible(False)
             self.exc_edit_toolbar.setDisabled(True)
-            # self.geo_edit_toolbar.setVisible(False)
             self.geo_edit_toolbar.setDisabled(True)
-            # self.grb_edit_toolbar.setVisible(False)
             self.grb_edit_toolbar.setDisabled(True)
 
             self.corner_snap_btn.setVisible(False)
@@ -2483,11 +2474,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
     def populate_toolbars(self):
         """
-        Will populate the App Toolbars with theie actions
+        Will populate the App Toolbars with their actions
+
         :return: None
         """
 
+        # ########################################################################
         # ## File Toolbar # ##
+        # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
@@ -2498,7 +2492,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_save_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
+        # ########################################################################
         # ## Edit Toolbar # ##
+        # ########################################################################
         self.newgeo_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
         self.newgrb_btn = self.toolbargeo.addAction(
@@ -2556,7 +2552,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.run_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
 
+        # ########################################################################
         # ## Tools Toolbar # ##
+        # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
@@ -2601,7 +2599,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cal_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
 
+        # ########################################################################
         # ## Excellon Editor Toolbar # ##
+        # ########################################################################
         self.select_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(
@@ -2625,7 +2625,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
 
+        # ########################################################################
         # ## Geometry Editor Toolbar # ##
+        # ########################################################################
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select 'Esc'"))
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
@@ -2675,7 +2677,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
+        # ########################################################################
         # ## Gerber Editor Toolbar # ##
+        # ########################################################################
         self.grb_select_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
@@ -2715,10 +2719,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
+        # ########################################################################
         # ## Snap Toolbar # ##
+        # ########################################################################
+
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         # self.addToolBar(self.snap_toolbar)
-
         self.grid_snap_btn = self.snap_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
@@ -2757,28 +2763,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                self.exc_edit_toolbar.setVisible(True)
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(True)
-                self.grb_edit_toolbar.setDisabled(True)
 
+            if layout == 'standard':
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
-                self.exc_edit_toolbar.setVisible(True)
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(True)
-                self.grb_edit_toolbar.setDisabled(True)
-
+            else:
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setDisabled(True)
                 self.snap_magnet.setDisabled(True)
+
+            # on 'minimal' layout only some toolbars are active
+            if layout != 'minimal':
+                self.exc_edit_toolbar.setVisible(True)
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setVisible(True)
+                self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setVisible(True)
+                self.grb_edit_toolbar.setDisabled(True)
 
     def keyPressEvent(self, event):
         """

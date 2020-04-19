@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a bug that did not allow to edit GUI elements of type FCDoubleSpinner if it contained the percent symbol
 - some small optimizations in the GUI of Cutout Tool
+- fixed more issues (new) in NCC Tool
+- added a new layout named 'minimal'
 
 15.04.2020 
 

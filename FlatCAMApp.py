@@ -1733,7 +1733,7 @@ class App(QtCore.QObject):
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
-            self.on_layout(lay=initial_lay)
+            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
@@ -2172,8 +2172,6 @@ class App(QtCore.QObject):
         )
 
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
-
-        self.ui.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # #############################################################################
         # ############################# GUI SETTINGS SIGNALS ##########################
@@ -2904,6 +2902,13 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
                                                       "Please reboot the application to update."))
             self.old_defaults_found = False
+
+    # ######################################### INIT FINISHED  #######################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -5097,10 +5102,11 @@ class App(QtCore.QObject):
         Save the toolbars visibility status to the preferences file (current_defaults.FlatConfig) to be
         used at the next launch of the application.
 
-        :param silent: whether to display a message in status bar or not; boolean
-        :param data_path: the path where to save the preferences file (current_defaults.FlatConfig)
+        :param silent:      Whether to display a message in status bar or not; boolean
+        :param data_path:   The path where to save the preferences file (current_defaults.FlatConfig)
         When the application is portable it should be a mobile location.
-        :return: None
+        :param first_time:  Boolean. If True will execute some code when the app is run first time
+        :return:            None
         """
         self.report_usage("save_defaults")
 
@@ -5133,6 +5139,30 @@ class App(QtCore.QObject):
         defaults.update(self.defaults)
         self.propagate_defaults(silent=True)
 
+        if first_time is False:
+            self.save_toolbar_view()
+
+        # Save update options
+        filename = data_path + "/current_defaults.FlatConfig"
+        try:
+            f = open(filename, "w")
+            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
+            f.close()
+        except Exception as e:
+            log.debug("App.save_defaults() --> %s" % str(e))
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+            return
+
+        if not silent:
+            self.inform.emit('[success] %s' % _("Preferences saved."))
+
+    def save_toolbar_view(self):
+        """
+        Will save the toolbar view state to the defaults
+
+        :return:            None
+        """
+
         # Save the toolbar view
         tb_status = 0
         if self.ui.toolbarfile.isVisible():
@@ -5162,22 +5192,7 @@ class App(QtCore.QObject):
         if self.ui.toolbarshell.isVisible():
             tb_status += 256
 
-        if first_time is False:
-            self.defaults["global_toolbar_view"] = tb_status
-
-        # Save update options
-        filename = data_path + "/current_defaults.FlatConfig"
-        try:
-            f = open(filename, "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-        except Exception as e:
-            log.debug("App.save_defaults() --> %s" % str(e))
-            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
-            return
-
-        if not silent:
-            self.inform.emit('[success] %s' % _("Preferences saved."))
+        self.defaults["global_toolbar_view"] = tb_status
 
     def save_factory_defaults(self, silent_message=False, data_path=None):
         """
@@ -6898,147 +6913,6 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
-
-    def on_layout(self, index=None, lay=None):
-        """
-        Set the toolbars layout (location)
-
-        :param index:
-        :param lay: type of layout to be set on the toolbard
-        :return: None
-        """
-        self.report_usage("on_layout()")
-        if lay:
-            current_layout = lay
-        else:
-            current_layout = self.ui.general_defaults_form.general_gui_group.layout_combo.get_value()
-
-        lay_settings = QSettings("Open Source", "FlatCAM")
-        lay_settings.setValue('layout', current_layout)
-
-        # This will write the setting to the platform specific storage.
-        del lay_settings
-
-        # first remove the toolbars:
-        try:
-            self.ui.removeToolBar(self.ui.toolbarfile)
-            self.ui.removeToolBar(self.ui.toolbargeo)
-            self.ui.removeToolBar(self.ui.toolbarview)
-            self.ui.removeToolBar(self.ui.toolbarshell)
-            self.ui.removeToolBar(self.ui.toolbartools)
-            self.ui.removeToolBar(self.ui.exc_edit_toolbar)
-            self.ui.removeToolBar(self.ui.geo_edit_toolbar)
-            self.ui.removeToolBar(self.ui.grb_edit_toolbar)
-            self.ui.removeToolBar(self.ui.snap_toolbar)
-            self.ui.removeToolBar(self.ui.toolbarshell)
-        except Exception:
-            pass
-
-        if current_layout == 'standard':
-            # ## TOOLBAR INSTALLATION # ##
-            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.ui.toolbarfile.setObjectName('File_TB')
-            self.ui.addToolBar(self.ui.toolbarfile)
-
-            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.ui.toolbargeo.setObjectName('Edit_TB')
-            self.ui.addToolBar(self.ui.toolbargeo)
-
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(self.ui.toolbarview)
-
-            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.ui.toolbarshell.setObjectName('Shell_TB')
-            self.ui.addToolBar(self.ui.toolbarshell)
-
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(self.ui.toolbartools)
-
-            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            # self.ui.exc_edit_toolbar.setVisible(False)
-            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.ui.addToolBar(self.ui.exc_edit_toolbar)
-
-            self.ui.addToolBarBreak()
-
-            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.ui.geo_edit_toolbar.setVisible(False)
-            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.ui.addToolBar(self.ui.geo_edit_toolbar)
-
-            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.ui.grb_edit_toolbar.setVisible(False)
-            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.ui.addToolBar(self.ui.grb_edit_toolbar)
-
-            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.ui.snap_toolbar.setObjectName('Snap_TB')
-            # self.ui.snap_toolbar.setMaximumHeight(30)
-            self.ui.addToolBar(self.ui.snap_toolbar)
-
-            self.ui.corner_snap_btn.setVisible(False)
-            self.ui.snap_magnet.setVisible(False)
-        elif current_layout == 'compact':
-            # ## TOOLBAR INSTALLATION # ##
-            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.ui.toolbarfile.setObjectName('File_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
-
-            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.ui.toolbargeo.setObjectName('Edit_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
-
-            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.ui.toolbarshell.setObjectName('Shell_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
-
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
-
-            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.ui.geo_edit_toolbar.setVisible(False)
-            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
-
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
-
-            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
-
-            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.ui.grb_edit_toolbar.setVisible(False)
-            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
-
-            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.exc_edit_toolbar)
-
-            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.ui.snap_toolbar.setObjectName('Snap_TB')
-            self.ui.snap_toolbar.setMaximumHeight(30)
-            self.ui.splitter_left.addWidget(self.ui.snap_toolbar)
-
-            self.ui.corner_snap_btn.setVisible(True)
-            self.ui.snap_magnet.setVisible(True)
-
-        # add all the actions to the toolbars
-        self.ui.populate_toolbars()
-
-        # reconnect all the signals to the toolbar actions
-        self.connect_toolbar_signals()
-
-        self.ui.grid_snap_btn.setChecked(True)
-        self.on_grid_snap_triggered(state=True)
-
-        self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
-        self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
-        self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
-        self.ui.grid_gap_link_cb.setChecked(True)
 
     def on_cursor_type(self, val):
         """

@@ -3626,7 +3626,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif layout == 'compact':
+            else:
                 # self.app.ui.exc_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)

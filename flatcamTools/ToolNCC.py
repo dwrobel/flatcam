@@ -875,12 +875,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
 
         # store all the data associated with the row parameter to the self.tools storage
-        tooldia_item = float(self.tools_table.item(row, 1).text())
-        type_item = self.tools_table.cellWidget(row, 2).currentText()
-        operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
-
-        nccoffset_item = self.ncc_choice_offset_cb.get_value()
-        nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
+        # tooldia_item = float(self.tools_table.item(row, 1).text())
+        # type_item = self.tools_table.cellWidget(row, 2).currentText()
+        # operation_type_item = self.tools_table.cellWidget(row, 4).currentText()
+        #
+        # nccoffset_item = self.ncc_choice_offset_cb.get_value()
+        # nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         # temp_tools = {}
@@ -1202,11 +1202,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             except AttributeError:
                 pass
 
-            try:
-                self.tools_table.cellWidget(row, 4).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
-            except AttributeError:
-                pass
-
         self.tool_type_radio.activated_custom.connect(self.on_tool_type)
 
         for opt in self.form_fields:
@@ -1238,11 +1233,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             pass
 
         for row in range(self.tools_table.rowCount()):
-            for col in [2, 4]:
-                try:
-                    self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
-                except (TypeError, AttributeError):
-                    pass
+
+            try:
+                self.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
 
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
@@ -1669,7 +1664,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
-        elif self.select_method == 'box':
+        elif self.select_method == _("Reference Object"):
             self.bound_obj_name = self.reference_combo.currentText()
             # Get source object.
             try:
@@ -2221,6 +2216,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         run non-threaded for TclShell usage
         :return:
         """
+        log.debug("Executing the handler ...")
+
         if run_threaded:
             proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
         else:
@@ -2306,7 +2303,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             except TypeError:
                 tool = eval(self.app.defaults["tools_ncctools"])
 
-            if ncc_select == 'box':
+            if ncc_select == _("Reference Object"):
                 env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
                 env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, ncc_select=ncc_select)
@@ -2330,19 +2327,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 )
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
-                tooluid = 0
+                tool_uid = 0
                 for k, v in self.ncc_tools.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool)):
-                        tooluid = int(k)
+                        tool_uid = int(k)
                         break
 
-                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tooluid]["data"]["tools_nccmargin"])
-                ncc_method = self.ncc_tools[tooluid]["data"]["tools_nccmethod"]
-                ncc_connect = self.ncc_tools[tooluid]["data"]["tools_nccconnect"]
-                ncc_contour = self.ncc_tools[tooluid]["data"]["tools_ncccontour"]
-                has_offset = self.ncc_tools[tooluid]["data"]["tools_ncc_offset_choice"]
-                ncc_offset = float(self.ncc_tools[tooluid]["data"]["tools_ncc_offset_value"])
+                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.ncc_tools[tool_uid]["data"]["tools_nccmargin"])
+                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
+                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_nccconnect"]
+                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncccontour"]
+                has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 cleared_geo[:] = []
 
@@ -2513,8 +2510,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             has_solid_geo = 0
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
+            for tid in geo_obj.tools:
+                if geo_obj.tools[tid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
                 app_obj.inform.emit('[ERROR] %s' %
@@ -2537,13 +2534,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # create the solid_geometry
                 geo_obj.solid_geometry = []
-                for tooluid in geo_obj.tools:
-                    if geo_obj.tools[tooluid]['solid_geometry']:
+                for tool_id in geo_obj.tools:
+                    if geo_obj.tools[tool_id]['solid_geometry']:
                         try:
-                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                            for geo in geo_obj.tools[tool_id]['solid_geometry']:
                                 geo_obj.solid_geometry.append(geo)
                         except TypeError:
-                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+                            geo_obj.solid_geometry.append(geo_obj.tools[tool_id]['solid_geometry'])
             else:
                 # I will use this variable for this purpose although it was meant for something else
                 # signal that we have no geo in the object therefore don't create it
@@ -2586,7 +2583,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
 
-            if ncc_select == 'box':
+            if ncc_select == _("Reference Object"):
                 env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
             else:
                 env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, ncc_select=ncc_select)
@@ -2615,19 +2612,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 tool = sorted_tools.pop(0)
 
-                tooluid = 0
+                tool_uid = 0
                 for k, v in self.ncc_tools.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool)):
-                        tooluid = int(k)
+                        tool_uid = int(k)
                         break
 
-                ncc_overlap = float(self.ncc_tools[tooluid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tooluid]["data"]["tools_nccmargin"])
-                ncc_method = self.ncc_tools[tooluid]["data"]["tools_nccmethod"]
-                ncc_connect = self.ncc_tools[tooluid]["data"]["tools_nccconnect"]
-                ncc_contour = self.ncc_tools[tooluid]["data"]["tools_ncccontour"]
-                has_offset = self.ncc_tools[tooluid]["data"]["tools_ncc_offset_choice"]
-                ncc_offset = float(self.ncc_tools[tooluid]["data"]["tools_ncc_offset_value"])
+                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.ncc_tools[tool_uid]["data"]["tools_nccmargin"])
+                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
+                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_nccconnect"]
+                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncccontour"]
+                has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 tool_used = tool - 1e-12
                 cleared_geo[:] = []
@@ -2784,7 +2781,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 poly = p.buffer(buffer_value)
                                 cleared_by_last_tool.append(poly)
 
-                            # find the tooluid associated with the current tool_dia so we know
+                            # find the tool uid associated with the current tool_dia so we know
                             # where to add the tool solid_geometry
                             for k, v in tools_storage.items():
                                 if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
@@ -2822,13 +2819,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # create the solid_geometry
                 geo_obj.solid_geometry = []
-                for tooluid in geo_obj.tools:
-                    if geo_obj.tools[tooluid]['solid_geometry']:
+                for tool_uid in geo_obj.tools:
+                    if geo_obj.tools[tool_uid]['solid_geometry']:
                         try:
-                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                            for geo in geo_obj.tools[tool_uid]['solid_geometry']:
                                 geo_obj.solid_geometry.append(geo)
                         except TypeError:
-                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+                            geo_obj.solid_geometry.append(geo_obj.tools[tool_uid]['solid_geometry'])
             else:
                 # I will use this variable for this purpose although it was meant for something else
                 # signal that we have no geo in the object therefore don't create it
@@ -3012,13 +3009,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             bounding_box = cascaded_union(geo_buff_list)
 
-        elif ncc_select == 'box':
+        elif ncc_select == _("Reference Object"):
             geo_n = ncc_sel_obj.solid_geometry
             if ncc_sel_obj.kind == 'geometry':
                 try:
                     __ = iter(geo_n)
                 except Exception as e:
-                    log.debug("NonCopperClear.clear_copper() 'box' --> %s" % str(e))
+                    log.debug("NonCopperClear.clear_copper() 'Reference Object' --> %s" % str(e))
                     geo_n = [geo_n]
 
                 geo_buff_list = []
