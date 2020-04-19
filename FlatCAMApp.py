@@ -2788,7 +2788,7 @@ class App(QtCore.QObject):
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
         try:
-            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.geo_editor = FlatCAMGeoEditor(self)
         except AttributeError:
             pass
 
@@ -9350,7 +9350,7 @@ class App(QtCore.QObject):
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
             # ## EDITOR section
-            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.geo_editor = FlatCAMGeoEditor(self)
             self.exc_editor = FlatCAMExcEditor(self)
             self.grb_editor = FlatCAMGrbEditor(self)
 

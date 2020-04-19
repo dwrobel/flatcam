@@ -467,6 +467,9 @@ class Geometry(object):
         self.units = self.app.defaults["units"]
         self.decimals = self.app.decimals
 
+        self.drawing_tolerance = 0.0
+        self.tools = None
+
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 

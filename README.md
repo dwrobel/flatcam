@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - some small optimizations in the GUI of Cutout Tool
 - fixed more issues (new) in NCC Tool
 - added a new layout named 'minimal'
+- some PEP8 changes in Geometry Editor
 
 15.04.2020 
 

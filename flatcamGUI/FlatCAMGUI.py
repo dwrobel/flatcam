@@ -795,9 +795,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setObjectName('Snap_TB')
         self.addToolBar(self.snap_toolbar)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
+        flat_settings = QSettings("Open Source", "FlatCAM")
+        if flat_settings.contains("layout"):
+            layout = flat_settings.value('layout', type=str)
             if layout == 'compact':
                 self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
@@ -2349,14 +2349,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ################## RESTORE THE TOOLBAR STATE from file #################
         # ########################################################################
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("saved_gui_state"):
-            saved_gui_state = settings.value('saved_gui_state')
+        flat_settings = QSettings("Open Source", "FlatCAM")
+        if flat_settings.contains("saved_gui_state"):
+            saved_gui_state = flat_settings.value('saved_gui_state')
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored from QSettings.")
 
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
+        if flat_settings.contains("layout"):
+            layout = flat_settings.value('layout', type=str)
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
@@ -2378,9 +2378,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
 
-            settings.setValue('layout', "standard")
+            flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
-            del settings
+            del flat_settings
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
 
         # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
@@ -2388,8 +2388,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.setText(_("Lock Toolbars"))
         self.lock_action.setCheckable(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("toolbar_lock"):
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("toolbar_lock"):
             lock_val = settings.value('toolbar_lock')
             if lock_val == 'true':
                 lock_state = True
@@ -2400,10 +2400,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.lock_action.setChecked(False)
         else:
             lock_state = False
-            settings.setValue('toolbar_lock', lock_state)
+            qsettings.setValue('toolbar_lock', lock_state)
 
             # This will write the setting to the platform specific storage.
-            del settings
+            del qsettings
 
         self.lock_toolbar(lock=lock_state)
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
@@ -2466,11 +2466,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         response = msgbox.clickedButton()
 
         if response == bt_yes:
-            settings = QSettings("Open Source", "FlatCAM")
-            for key in settings.allKeys():
-                settings.remove(key)
+            qsettings = QSettings("Open Source", "FlatCAM")
+            for key in qsettings.allKeys():
+                qsettings.remove(key)
             # This will write the setting to the platform specific storage.
-            del settings
+            del qsettings
 
     def populate_toolbars(self):
         """
@@ -2760,9 +2760,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("layout"):
+            layout = qsettings.value('layout', type=str)
 
             if layout == 'standard':
                 self.corner_snap_btn.setVisible(False)
@@ -3892,7 +3892,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
                 # Propagate to tool
-                response = None
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':

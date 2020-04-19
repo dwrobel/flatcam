@@ -1052,9 +1052,8 @@ class TransformEditorTool(FlatCAMTool):
             self.flip_ref_entry.set_value((0, 0))
 
     def template(self):
-        if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Transformation cancelled. No shape selected."))
+        if not self.draw_app.selected:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Transformation cancelled. No shape selected."))
             return
 
         self.draw_app.select_tool("select")
@@ -1098,6 +1097,14 @@ class TransformEditorTool(FlatCAMTool):
         self.flip_ref_entry.set_value(val)
 
     def on_skewx(self, sig=None, val=None):
+        """
+        Skew on X axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Skew with a known value, val
+        :return:
+        """
+
         if val:
             value = val
         else:
@@ -1108,8 +1115,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("X", value)
@@ -1119,6 +1125,14 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_skewy(self, sig=None, val=None):
+        """
+        Skew on Y axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Skew with a known value, val
+        :return:
+        """
+
         if val:
             value = val
         else:
@@ -1129,8 +1143,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("Y", value)
@@ -1140,6 +1153,14 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_scalex(self, sig=None, val=None):
+        """
+        Scale on X axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Scale with a known value, val
+        :return:
+        """
+
         if val:
             xvalue = val
         else:
@@ -1150,8 +1171,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1176,6 +1196,14 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_scaley(self, sig=None, val=None):
+        """
+        Scale on Y axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Scale with a known value, val
+        :return:
+        """
+
         xvalue = 1
         if val:
             yvalue = val
@@ -1187,8 +1215,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1205,6 +1232,14 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_offx(self, sig=None, val=None):
+        """
+        Offset on X axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Offset with a known value, val
+        :return:
+        """
+
         if val:
             value = val
         else:
@@ -1215,8 +1250,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("X", value)
@@ -1226,6 +1260,14 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_offy(self, sig=None, val=None):
+        """
+        Offset on Y axis
+
+        :param sig:     Signal value sent by the signal that is connected to this slot
+        :param val:     Offset with a known value, val
+        :return:
+        """
+
         if val:
             value = val
         else:
@@ -1236,8 +1278,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("Y", value)
@@ -1247,6 +1288,13 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_rotate_action(self, num):
+        """
+        Rotate geometry
+
+        :param num:     Rotate with a known angle value, num
+        :return:
+        """
+
         shape_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -1254,8 +1302,7 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No shape selected. Please Select a shape to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected. Please Select a shape to rotate!"))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
@@ -1290,6 +1337,13 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_flip(self, axis):
+        """
+        Mirror (flip) geometry
+
+        :param axis:     Miror on a known axis given by the axis parameter
+        :return:
+        """
+
         shape_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -1346,6 +1400,14 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_skew(self, axis, num):
+        """
+        Skew geometry
+
+        :param num:     Rotate with a known angle value, num
+        :param axis:    Axis on which to deform, skew
+        :return:
+        """
+
         shape_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -1387,6 +1449,17 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
+        """
+        Scale geometry
+
+        :param axis:        Axis on which to scale
+        :param xfactor:     Factor for scaling on X axis
+        :param yfactor:     Factor for scaling on Y axis
+        :param point:       Point of origin for scaling
+
+        :return:
+        """
+
         shape_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -1437,13 +1510,18 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_offset(self, axis, num):
+        """
+        Offset geometry
+
+        :param axis:        Axis on which to apply offset
+        :param num:         The translation factor
+
+        :return:
+        """
         shape_list = self.draw_app.selected
-        xminlist = []
-        yminlist = []
 
         if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No shape selected. Please Select a shape to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected. Please Select a shape to offset!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -1646,11 +1724,11 @@ class DrawToolShape(object):
         Mirrors the shape around a specified axis passing through
         the given point.
 
-        :param axis: "X" or "Y" indicates around which axis to mirror.
-        :type axis: str
-        :param point: [x, y] point belonging to the mirror axis.
-        :type point: list
-        :return: None
+        :param axis:    "X" or "Y" indicates around which axis to mirror.
+        :type axis:     str
+        :param point:   [x, y] point belonging to the mirror axis.
+        :type point:    list
+        :return:        None
         """
 
         px, py = point
@@ -1674,8 +1752,7 @@ class DrawToolShape(object):
         """
         Rotate a shape by an angle (in degrees) around the provided coordinates.
 
-        Parameters
-        ----------
+
         The angle of rotation are specified in degrees (default). Positive angles are
         counter-clockwise and negative are clockwise rotations.
 
@@ -1683,8 +1760,11 @@ class DrawToolShape(object):
         center (default), 'centroid' for the geometry's centroid, a Point object
         or a coordinate tuple (x0, y0).
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
+
+        :param angle:   The angle of rotation
+        :param point:   The point of origin
+        :return:        None
         """
 
         px, py = point
@@ -1707,16 +1787,17 @@ class DrawToolShape(object):
         """
         Shear/Skew a shape by angles along x and y dimensions.
 
-        Parameters
-        ----------
         angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
-        point: tuple of coordinates (x,y)
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
+
+        :param angle_x:
+        :param angle_y:
+        :param point:       tuple of coordinates (x,y)
+        :return:
         """
         px, py = point
 
@@ -1736,12 +1817,12 @@ class DrawToolShape(object):
 
     def offset(self, vect):
         """
-        Offsets all shapes by a given vector/
+        Offsets all shapes by a given vector
 
-        :param vect: (x, y) vector by which to offset the shape geometry
-        :type vect: tuple
-        :return: None
-        :rtype: None
+        :param vect:    (x, y) vector by which to offset the shape geometry
+        :type vect:     tuple
+        :return:        None
+        :rtype:         None
         """
 
         try:
@@ -1769,10 +1850,11 @@ class DrawToolShape(object):
         """
         Scales all shape geometry by a given factor.
 
-        :param xfactor: Factor by which to scale the shape's geometry/
-        :type xfactor: float
-        :param yfactor: Factor by which to scale the shape's geometry/
-        :type yfactor: float
+        :param xfactor:     Factor by which to scale the shape's geometry/
+        :type xfactor:      float
+        :param yfactor:     Factor by which to scale the shape's geometry/
+        :type yfactor:      float
+        :param point:       Point of origin; tuple
         :return: None
         :rtype: None
         """
@@ -1897,6 +1979,8 @@ class FCShapeTool(DrawTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+
+        self.name = None
 
     def make(self):
         pass
@@ -2454,7 +2538,7 @@ class FCSelect(DrawTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.storage = self.draw_app.storage
@@ -2462,12 +2546,17 @@ class FCSelect(DrawTool):
         # self.selected = self.draw_app.selected
 
     def click_release(self, point):
+        """
+
+        :param point:   The point for which to find the neasrest shape
+        :return:
+        """
 
         # list where we store the overlapped shapes under our mouse left click position
         over_shape_list = []
 
         # pos[0] and pos[1] are the mouse click coordinates (x, y)
-        for obj_shape in self.storage.get_objects():
+        for ____ in self.storage.get_objects():
             # first method of click selection -> inconvenient
             # minx, miny, maxx, maxy = obj_shape.geo.bounds
             # if (minx <= pos[0] <= maxx) and (miny <= pos[1] <= maxy):
@@ -2482,7 +2571,7 @@ class FCSelect(DrawTool):
 
             # 3rd method of click selection -> inconvenient
             try:
-                _, closest_shape = self.storage.nearest(point)
+                __, closest_shape = self.storage.nearest(point)
             except StopIteration:
                 return ""
 
@@ -2566,7 +2655,7 @@ class FCExplode(FCShapeTool):
 
         self.draw_app.active_tool = self
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' % ("No shape selected. Select a shape to explode"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' % _("No shape selected. Select a shape to explode"))
         else:
             self.make()
 
@@ -2619,7 +2708,7 @@ class FCMove(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.storage = self.draw_app.storage
@@ -3084,7 +3173,7 @@ class FCEraser(FCShapeTool):
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         if len(self.draw_app.get_selected()) == 0:
-            for obj_shape in self.storage.get_objects():
+            for ____ in self.storage.get_objects():
                 try:
                     __, closest_shape = self.storage.nearest(point)
                     self.draw_app.selected.append(closest_shape)
@@ -3234,6 +3323,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.geo_frame.setLayout(self.tools_box)
 
+        if disabled:
+            self.geo_frame.setDisabled(True)
+
         # ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(self.title_box)
@@ -3368,22 +3460,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.rtree_index = rtindex.Index()
 
-        def entry2option(option, entry):
+        def entry2option(opt, entry):
+            """
+
+            :param opt:     A option from the self.options dictionary
+            :param entry:   A GUI element which text value is used
+            :return:
+            """
             try:
-                self.options[option] = float(entry.text())
+                self.options[opt] = float(entry.text())
             except Exception as e:
                 log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
         def gridx_changed(goption, gentry):
-            entry2option(option=goption, entry=gentry)
+            """
+
+            :param goption: String. Can be either 'global_gridx' or 'global_gridy'
+            :param gentry:  A GUI element which text value is read and used
+            :return:
+            """
+            entry2option(opt=goption, entry=gentry)
             # if the grid link is checked copy the value in the GridX field to GridY
             try:
-                val = float(self.app.ui.grid_gap_x_entry.get_value())
+                val = float(gentry.get_value())
             except ValueError:
                 return
-
-            units = self.app.defaults['units'].upper()
 
             if self.app.ui.grid_gap_link_cb.isChecked():
                 self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
@@ -3463,13 +3565,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-    def build_ui(self, first_run=None):
+    def build_ui(self):
+        """
+        Build the GUI in the Selected Tab for this editor
 
-        # try:
-        #     # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        #     self.apertures_table.itemChanged.disconnect()
-        # except (TypeError, AttributeError):
-        #     pass
+        :return:
+        """
 
         iterator = QtWidgets.QTreeWidgetItemIterator(self.geo_parent)
         to_delete = []
@@ -3861,9 +3962,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         """
         Adds a shape to the shape storage.
 
-        :param shape: Shape to be added.
-        :type shape: DrawToolShape
-        :return: None
+        :param shape:   Shape to be added.
+        :type shape:    DrawToolShape
+        :return:        None
         """
 
         if shape is None:
@@ -3877,8 +3978,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
         assert shape.geo is not None, "Shape object has empty geometry (None)"
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
-               not isinstance(shape.geo, list), "Shape objects has empty geometry ([])"
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
+            "Shape objects has empty geometry ([])"
 
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
@@ -3887,6 +3988,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.build_ui()
 
     def delete_utility_geometry(self):
+        """
+        Will delete the shapes in the utility shapes storage.
+
+        :return:    None
+        """
+
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
         # for_deletion = [shape for shape in self.storage.get_objects() if shape.utility]
         for_deletion = [shape for shape in self.utility]
@@ -3897,10 +4004,23 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.tool_shape.redraw()
 
     def toolbar_tool_toggle(self, key):
-        self.options[key] = self.sender().isChecked()
-        return 1 if self.options[key] == True else 0
+        """
+        It is used as a slot by the Snap buttons.
+
+        :param key:     Key in the self.options dictionary that is to be updated
+        :return:        Boolean. Status of the checkbox that toggled the Editor Tool
+        """
+        cb_widget = self.sender()
+        self.options[key] = cb_widget.isChecked()
+
+        return 1 if self.options[key] is True else 0
 
     def clear(self):
+        """
+        Will clear the storage for the Editor shapes, the selected shapes storage and replot. Clean up method.
+
+        :return:    None
+        """
         self.active_tool = None
         # self.shape_buffer = []
         self.selected = []
@@ -3915,12 +4035,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Imports the geometry from the given FlatCAM Geometry object
         into the editor.
 
-        :param fcgeometry: FlatCAMGeometry
-        :param multigeo_tool: a tool for the case of multigeo
-        :return: None
+        :param fcgeometry:      FlatCAMGeometry
+        :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
+        :return:                None
         """
-        assert isinstance(fcgeometry, Geometry), \
-            "Expected a Geometry, got %s" % type(fcgeometry)
+        assert isinstance(fcgeometry, Geometry), "Expected a Geometry, got %s" % type(fcgeometry)
 
         self.deactivate()
         self.activate()
@@ -3964,7 +4083,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
 
         for shape in geo_to_edit:
-            if shape is not None:  # TODO: Make flatten never create a None
+            if shape is not None:
                 if type(shape) == Polygon:
                     self.add_shape(DrawToolShape(shape.exterior))
                     for inter in shape.interiors:
@@ -4186,16 +4305,16 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_geo_click_release(self, event):
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
