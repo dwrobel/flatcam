@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.04.2020
+
+- made the Grid icon in the status bar clickable and it will toggle the snap to grid function
+
 19.04.2020 
 
 - fixed a bug that did not allow to edit GUI elements of type FCDoubleSpinner if it contained the percent symbol

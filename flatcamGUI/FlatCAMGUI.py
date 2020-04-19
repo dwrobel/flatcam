@@ -2268,7 +2268,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
-        self.snap_infobar_label = QtWidgets.QLabel()
+        self.snap_infobar_label = FCLabel()
         self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
         self.infobar.addWidget(self.snap_infobar_label)
 

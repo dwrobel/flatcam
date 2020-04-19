@@ -2276,6 +2276,7 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
         self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
+        self.ui.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
@@ -12489,7 +12490,7 @@ class App(QtCore.QObject):
 
     def on_zoom_fit(self, event):
         """
-        Callback for zoom-out request. This can be either from the corresponding
+        Callback for zoom-fit request. This can be either from the corresponding
         toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
         with axes limits from the geometry bounds of all objects.
 
@@ -12509,9 +12510,18 @@ class App(QtCore.QObject):
             self.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def on_zoom_in(self):
+        """
+        Callback for zoom-in request.
+        :return:
+        """
         self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
 
     def on_zoom_out(self):
+        """
+        Callback for zoom-out request.
+
+        :return:
+        """
         self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
@@ -12551,7 +12561,7 @@ class App(QtCore.QObject):
 
     def enable_plots(self, objects):
         """
-        Disables plots
+        Enable plots
 
         :param objects: list of Objects to be enabled
         :return:
@@ -12679,8 +12689,16 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def on_set_color_action_triggered(self):
+        """
+        This slot gets called by clicking on the menu entry in the Set Color submenu of the context menu in Project Tab
+
+        :return:
+        """
         new_color = self.defaults['gerber_plot_fill']
-        act_name = self.sender().text()
+        clicked_action = self.sender()
+
+        assert isinstance(clicked_action, QAction), "Expected a QAction, got %s" % isinstance(clicked_action, QAction)
+        act_name = clicked_action.text()
         sel_obj_list = self.collection.get_selected()
 
         if not sel_obj_list:
@@ -12783,12 +12801,35 @@ class App(QtCore.QObject):
             )
 
     def on_grid_snap_triggered(self, state):
+        """
+
+        :param state:   A parameter with the state of the grid, boolean
+
+        :return:
+        """
         if state:
             self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
         else:
             self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
 
+        self.ui.snap_infobar_label.clicked_state = state
+
+    def on_grid_icon_snap_clicked(self):
+        """
+        Slot called by clicking a GUI element, in this case a FCLabel
+
+        :return:
+        """
+        if isinstance(self.sender(), FCLabel):
+            self.ui.grid_snap_btn.trigger()
+
     def generate_cnc_job(self, objects):
+        """
+        Slot that will be called by clicking an entry in the contextual menu generated in the Project Tab tree
+
+        :param objects:     Selected objects in the Project Tab
+        :return:
+        """
         self.report_usage("generate_cnc_job()")
 
         # for obj in objects:
@@ -12800,11 +12841,11 @@ class App(QtCore.QObject):
         """
         Saves the current project to the specified file.
 
-        :param filename: Name of the file in which to save.
-        :type filename: str
-        :param quit_action: if the project saving will be followed by an app quit; boolean
-        :param silent: if True will not display status messages
-        :return: None
+        :param filename:        Name of the file in which to save.
+        :type filename:         str
+        :param quit_action:     if the project saving will be followed by an app quit; boolean
+        :param silent:          if True will not display status messages
+        :return:                None
         """
         self.log.debug("save_project()")
         self.save_in_progress = True
@@ -12887,9 +12928,9 @@ class App(QtCore.QObject):
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """
 
-        :param delay:       period of checking if project file size is more than zero; in seconds
-        :param filename:    the name of the project file to be checked periodically for size more than zero
-        :param should_quit: if the task finished will be followed by an app quit; boolean
+        :param delay:           period of checking if project file size is more than zero; in seconds
+        :param filename:        the name of the project file to be checked periodically for size more than zero
+        :param should_quit:     if the task finished will be followed by an app quit; boolean
         :return:
         """
         to_quit = should_quit
@@ -12901,8 +12942,8 @@ class App(QtCore.QObject):
     def check_project_file_size(self, filename, should_quit=None):
         """
 
-        :param filename: the name of the project file to be checked periodically for size more than zero
-        :param should_quit: will quit the app if True; boolean
+        :param filename:        the name of the project file to be checked periodically for size more than zero
+        :param should_quit:     will quit the app if True; boolean
         :return:
         """
 
@@ -12927,7 +12968,7 @@ class App(QtCore.QObject):
         Callback for Options->Transfer Options->App=>Project. Copies options
         from application defaults to project defaults.
 
-        :return: None
+        :return:    None
         """
 
         self.report_usage("on_options_app2project")
