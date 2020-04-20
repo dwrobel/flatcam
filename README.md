@@ -1,5 +1,6 @@
 FlatCAM BETA (c) 2019 - by Marius Stanciu
-Based on FlatCAM: 2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
+Based on FlatCAM: 
+2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
 =================================================
 
 FlatCAM is a program for preparing CNC jobs for making PCBs on a CNC router.
@@ -8,10 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
------------- Installation instructions ------------
+------------ Installation instructions ----------
 
 Works with Python version 3.5 or greater and PyQt5.
+More on the YouTube channel: https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_
+You can contact me on my email address found in the app in:
+Menu -> Help -> About FlatCAM -> Programmers -> Marius Stanciu
 
+- Make sure that your OS is up-to-date
 - Download sources from: https://bitbucket.org/jpcgt/flatcam/downloads/
 - Unzip them on a HDD location that your user has permissions for.
 
@@ -20,21 +25,28 @@ Works with Python version 3.5 or greater and PyQt5.
 
 2. Linux
 - make sure that Python 3.8 is installed on your OS and that the command: python3 -V confirm it
+- verify that the pip package is installed for your Python installation (e.g 3.8) by running the command pip3 -V. 
+If it is not installed, install it. In Ubuntu-like OS's it is done like this: 
+sudo apt-get install python3-pip 
+or:
+sudo apt-get install python3.8-pip
 - verify that the file setup_ubuntu.sh has Linux line-endings (LF) and that it is executable (chmod +x setup_ubuntu.sh)
 - run the file setup_ubuntu.sh and install all the dependencies with the command: ./setup_ubuntu.sh
 - if the previous command is successful and has no errors, run FlatCAM with the command: python3 FlatCAM.py
 
 3. Windows
-- download the provided installer (for your OS flavor 64bit or 32bit) from https://bitbucket.org/jpcgt/flatcam/downloads/
+- download the provided installer (for your OS flavor 64bit or 32bit) from:
+https://bitbucket.org/jpcgt/flatcam/downloads/
 - execute the installer and install the program. It is recommended to install as a Local User.
 
-or
+or from sources:
 - download the sources from the same location
 - unzip them on a safe location on your HDD that your user has permissions for
 - install WinPython e.g WinPython 3.8 downloaded from here: https://sourceforge.net/projects/winpython/files/WinPython_3.8/
-Use one of the versions (64bit or 32it) that are compatible with your OS. To save space use one of the versions that have the smaller size (they offer 2 versions: one with size of few hundred MB and one smaller with size of few tens of MB)
+Use one of the versions (64bit or 32it) that are compatible with your OS. 
+To save space use one of the versions that have the smaller size (they offer 2 versions: one with size of few hundred MB and one smaller with size of few tens of MB)
 
-- add Python folder and Python\Scripts folder to your Path (https://docs.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v%3Doffice.14))
+- add Python folder and Python\Scripts folder to your Windows Path (https://docs.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v%3Doffice.14))
 - verify that the pip package can be run by opening Command Prompt(Admin) and running the command: pip -V
 
 - look in the requirements.txt file (found in the sources folder) and install all the dependencies using the pip package. 

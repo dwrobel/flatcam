@@ -1,5 +1,6 @@
 FlatCAM BETA (c) 2019 - by Marius Stanciu
-Based on FlatCAM: 2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
+Based on FlatCAM: 
+2D Computer-Aided PCB Manufacturing by (c) 2014-2016 Juan Pablo Caram
 =================================================
 
 CHANGELOG for FlatCAM beta
@@ -14,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - added the linewidth=2 parameter for the Tool Distance utility geometry
 - fixed a selection issue in Legacy graphic mode for single click
 - added a CHANGELOG file and changed the README file to contain the installation instructions
+- updated the README file
 
 19.04.2020 
 
