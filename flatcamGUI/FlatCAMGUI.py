@@ -4163,8 +4163,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.app.save_in_progress:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Application is saving the project. Please wait ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Application is saving the project. Please wait ..."))
         else:
             grect = self.geometry()
 

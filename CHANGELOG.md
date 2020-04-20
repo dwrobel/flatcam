@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - fixed a selection issue in Legacy graphic mode for single click
 - added a CHANGELOG file and changed the README file to contain the installation instructions
 - updated the README file
+- in Project Tab added tooltips for the loaded objects
+- fixed a bug in loading objects by drag&drop into the Project Tab where only one object in the selection was loaded
 
 19.04.2020 
 
