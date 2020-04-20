@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - made the Grid icon in the status bar clickable and it will toggle the snap to grid function
 - some mods in the Distance Tool
+- added ability to use line width when adding shapes for both Legacy and OpenGL graphic engines
+- added the linewidth=2 parameter for the Tool Distance utility geometry
+- fixed a selection issue in Legacy graphic mode for single click
 
 19.04.2020 
 

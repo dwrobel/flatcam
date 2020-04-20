@@ -4267,12 +4267,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if self.pos is None:
             self.pos = (0, 0)
-        dx = x - self.pos[0]
-        dy = y - self.pos[1]
+        self.app.dx = x - self.pos[0]
+        self.app.dy = y - self.pos[1]
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass

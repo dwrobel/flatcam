@@ -598,7 +598,7 @@ class Distance(FlatCAMTool):
         else:
             color = '#FFFFFFFF'
 
-        self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None)
+        self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None, linewidth=2)
 
         if self.app.is_legacy is True:
             self.sel_shapes.redraw()

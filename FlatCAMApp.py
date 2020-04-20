@@ -2670,6 +2670,10 @@ class App(QtCore.QObject):
         # variable to store mouse coordinates
         self.mouse = [0, 0]
 
+        # variable to store the delta positions on cavnas
+        self.dx = 0
+        self.dy = 0
+
         # decide if we have a double click or single click
         self.doubleclick = False
 
@@ -7635,10 +7639,10 @@ class App(QtCore.QObject):
         self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                        "<b>Y</b>: %.4f" % (location[0], location[1]))
         # Set the relative position label
-        dx = location[0] - float(self.rel_point1[0])
-        dy = location[1] - float(self.rel_point1[1])
+        self.dx = location[0] - float(self.rel_point1[0])
+        self.dy = location[1] - float(self.rel_point1[1])
         self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -8823,24 +8827,26 @@ class App(QtCore.QObject):
                 self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
 
-                dx = pos[0] - float(self.rel_point1[0])
-                dy = pos[1] - float(self.rel_point1[1])
+                self.dx = pos[0] - float(self.rel_point1[0])
+                self.dy = pos[1] - float(self.rel_point1[1])
                 self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
                 if self.event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
-                    if dx < 0:
+                    if self.dx < 0:
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
                                                          face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    elif dx >= 0:
+                    elif self.dx >= 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
                     else:
                         self.selection_type = None
+                else:
+                    self.selection_type = None
 
                 # hover effect - enabled in Preferences -> General -> GUI Settings
                 if self.defaults['global_hover']:
@@ -8940,6 +8946,12 @@ class App(QtCore.QObject):
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
                         return
             else:
+                # WORKAROUND for LEGACY MODE
+                if self.is_legacy is True:
+                    # if there is no move on canvas then we have no dragging selection
+                    if self.dx == 0 or self.dy == 0:
+                        self.selection_type = None
+
                 if self.selection_type is not None:
                     try:
                         self.selection_area_handler(self.pos, pos, self.selection_type)
@@ -8948,6 +8960,7 @@ class App(QtCore.QObject):
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
                         return
                 else:
+
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
                     if key_modifier == QtCore.Qt.ShiftModifier:

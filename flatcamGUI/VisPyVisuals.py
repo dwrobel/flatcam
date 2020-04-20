@@ -193,10 +193,10 @@ class ShapeGroup(object):
 
 class ShapeCollectionVisual(CompoundVisual):
 
-    def __init__(self, line_width=1, triangulation='vispy', layers=3, pool=None, **kwargs):
+    def __init__(self, linewidth=1, triangulation='vispy', layers=3, pool=None, **kwargs):
         """
         Represents collection of shapes to draw on VisPy scene
-        :param line_width: float
+        :param linewidth: float
             Width of lines/edges
         :param triangulation: str
             Triangulation method used for polygons translation
@@ -223,7 +223,7 @@ class ShapeCollectionVisual(CompoundVisual):
         # self._lines = [LineVisual(antialias=True) for _ in range(0, layers)]
         self._lines = [FlatCAMLineVisual(antialias=True) for _ in range(0, layers)]
 
-        self._line_width = line_width
+        self._line_width = linewidth
         self._triangulation = triangulation
 
         visuals_ = [self._lines[i // 2] if i % 2 else self._meshes[i // 2] for i in range(0, layers * 2)]
@@ -262,7 +262,7 @@ class ShapeCollectionVisual(CompoundVisual):
         :param tolerance: float
             Geometry simplifying tolerance
         :param linewidth: int
-            Not used, for compatibility
+            Width of the line
         :return: int
             Index of shape
         """
@@ -275,6 +275,9 @@ class ShapeCollectionVisual(CompoundVisual):
         # Prepare data for translation
         self.data[key] = {'geometry': shape, 'color': color, 'alpha': alpha, 'face_color': face_color,
                           'visible': visible, 'layer': layer, 'tolerance': tolerance}
+
+        if linewidth:
+            self._line_width = linewidth
 
         # Add data to process pool if pool exists
         try:
@@ -459,7 +462,7 @@ class ShapeCollectionVisual(CompoundVisual):
         self.update_lock.acquire(True)
 
         # Merge shapes buffers
-        for data in list(self.data.values()):
+        for data in self.data.values():
             if data['visible'] and 'line_pts' in data:
                 try:
                     line_pts[data['layer']] += data['line_pts']

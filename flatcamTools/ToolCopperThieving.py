@@ -917,10 +917,10 @@ class ToolCopperThieving(FlatCAMTool):
         if self.cursor_pos is None:
             self.cursor_pos = (0, 0)
 
-        dx = curr_pos[0] - float(self.cursor_pos[0])
-        dy = curr_pos[1] - float(self.cursor_pos[1])
+        self.app.dx = curr_pos[0] - float(self.cursor_pos[0])
+        self.app.dy = curr_pos[1] - float(self.cursor_pos[1])
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         # draw the utility geometry
         if self.first_click:
