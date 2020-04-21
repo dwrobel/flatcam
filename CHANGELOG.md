@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.04.2020 
+
+- added a new feature, project auto-saving controlled from Edit -> Preferences -> General -> APP. Preferences -> Enable Auto Save checkbox
+
 20.04.2020
 
 - made the Grid icon in the status bar clickable and it will toggle the snap to grid function

@@ -437,6 +437,8 @@ class App(QtCore.QObject):
             "global_tpdf_bmargin": 10.0,
             "global_tpdf_lmargin": 20.0,
             "global_tpdf_rmargin": 20.0,
+            "global_autosave": False,
+            "global_autosave_timeout": 300000,
 
             # General
             "global_graphic_engine": '3D',
@@ -1197,6 +1199,8 @@ class App(QtCore.QObject):
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
+            "global_autosave": self.ui.general_defaults_form.general_app_group.autosave_cb,
+            "global_autosave_timeout": self.ui.general_defaults_form.general_app_group.autosave_entry,
 
             "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
             "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
@@ -1955,6 +1959,15 @@ class App(QtCore.QObject):
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
         self.log.debug("Finished creating Workers crew.")
+
+        # #############################################################################
+        # ################################ AUTOSAVE SETUP #############################
+        # #############################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # #############################################################################
         # ################################# Activity Monitor ##########################
@@ -5160,6 +5173,9 @@ class App(QtCore.QObject):
 
         if not silent:
             self.inform.emit('[success] %s' % _("Preferences saved."))
+
+        # update the autosave timer
+        self.save_project_auto_update()
 
     def save_toolbar_view(self):
         """
@@ -11651,6 +11667,9 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
+        # block autosaving while a project is loaded
+        self.block_autosave = True
+
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
@@ -11738,6 +11757,9 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
+
+        # restore autosaving after a project was loaded
+        self.block_autosave = False
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
@@ -12920,8 +12942,7 @@ class App(QtCore.QObject):
 
                 if silent is False:
                     if 'version' in saved_d:
-                        self.inform.emit('[success] %s: %s' %
-                                         (_("Project saved to"), filename))
+                        self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
                     else:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
                                          (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
@@ -12969,7 +12990,36 @@ class App(QtCore.QObject):
         except Exception:
             traceback.print_exc()
 
+    def save_project_auto(self):
+        """
+        Called periodically to save the project.
+        It will save if there is no block on the save, if the project was saved at least once and if there is no save in
+        # progress.
+
+        :return:
+        """
+
+        if self.block_autosave is False and self.should_we_save is True and self.save_in_progress is False:
+            self.on_file_saveproject()
+
+    def save_project_auto_update(self):
+        """
+        Update the auto save time interval value.
+        :return:
+        """
+        log.debug("App.save_project_auto_update() --> updated the interval timeout.")
+        if self.autosave_timer.isActive():
+            self.autosave_timer.stop()
+        if self.defaults['global_autosave'] is True:
+            self.autosave_timer.setInterval(int(self.defaults['global_autosave_timeout']))
+            self.autosave_timer.start()
+
     def on_plotarea_tab_closed(self, tab_idx):
+        """
+
+        :param tab_idx: Index of the Tab from the plotarea that was closed
+        :return:
+        """
         widget = self.ui.plot_tab_area.widget(tab_idx)
 
         if widget is not None:

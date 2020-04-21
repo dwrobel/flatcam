@@ -1818,16 +1818,42 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
+        # Auto save CB
+        self.autosave_cb = FCCheckBox(_('Enable Auto Save'))
+        self.autosave_cb.setToolTip(
+            _("Check to enable the autosave feature.\n"
+              "When enabled, the application will try to save a project\n"
+              "at the set interval.")
+        )
+
+        grid0.addWidget(self.autosave_cb, 31, 0, 1, 2)
+
+        # Auto Save Timeout Interval
+        self.autosave_entry = FCSpinner()
+        self.autosave_entry.set_range(0, 9999999)
+        self.autosave_label = QtWidgets.QLabel('%s:' % _('Interval'))
+        self.autosave_label.setToolTip(
+            _("Time interval for autosaving. In milliseconds.\n"
+              "The application will try to save periodically but only\n"
+              "if the project was saved manually at least once.\n"
+              "While active, some operations may block this feature.")
+        )
+
+        grid0.addWidget(self.autosave_label, 32, 0)
+        grid0.addWidget(self.autosave_entry, 32, 1)
+
+        # self.as_ois = OptionalInputSection(self.autosave_cb, [self.autosave_label, self.autosave_entry], True)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 31, 0, 1, 2)
+        grid0.addWidget(separator_line, 33, 0, 1, 2)
 
         self.pdf_param_label = QtWidgets.QLabel('<B>%s:</b>' % _("Text to PDF parameters"))
         self.pdf_param_label.setToolTip(
             _("Used when saving text in Code Editor or in FlatCAM Document objects.")
         )
-        grid0.addWidget(self.pdf_param_label, 32, 0, 1, 2)
+        grid0.addWidget(self.pdf_param_label, 34, 0, 1, 2)
 
         # Top Margin value
         self.tmargin_entry = FCDoubleSpinner()
@@ -1839,8 +1865,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the top of the PDF file.")
         )
 
-        grid0.addWidget(self.tmargin_label, 33, 0)
-        grid0.addWidget(self.tmargin_entry, 33, 1)
+        grid0.addWidget(self.tmargin_label, 35, 0)
+        grid0.addWidget(self.tmargin_entry, 35, 1)
 
         # Bottom Margin value
         self.bmargin_entry = FCDoubleSpinner()
@@ -1852,8 +1878,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the bottom of the PDF file.")
         )
 
-        grid0.addWidget(self.bmargin_label, 34, 0)
-        grid0.addWidget(self.bmargin_entry, 34, 1)
+        grid0.addWidget(self.bmargin_label, 36, 0)
+        grid0.addWidget(self.bmargin_entry, 36, 1)
 
         # Left Margin value
         self.lmargin_entry = FCDoubleSpinner()
@@ -1865,8 +1891,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the left of the PDF file.")
         )
 
-        grid0.addWidget(self.lmargin_label, 35, 0)
-        grid0.addWidget(self.lmargin_entry, 35, 1)
+        grid0.addWidget(self.lmargin_label, 37, 0)
+        grid0.addWidget(self.lmargin_entry, 37, 1)
 
         # Right Margin value
         self.rmargin_entry = FCDoubleSpinner()
@@ -1878,8 +1904,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the right of the PDF file.")
         )
 
-        grid0.addWidget(self.rmargin_label, 36, 0)
-        grid0.addWidget(self.rmargin_entry, 36, 1)
+        grid0.addWidget(self.rmargin_label, 38, 0)
+        grid0.addWidget(self.rmargin_entry, 38, 1)
 
         self.layout.addStretch()
 
