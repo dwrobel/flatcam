@@ -92,7 +92,11 @@ class TclCommandCncjob(TclCommandSignaled):
         name = ''
 
         if 'muted' in args:
-            muted = bool(eval(args['muted']))
+            try:
+                par = args['muted'].capitalize()
+            except AttributeError:
+                par = args['muted']
+            muted = bool(eval(par))
         else:
             muted = False
 

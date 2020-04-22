@@ -38,7 +38,6 @@ class TclCommandCopperClear(TclCommand):
         ('method', str),
         ('connect', str),
         ('contour', str),
-        ('has_offset', str),
         ('offset', float),
         ('rest', str),
         ('all', int),
@@ -69,15 +68,13 @@ class TclCommandCopperClear(TclCommand):
             ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
             ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
             ('rest', 'Use rest-machining. True (1) or False (0)'),
-            ('has_offset', 'The offset will used only if this is set True or present in args. True (1) or False (0).'),
-            ('offset', 'The copper clearing will finish to a distance from copper features. Float number.'),
-            ('all', 'Will copper clear the whole object. 1 or True = enabled, anything else = disabled'),
-            ('ref', 'Will clear of extra copper all polygons within a specified object with the name in "box" '
-                    'parameter. 1 or True = enabled, 0 or False = disabled'),
-            ('box', 'Name of the object to be used as reference. Required when selecting "ref" = 1 or True. String.'),
+            ('offset', 'If used, the copper clearing will finish to a distance from copper features. Float number.'),
+            ('all', 'If used will copper clear the whole object. Either "-all" or "-box <value>" has to be used.'),
+            ('box', 'Name of the object to be used as reference. Either "-all" or "-box <value>" has to be used. '
+                    'String.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
-        'examples': ["ncc obj_name -tooldia 0.3,1 -overlap 10 -margin 1.0 -method 'lines' -all True"]
+        'examples': ["ncc obj_name -tooldia 0.3,1 -overlap 10 -margin 1.0 -method 'lines' -all"]
     }
 
     def execute(self, args, unnamed_args):
@@ -129,24 +126,27 @@ class TclCommandCopperClear(TclCommand):
             method = str(self.app.defaults["tools_nccmethod"])
 
         if 'connect' in args:
-            connect = bool(eval(args['connect']))
+            try:
+                par = args['connect'].capitalize()
+            except AttributeError:
+                par = args['connect']
+            connect = bool(eval(par))
         else:
             connect = bool(eval(str(self.app.defaults["tools_nccconnect"])))
 
         if 'contour' in args:
-            contour = bool(eval(args['contour']))
+            try:
+                par = args['contour'].capitalize()
+            except AttributeError:
+                par = args['contour']
+            contour = bool(eval(par))
         else:
             contour = bool(eval(str(self.app.defaults["tools_ncccontour"])))
 
         offset = 0.0
-        if 'has_offset' in args:
-            has_offset = bool(eval(args['has_offset']))
-            if args['has_offset'] is True:
-                if 'offset' in args:
-                    offset = float(args['margin'])
-                else:
-                    # 'offset' has to be in args if 'has_offset' is and it is set True
-                    self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
+        if 'offset' in args:
+            offset = float(args['offset'])
+            has_offset = True
         else:
             has_offset = False
 
@@ -208,7 +208,11 @@ class TclCommandCopperClear(TclCommand):
             })
 
         if 'rest' in args:
-            rest = bool(eval(args['rest']))
+            try:
+                par = args['rest'].capitalize()
+            except AttributeError:
+                par = args['rest']
+            rest = bool(eval(par))
         else:
             rest = bool(eval(str(self.app.defaults["tools_nccrest"])))
 
@@ -221,7 +225,7 @@ class TclCommandCopperClear(TclCommand):
                 outname = name + "_ncc_rm"
 
         # Non-Copper clear all polygons in the non-copper clear object
-        if 'all' in args and bool(args['all']):
+        if 'all' in args:
             self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
                                                    select_method='itself',
                                                    ncctooldia=tooldia,
@@ -241,40 +245,36 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
-        elif 'ref' in args and bool(eval(args['ref'])):
-            if 'box' not in args:
-                self.raise_tcl_error('%s' % _("Expected -box <value>."))
-            else:
-                box_name = args['box']
+        if 'box' in args:
+            box_name = args['box']
 
-                # Get box source object.
-                try:
-                    box_obj = self.app.collection.get_by_name(str(box_name))
-                except Exception as e:
-                    log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
-                    self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
-                    return "Could not retrieve object: %s" % name
+            # Get box source object.
+            try:
+                box_obj = self.app.collection.get_by_name(str(box_name))
+            except Exception as e:
+                log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
+                self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+                return "Could not retrieve object: %s" % name
 
-                self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
-                                                       sel_obj=box_obj,
-                                                       select_method='box',
-                                                       ncctooldia=tooldia,
-                                                       overlap=overlap,
-                                                       order=order,
-                                                       margin=margin,
-                                                       has_offset=has_offset,
-                                                       offset=offset,
-                                                       method=method,
-                                                       outname=outname,
-                                                       connect=connect,
-                                                       contour=contour,
-                                                       rest=rest,
-                                                       tools_storage=ncc_tools,
-                                                       plot=False,
-                                                       run_threaded=False)
+            self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
+                                                   sel_obj=box_obj,
+                                                   select_method='box',
+                                                   ncctooldia=tooldia,
+                                                   overlap=overlap,
+                                                   order=order,
+                                                   margin=margin,
+                                                   has_offset=has_offset,
+                                                   offset=offset,
+                                                   method=method,
+                                                   outname=outname,
+                                                   connect=connect,
+                                                   contour=contour,
+                                                   rest=rest,
+                                                   tools_storage=ncc_tools,
+                                                   plot=False,
+                                                   run_threaded=False)
             return
-        else:
-            self.raise_tcl_error("%s:" % _("None of the following args: 'ref', 'all' were found or none was set to 1.\n"
-                                           "Copper clearing failed."))
-            return "None of the following args: 'ref', 'all' were found or none was set to 1.\n" \
-                   "Copper clearing failed."
+
+        # if the program reached this then it's an error because neither -all or -box <value> was used.
+        self.raise_tcl_error('%s' % _("Expected either -box <value> or -all."))
+        return "Expected either -box <value> or -all. Copper clearing failed."

@@ -86,7 +86,11 @@ class TclCommandMillSlots(TclCommandSignaled):
             args['outname'] = name + "_mill_slots"
 
         if 'use_thread' in args:
-            args['use_thread'] = bool(eval(args['use_thread']))
+            try:
+                par = args['use_thread'].capitalize()
+            except AttributeError:
+                par = args['use_thread']
+            args['use_thread'] = bool(eval(par))
         else:
             args['use_thread'] = False
 

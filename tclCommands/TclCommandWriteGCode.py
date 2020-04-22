@@ -69,11 +69,15 @@ class TclCommandWriteGCode(TclCommandSignaled):
         postamble = args['postamble'] if 'postamble' in args else ''
 
         if 'muted' in args:
-            muted = bool(eval(args['muted']))
+            try:
+                par = args['muted'].capitalize()
+            except AttributeError:
+                par = args['muted']
+            muted = bool(eval(par))
         else:
             muted = False
 
-        # TODO: This is not needed any more? All targets should be present.
+        # This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.
         # if self.collection.has_promises():
         #     def write_gcode_on_object(new_object):

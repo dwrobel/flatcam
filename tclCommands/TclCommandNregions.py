@@ -78,9 +78,14 @@ class TclCommandNregions(TclCommand):
             args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
         margin = float(args['margin'])
 
-        if 'rounded' not in args:
-            args['rounded'] = self.app.defaults["gerber_noncopperrounded"]
-        rounded = bool(eval(args['rounded']))
+        if 'rounded' in args:
+            try:
+                par = args['rounded'].capitalize()
+            except AttributeError:
+                par = args['rounded']
+            rounded = bool(eval(par))
+        else:
+            rounded = bool(eval(self.app.defaults["gerber_noncopperrounded"]))
 
         del args['name']
 

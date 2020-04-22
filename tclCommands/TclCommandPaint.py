@@ -69,16 +69,14 @@ class TclCommandPaint(TclCommand):
             ('method', 'Algorithm for painting. Can be: "standard", "seed" or "lines".'),
             ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
             ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
-            ('all', 'Paint all polygons in the object. True (1) or False (0)'),
+            ('all', 'If used, paint all polygons in the object.'),
+            ('box', 'name of the object to be used as paint reference. String.'),
             ('single', 'Paint a single polygon specified by "x" and "y" parameters. True (1) or False (0)'),
-            ('ref', 'Paint all polygons within a specified object with the name in "box" parameter. '
-                    'True (1) or False (0)'),
-            ('box', 'name of the object to be used as paint reference when selecting "ref"" True. String.'),
             ('x', 'X value of coordinate for the selection of a single polygon. Float number.'),
             ('y', 'Y value of coordinate for the selection of a single polygon. Float number.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
-        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all True"]
+        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all"]
     }
 
     def execute(self, args, unnamed_args):
@@ -127,14 +125,22 @@ class TclCommandPaint(TclCommand):
             method = str(self.app.defaults["tools_paintmethod"])
 
         if 'connect' in args:
-            connect = bool(eval(args['connect']))
+            try:
+                par = args['connect'].capitalize()
+            except AttributeError:
+                par = args['connect']
+            connect = bool(eval(par))
         else:
-            connect = eval(str(self.app.defaults["tools_pathconnect"]))
+            connect = bool(eval(str(self.app.defaults["tools_pathconnect"])))
 
         if 'contour' in args:
-            contour = bool(eval(args['contour']))
+            try:
+                par = args['contour'].capitalize()
+            except AttributeError:
+                par = args['contour']
+            contour = bool(eval(par))
         else:
-            contour = eval(str(self.app.defaults["tools_paintcontour"]))
+            contour = bool(eval(str(self.app.defaults["tools_paintcontour"])))
 
         if 'outname' in args:
             outname = args['outname']
@@ -202,7 +208,7 @@ class TclCommandPaint(TclCommand):
             return "Object not found: %s" % name
 
         # Paint all polygons in the painted object
-        if 'all' in args and bool(eval(args['all'])) is True:
+        if 'all' in args:
             self.app.paint_tool.paint_poly_all(obj=obj,
                                                tooldia=tooldia,
                                                overlap=overlap,
@@ -218,8 +224,8 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint single polygon in the painted object
-        elif 'single' in args and bool(eval(args['single'])) is True:
-            if 'x' not in args or 'y' not in args:
+        if 'single' in args:
+            if 'x' not in args and 'y' not in args:
                 self.raise_tcl_error('%s' % _("Expected -x <value> and -y <value>."))
             else:
                 x = args['x']
@@ -241,37 +247,35 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint all polygons found within the box object from the the painted object
-        elif 'ref' in args and bool(eval(args['ref'])) is True:
-            if 'box' not in args:
+        if 'box' in args:
+            box_name = args['box']
+
+            if box_name is None:
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
-            else:
-                box_name = args['box']
 
-                # Get box source object.
-                try:
-                    box_obj = self.app.collection.get_by_name(str(box_name))
-                except Exception as e:
-                    log.debug("TclCommandPaint.execute() --> %s" % str(e))
-                    self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
-                    return "Could not retrieve object: %s" % name
+            # Get box source object.
+            try:
+                box_obj = self.app.collection.get_by_name(str(box_name))
+            except Exception as e:
+                log.debug("TclCommandPaint.execute() --> %s" % str(e))
+                self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
+                return "Could not retrieve object: %s" % name
 
-                self.app.paint_tool.paint_poly_ref(obj=obj,
-                                                   sel_obj=box_obj,
-                                                   tooldia=tooldia,
-                                                   overlap=overlap,
-                                                   order=order,
-                                                   margin=margin,
-                                                   method=method,
-                                                   outname=outname,
-                                                   connect=connect,
-                                                   contour=contour,
-                                                   tools_storage=paint_tools,
-                                                   plot=False,
-                                                   run_threaded=False)
+            self.app.paint_tool.paint_poly_ref(obj=obj,
+                                               sel_obj=box_obj,
+                                               tooldia=tooldia,
+                                               overlap=overlap,
+                                               order=order,
+                                               margin=margin,
+                                               method=method,
+                                               outname=outname,
+                                               connect=connect,
+                                               contour=contour,
+                                               tools_storage=paint_tools,
+                                               plot=False,
+                                               run_threaded=False)
             return
 
-        else:
-            self.raise_tcl_error("%s:" % _("There was none of the following args: 'ref', 'single', 'all'.\n"
-                                           "Paint failed."))
-            return "There was none of the following args: 'ref', 'single', 'all'.\n" \
-                   "Paint failed."
+        self.raise_tcl_error("%s:" % _("None of the following args: 'box', 'single', 'all' were used.\n"
+                                       "Paint failed."))
+        return "None of the following args: 'box', 'single', 'all' were used. Paint failed."

@@ -65,7 +65,11 @@ class TclCommandDelete(TclCommand):
                 if args['f'] is None:
                     is_forced = True
                 else:
-                    is_forced = True if bool(eval(str(args['f']))) else False
+                    try:
+                        par = args['f'].capitalize()
+                    except AttributeError:
+                        par = args['f']
+                    is_forced = bool(eval(par))
             except KeyError:
                 is_forced = True
 

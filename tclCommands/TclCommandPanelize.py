@@ -37,7 +37,7 @@ class TclCommandPanelize(TclCommand):
         ('spacing_rows', float),
         ('box', str),
         ('outname', str),
-        ('run_threaded', str)
+        ('use_thread', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -55,7 +55,7 @@ class TclCommandPanelize(TclCommand):
             ('columns', 'Number of columns.'),
             ('rows', 'Number of rows;'),
             ('outname', 'Name of the new geometry object.'),
-            ('run_threaded', 'False (0) = non-threaded execution or True (1) = threaded execution')
+            ('use_thread', 'False (0) = non-threaded execution or True (1) = threaded execution')
         ]),
         'examples': [
             'panelize obj_name',
@@ -113,8 +113,12 @@ class TclCommandPanelize(TclCommand):
         else:
             outname = name + '_panelized'
 
-        if 'run_threaded' in args:
-            threaded = bool(eval(args['run_threaded']))
+        if 'use_thread' in args:
+            try:
+                par = args['use_thread'].capitalize()
+            except AttributeError:
+                par = args['use_thread']
+            threaded = bool(eval(par))
         else:
             threaded = False
 

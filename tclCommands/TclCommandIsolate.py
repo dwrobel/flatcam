@@ -83,8 +83,12 @@ class TclCommandIsolate(TclCommandSignaled):
             args['follow'] = None
 
         # evaluate this parameter so True, False, 0 and 1 works
-        if "combine" in args:
-            args['combine'] = bool(eval(args['combine']))
+        if 'combine' in args:
+            try:
+                par = args['combine'].capitalize()
+            except AttributeError:
+                par = args['combine']
+            args['combine'] = bool(eval(par))
         else:
             args['combine'] = bool(eval(self.app.defaults["gerber_combine_passes"]))
 

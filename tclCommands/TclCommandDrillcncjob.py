@@ -111,7 +111,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             args['outname'] = name + "_cnc"
 
         if 'muted' in args:
-            muted = bool(eval(args['muted']))
+            try:
+                par = args['muted'].capitalize()
+            except AttributeError:
+                par = args['muted']
+            muted = bool(eval(par))
         else:
             muted = False
 

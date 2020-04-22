@@ -79,9 +79,14 @@ class TclCommandBbox(TclCommand):
             args['margin'] = float(self.app.defaults["gerber_bboxmargin"])
         margin = args['margin']
 
-        if 'rounded' not in args:
-            args['rounded'] = bool(eval(self.app.defaults["gerber_bboxrounded"]))
-        rounded = bool(eval(args['rounded']))
+        if 'rounded' in args:
+            try:
+                par = args['rounded'].capitalize()
+            except AttributeError:
+                par = args['rounded']
+            rounded = bool(eval(par))
+        else:
+            rounded = bool(eval(self.app.defaults["gerber_bboxrounded"]))
 
         del args['name']
 

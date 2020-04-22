@@ -49,17 +49,27 @@ class TclCommandPlotAll(TclCommandSignaled):
         """
 
         if 'use_thread' in args:
-            threaded = bool(eval(args['use_thread']))
+            try:
+                par = args['use_thread'].capitalize()
+            except AttributeError:
+                par = args['use_thread']
+            threaded = bool(eval(par))
         else:
             threaded = False
 
+        plot_status = True
         if 'plot_status' in args:
-            if args['plot_status'] is None:
+            try:
+                if args['plot_status'] is None:
+                    plot_status = True
+                else:
+                    try:
+                        par = args['plot_status'].capitalize()
+                    except AttributeError:
+                        par = args['plot_status']
+                    plot_status = bool(eval(par))
+            except KeyError:
                 plot_status = True
-            else:
-                plot_status = bool(eval(args['plot_status']))
-        else:
-            plot_status = True
 
         for obj in self.app.collection.get_list():
             obj.options["plot"] = True if plot_status is True else False
