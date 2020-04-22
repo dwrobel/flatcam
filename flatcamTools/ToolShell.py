@@ -33,10 +33,10 @@ class TermWidget(QWidget):
     User pressed Enter. Client class should decide, if command must be executed or user may continue edit it
     """
 
-    def __init__(self, version, *args):
+    def __init__(self, version, app, *args):
         QWidget.__init__(self, *args)
 
-        self._browser = _BrowserTextEdit(version=version)
+        self._browser = _BrowserTextEdit(version=version, app=app)
         self._browser.setStyleSheet("font: 9pt \"Courier\";")
         self._browser.setReadOnly(True)
         self._browser.document().setDefaultStyleSheet(
@@ -92,10 +92,14 @@ class TermWidget(QWidget):
         """
         Convert text to HTML for inserting it to browser
         """
-        assert style in ('in', 'out', 'err', 'warning', 'success', 'selected')
+        assert style in ('in', 'out', 'err', 'warning', 'success', 'selected', 'raw')
 
-        text = html.escape(text)
-        text = text.replace('\n', '<br/>')
+        if style != 'raw':
+            text = html.escape(text)
+            text = text.replace('\n', '<br/>')
+        else:
+            text = text.replace('\n', '<br>')
+            text = text.replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 
         if style == 'in':
             text = '<span style="font-weight: bold;">%s</span>' % text
@@ -107,6 +111,8 @@ class TermWidget(QWidget):
             text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
         elif style == 'selected':
             text = ''
+        elif style == 'raw':
+            text = text
         else:
             text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
 
@@ -177,23 +183,29 @@ class TermWidget(QWidget):
         """
         self._append_to_browser('out', text)
 
+    def append_raw(self, text):
+        """
+        Append text to output widget as it is
+        """
+        self._append_to_browser('raw', text)
+
     def append_success(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('success', text)
 
     def append_selected(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('selected', text)
 
     def append_warning(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('warning', text)
 
     def append_error(self, text):
-        """Appent error text to output widget. Text is drawn with red background
+        """Append error text to output widget. Text is drawn with red background
         """
         self._append_to_browser('err', text)
 
@@ -235,7 +247,7 @@ class FCShell(TermWidget):
         :param version:     FlatCAM version string
         :param args:        Parameters passed to the TermWidget parent class
         """
-        TermWidget.__init__(self, version, *args)
+        TermWidget.__init__(self, version, *args, app=sysShell)
         self._sysShell = sysShell
 
     def is_command_complete(self, text):

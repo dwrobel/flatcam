@@ -2105,7 +2105,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
 
-        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
@@ -3326,7 +3326,7 @@ class App(QtCore.QObject):
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
         self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
                                                            '&Command Line\tS')
-        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
 
         # third install all of them
         try:
@@ -3377,7 +3377,7 @@ class App(QtCore.QObject):
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
-        self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
+        self.ui.shell_btn.triggered.connect(self.toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
         self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
         self.ui.run_script_btn.triggered.connect(self.on_filerunscript)
@@ -5173,7 +5173,7 @@ class App(QtCore.QObject):
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
         # sys.exit(0)
-        os._exit(0) # fix to work with Python 3.8
+        os._exit(0)     # fix to work with Python 3.8
 
     def kill_app(self):
         # QtCore.QCoreApplication.quit()
@@ -5273,34 +5273,6 @@ class App(QtCore.QObject):
 
         with open(config_file, 'w') as f:
             f.writelines(data)
-
-    def on_toggle_shell(self):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.report_usage("on_toggle_shell()")
-
-        if self.ui.shell_dock.isVisible():
-            self.ui.shell_dock.hide()
-        else:
-            self.ui.shell_dock.show()
-
-    def on_toggle_shell_from_settings(self, state):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.report_usage("on_toggle_shell_from_settings()")
-
-        if state is True:
-            if not self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.show()
-        else:
-            if self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.hide()
 
     def on_register_files(self, obj_type=None):
         """
@@ -8601,8 +8573,11 @@ class App(QtCore.QObject):
                 pan_button = 2
             self.event_is_dragging = self.plotcanvas.is_dragging
 
-        # So it can receive key presses
-        self.plotcanvas.native.setFocus()
+        # So it can receive key presses but not when the Tcl Shell is active
+        if not self.ui.shell_dock.isVisible():
+            if not self.plotcanvas.native.hasFocus():
+                self.plotcanvas.native.setFocus()
+
         self.pos_jump = event_pos
 
         self.ui.popMenu.mouse_is_panning = False
@@ -12812,6 +12787,49 @@ class App(QtCore.QObject):
         this exception is defined here, to be able catch it if we successfully handle all errors from shell command
         """
         pass
+
+    def toggle_shell(self):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.report_usage("toggle_shell()")
+
+        if self.ui.shell_dock.isVisible():
+            self.ui.shell_dock.hide()
+            self.plotcanvas.native.setFocus()
+        else:
+            self.ui.shell_dock.show()
+
+            # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
+            # self.shell._edit.setFocus()
+            QtCore.QTimer.singleShot(0, lambda: self.ui.shell_dock.widget()._edit.setFocus())
+
+            # HACK - simulate a mouse click - alternative
+            # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.NoModifier)    # no KB modifier
+            # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
+            # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtWidgets.qApp.sendEvent(self.shell._edit, e)
+            # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtWidgets.qApp.sendEvent(self.shell._edit, f)
+
+    def on_toggle_shell_from_settings(self, state):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.report_usage("on_toggle_shell_from_settings()")
+
+        if state is True:
+            if not self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.show()
+        else:
+            if self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.hide()
 
     def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """

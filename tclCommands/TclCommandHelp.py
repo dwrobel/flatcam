@@ -22,10 +22,10 @@ if '_' not in builtins.__dict__:
 
 class TclCommandHelp(TclCommand):
     """
-    Tcl shell command to get the value of a system variable
+    Tcl shell command to show Help
 
     example:
-        get_sys excellon_zeros
+        help add_circle
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
@@ -58,21 +58,21 @@ class TclCommandHelp(TclCommand):
     def execute(self, args, unnamed_args):
         """
 
-        :param args:
+        :param args:            Without any argument will display the list of commands. Can have as a argument
+        a tcl command name to display the help for that command.
         :param unnamed_args:
         :return:
         """
-        print(self.app.tcl_commands_storage)
 
         if 'name' in args:
             name = args['name']
             if name not in self.app.tcl_commands_storage:
                 return "Unknown command: %s" % name
 
-            print(self.app.tcl_commands_storage[name]["help"])
+            self.app.shell.append_output(self.app.tcl_commands_storage[name]["help"])
         else:
-            if args is None:
-                cmd_enum = _("Available commands:\n")
+            if not args:
+                cmd_enum = '%s\n' % _("Available commands:")
 
                 displayed_text = []
                 try:
@@ -85,14 +85,12 @@ class TclCommandHelp(TclCommand):
                     max_tabs = math.ceil(max_len / 8)
 
                     for cmd_name in sorted(self.app.tcl_commands_storage):
-                        cmd_description = self.app.tcl_commands_storage[cmd_name]['description']
+                        cmd_description = "<span>%s</span>" % self.app.tcl_commands_storage[cmd_name]['description']
 
                         curr_len = len(cmd_name)
                         tabs = '\t'
 
-                        cmd_name_colored = "<span style=\" color:#ff0000;\" >"
-                        cmd_name_colored += str(cmd_name)
-                        cmd_name_colored += "</span>"
+                        cmd_name_colored = "<span style=\" font-weight: bold; color: red;\" >%s</span>" % str(cmd_name)
 
                         # make sure to add the right number of tabs (1 tab = 8 spaces) so all the commands
                         # descriptions are aligned
@@ -102,7 +100,7 @@ class TclCommandHelp(TclCommand):
                             nr_tabs = 0
 
                             for x in range(max_tabs):
-                                if curr_len <= (x * 8):
+                                if curr_len < (x * 8):
                                     nr_tabs += 1
 
                             # nr_tabs = 2 if curr_len <= 8 else 1
@@ -111,9 +109,9 @@ class TclCommandHelp(TclCommand):
                         displayed_text.append(cmd_line_txt)
                 except Exception as err:
                     self.app.log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))
-                    displayed_text = [' %s' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
+                    displayed_text = ['> %s\n' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
 
-                cmd_enum += '\n'.join(displayed_text)
-                cmd_enum += '\n\n%s\n%s' % (_("Type help <command_name> for usage."), _("Example: help open_gerber"))
+                cmd_enum += '<br>'.join(displayed_text)
+                cmd_enum += '<br><br>%s<br>%s' % (_("Type help <command_name> for usage."), _("Example: help open_gerber"))
 
-                print(cmd_enum)
+                self.app.shell.append_raw(cmd_enum)

@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.04.2020 
+
+- fixed the Tcl Command Help to work as expected; made the text of the commands to be colored in Red color and bold
+- added a 'Close' menu entry in the Tcl Shell context menu that will close (hide) the Tcl Shell Dock widget
+- on launching the Tcl Shell the Edit line will take focus immediately 
+- in App.on_mouse_move_over_plot() method no longer will be done a setFocus() on every move, only when it is needed
+
 22.04.2020 
 
 - added a new feature, project auto-saving controlled from Edit -> Preferences -> General -> APP. Preferences -> Enable Auto Save checkbox

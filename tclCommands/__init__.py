@@ -1,7 +1,6 @@
 import pkgutil
 import sys
 
-# Todo: I think these imports are not needed.
 # allowed command modules (please append them alphabetically ordered)
 import tclCommands.TclCommandAddCircle
 import tclCommands.TclCommandAddPolygon
@@ -27,6 +26,7 @@ import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames
 import tclCommands.TclCommandGetSys
+import tclCommands.TclCommandHelp
 import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
@@ -93,7 +93,6 @@ def register_all_commands(app, commands):
     tcl_modules = {k: v for k, v in list(sys.modules.items()) if k.startswith('tclCommands.TclCommand')}
 
     for key, mod in list(tcl_modules.items()):
-        print(key)
         if key != 'tclCommands.TclCommand':
             class_name = key.split('.')[1]
             class_type = getattr(mod, class_name)

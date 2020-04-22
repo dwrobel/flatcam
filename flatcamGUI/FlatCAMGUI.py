@@ -3247,7 +3247,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Shell toggle
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_toggle_shell()
+                    self.app.toggle_shell()
 
                 # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:

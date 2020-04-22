@@ -2560,10 +2560,11 @@ class DialogBoxRadio(QtWidgets.QDialog):
 
 class _BrowserTextEdit(QTextEdit):
 
-    def __init__(self, version):
+    def __init__(self, version, app=None):
         QTextEdit.__init__(self)
         self.menu = None
         self.version = version
+        self.app = app
 
     def contextMenuEvent(self, event):
         self.menu = self.createStandardContextMenu(event.pos())
@@ -2571,6 +2572,12 @@ class _BrowserTextEdit(QTextEdit):
         clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
+
+        if self.app:
+            close_action = QAction("Close", self)
+            self.menu.addAction(close_action)
+            close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
+
         self.menu.exec_(event.globalPos())
 
     def clear(self):
