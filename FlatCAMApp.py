@@ -3829,7 +3829,23 @@ class App(QtCore.QObject):
             if 'version' not in defaults or defaults['version'] != self.defaults['version']:
                 for k, v in defaults.items():
                     if k in self.defaults and k != 'version':
-                        self.defaults[k] = v
+
+                        # check if the types are the same. Because some types (tuple, float, int etc)
+                        # may be stored as strings we check their types.
+                        try:
+                            target = eval(self.defaults[k])
+                        except NameError:
+                            # it's an unknown string leave it as it is
+                            target = deepcopy(self.defaults[k])
+
+                        try:
+                            source = eval(v)
+                        except NameError:
+                            # it's an unknown string leave it as it is
+                            source = deepcopy(v)
+
+                        if type(target) == type(source):
+                            self.defaults[k] = v
 
                 # delete old factory defaults
                 try:

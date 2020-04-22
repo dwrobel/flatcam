@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - added a 'Close' menu entry in the Tcl Shell context menu that will close (hide) the Tcl Shell Dock widget
 - on launching the Tcl Shell the Edit line will take focus immediately 
 - in App.on_mouse_move_over_plot() method no longer will be done a setFocus() on every move, only when it is needed
+- added an extra check if old preferences files are detected, a check if the type of the values is the same with the type in the current preferences file. If the type is not the same then the current type is preferred.
 
 22.04.2020 
 
