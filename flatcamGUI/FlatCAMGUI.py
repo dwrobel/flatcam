@@ -42,13 +42,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Divine icon pack by Ipapun @ finicons.com
 
-        # ################################## ##
-        # ## BUILDING THE GUI IS DONE HERE # ##
-        # ################################## ##
+        # #######################################################################
+        # ############ BUILDING THE GUI IS EXECUTED HERE ########################
+        # #######################################################################
 
-        # ######### ##
-        # ## Menu # ##
-        # ######### ##
+        # #######################################################################
+        # ####################### TCL Shell DOCK ################################
+        # #######################################################################
+        self.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
+        self.shell_dock.setObjectName('Shell_DockWidget')
+        self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
+        self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
+                                       QtWidgets.QDockWidget.DockWidgetFloatable |
+                                       QtWidgets.QDockWidget.DockWidgetClosable)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.shell_dock)
+
+        # #######################################################################
+        # ###################### Menu BUILDING ##################################
+        # #######################################################################
         self.menu = self.menuBar()
 
         self.menu_toggle_nb = QtWidgets.QAction(
@@ -735,7 +746,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
 
         # IMPORTANT #
-        # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
+        # The order: SPLITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
         # desired.
         self.splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.splitter)

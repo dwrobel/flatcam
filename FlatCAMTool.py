@@ -252,3 +252,11 @@ class FlatCAMTool(QtWidgets.QWidget):
                                  (_("Edited value is out of range"), minval, maxval))
         else:
             self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
+
+    def sizeHint(self):
+        """
+        I've overloaded this just in case I will need to make changes in the future to enforce dimensions
+        :return:
+        """
+        default_hint_size = super(FlatCAMTool, self).sizeHint()
+        return QtCore.QSize(default_hint_size.width(), default_hint_size.height())

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - added a new feature, project auto-saving controlled from Edit -> Preferences -> General -> APP. Preferences -> Enable Auto Save checkbox
 - fixed some bugs in the Tcl Commands
 - modified the Tcl Commands to be able to use as boolean values keywords with lower case like 'false' instead of expected 'False'
+- refactored some of the code in the App class and created a new Tcl Command named Help
 
 20.04.2020
 

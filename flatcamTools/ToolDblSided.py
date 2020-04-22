@@ -159,7 +159,7 @@ class DblSidedTool(FlatCAMTool):
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Mirror Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
 
-        grid_lay1.addWidget(self.param_label, 0, 0, 1, 3)
+        grid_lay1.addWidget(self.param_label, 0, 0, 1, 2)
 
         # ## Axis
         self.mirax_label = QtWidgets.QLabel('%s:' % _("Mirror Axis"))

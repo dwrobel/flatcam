@@ -2556,6 +2556,9 @@ class App(QtCore.QObject):
         # this will hold the TCL instance
         self.tcl = None
 
+        # the actual variable will be redeclared in setup_tcl()
+        self.tcl_commands_storage = None
+
         self.init_tcl()
 
         self.shell = FCShell(self, version=self.version)
@@ -2566,14 +2569,7 @@ class App(QtCore.QObject):
         self.shell.append_output("FlatCAM %s - " % self.version)
         self.shell.append_output(_("Type >help< to get started\n\n"))
 
-        self.ui.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
-        self.ui.shell_dock.setObjectName('Shell_DockWidget')
         self.ui.shell_dock.setWidget(self.shell)
-        self.ui.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-        self.ui.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
-                                       QtWidgets.QDockWidget.DockWidgetFloatable |
-                                       QtWidgets.QDockWidget.DockWidgetClosable)
-        self.ui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.ui.shell_dock)
 
         # show TCL shell at start-up based on the Menu -? Edit -> Preferences setting.
         if self.defaults["global_shell_at_startup"]:
@@ -2883,7 +2879,7 @@ class App(QtCore.QObject):
                     # if there are Windows paths then replace the path separator with a Unix like one
                     if sys.platform == 'win32':
                         command_tcl_formatted = command_tcl_formatted.replace('\\', '/')
-                    self.shell._sysShell.exec_command(command_tcl_formatted, no_echo=True)
+                    self.shell.exec_command(command_tcl_formatted, no_echo=True)
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
@@ -2903,9 +2899,9 @@ class App(QtCore.QObject):
                     #                             color=QtGui.QColor("gray"))
                     cmd_line_shellfile_text = myfile.read()
                     if self.cmd_line_headless != 1:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+                        self.shell.exec_command(cmd_line_shellfile_text)
                     else:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_text, no_echo=True)
+                        self.shell.exec_command(cmd_line_shellfile_text, no_echo=True)
 
             except Exception as ext:
                 print("ERROR: ", ext)
@@ -3702,209 +3698,6 @@ class App(QtCore.QObject):
             self.defaults['global_stats'][resource] += 1
         else:
             self.defaults['global_stats'][resource] = 1
-
-    def init_tcl(self):
-        """
-        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
-        :return: None
-        """
-        if hasattr(self, 'tcl') and self.tcl is not None:
-            # self.tcl = None
-            # TODO  we need  to clean  non default variables and procedures here
-            # new object cannot be used here as it  will not remember values created for next passes,
-            # because tcl  was execudted in old instance of TCL
-            pass
-        else:
-            self.tcl = tk.Tcl()
-            self.setup_shell()
-        self.log.debug("TCL Shell has been initialized.")
-
-    # TODO: This shouldn't be here.
-    class TclErrorException(Exception):
-        """
-        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
-        """
-        pass
-
-    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
-        """
-        Shows a message on the FlatCAM Shell
-
-        :param msg: Message to display.
-        :param show: Opens the shell.
-        :param error: Shows the message as an error.
-        :param warning: Shows the message as an warning.
-        :param success: Shows the message as an success.
-        :param selected: Indicate that something was selected on canvas
-        :return: None
-        """
-        if show:
-            self.ui.shell_dock.show()
-        try:
-            if error:
-                self.shell.append_error(msg + "\n")
-            elif warning:
-                self.shell.append_warning(msg + "\n")
-            elif success:
-                self.shell.append_success(msg + "\n")
-            elif selected:
-                self.shell.append_selected(msg + "\n")
-            else:
-                self.shell.append_output(msg + "\n")
-        except AttributeError:
-            log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
-
-    def raise_tcl_unknown_error(self, unknownException):
-        """
-        Raise exception if is different type than TclErrorException
-        this is here mainly to show unknown errors inside TCL shell console.
-
-        :param unknownException:
-        :return:
-        """
-
-        if not isinstance(unknownException, self.TclErrorException):
-            self.raise_tcl_error("Unknown error: %s" % str(unknownException))
-        else:
-            raise unknownException
-
-    def display_tcl_error(self, error, error_info=None):
-        """
-        Escape bracket [ with '\' otherwise there is error
-        "ERROR: missing close-bracket" instead of real error
-
-        :param error: it may be text  or exception
-        :param error_info: Some informations about the error
-        :return: None
-        """
-
-        if isinstance(error, Exception):
-            exc_type, exc_value, exc_traceback = error_info
-            if not isinstance(error, self.TclErrorException):
-                show_trace = 1
-            else:
-                show_trace = int(self.defaults['global_verbose_error_level'])
-
-            if show_trace > 0:
-                trc = traceback.format_list(traceback.extract_tb(exc_traceback))
-                trc_formated = []
-                for a in reversed(trc):
-                    trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
-                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
-            else:
-                text = "%s" % error
-        else:
-            text = error
-
-        text = text.replace('[', '\\[').replace('"', '\\"')
-        self.tcl.eval('return -code error "%s"' % text)
-
-    def raise_tcl_error(self, text):
-        """
-        This method  pass exception from python into TCL as error, so we get stacktrace and reason
-
-        :param text: text of error
-        :return: raise exception
-        """
-
-        self.display_tcl_error(text)
-        raise self.TclErrorException(text)
-
-    def exec_command(self, text, no_echo=False):
-        """
-        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
-        Also handles execution in separated threads
-
-        :param text: FlatCAM TclCommand with parameters
-        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
-        will create crashes of the _Expandable_Edit widget
-        :return: output if there was any
-        """
-
-        self.report_usage('exec_command')
-
-        result = self.exec_command_test(text, False, no_echo=no_echo)
-
-        # MS: added this method call so the geometry is updated once the TCL command is executed
-        # if no_plot is None:
-        #     self.plot_all()
-
-        return result
-
-    def exec_command_test(self, text, reraise=True, no_echo=False):
-        """
-        Same as exec_command(...) with additional control over  exceptions.
-        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
-
-        :param text: Input command
-        :param reraise: Re-raise TclError exceptions in Python (mostly for unittests).
-        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
-        will create crashes of the _Expandable_Edit widget
-        :return: Output from the command
-        """
-
-        tcl_command_string = str(text)
-
-        try:
-            if no_echo is False:
-                self.shell.open_processing()  # Disables input box.
-
-            result = self.tcl.eval(str(tcl_command_string))
-            if result != 'None' and no_echo is False:
-                self.shell.append_output(result + '\n')
-
-        except tk.TclError as e:
-
-            # This will display more precise answer if something in TCL shell fails
-            result = self.tcl.eval("set errorInfo")
-            self.log.error("Exec command Exception: %s" % (result + '\n'))
-            if no_echo is False:
-                self.shell.append_error('ERROR: ' + result + '\n')
-            # Show error in console and just return or in test raise exception
-            if reraise:
-                raise e
-        finally:
-            if no_echo is False:
-                self.shell.close_processing()
-            pass
-        return result
-
-        # """
-        # Code below is unsused. Saved for later.
-        # """
-
-        # parts = re.findall(r'([\w\\:\.]+|".*?")+', text)
-        # parts = [p.replace('\n', '').replace('"', '') for p in parts]
-        # self.log.debug(parts)
-        # try:
-        #     if parts[0] not in commands:
-        #         self.shell.append_error("Unknown command\n")
-        #         return
-        #
-        #     #import inspect
-        #     #inspect.getargspec(someMethod)
-        #     if (type(commands[parts[0]]["params"]) is not list and len(parts)-1 != commands[parts[0]]["params"]) or \
-        #             (type(commands[parts[0]]["params"]) is list and len(parts)-1 not in commands[parts[0]]["params"]):
-        #         self.shell.append_error(
-        #             "Command %s takes %d arguments. %d given.\n" %
-        #             (parts[0], commands[parts[0]]["params"], len(parts)-1)
-        #         )
-        #         return
-        #
-        #     cmdfcn = commands[parts[0]]["fcn"]
-        #     cmdconv = commands[parts[0]]["converters"]
-        #     if len(parts) - 1 > 0:
-        #         retval = cmdfcn(*[cmdconv[i](parts[i + 1]) for i in range(len(parts)-1)])
-        #     else:
-        #         retval = cmdfcn()
-        #     retfcn = commands[parts[0]]["retfcn"]
-        #     if retval and retfcn(retval):
-        #         self.shell.append_output(retfcn(retval) + "\n")
-        #
-        # except Exception as e:
-        #     #self.shell.append_error(''.join(traceback.format_exc()))
-        #     #self.shell.append_error("?\n")
-        #     self.shell.append_error(str(e) + "\n")
 
     def info(self, msg):
         """
@@ -10464,9 +10257,9 @@ class App(QtCore.QObject):
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
                     if self.cmd_line_headless != 1:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_content)
+                        self.shell.exec_command(cmd_line_shellfile_content)
                     else:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_content, no_echo=True)
+                        self.shell.exec_command(cmd_line_shellfile_content, no_echo=True)
 
                 if silent is False:
                     self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
@@ -11865,231 +11658,6 @@ class App(QtCore.QObject):
         """
         self.ui.progress_bar.setValue(int(percentage))
 
-    def setup_shell(self):
-        """
-        Creates shell functions. Runs once at startup.
-
-        :return: None
-        """
-
-        self.log.debug("setup_shell()")
-
-        def shelp(p=None):
-            if not p:
-                cmd_enum = _("Available commands:\n")
-
-                displayed_text = []
-                try:
-                    # find the maximum length of a command name
-                    max_len = 0
-                    for cmd_name in commands:
-                        curr_len = len(cmd_name)
-                        if curr_len > max_len:
-                            max_len = curr_len
-                    max_tabs = math.ceil(max_len / 8)
-
-                    for cmd_name in sorted(commands):
-                        cmd_description = commands[cmd_name]['description']
-
-                        curr_len = len(cmd_name)
-                        tabs = '\t'
-
-                        # make sure to add the right number of tabs (1 tab = 8 spaces) so all the commands
-                        # descriptions are aligned
-                        if curr_len == max_len:
-                            cmd_line_txt = ' %s%s%s' % (str(cmd_name), tabs, cmd_description)
-                        else:
-                            nr_tabs = 0
-
-                            for x in range(max_tabs):
-                                if curr_len <= (x*8):
-                                    nr_tabs += 1
-
-                            # nr_tabs = 2 if curr_len <= 8 else 1
-                            cmd_line_txt = ' %s%s%s' % (str(cmd_name), nr_tabs*tabs, cmd_description)
-
-                        displayed_text.append(cmd_line_txt)
-                except Exception as err:
-                    log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))
-                    displayed_text = [' %s' % cmd for cmd in sorted(commands)]
-
-                cmd_enum += '\n'.join(displayed_text)
-                cmd_enum += '\n\n%s\n%s' % (_("Type help <command_name> for usage."), _("Example: help open_gerber"))
-                return cmd_enum
-
-            if p not in commands:
-                return "Unknown command: %s" % p
-
-            return commands[p]["help"]
-
-        # --- Migrated to new architecture ---
-        # def options(name):
-        #     ops = self.collection.get_by_name(str(name)).options
-        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
-
-        def h(*args):
-            """
-            Pre-processes arguments to detect '-keyword value' pairs into dictionary
-            and standalone parameters into list.
-            """
-
-            kwa = {}
-            a = []
-            n = len(args)
-            name = None
-            for i in range(n):
-                match = re.search(r'^-([a-zA-Z].*)', args[i])
-                if match:
-                    assert name is None
-                    name = match.group(1)
-                    continue
-
-                if name is None:
-                    a.append(args[i])
-                else:
-                    kwa[name] = args[i]
-                    name = None
-
-            return a, kwa
-
-        @contextmanager
-        def wait_signal(signal, timeout=10000):
-            """
-            Block loop until signal emitted, timeout (ms) elapses
-            or unhandled exception happens in a thread.
-
-            :param timeout: time after which the loop is exited
-            :param signal: Signal to wait for.
-            """
-            loop = QtCore.QEventLoop()
-
-            # Normal termination
-            signal.connect(loop.quit)
-
-            # Termination by exception in thread
-            self.thread_exception.connect(loop.quit)
-
-            status = {'timed_out': False}
-
-            def report_quit():
-                status['timed_out'] = True
-                loop.quit()
-
-            yield
-
-            # Temporarily change how exceptions are managed.
-            oeh = sys.excepthook
-            ex = []
-
-            def except_hook(type_, value, traceback_):
-                ex.append(value)
-                oeh(type_, value, traceback_)
-            sys.excepthook = except_hook
-
-            # Terminate on timeout
-            if timeout is not None:
-                QtCore.QTimer.singleShot(timeout, report_quit)
-
-            # # ## Block ## ##
-            loop.exec_()
-
-            # Restore exception management
-            sys.excepthook = oeh
-            if ex:
-                self.raiseTclError(str(ex[0]))
-
-            if status['timed_out']:
-                raise Exception('Timed out!')
-
-        def make_docs():
-            output = ''
-            import collections
-            od = collections.OrderedDict(sorted(commands.items()))
-            for cmd_, val in od.items():
-                output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
-
-                t = val['help']
-                usage_i = t.find('>')
-                if usage_i < 0:
-                    expl = t
-                    output += expl + '\n\n'
-                    continue
-
-                expl = t[:usage_i - 1]
-                output += expl + '\n\n'
-
-                end_usage_i = t[usage_i:].find('\n')
-
-                if end_usage_i < 0:
-                    end_usage_i = len(t[usage_i:])
-                    output += '    ' + t[usage_i:] + '\n       No parameters.\n'
-                else:
-                    extras = t[usage_i+end_usage_i+1:]
-                    parts = [s.strip() for s in extras.split('\n')]
-
-                    output += '    ' + t[usage_i:usage_i+end_usage_i] + '\n'
-                    for p in parts:
-                        output += '       ' + p + '\n\n'
-
-            return output
-
-        '''
-            Howto implement TCL shell commands:
-
-            All parameters passed to command should be possible to set as None and test it afterwards.
-            This is because we need to see error caused in tcl,
-            if None value as default parameter is not allowed TCL will return empty error.
-            Use:
-                def mycommand(name=None,...):
-
-            Test it like this:
-            if name is None:
-
-                self.raise_tcl_error('Argument name is missing.')
-
-            When error ocurre, always use raise_tcl_error, never return "sometext" on error,
-            otherwise we will miss it and processing will silently continue.
-            Method raise_tcl_error  pass error into TCL interpreter, then raise python exception,
-            which is catched in exec_command and displayed in TCL shell console with red background.
-            Error in console is displayed  with TCL  trace.
-
-            This behavior works only within main thread,
-            errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
-            TCL shell.
-
-            Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
-
-        '''
-
-        commands = {
-            'help': {
-                'fcn': shelp,
-                'help': _("Shows list of commands."),
-                'description': ''
-            },
-        }
-
-        # Import/overwrite tcl commands as objects of TclCommand descendants
-        # This modifies the variable 'commands'.
-        tclCommands.register_all_commands(self, commands)
-
-        # Add commands to the tcl interpreter
-        for cmd in commands:
-            self.tcl.createcommand(cmd, commands[cmd]['fcn'])
-
-        # Make the tcl puts function return instead of print to stdout
-        self.tcl.eval('''
-            rename puts original_puts
-            proc puts {args} {
-                if {[llength $args] == 1} {
-                    return "[lindex $args 0]"
-                } else {
-                    eval original_puts $args
-                }
-            }
-            ''')
-
     def setup_recent_items(self):
         """
         Setup a dictionary with the recent files accessed, organized by type
@@ -13039,6 +12607,295 @@ class App(QtCore.QObject):
         self.defaults_read_form()
         self.options.update(self.defaults)
         # self.options_write_form()
+
+    def init_tcl(self):
+        """
+        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
+        :return: None
+        """
+        if hasattr(self, 'tcl') and self.tcl is not None:
+            # self.tcl = None
+            # TODO  we need  to clean  non default variables and procedures here
+            # new object cannot be used here as it  will not remember values created for next passes,
+            # because tcl  was execudted in old instance of TCL
+            pass
+        else:
+            self.tcl = tk.Tcl()
+            self.setup_shell()
+        self.log.debug("TCL Shell has been initialized.")
+
+    def setup_shell(self):
+        """
+        Creates shell functions. Runs once at startup.
+
+        :return: None
+        """
+
+        self.log.debug("setup_shell()")
+
+        def shelp(p=None):
+            pass
+
+        # --- Migrated to new architecture ---
+        # def options(name):
+        #     ops = self.collection.get_by_name(str(name)).options
+        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
+
+        def h(*args):
+            """
+            Pre-processes arguments to detect '-keyword value' pairs into dictionary
+            and standalone parameters into list.
+            """
+
+            kwa = {}
+            a = []
+            n = len(args)
+            name = None
+            for i in range(n):
+                match = re.search(r'^-([a-zA-Z].*)', args[i])
+                if match:
+                    assert name is None
+                    name = match.group(1)
+                    continue
+
+                if name is None:
+                    a.append(args[i])
+                else:
+                    kwa[name] = args[i]
+                    name = None
+
+            return a, kwa
+
+        @contextmanager
+        def wait_signal(signal, timeout=10000):
+            """
+            Block loop until signal emitted, timeout (ms) elapses
+            or unhandled exception happens in a thread.
+
+            :param timeout: time after which the loop is exited
+            :param signal: Signal to wait for.
+            """
+            loop = QtCore.QEventLoop()
+
+            # Normal termination
+            signal.connect(loop.quit)
+
+            # Termination by exception in thread
+            self.thread_exception.connect(loop.quit)
+
+            status = {'timed_out': False}
+
+            def report_quit():
+                status['timed_out'] = True
+                loop.quit()
+
+            yield
+
+            # Temporarily change how exceptions are managed.
+            oeh = sys.excepthook
+            ex = []
+
+            def except_hook(type_, value, traceback_):
+                ex.append(value)
+                oeh(type_, value, traceback_)
+
+            sys.excepthook = except_hook
+
+            # Terminate on timeout
+            if timeout is not None:
+                QtCore.QTimer.singleShot(timeout, report_quit)
+
+            # # ## Block ## ##
+            loop.exec_()
+
+            # Restore exception management
+            sys.excepthook = oeh
+            if ex:
+                self.raise_tcl_error(str(ex[0]))
+
+            if status['timed_out']:
+                raise Exception('Timed out!')
+
+        def make_docs():
+            output = ''
+            import collections
+            od = collections.OrderedDict(sorted(self.tcl_commands_storage.items()))
+            for cmd_, val in od.items():
+                output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
+
+                t = val['help']
+                usage_i = t.find('>')
+                if usage_i < 0:
+                    expl = t
+                    output += expl + '\n\n'
+                    continue
+
+                expl = t[:usage_i - 1]
+                output += expl + '\n\n'
+
+                end_usage_i = t[usage_i:].find('\n')
+
+                if end_usage_i < 0:
+                    end_usage_i = len(t[usage_i:])
+                    output += '    ' + t[usage_i:] + '\n       No parameters.\n'
+                else:
+                    extras = t[usage_i + end_usage_i + 1:]
+                    parts = [s.strip() for s in extras.split('\n')]
+
+                    output += '    ' + t[usage_i:usage_i + end_usage_i] + '\n'
+                    for p in parts:
+                        output += '       ' + p + '\n\n'
+
+            return output
+
+        '''
+            Howto implement TCL shell commands:
+
+            All parameters passed to command should be possible to set as None and test it afterwards.
+            This is because we need to see error caused in tcl,
+            if None value as default parameter is not allowed TCL will return empty error.
+            Use:
+                def mycommand(name=None,...):
+
+            Test it like this:
+            if name is None:
+
+                self.raise_tcl_error('Argument name is missing.')
+
+            When error ocurre, always use raise_tcl_error, never return "sometext" on error,
+            otherwise we will miss it and processing will silently continue.
+            Method raise_tcl_error  pass error into TCL interpreter, then raise python exception,
+            which is catched in exec_command and displayed in TCL shell console with red background.
+            Error in console is displayed  with TCL  trace.
+
+            This behavior works only within main thread,
+            errors with promissed tasks can be catched and detected only with log.
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
+            TCL shell.
+
+            Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
+
+        '''
+
+        self.tcl_commands_storage = {}
+        # commands = {
+        #     'help': {
+        #         'fcn': shelp,
+        #         'help': _("Shows list of commands."),
+        #         'description': ''
+        #     },
+        # }
+
+        # Import/overwrite tcl commands as objects of TclCommand descendants
+        # This modifies the variable 'commands'.
+        tclCommands.register_all_commands(self, self.tcl_commands_storage)
+
+        # Add commands to the tcl interpreter
+        for cmd in self.tcl_commands_storage:
+            self.tcl.createcommand(cmd, self.tcl_commands_storage[cmd]['fcn'])
+
+        # Make the tcl puts function return instead of print to stdout
+        self.tcl.eval('''
+            rename puts original_puts
+            proc puts {args} {
+                if {[llength $args] == 1} {
+                    return "[lindex $args 0]"
+                } else {
+                    eval original_puts $args
+                }
+            }
+            ''')
+
+    # TODO: This shouldn't be here.
+    class TclErrorException(Exception):
+        """
+        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
+        """
+        pass
+
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
+        """
+        Shows a message on the FlatCAM Shell
+
+        :param msg: Message to display.
+        :param show: Opens the shell.
+        :param error: Shows the message as an error.
+        :param warning: Shows the message as an warning.
+        :param success: Shows the message as an success.
+        :param selected: Indicate that something was selected on canvas
+        :return: None
+        """
+        if show:
+            self.ui.shell_dock.show()
+        try:
+            if error:
+                self.shell.append_error(msg + "\n")
+            elif warning:
+                self.shell.append_warning(msg + "\n")
+            elif success:
+                self.shell.append_success(msg + "\n")
+            elif selected:
+                self.shell.append_selected(msg + "\n")
+            else:
+                self.shell.append_output(msg + "\n")
+        except AttributeError:
+            log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
+
+    def raise_tcl_unknown_error(self, unknownException):
+        """
+        Raise exception if is different type than TclErrorException
+        this is here mainly to show unknown errors inside TCL shell console.
+
+        :param unknownException:
+        :return:
+        """
+
+        if not isinstance(unknownException, self.TclErrorException):
+            self.raise_tcl_error("Unknown error: %s" % str(unknownException))
+        else:
+            raise unknownException
+
+    def display_tcl_error(self, error, error_info=None):
+        """
+        Escape bracket [ with '\' otherwise there is error
+        "ERROR: missing close-bracket" instead of real error
+
+        :param error: it may be text  or exception
+        :param error_info: Some informations about the error
+        :return: None
+        """
+
+        if isinstance(error, Exception):
+            exc_type, exc_value, exc_traceback = error_info
+            if not isinstance(error, self.TclErrorException):
+                show_trace = 1
+            else:
+                show_trace = int(self.defaults['global_verbose_error_level'])
+
+            if show_trace > 0:
+                trc = traceback.format_list(traceback.extract_tb(exc_traceback))
+                trc_formated = []
+                for a in reversed(trc):
+                    trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
+                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
+            else:
+                text = "%s" % error
+        else:
+            text = error
+
+        text = text.replace('[', '\\[').replace('"', '\\"')
+        self.tcl.eval('return -code error "%s"' % text)
+
+    def raise_tcl_error(self, text):
+        """
+        This method  pass exception from python into TCL as error, so we get stacktrace and reason
+
+        :param text: text of error
+        :return: raise exception
+        """
+
+        self.display_tcl_error(text)
+        raise self.TclErrorException(text)
 
 
 class ArgsThread(QtCore.QObject):

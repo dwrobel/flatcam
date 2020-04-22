@@ -33,8 +33,6 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
         self.decimals = self.app.decimals
 
-        self.transform_lay = QtWidgets.QVBoxLayout()
-        self.layout.addLayout(self.transform_lay)
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
@@ -44,12 +42,12 @@ class ToolTransform(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.transform_lay.addWidget(title_label)
-        self.transform_lay.addWidget(QtWidgets.QLabel(''))
+        self.layout.addWidget(title_label)
+        self.layout.addWidget(QtWidgets.QLabel(''))
 
         # ## Layout
         grid0 = QtWidgets.QGridLayout()
-        self.transform_lay.addLayout(grid0)
+        self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         grid0.setColumnStretch(2, 0)
@@ -206,7 +204,7 @@ class ToolTransform(FlatCAMTool):
         self.ois_scale = OptionalInputSection(self.scale_link_cb, [self.scaley_entry, self.scaley_button], logic=False)
 
         grid0.addWidget(self.scale_link_cb, 10, 0)
-        grid0.addWidget(self.scale_zero_ref_cb, 10, 1)
+        grid0.addWidget(self.scale_zero_ref_cb, 10, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -395,7 +393,7 @@ class ToolTransform(FlatCAMTool):
 
         grid0.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 3)
 
-        self.transform_lay.addStretch()
+        self.layout.addStretch()
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
@@ -408,7 +406,7 @@ class ToolTransform(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.transform_lay.addWidget(self.reset_button)
+        self.layout.addWidget(self.reset_button)
 
         # ## Signals
         self.rotate_button.clicked.connect(self.on_rotate)
