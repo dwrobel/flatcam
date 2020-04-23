@@ -53,8 +53,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.shell_dock.setObjectName('Shell_DockWidget')
         self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
-                                       QtWidgets.QDockWidget.DockWidgetFloatable |
-                                       QtWidgets.QDockWidget.DockWidgetClosable)
+                                    QtWidgets.QDockWidget.DockWidgetFloatable |
+                                    QtWidgets.QDockWidget.DockWidgetClosable)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.shell_dock)
 
         # #######################################################################
@@ -1656,6 +1656,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td height="20"><strong>Ctrl+Shift+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+Shift+V</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
@@ -1715,6 +1720,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"),
+
                 # ALT section
                 _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
@@ -1730,6 +1736,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # CTRL + SHIFT section
                 _("Save Project As"),
+                _("Paste Special. Will convert a Windows path style to the one required in Tcl Shell"),
 
                 # F keys section
                 _("Open Online Manual"),

@@ -384,13 +384,13 @@ class FlatCAMObj(QtCore.QObject):
             pass
             # self.app.log.warning("Failed to read option from field: %s" % option)
 
-    def plot(self):
+    def plot(self, kind=None) -> bool:
         """
         Plot this object (Extend this method to implement the actual plotting).
         Call this in descendants before doing the plotting.
 
-        :return: Whether to continue plotting or not depending on the "plot" option.
-        :rtype: bool
+        :param kind:    Used by only some of the FlatCAM objects
+        :return:        Whether to continue plotting or not depending on the "plot" option. Boolean
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
 
@@ -1761,10 +1761,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # self.options['isotooldia'] = float(self.options['isotooldia']) * factor
         # self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
 
-    def plot(self, **kwargs):
+    def plot(self, kind=None, **kwargs):
         """
 
-        :param kwargs: color and face_color
+        :param kind:    Not used, for compatibility with the plot method for other objects
+        :param kwargs:  Color and face_color, visible
         :return:
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
