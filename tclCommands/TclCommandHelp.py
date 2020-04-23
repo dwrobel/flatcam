@@ -82,31 +82,28 @@ class TclCommandHelp(TclCommand):
                         curr_len = len(cmd_name)
                         if curr_len > max_len:
                             max_len = curr_len
-                    max_tabs = math.ceil(max_len / 8)
 
+                    h_space = "&nbsp;"
+                    cnt = 0
                     for cmd_name in sorted(self.app.tcl_commands_storage):
                         cmd_description = "<span>%s</span>" % self.app.tcl_commands_storage[cmd_name]['description']
 
                         curr_len = len(cmd_name)
-                        tabs = '\t'
 
                         cmd_name_colored = "<span style=\" font-weight: bold; color: red;\" >%s</span>" % str(cmd_name)
 
-                        # make sure to add the right number of tabs (1 tab = 8 spaces) so all the commands
-                        # descriptions are aligned
-                        if curr_len == max_len:
-                            cmd_line_txt = ' %s%s%s' % (cmd_name_colored, tabs, cmd_description)
-                        else:
-                            nr_tabs = 0
+                        nr_chars = max_len - curr_len
 
-                            for x in range(max_tabs):
-                                if curr_len < (x * 8):
-                                    nr_tabs += 1
-
-                            # nr_tabs = 2 if curr_len <= 8 else 1
-                            cmd_line_txt = ' %s%s%s' % (cmd_name_colored, nr_tabs * tabs, cmd_description)
+                        cmd_line_txt = '%s%s&nbsp;&nbsp;%s' % (cmd_name_colored, nr_chars * h_space, cmd_description)
 
                         displayed_text.append(cmd_line_txt)
+
+                        # group commands by 4 adding a line break after 4 commands
+                        if cnt == 3:
+                            cnt = 0
+                            displayed_text.append(' ')
+                        else:
+                            cnt += 1
                 except Exception as err:
                     self.app.log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))
                     displayed_text = ['> %s\n' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
