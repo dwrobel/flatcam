@@ -726,7 +726,7 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.readyToEdit = True
             self.prev_readyToEdit = True
 
-    def valueFromText(self, text: str) -> int:
+    def valueFromText(self, text):
         txt = text.strip('%%')
         try:
             ret_val = int(txt)
@@ -1426,7 +1426,7 @@ class FCLabel(QtWidgets.QLabel):
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
 
-    def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
+    def mousePressEvent(self, event):
         self.clicked_state = not self.clicked_state
         self.clicked.emit(self.clicked_state)
 

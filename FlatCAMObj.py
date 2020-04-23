@@ -384,7 +384,7 @@ class FlatCAMObj(QtCore.QObject):
             pass
             # self.app.log.warning("Failed to read option from field: %s" % option)
 
-    def plot(self, kind=None) -> bool:
+    def plot(self, kind=None):
         """
         Plot this object (Extend this method to implement the actual plotting).
         Call this in descendants before doing the plotting.
