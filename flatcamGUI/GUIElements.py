@@ -2600,7 +2600,8 @@ class _BrowserTextEdit(QTextEdit):
 
     def save_log(self, app):
         html_content = self.toHtml()
-        app.save_to_file(content_to_save=html_content)
+        txt_content = self.toPlainText()
+        app.save_to_file(content_to_save=html_content, txt_content=txt_content)
 
 
 class _ExpandableTextEdit(QTextEdit):

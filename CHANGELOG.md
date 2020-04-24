@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - added a new menu entry in the context menu of the Tcl Shell: 'Save Log' which will save the content of the Tcl Shell browser window to a file
 - the status bar messages that are echoed in the Tcl Shell will no longer have all text colored but only the identifier
 - some message strings cleanup
+- added possibility to save as text file the content in Tcl Shell browser window when clicking the Save log context menu entry
 
 23.04.2020 
 
@@ -3683,8 +3684,7 @@ saving an Excellon object from editor to FlatCAM, selecting drills by left click
 
 27.09.2018
 
-- fixed bug when creating a new project, if a previous object was selected on screen, the selection shape
-survived the creation of a new project
+- fixed bug when creating a new project, if a previous object was selected on screen, the selection shape survived the creation of a new project
 - added compatibility with old type of FlatCAM projects
 - reverted modifications to the way that Excellon geometry was stored to the old way.
 - added exceptions for Paint functions so the user can know if something failed.
@@ -3694,8 +3694,7 @@ survived the creation of a new project
 26.09.2018
 
 - disabled selection of objects in Project Tab when in Editor
-- the Editor Toolbar is hidden in normal mode and it is showed when Editor
-is activated. I may change this behaviour back.
+- the Editor Toolbar is hidden in normal mode and it is showed when Editor is activated. I may change this behaviour back.
 - changed names in classes, functions to prepare for the Excellon editor
 
 - fixed bugs in Paint All function
@@ -3704,63 +3703,45 @@ is activated. I may change this behaviour back.
 - moved all the Editor menu/toolbar creation to FlatCAMUI where they belong
 - fixed a Gerber parse number issue when Gerber zeros are TZ (keep trailing zeros)
 
-- changed the way of how the solid_geometry for Excellon files is stored
-and plotted. Before everything was put in the same "container". Now,
-the geometries of drills and slots are organized into dictionaries having
-as keys the tool diameters and as values list of Shapely objects (polygons)
+- changed the way of how the solid_geometry for Excellon files is stored and plotted. Before everything was put in the same "container". Now, the geometries of drills and slots are organized into dictionaries having as keys the tool diameters and as values list of Shapely objects (polygons)
 - fix for Excellon plotting for newly created empty Excellon Object
 - fixed geometry.bounds() in camlib to work with the new format of the Excellon geometry (list of dicts)
 
 24.09.2018
 
-- added packages in the Requirements and setup_ubuntu.sh. Tested in Ubuntu and
-it's OK
+- added packages in the Requirements and setup_ubuntu.sh. Tested in Ubuntu and it's OK
 - added Replace (All) feature in the CNC Code Editor
 - made CNC Code generation for Excellon to show progress
-- added information about transforms in the object properties (like skew
-and how much, if it was mirrored and so on)
+- added information about transforms in the object properties (like skew and how much, if it was mirrored and so on)
 - made all the transforms threaded and make them show progress in the progress bar
 - made FlatCAM project saving, threaded.
  
 23.09.2018
 
-- added support for "header-less" Excellon files. It seems that Mentor PADS does generate such
-non-standard Excellon files. The user will have to guess: units (IN/MM), type of zero suppression LZ/TZ 
-(leading zeros or trailing zeros are kept) and Excellon number format(digits and decimals). 
-All of those can be adjusted in Menu -> Edit -> Preferences -> Excellon Object -> Excellon format
-- fixed svgparse for Path. Now PCB rasted images can traced in Inkscape or PDF's can be converted
-and then saved as SVG files which can be imported into FlatCAM. This is a convolute way to convert a PDF
-to Gerber file.
+- added support for "header-less" Excellon files. It seems that Mentor PADS does generate such non-standard Excellon files. The user will have to guess: units (IN/MM), type of zero suppression LZ/TZ  (leading zeros or trailing zeros are kept) and Excellon number format(digits and decimals).  All of those can be adjusted in Menu -> Edit -> Preferences -> Excellon Object -> Excellon format
+- fixed svgparse for Path. Now PCB rasted images can traced in Inkscape or PDF's can be converted and then saved as SVG files which can be imported into FlatCAM. This is a convolute way to convert a PDF to Gerber file.
 
 22.09.2018
 
-- added Drag & Drop capability. Now the user can drag and drop to FlatCAM GUI interface a file 
-(with the right extension) that can be a FlatCAM project file (.FlatPrj) a Gerber file, 
-an Excellon file, a G-Code file or a SVG file.
+- added Drag & Drop capability. Now the user can drag and drop to FlatCAM GUI interface a file (with the right extension) that can be a FlatCAM project file (.FlatPrj) a Gerber file, an Excellon file, a G-Code file or a SVG file.
 - made the Move Tool command threaded
 - added Image import into FlatCAM
 
 21.09.2018
 
-- added new information's in the object properties: all used Tool-Table items
-are included in a new entry in self.options dictionary
-- modified the preprocessor files so they now include information's about
-how many drills (or slots) are for each tool. The Gcode will have this
-information displayed on the message from ToolChange.
+- added new information's in the object properties: all used Tool-Table items are included in a new entry in self.options dictionary
+- modified the preprocessor files so they now include information's about how many drills (or slots) are for each tool. The Gcode will have this information displayed on the message from ToolChange.
 - removed some log.debug and add new log.debug especially for moments when some process is finished
 - fixed the utility geometry for Font geometry in Geometry Editor
 - work on selection in Geometry Editor
-- added multiple selection key as a Preference in Menu -> Edit -> Preferences
-It can be either Shift or Ctrl.
+- added multiple selection key as a Preference in Menu -> Edit -> Preferences It can be either Shift or Ctrl.
 - fixed bug in Gerber Object -> Copper Clearing.
 - added more comprehensive tooltips in Non-copper Clearing as advice on how to proceed.
-- adjusted make_win32.py file so it will work with Python 3.7 (cx_freeze can't copy OpenGL files, so
-it has to be done manually)
+- adjusted make_win32.py file so it will work with Python 3.7 (cx_freeze can't copy OpenGL files, so it has to be done manually)
 
 19.09.2018
 
-- optimized loading FlatCAM project by double clicking on project file; there is no need to clean up everything by using 
-the function not Thread Safe: on_file_new() because there is nothing to clean since FlatCAM just started.
+- optimized loading FlatCAM project by double clicking on project file; there is no need to clean up everything by using the function not Thread Safe: on_file_new() because there is nothing to clean since FlatCAM just started.
 
 - added a workspace delimitation with sizes A3, A4 and landscape or portrait format
 - The Workspace checkbox in Preferences GUI is doing toggle on the workspace
@@ -3770,13 +3751,10 @@ the function not Thread Safe: on_file_new() because there is nothing to clean si
 - added an automatic defaults save on FlatCAM application close
 - made the draw method for the Workspace lines 'agg' so the quality of the FC objects will not be affected
 
-- added Area constrain to the Panelization Tool: if the resulting area is too big to fit within constrains, the number
-of columns and/or rows will be reduced to the maximum that still fits is.
-- removed the Flip command from Panelization Tools because Flipping (Mirroring) should be done properly with the 
-Transform Tool or using the provided shortcut keys.
+- added Area constrain to the Panelization Tool: if the resulting area is too big to fit within constrains, the number of columns and/or rows will be reduced to the maximum that still fits is.
+- removed the Flip command from Panelization Tools because Flipping (Mirroring) should be done properly with the Transform Tool or using the provided shortcut keys.
 
-- made Font parsing threaded so the application will not wait for the font parsing to complete therefore the app start
-is faster
+- made Font parsing threaded so the application will not wait for the font parsing to complete therefore the app start is faster
 
 
 17.09.2018
@@ -3784,47 +3762,34 @@ is faster
 - fixed Measuring Tool not working when grid is turned OFF
 - fixed Roland MDX20 preprocessor
 - added a .GBR extension in the open_gerber filter
-- added ability to Scale and Offset (for all types of objects) to just
-press Enter after entering a value in the Entry just like in Tool Transform
-- added capability in Tool Transform to mirror(flip) around a certain Point.
-The point coordinates can either be entered by hand or they can be captured
-by left clicking while pressing key "SHIFT" and then clicking the Add button
+- added ability to Scale and Offset (for all types of objects) to just press Enter after entering a value in the Entry just like in Tool Transform
+- added capability in Tool Transform to mirror(flip) around a certain Point. The point coordinates can either be entered by hand or they can be captured by left clicking while pressing key "SHIFT" and then clicking the Add button
 - added the .ROL extension when saving Machine Code
 - replaced strings that reference to G-Code from G-Code to CNC Code
-- added capability to open a project by serving the path/project_name.FlatPrj as a parameter
-to FlatCAM.py
+- added capability to open a project by serving the path/project_name.FlatPrj as a parameter to FlatCAM.py
 
 15.09.2018
 
 - removed dwell line generator and included dwell generation in the preprocessor files
 - added a proposed RML1 Roland_MDX20 preprocessor file.
-- added a limit of 15mm/sec (900mm/min) to the feedrate and to the feedrate_rapid. Anything faster than this
-will be capped to 900mm/min regardless what is entered in the program GUI. This is because Roland MDX-20 has
-a mechanical limit of the speed to 15mm/sec (900mm/min in GUI)
+- added a limit of 15mm/sec (900mm/min) to the feedrate and to the feedrate_rapid. Anything faster than this will be capped to 900mm/min regardless what is entered in the program GUI. This is because Roland MDX-20 has a mechanical limit of the speed to 15mm/sec (900mm/min in GUI)
 
 14.09.2018
-- remade the Double Sided Tool so it now include mirroring of Excellon and Geometry Objects along Gerber.
-Made adding points easier by adding buttons to GUI that allow adding the coordinates captured by
-left mouse click + SHIFT key
-- added a few fixes in code to the other FlatCAM tools regarding reset_fields() function. The issue
-was present when clicking New Project entry in Menu -> File.
+- remade the Double Sided Tool so it now include mirroring of Excellon and Geometry Objects along Gerber. Made adding points easier by adding buttons to GUI that allow adding the coordinates captured by left mouse click + SHIFT key
+- added a few fixes in code to the other FlatCAM tools regarding reset_fields() function. The issue was present when clicking New Project entry in Menu -> File.
 - FIXED: fix adding/updating bounding box coords for the mirrored objects in Double side Tool.
 - FIXED: fix the bounding box values from within FlatCAM objects, upon units change.
-- fixed issue with running again the constructor of the drawing tools after the tool action was complete,
-in Geometry Editor
+- fixed issue with running again the constructor of the drawing tools after the tool action was complete, in Geometry Editor
 - fixed issue with Tool tab not closed after Text Input tool is finished.
 - fixed issue with TEXT to GEOMETRY tool, the resulting geometry was not scaled depending of current units
-- fixed case when user is clicking on the canvas to place a Font Geometry without clicking apply button first
-or the Font Geometry is empty, in Geometry Editor - > Text Input tool
-- reworked Measuring Tool by adding more information's (START, STOP point coordinates) and remade the 
-strings
+- fixed case when user is clicking on the canvas to place a Font Geometry without clicking apply button first or the Font Geometry is empty, in Geometry Editor - > Text Input tool
+- reworked Measuring Tool by adding more information's (START, STOP point coordinates) and remade the strings
 - added to Double Sided Tool the ability to use as reference box Excellon and Geometry Objects
 
 12.09.2018
 
 - fixed Excellon Object class such that Excellon files that have both drills and slots are supported
-- remade the GUI interface for the Excellon Object in a more compact way; added a column with slots numbers
-(if any) along the drills numbers so now there is only one tool table for drills and slots.
+- remade the GUI interface for the Excellon Object in a more compact way; added a column with slots numbers (if any) along the drills numbers so now there is only one tool table for drills and slots.
 - remade the GUI in Preferences and removed unwanted stretch that was broken the layout.
 - if for a certain tool, the slots number is zero it will not be displayed
 - reworked Text to Geometry feature to work in Linux and MacOS
@@ -3833,16 +3798,12 @@ strings
 
 09.09.2018
 
-- added TEXT ENTRY SUPPORT in Geometry Editor. It will convert strings of True Type Fonts to geometry. 
-The actual dimensions are approximations because font size is in points and not in metric or inch units.
-For now full support is limited to Windows. In Linux/MacOS only the fonts for which the font name is the same 
-as the font filename are supported. Italic and Bold functions may not work in Linux/MacOS.
+- added TEXT ENTRY SUPPORT in Geometry Editor. It will convert strings of True Type Fonts to geometry. The actual dimensions are approximations because font size is in points and not in metric or inch units. For now full support is limited to Windows. In Linux/MacOS only the fonts for which the font name is the same as the font filename are supported. Italic and Bold functions may not work in Linux/MacOS.
 - solved bug: some Drawing menu entries not having connected functions
 
 28.08.2018
 
-- fixed Gerber parser so now G01 "moving" rectangular 
-aperture is supported.
+- fixed Gerber parser so now G01 "moving" rectangular aperture is supported.
 - fixed import_svg function; it can import SVG as geometry (solved bug)
 - fixed import_svg function; it can import SVG as Gerber (it did not work previously)
 - added menu entry's for SVG import as Gerber and separated import as Geometry
@@ -3853,119 +3814,73 @@ aperture is supported.
 
 26.08.2018
 
-- added awareness for missing coordinates in Gerber parsing. It will try to use the previous coordinates but if there
-are not any those lines will be ignored and an Warning will be printed in Tcl Shell.
+- added awareness for missing coordinates in Gerber parsing. It will try to use the previous coordinates but if there are not any those lines will be ignored and an Warning will be printed in Tcl Shell.
 - fixed TCL commands AlignDrillGrid and DrilCncJob
 - added TCL script file load_and_run support in GUI
-- made the tool_table in Excellon to automatically adjust the table height depending on the number of rows such that
-all the rows will be displayed.
+- made the tool_table in Excellon to automatically adjust the table height depending on the number of rows such that all the rows will be displayed.
 - structural changes in the Excellon build_ui()
 - icon changes and menu compress
 
 23.08.2018
 
 - added Excellon routing support
-- solved a small bug that crippled Excellon slot G85 support when the coordinates
-are with period.
-- changed the way selection is done in Geometry Editor; now it should work
-in all cases (although the method used may be computationally intensive,
-because sometimes you have to click twice to make selection if you do it too fast)
+- solved a small bug that crippled Excellon slot G85 support when the coordinates are with period.
+- changed the way selection is done in Geometry Editor; now it should work in all cases (although the method used may be computationally intensive, because sometimes you have to click twice to make selection if you do it too fast)
 
 21.08.2018
 
-- added Excellon slots support when using G85 command for generation of
-the slots file. Inspired from the work of @mgix. Thanks.
-Routing format support for slots will follow. 
-- minor bug solved: option "Cut over 1st pt" now has same name both in
-Preferences -> Geometry Options and in Selected tab -> Geomety Object.
-Solves #3
-- added option to select Climb or Conventional Milling in Gerber Object options
-Solves #4
+- added Excellon slots support when using G85 command for generation of the slots file. Inspired from the work of @mgix. Thanks. Routing format support for slots will follow. 
+- minor bug solved: option "Cut over 1st pt" now has same name both in Preferences -> Geometry Options and in Selected tab -> Geomety Object. Solves #3
+- added option to select Climb or Conventional Milling in Gerber Object options Solves #4
 - made "Combine passes" option to be saved as an app preference
-- added Generate Exteriors Geo and Generate Interiors Geo buttons in the
-Gerber Object properties
-- added configuration for the number of steps used for Gerber circular aperture
-linear approximation. The option is in Preferences -> Gerber Options
-- added configuration for the number of steps used for Gcode circular aperture
-linear approximation. The option is in Preferences -> CNCjob Options
-- added configuration for the number of steps used for Geometry circular aperture
-linear approximation. The option is in Preferences -> Geometry Options. It is used 
-on circles/arcs made in Geometry Editor and for other types of geometries generated in 
-the app.
-
+- added Generate Exteriors Geo and Generate Interiors Geo buttons in the Gerber Object properties
+- added configuration for the number of steps used for Gerber circular aperture linear approximation. The option is in Preferences -> Gerber Options
+- added configuration for the number of steps used for Gcode circular aperture linear approximation. The option is in Preferences -> CNCjob Options
+- added configuration for the number of steps used for Geometry circular aperture linear approximation. The option is in Preferences -> Geometry Options. It is used on circles/arcs made in Geometry Editor and for other types of geometries generated in the app.
 
 17.07.2018
 
 - added the required packages in Requirements.txt file
 - added required packages in setup_ubuntu.sh file
-- added color control over almost all the colors in the application; those
-settings are in Menu -> Edit -> Preferences -> General Tab
+- added color control over almost all the colors in the application; those settings are in Menu -> Edit -> Preferences -> General Tab
 - added configuration of which mouse button to be used when panning (MMB or RMB)
-- fixed bug with missing 'drillz' parameter in function generate_from_excellon_by_tool()
-(credits for finding it goes to Stefan Smith https://bitbucket.org/stefan064/)
-- load Factory defaults in Preferences will load the defaults that are used just after
-first install. Load Defaults option in Preferences will load the User saved Defaults.
+- fixed bug with missing 'drillz' parameter in function generate_from_excellon_by_tool() (credits for finding it goes to Stefan Smith https://bitbucket.org/stefan064/)
+- load Factory defaults in Preferences will load the defaults that are used just after first install. Load Defaults option in Preferences will load the User saved Defaults.
 
 03.07.2018
 
-- fixed bug in rotate function that didn't update the bounding box of the
-modified object (rotated) due of not emitting the right signal parameter.
-- removed the Options tab from the Notebook (the left area where is located
-also the Project tab). Replaced it with the Preferences Tab launched with
-Menu -> Edit -> Preferences
-- when FlatCAM is used under MacOS, multiple selection of shapes in Editor
-mode is done using SHIFT key instead of CTRL key due of MacOS interpreting
-Ctrl+LMB_click as a RMB click
-- when in Editor, clicking not on a shape, reset the index of selected shapes
-to zero
-- added a new Tab in the Plot Area named Gcode Editor. It allow the user to
-edit the Gcode and then Save it or Print it.
-- added a fix so the 'preamble' Gcode is correctly inserted between the
-comments header and the actual GCODE
+- fixed bug in rotate function that didn't update the bounding box of the modified object (rotated) due of not emitting the right signal parameter.
+- removed the Options tab from the Notebook (the left area where is located also the Project tab). Replaced it with the Preferences Tab launched with Menu -> Edit -> Preferences
+- when FlatCAM is used under MacOS, multiple selection of shapes in Editor mode is done using SHIFT key instead of CTRL key due of MacOS interpreting Ctrl+LMB_click as a RMB click
+- when in Editor, clicking not on a shape, reset the index of selected shapes to zero
+- added a new Tab in the Plot Area named Gcode Editor. It allow the user to edit the Gcode and then Save it or Print it.
+- added a fix so the 'preamble' Gcode is correctly inserted between the comments header and the actual GCODE
 - added Find function in G-Code Editor
-
 
 27.06.2018
 
-- the Plot Area tab is changing name to "Editor Area" when the Editor is
-activated and returns to the "Plot Area" name upon exiting the Editor
-- made the labels shorter in Transform Tool in anticipation of
-Options Tab removal from Notebook and replacing it with Preferences
-- the Excellon Editor is not finished (not even started yet) so the
-Plot Area title should stay "Plot Area" not change to "Editor Area" when
-attempting to edit an Excellon file. Solved.
-- added a header comment block in the generated Gcode with useful
-information's
-- fixed issue that did not allow the Nightly's to be run in
-Windows 7 x64. The reason was an outdated DLL file (freetype.dll) used
-by Vispy python module.
-
+- the Plot Area tab is changing name to "Editor Area" when the Editor is activated and returns to the "Plot Area" name upon exiting the Editor
+- made the labels shorter in Transform Tool in anticipation of Options Tab removal from Notebook and replacing it with Preferences
+- the Excellon Editor is not finished (not even started yet) so the Plot Area title should stay "Plot Area" not change to "Editor Area" when attempting to edit an Excellon file. Solved.
+- added a header comment block in the generated Gcode with useful information's
+- fixed issue that did not allow the Nightly's to be run in Windows 7 x64. The reason was an outdated DLL file (freetype.dll) used by Vispy python module.
 
 25.06.2018
 
 - "New" menu entry in Menu -> File is renamed to "New Project"
-- on "New Project" action, all the Tools are reinitialized so the Tools
-tab will work as expected
+- on "New Project" action, all the Tools are reinitialized so the Tools tab will work as expected
 - fixed issue in Film Tool when generating black film
 - fixed Measurement Tool acquiring and releasing the mouse/key events
 - fixed cursor shape is updated on grid_toggle
-- added some infobar messages to show the user when the Editor was
-activated and when it was closed (control returned to App).
-- added thread usage for Film tool; now the App is no longer blocked on
-film generation and there is a visual clue that the App is working
+- added some infobar messages to show the user when the Editor was activated and when it was closed (control returned to App).
+- added thread usage for Film tool; now the App is no longer blocked on film generation and there is a visual clue that the App is working
 
 22.06.2018
 
-- added export PNG image functionality and menu entry in
-Menu -> File -> Export PNG ...
-- added a command to set focus on canvas inside the mouve move event
-handler; once the mouse is moved the focus is moved to canvas so the
-shortcuts work immediatly.
-- solved a small bug when using the 'C' key to copy name of the selected
-object to clipboard
-
-- fixed millholes() function and isolate() so now it works even when the
-tool diameter is the same as the hole diameter.
+- added export PNG image functionality and menu entry in Menu -> File -> Export PNG ...
+- added a command to set focus on canvas inside the mouve move event handler; once the mouse is moved the focus is moved to canvas so the shortcuts work immediatly.
+- solved a small bug when using the 'C' key to copy name of the selected object to clipboard
+- fixed millholes() function and isolate() so now it works even when the tool diameter is the same as the hole diameter.
 
 Actually if the passed value to  the buffer() function is zero, I
 artificially add a value of 0.0000001 (FlatCAM has a precision of
@@ -3974,120 +3889,67 @@ because the value has to be positive. This may have solved for some use
 cases the user complaints that on clearing the areas of copper there is
 still copper leftovers.
 
-- added shortcut "Shift+G" to toggle the axis presence. Useful when one
-wants to save a PNG file.
+- added shortcut "Shift+G" to toggle the axis presence. Useful when one wants to save a PNG file.
 - changed color of the grid from 'gray' to 'dimgray'
-
 - the selection shape is deleted when the object is deleted
-
 - the plot area is now in a TAB.
 - solved bug that allowed middle button click to create selection
 - fixed issue with main window geometry restore (hopefully).
-- made view toolbar to be hidden by default as it is not really needed
-(we have the functions in menu, zoom is done with mouse wheel, and there
-is also the canvas context menu that holds the functionality)
+- made view toolbar to be hidden by default as it is not really needed (we have the functions in menu, zoom is done with mouse wheel, and there is also the canvas context menu that holds the functionality)
 - remade the GUIElements.FCInput() and made a GUIElements.FCTab()
 - on visibility plot toogle the selection shape is deleted
-
-- made sure that on panning in Geometry editor, the context menu is not
-displayed
-- disabled App shortcut keys on entry in Geometry Editor so only the
-local shortcut keys are working
-
+- made sure that on panning in Geometry editor, the context menu is not displayed
+- disabled App shortcut keys on entry in Geometry Editor so only the local shortcut keys are working
 - deleted metric units in canvas context menu
-- added protection so object deletion can't be done until Geometry
-Editor session is finished. Solved bug when the shapes on Geometry
-Editor were not transfered to the New_geometry object yet and the
-New_Geometry object is deleted. In this case the drawn shapes are left
-in a intermediary state on canvas.
-
-- added selection shape drawing in Geometry Editor preserving the
-current behavior: click to select, click on canvas clear selection,
-Ctrl+click add to selection new shape but remove from selection
-if already selected. Drag LMB from left to right select enclosed
-shapes, drag LMB from right to left select touching shapes. Now the
-selection is made based on
-- added info message to be displayed in infobar, when a object is
-renamed
+- added protection so object deletion can't be done until Geometry Editor session is finished. Solved bug when the shapes on Geometry Editor were not transferred to the New_geometry object yet and the New_Geometry object is deleted. In this case the drawn shapes are left in a intermediary state on canvas.
+- added selection shape drawing in Geometry Editor preserving the current behavior: click to select, click on canvas clear selection, Ctrl+click add to selection new shape but remove from selection if already selected. Drag LMB from left to right select enclosed shapes, drag LMB from right to left select touching shapes. Now the selection is made based on
+- added info message to be displayed in infobar, when a object is renamed
 
 20.06.2018
 
-- there are two types of mouse drag selection (rectangle selection)
-If there is a rectangle selection from left to right, the color of the
-selection rectangle is blue and the selection is "enclosing" - this
-means that the object to be selected has to be enclosed by the selecting
-blue rectangle shape.
-If there is a rectangle selection fro right to left, the color of the
-selection rectangle is green and the selection is "touching" - this
-means that it's enough to touch with the selecting green rectangle the
-object(s) to be selected so they become selected
-- changed the modifier key required to be pressed when LMB is ckicked
-over canvas in order to copy to clipboard the coordinates of the click,
-from CTRL to SHIFT. CTRL will be used for multiple selection.
+- there are two types of mouse drag selection (rectangle selection). If there is a rectangle selection from left to right, the color of the selection rectangle is blue and the selection is "enclosing" - this means that the object to be selected has to be enclosed by the selecting blue rectangle shape. If there is a rectangle selection fro right to left, the color of the selection rectangle is green and the selection is "touching" - this means that it's enough to touch with the selecting green rectangle the object(s) to be selected so they become selected
+- changed the modifier key required to be pressed when LMB is ckicked over canvas in order to copy to clipboard the coordinates of the click, from CTRL to SHIFT. CTRL will be used for multiple selection.
 - change the entry names in the canvas context menu
-- disconnected the app mouse event functions while in geometry editor
-since the geometry editor has it's own mouse event functions and there
-was interference between object and geometry items. Exception for the
-mouse release event so the canvas context menu still work.
-- solved a bug that did not update the obj.options after a geometry
-object was edited in geometry editor
-- solved a bug in the signal that saved the position and dimensions of
-the application window.
-- solved a bug in app.on_preferences() that created an error when run
-in Linux
+- disconnected the app mouse event functions while in geometry editor since the geometry editor has it's own mouse event functions and there was interference between object and geometry items. Exception for the mouse release event so the canvas context menu still work.
+- solved a bug that did not update the obj.options after a geometry object was edited in geometry editor
+- solved a bug in the signal that saved the position and dimensions of the application window.
+- solved a bug in app.on_preferences() that created an error when run in Linux
 
 18.06.2018 Update 1
 
-- reverted the 'units' parameter change to 'global_units' due of a bug
-that did not allow saving of the project
-- modified the camlib transform (rotate, mirror, scale etc) functions
-so now they work with Gerber file loaded with 'follow' parameter
+- reverted the 'units' parameter change to 'global_units' due of a bug that did not allow saving of the project
+- modified the camlib transform (rotate, mirror, scale etc) functions so now they work with Gerber file loaded with 'follow' parameter
 
 18.06.2018
 
-- reworked the Properties context menu option to a Tool that displays
-more informations on the selected object(s)
+- reworked the Properties context menu option to a Tool that displays more informations on the selected object(s)
 - remade the FlatCAM project extension as .FlatPrj
 - rearranged the toolbar menu entries to a more properly order
-- objects can now be selected on canvas, a blue polygon is drawn around
-when selected
+- objects can now be selected on canvas, a blue polygon is drawn around when selected
 - reworked the Tool Move so it will work with the new canvas selection
-- reworked the Measurement Tool so it will work with the new canvas
-selection
-- canvas selection can now be done by dragging left mouse boutton and
-creating a selection box over the objects
-- when the objects are overlapped on canvas, the mouse click
-selection works in a circular way, selecting the first, then the second,
-then ..., then the last and then again the first and so on.
+- reworked the Measurement Tool so it will work with the new canvas selection
+- canvas selection can now be done by dragging left mouse boutton and creating a selection box over the objects
+- when the objects are overlapped on canvas, the mouse click selection works in a circular way, selecting the first, then the second, then ..., then the last and then again the first and so on.
 - double click on a object on canvas will open the Selected Tab
 - each object store the bounding box coordinates in the options dict
-- the bbox coordinates are updated on the obj options when the object
-is modified by a transform function (rotate, scale etc)
+- the bbox coordinates are updated on the obj options when the object is modified by a transform function (rotate, scale etc)
 
 
 15.06.2018
 
-- the selection marker when moving is now a semitransparent Polygon
-with a blue border
-- rectified a small typo in the ToolTip for Excellon Format for
-Diptrace excellon format; from 4:2 to 5:2
+- the selection marker when moving is now a semitransparent Polygon with a blue border
+- rectified a small typo in the ToolTip for Excellon Format for Diptrace excellon format; from 4:2 to 5:2
 - corrected an error that cause no Gcode could be saved
-
 
 14.06.2018
 
 - more work on the contextual menu
 - added Draw context menu
-- added a new tool that bring together all the transformations, named
-Transformation Tool (Rotate, Skew, Scale, Offset, Flip)
+- added a new tool that bring together all the transformations, named Transformation Tool (Rotate, Skew, Scale, Offset, Flip)
 - added shorcut key 'Q' which toggle the units between IN and MM
-- remade the Move tool, there is now a selection box to show where the
-move is done
-- remade the Measurement tool, there is now a line between the start
-point of measurement and the end point of the measurement.
-- renamed most of the system variables that have a global app effect to
-global_name where name is the parameter (variable)
-
+- remade the Move tool, there is now a selection box to show where the move is done
+- remade the Measurement tool, there is now a line between the start point of measurement and the end point of the measurement.
+- renamed most of the system variables that have a global app effect to global_name where name is the parameter (variable)
 
 9.06.2018
 
@@ -4099,153 +3961,89 @@ global_name where name is the parameter (variable)
 6.06.2018 Update
 
 - fixed bug: G-Code could not be saved
-- fixed bug: double clicking a category in Project Tab made the app to
-crash
-- remade the bounds() function to work with nested lists of objects as
-per advice from JP which made the operation less performance taxing.
+- fixed bug: double clicking a category in Project Tab made the app to crash
+- remade the bounds() function to work with nested lists of objects as per advice from JP which made the operation less performance taxing.
 - added shortcut Shift+R that is complement to 'R'
-- shorcuts 'R' and 'Shift+R' are working now in steps of 90 degrees
-instead of previous 45 degrees.
-- added filters in the open ... FlatCAM projects are saved automatically
-as *.flat, the Gerber files have few categories. So the Excellons and
-G-Code and SVG.
+- shorcuts 'R' and 'Shift+R' are working now in steps of 90 degrees instead of previous 45 degrees.
+- added filters in the open ... FlatCAM projects are saved automatically as *.flat, the Gerber files have few categories. So the Excellons and G-Code and SVG.
 
 6.06.2018
 
-- remade the transform functions (rotate, flip, skew) so they are now
-working for joined objects, too
-- modified the Skew and Rotate comamands: if they are applied over a
-selection of objects than the origin point will be the center of the
-biggest bounding box. That allow for perfect sync between the selected
-objects
+- remade the transform functions (rotate, flip, skew) so they are now working for joined objects, too
+- modified the Skew and Rotate comamands: if they are applied over a selection of objects than the origin point will be the center of the biggest bounding box. That allow for perfect sync between the selected objects
 - started to modify the program so the exceptions are handled correctly
-- solved bug where a crash occur when ObjCollection.setData didn't
-return a bool value
-- work in progress for handling situations when a different file is
-loaded as another (like loading a Gerber file using Open Excellon
- commands.
-- added filters on open_gerber and open_excellon Dialogs. There is still
-the ability to select All Files but this should reduce the cases when
-the user is trying to oprn a file from a wrong place.
+- solved bug where a crash occur when ObjCollection.setData didn't return a bool value
+- work in progress for handling situations when a different file is loaded as another (like loading a Gerber file using Open Excellon commands.
+- added filters on open_gerber and open_excellon Dialogs. There is still the ability to select All Files but this should reduce the cases when the user is trying to oprn a file from a wrong place.
 
 4.06.2018
 
-- finished PyQt4 to PyQt4 port on the Vispy variant (there were some changes
-compared with the Matplotlib version for which the port was finished
-some time ago)
-- added Ctrl+S shortcut for the Geometry Editor. When is activated it will
-save de geometry ("update") and return to the main App.
-- modified the Mirror command for the case when multiple objects are
-selected and we want to mirror all together. In this case they should mirror
-around a bounding box to fill all.
+- finished PyQt4 to PyQt4 port on the Vispy variant (there were some changes compared with the Matplotlib version for which the port was finished some time ago)
+- added Ctrl+S shortcut for the Geometry Editor. When is activated it will save de geometry ("update") and return to the main App.
+- modified the Mirror command for the case when multiple objects are selected and we want to mirror all together. In this case they should mirror around a bounding box to fill all.
 
 3.06.2018
 
 - removed the current drill path optimizations as they are inefficient
-- implemented Google OR-tools drill path optimization in 2 flavors;
-Basic OR-tools TSP algorithm and OR-Tools Metaheuristics Guided Local Path
+- implemented Google OR-tools drill path optimization in 2 flavors; Basic OR-tools TSP algorithm and OR-Tools Metaheuristics Guided Local Path
 - Move tool is moved to Menu -> Edit under the name Move Object
 
-- solved some internal bugs (info command was creating an non-fatal
-error in PyQt, regarding using QPixMaps outside GUI thread
+- solved some internal bugs (info command was creating an non-fatal error in PyQt, regarding using QPixMaps outside GUI thread
 - reworked camlib number parsing (still had some bugs)
 - working in porting the application from usage of PyQt4 to PyQt4
-- added TclCommands save_sys and list_sys. save_sys is saving all the
-system default parameters and list_sys is listing them by the first
-letters. listsys with no arguments will list all the system parameters.
+- added TclCommands save_sys and list_sys. save_sys is saving all the system default parameters and list_sys is listing them by the first letters. listsys with no arguments will list all the system parameters.
 
 29.05.2018
 
 - modified the labels for the X,Y and Dx,Dy coordinates
 - modified the menu entries, added more icons
 - added initial work on a Excellon Editor
-- modified the behavior of when clicking on canvas the coordinates were
-copied to cliboard: now it is required to press CTRL key for this to
-happen, and it will only happen just for left mouse button click
+- modified the behavior of when clicking on canvas the coordinates were copied to cliboard: now it is required to press CTRL key for this to happen, and it will only happen just for left mouse button click
 - removed the autocopy of the object name on new object creation
 - remade the Tcl commands drillcncjob and cncjob
-- added fix so the canvas is focused on the start of the program,
-therefore the shortcuts work without the need for doing first a click
-on canvas.
-
-
+- added fix so the canvas is focused on the start of the program, therefore the shortcuts work without the need for doing first a click on canvas.
 
 28.05.2018
 
-- added total drill count column in Excellon Tool Table which displays the
-total number of drills
+- added total drill count column in Excellon Tool Table which displays the total number of drills
 - added aliases in panelize Tool (pan and panel should work)
-- modified generate_milling method which had issues from the Python3 port
-(it could not sort the tools due of dict to dict comparison no longer
-possible).
-- modified the 'default' preprocessor in order to include a space
-between the value of Xcoord and the following Y
-- made optional the using of threads for the milling command; by default
-it is OFF (False) because in the current configuration it creates issues
-when it is using threads
-- modified the Panelize function and Tcl command Panelize. It was having
-issues due to multithreading (kept trying to modify a dictionary in
-redraw() method)and automatically selecting the last created object
-(feature introduced by me). I've added a parameter to
-the new_object method, named autoselected (by default it is True) and
-in the panelize method I initialized it with False.
-By initializing the plot parameter with False for the temporary objects,
-I have increased dramatically the  generation speed of the panel because
-now the temporary object are no longer ploted which consumed time.
+- modified generate_milling method which had issues from the Python3 port (it could not sort the tools due of dict to dict comparison no longer possible).
+- modified the 'default' preprocessor in order to include a space between the value of Xcoord and the following Y
+- made optional the using of threads for the milling command; by default it is OFF (False) because in the current configuration it creates issues when it is using threads
+- modified the Panelize function and Tcl command Panelize. It was having issues due to multithreading (kept trying to modify a dictionary in redraw() method)and automatically selecting the last created object (feature introduced by me). I've added a parameter to the new_object method, named autoselected (by default it is True) and in the panelize method I initialized it with False.
+By initializing the plot parameter with False for the temporary objects, I have increased dramatically the  generation speed of the panel because now the temporary object are no longer ploted which consumed time.
 - replaced log.warn() with log.warning() in camlib.py. Reason: deprecated
-- fixed the issue that the "Defaults" button was having no effect when
-clicked and Options Combo was in Project Options
-- fixed issue with Tcl Shell loosing focus after each command, therefore
-needing to click in the edit line before we type a new command (borrowed
-from @brainstorm
-- added a header in the preprocessor files mentioning that the GCODE
-files were generated by FlatCAM.
+- fixed the issue that the "Defaults" button was having no effect when clicked and Options Combo was in Project Options
+- fixed issue with Tcl Shell loosing focus after each command, therefore needing to click in the edit line before we type a new command (borrowed from @brainstorm
+- added a header in the preprocessor files mentioning that the GCODE files were generated by FlatCAM.
 - modified the number of decimals in some of the line entries to 4.
 - added an alias for the millholes Tcl Command: 'mill'
 
 27.04.2018
 
-- modified the Gerber.scale() function from camlib.py in order to
-allow loading Gerber files with 'follow' parameter in other units
-than the current ones
-- snap_max_entry is disabled when the DRAW toolbar is disabled (previous
-fix didn't work)
-- added drill count column in Excellon Tool Table which displays the
-total number of drills for each tool
-
-- added a new menu entry in Menu -> EDIT named "Join Excellon". It will
-merge a selection of Excellon files into a new Excellon file
+- modified the Gerber.scale() function from camlib.py in order to allow loading Gerber files with 'follow' parameter in other units than the current ones
+- snap_max_entry is disabled when the DRAW toolbar is disabled (previous fix didn't work)
+- added drill count column in Excellon Tool Table which displays the total number of drills for each tool
+- added a new menu entry in Menu -> EDIT named "Join Excellon". It will merge a selection of Excellon files into a new Excellon file
 - added menu stubs for other Excellon based actions
-
 - solved bug that was not possible to generate film from joined geometry
-- improved toggle active/inactive of the object through SPACE key. Now
-the command works not only for one object but also for a selection
+- improved toggle active/inactive of the object through SPACE key. Now the command works not only for one object but also for a selection
 
 26.05.2018
 
 - made conversion to Python3
 - added Rtree Indexing drill path optimization
-- added a checkbox in Options Tab -> App Defaults -> Excellon
-Group named Excellon Optim. Type from which it can be selected
-the default optimization type: TS stands for Travelling
-Salesman algorithm and Rtree stands for Rtree Indexing
-- added a checkbox on the Grid Toolbar that when checked
-(default status is checked) whatever value entered in the GridX entry
-will be used instead of the now disabled GridY entry
-- modified the default behavior on when a line_entry is clicked.
-Now, on each click on a line_entry, the content is automatically
-selected.
+- added a checkbox in Options Tab -> App Defaults -> Excellon Group named Excellon Optim. Type from which it can be selected the default optimization type: TS stands for Travelling Salesman algorithm and Rtree stands for Rtree Indexing
+- added a checkbox on the Grid Toolbar that when checked (default status is checked) whatever value entered in the GridX entry will be used instead of the now disabled GridY entry
+- modified the default behavior on when a line_entry is clicked. Now, on each click on a line_entry, the content is automatically selected.
 - snap_max_entry is disabled when the DRAW toolbar is disabled
 
 24.05.2015
 
-- in Geometry Editor added a initial form of Rotate Geometry command in
-toolbar
-- changed the way the geometry is finished if it requires a key: before
-it was using key 'Space' now it uses 'Enter'
+- in Geometry Editor added a initial form of Rotate Geometry command in toolbar
+- changed the way the geometry is finished if it requires a key: before it was using key 'Space' now it uses 'Enter'
 - added Shortcut for Rotate Geometry to key 'Space'
-- after using a tool in Geometry Editor it automatically defaults to
-'Select Tool'
+- after using a tool in Geometry Editor it automatically defaults to 'Select Tool'
 
 23.05.2018
 
@@ -4302,135 +4100,69 @@ Delete:  Delete Obj
 22.05.2018
 
 - Added Marlin preprocessor
-- Added a new entry into the Geometry and Excellon Object's UI:
-Feedrate rapid: the purpose is to set a feedrate for the G0
-command that some firmwares like Marlin don't intepret as
-'move with highest speed'
-- FlatCAM was not making the conversion from one type of units to
-another for a lot of parameters. Corrected that.
-- Modified the Marlin preprocessor so it will generate the required
-GCODE.
+- Added a new entry into the Geometry and Excellon Object's UI: Feedrate rapid: the purpose is to set a feedrate for the G0 command that some firmwares like Marlin don't intepret as 'move with highest speed'
+- FlatCAM was not making the conversion from one type of units to another for a lot of parameters. Corrected that.
+- Modified the Marlin preprocessor so it will generate the required GCODE.
 
 21.05.2018
 
 - added new icons for menu entries
-- added shortcuts that work on the Project tab but also over
-Plot. Shorcut list is accesed with shortcut key '~' sau '`'
-- small GUI modification: on each "New File" command it will switch to
-the Project Tab regardless on which tab we were.
-
-- removed the global shear entries and checkbox as they can be
-damaging and it will build effect upon effect, which is not good
-- solved bug in that the Edit -> Shear on X (Y)axis could adjust
-only in integers. Now the angle can be adjusted in float with
-3 decimals.
+- added shortcuts that work on the Project tab but also over Plot. Shorcut list is accesed with shortcut key '~' sau '`'
+- small GUI modification: on each "New File" command it will switch to the Project Tab regardless on which tab we were.
+- removed the global shear entries and checkbox as they can be damaging and it will build effect upon effect, which is not good
+- solved bug in that the Edit -> Shear on X (Y)axis could adjust only in integers. Now the angle can be adjusted in float with 3 decimals.
 - changed the tile of QInputDialog to a more general one
 - changed the "follow" Tcl command to the new format
-- added a new entry in the Menu -> File, to open a Gerber with
-the follow parameter = True
-- added a new checkbox in the Gerber Object Selection Tab that
-when checked it will create a "follow" geometry
-- added a few lines in Mill Holes Tcl command to check if there are
-promises and raise an Tcl error if there are any.
+- added a new entry in the Menu -> File, to open a Gerber with the follow parameter = True
+- added a new checkbox in the Gerber Object Selection Tab that when checked it will create a "follow" geometry
+- added a few lines in Mill Holes Tcl command to check if there are promises and raise an Tcl error if there are any.
 - started to modify the Export_Svg Tcl command
 
 20.05.2018
 
-- changed the interpretation of the axis for the rotate and skew commands.
-Actually I reversed them to reflect reality.
+- changed the interpretation of the axis for the rotate and skew commands. Actually I reversed them to reflect reality.
 - for the rotate command a positive angle now rotates CW. It was reversed.
-- added shortcuts (for outside CANVAS; the CANVAS has it's own set of shortcuts)
-Ctrl+C will copy to clipboard the name of the selected object
-Ctrl+A will Select All objects
-
+- added shortcuts (for outside CANVAS; the CANVAS has it's own set of shortcuts) Ctrl+C will copy to clipboard the name of the selected object Ctrl+A will Select All objects
 "X" key will flip the selected objects on X axis
-
 "Y" key will flip the selected objects on Y axis
-
 "R" key will rotate CW with a 45 degrees step
-- changed the layout for the top of th Options page. Added a checkbox and entries
-for parameters for skew command. When the checkbox is checked it will save (and
-load at the next startup of the program) the option that at each CNCJob generation
-(be it from Excellon or Geometry) it will perform the Skew command with the 
-parametrs set in the nearby field boxes (Skew X and Skey Y angles).
-It is useful in case the CNC router is not perfectly alligned between the X and Y axis
 
+- changed the layout for the top of th Options page. Added a checkbox and entries for parameters for skew command. When the checkbox is checked it will save (and load at the next startup of the program) the option that at each CNCJob generation (be it from Excellon or Geometry) it will perform the Skew command with the parametrs set in the nearby field boxes (Skew X and Skey Y angles). It is useful in case the CNC router is not perfectly alligned between the X and Y axis
 - added some protection in case the skew command receive a None parameter
-
-- BUG solved: made an UGLY (really UGLY) HACK so now, when there is a panel geometry
-generated from GUI, the project WILL save. I had to create a copy of the generated 
-panel geometry and delete the original panel geometry. This way there is no complain
-from JSON module about circular reference.
-
-Supplimentary:
-- removed the Save buttons previously added on each Group in Application Defaults.
-Replaced them with a single Save button that stays always on top of the Options TAB
+- BUG solved: made an UGLY (really UGLY) HACK so now, when there is a panel geometry generated from GUI, the project WILL save. I had to create a copy of the generated panel geometry and delete the original panel geometry. This way there is no complain from JSON module about circular reference.
+- removed the Save buttons previously added on each Group in Application Defaults. Replaced them with a single Save button that stays always on top of the Options TAB
 - added settings for defaults for the Grid that are persistent
 - changed the default view at FlatCAM startup: now the origin is in the center of the screen
 
-
 19.05.2018
 
-- last object that is opened (created) is always automatically selected and
-the name of the object is automatically copied to clipboard; useful when
-using the TCL command :)
-
-- added new commands in MENU -> EDIT named: "Copy Object" and
-"Copy Obj as Geom". The first command will duplicate any object (Geometry,
-Gerber, Excellon).
-The second command will duplicate the object as a geometry. For example,
-holes in Excello now are just circles that can be "painted" if one wants it.
-
-- added new Tool named ToolFreeformCutout. It does what it says, it will
-make a board cutout from a "any shape" Gerber or Geometry file
-
-- solved bug in the TCL command "drillcncjob" that always used the endz
-parameter value as the toolchangez parameter value and for the endz value
-used a default value = 1
-
+- last object that is opened (created) is always automatically selected and the name of the object is automatically copied to clipboard; useful when using the TCL command :)
+- added new commands in MENU -> EDIT named: "Copy Object" and "Copy Obj as Geom". The first command will duplicate any object (Geometry, Gerber, Excellon). The second command will duplicate the object as a geometry. For example, holes in Excello now are just circles that can be "painted" if one wants it.
+- added new Tool named ToolFreeformCutout. It does what it says, it will make a board cutout from a "any shape" Gerber or Geometry file
+- solved bug in the TCL command "drillcncjob" that always used the endz parameter value as the toolchangez parameter value and for the endz value used a default value = 1
 - added preprocessor name into the TCL command "drillcncjob" parameters
-
-- when adding a new geometry the default name is now: "New_Geometry" instead
-of "New Geometry". TCL commands don't handle the spaces inside the name and
-require adding quotes.
-
-- solved bug in "cncjob" TCL command in which it used multidepth parameter as
-always True regardless of the argument provided
-
+- when adding a new geometry the default name is now: "New_Geometry" instead of "New Geometry". TCL commands don't handle the spaces inside the name and require adding quotes.
+- solved bug in "cncjob" TCL command in which it used multidepth parameter as always True regardless of the argument provided
 - added a checkbox for Multidepth in the Options Tab -> Application Defaults
-
 
 18.05.2018
 
-- added an "Defaults" button in Excellon Defaults Group; it loads the
-following configuration (Excellon_format_in 2:4, Excellon_format_mm 3:3,
-Excellon_zeros LZ)
-- added Save buttons for each Defaults Group; in the future more 
-parameters will be propagated in the app, for now they are a few
-- added functions for Skew on X axis and for Skew on Y menu stubs.
-Now, clicking on those Menu -> Options -> Transform Object menu entries
-will trigger those functions
-- added a CheckBox button in the Options Tab -> Application Defaults that control
-the behaviour of the TCL shell: checking it will make the TCL shell window visible
-at each start-up, unchecking it the TCL shell window will be hidden until needed
-- Depth/pass parameter from Geometry Object CNC Job is now in the
-defaults and it will keep it's value until changed in the Application
-Defaults.
+- added an "Defaults" button in Excellon Defaults Group; it loads the following configuration (Excellon_format_in 2:4, Excellon_format_mm 3:3, Excellon_zeros LZ)
+- added Save buttons for each Defaults Group; in the future more parameters will be propagated in the app, for now they are a few
+- added functions for Skew on X axis and for Skew on Y menu stubs. Now, clicking on those Menu -> Options -> Transform Object menu entries will trigger those functions
+- added a CheckBox button in the Options Tab -> Application Defaults that control the behaviour of the TCL shell: checking it will make the TCL shell window visible at each start-up, unchecking it the TCL shell window will be hidden until needed
+- Depth/pass parameter from Geometry Object CNC Job is now in the defaults and it will keep it's value until changed in the Application Defaults.
 
 17.05.2018
 
-- added messages box for the Flip commands to show error in case there
-is no object selected when the command is executed
-- added field entries in the Options TAB - > Application Defaults for the
-following newly introduced parameters: 
+- added messages box for the Flip commands to show error in case there is no object selected when the command is executed
+- added field entries in the Options TAB - > Application Defaults for the following newly introduced parameters: 
 excellon_format_upper_in
 excellon_format_lower_in
 excellon_format_upper_mm
 excellon_format_lower_mm
 
-The ones with upper indicate how many digits are allocated for the units
-and the ones with lower indicate how many digits from coordinates are 
-alocated for the decimals.
+The ones with upper indicate how many digits are allocated for the units and the ones with lower indicate how many digits from coordinates are alocated for the decimals.
 
 [  Eg: Excellon format 2:4 in INCH
    excellon_format_upper_in = 2
@@ -4439,71 +4171,39 @@ where the first 2 digits are for units and the last 4 digits are
 decimals so from a number like 235589 we will get a coordinate 23.5589
 ]
 
-- added Radio button in the Options TAB - > Application Defaults for the
-Excellon_zeros parameter
-
-After each change of those parameters the user will have to press 
-"Save defaults" from File menu in order to propagate the new values, or
-wait for the autosave to kick in (each 20sec).
-
+- added Radio button in the Options TAB - > Application Defaults for the Excellon_zeros parameter
+After each change of those parameters the user will have to press "Save defaults" from File menu in order to propagate the new values, or wait for the autosave to kick in (each 20sec).
 Those parameters can be set in the set_sys TCL command.
 
 15.05.2018
 - modified SetSys TCL command: now it can change units
-- modified SetSys TCL command: now it can set new parameters:
-excellon_format_mm and excellon_format_in. the first one is when the
-excellon units are MM and the second is for when the excellon units are
-in INCH. Those parameters can be set with a number between 1 and 5 and it
-signify how many digits are before coma.
-- added new GUI command in EDIT -> Select All. It will select all
-objects on the first mouse click and on the second will deselect all
-(toggle action)
-- added new GUI commands in Options -> Transform object. Added Rotate selection,
-Flip on X axis of the selection and Flip on Y axis of the selection
-For the Rotate selection command, negative numbers means rotation CCW and
-positive numbers means rotation CW.
-
+- modified SetSys TCL command: now it can set new parameters: excellon_format_mm and excellon_format_in. the first one is when the excellon units are MM and the second is for when the excellon units are in INCH. Those parameters can be set with a number between 1 and 5 and it signify how many digits are before coma.
+- added new GUI command in EDIT -> Select All. It will select all objects on the first mouse click and on the second will deselect all (toggle action)
+- added new GUI commands in Options -> Transform object. Added Rotate selection, Flip on X axis of the selection and Flip on Y axis of the selection For the Rotate selection command, negative numbers means rotation CCW and positive numbers means rotation CW.
 - cleaned up a bit the module imports
-- worked on the excellon parsing for the case of trailing zeros.
-If there are more than 6digits in the 
-coordinates, in case that there is no period, now the software will 
-identify the issue and attempt to correct it by dividing the coordinate 
-further by 10 for each additional digit over 6. If the number of digits
-is less than 6 then the software will multiply by 10 the coordinates
+- worked on the excellon parsing for the case of trailing zeros. If there are more than 6digits in the coordinates, in case that there is no period, now the software will identify the issue and attempt to correct it by dividing the coordinate  further by 10 for each additional digit over 6. If the number of digits is less than 6 then the software will multiply by 10 the coordinates
 
 14.05.2018
 
-- fixed bug in Geometry CNCJob generation that prevented generating 
-the object
-- added GRBL 1.1 preprocessor and Laser preprocessor (adapted from 
-the work of MARCO A QUEZADA)
-
+- fixed bug in Geometry CNCJob generation that prevented generating the object
+- added GRBL 1.1 preprocessor and Laser preprocessor (adapted from the work of MARCO A QUEZADA)
 
 13.05.2018
 
 - added postprocessing in correct form
 - added the possibility to select an preprocessor for Excellon Object
-- added a new preprocessor, manual_toolchange.py. It allows to change 
-the tools and adjust the drill tip to touch the surface manually, always
-in the X=0, Y=0, Z = toolchangeZ coordinates.
+- added a new preprocessor, manual_toolchange.py. It allows to change the tools and adjust the drill tip to touch the surface manually, always in the X=0, Y=0, Z = toolchangeZ coordinates.
 - fixed drillcncjob TCL command by adding toolchangeZ parameter
-- fixed the preprocessor file template 'default.py' in the toolchange
-command section
-- after I created a feature that the message in infobar is cleared by
-moving mouse on canvas, it generated a bug in TCL shell: everytime 
-mouse was moved it will add a space into the TCL read only section.
-Now this bug is fixed.
-- added an EndZ parameter for the drillcncjob and cncjob TCL commands: it
-will specify at what Z value to park the CNC when job ends
-- the spindle will be turned on after the toolchange and it will be turned off
-just before the final end move.
+- fixed the preprocessor file template 'default.py' in the toolchange command section
+- after I created a feature that the message in infobar is cleared by moving mouse on canvas, it generated a bug in TCL shell: everytime  mouse was moved it will add a space into the TCL read only section. Now this bug is fixed.
+- added an EndZ parameter for the drillcncjob and cncjob TCL commands: it will specify at what Z value to park the CNC when job ends
+- the spindle will be turned on after the toolchange and it will be turned off just before the final end move.
 
 Previously:
 - added GRID based working of FLATCAM
 - added Set Origin command
 - added FilmTool, PanelizeTool GUI, MoveTool
 - and others
-
 
 24.04.2018
 
@@ -4523,7 +4223,6 @@ Previously:
 
 
 ============================================
-
 This fork features:
 
 - Added buttons in the menu bar for opening of Gerber and Excellon files;
@@ -4532,13 +4231,12 @@ This fork features:
 - Added capability so FlatCAM can now read Gerber files with traces having zero value (aperture size is zero);
 - Added Paint All / Seed based Paint functions from the JP's FlatCAM;
 - Added Excellon move optimization (travelling salesman algorithm) cherry-picked from David Kahler: https://bitbucket.org/dakahler/flatcam
-- Updated make_win32.py so it will work with cx_freeze 5.0.1 Corrected small typo in DblSidedTool.py
+- Updated make_win32.py so it will work with cx_freeze 5.0.1
+- Corrected small typo in DblSidedTool.py
 - Added the TCL commands in the new format. Picked from FLATCAM master.
 - Hack to fix the issue with geometry not being updated after a TCL command was executed. Now after each TCL command the plot_all() function is executed and the canvas is refreshed.
 - Added GUI for panelization TCL command
 - Added GUI tool for the panelization TCL command: Changed some ToolTips.
-
-
 ============================================
 
 Previously added features by Dennis

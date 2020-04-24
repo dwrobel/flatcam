@@ -4032,7 +4032,7 @@ class App(QtCore.QObject):
         self.file_saved.emit("preferences", filename)
         self.inform.emit('[success] %s: %s' % (_("Exported preferences to"), filename))
 
-    def save_to_file(self, content_to_save):
+    def save_to_file(self, content_to_save, txt_content):
         """
         Save something to a file.
 
@@ -4045,7 +4045,7 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter__ = "HTML File .html (*.html);;All Files (*.*)"
+        filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
         path_to_save = self.defaults["global_last_save_folder"] if\
             self.defaults["global_last_save_folder"] is not None else self.data_path
         try:
@@ -4064,9 +4064,8 @@ class App(QtCore.QObject):
             return
         else:
             try:
-                f = open(filename, 'w')
-                defaults_file_content = f.read()
-                f.close()
+                with open(filename, 'w') as f:
+                    ___ = f.read()
             except PermissionError:
                 self.inform.emit('[WARNING] %s' %
                                  _("Permission denied, saving not possible.\n"
@@ -4084,9 +4083,14 @@ class App(QtCore.QObject):
                 return
 
             # Save content
+            if filename.rpartition('.')[2].lower() == 'html':
+                file_content = content_to_save
+            else:
+                file_content = txt_content
+
             try:
                 with open(filename, "w") as f:
-                    f.write(content_to_save)
+                    f.write(file_content)
             except Exception:
                 self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
                 return
