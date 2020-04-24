@@ -2561,8 +2561,8 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
-        self.shell.append_output("FlatCAM %s - " % self.version)
-        self.shell.append_output(_("Type >help< to get started\n\n"))
+        self.shell._append_to_browser('in', "FlatCAM %s - " % self.version)
+        self.shell.append_output('%s\n\n' % _("Type >help< to get started"))
 
         self.ui.shell_dock.setWidget(self.shell)
 

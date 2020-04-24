@@ -12,7 +12,7 @@ CHANGELOG for FlatCAM beta
 - some PEP changes, some method descriptions updated
 - added a placeholder text to 2Sided Tool
 - added a new menu entry in the context menu of the Tcl Shell: 'Save Log' which will save the content of the Tcl Shell browser window to a file
-
+- the status bar messages that are echoed in the Tcl Shell will no longer have all text colored but only the identifier
 
 23.04.2020 
 

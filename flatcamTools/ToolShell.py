@@ -101,20 +101,33 @@ class TermWidget(QWidget):
             text = text.replace('\n', '<br>')
             text = text.replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 
+        idx = text.find(']')
+        mtype = text[:idx+1].upper()
+        mtype = mtype.replace('_NOTCL', '')
+        body = text[idx+1:]
         if style == 'in':
             text = '<span style="font-weight: bold;">%s</span>' % text
         elif style == 'err':
-            text = '<span style="font-weight: bold; color: red;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: red;">%s</span>'\
+                   '<span style="font-weight: bold;">%s</span>'\
+                   %(mtype, body)
         elif style == 'warning':
-            text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
+            # text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' \
+                   '<span style="font-weight: bold;">%s</span>' \
+                   % (mtype, body)
         elif style == 'success':
-            text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
+            # text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #15b300;">%s</span>' \
+                   '<span style="font-weight: bold;">%s</span>' \
+                   % (mtype, body)
         elif style == 'selected':
             text = ''
         elif style == 'raw':
             text = text
         else:
-            text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
+            # without span <br/> is ignored!!!
+            text = '<span>%s</span>' % text
 
         scrollbar = self._browser.verticalScrollBar()
         old_value = scrollbar.value()
