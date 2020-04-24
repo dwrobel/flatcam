@@ -20,6 +20,8 @@ CHANGELOG for FlatCAM beta
 - updated the Readme file with the steps for installation for MacOS
 - updated the requirements.txt file
 - updated some of the icons in the dark_resources folder (some added, some modified)
+- updated Paint Tool for the new Tool DB
+- updated the Tcl commands CopperClear and Paint
 
 23.04.2020 
 

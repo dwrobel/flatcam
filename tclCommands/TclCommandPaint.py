@@ -66,7 +66,7 @@ class TclCommandPaint(TclCommand):
                       '"no" -> the order used is the one provided.'
                       '"fwd" -> tools are ordered from smallest to biggest.'
                       '"rev" -> tools are ordered from biggest to smallest.'),
-            ('method', 'Algorithm for painting. Can be: "standard", "seed" or "lines".'),
+            ('method', 'Algorithm for painting. Can be: "standard", "seed", "lines", "laser_lines", "combo".'),
             ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
             ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
             ('all', 'If used, paint all polygons in the object.'),
@@ -121,6 +121,16 @@ class TclCommandPaint(TclCommand):
 
         if 'method' in args:
             method = args['method']
+            if method == "standard":
+                method = _("Standard")
+            elif method == "seed":
+                method = _("Seed")
+            elif method == "lines":
+                method = _("Lines")
+            elif method == "laser_lines":
+                method = _("Laser_lines")
+            else:
+                method = _("Combo")
         else:
             method = str(self.app.defaults["tools_paintmethod"])
 
@@ -147,6 +157,14 @@ class TclCommandPaint(TclCommand):
         else:
             outname = name + "_paint"
 
+        # used only to have correct information's in the obj.tools[tool]['data'] dict
+        if "all" in args:
+            select = _("All Polygons")
+        elif "single" in args:
+            select = _("Polygon Selection")
+        else:
+            select = _("Reference Object")
+
         try:
             tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
         except AttributeError:
@@ -154,8 +172,8 @@ class TclCommandPaint(TclCommand):
         # store here the default data for Geometry Data
         default_data = {}
         default_data.update({
-            "name": '_paint',
-            "plot": self.app.defaults["geometry_plot"],
+            "name": outname,
+            "plot": False,
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -180,12 +198,12 @@ class TclCommandPaint(TclCommand):
             "startz": self.app.defaults["geometry_startz"],
 
             "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
-            "paintmethod": self.app.defaults["tools_paintmethod"],
-            "selectmethod": self.app.defaults["tools_selectmethod"],
-            "pathconnect": self.app.defaults["tools_pathconnect"],
-            "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"]
+            "paintmargin": margin,
+            "paintmethod": method,
+            "selectmethod": select,
+            "pathconnect": connect,
+            "paintcontour": contour,
+            "paintoverlap": overlap
         })
         paint_tools = {}
 
@@ -203,6 +221,7 @@ class TclCommandPaint(TclCommand):
                     'solid_geometry': []
                 }
             })
+            paint_tools[int(tooluid)]['data']['tooldia'] = float('%.*f' % (obj.decimals, tool))
 
         if obj is None:
             return "Object not found: %s" % name
@@ -211,13 +230,9 @@ class TclCommandPaint(TclCommand):
         if 'all' in args:
             self.app.paint_tool.paint_poly_all(obj=obj,
                                                tooldia=tooldia,
-                                               overlap=overlap,
                                                order=order,
-                                               margin=margin,
                                                method=method,
                                                outname=outname,
-                                               connect=connect,
-                                               contour=contour,
                                                tools_storage=paint_tools,
                                                plot=False,
                                                run_threaded=False)
@@ -234,13 +249,9 @@ class TclCommandPaint(TclCommand):
                 self.app.paint_tool.paint_poly(obj=obj,
                                                inside_pt=[x, y],
                                                tooldia=tooldia,
-                                               overlap=overlap,
                                                order=order,
-                                               margin=margin,
                                                method=method,
                                                outname=outname,
-                                               connect=connect,
-                                               contour=contour,
                                                tools_storage=paint_tools,
                                                plot=False,
                                                run_threaded=False)
@@ -264,13 +275,9 @@ class TclCommandPaint(TclCommand):
             self.app.paint_tool.paint_poly_ref(obj=obj,
                                                sel_obj=box_obj,
                                                tooldia=tooldia,
-                                               overlap=overlap,
                                                order=order,
-                                               margin=margin,
                                                method=method,
                                                outname=outname,
-                                               connect=connect,
-                                               contour=contour,
                                                tools_storage=paint_tools,
                                                plot=False,
                                                run_threaded=False)

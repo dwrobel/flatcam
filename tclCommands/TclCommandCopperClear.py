@@ -122,8 +122,21 @@ class TclCommandCopperClear(TclCommand):
 
         if 'method' in args:
             method = args['method']
+            if method == "standard":
+                method_data = _("Standard")
+            elif method == "seed":
+                method_data = _("Seed")
+            else:
+                method_data = _("Lines")
         else:
             method = str(self.app.defaults["tools_nccmethod"])
+            method_data = method
+            if method == _("Standard"):
+                method = "standard"
+            elif method == _("Seed"):
+                method = "seed"
+            else:
+                method = "lines"
 
         if 'connect' in args:
             try:
@@ -155,11 +168,34 @@ class TclCommandCopperClear(TclCommand):
         except AttributeError:
             tools = [float(tooldia)]
 
+        if 'rest' in args:
+            try:
+                par = args['rest'].capitalize()
+            except AttributeError:
+                par = args['rest']
+            rest = bool(eval(par))
+        else:
+            rest = bool(eval(str(self.app.defaults["tools_nccrest"])))
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            if rest is True:
+                outname = name + "_ncc"
+            else:
+                outname = name + "_ncc_rm"
+
+        # used only to have correct information's in the obj.tools[tool]['data'] dict
+        if "all" in args:
+            select = _("Itself")
+        else:
+            select = _("Reference Object")
+
         # store here the default data for Geometry Data
         default_data = {}
         default_data.update({
-            "name": '_paint',
-            "plot": self.app.defaults["geometry_plot"],
+            "name": outname,
+            "plot": False,
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -183,12 +219,12 @@ class TclCommandCopperClear(TclCommand):
             "startz": self.app.defaults["geometry_startz"],
 
             "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
-            "paintmethod": self.app.defaults["tools_paintmethod"],
-            "selectmethod": self.app.defaults["tools_selectmethod"],
-            "pathconnect": self.app.defaults["tools_pathconnect"],
-            "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"]
+            "tools_nccmargin": margin,
+            "tools_nccmethod": method_data,
+            "tools_nccref": select,
+            "tools_nccconnect": connect,
+            "tools_ncccontour": contour,
+            "tools_nccoverlap": overlap
         })
         ncc_tools = {}
 
@@ -206,23 +242,7 @@ class TclCommandCopperClear(TclCommand):
                     'solid_geometry': []
                 }
             })
-
-        if 'rest' in args:
-            try:
-                par = args['rest'].capitalize()
-            except AttributeError:
-                par = args['rest']
-            rest = bool(eval(par))
-        else:
-            rest = bool(eval(str(self.app.defaults["tools_nccrest"])))
-
-        if 'outname' in args:
-            outname = args['outname']
-        else:
-            if rest is True:
-                outname = name + "_ncc"
-            else:
-                outname = name + "_ncc_rm"
+            ncc_tools[int(tooluid)]['data']['tooldia'] = float('%.*f' % (obj.decimals, tool))
 
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args:
