@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - update the language template strings.pot and updated the Romanian translation
 - updated the Readme file with the steps for installation for MacOS
 - updated the requirements.txt file
+- updated some of the icons in the dark_resources folder (some added, some modified)
 
 23.04.2020 
 
