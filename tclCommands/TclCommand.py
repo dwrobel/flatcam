@@ -289,7 +289,7 @@ class TclCommand(object):
 
         # self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
         try:
-            self.log.debug("TCL command '%s' executed." % str(self.__class__))
+            self.log.debug("TCL command '%s' executed." % str(type(self).__name__))
             self.original_args = args
             args, unnamed_args = self.check_args(args)
             return self.execute(args, unnamed_args)
@@ -405,7 +405,7 @@ class TclCommandSignaled(TclCommand):
                                                  "'set_sys global_background_timeout <miliseconds>'.")
 
         try:
-            self.log.debug("TCL command '%s' executed." % str(self.__class__))
+            self.log.debug("TCL command '%s' executed." % str(type(self).__name__))
             self.original_args = args
             args, unnamed_args = self.check_args(args)
             if 'timeout' in args:

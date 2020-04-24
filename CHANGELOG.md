@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - the status bar messages that are echoed in the Tcl Shell will no longer have all text colored but only the identifier
 - some message strings cleanup
 - added possibility to save as text file the content in Tcl Shell browser window when clicking the Save log context menu entry
+- fixed an issue regarding the statusbar pixmap selection
 
 23.04.2020 
 
