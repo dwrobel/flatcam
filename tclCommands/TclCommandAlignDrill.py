@@ -15,6 +15,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrill']
 
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -41,7 +43,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create excellon with drills for aligment.",
+        'main': "Create an Excellon object with drills for alignment.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
             ('dia', 'Tool diameter'),

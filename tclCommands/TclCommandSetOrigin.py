@@ -34,6 +34,8 @@ class TclCommandSetOrigin(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['set_origin', 'origin']
 
+    description = '%s %s' % ("--", "Set the origin at the specified x,y location.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('loc', str)
@@ -41,7 +43,7 @@ class TclCommandSetOrigin(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('auto', bool)
+        ('auto', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -49,13 +51,15 @@ class TclCommandSetOrigin(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Will set the origin at the specified x,y location.",
+        'main': "Will set the origin at the specified x,y location.\n"
+                "If it is called without arguments it will set origin at (0, 0)",
         'args': collections.OrderedDict([
-            ('loc', 'Location to offset all the selected objects. No spaces between x and y pair. Use like this: 2,3'),
+            ('loc', 'Location to offset all the selected objects. NO SPACES ALLOWED in X and Y pair.\n'
+                    'Use like this: 2,3'),
             ('auto', 'If set to True it will set the origin to the minimum x, y of the object selection bounding box.'
-                     '-auto=True is not correct but -auto 1 or -auto True is correct.')
+                     '-auto=True is not correct but -auto 1 or -auto True is correct. True (1) or False (0).')
         ]),
-        'examples': ['set_origin 3,2', 'set_origin -auto 1']
+        'examples': ['set_origin 3,2', 'set_origin -auto 1', 'origin']
     }
 
     def execute(self, args, unnamed_args):
@@ -66,7 +70,7 @@ class TclCommandSetOrigin(TclCommand):
         :return:
         """
 
-        loc = list()
+        loc = []
         if 'auto' in args:
             if bool(args['auto']) is True:
                 objs = self.app.collection.get_list()

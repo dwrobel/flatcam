@@ -111,7 +111,7 @@ class ToolMove(FlatCAMTool):
                 self.draw_sel_bbox()
             else:
                 self.toggle()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("MOVE action cancelled. No object(s) to move."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No object(s) to move."))
 
     def on_left_click(self, event):
         # mouse click will be accepted only if the left button is clicked
@@ -188,6 +188,16 @@ class ToolMove(FlatCAMTool):
                                     sel_obj.options['ymin'] = b
                                     sel_obj.options['xmax'] = c
                                     sel_obj.options['ymax'] = d
+
+                                # update the source_file with the new positions
+                                for sel_obj in obj_list:
+                                    out_name = sel_obj.options["name"]
+                                    if sel_obj.kind == 'gerber':
+                                        sel_obj.source_file = self.app.export_gerber(
+                                            obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
+                                    elif sel_obj.kind == 'excellon':
+                                        sel_obj.source_file = self.app.export_excellon(
+                                            obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
                             except Exception as e:
                                 log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(e)))
                                 return "fail"
@@ -257,7 +267,7 @@ class ToolMove(FlatCAMTool):
     def on_key_press(self, event):
         if event.key == 'escape':
             # abort the move action
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Move action cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             self.toggle()
         return
 

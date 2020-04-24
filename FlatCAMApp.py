@@ -9,13 +9,12 @@
 import urllib.request
 import urllib.parse
 import urllib.error
-import webbrowser
 
 import getopt
 import random
 import simplejson as json
 import lzma
-import threading
+# import threading
 import shutil
 import stat
 
@@ -27,12 +26,12 @@ import ctypes
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
-from reportlab.graphics import renderPM
+# from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import landscape, portrait
 from svglib.svglib import svg2rlg
 
-from contextlib import contextmanager
+# from contextlib import contextmanager
 import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
@@ -40,9 +39,9 @@ from xml.dom.minidom import parseString as parse_xml_string
 from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
-from array import array
+# from array import array
 
-import vispy.scene as scene
+# import vispy.scene as scene
 
 # #######################################
 # #      Imports part of FlatCAM       ##
@@ -54,8 +53,9 @@ from camlib import to_dict, dict2obj, ET, ParseError
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
+from flatcamGUI.GUIElements import FCFileSaveDialog
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, color_variant
+from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, ToolsDB2, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -88,15 +88,28 @@ if '_' not in builtins.__dict__:
 
 
 class App(QtCore.QObject):
-    # ########################################
-    # #                App                 ###
-    # ########################################
-
     """
     The main application class. The constructor starts the GUI.
     """
 
-    # Get Cmd Line Options
+    # ###############################################################################################################
+    # ########################################## App ################################################################
+    # ###############################################################################################################
+
+    # ###############################################################################################################
+    # ######################################### LOGGING #############################################################
+    # ###############################################################################################################
+    log = logging.getLogger('base')
+    log.setLevel(logging.DEBUG)
+    # log.setLevel(logging.WARNING)
+    formatter = logging.Formatter('[%(levelname)s][%(threadName)s] %(message)s')
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+
+    # ###############################################################################################################
+    # #################################### Get Cmd Line Options #####################################################
+    # ###############################################################################################################
     cmd_line_shellfile = ''
     cmd_line_shellvar = ''
     cmd_line_headless = None
@@ -128,20 +141,11 @@ class App(QtCore.QObject):
             except NameError:
                 pass
 
-    # ## Logging ###
-    log = logging.getLogger('base')
-    log.setLevel(logging.DEBUG)
-    # log.setLevel(logging.WARNING)
-    formatter = logging.Formatter('[%(levelname)s][%(threadName)s] %(message)s')
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
-
-    # ##########################################################################
-    # ################## Version and VERSION DATE ##############################
-    # ##########################################################################
+    # ###############################################################################################################
+    # ################################### Version and VERSION DATE ##################################################
+    # ###############################################################################################################
     version = 8.992
-    version_date = "2020/01/02"
+    version_date = "2020/05/01"
     beta = True
     engine = '3D'
 
@@ -150,6 +154,9 @@ class App(QtCore.QObject):
     date = ''.join(c for c in date if c not in ':-')
     date = date.replace(' ', '_')
 
+    # ###############################################################################################################
+    # ############################################ URLS's ###########################################################
+    # ###############################################################################################################
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
 
@@ -171,9 +178,9 @@ class App(QtCore.QObject):
     # flag is True if saving action has been triggered
     save_in_progress = False
 
-    # ###########################################################################
-    # #############################    Signals   ################################
-    # ###########################################################################
+    # ###############################################################################################################
+    # #######################################    APP Signals   ######################################################
+    # ###############################################################################################################
 
     # Inform the user
     # Handled by:
@@ -240,6 +247,9 @@ class App(QtCore.QObject):
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
 
+    # signal emitted when jumping
+    locate_signal = pyqtSignal(tuple, str)
+
     # close app signal
     close_app_signal = pyqtSignal()
 
@@ -255,10 +265,9 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # #########################################################################
-        # Setup the listening thread for another instance launching with args #####
-        # #########################################################################
-
+        # ############################################################################################################
+        # ################# Setup the listening thread for another instance launching with args ######################
+        # ############################################################################################################
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
             self.th = QtCore.QThread()
@@ -269,14 +278,14 @@ class App(QtCore.QObject):
             self.new_launch.moveToThread(self.th)
             self.new_launch.start.emit()
 
-        # ############################################################################
-        # # ################# OS-specific ############################################
-        # ############################################################################
+        # ############################################################################################################
+        # # ######################################## OS-specific #####################################################
+        # ############################################################################################################
         portable = False
 
         # Folder for user settings.
         if sys.platform == 'win32':
-            from win32com.shell import shell, shellcon
+            from win32comext.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
             else:
@@ -325,9 +334,9 @@ class App(QtCore.QObject):
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
             self.os = 'unix'
 
-        # ##########################################################################
-        # ################## Setup folders and files ###############################
-        # ##########################################################################
+        # ############################################################################################################
+        # ################################# Setup folders and files ##################################################
+        # ############################################################################################################
 
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
@@ -347,16 +356,6 @@ class App(QtCore.QObject):
         except IOError:
             App.log.debug('Creating empty geo_tool_db.FlatDB')
             f = open(self.data_path + '/geo_tools_db.FlatDB', 'w')
-            json.dump({}, f)
-            f.close()
-
-        # create fctool_tools_db.FlatDB file if there is none
-        try:
-            f = open(self.data_path + '/fctool_tools_db.FlatDB')
-            f.close()
-        except IOError:
-            App.log.debug('Creating empty fctool_tool_db.FlatDB')
-            f = open(self.data_path + '/fctool_tools_db.FlatDB', 'w')
             json.dump({}, f)
             f.close()
 
@@ -414,9 +413,9 @@ class App(QtCore.QObject):
 
         os.chdir(self.app_home)
 
-        # #################################################################################
-        # #################### DEFAULTS - PREFERENCES STORAGE #############################
-        # #################################################################################
+        # ############################################################################################################
+        # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
+        # ############################################################################################################
         self.defaults = LoudDict()
         self.defaults.update({
             # Global APP Preferences
@@ -429,10 +428,13 @@ class App(QtCore.QObject):
             "global_stats": dict(),
             "global_tabs_detachable": True,
             "global_jump_ref": 'abs',
+            "global_locate_pt": 'bl',
             "global_tpdf_tmargin": 15.0,
             "global_tpdf_bmargin": 10.0,
             "global_tpdf_lmargin": 20.0,
             "global_tpdf_rmargin": 20.0,
+            "global_autosave": False,
+            "global_autosave_timeout": 300000,
 
             # General
             "global_graphic_engine": '3D',
@@ -512,7 +514,7 @@ class App(QtCore.QObject):
             "zoom_in_key": '=',
             "grid_toggle_key": 'G',
             "global_zoom_ratio": 1.5,
-            "global_point_clipboard_format": "(%.4f, %.4f)",
+            "global_point_clipboard_format": "(%.*f, %.*f)",
             "global_zdownrate": None,
 
             # General GUI Settings
@@ -524,8 +526,8 @@ class App(QtCore.QObject):
             "global_cursor_type": "small",
             "global_cursor_size": 20,
             "global_cursor_width": 2,
-            "global_cursor_color": '#000000',
-            "global_cursor_color_enabled": False,
+            "global_cursor_color": '#FF0000',
+            "global_cursor_color_enabled": True,
 
             # Gerber General
             "gerber_plot": True,
@@ -541,23 +543,24 @@ class App(QtCore.QObject):
 
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
-            "gerber_save_filters": "Gerber File (*.gbr);;Gerber File (*.bot);;Gerber File (*.bsm);;"
-                                   "Gerber File (*.cmp);;Gerber File (*.crc);;Gerber File (*.crs);;"
-                                   "Gerber File (*.gb0);;Gerber File (*.gb1);;Gerber File (*.gb2);;"
-                                   "Gerber File (*.gb3);;Gerber File (*.gb4);;Gerber File (*.gb5);;"
-                                   "Gerber File (*.gb6);;Gerber File (*.gb7);;Gerber File (*.gb8);;"
-                                   "Gerber File (*.gb9);;Gerber File (*.gbd);;Gerber File (*.gbl);;"
-                                   "Gerber File (*.gbo);;Gerber File (*.gbp);;Gerber File (*.gbs);;"
-                                   "Gerber File (*.gdo);;Gerber File (*.ger);;Gerber File (*.gko);;"
-                                   "Gerber File (*.gm1);;Gerber File (*.gm2);;Gerber File (*.gm3);;"
-                                   "Gerber File (*.grb);;Gerber File (*.gtl);;Gerber File (*.gto);;"
-                                   "Gerber File (*.gtp);;Gerber File (*.gts);;Gerber File (*.ly15);;"
-                                   "Gerber File (*.ly2);;Gerber File (*.mil);;Gerber File (*.pho);;"
-                                   "Gerber File (*.plc);;Gerber File (*.pls);;Gerber File (*.smb);;"
-                                   "Gerber File (*.smt);;Gerber File (*.sol);;Gerber File (*.spb);;"
-                                   "Gerber File (*.spt);;Gerber File (*.ssb);;Gerber File (*.sst);;"
-                                   "Gerber File (*.stc);;Gerber File (*.sts);;Gerber File (*.top);;"
-                                   "Gerber File (*.tsm);;Gerber File (*.art)"
+            "gerber_save_filters": "Gerber File .gbr (*.gbr);;Gerber File .bot (*.bot);;Gerber File .bsm (*.bsm);;"
+                                   "Gerber File .cmp (*.cmp);;Gerber File .crc (*.crc);;Gerber File .crs (*.crs);;"
+                                   "Gerber File .gb0 (*.gb0);;Gerber File .gb1 (*.gb1);;Gerber File .gb2 (*.gb2);;"
+                                   "Gerber File .gb3 (*.gb3);;Gerber File .gb4 (*.gb4);;Gerber File .gb5 (*.gb5);;"
+                                   "Gerber File .gb6 (*.gb6);;Gerber File .gb7 (*.gb7);;Gerber File .gb8 (*.gb8);;"
+                                   "Gerber File .gb9 (*.gb9);;Gerber File .gbd (*.gbd);;Gerber File .gbl (*.gbl);;"
+                                   "Gerber File .gbo (*.gbo);;Gerber File .gbp (*.gbp);;Gerber File .gbs (*.gbs);;"
+                                   "Gerber File .gdo (*.gdo);;Gerber File .ger (*.ger);;Gerber File .gko (*.gko);;"
+                                   "Gerber File .gm1 (*.gm1);;Gerber File .gm2 (*.gm2);;Gerber File .gm3 (*.gm3);;"
+                                   "Gerber File .grb (*.grb);;Gerber File .gtl (*.gtl);;Gerber File .gto (*.gto);;"
+                                   "Gerber File .gtp (*.gtp);;Gerber File .gts (*.gts);;Gerber File .ly15 (*.ly15);;"
+                                   "Gerber File .ly2 (*.ly2);;Gerber File .mil (*.mil);;"
+                                   "Gerber File .outline (*.outline);;Gerber File .pho (*.pho);;"
+                                   "Gerber File .plc (*.plc);;Gerber File .pls (*.pls);;Gerber File .smb (*.smb);;"
+                                   "Gerber File .smt (*.smt);;Gerber File .sol (*.sol);;Gerber File .spb (*.spb);;"
+                                   "Gerber File .spt (*.spt);;Gerber File .ssb (*.ssb);;Gerber File .sst (*.sst);;"
+                                   "Gerber File .stc (*.stc);;Gerber File .sts (*.sts);;Gerber File .top (*.top);;"
+                                   "Gerber File .tsm (*.tsm);;Gerber File .art (*.art)"
                                    "All Files (*.*)",
 
             # Gerber Options
@@ -619,19 +622,31 @@ class App(QtCore.QObject):
             "excellon_zeros": "L",
             "excellon_units": "INCH",
             "excellon_update": True,
+
             "excellon_optimization_type": 'B',
+
             "excellon_search_time": 3,
-            "excellon_save_filters": "Excellon File (*.txt);;Excellon File (*.drd);;Excellon File (*.drl);;"
-                                     "Excellon File (*.exc);;Excellon File (*.ncd);;Excellon File (*.tap);;"
-                                     "Excellon File (*.xln);;All Files (*.*)",
+            "excellon_save_filters": "Excellon File .txt (*.txt);;Excellon File .drd (*.drd);;"
+                                     "Excellon File .drill (*.drill);;"
+                                     "Excellon File .drl (*.drl);;Excellon File .exc (*.exc);;"
+                                     "Excellon File .ncd (*.ncd);;Excellon File .tap (*.tap);;"
+                                     "Excellon File .xln (*.xln);;All Files (*.*)",
             "excellon_plot_fill": '#C40000BF',
             "excellon_plot_line": '#750000BF',
 
             # Excellon Options
-            "excellon_drillz": -1.7,
+            "excellon_operation": "drill",
+            "excellon_milling_type": "drills",
+
+            "excellon_milling_dia": 0.8,
+
+            "excellon_cutz": -1.7,
+            "excellon_multidepth": False,
+            "excellon_depthperpass": 0.7,
             "excellon_travelz": 2,
             "excellon_endz": 0.5,
-            "excellon_feedrate": 300,
+            "excellon_endxy": None,
+            "excellon_feedrate_z": 300,
             "excellon_spindlespeed": 0,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
@@ -676,7 +691,7 @@ class App(QtCore.QObject):
             "excellon_editor_slot_length": 5.0,
             # Excellon Slot Array
             "excellon_editor_slot_array_size": 5,
-            "excellon_editor_slot_lin_dir":  'X',
+            "excellon_editor_slot_lin_dir": 'X',
             "excellon_editor_slot_lin_pitch": 2.54,
             "excellon_editor_slot_lin_angle": 0.0,
             "excellon_editor_slot_circ_dir": 'CW',
@@ -698,6 +713,8 @@ class App(QtCore.QObject):
             "geometry_toolchange": False,
             "geometry_toolchangez": 15.0,
             "geometry_endz": 15.0,
+            "geometry_endxy": None,
+
             "geometry_feedrate": 120,
             "geometry_feedrate_z": 60,
             "geometry_spindlespeed": 0,
@@ -733,15 +750,15 @@ class App(QtCore.QObject):
             "cncjob_steps_per_circle": 64,
             "cncjob_footer": False,
             "cncjob_line_ending": False,
-            "cncjob_save_filters": "G-Code Files (*.nc);;G-Code Files (*.din);;G-Code Files (*.dnc);;"
-                                   "G-Code Files (*.ecs);;G-Code Files (*.eia);;G-Code Files (*.fan);;"
-                                   "G-Code Files (*.fgc);;G-Code Files (*.fnc);;G-Code Files (*.gc);;"
-                                   "G-Code Files (*.gcd);;G-Code Files (*.gcode);;G-Code Files (*.h);;"
-                                   "G-Code Files (*.hnc);;G-Code Files (*.i);;G-Code Files (*.min);;"
-                                   "G-Code Files (*.mpf);;G-Code Files (*.mpr);;G-Code Files (*.cnc);;"
-                                   "G-Code Files (*.ncc);;G-Code Files (*.ncg);;G-Code Files (*.ncp);;"
-                                   "G-Code Files (*.ngc);;G-Code Files (*.out);;G-Code Files (*.ply);;"
-                                   "G-Code Files (*.sbp);;G-Code Files (*.tap);;G-Code Files (*.xpi);;"
+            "cncjob_save_filters": "G-Code Files .nc (*.nc);;G-Code Files .din (*.din);;G-Code Files .dnc (*.dnc);;"
+                                   "G-Code Files .ecs (*.ecs);;G-Code Files .eia (*.eia);;G-Code Files .fan (*.fan);;"
+                                   "G-Code Files .fgc (*.fgc);;G-Code Files .fnc (*.fnc);;G-Code Files . gc (*.gc);;"
+                                   "G-Code Files .gcd (*.gcd);;G-Code Files .gcode (*.gcode);;G-Code Files .h (*.h);;"
+                                   "G-Code Files .hnc (*.hnc);;G-Code Files .i (*.i);;G-Code Files .min (*.min);;"
+                                   "G-Code Files .mpf (*.mpf);;G-Code Files .mpr (*.mpr);;G-Code Files .cnc (*.cnc);;"
+                                   "G-Code Files .ncc (*.ncc);;G-Code Files .ncg (*.ncg);;G-Code Files .ncp (*.ncp);;"
+                                   "G-Code Files .ngc (*.ngc);;G-Code Files .out (*.out);;G-Code Files .ply (*.ply);;"
+                                   "G-Code Files .sbp (*.sbp);;G-Code Files .tap (*.tap);;G-Code Files .xpi (*.xpi);;"
                                    "All Files (*.*)",
             "cncjob_plot_line": '#4650BDFF',
             "cncjob_plot_fill": '#5E6CFFFF',
@@ -761,22 +778,24 @@ class App(QtCore.QObject):
             # NCC Tool
             "tools_ncctools": "1.0, 0.5",
             "tools_nccorder": 'rev',
+            "tools_nccoperation": 'clear',
             "tools_nccoverlap": 40,
             "tools_nccmargin": 1.0,
-            "tools_nccmethod": "seed",
+            "tools_nccmethod": _("Seed"),
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
             "tools_ncc_offset_choice": False,
             "tools_ncc_offset_value": 0.0000,
-            "tools_nccref": 'itself',
+            "tools_nccref": _('Itself'),
+            "tools_ncc_area_shape": "square",
             "tools_ncc_plotting": 'normal',
             "tools_nccmilling_type": 'cl',
-            "tools_ncctool_type": 'V',
+            "tools_ncctool_type": 'C1',
             "tools_ncccutz": -0.05,
             "tools_ncctipdia": 0.1,
             "tools_ncctipangle": 30,
-            "tools_nccnewdia": 1.0,
+            "tools_nccnewdia": 0.1,
 
             # Cutout Tool
             "tools_cutouttooldia": 2.4,
@@ -794,16 +813,24 @@ class App(QtCore.QObject):
             "tools_paintorder": 'rev',
             "tools_paintoverlap": 20,
             "tools_paintmargin": 0.0,
-            "tools_paintmethod": "seed",
-            "tools_selectmethod": "all",
+            "tools_paintmethod": _("Seed"),
+            "tools_selectmethod": _("All Polygons"),
+            "tools_paint_area_shape": "square",
             "tools_pathconnect": True,
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
+            "tools_paintrest": False,
+            "tools_painttool_type": 'C1',
+            "tools_paintcutz": -0.05,
+            "tools_painttipdia": 0.1,
+            "tools_painttipangle": 30,
+            "tools_paintnewdia": 0.1,
 
             # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
             "tools_2sided_drilldia": 3.125,
+            "tools_2sided_allign_axis": "X",
 
             # Film Tool
             "tools_film_type": 'neg',
@@ -878,6 +905,9 @@ class App(QtCore.QObject):
 
             # Subtract Tool
             "tools_sub_close_paths": True,
+
+            # Distance Tool
+            "tools_dist_snap_center": False,
 
             # ###################################################################################
             # ################################ TOOLS 2 ##########################################
@@ -954,28 +984,67 @@ class App(QtCore.QObject):
             "tools_cal_toolchange_xy": '',
             "tools_cal_sec_point": 'tl',
 
+            # Drills Extraction Tool
+            "tools_edrills_hole_type": 'fixed',
+            "tools_edrills_hole_fixed_dia": 0.5,
+            "tools_edrills_hole_prop_factor": 80.0,
+            "tools_edrills_circular_ring": 0.2,
+            "tools_edrills_oblong_ring": 0.2,
+            "tools_edrills_square_ring": 0.2,
+            "tools_edrills_rectangular_ring": 0.2,
+            "tools_edrills_others_ring": 0.2,
+            "tools_edrills_circular": True,
+            "tools_edrills_oblong": False,
+            "tools_edrills_square": False,
+            "tools_edrills_rectangular": False,
+            "tools_edrills_others": False,
+
+            # Punch Gerber Tool
+            "tools_punch_hole_type": 'exc',
+            "tools_punch_hole_fixed_dia": 0.5,
+            "tools_punch_hole_prop_factor": 80.0,
+            "tools_punch_circular_ring": 0.2,
+            "tools_punch_oblong_ring": 0.2,
+            "tools_punch_square_ring": 0.2,
+            "tools_punch_rectangular_ring": 0.2,
+            "tools_punch_others_ring": 0.2,
+            "tools_punch_circular": True,
+            "tools_punch_oblong": False,
+            "tools_punch_square": True,
+            "tools_punch_rectangular": False,
+            "tools_punch_others": False,
+
+            # Align Objects Tool
+            "tools_align_objects_align_type": 'sp',
+
+            # Invert Gerber Tool
+            "tools_invert_margin": 0.1,
+            "tools_invert_join_style": 's',
+
             # Utilities
             # file associations
-            "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
+            "fa_excellon": 'drd, drill, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
                         'ncg, ncp, ngc, out, ply, rol, sbp, tap, xpi',
             "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, gb0, gb1, gb2, gb3, gb4, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
-                         'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
+                         'mil, outline, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
-            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
-                                          'Repetier, Roland_MDX_20, Users, Toolchange_Custom, Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
+            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, False, '
+                                          'Marius, My Documents, Paste_1, '
+                                          'Repetier, Roland_MDX_20, True, Users, Toolchange_Custom, '
+                                          'Toolchange_Probe_MACH3, '
+                                          'Toolchange_manual, Users, all, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
-                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
-                                          'extracut_length, '
-                                          'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
+                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dpp, dwelltime, '
+                                          'endxy, endz, extracut_length, f, feedrate, '
+                                          'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
                                           'minoffset, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                           'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'toolchange_xy, toolchangez, '
-                                          'tooldia, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
+                                          'startz, startxy, toolchange_xy, toolchangez, '
+                                          'tooldia, travelz, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
                                           'z_move',
             "script_autocompleter": True,
             "script_text": "",
@@ -1013,7 +1082,7 @@ class App(QtCore.QObject):
         self.current_units = self.defaults['units']
 
         # store here the current self.defaults so it can be restored if Preferences changes are cancelled
-        self.current_defaults = dict()
+        self.current_defaults = {}
         self.current_defaults.update(self.defaults)
 
         # ##########################################################################
@@ -1126,6 +1195,8 @@ class App(QtCore.QObject):
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
+            "global_autosave": self.ui.general_defaults_form.general_app_group.autosave_cb,
+            "global_autosave_timeout": self.ui.general_defaults_form.general_app_group.autosave_entry,
 
             "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
             "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
@@ -1256,10 +1327,19 @@ class App(QtCore.QObject):
             "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
 
             # Excellon Options
-            "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
+            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
+
+            "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
+
+            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
+            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.eendz_entry,
-            "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_entry,
+            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
+            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
+
+            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
@@ -1329,21 +1409,22 @@ class App(QtCore.QObject):
             "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
             "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
             "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
+            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
             "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
             "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
             "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.gendz_entry,
+            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
+            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
             "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             # Geometry Advanced Options
             "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
             "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
             "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
             "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
             "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
@@ -1367,7 +1448,7 @@ class App(QtCore.QObject):
             "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
             "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
-            "cncjob_line_ending":  self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
+            "cncjob_line_ending": self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
             "cncjob_plot_line": self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
             "cncjob_plot_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
             "cncjob_travel_line": self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
@@ -1388,13 +1469,14 @@ class App(QtCore.QObject):
             "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
             "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
             "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
-            "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_radio,
+            "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
             "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
             "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
             "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
             "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
             "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
-            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
+            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.select_combo,
+            "tools_ncc_area_shape": self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
             "tools_ncc_plotting": self.ui.tools_defaults_form.tools_ncc_group.ncc_plotting_radio,
             "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
             "tools_ncctool_type": self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
@@ -1421,14 +1503,23 @@ class App(QtCore.QObject):
             "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
             "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
             "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
+            "tools_paint_area_shape": self.ui.tools_defaults_form.tools_paint_group.area_shape_radio,
             "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
             "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
             "tools_paint_plotting": self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
+
+            "tools_paintrest": self.ui.tools_defaults_form.tools_paint_group.rest_cb,
+            "tools_painttool_type": self.ui.tools_defaults_form.tools_paint_group.tool_type_radio,
+            "tools_paintcutz": self.ui.tools_defaults_form.tools_paint_group.cutz_entry,
+            "tools_painttipdia": self.ui.tools_defaults_form.tools_paint_group.tipdia_entry,
+            "tools_painttipangle": self.ui.tools_defaults_form.tools_paint_group.tipangle_entry,
+            "tools_paintnewdia": self.ui.tools_defaults_form.tools_paint_group.newdia_entry,
 
             # 2-sided Tool
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+            "tools_2sided_allign_axis": self.ui.tools_defaults_form.tools_2sided_group.align_axis_radio,
 
             # Film Tool
             "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
@@ -1578,6 +1669,40 @@ class App(QtCore.QObject):
             "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
             "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
 
+            # Extract Drills Tool
+            "tools_edrills_hole_type": self.ui.tools2_defaults_form.tools2_edrills_group.hole_size_radio,
+            "tools_edrills_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_edrills_group.dia_entry,
+            "tools_edrills_hole_prop_factor": self.ui.tools2_defaults_form.tools2_edrills_group.factor_entry,
+            "tools_edrills_circular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.circular_ring_entry,
+            "tools_edrills_oblong_ring": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_ring_entry,
+            "tools_edrills_square_ring": self.ui.tools2_defaults_form.tools2_edrills_group.square_ring_entry,
+            "tools_edrills_rectangular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_ring_entry,
+            "tools_edrills_others_ring": self.ui.tools2_defaults_form.tools2_edrills_group.other_ring_entry,
+            "tools_edrills_circular": self.ui.tools2_defaults_form.tools2_edrills_group.circular_cb,
+            "tools_edrills_oblong": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_cb,
+            "tools_edrills_square": self.ui.tools2_defaults_form.tools2_edrills_group.square_cb,
+            "tools_edrills_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
+            "tools_edrills_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
+
+            # Punch Gerber Tool
+            "tools_punch_hole_type": self.ui.tools2_defaults_form.tools2_punch_group.hole_size_radio,
+            "tools_punch_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_punch_group.dia_entry,
+            "tools_punch_hole_prop_factor": self.ui.tools2_defaults_form.tools2_punch_group.factor_entry,
+            "tools_punch_circular_ring": self.ui.tools2_defaults_form.tools2_punch_group.circular_ring_entry,
+            "tools_punch_oblong_ring": self.ui.tools2_defaults_form.tools2_punch_group.oblong_ring_entry,
+            "tools_punch_square_ring": self.ui.tools2_defaults_form.tools2_punch_group.square_ring_entry,
+            "tools_punch_rectangular_ring": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_ring_entry,
+            "tools_punch_others_ring": self.ui.tools2_defaults_form.tools2_punch_group.other_ring_entry,
+            "tools_punch_circular": self.ui.tools2_defaults_form.tools2_punch_group.circular_cb,
+            "tools_punch_oblong": self.ui.tools2_defaults_form.tools2_punch_group.oblong_cb,
+            "tools_punch_square": self.ui.tools2_defaults_form.tools2_punch_group.square_cb,
+            "tools_punch_rectangular": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_cb,
+            "tools_punch_others": self.ui.tools2_defaults_form.tools2_punch_group.other_cb,
+
+            # Invert Gerber Tool
+            "tools_invert_margin": self.ui.tools2_defaults_form.tools2_invert_group.margin_entry,
+            "tools_invert_join_style": self.ui.tools2_defaults_form.tools2_invert_group.join_radio,
+
             # Utilities
             # File associations
             "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,
@@ -1600,7 +1725,6 @@ class App(QtCore.QObject):
         # ##############################################################################
 
         if self.defaults["first_run"] is True:
-
             self.save_factory_defaults(silent_message=False)
             # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
             filename_factory = self.data_path + '/factory_defaults.FlatConfig'
@@ -1608,7 +1732,7 @@ class App(QtCore.QObject):
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
-            self.on_layout(lay=initial_lay)
+            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
@@ -1640,7 +1764,7 @@ class App(QtCore.QObject):
 
         # make sure that always the 'default' preprocessor is the first item in the dictionary
         if 'default' in self.preprocessors.keys():
-            new_ppp_dict = dict()
+            new_ppp_dict = {}
 
             # add the 'default' name first in the dict after removing from the preprocessor's dictionary
             default_pp = self.preprocessors.pop('default')
@@ -1780,7 +1904,7 @@ class App(QtCore.QObject):
                                       "Canvas initialization started."),
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
-        start_plot_time = time.time()   # debug
+        start_plot_time = time.time()  # debug
         self.plotcanvas = None
 
         self.app_cursor = None
@@ -1830,6 +1954,15 @@ class App(QtCore.QObject):
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
         self.log.debug("Finished creating Workers crew.")
+
+        # #############################################################################
+        # ################################ AUTOSAVE SETUP #############################
+        # #############################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # #############################################################################
         # ################################# Activity Monitor ##########################
@@ -1897,7 +2030,7 @@ class App(QtCore.QObject):
 
         self.ui.menufilesaveproject.triggered.connect(self.on_file_saveproject)
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
-        self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
+        # self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
 
         self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
@@ -1917,12 +2050,15 @@ class App(QtCore.QObject):
 
         self.ui.menueditdelete.triggered.connect(self.on_delete)
 
-        self.ui.menueditcopyobject.triggered.connect(self.on_copy_object)
+        self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
         self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
         self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
+        self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
+
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
+        self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
         self.ui.menueditselectall.triggered.connect(self.on_selectall)
@@ -1943,7 +2079,7 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
         self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
-        self.ui.menuoptions_tools_db.triggered.connect(self.on_tools_database)
+        self.ui.menuoptions_tools_db.triggered.connect(lambda: self.on_tools_database(source='app'))
 
         self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
         self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
@@ -1964,7 +2100,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
 
-        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
@@ -1979,7 +2115,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
         self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
 
-        self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
+        self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
         self.ui.menuprojectedit.triggered.connect(self.object2editor)
 
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
@@ -2010,7 +2146,7 @@ class App(QtCore.QObject):
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
 
-        self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
+        self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
         self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
@@ -2044,8 +2180,6 @@ class App(QtCore.QObject):
         )
 
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
-
-        self.ui.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # #############################################################################
         # ############################# GUI SETTINGS SIGNALS ##########################
@@ -2150,6 +2284,7 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
         self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
+        self.ui.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
@@ -2182,36 +2317,40 @@ class App(QtCore.QObject):
         # ######################### Auto-complete KEYWORDS ####################################
         # #####################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
-                                  'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
-                                  'delete', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon', 'ee', 'export_exc',
-                                  'export_gcode', 'export_gerber', 'egr', 'export_svg', 'ext', 'exteriors', 'follow',
-                                  'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
-                                  'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
-                                  'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
+                                  'aligndrill', 'aligndrillgrid', 'bbox', 'clear', 'cncjob', 'cutout',
+                                  'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
+                                  'export_exc',
+                                  'export_gcode', 'export_gerber', 'export_svg', 'ext', 'exteriors', 'follow',
+                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_sys', 'help', 'import_svg',
+                                  'interiors', 'isolate', 'join_excellon',
+                                  'join_geometry', 'list_sys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
-                                  'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
+                                  'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
-                                  'paint', 'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_flatcam',
                                   'save', 'save_project',
                                   'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
-                                  'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
-        self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
+        self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'False', 'Marius', 'My Documents',
+                                 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis',
-                                 'axisoffset',
-                                 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
-                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
-                                 'dwelltime', 'extracut_length',
-                                 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'Toolchange_manual', 'True', 'Users',
+                                 'all', 'auto', 'axis',
+                                 'axisoffset', 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect',
+                                 'contour', 'default',
+                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dpp',
+                                 'dwelltime', 'extracut_length', 'endxy', 'enz', 'f', 'feedrate',
+                                 'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
-                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'toolchangez',
+                                 'spacing_rows', 'spindlespeed', 'startz', 'startxy',
+                                 'toolchange_xy', 'toolchangez', 'travelz',
                                  'tooldia', 'use_threads', 'value',
                                  'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                  ]
@@ -2412,6 +2551,9 @@ class App(QtCore.QObject):
         # this will hold the TCL instance
         self.tcl = None
 
+        # the actual variable will be redeclared in setup_tcl()
+        self.tcl_commands_storage = None
+
         self.init_tcl()
 
         self.shell = FCShell(self, version=self.version)
@@ -2419,17 +2561,10 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
-        self.shell.append_output("FlatCAM %s - " % self.version)
-        self.shell.append_output(_("Type >help< to get started\n\n"))
+        self.shell._append_to_browser('in', "FlatCAM %s - " % self.version)
+        self.shell.append_output('%s\n\n' % _("Type >help< to get started"))
 
-        self.ui.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
-        self.ui.shell_dock.setObjectName('Shell_DockWidget')
         self.ui.shell_dock.setWidget(self.shell)
-        self.ui.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-        self.ui.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
-                                       QtWidgets.QDockWidget.DockWidgetFloatable |
-                                       QtWidgets.QDockWidget.DockWidgetClosable)
-        self.ui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.ui.shell_dock)
 
         # show TCL shell at start-up based on the Menu -? Edit -> Preferences setting.
         if self.defaults["global_shell_at_startup"]:
@@ -2464,12 +2599,16 @@ class App(QtCore.QObject):
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
+        self.edrills_tool = None
+        self.align_objects_tool = None
+        self.punch_tool = None
+        self.invert_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
             self.install_tools()
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            log.debug("App.__init__() install tools() --> %s" % str(e))
 
         # ##################################################################################
         # ########################### SETUP RECENT ITEMS ###################################
@@ -2535,6 +2674,10 @@ class App(QtCore.QObject):
         # variable to store mouse coordinates
         self.mouse = [0, 0]
 
+        # variable to store the delta positions on cavnas
+        self.dx = 0
+        self.dy = 0
+
         # decide if we have a double click or single click
         self.doubleclick = False
 
@@ -2551,10 +2694,12 @@ class App(QtCore.QObject):
 
         # List to store the objects that are currently loaded in FlatCAM
         # This list is updated on each object creation or object delete
-        self.all_objects_list = list()
+        self.all_objects_list = []
+
+        self.objects_under_the_click_list = []
 
         # List to store the objects that are selected
-        self.sel_objects_list = list()
+        self.sel_objects_list = []
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
@@ -2593,10 +2738,11 @@ class App(QtCore.QObject):
 
         self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
                          'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
-                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'pho',
-                         'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top', 'tsm']
+                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'outline',
+                         'pho', 'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top',
+                         'tsm']
 
-        self.exc_list = ['drd', 'drl', 'exc', 'ncd', 'tap', 'txt', 'xln']
+        self.exc_list = ['drd', 'drl', 'drill', 'exc', 'ncd', 'tap', 'txt', 'xln']
 
         self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
                            'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'ply', 'rol',
@@ -2630,6 +2776,8 @@ class App(QtCore.QObject):
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
 
+        self.pagesize = {}
+
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
         if self.is_legacy is False:
@@ -2641,6 +2789,9 @@ class App(QtCore.QObject):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
 
+        # used in the delayed shutdown self.start_delayed_quit() method
+        self.save_timer = None
+
         # ###############################################################################
         # ################# ADDING FlatCAM EDITORS section ##############################
         # ###############################################################################
@@ -2648,7 +2799,7 @@ class App(QtCore.QObject):
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
         try:
-            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.geo_editor = FlatCAMGeoEditor(self)
         except AttributeError:
             pass
 
@@ -2725,7 +2876,7 @@ class App(QtCore.QObject):
                     # if there are Windows paths then replace the path separator with a Unix like one
                     if sys.platform == 'win32':
                         command_tcl_formatted = command_tcl_formatted.replace('\\', '/')
-                    self.shell._sysShell.exec_command(command_tcl_formatted, no_echo=True)
+                    self.shell.exec_command(command_tcl_formatted, no_echo=True)
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
@@ -2745,9 +2896,9 @@ class App(QtCore.QObject):
                     #                             color=QtGui.QColor("gray"))
                     cmd_line_shellfile_text = myfile.read()
                     if self.cmd_line_headless != 1:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+                        self.shell.exec_command(cmd_line_shellfile_text)
                     else:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_text, no_echo=True)
+                        self.shell.exec_command(cmd_line_shellfile_text, no_echo=True)
 
             except Exception as ext:
                 print("ERROR: ", ext)
@@ -2762,6 +2913,13 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
                                                       "Please reboot the application to update."))
             self.old_defaults_found = False
+
+    # ######################################### INIT FINISHED  #######################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
+    # #################################################################################################################
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2803,7 +2961,7 @@ class App(QtCore.QObject):
 
                     if project_name == "":
                         if silent is False:
-                            self.inform.emit(_("Open cancelled."))
+                            self.inform.emit(_("Cancelled."))
                     else:
                         # self.open_project(project_name)
                         run_from_arg = True
@@ -3017,13 +3175,6 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=True)
-
-        self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
-                                  before=self.dblsidedtool.menuAction,
-                                  separator=False)
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
@@ -3034,6 +3185,20 @@ class App(QtCore.QObject):
                                        pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
                                        separator=True)
+
+        self.dblsidedtool = DblSidedTool(self)
+        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
+
+        self.cal_exc_tool = ToolCalibration(self)
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
+                                  before=self.dblsidedtool.menuAction,
+                                  separator=False)
+
+        self.align_objects_tool = AlignObjects(self)
+        self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
+
+        self.edrills_tool = ToolExtractDrills(self)
+        self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
@@ -3086,6 +3251,12 @@ class App(QtCore.QObject):
         self.qrcode_tool = QRCode(self)
         self.qrcode_tool.install(icon=QtGui.QIcon(self.resource_location + '/qrcode32.png'),
                                  pos=self.ui.menutool)
+
+        self.punch_tool = ToolPunchGerber(self)
+        self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menutool)
+
+        self.invert_tool = ToolInvertGerber(self)
+        self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menutool)
 
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
@@ -3152,7 +3323,7 @@ class App(QtCore.QObject):
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
         self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
                                                            '&Command Line\tS')
-        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
 
         # third install all of them
         try:
@@ -3192,15 +3363,18 @@ class App(QtCore.QObject):
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
-        self.ui.copy_btn.triggered.connect(self.on_copy_object)
+        self.ui.copy_btn.triggered.connect(self.on_copy_command)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
-        self.ui.jmp_btn.triggered.connect(self.on_jump_to)
+        self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
 
-        self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
+        self.ui.jmp_btn.triggered.connect(self.on_jump_to)
+        self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
+
+        self.ui.shell_btn.triggered.connect(self.toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
         self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
         self.ui.run_script_btn.triggered.connect(self.on_filerunscript)
@@ -3208,6 +3382,9 @@ class App(QtCore.QObject):
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
         self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
@@ -3224,6 +3401,8 @@ class App(QtCore.QObject):
         self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
+        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
+        self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
 
     def object2editor(self):
         """
@@ -3242,8 +3421,7 @@ class App(QtCore.QObject):
                 isinstance(edited_object, FlatCAMExcellon):
             pass
         else:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Select a Geometry, Gerber or Excellon Object to edit."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
         if isinstance(edited_object, FlatCAMGeometry):
@@ -3251,7 +3429,7 @@ class App(QtCore.QObject):
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
             # we set the notebook to hidden
-            self.ui.splitter.setSizes([0, 1])
+            # self.ui.splitter.setSizes([0, 1])
 
             if edited_object.multigeo is True:
                 sel_rows = [item.row() for item in edited_object.ui.geo_tools_table.selectedItems()]
@@ -3359,20 +3537,28 @@ class App(QtCore.QObject):
                         obj_type = "Geometry"
                         if cleanup is None:
                             self.geo_editor.update_fcgeometry(edited_obj)
-                            self.geo_editor.update_options(edited_obj)
+                            # self.geo_editor.update_options(edited_obj)
+
                         self.geo_editor.deactivate()
+
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.tool_scroll_area.takeWidget()
 
                         # update the geo object options so it is including the bounding box values
                         try:
-                            xmin, ymin, xmax, ymax = edited_obj.bounds()
+                            xmin, ymin, xmax, ymax = edited_obj.bounds(flatten=True)
                             edited_obj.options['xmin'] = xmin
                             edited_obj.options['ymin'] = ymin
                             edited_obj.options['xmax'] = xmax
                             edited_obj.options['ymax'] = ymax
                         except AttributeError as e:
-                            self.inform.emit('[WARNING] %s' %
-                                             _("Object empty after edit."))
+                            self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+
+                        edited_obj.build_ui()
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                     elif isinstance(edited_obj, FlatCAMGerber):
                         obj_type = "Gerber"
                         if cleanup is None:
@@ -3392,60 +3578,64 @@ class App(QtCore.QObject):
                             # a single Polygon, therefore we pass this
                             pass
 
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
-                        # Switch notebook to Selected page
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
-                            self.exc_editor.update_options(edited_obj)
+                            # self.exc_editor.update_options(edited_obj)
 
                         self.exc_editor.deactivate()
-
-                        # delete the old object (the source object) if it was an empty one
-                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
-                            old_name = edited_obj.options['name']
-                            self.collection.set_active(old_name)
-                            self.collection.delete_active()
 
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
-                        # Switch notebook to Selected page
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
+                        # delete the old object (the source object) if it was an empty one
+                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
+                            old_name = edited_obj.options['name']
+                            self.collection.delete_by_name(name=old_name)
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
                         return
 
-                    self.inform.emit('[selected] %s %s' %
-                                     (obj_type, _("is updated, returning to App...")))
+                    self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
                 elif response == bt_no:
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
                     self.ui.notebook.setTabText(2, "Tool")
 
+                    self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         self.geo_editor.deactivate()
+                        edited_obj.build_ui()
                     elif isinstance(edited_obj, FlatCAMGerber):
                         self.grb_editor.deactivate_grb_editor()
+                        edited_obj.build_ui()
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         self.exc_editor.deactivate()
-                        # set focus on the project tab
+                        edited_obj.build_ui()
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
                         return
-                    edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
-                    self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
                 elif response == bt_cancel:
                     return
+
+                # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
+                # edited_obj.build_ui()
+                # Switch notebook to Selected page
+                self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
                 if isinstance(edited_obj, FlatCAMGeometry):
                     self.geo_editor.deactivate()
@@ -3506,209 +3696,6 @@ class App(QtCore.QObject):
         else:
             self.defaults['global_stats'][resource] = 1
 
-    def init_tcl(self):
-        """
-        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
-        :return: None
-        """
-        if hasattr(self, 'tcl') and self.tcl is not None:
-            # self.tcl = None
-            # TODO  we need  to clean  non default variables and procedures here
-            # new object cannot be used here as it  will not remember values created for next passes,
-            # because tcl  was execudted in old instance of TCL
-            pass
-        else:
-            self.tcl = tk.Tcl()
-            self.setup_shell()
-        self.log.debug("TCL Shell has been initialized.")
-
-    # TODO: This shouldn't be here.
-    class TclErrorException(Exception):
-        """
-        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
-        """
-        pass
-
-    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
-        """
-        Shows a message on the FlatCAM Shell
-
-        :param msg: Message to display.
-        :param show: Opens the shell.
-        :param error: Shows the message as an error.
-        :param warning: Shows the message as an warning.
-        :param success: Shows the message as an success.
-        :param selected: Indicate that something was selected on canvas
-        :return: None
-        """
-        if show:
-            self.ui.shell_dock.show()
-        try:
-            if error:
-                self.shell.append_error(msg + "\n")
-            elif warning:
-                self.shell.append_warning(msg + "\n")
-            elif success:
-                self.shell.append_success(msg + "\n")
-            elif selected:
-                self.shell.append_selected(msg + "\n")
-            else:
-                self.shell.append_output(msg + "\n")
-        except AttributeError:
-            log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
-
-    def raise_tcl_unknown_error(self, unknownException):
-        """
-        Raise exception if is different type than TclErrorException
-        this is here mainly to show unknown errors inside TCL shell console.
-
-        :param unknownException:
-        :return:
-        """
-
-        if not isinstance(unknownException, self.TclErrorException):
-            self.raise_tcl_error("Unknown error: %s" % str(unknownException))
-        else:
-            raise unknownException
-
-    def display_tcl_error(self, error, error_info=None):
-        """
-        Escape bracket [ with '\' otherwise there is error
-        "ERROR: missing close-bracket" instead of real error
-
-        :param error: it may be text  or exception
-        :param error_info: Some informations about the error
-        :return: None
-        """
-
-        if isinstance(error, Exception):
-            exc_type, exc_value, exc_traceback = error_info
-            if not isinstance(error, self.TclErrorException):
-                show_trace = 1
-            else:
-                show_trace = int(self.defaults['global_verbose_error_level'])
-
-            if show_trace > 0:
-                trc = traceback.format_list(traceback.extract_tb(exc_traceback))
-                trc_formated = []
-                for a in reversed(trc):
-                    trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
-                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
-            else:
-                text = "%s" % error
-        else:
-            text = error
-
-        text = text.replace('[', '\\[').replace('"', '\\"')
-        self.tcl.eval('return -code error "%s"' % text)
-
-    def raise_tcl_error(self, text):
-        """
-        This method  pass exception from python into TCL as error, so we get stacktrace and reason
-
-        :param text: text of error
-        :return: raise exception
-        """
-
-        self.display_tcl_error(text)
-        raise self.TclErrorException(text)
-
-    def exec_command(self, text, no_echo=False):
-        """
-        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
-        Also handles execution in separated threads
-
-        :param text: FlatCAM TclCommand with parameters
-        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
-        will create crashes of the _Expandable_Edit widget
-        :return: output if there was any
-        """
-
-        self.report_usage('exec_command')
-
-        result = self.exec_command_test(text, False, no_echo=no_echo)
-
-        # MS: added this method call so the geometry is updated once the TCL command is executed
-        # if no_plot is None:
-        #     self.plot_all()
-
-        return result
-
-    def exec_command_test(self, text, reraise=True, no_echo=False):
-        """
-        Same as exec_command(...) with additional control over  exceptions.
-        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
-
-        :param text: Input command
-        :param reraise: Re-raise TclError exceptions in Python (mostly for unittests).
-        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
-        will create crashes of the _Expandable_Edit widget
-        :return: Output from the command
-        """
-
-        tcl_command_string = str(text)
-
-        try:
-            if no_echo is False:
-                self.shell.open_processing()  # Disables input box.
-
-            result = self.tcl.eval(str(tcl_command_string))
-            if result != 'None' and no_echo is False:
-                self.shell.append_output(result + '\n')
-
-        except tk.TclError as e:
-
-            # This will display more precise answer if something in TCL shell fails
-            result = self.tcl.eval("set errorInfo")
-            self.log.error("Exec command Exception: %s" % (result + '\n'))
-            if no_echo is False:
-                self.shell.append_error('ERROR: ' + result + '\n')
-            # Show error in console and just return or in test raise exception
-            if reraise:
-                raise e
-        finally:
-            if no_echo is False:
-                self.shell.close_processing()
-            pass
-        return result
-
-        # """
-        # Code below is unsused. Saved for later.
-        # """
-
-        # parts = re.findall(r'([\w\\:\.]+|".*?")+', text)
-        # parts = [p.replace('\n', '').replace('"', '') for p in parts]
-        # self.log.debug(parts)
-        # try:
-        #     if parts[0] not in commands:
-        #         self.shell.append_error("Unknown command\n")
-        #         return
-        #
-        #     #import inspect
-        #     #inspect.getargspec(someMethod)
-        #     if (type(commands[parts[0]]["params"]) is not list and len(parts)-1 != commands[parts[0]]["params"]) or \
-        #             (type(commands[parts[0]]["params"]) is list and len(parts)-1 not in commands[parts[0]]["params"]):
-        #         self.shell.append_error(
-        #             "Command %s takes %d arguments. %d given.\n" %
-        #             (parts[0], commands[parts[0]]["params"], len(parts)-1)
-        #         )
-        #         return
-        #
-        #     cmdfcn = commands[parts[0]]["fcn"]
-        #     cmdconv = commands[parts[0]]["converters"]
-        #     if len(parts) - 1 > 0:
-        #         retval = cmdfcn(*[cmdconv[i](parts[i + 1]) for i in range(len(parts)-1)])
-        #     else:
-        #         retval = cmdfcn()
-        #     retfcn = commands[parts[0]]["retfcn"]
-        #     if retval and retfcn(retval):
-        #         self.shell.append_output(retfcn(retval) + "\n")
-        #
-        # except Exception as e:
-        #     #self.shell.append_error(''.join(traceback.format_exc()))
-        #     #self.shell.append_error("?\n")
-        #     self.shell.append_error(str(e) + "\n")
-
     def info(self, msg):
         """
         Informs the user. Normally on the status bar, optionally
@@ -3719,7 +3706,7 @@ class App(QtCore.QObject):
         """
 
         # Type of message in brackets at the beginning of the message.
-        match = re.search("\[([^\]]+)\](.*)", msg)
+        match = re.search(r"\[(.*)\](.*)", msg)
         if match:
             level = match.group(1)
             msg_ = match.group(2)
@@ -3839,7 +3826,23 @@ class App(QtCore.QObject):
             if 'version' not in defaults or defaults['version'] != self.defaults['version']:
                 for k, v in defaults.items():
                     if k in self.defaults and k != 'version':
-                        self.defaults[k] = v
+
+                        # check if the types are the same. Because some types (tuple, float, int etc)
+                        # may be stored as strings we check their types.
+                        try:
+                            target = eval(self.defaults[k])
+                        except NameError:
+                            # it's an unknown string leave it as it is
+                            target = deepcopy(self.defaults[k])
+
+                        try:
+                            source = eval(v)
+                        except NameError:
+                            # it's an unknown string leave it as it is
+                            source = deepcopy(v)
+
+                        if type(target) == type(source):
+                            self.defaults[k] = v
 
                 # delete old factory defaults
                 try:
@@ -3852,7 +3855,8 @@ class App(QtCore.QObject):
                     json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
                     f_f_def_s.close()
 
-                    # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
+                    # and then make the factory_defaults.FlatConfig file read_only
+                    # so it can't be modified after creation.
                     os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
                 except Exception as e:
                     log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
@@ -3877,7 +3881,7 @@ class App(QtCore.QObject):
         filename = self.data_path + '/factory_defaults.FlatConfig'
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences default restore was cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 f = open(filename)
@@ -3926,7 +3930,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences import cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 f = open(filename)
@@ -3967,22 +3971,21 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter__ = "Config File (*.FlatConfig);;All Files (*.*)"
+        filter__ = "Config File .FlatConfig (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + self.date,
                 filter=filter__
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                                 filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Preferences"), filter=filter__)
 
         filename = str(filename)
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences export cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -4028,6 +4031,71 @@ class App(QtCore.QObject):
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
         self.inform.emit('[success] %s: %s' % (_("Exported preferences to"), filename))
+
+    def save_to_file(self, content_to_save, txt_content):
+        """
+        Save something to a file.
+
+        :return: None
+        """
+        self.report_usage("save_to_file")
+        App.log.debug("save_to_file()")
+
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
+
+        filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
+        path_to_save = self.defaults["global_last_save_folder"] if\
+            self.defaults["global_last_save_folder"] is not None else self.data_path
+        try:
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save to file"),
+                directory=path_to_save + '/file_' + self.date,
+                filter=filter__
+            )
+        except TypeError:
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), filter=filter__)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+            return
+        else:
+            try:
+                with open(filename, 'w') as f:
+                    ___ = f.read()
+            except PermissionError:
+                self.inform.emit('[WARNING] %s' %
+                                 _("Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return
+            except IOError:
+                App.log.debug('Creating a new file ...')
+                f = open(filename, 'w')
+                f.close()
+            except Exception:
+                e = sys.exc_info()[0]
+                App.log.error("Could not load the file.")
+                App.log.error(str(e))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
+                return
+
+            # Save content
+            if filename.rpartition('.')[2].lower() == 'html':
+                file_content = content_to_save
+            else:
+                file_content = txt_content
+
+            try:
+                with open(filename, "w") as f:
+                    f.write(file_content)
+            except Exception:
+                self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+                return
+
+        self.inform.emit('[success] %s: %s' % (_("Exported file to"), filename))
 
     def save_geometry(self, x, y, width, height, notebook_width):
         """
@@ -4152,7 +4220,7 @@ class App(QtCore.QObject):
         :param fit:
         :param plot: If to plot the resulting object
         :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
-        self.colleaction
+        self.collection
         :return: None
         :rtype: None
         """
@@ -4237,8 +4305,19 @@ class App(QtCore.QObject):
                 obj.options['xmax'] = xmax
                 obj.options['ymax'] = ymax
             except Exception as e:
-                log.warning("The object has no bounds properties. %s" % str(e))
+                log.warning("App.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
+
+            try:
+                if kind == 'excellon':
+                    obj.fill_color = self.defaults["excellon_plot_fill"]
+                    obj.outline_color = self.defaults["excellon_plot_line"]
+
+                if kind == 'gerber':
+                    obj.fill_color = self.defaults["gerber_plot_fill"]
+                    obj.outline_color = self.defaults["gerber_plot_line"]
+            except Exception as e:
+                log.warning("App.new_object() -> setting colors error. %s" % str(e))
 
         # update the KeyWords list with the name of the file
         self.myKeywords.append(obj.options['name'])
@@ -4247,7 +4326,6 @@ class App(QtCore.QObject):
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(self.main_thread)
-
         self.object_created.emit(obj, obj_plot, obj_autoselected)
 
         return obj
@@ -4314,13 +4392,13 @@ class App(QtCore.QObject):
             new_source_file = text
         else:
             commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-                            "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n"\
+                            "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
                             "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-                            "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
+                            "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
                             "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-                            "ListSys, MillDrills,\n"\
+                            "ListSys, MillDrills,\n" \
                             "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-                            "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"\
+                            "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
                             "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
                             "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
                             "# SubtractRectangle, Version, WriteGCode\n"
@@ -4550,10 +4628,10 @@ class App(QtCore.QObject):
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
                         'furnished to do so, subject to the following conditions:\n\n'
-    
+
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
-    
+
                         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
                         'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
                         'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
@@ -4728,7 +4806,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "BR - Portuguese"), 1, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"),  1, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"), 1, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
@@ -4911,10 +4989,11 @@ class App(QtCore.QObject):
         Save the toolbars visibility status to the preferences file (current_defaults.FlatConfig) to be
         used at the next launch of the application.
 
-        :param silent: whether to display a message in status bar or not; boolean
-        :param data_path: the path where to save the preferences file (current_defaults.FlatConfig)
+        :param silent:      Whether to display a message in status bar or not; boolean
+        :param data_path:   The path where to save the preferences file (current_defaults.FlatConfig)
         When the application is portable it should be a mobile location.
-        :return: None
+        :param first_time:  Boolean. If True will execute some code when the app is run first time
+        :return:            None
         """
         self.report_usage("save_defaults")
 
@@ -4947,6 +5026,33 @@ class App(QtCore.QObject):
         defaults.update(self.defaults)
         self.propagate_defaults(silent=True)
 
+        if first_time is False:
+            self.save_toolbar_view()
+
+        # Save update options
+        filename = data_path + "/current_defaults.FlatConfig"
+        try:
+            f = open(filename, "w")
+            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
+            f.close()
+        except Exception as e:
+            log.debug("App.save_defaults() --> %s" % str(e))
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+            return
+
+        if not silent:
+            self.inform.emit('[success] %s' % _("Preferences saved."))
+
+        # update the autosave timer
+        self.save_project_auto_update()
+
+    def save_toolbar_view(self):
+        """
+        Will save the toolbar view state to the defaults
+
+        :return:            None
+        """
+
         # Save the toolbar view
         tb_status = 0
         if self.ui.toolbarfile.isVisible():
@@ -4976,22 +5082,7 @@ class App(QtCore.QObject):
         if self.ui.toolbarshell.isVisible():
             tb_status += 256
 
-        if first_time is False:
-            self.defaults["global_toolbar_view"] = tb_status
-
-        # Save update options
-        filename = data_path + "/current_defaults.FlatConfig"
-        try:
-            f = open(filename, "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-        except Exception as e:
-            log.debug("App.save_defaults() --> %s" % str(e))
-            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
-            return
-
-        if not silent:
-            self.inform.emit('[success] %s' % _("Preferences saved."))
+        self.defaults["global_toolbar_view"] = tb_status
 
     def save_factory_defaults(self, silent_message=False, data_path=None):
         """
@@ -5105,7 +5196,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.save_defaults(silent=True)
-        log.debug("App.final_save() --> App Defaults saved.")
+        log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
             # save app state to file
@@ -5137,10 +5228,32 @@ class App(QtCore.QObject):
             # This will write the setting to the platform specific storage.
             del stgs
 
-        log.debug("App.final_save() --> App UI state saved.")
-        self.close_app_signal.emit()
+        log.debug("App.quit_application() --> App UI state saved.")
 
-    def kill_app(self):
+        # try to quit the QThread that run ArgsThread class
+        try:
+            self.th.quit()
+        except Exception as e:
+            log.debug("App.quit_application() --> %s" % str(e))
+
+        # try to quit the Socket opened by ArgsThread class
+        try:
+            self.new_launch.listener.close()
+        except Exception as err:
+            log.debug("App.quit_application() --> %s" % str(err))
+
+        # quit app by signalling for self.kill_app() method
+        # self.close_app_signal.emit()
+
+        QtWidgets.qApp.quit()
+        # When the main event loop is not started yet in which case the qApp.quit() will do nothing
+        # we use the following command
+        # sys.exit(0)
+        os._exit(0)  # fix to work with Python 3.8
+
+    @staticmethod
+    def kill_app():
+        # QtCore.QCoreApplication.quit()
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -5237,19 +5350,6 @@ class App(QtCore.QObject):
 
         with open(config_file, 'w') as f:
             f.writelines(data)
-
-    def on_toggle_shell(self):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.report_usage("on_toggle_shell()")
-
-        if self.ui.shell_dock.isVisible():
-            self.ui.shell_dock.hide()
-        else:
-            self.ui.shell_dock.show()
 
     def on_register_files(self, obj_type=None):
         """
@@ -5567,11 +5667,12 @@ class App(QtCore.QObject):
         if True in geo_type_set:
             def initialize(geo_obj, app):
                 FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
-                app.inform.emit('[success] %s.' % _("Multigeo. Geometry merging finished"))
+                app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
-                for v in obj.tools.values():
+                for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_multi
+
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
@@ -5579,8 +5680,9 @@ class App(QtCore.QObject):
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
-                for v in obj.tools.values():
+                for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_single
+
             self.new_object("geometry", obj_name_single, initialize)
 
         self.should_we_save = True
@@ -5777,15 +5879,17 @@ class App(QtCore.QObject):
         dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin', "gerber_isooverlap",
                       "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
 
-                      'excellon_drillz',  'excellon_travelz', "excellon_toolchangexy",
+                      'excellon_cutz', 'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
                       'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
-                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', "excellon_feedrate_probe",
+                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', 'excellon_endxy',
+                      "excellon_feedrate_probe",
                       "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",
                       "excellon_editor_slot_lin_pitch",
 
-                      'geometry_cutz',  "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
+                      'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
                       'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
-                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', "geometry_z_pdepth",
+                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
+                      "geometry_z_pdepth",
                       "geometry_feedrate_probe", "geometry_startz",
 
                       'cncjob_tooldia',
@@ -5833,6 +5937,20 @@ class App(QtCore.QObject):
                     coords_xy[1] *= sfactor
                     self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
                                                                              self.decimals, coords_xy[1])
+                elif dim == 'excellon_endxy':
+                    coordinates = self.defaults["excellon_endxy"].split(",")
+                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    end_coords_xy[0] *= sfactor
+                    end_coords_xy[1] *= sfactor
+                    self.defaults['excellon_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
+                                                                      self.decimals, end_coords_xy[1])
+                elif dim == 'geometry_endxy':
+                    coordinates = self.defaults["geometry_endxy"].split(",")
+                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    end_coords_xy[0] *= sfactor
+                    end_coords_xy[1] *= sfactor
+                    self.defaults['geometry_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
+                                                                      self.decimals, end_coords_xy[1])
                 elif dim == 'geometry_cnctooldia':
                     if type(self.defaults["geometry_cnctooldia"]) == float:
                         tools_diameters = [self.defaults["geometry_cnctooldia"]]
@@ -5849,7 +5967,6 @@ class App(QtCore.QObject):
                         tools_diameters[t] *= sfactor
                         self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
                 elif dim == 'tools_ncctools':
-                    ncctools = list()
                     if type(self.defaults["tools_ncctools"]) == float:
                         ncctools = [self.defaults["tools_ncctools"]]
                     else:
@@ -5865,7 +5982,6 @@ class App(QtCore.QObject):
                         ncctools[t] *= sfactor
                         self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
                 elif dim == 'tools_solderpaste_tools':
-                    sptools = list()
                     if type(self.defaults["tools_solderpaste_tools"]) == float:
                         sptools = [self.defaults["tools_solderpaste_tools"]]
                     else:
@@ -5894,7 +6010,6 @@ class App(QtCore.QObject):
 
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
-                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
@@ -5903,7 +6018,6 @@ class App(QtCore.QObject):
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                     else:
-                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
@@ -5912,7 +6026,6 @@ class App(QtCore.QObject):
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                 else:
-                    val = 0.1
                     if self.defaults[dim]:
                         try:
                             val = float(self.defaults[dim]) * sfactor
@@ -5923,7 +6036,7 @@ class App(QtCore.QObject):
                         self.defaults[dim] = val
 
         # The scaling factor depending on choice of units.
-        factor = 25.4 if new_units == 'MM' else 1/25.4
+        factor = 25.4 if new_units == 'MM' else 1 / 25.4
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
@@ -5995,7 +6108,7 @@ class App(QtCore.QObject):
             val_x = float(self.defaults['global_gridx'])
             val_y = float(self.defaults['global_gridy'])
 
-            self.inform.emit('[WARNING_NOTCL]%s' % _("Units conversion cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
 
         self.defaults_read_form()
 
@@ -6406,33 +6519,33 @@ class App(QtCore.QObject):
         if state:
             # first try to disconnect
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.returnPressed.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.returnPressed. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.returnPressed.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.returnPressed. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
 
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom. \
                     disconnect(self.on_excellon_zeros_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom. \
                     disconnect(self.on_excellon_zeros_changed)
             except TypeError:
                 pass
@@ -6665,147 +6778,6 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
-    def on_layout(self, index=None, lay=None):
-        """
-        Set the toolbars layout (location)
-
-        :param index:
-        :param lay: type of layout to be set on the toolbard
-        :return: None
-        """
-        self.report_usage("on_layout()")
-        if lay:
-            current_layout = lay
-        else:
-            current_layout = self.ui.general_defaults_form.general_gui_group.layout_combo.get_value()
-
-        lay_settings = QSettings("Open Source", "FlatCAM")
-        lay_settings.setValue('layout', current_layout)
-
-        # This will write the setting to the platform specific storage.
-        del lay_settings
-
-        # first remove the toolbars:
-        try:
-            self.ui.removeToolBar(self.ui.toolbarfile)
-            self.ui.removeToolBar(self.ui.toolbargeo)
-            self.ui.removeToolBar(self.ui.toolbarview)
-            self.ui.removeToolBar(self.ui.toolbarshell)
-            self.ui.removeToolBar(self.ui.toolbartools)
-            self.ui.removeToolBar(self.ui.exc_edit_toolbar)
-            self.ui.removeToolBar(self.ui.geo_edit_toolbar)
-            self.ui.removeToolBar(self.ui.grb_edit_toolbar)
-            self.ui.removeToolBar(self.ui.snap_toolbar)
-            self.ui.removeToolBar(self.ui.toolbarshell)
-        except Exception:
-            pass
-
-        if current_layout == 'standard':
-            # ## TOOLBAR INSTALLATION # ##
-            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.ui.toolbarfile.setObjectName('File_TB')
-            self.ui.addToolBar(self.ui.toolbarfile)
-
-            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.ui.toolbargeo.setObjectName('Edit_TB')
-            self.ui.addToolBar(self.ui.toolbargeo)
-
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(self.ui.toolbarview)
-
-            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.ui.toolbarshell.setObjectName('Shell_TB')
-            self.ui.addToolBar(self.ui.toolbarshell)
-
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(self.ui.toolbartools)
-
-            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            # self.ui.exc_edit_toolbar.setVisible(False)
-            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.ui.addToolBar(self.ui.exc_edit_toolbar)
-
-            self.ui.addToolBarBreak()
-
-            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.ui.geo_edit_toolbar.setVisible(False)
-            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.ui.addToolBar(self.ui.geo_edit_toolbar)
-
-            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.ui.grb_edit_toolbar.setVisible(False)
-            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.ui.addToolBar(self.ui.grb_edit_toolbar)
-
-            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.ui.snap_toolbar.setObjectName('Snap_TB')
-            # self.ui.snap_toolbar.setMaximumHeight(30)
-            self.ui.addToolBar(self.ui.snap_toolbar)
-
-            self.ui.corner_snap_btn.setVisible(False)
-            self.ui.snap_magnet.setVisible(False)
-        elif current_layout == 'compact':
-            # ## TOOLBAR INSTALLATION # ##
-            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.ui.toolbarfile.setObjectName('File_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
-
-            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.ui.toolbargeo.setObjectName('Edit_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
-
-            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.ui.toolbarshell.setObjectName('Shell_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
-
-            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.ui.toolbartools.setObjectName('Tools_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
-
-            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.ui.geo_edit_toolbar.setVisible(False)
-            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
-
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
-
-            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
-
-            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.ui.grb_edit_toolbar.setVisible(False)
-            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
-
-            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.exc_edit_toolbar)
-
-            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.ui.snap_toolbar.setObjectName('Snap_TB')
-            self.ui.snap_toolbar.setMaximumHeight(30)
-            self.ui.splitter_left.addWidget(self.ui.snap_toolbar)
-
-            self.ui.corner_snap_btn.setVisible(True)
-            self.ui.snap_magnet.setVisible(True)
-
-        # add all the actions to the toolbars
-        self.ui.populate_toolbars()
-
-        # reconnect all the signals to the toolbar actions
-        self.connect_toolbar_signals()
-
-        self.ui.grid_snap_btn.setChecked(True)
-        self.on_grid_snap_triggered(state=True)
-
-        self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
-        self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
-        self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
-        self.ui.grid_gap_link_cb.setChecked(True)
-
     def on_cursor_type(self, val):
         """
 
@@ -6876,6 +6848,14 @@ class App(QtCore.QObject):
 
         # This will write the setting to the platform specific storage.
         del settgs
+
+        if save_to_file:
+            # close the tab and delete it
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                    self.ui.plot_tab_area.closeTab(idx)
+                    break
 
     def on_pref_close_button(self):
         # Preferences saved, update flag
@@ -6993,10 +6973,11 @@ class App(QtCore.QObject):
     # Hovering over Selected tab, if the selected tab is a Geometry it will delete tools in tool table. But even if
     # there is a Selected tab in focus with a Geometry inside, if you hover over canvas it will delete an object.
     # Complicated, I know :)
-    def on_delete(self):
+    def on_delete(self, force_deletion=False):
         """
         Delete the currently selected FlatCAMObjs.
 
+        :param force_deletion:  used by Tcl command
         :return: None
         """
         self.report_usage("on_delete()")
@@ -7008,7 +6989,7 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
                 and self.grb_editor.editor_active is False:
-            if self.defaults["global_delete_confirmation"] is True:
+            if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
@@ -7022,12 +7003,14 @@ class App(QtCore.QObject):
                 msgbox.exec_()
                 response = msgbox.clickedButton()
 
-            if response == bt_ok or self.defaults["global_delete_confirmation"] is False:
+            if self.defaults["global_delete_confirmation"] is False or force_deletion is True:
+                response = bt_ok
+
+            if response == bt_ok:
                 if self.collection.get_active():
                     self.log.debug("App.on_delete()")
 
-                    while self.collection.get_active():
-                        obj_active = self.collection.get_active()
+                    for obj_active in self.collection.get_selected():
                         # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                         if isinstance(obj_active, FlatCAMGerber):
                             for el in obj_active.mark_shapes:
@@ -7037,18 +7020,23 @@ class App(QtCore.QObject):
                                 del el
                         elif isinstance(obj_active, FlatCAMCNCjob):
                             try:
+                                obj_active.text_col.enabled = False
+                                del obj_active.text_col
                                 obj_active.annotation.clear(update=True)
-                                obj_active.annotation.enabled = False
-                            except AttributeError:
-                                pass
+                                del obj_active.annotation
+                            except AttributeError as e:
+                                log.debug(
+                                    "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
+                                )
+
+                    while self.collection.get_selected():
                         self.delete_first_selected()
 
-                    self.inform.emit('%s...' %
-                                     _("Object(s) deleted"))
+                    self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
                 else:
-                    self.inform.emit(_("Failed. No object(s) selected..."))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
@@ -7079,8 +7067,7 @@ class App(QtCore.QObject):
         # Clear form
         self.setup_component_editor()
 
-        self.inform.emit('%s: %s' %
-                         (_("Object deleted"), name))
+        self.inform.emit('%s: %s' % (_("Object deleted"), name))
 
     def on_set_origin(self):
         """
@@ -7130,7 +7117,9 @@ class App(QtCore.QObject):
 
         def worker_task():
             with self.proc_container.new(_("Setting Origin...")):
-                for obj in self.collection.get_list():
+                obj_list = self.collection.get_list()
+
+                for obj in obj_list:
                     obj.offset((x, y))
                     self.object_changed.emit(obj)
 
@@ -7140,15 +7129,24 @@ class App(QtCore.QObject):
                     obj.options['ymin'] = b
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
-                self.inform.emit('[success] %s...' %
-                                 _('Origin set'))
+                self.inform.emit('[success] %s...' % _('Origin set'))
+
+                for obj in obj_list:
+                    out_name = obj.options["name"]
+
+                    if obj.kind == 'gerber':
+                        obj.source_file = self.export_gerber(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'excellon':
+                        obj.source_file = self.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+
                 if noplot_sig is False:
                     self.replot_signal.emit([])
 
         if location is not None:
             if len(location) != 2:
-                self.inform.emit('[ERROR_NOTCL] %s...' %
-                                 _("Origin coordinates specified but incomplete."))
+                self.inform.emit('[ERROR_NOTCL] %s...' % _("Origin coordinates specified but incomplete."))
                 return 'fail'
 
             x, y = location
@@ -7167,7 +7165,7 @@ class App(QtCore.QObject):
                 event_pos = (event.xdata, event.ydata)
             pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-            if self.grid_status() == True:
+            if self.grid_status():
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
                 pos = pos_canvas
@@ -7181,9 +7179,72 @@ class App(QtCore.QObject):
                 worker_task()
             self.should_we_save = True
 
+    def on_move2origin(self, use_thread=True):
+        """
+        Move selected objects to origin.
+        :param use_thread: Control if to use threaded operation. Boolean.
+        :return:
+        """
+
+        def worker_task():
+            with self.proc_container.new(_("Moving to Origin...")):
+                obj_list = self.collection.get_selected()
+
+                if not obj_list:
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+                    return
+
+                xminlist = []
+                yminlist = []
+
+                # first get a bounding box to fit all
+                for obj in obj_list:
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    xminlist.append(xmin)
+                    yminlist.append(ymin)
+
+                # get the minimum x,y for all objects selected
+                x = min(xminlist)
+                y = min(yminlist)
+
+                for obj in obj_list:
+                    obj.offset((-x, -y))
+                    self.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+
+                for obj in obj_list:
+                    obj.plot()
+
+                for obj in obj_list:
+                    out_name = obj.options["name"]
+
+                    if obj.kind == 'gerber':
+                        obj.source_file = self.export_gerber(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+                    elif obj.kind == 'excellon':
+                        obj.source_file = self.export_excellon(
+                            obj_name=out_name, filename=None, local_use=obj, use_thread=False)
+
+                self.inform.emit('[success] %s...' % _('Origin set'))
+
+        if use_thread is True:
+            self.worker_task.emit({'fcn': worker_task, 'params': []})
+        else:
+            worker_task()
+        self.should_we_save = True
+
     def on_jump_to(self, custom_location=None, fit_center=True):
         """
-        Jump to a location by setting the mouse cursor location
+        Jump to a location by setting the mouse cursor location.
+
+        :param custom_location:     Jump to a specified point. (x, y) tuple.
+        :param fit_center:          If to fit view. Boolean.
         :return:
 
         """
@@ -7234,8 +7295,6 @@ class App(QtCore.QObject):
             location = custom_location
 
         self.jump_signal.emit(location)
-
-        units = self.defaults['units'].upper()
 
         if fit_center:
             self.plotcanvas.fit_center(loc=location)
@@ -7301,8 +7360,161 @@ class App(QtCore.QObject):
         self.inform.emit('[success] %s' % _("Done."))
         return location
 
-    def on_copy_object(self):
-        self.report_usage("on_copy_object()")
+    def on_locate(self, obj, fit_center=True):
+        """
+        Jump to one of the corners (or center) of an object by setting the mouse cursor location
+
+        :param obj:         The object on which to locate certain points
+        :param fit_center:  If to fit view. Boolean.
+        :return:            A point location. (x, y) tuple.
+
+        """
+        self.report_usage("on_locate()")
+
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
+            return 'fail'
+
+        class DialogBoxChoice(QtWidgets.QDialog):
+            def __init__(self, title=None, icon=None, choice='bl'):
+                """
+
+                :param title: string with the window title
+                """
+                super(DialogBoxChoice, self).__init__()
+
+                self.ok = False
+
+                self.setWindowIcon(icon)
+                self.setWindowTitle(str(title))
+
+                self.form = QtWidgets.QFormLayout(self)
+
+                self.ref_radio = RadioSet([
+                    {"label": _("Bottom-Left"), "value": "bl"},
+                    {"label": _("Top-Left"), "value": "tl"},
+                    {"label": _("Bottom-Right"), "value": "br"},
+                    {"label": _("Top-Right"), "value": "tr"},
+                    {"label": _("Center"), "value": "c"}
+                ], orientation='vertical', stretch=False)
+                self.ref_radio.set_value(choice)
+                self.form.addRow(self.ref_radio)
+
+                self.button_box = QtWidgets.QDialogButtonBox(
+                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                    Qt.Horizontal, parent=self)
+                self.form.addRow(self.button_box)
+
+                self.button_box.accepted.connect(self.accept)
+                self.button_box.rejected.connect(self.reject)
+
+                if self.exec_() == QtWidgets.QDialog.Accepted:
+                    self.ok = True
+                    self.location_point = self.ref_radio.get_value()
+                else:
+                    self.ok = False
+                    self.location_point = None
+
+        dia_box = DialogBoxChoice(title=_("Locate ..."),
+                                  icon=QtGui.QIcon(self.resource_location + '/locate16.png'),
+                                  choice=self.defaults['global_locate_pt'])
+
+        if dia_box.ok is True:
+            try:
+                location_point = dia_box.location_point
+                self.defaults['global_locate_pt'] = dia_box.location_point
+            except Exception:
+                return
+        else:
+            return
+
+        loc_b = obj.bounds()
+        if location_point == 'bl':
+            location = (loc_b[0], loc_b[1])
+        elif location_point == 'tl':
+            location = (loc_b[0], loc_b[3])
+        elif location_point == 'br':
+            location = (loc_b[2], loc_b[1])
+        elif location_point == 'tr':
+            location = (loc_b[2], loc_b[3])
+        else:
+            # center
+            cx = loc_b[0] + ((loc_b[2] - loc_b[0]) / 2)
+            cy = loc_b[1] + ((loc_b[3] - loc_b[1]) / 2)
+            location = (cx, cy)
+
+        self.locate_signal.emit(location, location_point)
+
+        if fit_center:
+            self.plotcanvas.fit_center(loc=location)
+
+        cursor = QtGui.QCursor()
+
+        if self.is_legacy is False:
+            # I don't know where those differences come from but they are constant for the current
+            # execution of the application and they are multiples of a value around 0.0263mm.
+            # In a random way sometimes they are more sometimes they are less
+            # if units == 'MM':
+            #     cal_factor = 0.0263
+            # else:
+            #     cal_factor = 0.0263 / 25.4
+
+            cal_location = (location[0], location[1])
+
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
+
+            j_pos = (
+                int(canvas_origin.x() + round(jump_loc[0])),
+                int(canvas_origin.y() + round(jump_loc[1]))
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+        else:
+            # find the canvas origin which is in the top left corner
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            # determine the coordinates for the lowest left point of the canvas
+            x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
+
+            # transform the given location from data coordinates to display coordinates. THe display coordinates are
+            # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
+            # canvas) and the point (width, height) is in the top-right location
+            loc = self.plotcanvas.axes.transData.transform_point(location)
+            j_pos = (
+                int(x0 + loc[0]),
+                int(y0 - loc[1])
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+            self.plotcanvas.mouse = [location[0], location[1]]
+            if self.defaults["global_cursor_color_enabled"] is True:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1], color=self.cursor_color_3D)
+            else:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
+
+        if self.grid_status():
+            # Update cursor
+            self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
+                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     edge_width=self.defaults["global_cursor_width"],
+                                     size=self.defaults["global_cursor_size"])
+
+        # Set the position label
+        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # Set the relative position label
+        self.dx = location[0] - float(self.rel_point1[0])
+        self.dy = location[1] - float(self.rel_point1[1])
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+        self.inform.emit('[success] %s' % _("Done."))
+        return location
+
+    def on_copy_command(self):
+        """
+        Will copy a selection of objects, creating new objects.
+        :return:
+        """
+        self.report_usage("on_copy_command()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
@@ -7319,8 +7531,8 @@ class App(QtCore.QObject):
             try:
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
-            except Exception as e:
-                log.debug("App.on_copy_object() --> %s" % str(e))
+            except Exception as err:
+                log.debug("App.on_copy_command() --> %s" % str(err))
 
             try:
                 obj_init.source_file = deepcopy(obj.source_file)
@@ -7361,6 +7573,9 @@ class App(QtCore.QObject):
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
+    def on_paste_command(self):
+        pass
+
     def on_copy_object2(self, custom_name):
 
         def initialize_geometry(obj_init, app):
@@ -7369,6 +7584,7 @@ class App(QtCore.QObject):
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
+
             try:
                 obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
@@ -7402,10 +7618,16 @@ class App(QtCore.QObject):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
                 elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
-            except Exception as e:
-                return "Operation failed: %s" % str(e)
+            except Exception as er:
+                return "Operation failed: %s" % str(er)
 
     def on_rename_object(self, text):
+        """
+        Will rename an object.
+
+        :param text:    New name for the object.
+        :return:
+        """
         self.report_usage("on_rename_object()")
 
         named_obj = self.collection.get_active()
@@ -7419,6 +7641,10 @@ class App(QtCore.QObject):
                     log.warning("App.on_rename_object() --> Could not rename the object in the list. --> %s" % str(e))
 
     def convert_any2geo(self):
+        """
+        Will convert any object out of Gerber, Excellon, Geometry to Geometry object.
+        :return:
+        """
         self.report_usage("convert_any2geo()")
 
         def initialize(obj_init, app):
@@ -7465,6 +7691,12 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def convert_any2gerber(self):
+        """
+        Will convert any object out of Gerber, Excellon, Geometry to Gerber object.
+
+        :return:
+        """
+
         self.report_usage("convert_any2gerber()")
 
         def initialize_geometry(obj_init, app):
@@ -7474,7 +7706,7 @@ class App(QtCore.QObject):
             apertures[str(apid)] = {}
             apertures[str(apid)]['geometry'] = []
             for obj_orig in obj.solid_geometry:
-                new_elem = dict()
+                new_elem = {}
                 new_elem['solid'] = obj_orig
                 try:
                     new_elem['follow'] = obj_orig.exterior
@@ -7495,7 +7727,7 @@ class App(QtCore.QObject):
                 apertures[str(apid)] = {}
                 apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = dict()
+                    new_el = {}
                     new_el['solid'] = geo
                     new_el['follow'] = geo.exterior
                     apertures[str(apid)]['geometry'].append(deepcopy(new_el))
@@ -7540,17 +7772,27 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def abort_all_tasks(self):
+        """
+        Executed when a certain key combo is pressed (Ctrl+Alt+X). Will abort current task
+        on the first possible occasion.
+
+        :return:
+        """
         if self.abort_flag is False:
             self.inform.emit(_("Aborting. The current task will be gracefully closed as soon as possible..."))
             self.abort_flag = True
 
     def app_is_idle(self):
         if self.abort_flag:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("The current task was gracefully closed on user request..."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("The current task was gracefully closed on user request..."))
             self.abort_flag = False
 
     def on_selectall(self):
+        """
+        Will draw a selection box shape around the selected objects.
+
+        :return:
+        """
         self.report_usage("on_selectall()")
 
         # delete the possible selection box around a possible selected object
@@ -7629,6 +7871,11 @@ class App(QtCore.QObject):
                     pass
 
     def on_preferences_edited(self):
+        """
+        Executed when a preference was changed in the Edit -> Preferences tab.
+        Will color the Preferences tab text to Red color.
+        :return:
+        """
         if self.preferences_changed_flag is False:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
 
@@ -7640,9 +7887,10 @@ class App(QtCore.QObject):
 
             self.preferences_changed_flag = True
 
-    def on_tools_database(self):
+    def on_tools_database(self, source='app'):
         """
-        Adds the Tools Database in a Tab in Plot Area
+        Adds the Tools Database in a Tab in Plot Area.
+
         :return:
         """
         for idx in range(self.ui.plot_tab_area.count()):
@@ -7650,16 +7898,35 @@ class App(QtCore.QObject):
                 # there can be only one instance of Tools Database at one time
                 return
 
-        self.tools_db_tab = ToolsDB(
-            app=self,
-            parent=self.ui,
-            callback_on_edited=self.on_tools_db_edited,
-            callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
-        )
+        if source == 'app':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
+            )
+        elif source == 'ncc':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.ncclear_tool.on_ncc_tool_add_from_db_executed
+            )
+        elif source == 'paint':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.paint_tool.on_paint_tool_add_from_db_executed
+            )
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
-        self.tools_db_tab.setObjectName("database_tab")
+        try:
+            self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
+            self.tools_db_tab.setObjectName("database_tab")
+        except Exception as e:
+            log.debug("App.on_tools_database() --> %s" % str(e))
+            return
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
@@ -7672,6 +7939,13 @@ class App(QtCore.QObject):
         self.tools_db_tab.ui_connect()
 
     def on_tools_db_edited(self):
+        """
+        Executed whenever a tool is edited in Tools Database.
+        Will color the text of the Tools Database tab to Red color.
+
+        :return:
+        """
+
         self.inform.emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."))
 
         for idx in range(self.ui.plot_tab_area.count()):
@@ -7682,7 +7956,8 @@ class App(QtCore.QObject):
 
     def on_geometry_tool_add_from_db_executed(self, tool):
         """
-        Here add the tool from DB  in the selected geometry object
+        Here add the tool from DB  in the selected geometry object.
+
         :return:
         """
         tool_from_db = deepcopy(tool)
@@ -7691,6 +7966,7 @@ class App(QtCore.QObject):
         if isinstance(obj, FlatCAMGeometry):
             obj.on_tool_from_db_inserted(tool=tool_from_db)
 
+            # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                     wdg = self.ui.plot_tab_area.widget(idx)
@@ -7701,6 +7977,13 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Adding tool from DB is not allowed for this object."))
 
     def on_plot_area_tab_closed(self, title):
+        """
+        Executed whenever a tab is closed in the Plot Area.
+
+        :param title: The name of the tab that was closed.
+        :return:
+        """
+
         if title == _("Preferences"):
             # disconnect
             for idx in range(self.ui.pref_tab_area.count()):
@@ -7787,6 +8070,11 @@ class App(QtCore.QObject):
             self.book_dialog_tab.deleteLater()
 
     def on_flipy(self):
+        """
+        Executed when the menu entry in Options -> Flip on Y axis is clicked.
+
+        :return:
+        """
         self.report_usage("on_flipy()")
 
         obj_list = self.collection.get_selected()
@@ -7796,8 +8084,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected to Flip on Y axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Flip on Y axis."))
         else:
             try:
                 # first get a bounding box to fit all
@@ -7829,6 +8116,12 @@ class App(QtCore.QObject):
                 return
 
     def on_flipx(self):
+        """
+        Executed when the menu entry in Options -> Flip on X axis is clicked.
+
+        :return:
+        """
+
         self.report_usage("on_flipx()")
 
         obj_list = self.collection.get_selected()
@@ -7871,6 +8164,13 @@ class App(QtCore.QObject):
                 return
 
     def on_rotate(self, silent=False, preset=None):
+        """
+        Executed when Options -> Rotate Selection menu entry is clicked.
+
+        :param silent:  If silent is True then use the preset value for the angle of the rotation.
+        :param preset:  A value to be used as predefined angle for rotation.
+        :return:
+        """
         self.report_usage("on_rotate()")
 
         obj_list = self.collection.get_selected()
@@ -7880,8 +8180,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected to Rotate."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Rotate."))
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
@@ -7921,6 +8220,12 @@ class App(QtCore.QObject):
                     return
 
     def on_skewx(self):
+        """
+        Executed when the menu entry in Options -> Skew on X axis is clicked.
+
+        :return:
+        """
+
         self.report_usage("on_skewx()")
 
         obj_list = self.collection.get_selected()
@@ -7954,6 +8259,12 @@ class App(QtCore.QObject):
                                  _("Skew on X axis done."))
 
     def on_skewy(self):
+        """
+        Executed when the menu entry in Options -> Skew on Y axis is clicked.
+
+        :return:
+        """
+
         self.report_usage("on_skewy()")
 
         obj_list = self.collection.get_selected()
@@ -7994,7 +8305,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if self.is_legacy is False:
-            self.plotcanvas.update()           # TODO: Need update canvas?
+            self.plotcanvas.update()  # TODO: Need update canvas?
         else:
             self.plotcanvas.auto_adjust_axes()
 
@@ -8028,15 +8339,20 @@ class App(QtCore.QObject):
         self.collection.on_item_activated(index)
 
     def on_row_selected(self, obj_name):
-        # this is a special string; when received it will make all entries unchecked
-        # it mean we clicked outside of the items and deselected all
+        """
+        This is a special string; when received it will make all Menu -> Objects entries unchecked
+        It mean we clicked outside of the items and deselected all
+
+        :param obj_name:
+        :return:
+        """
         if obj_name == 'none':
             for act in self.ui.menuobjects.actions():
                 act.setChecked(False)
             return
 
         # get the name of the selected objects and add them to a list
-        name_list = list()
+        name_list = []
         for obj in self.collection.get_selected():
             name_list.append(obj.options['name'])
 
@@ -8051,10 +8367,10 @@ class App(QtCore.QObject):
         Create a menu from the object loaded in the collection.
         TODO: should use the collection model to do this
 
-        :param obj: object that was changd (added, deleted, renamed)
-        :param state: what was done with the objectCand be: added, deleted, delete_all, renamed
-        :param old_name: the old name of the object before the action that triggered this slot happened
-        :return: None
+        :param obj:         object that was changed (added, deleted, renamed)
+        :param state:       what was done with the object. Can be: added, deleted, delete_all, renamed
+        :param old_name:    the old name of the object before the action that triggered this slot happened
+        :return:            None
         """
         icon_files = {
             "gerber": self.resource_location + "/flatcam_icon16.png",
@@ -8073,12 +8389,12 @@ class App(QtCore.QObject):
                     pass
             self.ui.menuobjects.clear()
 
-            gerber_list = list()
-            exc_list = list()
-            cncjob_list = list()
-            geo_list = list()
-            script_list = list()
-            doc_list = list()
+            gerber_list = []
+            exc_list = []
+            cncjob_list = []
+            geo_list = []
+            script_list = []
+            doc_list = []
 
             for name in self.collection.get_names():
                 obj_named = self.collection.get_by_name(name)
@@ -8222,8 +8538,8 @@ class App(QtCore.QObject):
     def populate_cmenu_grids(self):
         units = self.defaults['units'].lower()
 
-        for act in self.ui.cmenu_gridmenu.actions():
-            act.triggered.disconnect()
+        # for act in self.ui.cmenu_gridmenu.actions():
+        #     act.triggered.disconnect()
         self.ui.cmenu_gridmenu.clear()
 
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
@@ -8358,24 +8674,24 @@ class App(QtCore.QObject):
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
         """
-        self.pos = list()
+        self.pos = []
 
         if self.is_legacy is False:
             event_pos = event.pos
-            pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
-            # Set the mouse button for panning
-            self.plotcanvas.view.camera.pan_button_setting = pan_button
+            # pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
+            # # Set the mouse button for panning
+            # self.plotcanvas.view.camera.pan_button_setting = pan_button
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            pan_button = 3 if self.defaults["global_pan_button"] == '2'else 2
+            # pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
 
         self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-        if self.grid_status() == True:
+        if self.grid_status():
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
         else:
             self.pos = (self.pos_canvas[0], self.pos_canvas[1])
@@ -8422,15 +8738,23 @@ class App(QtCore.QObject):
                 pan_button = 2
             self.event_is_dragging = self.plotcanvas.is_dragging
 
-        # So it can receive key presses
-        self.plotcanvas.native.setFocus()
+        # So it can receive key presses but not when the Tcl Shell is active
+        if not self.ui.shell_dock.isVisible():
+            if not self.plotcanvas.native.hasFocus():
+                self.plotcanvas.native.setFocus()
+
         self.pos_jump = event_pos
 
         self.ui.popMenu.mouse_is_panning = False
 
-        if not origin_click:
+        if origin_click is None:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
             if event.button == pan_button and self.event_is_dragging == 1:
+
+                # if a popup menu is active don't change mouse_is_panning variable because is not True
+                if self.ui.popMenu.popup_active:
+                    self.ui.popMenu.popup_active = False
+                    return
                 self.ui.popMenu.mouse_is_panning = True
                 return
 
@@ -8438,7 +8762,7 @@ class App(QtCore.QObject):
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-                if self.grid_status() == True:
+                if self.grid_status():
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
                     # Update cursor
@@ -8452,24 +8776,26 @@ class App(QtCore.QObject):
                 self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
 
-                dx = pos[0] - float(self.rel_point1[0])
-                dy = pos[1] - float(self.rel_point1[1])
+                self.dx = pos[0] - float(self.rel_point1[0])
+                self.dy = pos[1] - float(self.rel_point1[1])
                 self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
                 if self.event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
-                    if dx < 0:
+                    if self.dx < 0:
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
                                                          face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    elif dx > 0:
+                    elif self.dx >= 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
                     else:
                         self.selection_type = None
+                else:
+                    self.selection_type = None
 
                 # hover effect - enabled in Preferences -> General -> GUI Settings
                 if self.defaults['global_hover']:
@@ -8524,7 +8850,7 @@ class App(QtCore.QObject):
             right_button = 3
 
         pos_canvas = self.plotcanvas.translate_coords(event_pos)
-        if self.grid_status() == True:
+        if self.grid_status():
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -8532,6 +8858,8 @@ class App(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         if event.button == right_button and self.ui.popMenu.mouse_is_panning is False:  # right click
+            self.ui.popMenu.mouse_is_panning = False
+
             self.cursor = QtGui.QCursor()
             self.populate_cmenu_grids()
             self.ui.popMenu.popup(self.cursor.pos())
@@ -8546,7 +8874,10 @@ class App(QtCore.QObject):
                 # do not auto open the Project Tab
                 self.click_noproject = True
 
-                self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                self.clipboard.setText(
+                    self.defaults["global_point_clipboard_format"] %
+                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
+                )
                 self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
                 return
 
@@ -8564,6 +8895,12 @@ class App(QtCore.QObject):
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
                         return
             else:
+                # WORKAROUND for LEGACY MODE
+                if self.is_legacy is True:
+                    # if there is no move on canvas then we have no dragging selection
+                    if self.dx == 0 or self.dy == 0:
+                        self.selection_type = None
+
                 if self.selection_type is not None:
                     try:
                         self.selection_area_handler(self.pos, pos, self.selection_type)
@@ -8572,6 +8909,7 @@ class App(QtCore.QObject):
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
                         return
                 else:
+
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
                     if key_modifier == QtCore.Qt.ShiftModifier:
@@ -8588,7 +8926,7 @@ class App(QtCore.QObject):
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
                             if self.command_active is None:
-                                self.select_objects(key='CTRL')
+                                self.select_objects(key='multisel')
                                 self.delete_hover_shape()
                         else:
                             # If there is no active command (self.command_active is None) then we check if we clicked
@@ -8614,7 +8952,7 @@ class App(QtCore.QObject):
 
         # make all objects inactive
         self.collection.set_all_inactive()
-        
+
         for obj in self.collection.get_list():
             try:
                 # select the object(s) only if it is enabled (plotted)
@@ -8651,7 +8989,8 @@ class App(QtCore.QObject):
         """
 
         # list where we store the overlapped objects under our mouse left click position
-        objects_under_the_click_list = []
+        if key is None:
+            self.objects_under_the_click_list = []
 
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
@@ -8661,21 +9000,24 @@ class App(QtCore.QObject):
             if isinstance(obj, FlatCAMScript) or isinstance(obj, FlatCAMDocument):
                 continue
 
+            if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
+                continue
+
             if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
                     (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
-                if obj.options['name'] not in objects_under_the_click_list:
+                if obj.options['name'] not in self.objects_under_the_click_list:
                     if obj.options['plot']:
                         # add objects to the objects_under_the_click list only if the object is plotted
                         # (active and not disabled)
-                        objects_under_the_click_list.append(obj.options['name'])
+                        self.objects_under_the_click_list.append(obj.options['name'])
 
         try:
-            if objects_under_the_click_list:
+            if self.objects_under_the_click_list:
                 curr_sel_obj = self.collection.get_active()
                 # case when there is only an object under the click and we toggle it
-                if len(objects_under_the_click_list) == 1:
+                if len(self.objects_under_the_click_list) == 1:
                     if curr_sel_obj is None:
-                        self.collection.set_active(objects_under_the_click_list[0])
+                        self.collection.set_active(self.objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
 
                         # create the selection box around the selected object
@@ -8683,12 +9025,12 @@ class App(QtCore.QObject):
                             self.draw_selection_shape(curr_sel_obj)
                             curr_sel_obj.selection_shape_drawn = True
 
-                    elif curr_sel_obj.options['name'] not in objects_under_the_click_list:
+                    elif curr_sel_obj.options['name'] not in self.objects_under_the_click_list:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
                         curr_sel_obj.selection_shape_drawn = False
 
-                        self.collection.set_active(objects_under_the_click_list[0])
+                        self.collection.set_active(self.objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
@@ -8714,21 +9056,21 @@ class App(QtCore.QObject):
                     # If there is no selected object
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
-                        self.collection.set_active(objects_under_the_click_list[0])
-                        self.collection.get_by_name(objects_under_the_click_list[0]).selection_shape_drawn = True
+                        self.collection.set_active(self.objects_under_the_click_list[0])
+                        self.collection.get_by_name(self.objects_under_the_click_list[0]).selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().options['name']
                     # In case that there is a selected object but it is not in the overlapped object list
                     # make that object inactive and activate the first element in the overlapped object list
-                    if name_sel_obj not in objects_under_the_click_list:
+                    if name_sel_obj not in self.objects_under_the_click_list:
                         self.collection.set_inactive(name_sel_obj)
-                        name_sel_obj = objects_under_the_click_list[0]
+                        name_sel_obj = self.objects_under_the_click_list[0]
                         self.collection.set_active(name_sel_obj)
                     else:
-                        sel_idx = objects_under_the_click_list.index(name_sel_obj)
+                        sel_idx = self.objects_under_the_click_list.index(name_sel_obj)
                         self.collection.set_all_inactive()
-                        self.collection.set_active(objects_under_the_click_list[(sel_idx + 1) %
-                                                                                len(objects_under_the_click_list)])
+                        self.collection.set_active(
+                            self.objects_under_the_click_list[(sel_idx + 1) % len(self.objects_under_the_click_list)])
 
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
@@ -8803,8 +9145,9 @@ class App(QtCore.QObject):
     def draw_hover_shape(self, sel_obj, color=None):
         """
 
-        :param sel_obj: the object for which the hover shape must be drawn
-        :return:
+        :param sel_obj: The object for which the hover shape must be drawn
+        :param color:   The color of the hover shape
+        :return:        None
         """
 
         pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
@@ -8848,9 +9191,11 @@ class App(QtCore.QObject):
 
     def draw_selection_shape(self, sel_obj, color=None):
         """
+        Will draw a selection shape around the selected object.
 
-        :param sel_obj: the object for which the selection shape must be drawn
-        :return:
+        :param sel_obj: The object for which the selection shape must be drawn
+        :param color:   The color for the selection shape.
+        :return:        None
         """
 
         if sel_obj is None:
@@ -8862,6 +9207,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
         if self.defaults['units'].upper() == 'MM':
             sel_rect = sel_rect.buffer(-0.1)
             sel_rect = sel_rect.buffer(0.2)
@@ -8891,9 +9237,11 @@ class App(QtCore.QObject):
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
+        Will draw a selection shape when dragging mouse on canvas.
 
-        :param old_coords: old coordinates
-        :param coords: new coordinates
+        :param old_coords:  Old coordinates
+        :param coords:      New coordinates
+        :param kwargs:      Keyword arguments
         :return:
         """
 
@@ -8932,6 +9280,13 @@ class App(QtCore.QObject):
             self.move_tool.sel_shapes.redraw()
 
     def on_file_new_click(self):
+        """
+        Callback for menu item File -> New.
+        Executed on clicking the Menu -> File -> New Project
+
+        :return:
+        """
+
         if self.collection.get_list() and self.should_we_save:
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
@@ -8956,13 +9311,11 @@ class App(QtCore.QObject):
                 self.on_file_new()
         else:
             self.on_file_new()
-        self.inform.emit('[success] %s...' %
-                         _("New Project created"))
+        self.inform.emit('[success] %s...' % _("New Project created"))
 
     def on_file_new(self, cli=None):
         """
-        Callback for menu item File -> New. Returns the application to its
-        startup state. This method is thread-safe.
+        Returns the application to its startup state. This method is thread-safe.
 
         :return: None
         """
@@ -8975,7 +9328,7 @@ class App(QtCore.QObject):
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
             # ## EDITOR section
-            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.geo_editor = FlatCAMGeoEditor(self)
             self.exc_editor = FlatCAMExcEditor(self)
             self.grb_editor = FlatCAMGrbEditor(self)
 
@@ -8986,16 +9339,20 @@ class App(QtCore.QObject):
             # delete shapes left drawn from mark shape_collections, if any
             if isinstance(obj, FlatCAMGerber):
                 try:
-                    obj.mark_shapes.enabled = False
-                    obj.mark_shapes.clear(update=True)
+                    for el in obj.mark_shapes:
+                        obj.mark_shapes[el].clear(update=True)
+                        obj.mark_shapes[el].enabled = False
+                        del el
                 except AttributeError:
                     pass
 
             # also delete annotation shapes, if any
             elif isinstance(obj, FlatCAMCNCjob):
                 try:
-                    obj.annotation.enabled = False
+                    obj.text_col.enabled = False
+                    del obj.text_col
                     obj.annotation.clear(update=True)
+                    del obj.annotation
                 except AttributeError:
                     pass
 
@@ -9038,6 +9395,7 @@ class App(QtCore.QObject):
     def obj_properties(self):
         """
         Will launch the object Properties Tool
+
         :return:
         """
 
@@ -9047,6 +9405,7 @@ class App(QtCore.QObject):
     def on_project_context_save(self):
         """
         Wrapper, will save the object function of it's type
+
         :return:
         """
 
@@ -9065,6 +9424,12 @@ class App(QtCore.QObject):
             self.on_file_savedocument()
 
     def obj_move(self):
+        """
+        Callback for the Move menu entry in various Context Menu's.
+
+        :return:
+        """
+
         self.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
@@ -9073,6 +9438,7 @@ class App(QtCore.QObject):
         File menu callback for opening a Gerber.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :param name:
         :return: None
         """
 
@@ -9081,7 +9447,7 @@ class App(QtCore.QObject):
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
                    ".gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.gb*);;" \
+                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
                    "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
                    "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim " \
                    "*.mil);;" \
@@ -9108,8 +9474,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9120,6 +9485,7 @@ class App(QtCore.QObject):
         File menu callback for opening an Excellon file.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :param name:
         :return: None
         """
 
@@ -9145,8 +9511,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL]%s' %
-                             _(" Open Excellon cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9154,10 +9519,12 @@ class App(QtCore.QObject):
 
     def on_fileopengcode(self, signal: bool = None, name=None):
         """
+
         File menu call back for opening gcode.
 
         :param signal: required because clicking the entry will generate a checked signal which needs a container
-        :return: None
+        :param name:
+        :return:
         """
 
         self.report_usage("on_fileopengcode")
@@ -9186,8 +9553,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open G-Code cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9216,8 +9582,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -9257,7 +9622,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Open HPGL2 file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9282,8 +9647,7 @@ class App(QtCore.QObject):
                                                                  filter=_filter_)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Config cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -9298,8 +9662,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -9326,18 +9689,17 @@ class App(QtCore.QObject):
 
         _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL]%s' %
-                             _(" Export SVG cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -9363,17 +9725,17 @@ class App(QtCore.QObject):
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG Image"),
                 directory=self.get_last_save_folder() + '/png_' + self.date,
                 filter=filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), filter=filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("Export PNG cancelled."))
+            self.inform.emit(_("Cancelled."))
             return
         else:
             if self.is_legacy is False:
@@ -9396,8 +9758,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Gerber object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
@@ -9410,18 +9771,17 @@ class App(QtCore.QObject):
 
         _filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Gerber source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9440,32 +9800,29 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Script object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMScript):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Script objects can be saved as TCL Script files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Script objects can be saved as TCL Script files..."))
             return
 
         name = self.collection.get_active().options["name"]
 
         _filter = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Script source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Script source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Script source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9484,32 +9841,29 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Document object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMScript):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Document objects can be saved as Document files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Document objects can be saved as Document files..."))
             return
 
         name = self.collection.get_active().options["name"]
 
         _filter = "FlatCAM Documents (*.FlatDoc);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Document source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Document source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Document source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9528,32 +9882,29 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Excellon object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
 
         _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Excellon source file"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Saving Excellon source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9572,32 +9923,29 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please Select an Excellon object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
 
         _filter = self.defaults["excellon_save_filters"]
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export Excellon cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -9619,32 +9967,29 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please Select an Gerber object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGerber):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Gerber objects can be saved as Gerber files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
         name = self.collection.get_active().options["name"]
 
         _filter_ = self.defaults['gerber_save_filters']
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Gerber"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Gerber"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), filter=_filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -9666,8 +10011,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -9678,8 +10022,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGeometry):
-            msg = '[ERROR_NOTCL] %s' % \
-                  _("Only Geometry objects can be used.")
+            msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -9690,21 +10033,19 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        _filter_ = "DXF File (*.DXF);;All Files (*.*)"
+        _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export DXF"),
-                                                                 filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), filter=_filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.export_dxf(name, filename)
@@ -9722,7 +10063,7 @@ class App(QtCore.QObject):
         self.report_usage("on_file_importsvg")
         App.log.debug("on_file_importsvg()")
 
-        _filter_ = "SVG File (*.svg);;All Files (*.*)"
+        _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"),
                                                                    directory=self.get_last_folder(), filter=_filter_)
@@ -9730,14 +10071,13 @@ class App(QtCore.QObject):
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"),
                                                                    filter=_filter_)
 
-        if type_of_obj is not "geometry" and type_of_obj is not "gerber":
+        if type_of_obj != "geometry" and type_of_obj != "gerber":
             type_of_obj = "geometry"
 
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open SVG cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9754,7 +10094,7 @@ class App(QtCore.QObject):
         self.report_usage("on_file_importdxf")
         App.log.debug("on_file_importdxf()")
 
-        _filter_ = "DXF File (*.DXF);;All Files (*.*)"
+        _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                                    directory=self.get_last_folder(),
@@ -9763,14 +10103,13 @@ class App(QtCore.QObject):
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                                    filter=_filter_)
 
-        if type_of_obj is not "geometry" and type_of_obj is not "gerber":
+        if type_of_obj != "geometry" and type_of_obj != "gerber":
             type_of_obj = "geometry"
 
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9828,11 +10167,11 @@ class App(QtCore.QObject):
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "Gerber Files .gbr (*.GBR);;PDF Files .pdf (*.PDF);;All Files (*.*)"
         elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "Excellon Files .drl (*.DRL);;PDF Files .pdf (*.PDF);;All Files (*.*)"
         elif obj.kind == 'cncjob':
-            flt = "GCode Files (*.NC);;PDF Files (*.PDF);;All Files (*.*)"
+            flt = "GCode Files .nc (*.NC);;PDF Files .pdf (*.PDF);;All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
@@ -9993,7 +10332,8 @@ class App(QtCore.QObject):
         self.report_usage("on_fileopenscript")
         App.log.debug("on_fileopenscript()")
 
-        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+        _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
+                   "All Files (*.*)"
 
         if name:
             filenames = [name]
@@ -10006,7 +10346,7 @@ class App(QtCore.QObject):
 
         if len(filenames) == 0:
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' % _("Open TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10035,7 +10375,8 @@ class App(QtCore.QObject):
                                         alignment=Qt.AlignBottom | Qt.AlignLeft,
                                         color=QtGui.QColor("gray"))
         else:
-            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+            _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
+                       "All Files (*.*)"
             try:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
                                                                      directory=self.get_last_folder(), filter=_filter_)
@@ -10049,7 +10390,7 @@ class App(QtCore.QObject):
 
         if filename == "":
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' % _("Run TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             if self.cmd_line_headless != 1:
                 if self.ui.shell_dock.isHidden():
@@ -10059,9 +10400,9 @@ class App(QtCore.QObject):
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
                     if self.cmd_line_headless != 1:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_content)
+                        self.shell.exec_command(cmd_line_shellfile_content)
                     else:
-                        self.shell._sysShell.exec_command(cmd_line_shellfile_content, no_echo=True)
+                        self.shell.exec_command(cmd_line_shellfile_content, no_echo=True)
 
                 if silent is False:
                     self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
@@ -10112,21 +10453,21 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
+        filter_ = "FlatCAM Project .FlatPrj (*.FlatPrj);; All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Project As ..."),
-                directory=('{l_save}/{proj}_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date,
-                                                             proj=_("Project")),
+                directory='{l_save}/{proj}_{date}'.format(l_save=str(self.get_last_save_folder()), date=self.date,
+                                                          proj=_("Project")),
                 filter=filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
 
         if use_thread is True:
@@ -10166,22 +10507,22 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
             return
 
-        filter_ = "PDF File (*.PDF);; All Files (*.*)"
+        filter_ = "PDF File .pdf (*.PDF);; All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Object as PDF ..."),
-                directory=('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
-                                                                 obj_name=obj_name,
-                                                                 date=self.date),
+                directory='{l_save}/{obj_name}_{date}'.format(l_save=str(self.get_last_save_folder()),
+                                                              obj_name=obj_name,
+                                                              date=self.date),
                 filter=filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Object as PDF ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Object PDF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
 
         if use_thread is True:
@@ -10202,61 +10543,61 @@ class App(QtCore.QObject):
         color = 'black'
         transparency_level = 1.0
 
-        self.pagesize = dict()
+        self.pagesize = {}
         self.pagesize.update(
             {
                 'Bounds': None,
-                'A0': (841*mm, 1189*mm),
-                'A1': (594*mm, 841*mm),
-                'A2': (420*mm, 594*mm),
-                'A3': (297*mm, 420*mm),
-                'A4': (210*mm, 297*mm),
-                'A5': (148*mm, 210*mm),
-                'A6': (105*mm, 148*mm),
-                'A7': (74*mm, 105*mm),
-                'A8': (52*mm, 74*mm),
-                'A9': (37*mm, 52*mm),
-                'A10': (26*mm, 37*mm),
+                'A0': (841 * mm, 1189 * mm),
+                'A1': (594 * mm, 841 * mm),
+                'A2': (420 * mm, 594 * mm),
+                'A3': (297 * mm, 420 * mm),
+                'A4': (210 * mm, 297 * mm),
+                'A5': (148 * mm, 210 * mm),
+                'A6': (105 * mm, 148 * mm),
+                'A7': (74 * mm, 105 * mm),
+                'A8': (52 * mm, 74 * mm),
+                'A9': (37 * mm, 52 * mm),
+                'A10': (26 * mm, 37 * mm),
 
-                'B0': (1000*mm, 1414*mm),
-                'B1': (707*mm, 1000*mm),
-                'B2': (500*mm, 707*mm),
-                'B3': (353*mm, 500*mm),
-                'B4': (250*mm, 353*mm),
-                'B5': (176*mm, 250*mm),
-                'B6': (125*mm, 176*mm),
-                'B7': (88*mm, 125*mm),
-                'B8': (62*mm, 88*mm),
-                'B9': (44*mm, 62*mm),
-                'B10': (31*mm, 44*mm),
+                'B0': (1000 * mm, 1414 * mm),
+                'B1': (707 * mm, 1000 * mm),
+                'B2': (500 * mm, 707 * mm),
+                'B3': (353 * mm, 500 * mm),
+                'B4': (250 * mm, 353 * mm),
+                'B5': (176 * mm, 250 * mm),
+                'B6': (125 * mm, 176 * mm),
+                'B7': (88 * mm, 125 * mm),
+                'B8': (62 * mm, 88 * mm),
+                'B9': (44 * mm, 62 * mm),
+                'B10': (31 * mm, 44 * mm),
 
-                'C0': (917*mm, 1297*mm),
-                'C1': (648*mm, 917*mm),
-                'C2': (458*mm, 648*mm),
-                'C3': (324*mm, 458*mm),
-                'C4': (229*mm, 324*mm),
-                'C5': (162*mm, 229*mm),
-                'C6': (114*mm, 162*mm),
-                'C7': (81*mm, 114*mm),
-                'C8': (57*mm, 81*mm),
-                'C9': (40*mm, 57*mm),
-                'C10': (28*mm, 40*mm),
+                'C0': (917 * mm, 1297 * mm),
+                'C1': (648 * mm, 917 * mm),
+                'C2': (458 * mm, 648 * mm),
+                'C3': (324 * mm, 458 * mm),
+                'C4': (229 * mm, 324 * mm),
+                'C5': (162 * mm, 229 * mm),
+                'C6': (114 * mm, 162 * mm),
+                'C7': (81 * mm, 114 * mm),
+                'C8': (57 * mm, 81 * mm),
+                'C9': (40 * mm, 57 * mm),
+                'C10': (28 * mm, 40 * mm),
 
                 # American paper sizes
-                'LETTER': (8.5*inch, 11*inch),
-                'LEGAL': (8.5*inch, 14*inch),
-                'ELEVENSEVENTEEN': (11*inch, 17*inch),
+                'LETTER': (8.5 * inch, 11 * inch),
+                'LEGAL': (8.5 * inch, 14 * inch),
+                'ELEVENSEVENTEEN': (11 * inch, 17 * inch),
 
                 # From https://en.wikipedia.org/wiki/Paper_size
-                'JUNIOR_LEGAL': (5*inch, 8*inch),
-                'HALF_LETTER': (5.5*inch, 8*inch),
-                'GOV_LETTER': (8*inch, 10.5*inch),
-                'GOV_LEGAL': (8.5*inch, 13*inch),
-                'LEDGER': (17*inch, 11*inch),
+                'JUNIOR_LEGAL': (5 * inch, 8 * inch),
+                'HALF_LETTER': (5.5 * inch, 8 * inch),
+                'GOV_LETTER': (8 * inch, 10.5 * inch),
+                'GOV_LEGAL': (8.5 * inch, 13 * inch),
+                'LEDGER': (17 * inch, 11 * inch),
             }
         )
 
-        exported_svg = list()
+        exported_svg = []
         for obj in obj_selection:
             svg_obj = obj.export_svg(scale_stroke_factor=0.0,
                                      scale_factor_x=None, scale_factor_y=None,
@@ -10378,7 +10719,8 @@ class App(QtCore.QObject):
         self.report_usage("export_svg()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_svg()")
 
@@ -10431,8 +10773,7 @@ class App(QtCore.QObject):
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
-            self.inform.emit('[success] %s: %s' %
-                             (_("SVG file exported to"), filename))
+            self.inform.emit('[success] %s: %s' % (_("SVG file exported to"), filename))
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """
@@ -10446,7 +10787,8 @@ class App(QtCore.QObject):
         self.report_usage("save source file()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("save source file()")
 
@@ -10489,7 +10831,10 @@ class App(QtCore.QObject):
         self.report_usage("export_excellon()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            if self.defaults["global_last_save_folder"]:
+                filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            else:
+                filename = self.defaults["global_last_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -10602,8 +10947,7 @@ class App(QtCore.QObject):
                     if self.defaults["global_open_style"] is False:
                         self.file_opened.emit("Excellon", filename)
                     self.file_saved.emit("Excellon", filename)
-                    self.inform.emit('[success] %s: %s' %
-                                     (_("Excellon file exported to"), filename))
+                    self.inform.emit('[success] %s: %s' % (_("Excellon file exported to"), filename))
                 else:
                     return exported_excellon
             except Exception as e:
@@ -10617,19 +10961,17 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Could not export Excellon file.'))
+                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
-            ret = make_excellon()
-            if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('Could not export Excellon file.'))
+            eret = make_excellon()
+            if eret == 'fail':
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Excellon file.'))
                 return 'fail'
             if local_use is not None:
-                return ret
+                return eret
 
     def export_gerber(self, obj_name, filename, local_use=None, use_thread=True):
         """
@@ -10645,7 +10987,8 @@ class App(QtCore.QObject):
         self.report_usage("export_gerber()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_gerber()")
 
@@ -10741,8 +11084,7 @@ class App(QtCore.QObject):
                     if self.defaults["global_open_style"] is False:
                         self.file_opened.emit("Gerber", filename)
                     self.file_saved.emit("Gerber", filename)
-                    self.inform.emit('[success] %s: %s' %
-                                     (_("Gerber file exported to"), filename))
+                    self.inform.emit('[success] %s: %s' % (_("Gerber file exported to"), filename))
                 else:
                     return exported_gerber
             except Exception as e:
@@ -10755,19 +11097,17 @@ class App(QtCore.QObject):
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Could not export Gerber file.'))
+                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:
-            ret = make_gerber()
-            if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('Could not export Gerber file.'))
+            gret = make_gerber()
+            if gret == 'fail':
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
                 return 'fail'
             if local_use is not None:
-                return ret
+                return gret
 
     def export_dxf(self, obj_name, filename, use_thread=True):
         """
@@ -10781,7 +11121,8 @@ class App(QtCore.QObject):
         self.report_usage("export_dxf()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_dxf()")
 
@@ -10867,10 +11208,9 @@ class App(QtCore.QObject):
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the DXF file.
 
-        :param filename: Path to the DXF file.
-        :param geo_type: Type of FlatCAM object that will be created from DXF
-        :param outname:
-        :type putname: str
+        :param filename:    Path to the DXF file.
+        :param geo_type:    Type of FlatCAM object that will be created from DXF
+        :param outname:     Name for the imported Geometry
         :return:
         """
         self.report_usage("import_dxf()")
@@ -10909,7 +11249,7 @@ class App(QtCore.QObject):
         it in the program. Thread-safe.
 
         :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
+            name to be that of the file. Str.
         :param filename: Gerber file filename
         :type filename: str
         :return: None
@@ -10952,7 +11292,7 @@ class App(QtCore.QObject):
             # # ## Object creation # ##
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open Gerber failed. Probable not a Gerber file.'))
+                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open Gerber failed. Probable not a Gerber file.'))
                 return 'fail'
 
             # Register recent file
@@ -10966,11 +11306,11 @@ class App(QtCore.QObject):
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
-        :param filename: Excellon file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    Excellon file filename
+        :type filename:     str
+        :param plot:        boolean, to plot or not the resulting object
+        :return:            None
         """
 
         App.log.debug("open_excellon()")
@@ -11031,10 +11371,11 @@ class App(QtCore.QObject):
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the name to be that of the file.
-        :param filename: G-code file filename
-        :type filename: str
-        :return: None
+        :param filename:        G-code file filename
+        :param outname:         Name of the resulting object. None causes the name to be that of the file.
+        :param force_parsing:
+        :param plot:
+        :return:                None
         """
         App.log.debug("open_gcode()")
 
@@ -11094,11 +11435,9 @@ class App(QtCore.QObject):
         Opens a HPGL2 file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
-        :param filename: HPGL2 file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    HPGL2 file filename
+        :return:            None
         """
         filename = filename
 
@@ -11147,7 +11486,7 @@ class App(QtCore.QObject):
             # # ## Object creation # ##
             ret = self.new_object("geometry", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
+                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
                 return 'fail'
 
             # Register recent file
@@ -11161,10 +11500,9 @@ class App(QtCore.QObject):
         Opens a Script file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the name to be that of the file.
-        :param filename: Script file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    Script file filename
+        :return:            None
         """
         App.log.debug("open_script()")
 
@@ -11198,9 +11536,9 @@ class App(QtCore.QObject):
         """
         Loads a config file from the specified file.
 
-        :param filename:  Name of the file from which to load.
-        :type filename: str
-        :return: None
+        :param filename:        Name of the file from which to load.
+        :param run_from_arg:    if True the FlatConfig file will be open as an command line argument
+        :return:                None
         """
         App.log.debug("Opening config file: " + filename)
 
@@ -11249,14 +11587,16 @@ class App(QtCore.QObject):
         5) Calls new_object() with the object's from_dict() as init method.
         6) Calls plot_all() if plot=True
 
-        :param filename:  Name of the file from which to load.
-        :type filename: str
-        :param run_from_arg: True if run for arguments
-        :param plot: If True plot all objects in the project
-        :param cli: run from command line
-        :return: None
+        :param filename:        Name of the file from which to load.
+        :param run_from_arg:    True if run for arguments
+        :param plot:            If True plot all objects in the project
+        :param cli:             Run from command line
+        :return:                None
         """
         App.log.debug("Opening project: " + filename)
+
+        # block autosaving while a project is loaded
+        self.block_autosave = True
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
@@ -11346,6 +11686,9 @@ class App(QtCore.QObject):
         self.should_we_save = False
         self.file_opened.emit("project", filename)
 
+        # restore autosaving after a project was loaded
+        self.block_autosave = False
+
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
@@ -11359,7 +11702,8 @@ class App(QtCore.QObject):
         an alternative to project options but allows the use
         of values invisible to the user.
 
-        :return: None
+        :param silent:  No messages
+        :return:        None
         """
 
         if silent is False:
@@ -11397,223 +11741,64 @@ class App(QtCore.QObject):
                         if silent is False:
                             self.log.debug("  " + param + " OK!")
 
-    def plot_all(self, zoom=True):
+    def plot_all(self, fit_view=True, use_thread=True):
         """
         Re-generates all plots from all objects.
 
-        :return: None
+        :param fit_view:    if True will plot the objects and will adjust the zoom to fit all plotted objects into view
+        :param use_thread:  if True will use threading for plotting the objects
+        :return:            None
         """
         self.log.debug("Plot_all()")
         self.inform.emit('[success] %s...' % _("Redrawing all objects"))
 
-        for obj in self.collection.get_list():
+        for plot_obj in self.collection.get_list():
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     obj.plot(kind=self.defaults["cncjob_plot_kind"])
-                    if zoom:
+                    if fit_view is True:
                         self.object_plotted.emit(obj)
 
-            # Send to worker
-            self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
+            if use_thread is True:
+                # Send to worker
+                self.worker_task.emit({'fcn': worker_task, 'params': [plot_obj]})
+            else:
+                worker_task(plot_obj)
 
     def register_folder(self, filename):
+        """
+        Register the last folder used by the app to open something
+
+        :param filename:    the last folder is extracted from the filename
+        :return:            None
+        """
         self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
+        """
+        Register the last folder used by the app to save something
+
+        :param filename:    the last folder is extracted from the filename
+        :return:            None
+        """
         self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
 
-    def set_progress_bar(self, percentage, text=""):
-        self.ui.progress_bar.setValue(int(percentage))
-
-    def setup_shell(self):
-        """
-        Creates shell functions. Runs once at startup.
-
-        :return: None
-        """
-
-        self.log.debug("setup_shell()")
-
-        def shelp(p=None):
-            if not p:
-                return _("Available commands:\n") + \
-                       '\n'.join(['  ' + cmd for cmd in sorted(commands)]) + \
-                       _("\n\nType help <command_name> for usage.\n Example: help open_gerber")
-
-            if p not in commands:
-                return "Unknown command: %s" % p
-
-            return commands[p]["help"]
-
-        # --- Migrated to new architecture ---
-        # def options(name):
-        #     ops = self.collection.get_by_name(str(name)).options
-        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
-
-        def h(*args):
-            """
-            Pre-processes arguments to detect '-keyword value' pairs into dictionary
-            and standalone parameters into list.
-            """
-
-            kwa = {}
-            a = []
-            n = len(args)
-            name = None
-            for i in range(n):
-                match = re.search(r'^-([a-zA-Z].*)', args[i])
-                if match:
-                    assert name is None
-                    name = match.group(1)
-                    continue
-
-                if name is None:
-                    a.append(args[i])
-                else:
-                    kwa[name] = args[i]
-                    name = None
-
-            return a, kwa
-
-        @contextmanager
-        def wait_signal(signal, timeout=10000):
-            """
-            Block loop until signal emitted, timeout (ms) elapses
-            or unhandled exception happens in a thread.
-
-            :param timeout: time after which the loop is exited
-            :param signal: Signal to wait for.
-            """
-            loop = QtCore.QEventLoop()
-
-            # Normal termination
-            signal.connect(loop.quit)
-
-            # Termination by exception in thread
-            self.thread_exception.connect(loop.quit)
-
-            status = {'timed_out': False}
-
-            def report_quit():
-                status['timed_out'] = True
-                loop.quit()
-
-            yield
-
-            # Temporarily change how exceptions are managed.
-            oeh = sys.excepthook
-            ex = []
-
-            def except_hook(type_, value, traceback_):
-                ex.append(value)
-                oeh(type_, value, traceback_)
-            sys.excepthook = except_hook
-
-            # Terminate on timeout
-            if timeout is not None:
-                QtCore.QTimer.singleShot(timeout, report_quit)
-
-            # # ## Block ## ##
-            loop.exec_()
-
-            # Restore exception management
-            sys.excepthook = oeh
-            if ex:
-                self.raiseTclError(str(ex[0]))
-
-            if status['timed_out']:
-                raise Exception('Timed out!')
-
-        def make_docs():
-            output = ''
-            import collections
-            od = collections.OrderedDict(sorted(commands.items()))
-            for cmd_, val in od.items():
-                output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
-
-                t = val['help']
-                usage_i = t.find('>')
-                if usage_i < 0:
-                    expl = t
-                    output += expl + '\n\n'
-                    continue
-
-                expl = t[:usage_i - 1]
-                output += expl + '\n\n'
-
-                end_usage_i = t[usage_i:].find('\n')
-
-                if end_usage_i < 0:
-                    end_usage_i = len(t[usage_i:])
-                    output += '    ' + t[usage_i:] + '\n       No parameters.\n'
-                else:
-                    extras = t[usage_i+end_usage_i+1:]
-                    parts = [s.strip() for s in extras.split('\n')]
-
-                    output += '    ' + t[usage_i:usage_i+end_usage_i] + '\n'
-                    for p in parts:
-                        output += '       ' + p + '\n\n'
-
-            return output
-
-        '''
-            Howto implement TCL shell commands:
-
-            All parameters passed to command should be possible to set as None and test it afterwards.
-            This is because we need to see error caused in tcl,
-            if None value as default parameter is not allowed TCL will return empty error.
-            Use:
-                def mycommand(name=None,...):
-
-            Test it like this:
-            if name is None:
-
-                self.raise_tcl_error('Argument name is missing.')
-
-            When error ocurre, always use raise_tcl_error, never return "sometext" on error,
-            otherwise we will miss it and processing will silently continue.
-            Method raise_tcl_error  pass error into TCL interpreter, then raise python exception,
-            which is catched in exec_command and displayed in TCL shell console with red background.
-            Error in console is displayed  with TCL  trace.
-
-            This behavior works only within main thread,
-            errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
-            TCL shell.
-
-            Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
-
-        '''
-
-        commands = {
-            'help': {
-                'fcn': shelp,
-                'help': _("Shows list of commands.")
-            },
-        }
-
-        # Import/overwrite tcl commands as objects of TclCommand descendants
-        # This modifies the variable 'commands'.
-        tclCommands.register_all_commands(self, commands)
-
-        # Add commands to the tcl interpreter
-        for cmd in commands:
-            self.tcl.createcommand(cmd, commands[cmd]['fcn'])
-
-        # Make the tcl puts function return instead of print to stdout
-        self.tcl.eval('''
-            rename puts original_puts
-            proc puts {args} {
-                if {[llength $args] == 1} {
-                    return "[lindex $args 0]"
-                } else {
-                    eval original_puts $args
-                }
-            }
-            ''')
+    # def set_progress_bar(self, percentage, text=""):
+    #     """
+    #     Set a progress bar to a value (percentage)
+    #
+    #     :param percentage:  Value set to the progressbar
+    #     :param text:        Not used
+    #     :return:            None
+    #     """
+    #     self.ui.progress_bar.setValue(int(percentage))
 
     def setup_recent_items(self):
+        """
+        Setup a dictionary with the recent files accessed, organized by type
 
+        :return:
+        """
         # TODO: Move this to constructor
         icons = {
             "gerber": self.resource_location + "/flatcam_icon16.png",
@@ -11654,16 +11839,14 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json')
         except IOError:
             App.log.error("Failed to load recent item list.")
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to load recent item list."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent item list."))
             return
 
         try:
             self.recent = json.load(f)
-        except json.scanner.JSONDecodeError:
+        except json.errors.JSONDecodeError:
             App.log.error("Failed to parse recent item list.")
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to parse recent item list."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse recent item list."))
             f.close()
             return
         f.close()
@@ -11673,16 +11856,14 @@ class App(QtCore.QObject):
             fp = open(self.data_path + '/recent_projects.json')
         except IOError:
             App.log.error("Failed to load recent project item list.")
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to load recent projects item list."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to load recent projects item list."))
             return
 
         try:
             self.recent_projects = json.load(fp)
-        except json.scanner.JSONDecodeError:
+        except json.errors.JSONDecodeError:
             App.log.error("Failed to parse recent project item list.")
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to parse recent project item list."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse recent project item list."))
             fp.close()
             return
         fp.close()
@@ -11692,6 +11873,7 @@ class App(QtCore.QObject):
         def make_callback(func, fname):
             def opener():
                 func(fname)
+
             return opener
 
         def reset_recent_files():
@@ -11712,12 +11894,12 @@ class App(QtCore.QObject):
             self.recent_projects = []
 
             try:
-                fp = open(self.data_path + '/recent_projects.json', 'w')
+                frp = open(self.data_path + '/recent_projects.json', 'w')
             except IOError:
                 App.log.error("Failed to open recent projects items file for writing.")
                 return
 
-            json.dump(self.recent, fp)
+            json.dump(self.recent, frp)
 
         # Reset menu
         self.ui.recent.clear()
@@ -11779,6 +11961,11 @@ class App(QtCore.QObject):
         self.log.debug("Recent items list has been populated.")
 
     def setup_component_editor(self):
+        """
+        Default text for the Selected tab when is not taken by the Object UI.
+
+        :return:
+        """
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
@@ -11787,51 +11974,51 @@ class App(QtCore.QObject):
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("notebook_font_size"):
-            fsize = settings.value('notebook_font_size', type=int)
+        f_settings = QSettings("Open Source", "FlatCAM")
+        if f_settings.contains("notebook_font_size"):
+            fsize = f_settings.value('notebook_font_size', type=int)
         else:
             fsize = 12
 
         tsize = fsize + int(fsize / 2)
 
-#         selected_text = (_('''
-# <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
-#
-# <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
-# The normal flow when working in FlatCAM is the following:</span></p>
-#
-# <ol>
-# 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into
+        #         selected_text = (_('''
+        # <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+        #
+        # <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
+        # The normal flow when working in FlatCAM is the following:</span></p>
+        #
+        # <ol>
+        # 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into
         # 	FlatCAM using either the menu&#39;s, toolbars, key shortcuts or
         # 	even dragging and dropping the files on the GUI.<br />
-# 	<br />
-# 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the
+        # 	<br />
+        # 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the
         # 	file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
-# 	&nbsp;</li>
-# 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then
+        # 	&nbsp;</li>
+        # 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then
         # 	focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the
         # 	Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to
         # 	it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
-# 	<br />
-# 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong>
+        # 	<br />
+        # 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong>
         # 	is in focus, again the object properties will be displayed into the Selected Tab. Alternatively,
         # 	double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate
         # 	it even if it was out of focus.<br />
-# 	<br />
-# 	You can change the parameters in this screen and the flow direction is like this:<br />
-# 	<br />
-# 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object
+        # 	<br />
+        # 	You can change the parameters in this screen and the flow direction is like this:<br />
+        # 	<br />
+        # 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object
         # 	</strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object
         # 	</strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in
         # 	<strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
-# </ol>
-#
-# <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in
+        # </ol>
+        #
+        # <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in
         # <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut:
         # <strong>F3</strong>.</span></p>
-#
-#         ''').format(fsize=fsize, tsize=tsize))
+        #
+        #         ''').format(fsize=fsize, tsize=tsize))
 
         selected_text = '''
         <p><span style="font-size:{tsize}px"><strong>{title}</strong></span></p>
@@ -11893,7 +12080,8 @@ class App(QtCore.QObject):
 
     def setup_obj_classes(self):
         """
-        Sets up application specifics on the FlatCAMObj class.
+        Sets up application specifics on the FlatCAMObj class. This way the object.app attribute will point to the App
+        class.
 
         :return: None
         """
@@ -11919,20 +12107,22 @@ class App(QtCore.QObject):
         self.log.debug("version_check()")
 
         if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
-            full_url = App.version_url + \
-                       "?s=" + str(self.defaults['global_serial']) + \
-                       "&v=" + str(self.version) + \
-                       "&os=" + str(self.os) + \
-                       "&" + urllib.parse.urlencode(self.defaults["global_stats"])
+            full_url = "%s?s=%s&v=%s&os=%s&%s" % (
+                App.version_url,
+                str(self.defaults['global_serial']),
+                str(self.version),
+                str(self.os),
+                urllib.parse.urlencode(self.defaults["global_stats"])
+            )
+            # full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + \
+            #            "&v=" + str(self.version) + "&os=" + str(self.os) + "&" + \
+            #            urllib.parse.urlencode(self.defaults["global_stats"])
         else:
             # no_stats dict; just so it won't break things on website
             no_ststs_dict = {}
             no_ststs_dict["global_ststs"] = {}
-            full_url = App.version_url + \
-                       "?s=" + str(self.defaults['global_serial']) + \
-                       "&v=" + str(self.version) + \
-                       "&os=" + str(self.os) + \
-                       "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
+            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) + \
+                       "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
         App.log.debug("Checking for updates @ %s" % full_url)
         # ## Get the data
@@ -11941,16 +12131,14 @@ class App(QtCore.QObject):
         except Exception:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Failed checking for latest version. Could not connect."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Failed checking for latest version. Could not connect."))
             return
 
         try:
             data = json.load(f)
         except Exception as e:
             App.log.error("Could not parse information about latest version.")
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Could not parse information about latest version."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not parse information about latest version."))
             App.log.debug("json.load(): %s" % str(e))
             f.close()
             return
@@ -11960,31 +12148,38 @@ class App(QtCore.QObject):
         # ## Latest version?
         if self.version >= data["version"]:
             App.log.debug("FlatCAM is up to date!")
-            self.inform.emit('[success] %s' %
-                             _("FlatCAM is up to date!"))
+            self.inform.emit('[success] %s' % _("FlatCAM is up to date!"))
             return
 
         App.log.debug("Newer version available.")
         self.message.emit(
             _("Newer Version Available"),
-            _("There is a newer version of FlatCAM available for download:\n\n") +
-            "<b>%s</b>" % str(data["name"]) + "\n%s" % str(data["message"]),
+            '%s<br><br>><b>%s</b><br>%s' % (
+                _("There is a newer version of FlatCAM available for download:"),
+                str(data["name"]),
+                str(data["message"])
+            ),
             _("info")
         )
 
     def on_plotcanvas_setup(self, container=None):
         """
-        This is doing the setup for the plot area (canvas)
+        This is doing the setup for the plot area (canvas).
 
-        :param container: widget where to install the canvas
-        :return: None
+        :param container:   QT Widget where to install the canvas
+        :return:            None
         """
         if container:
             plot_container = container
         else:
             plot_container = self.ui.right_layout
 
-        if self.is_legacy is False:
+        modifier = QtWidgets.QApplication.queryKeyboardModifiers()
+        if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
+            self.is_legacy = True
+            self.defaults["global_graphic_engine"] = "2D"
+            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
+        else:
             try:
                 self.plotcanvas = PlotCanvas(plot_container, self)
             except Exception as er:
@@ -11997,11 +12192,14 @@ class App(QtCore.QObject):
                 msg += msg_txt
                 self.inform.emit(msg)
                 return 'fail'
-        else:
-            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
+
+        if self.is_legacy is False:
+            pan_button = 2 if self.defaults["global_pan_button"] == '2' else 3
+            # Set the mouse button for panning
+            self.plotcanvas.view.camera.pan_button_setting = pan_button
 
         self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
         self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -12029,12 +12227,12 @@ class App(QtCore.QObject):
 
     def on_zoom_fit(self, event):
         """
-        Callback for zoom-out request. This can be either from the corresponding
+        Callback for zoom-fit request. This can be either from the corresponding
         toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
         with axes limits from the geometry bounds of all objects.
 
-        :param event: Ignored.
-        :return: None
+        :param event:   Ignored.
+        :return:        None
         """
         if self.is_legacy is False:
             self.plotcanvas.fit_view()
@@ -12049,9 +12247,18 @@ class App(QtCore.QObject):
             self.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def on_zoom_in(self):
+        """
+        Callback for zoom-in request.
+        :return:
+        """
         self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
 
     def on_zoom_out(self):
+        """
+        Callback for zoom-out request.
+
+        :return:
+        """
         self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
@@ -12091,7 +12298,7 @@ class App(QtCore.QObject):
 
     def enable_plots(self, objects):
         """
-        Disables plots
+        Enable plots
 
         :param objects: list of Objects to be enabled
         :return:
@@ -12121,12 +12328,12 @@ class App(QtCore.QObject):
 
         def worker_task(objs):
             with self.proc_container.new(_("Enabling plots ...")):
-                for obj in objs:
+                for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(obj, FlatCAMCNCjob):
-                        obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
+                    if isinstance(plot_obj, FlatCAMCNCjob):
+                        plot_obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
                     else:
-                        obj.plot(visible=True)
+                        plot_obj.plot(visible=True)
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
@@ -12173,20 +12380,21 @@ class App(QtCore.QObject):
         # self.plots_updated.emit()
         def worker_task(objs):
             with self.proc_container.new(_("Disabling plots ...")):
-                for obj in objs:
+                for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(obj, FlatCAMCNCjob):
-                        obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
+                    if isinstance(plot_obj, FlatCAMCNCjob):
+                        plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
-                        obj.plot(visible=False)
+                        plot_obj.plot(visible=False)
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
     def toggle_plots(self, objects):
         """
         Toggle plots visibility
-        :param objects: list of Objects for which to be toggled the visibility
-        :return:
+
+        :param objects:     list of Objects for which to be toggled the visibility
+        :return:            None
         """
 
         # if no objects selected then do nothing
@@ -12203,6 +12411,11 @@ class App(QtCore.QObject):
         self.plots_updated.emit()
 
     def clear_plots(self):
+        """
+        Clear the plots
+
+        :return:            None
+        """
 
         objects = self.collection.get_list()
 
@@ -12213,34 +12426,56 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def on_set_color_action_triggered(self):
-        new_color = self.defaults['gerber_plot_fill']
-        act_name = self.sender().text().lower()
+        """
+        This slot gets called by clicking on the menu entry in the Set Color submenu of the context menu in Project Tab
 
+        :return:
+        """
+        new_color = self.defaults['gerber_plot_fill']
+        clicked_action = self.sender()
+
+        assert isinstance(clicked_action, QAction), "Expected a QAction, got %s" % isinstance(clicked_action, QAction)
+        act_name = clicked_action.text()
         sel_obj_list = self.collection.get_selected()
 
         if not sel_obj_list:
             return
 
-        if act_name == 'red':
-            new_color = '#FF0000' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'blue':
-            new_color = '#0000FF' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'yellow':
-            new_color = '#FFDF00' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'green':
-            new_color = '#00FF00' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'purple':
-            new_color = '#FF00FF' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'brown':
-            new_color = '#A52A2A' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+        # a default value, I just chose this one
+        alpha_level = 'BF'
+        for sel_obj in sel_obj_list:
+            if sel_obj.kind == 'excellon':
+                alpha_level = str(hex(
+                    self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
+            elif sel_obj.kind == 'gerber':
+                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            elif sel_obj.kind == 'geometry':
+                alpha_level = 'FF'
+            else:
+                log.debug(
+                    "App.on_set_color_action_triggered() --> Default alpfa for this object type not supported yet")
+                continue
+            sel_obj.alpha_level = alpha_level
 
-        if act_name == 'custom':
+        if act_name == _('Red'):
+            new_color = '#FF0000' + alpha_level
+        if act_name == _('Blue'):
+            new_color = '#0000FF' + alpha_level
+
+        if act_name == _('Yellow'):
+            new_color = '#FFDF00' + alpha_level
+        if act_name == _('Green'):
+            new_color = '#00FF00' + alpha_level
+        if act_name == _('Purple'):
+            new_color = '#FF00FF' + alpha_level
+        if act_name == _('Brown'):
+            new_color = '#A52A2A' + alpha_level
+        if act_name == _('White'):
+            new_color = '#FFFFFF' + alpha_level
+        if act_name == _('Black'):
+            new_color = '#000000' + alpha_level
+
+        if act_name == _('Custom'):
             new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
             c_dialog = QtWidgets.QColorDialog()
             plot_fill_color = c_dialog.getColor(initial=new_color)
@@ -12248,33 +12483,90 @@ class App(QtCore.QObject):
             if plot_fill_color.isValid() is False:
                 return
 
-            new_color = str(plot_fill_color.name()) + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = str(plot_fill_color.name()) + alpha_level
+
+        if act_name == _("Default"):
+            for sel_obj in sel_obj_list:
+                if sel_obj.kind == 'excellon':
+                    new_color = self.defaults['excellon_plot_fill']
+                    new_line_color = self.defaults['excellon_plot_line']
+                elif sel_obj.kind == 'gerber':
+                    new_color = self.defaults['gerber_plot_fill']
+                    new_line_color = self.defaults['gerber_plot_line']
+                elif sel_obj.kind == 'geometry':
+                    new_color = self.defaults['geometry_plot_line']
+                    new_line_color = self.defaults['geometry_plot_line']
+                else:
+                    log.debug(
+                        "App.on_set_color_action_triggered() --> Default color for this object type not supported yet")
+                    continue
+
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+            return
+
+        if act_name == _("Opacity"):
+            alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
+                self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
+
+            if ok_button:
+
+                alpha_str = str(hex(alpha_level)[2:]) if alpha_level != 0 else '00'
+                for sel_obj in sel_obj_list:
+                    sel_obj.fill_color = sel_obj.fill_color[:-2] + alpha_str
+
+                    sel_obj.shapes.redraw(
+                        update_colors=(sel_obj.fill_color, sel_obj.outline_color)
+                    )
+
+            return
 
         new_line_color = color_variant(new_color[:7], 0.7)
+        if act_name == _("White"):
+            new_line_color = color_variant("#dedede", 0.7)
 
         for sel_obj in sel_obj_list:
-            if self.is_legacy is False:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
 
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
-            else:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
 
     def on_grid_snap_triggered(self, state):
+        """
+
+        :param state:   A parameter with the state of the grid, boolean
+
+        :return:
+        """
         if state:
             self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
         else:
             self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
 
+        self.ui.snap_infobar_label.clicked_state = state
+
+    def on_grid_icon_snap_clicked(self):
+        """
+        Slot called by clicking a GUI element, in this case a FCLabel
+
+        :return:
+        """
+        if isinstance(self.sender(), FCLabel):
+            self.ui.grid_snap_btn.trigger()
+
     def generate_cnc_job(self, objects):
+        """
+        Slot that will be called by clicking an entry in the contextual menu generated in the Project Tab tree
+
+        :param objects:     Selected objects in the Project Tab
+        :return:
+        """
         self.report_usage("generate_cnc_job()")
 
         # for obj in objects:
@@ -12286,11 +12578,11 @@ class App(QtCore.QObject):
         """
         Saves the current project to the specified file.
 
-        :param filename: Name of the file in which to save.
-        :type filename: str
-        :param quit_action: if the project saving will be followed by an app quit; boolean
-        :param silent: if True will not display status messages
-        :return: None
+        :param filename:        Name of the file in which to save.
+        :type filename:         str
+        :param quit_action:     if the project saving will be followed by an app quit; boolean
+        :param silent:          if True will not display status messages
+        :return:                None
         """
         self.log.debug("save_project()")
         self.save_in_progress = True
@@ -12299,7 +12591,9 @@ class App(QtCore.QObject):
             # Capture the latest changes
             # Current object
             try:
-                self.collection.get_active().read_form()
+                current_object = self.collection.get_active()
+                if current_object:
+                    current_object.read_form()
             except Exception as e:
                 self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
                 pass
@@ -12350,8 +12644,7 @@ class App(QtCore.QObject):
 
                 if silent is False:
                     if 'version' in saved_d:
-                        self.inform.emit('[success] %s: %s' %
-                                         (_("Project saved to"), filename))
+                        self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
                     else:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
                                          (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
@@ -12364,16 +12657,16 @@ class App(QtCore.QObject):
                 del tb_settings
 
             # if quit:
-                # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
-                # t.start()
+            # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
+            # t.start()
             self.start_delayed_quit(delay=500, filename=filename, should_quit=quit_action)
 
     def start_delayed_quit(self, delay, filename, should_quit=None):
         """
 
-        :param delay:       period of checking if project file size is more than zero; in seconds
-        :param filename:    the name of the project file to be checked periodically for size more than zero
-        :param should_quit: if the task finished will be followed by an app quit; boolean
+        :param delay:           period of checking if project file size is more than zero; in seconds
+        :param filename:        the name of the project file to be checked periodically for size more than zero
+        :param should_quit:     if the task finished will be followed by an app quit; boolean
         :return:
         """
         to_quit = should_quit
@@ -12385,8 +12678,8 @@ class App(QtCore.QObject):
     def check_project_file_size(self, filename, should_quit=None):
         """
 
-        :param filename: the name of the project file to be checked periodically for size more than zero
-        :param should_quit: will quit the app if True; boolean
+        :param filename:        the name of the project file to be checked periodically for size more than zero
+        :param should_quit:     will quit the app if True; boolean
         :return:
         """
 
@@ -12399,7 +12692,36 @@ class App(QtCore.QObject):
         except Exception:
             traceback.print_exc()
 
+    def save_project_auto(self):
+        """
+        Called periodically to save the project.
+        It will save if there is no block on the save, if the project was saved at least once and if there is no save in
+        # progress.
+
+        :return:
+        """
+
+        if self.block_autosave is False and self.should_we_save is True and self.save_in_progress is False:
+            self.on_file_saveproject()
+
+    def save_project_auto_update(self):
+        """
+        Update the auto save time interval value.
+        :return:
+        """
+        log.debug("App.save_project_auto_update() --> updated the interval timeout.")
+        if self.autosave_timer.isActive():
+            self.autosave_timer.stop()
+        if self.defaults['global_autosave'] is True:
+            self.autosave_timer.setInterval(int(self.defaults['global_autosave_timeout']))
+            self.autosave_timer.start()
+
     def on_plotarea_tab_closed(self, tab_idx):
+        """
+
+        :param tab_idx: Index of the Tab from the plotarea that was closed
+        :return:
+        """
         widget = self.ui.plot_tab_area.widget(tab_idx)
 
         if widget is not None:
@@ -12411,7 +12733,7 @@ class App(QtCore.QObject):
         Callback for Options->Transfer Options->App=>Project. Copies options
         from application defaults to project defaults.
 
-        :return: None
+        :return:    None
         """
 
         self.report_usage("on_options_app2project")
@@ -12419,6 +12741,338 @@ class App(QtCore.QObject):
         self.defaults_read_form()
         self.options.update(self.defaults)
         # self.options_write_form()
+
+    def init_tcl(self):
+        """
+        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
+        :return: None
+        """
+        if hasattr(self, 'tcl') and self.tcl is not None:
+            # self.tcl = None
+            # TODO  we need  to clean  non default variables and procedures here
+            # new object cannot be used here as it  will not remember values created for next passes,
+            # because tcl was executed in old instance of TCL
+            pass
+        else:
+            self.tcl = tk.Tcl()
+            self.setup_shell()
+        self.log.debug("TCL Shell has been initialized.")
+
+    def setup_shell(self):
+        """
+        Creates shell functions. Runs once at startup.
+
+        :return: None
+        """
+
+        self.log.debug("setup_shell()")
+
+        # def shelp(p=None):
+        #     pass
+
+        # --- Migrated to new architecture ---
+        # def options(name):
+        #     ops = self.collection.get_by_name(str(name)).options
+        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
+
+        # def h(*args):
+        #     """
+        #     Pre-processes arguments to detect '-keyword value' pairs into dictionary
+        #     and standalone parameters into list.
+        #     """
+        #
+        #     kwa = {}
+        #     a = []
+        #     n = len(args)
+        #     name = None
+        #     for i in range(n):
+        #         match = re.search(r'^-([a-zA-Z].*)', args[i])
+        #         if match:
+        #             assert name is None
+        #             name = match.group(1)
+        #             continue
+        #
+        #         if name is None:
+        #             a.append(args[i])
+        #         else:
+        #             kwa[name] = args[i]
+        #             name = None
+        #
+        #     return a, kwa
+
+        # @contextmanager
+        # def wait_signal(signal, timeout=10000):
+        #     """
+        #     Block loop until signal emitted, timeout (ms) elapses
+        #     or unhandled exception happens in a thread.
+        #
+        #     :param timeout: time after which the loop is exited
+        #     :param signal: Signal to wait for.
+        #     """
+        #     loop = QtCore.QEventLoop()
+        #
+        #     # Normal termination
+        #     signal.connect(loop.quit)
+        #
+        #     # Termination by exception in thread
+        #     self.thread_exception.connect(loop.quit)
+        #
+        #     status = {'timed_out': False}
+        #
+        #     def report_quit():
+        #         status['timed_out'] = True
+        #         loop.quit()
+        #
+        #     yield
+        #
+        #     # Temporarily change how exceptions are managed.
+        #     oeh = sys.excepthook
+        #     ex = []
+        #
+        #     def except_hook(type_, value, traceback_):
+        #         ex.append(value)
+        #         oeh(type_, value, traceback_)
+        #
+        #     sys.excepthook = except_hook
+        #
+        #     # Terminate on timeout
+        #     if timeout is not None:
+        #         QtCore.QTimer.singleShot(timeout, report_quit)
+        #
+        #     # # ## Block ## ##
+        #     loop.exec_()
+        #
+        #     # Restore exception management
+        #     sys.excepthook = oeh
+        #     if ex:
+        #         self.raise_tcl_error(str(ex[0]))
+        #
+        #     if status['timed_out']:
+        #         raise Exception('Timed out!')
+        #
+        # def make_docs():
+        #     output = ''
+        #     import collections
+        #     od = collections.OrderedDict(sorted(self.tcl_commands_storage.items()))
+        #     for cmd_, val in od.items():
+        #         output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
+        #
+        #         t = val['help']
+        #         usage_i = t.find('>')
+        #         if usage_i < 0:
+        #             expl = t
+        #             output += expl + '\n\n'
+        #             continue
+        #
+        #         expl = t[:usage_i - 1]
+        #         output += expl + '\n\n'
+        #
+        #         end_usage_i = t[usage_i:].find('\n')
+        #
+        #         if end_usage_i < 0:
+        #             end_usage_i = len(t[usage_i:])
+        #             output += '    ' + t[usage_i:] + '\n       No parameters.\n'
+        #         else:
+        #             extras = t[usage_i + end_usage_i + 1:]
+        #             parts = [s.strip() for s in extras.split('\n')]
+        #
+        #             output += '    ' + t[usage_i:usage_i + end_usage_i] + '\n'
+        #             for p in parts:
+        #                 output += '       ' + p + '\n\n'
+        #
+        #     return output
+
+        '''
+            Howto implement TCL shell commands:
+
+            All parameters passed to command should be possible to set as None and test it afterwards.
+            This is because we need to see error caused in tcl,
+            if None value as default parameter is not allowed TCL will return empty error.
+            Use:
+                def mycommand(name=None,...):
+
+            Test it like this:
+            if name is None:
+
+                self.raise_tcl_error('Argument name is missing.')
+
+            When error ocurre, always use raise_tcl_error, never return "sometext" on error,
+            otherwise we will miss it and processing will silently continue.
+            Method raise_tcl_error  pass error into TCL interpreter, then raise python exception,
+            which is catched in exec_command and displayed in TCL shell console with red background.
+            Error in console is displayed  with TCL  trace.
+
+            This behavior works only within main thread,
+            errors with promissed tasks can be catched and detected only with log.
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
+            TCL shell.
+
+            Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
+
+        '''
+
+        self.tcl_commands_storage = {}
+        # commands = {
+        #     'help': {
+        #         'fcn': shelp,
+        #         'help': _("Shows list of commands."),
+        #         'description': ''
+        #     },
+        # }
+
+        # Import/overwrite tcl commands as objects of TclCommand descendants
+        # This modifies the variable 'commands'.
+        tclCommands.register_all_commands(self, self.tcl_commands_storage)
+
+        # Add commands to the tcl interpreter
+        for cmd in self.tcl_commands_storage:
+            self.tcl.createcommand(cmd, self.tcl_commands_storage[cmd]['fcn'])
+
+        # Make the tcl puts function return instead of print to stdout
+        self.tcl.eval('''
+            rename puts original_puts
+            proc puts {args} {
+                if {[llength $args] == 1} {
+                    return "[lindex $args 0]"
+                } else {
+                    eval original_puts $args
+                }
+            }
+            ''')
+
+    # TODO: This shouldn't be here.
+    class TclErrorException(Exception):
+        """
+        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
+        """
+        pass
+
+    def toggle_shell(self):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.report_usage("toggle_shell()")
+
+        if self.ui.shell_dock.isVisible():
+            self.ui.shell_dock.hide()
+            self.plotcanvas.native.setFocus()
+        else:
+            self.ui.shell_dock.show()
+
+            # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
+            # self.shell._edit.setFocus()
+            QtCore.QTimer.singleShot(0, lambda: self.ui.shell_dock.widget()._edit.setFocus())
+
+            # HACK - simulate a mouse click - alternative
+            # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.NoModifier)    # no KB modifier
+            # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
+            # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtWidgets.qApp.sendEvent(self.shell._edit, e)
+            # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
+            #                       no_km)
+            # QtWidgets.qApp.sendEvent(self.shell._edit, f)
+
+    def on_toggle_shell_from_settings(self, state):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.report_usage("on_toggle_shell_from_settings()")
+
+        if state is True:
+            if not self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.show()
+        else:
+            if self.ui.shell_dock.isVisible():
+                self.ui.shell_dock.hide()
+
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
+        """
+        Shows a message on the FlatCAM Shell
+
+        :param msg: Message to display.
+        :param show: Opens the shell.
+        :param error: Shows the message as an error.
+        :param warning: Shows the message as an warning.
+        :param success: Shows the message as an success.
+        :param selected: Indicate that something was selected on canvas
+        :return: None
+        """
+        if show:
+            self.ui.shell_dock.show()
+        try:
+            if error:
+                self.shell.append_error(msg + "\n")
+            elif warning:
+                self.shell.append_warning(msg + "\n")
+            elif success:
+                self.shell.append_success(msg + "\n")
+            elif selected:
+                self.shell.append_selected(msg + "\n")
+            else:
+                self.shell.append_output(msg + "\n")
+        except AttributeError:
+            log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
+
+    def raise_tcl_unknown_error(self, unknownException):
+        """
+        Raise exception if is different type than TclErrorException
+        this is here mainly to show unknown errors inside TCL shell console.
+
+        :param unknownException:
+        :return:
+        """
+
+        if not isinstance(unknownException, self.TclErrorException):
+            self.raise_tcl_error("Unknown error: %s" % str(unknownException))
+        else:
+            raise unknownException
+
+    def display_tcl_error(self, error, error_info=None):
+        """
+        Escape bracket [ with '\' otherwise there is error
+        "ERROR: missing close-bracket" instead of real error
+
+        :param error: it may be text  or exception
+        :param error_info: Some informations about the error
+        :return: None
+        """
+
+        if isinstance(error, Exception):
+            exc_type, exc_value, exc_traceback = error_info
+            if not isinstance(error, self.TclErrorException):
+                show_trace = 1
+            else:
+                show_trace = int(self.defaults['global_verbose_error_level'])
+
+            if show_trace > 0:
+                trc = traceback.format_list(traceback.extract_tb(exc_traceback))
+                trc_formated = []
+                for a in reversed(trc):
+                    trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
+                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
+            else:
+                text = "%s" % error
+        else:
+            text = error
+
+        text = text.replace('[', '\\[').replace('"', '\\"')
+        self.tcl.eval('return -code error "%s"' % text)
+
+    def raise_tcl_error(self, text):
+        """
+        This method  pass exception from python into TCL as error, so we get stacktrace and reason
+
+        :param text: text of error
+        :return: raise exception
+        """
+
+        self.display_tcl_error(text)
+        raise self.TclErrorException(text)
 
 
 class ArgsThread(QtCore.QObject):
@@ -12432,13 +13086,15 @@ class ArgsThread(QtCore.QObject):
 
     def __init__(self):
         super(ArgsThread, self).__init__()
+        self.listener = None
+
         self.start.connect(self.run)
 
     def my_loop(self, address):
         try:
-            listener = Listener(*address)
+            self.listener = Listener(*address)
             while True:
-                conn = listener.accept()
+                conn = self.listener.accept()
                 self.serve(conn)
         except socket.error:
             conn = Client(*address)
@@ -12446,6 +13102,10 @@ class ArgsThread(QtCore.QObject):
             conn.send('close')
             # close the current instance only if there are args
             if len(sys.argv) > 1:
+                try:
+                    self.listener.close()
+                except Exception:
+                    pass
                 sys.exit()
 
     def serve(self, conn):

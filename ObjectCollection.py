@@ -16,7 +16,8 @@ from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QColor
 # from PyQt5.QtCore import QModelIndex
 
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript
+from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript, \
+    FlatCAMObj
 import inspect  # TODO: Remove
 import FlatCAMApp
 
@@ -55,6 +56,17 @@ class KeySensitiveListView(QtWidgets.QTreeView):
         self.filename = ""
         self.app = app
 
+        # Enabling Drag and Drop for the items in the Project Tab
+        # Example: https://github.com/d1vanov/PyQt5-reorderable-list-model/blob/master/reorderable_list_model.py
+        # https://github.com/jimmykuu/PyQt-PySide-Cookbook/blob/master/tree/drop_indicator.md
+        # self.setDragEnabled(True)
+        # self.viewport().setAcceptDrops(True)
+        # self.setDropIndicatorShown(True)
+        # self.DragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        # self.current_idx = None
+        # self.current_group = None
+        # self.dropped_obj = None
+
     keyPressed = QtCore.pyqtSignal(int)
 
     def keyPressEvent(self, event):
@@ -62,6 +74,11 @@ class KeySensitiveListView(QtWidgets.QTreeView):
         self.keyPressed.emit(event.key())
 
     def dragEnterEvent(self, event):
+        # if event.source():
+        #     self.current_idx = self.currentIndex()
+        #     self.current_group = self.model().group_items[self.current_idx.internalPointer().obj.kind]
+        #     self.dropped_obj = self.current_idx.internalPointer().obj
+
         if event.mimeData().hasUrls:
             event.accept()
         else:
@@ -69,6 +86,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
 
     def dragMoveEvent(self, event):
         self.setDropIndicatorShown(True)
+
         if event.mimeData().hasUrls:
             event.accept()
         else:
@@ -77,6 +95,20 @@ class KeySensitiveListView(QtWidgets.QTreeView):
     def dropEvent(self, event):
         drop_indicator = self.dropIndicatorPosition()
 
+        # if event.source():
+        #     new_index = self.indexAt(event.pos())
+        #     new_group = self.model().group_items[new_index.internalPointer().obj.kind]
+        #     if self.current_group == new_group:
+        #
+        #         # delete it from the model
+        #         deleted_obj_name = self.dropped_obj.options['name']
+        #         self.model().delete_by_name(deleted_obj_name)
+        #
+        #         # add the object to the new index
+        #         self.model().append(self.dropped_obj, to_index=new_index)
+        #
+        #         return
+
         m = event.mimeData()
         if m.hasUrls:
             event.accept()
@@ -84,46 +116,46 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             for url in m.urls():
                 self.filename = str(url.toLocalFile())
 
-            # file drop from outside application
-            if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
-                if self.filename == "":
-                    self.app.inform.emit(_("Open cancelled."))
+                # file drop from outside application
+                if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+                    if self.filename == "":
+                        self.app.inform.emit(_("Cancelled."))
+                    else:
+                        if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
+                            self.app.worker_task.emit({'fcn': self.app.open_gerber,
+                                                       'params': [self.filename]})
+                        else:
+                            event.ignore()
+
+                        if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
+                            self.app.worker_task.emit({'fcn': self.app.open_excellon,
+                                                       'params': [self.filename]})
+                        else:
+                            event.ignore()
+
+                        if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
+                            self.app.worker_task.emit({'fcn': self.app.open_gcode,
+                                                       'params': [self.filename]})
+                        else:
+                            event.ignore()
+
+                        if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
+                            object_type = 'geometry'
+                            self.app.worker_task.emit({'fcn': self.app.import_svg,
+                                                       'params': [self.filename, object_type, None]})
+
+                        if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
+                            object_type = 'geometry'
+                            self.app.worker_task.emit({'fcn': self.app.import_dxf,
+                                                       'params': [self.filename, object_type, None]})
+
+                        if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
+                            # self.app.open_project() is not Thread Safe
+                            self.app.open_project(self.filename)
+                        else:
+                            event.ignore()
                 else:
-                    if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gerber,
-                                                   'params': [self.filename]})
-                    else:
-                        event.ignore()
-
-                    if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_excellon,
-                                                   'params': [self.filename]})
-                    else:
-                        event.ignore()
-
-                    if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gcode,
-                                                   'params': [self.filename]})
-                    else:
-                        event.ignore()
-
-                    if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
-                        object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_svg,
-                                                   'params': [self.filename, object_type, None]})
-
-                    if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
-                        object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_dxf,
-                                                   'params': [self.filename, object_type, None]})
-
-                    if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
-                        # self.app.open_project() is not Thread Safe
-                        self.app.open_project(self.filename)
-                    else:
-                        event.ignore()
-            else:
-                pass
+                    pass
         else:
             event.ignore()
 
@@ -221,6 +253,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     # will emit the name of the object that was just selected
     item_selected = QtCore.pyqtSignal(str)
+    update_list_signal = QtCore.pyqtSignal()
 
     root_item = None
     # app = None
@@ -296,6 +329,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.click_modifier = None
 
+        self.update_list_signal.connect(self.on_update_list_signal)
+
     def promise(self, obj_name):
         FlatCAMApp.App.log.debug("Object %s has been promised." % obj_name)
         self.promises.add(obj_name)
@@ -338,7 +373,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectcolor.setEnabled(False)
 
             for obj in self.get_selected():
-                if type(obj) == FlatCAMGerber:
+                if type(obj) == FlatCAMGerber or type(obj) == FlatCAMExcellon:
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
                 if type(obj) != FlatCAMGeometry:
@@ -430,6 +465,18 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return icon
             else:
                 return QtGui.QPixmap()
+        elif role == Qt.ToolTipRole:
+            try:
+                obj = index.internalPointer().obj
+            except AttributeError:
+                return None
+
+            if obj:
+                text = obj.options['name']
+                return text
+            else:
+                QtWidgets.QToolTip.hideText()
+                return None
         else:
             return None
 
@@ -459,7 +506,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
                                                                                                       new=new_name))
 
-        return True
+            self.dataChanged.emit(index, index)
+            return True
+        else:
+            return False
 
     def supportedDropActions(self):
         return Qt.MoveAction
@@ -471,15 +521,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             return Qt.ItemIsEnabled | default_flags
 
         # Prevent groups from selection
-        if not index.internalPointer().obj:
+        try:
+            if not index.internalPointer().obj:
+                return Qt.ItemIsEnabled
+            else:
+                return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable | \
+                       Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
+        except AttributeError:
             return Qt.ItemIsEnabled
-        else:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable | \
-                   Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
-
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
-    def append(self, obj, active=False):
+    def append(self, obj, active=False, to_index=None):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]
@@ -504,21 +556,27 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 name += "_1"
         obj.options["name"] = name
 
-        obj.set_ui(obj.ui_type(decimals=self.app.decimals))
+        obj.set_ui(obj.ui_type(app=self.app))
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]
         group_index = self.index(group.row(), 0, QtCore.QModelIndex())
-        self.beginInsertRows(group_index, group.child_count(), group.child_count())
 
-        # Append new item
-        obj.item = TreeItem(None, self.icons[obj.kind], obj, group)
-
-        # Required after appending (Qt MVC)
-        self.endInsertRows()
+        if to_index is None:
+            self.beginInsertRows(group_index, group.child_count(), group.child_count())
+            # Append new item
+            obj.item = TreeItem(None, self.icons[obj.kind], obj, group)
+            # Required after appending (Qt MVC)
+            self.endInsertRows()
+        else:
+            self.beginInsertRows(group_index, to_index.row()-1, to_index.row()-1)
+            # Append new item
+            obj.item = TreeItem(None, self.icons[obj.kind], obj, group)
+            # Required after appending (Qt MVC)
+            self.endInsertRows()
 
         # Expand group
-        if group.child_count() is 1:
+        if group.child_count() == 1:
             self.view.setExpanded(group_index, True)
 
         self.app.should_we_save = True
@@ -644,6 +702,62 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # hide the notebook if there are no objects in the collection
             if not self.get_list():
                 self.app.ui.splitter.setSizes([0, 1])
+
+    def delete_by_name(self, name, select_project=True):
+        obj = self.get_by_name(name=name)
+        item = obj.item
+        group = self.group_items[obj.kind]
+
+        group_index = self.index(group.row(), 0, QtCore.QModelIndex())
+        item_index = self.index(item.row(), 0, group_index)
+
+        deleted = item_index.internalPointer()
+        group = deleted.parent_item
+
+        # some objects add a Tab on creation, close it here
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == deleted.obj.options['name']:
+                self.app.ui.plot_tab_area.removeTab(idx)
+                break
+
+        # update the SHELL auto-completer model data
+        name = deleted.obj.options['name']
+        try:
+            self.app.myKeywords.remove(name)
+            self.app.shell._edit.set_model_data(self.app.myKeywords)
+            # this is not needed any more because now the code editor is created on demand
+            # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+        except Exception as e:
+            log.debug(
+                "delete_by_name() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
+
+        self.app.object_status_changed.emit(deleted.obj, 'delete', name)
+
+        # ############ OBJECT DELETION FROM MODEL STARTS HERE ####################
+        self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), deleted.row(), deleted.row())
+        group.remove_child(deleted)
+        # after deletion of object store the current list of objects into the self.app.all_objects_list
+        self.update_list_signal.emit()
+        self.endRemoveRows()
+        # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
+
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.redraw()
+
+        if select_project:
+            # always go to the Project Tab after object deletion as it may be done with a shortcut key
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.should_we_save = True
+
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # hide the notebook if there are no objects in the collection
+            if not self.get_list():
+                self.app.ui.splitter.setSizes([0, 1])
+
+    def on_update_list_signal(self):
+        self.app.all_objects_list = self.get_list()
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
@@ -859,6 +973,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 raise
 
     def get_list(self):
+        """
+        Will return a list of all objects currently opened.
+
+        :return:
+        """
         obj_list = []
         for group in self.root_item.child_items:
             for item in group.child_items:

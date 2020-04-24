@@ -124,7 +124,7 @@ class FCDrillAdd(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -359,7 +359,7 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -398,7 +398,7 @@ class FCSlot(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_slot.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -538,7 +538,7 @@ class FCSlot(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         try:
@@ -562,7 +562,7 @@ class FCSlot(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -600,7 +600,7 @@ class FCSlotArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -677,9 +677,8 @@ class FCSlotArray(FCShapeTool):
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
                 return
-        except Exception as e:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("The value is mistyped. Check the value."))
+        except Exception:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
         if self.slot_array == 'Linear':
@@ -829,7 +828,7 @@ class FCSlotArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # add the point to slots if the diameter is a key in the dict, if not, create it add the drill location
@@ -888,7 +887,7 @@ class FCSlotArray(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1022,8 +1021,7 @@ class FCDrillResize(FCShapeTool):
                             self.geometry.append(DrawToolShape(new_poly))
                         else:
                             # unexpected geometry so we cancel
-                            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                          _("Cancelled."))
+                            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled."))
                             return
 
                         # remove the geometry with the old size
@@ -1091,8 +1089,7 @@ class FCDrillResize(FCShapeTool):
                     except KeyError:
                         # if the exception happen here then we are not dealing with slots neither
                         # therefore something else is not OK so we return
-                        self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                      _("Cancelled."))
+                        self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled."))
                         return
 
             # this simple hack is used so we can delete form self.draw_app.selected but
@@ -1128,7 +1125,7 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.select_tool("drill_select")
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1268,7 +1265,7 @@ class FCDrillMove(FCShapeTool):
             return DrawToolUtilityShape(ss_el)
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1323,7 +1320,7 @@ class FCDrillCopy(FCDrillMove):
         self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = list()
+        self.draw_app.selected = []
         self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
@@ -1334,16 +1331,16 @@ class FCDrillCopy(FCDrillMove):
 
 
 class FCDrillSelect(DrawTool):
-    def __init__(self, exc_editor_app):
-        DrawTool.__init__(self, exc_editor_app)
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
         self.name = 'drill_select'
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
-        self.exc_editor_app = exc_editor_app
+        self.exc_editor_app = draw_app
         self.storage = self.exc_editor_app.storage_dict
         # self.selected = self.exc_editor_app.selected
 
@@ -1368,7 +1365,7 @@ class FCDrillSelect(DrawTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
             self.exc_editor_app.selected = []
@@ -1379,8 +1376,10 @@ class FCDrillSelect(DrawTool):
 
         try:
             for storage in self.exc_editor_app.storage_dict:
-                for sh in self.exc_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(sh)
+                # for sh in self.exc_editor_app.storage_dict[storage].get_objects():
+                #     self.sel_storage.insert(sh)
+                _, st_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
+                self.sel_storage.insert(st_closest_shape)
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
@@ -1417,37 +1416,41 @@ class FCDrillSelect(DrawTool):
             else:
                 mod_key = None
 
-            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
                 if closest_shape in self.exc_editor_app.selected:
                     self.exc_editor_app.selected.remove(closest_shape)
                 else:
                     self.exc_editor_app.selected.append(closest_shape)
             else:
-                self.draw_app.selected = []
-                self.draw_app.selected.append(closest_shape)
+                self.exc_editor_app.selected = []
+                self.exc_editor_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
             try:
-                self.draw_app.tools_table_exc.cellPressed.disconnect()
+                self.exc_editor_app.tools_table_exc.cellPressed.disconnect()
             except (TypeError, AttributeError):
                 pass
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
+            #     self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.sel_tools.clear()
+
             for shape_s in self.exc_editor_app.selected:
                 for storage in self.exc_editor_app.storage_dict:
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
                         self.sel_tools.add(storage)
 
+            self.exc_editor_app.tools_table_exc.clearSelection()
             for storage in self.sel_tools:
-                for k, v in self.draw_app.tool2tooldia.items():
+                for k, v in self.exc_editor_app.tool2tooldia.items():
                     if v == storage:
                         self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)
-                        self.draw_app.last_tool_selected = int(k)
+                        self.exc_editor_app.last_tool_selected = int(k)
                         break
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-            self.draw_app.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+            self.exc_editor_app.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
 
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = FlatCAMExcEditor.make_storage()
@@ -1733,7 +1736,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_box.addLayout(self.linear_form)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel('%s:'% _('Direction'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -2031,22 +2034,14 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # ## Toolbar events and properties
         self.tools_exc = {
-            "drill_select": {"button": self.app.ui.select_drill_btn,
-                             "constructor": FCDrillSelect},
-            "drill_add": {"button": self.app.ui.add_drill_btn,
-                          "constructor": FCDrillAdd},
-            "drill_array": {"button": self.app.ui.add_drill_array_btn,
-                            "constructor": FCDrillArray},
-            "slot_add": {"button": self.app.ui.add_slot_btn,
-                         "constructor": FCSlot},
-            "slot_array": {"button": self.app.ui.add_slot_array_btn,
-                                "constructor": FCSlotArray},
-            "drill_resize": {"button": self.app.ui.resize_drill_btn,
-                             "constructor": FCDrillResize},
-            "drill_copy": {"button": self.app.ui.copy_drill_btn,
-                           "constructor": FCDrillCopy},
-            "drill_move": {"button": self.app.ui.move_drill_btn,
-                           "constructor": FCDrillMove},
+            "drill_select": {"button": self.app.ui.select_drill_btn, "constructor": FCDrillSelect},
+            "drill_add": {"button": self.app.ui.add_drill_btn, "constructor": FCDrillAdd},
+            "drill_array": {"button": self.app.ui.add_drill_array_btn, "constructor": FCDrillArray},
+            "slot_add": {"button": self.app.ui.add_slot_btn, "constructor": FCSlot},
+            "slot_array": {"button": self.app.ui.add_slot_array_btn, "constructor": FCSlotArray},
+            "drill_resize": {"button": self.app.ui.resize_drill_btn, "constructor": FCDrillResize},
+            "drill_copy": {"button": self.app.ui.copy_drill_btn, "constructor": FCDrillCopy},
+            "drill_move": {"button": self.app.ui.move_drill_btn, "constructor": FCDrillMove},
         }
 
         # ## Data
@@ -2068,7 +2063,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = []
-        self.new_tool_offset = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -2179,6 +2173,43 @@ class FlatCAMExcEditor(QtCore.QObject):
         for option in self.options:
             if option in self.app.options:
                 self.options[option] = self.app.options[option]
+
+        self.data_defaults = {
+            "plot": self.app.defaults["excellon_plot"],
+            "solid": self.app.defaults["excellon_solid"],
+
+            "operation": self.app.defaults["excellon_operation"],
+            "milling_type": self.app.defaults["excellon_milling_type"],
+
+            "milling_dia": self.app.defaults["excellon_milling_dia"],
+
+            "cutz": self.app.defaults["excellon_cutz"],
+            "multidepth": self.app.defaults["excellon_multidepth"],
+            "depthperpass": self.app.defaults["excellon_depthperpass"],
+            "travelz": self.app.defaults["excellon_travelz"],
+            "feedrate": self.app.defaults["geometry_feedrate"],
+            "feedrate_z": self.app.defaults["excellon_feedrate_z"],
+            "feedrate_rapid": self.app.defaults["excellon_feedrate_rapid"],
+            "tooldia": self.app.defaults["excellon_tooldia"],
+            "slot_tooldia": self.app.defaults["excellon_slot_tooldia"],
+            "toolchange": self.app.defaults["excellon_toolchange"],
+            "toolchangez": self.app.defaults["excellon_toolchangez"],
+            "toolchangexy": self.app.defaults["excellon_toolchangexy"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
+            "endz": self.app.defaults["excellon_endz"],
+            "endxy": self.app.defaults["excellon_endxy"],
+            "startz": self.app.defaults["excellon_startz"],
+            "offset": self.app.defaults["excellon_offset"],
+            "spindlespeed": self.app.defaults["excellon_spindlespeed"],
+            "dwell": self.app.defaults["excellon_dwell"],
+            "dwelltime": self.app.defaults["excellon_dwelltime"],
+            "ppname_e": self.app.defaults["excellon_ppname_e"],
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "z_pdepth": self.app.defaults["excellon_z_pdepth"],
+            "feedrate_probe": self.app.defaults["excellon_feedrate_probe"],
+            "optimization_type": self.app.defaults["excellon_optimization_type"]
+        }
 
         self.rtree_exc_index = rtindex.Index()
         # flag to show if the object was modified
@@ -2537,9 +2568,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[tool_dia] = tool_dia
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Tool already in the original or actual tool list.\n"
-                                 "Save and reedit Excellon if you need to add this tool. "))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool already in the original or actual tool list.\n" 
+                                                          "Save and reedit Excellon if you need to add this tool. "))
             return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
@@ -2579,15 +2609,11 @@ class FlatCAMExcEditor(QtCore.QObject):
                         deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dd)))
                 else:
                     deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dia)))
-        except Exception as e:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Select a tool in Tool Table"))
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Select a tool in Tool Table"))
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
-
-            # delete de tool offset
-            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
 
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
@@ -2789,7 +2815,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = []
-        self.new_tool_offset = {}
+
         self.olddia_newdia = {}
 
         self.shapes.enabled = True
@@ -2832,7 +2858,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # adjust the status of the menu entries related to the editor
@@ -2856,7 +2882,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif layout == 'compact':
+            else:
                 # self.app.ui.exc_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
@@ -2974,7 +3000,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_command)
         self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 
@@ -3262,13 +3288,14 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.edited_obj_name += "_1"
             else:
                 self.edited_obj_name += "_edit"
-        self.new_tool_offset = self.exc_obj.tool_offset
 
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name,
                                               self.new_drills,
                                               self.new_slots,
                                               self.new_tools]})
+
+        return self.edited_obj_name
 
     def update_options(self, obj):
         try:
@@ -3308,8 +3335,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = deepcopy(new_drills)
             excellon_obj.tools = deepcopy(new_tools)
             excellon_obj.slots = deepcopy(new_slots)
-            excellon_obj.tool_offset = self.new_tool_offset
+
             excellon_obj.options['name'] = outname
+
+            # add a 'data' dict for each tool with the default values
+            for tool in excellon_obj.tools:
+                excellon_obj.tools[tool]['data'] = {}
+                excellon_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
 
             try:
                 excellon_obj.create_geometry()
@@ -3348,7 +3380,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_tool_selected is None and current_tool is not 'drill_select':
+        if self.last_tool_selected is None and current_tool != 'drill_select':
             # self.draw_app.select_tool('drill_select')
             self.complete = True
             current_tool = 'drill_select'
@@ -3423,7 +3455,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -3568,7 +3600,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         pos_canvas = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -3580,7 +3612,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     try:
                         QtGui.QGuiApplication.restoreOverrideCursor()
-                    except Exception as e:
+                    except Exception:
                         pass
                     if self.active_tool.complete is False and not isinstance(self.active_tool, FCDrillSelect):
                         self.active_tool.complete = True
@@ -3659,7 +3691,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             for storage in self.storage_dict:
                 for obj in self.storage_dict[storage].get_objects():
                     if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                        (sel_type is False and poly_selection.intersects(obj.geo)):
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
 
                         if obj in self.selected:
                             # remove the shape object from the selected shapes storage
@@ -3679,7 +3711,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
-        except Exception as e:
+        except Exception:
             pass
 
         # first deselect all rows (tools) in the Tools Table
@@ -3756,7 +3788,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             return
 
         # ## Snap coordinates
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
@@ -3773,12 +3805,12 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         if self.pos is None:
             self.pos = (0, 0)
-        dx = x - self.pos[0]
-        dy = y - self.pos[1]
+        self.app.dx = x - self.pos[0]
+        self.app.dy = y - self.pos[1]
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         # ## Utility geometry (animated)
         self.update_utility_geometry(data=(x, y))

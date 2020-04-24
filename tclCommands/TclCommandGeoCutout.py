@@ -7,7 +7,15 @@ from copy import deepcopy
 from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
 log = logging.getLogger('base')
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class TclCommandGeoCutout(TclCommandSignaled):
@@ -24,6 +32,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
     # names for backward compatibility (add_poly, add_polygon)
     aliases = ['geocutout', 'geoc']
 
+    description = '%s %s' % ("--", "Creates board cutout from an object (Gerber or Geometry) of any shape.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -35,7 +45,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
         ('dia', float),
         ('margin', float),
         ('gapsize', float),
-        ('gaps', str)
+        ('gaps', str),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -43,16 +54,17 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Creates board cutout from an object (Gerber or Geometry) of any shape',
+        'main': 'Creates board cutout from an object (Gerber or Geometry) of any shape.',
         'args': collections.OrderedDict([
-            ('name', 'Name of the object.'),
+            ('name', 'Name of the object to be cutout. Required'),
             ('dia', 'Tool diameter.'),
             ('margin', 'Margin over bounds.'),
             ('gapsize', 'size of gap.'),
             ('gaps', "type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right, '2tb' = 2top-2bottom, "
-                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts")
+                     "'2lr' = 2left-2right, '4' = 4 cuts, '8' = 8 cuts"),
+            ('outname', 'Name of the resulting Geometry object.'),
         ]),
-        'examples': ["      #isolate margin for example from fritzing arduino shield or any svg etc\n" +
+        'examples': ["      #isolate margin for example from Fritzing arduino shield or any svg etc\n" +
                      "      isolate BCu_margin -dia 3 -overlap 1\n" +
                      "\n" +
                      "      #create exteriors from isolated object\n" +
@@ -62,7 +74,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                      "      delete BCu_margin_iso\n" +
                      "\n" +
                      "      #finally cut holding gaps\n" +
-                     "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4\n"]
+                     "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4 -outname cutout_geo\n"]
     }
 
     flat_geometry = []
@@ -133,28 +145,33 @@ class TclCommandGeoCutout(TclCommandSignaled):
             name = args['name']
         else:
             self.app.inform.emit(
-                "[WARNING]The name of the object for which cutout is done is missing. Add it and retry.")
+                "[WARNING] %s" % _("The name of the object for which cutout is done is missing. Add it and retry."))
             return
 
         if 'margin' in args:
             margin = float(args['margin'])
         else:
-            margin = 0.001
+            margin = float(self.app.defaults["tools_cutoutmargin"])
 
         if 'dia' in args:
             dia = float(args['dia'])
         else:
-            dia = 0.1
+            dia = float(self.app.defaults["tools_cutouttooldia"])
 
         if 'gaps' in args:
             gaps = args['gaps']
         else:
-            gaps = 4
+            gaps = str(self.app.defaults["tools_gaps_ff"])
 
         if 'gapsize' in args:
             gapsize = float(args['gapsize'])
         else:
-            gapsize = 0.1
+            gapsize = float(self.app.defaults["tools_cutoutgapsize"])
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = str(name) + "_cutout"
 
         # Get source object.
         try:
@@ -164,12 +181,13 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
-            self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive real number.")
+            self.app.inform.emit(
+                "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
-            self.app.inform.emit("[WARNING]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. ")
+            self.app.inform.emit(
+                "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -281,9 +299,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
                 app_obj.disable_plots(objects=[cutout_obj])
 
-                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
+                app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
-            outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
             # cutout_obj.plot()
@@ -340,12 +357,11 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 geo_obj.options['ymin'] = cutout_obj.options['ymin']
                 geo_obj.options['xmax'] = cutout_obj.options['xmax']
                 geo_obj.options['ymax'] = cutout_obj.options['ymax']
-                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
+                app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
-            outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:
-            self.app.inform.emit("[ERROR]Cancelled. Object type is not supported.")
+            self.app.inform.emit("[ERROR] %s" % _("Cancelled. Object type is not supported."))
             return

@@ -1,7 +1,7 @@
 import sys
 import os
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
 from flatcamGUI import VisPyPatches
@@ -32,6 +32,19 @@ if __name__ == '__main__':
     # NOTE: Never talk to the GUI from threads! This is why I commented the above.
     freeze_support()
 
+    # Supported Python version is >= 3.5
+    if sys.version_info.major >= 3:
+        if sys.version_info.minor >= 5:
+            pass
+        else:
+            print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
+                  "Your Python version is: %s" % str(sys.version_info))
+            os._exit(0)
+    else:
+        print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
+              "Your Python version is: %s" % str(sys.version_info))
+        os._exit(0)
+
     debug_trace()
     VisPyPatches.apply_patches()
 
@@ -55,6 +68,11 @@ if __name__ == '__main__':
     # else:
     #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
+    if hdpi_support == 2:
+        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    else:
+        QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+
     app = QtWidgets.QApplication(sys.argv)
 
     # apply style
@@ -63,11 +81,6 @@ if __name__ == '__main__':
         style = settings.value('style', type=str)
         app.setStyle(style)
 
-    if hdpi_support == 2:
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    else:
-        app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-
     fc = App()
-
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
+    app.exec_()

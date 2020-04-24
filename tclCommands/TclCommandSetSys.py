@@ -14,6 +14,8 @@ class TclCommandSetSys(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['set_sys', 'setsys']
 
+    description = '%s %s' % ("--", "Sets the value of the specified system variable.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -30,12 +32,12 @@ class TclCommandSetSys(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Sets the value of the system variable.",
+        'main': "Sets the value of the specified system variable.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the system variable.'),
+            ('name', 'Name of the system variable. Required.'),
             ('value', 'Value to set.')
         ]),
-        'examples': []
+        'examples': ['set_sys global_gridx 1.0']
     }
 
     def execute(self, args, unnamed_args):

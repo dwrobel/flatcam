@@ -90,7 +90,7 @@ class PcbWizard(FlatCAMTool):
         self.layout.addLayout(form_layout1)
 
         # Integral part of the coordinates
-        self.int_entry = FCSpinner()
+        self.int_entry = FCSpinner(callback=self.confirmation_message_int)
         self.int_entry.set_range(1, 10)
         self.int_label = QtWidgets.QLabel('%s:' % _("Int. digits"))
         self.int_label.setToolTip(
@@ -99,7 +99,7 @@ class PcbWizard(FlatCAMTool):
         form_layout1.addRow(self.int_label, self.int_entry)
 
         # Fractional part of the coordinates
-        self.frac_entry = FCSpinner()
+        self.frac_entry = FCSpinner(callback=self.confirmation_message_int)
         self.frac_entry.set_range(1, 10)
         self.frac_label = QtWidgets.QLabel('%s:' % _("Frac. digits"))
         self.frac_label.setToolTip(
@@ -298,7 +298,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_excellon, 'params': [filename]})
 
@@ -321,7 +321,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_inf, 'params': [filename]})
 

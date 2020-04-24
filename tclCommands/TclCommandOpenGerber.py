@@ -13,6 +13,8 @@ class TclCommandOpenGerber(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_gerber']
 
+    description = '%s %s' % ("--", "Opens an Gerber file, parse it and create a Gerber object from it.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('filename', str)
@@ -30,10 +32,12 @@ class TclCommandOpenGerber(TclCommandSignaled):
     help = {
         'main': "Opens a Gerber file.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
             ('outname', 'Name of the resulting Gerber object.')
         ]),
-        'examples': ["open_gerber gerber_object_path -outname bla"]
+        'examples': ["open_gerber gerber_object_path -outname bla",
+                     'open_gerber "D:\\my_gerber_file with spaces in the name.GRB"']
     }
 
     def execute(self, args, unnamed_args):
@@ -65,7 +69,10 @@ class TclCommandOpenGerber(TclCommandSignaled):
                 return
 
         filename = args['filename']
-        # filename = filename.replace(' ', '')
+
+        if ' ' in filename:
+            return "The absolute path to the project file contain spaces which is not allowed.\n" \
+                   "Please enclose the path within quotes."
 
         if 'outname' in args:
             outname = args['outname']

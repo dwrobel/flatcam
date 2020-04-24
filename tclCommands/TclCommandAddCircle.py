@@ -13,6 +13,8 @@ class TclCommandAddCircle(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['add_circle']
 
+    description = '%s %s' % ("--", "Creates a circle in the given Geometry object.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str),
@@ -38,7 +40,7 @@ class TclCommandAddCircle(TclCommand):
             ('center_y', 'Y coordinates of the center of the circle.'),
             ('radius', 'Radius of the circle.')
         ]),
-        'examples': []
+        'examples': ['add_circle geo_name 1.0 2.0 3']
     }
 
     def execute(self, args, unnamed_args):

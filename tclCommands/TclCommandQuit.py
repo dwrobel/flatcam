@@ -21,6 +21,8 @@ class TclCommandQuit(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['quit_flatcam']
 
+    description = '%s %s' % ("--", "Tcl shell command to quit FlatCAM from Tcl shell.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
 

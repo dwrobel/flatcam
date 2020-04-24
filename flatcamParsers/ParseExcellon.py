@@ -43,6 +43,7 @@ class Excellon(Geometry):
     ================  ====================================
     C                 Diameter of the tool
     solid_geometry    Geometry list for each tool
+    data              dictionary which holds the options for each tool
     Others            Not supported (Ignored).
     ================  ====================================
 
@@ -94,11 +95,11 @@ class Excellon(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
-        self.tools = dict()
+        self.tools = {}
         # list to store the drills, see above for description
-        self.drills = list()
+        self.drills = []
         # self.slots (list) to store the slots; each is a dictionary
-        self.slots = list()
+        self.slots = []
 
         self.source_file = ''
 
@@ -109,8 +110,8 @@ class Excellon(Geometry):
         self.match_routing_start = None
         self.match_routing_stop = None
 
-        self.num_tools = list()  # List for keeping the tools sorted
-        self.index_per_tool = dict()  # Dictionary to store the indexed points for each tool
+        self.num_tools = []  # List for keeping the tools sorted
+        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -617,82 +618,92 @@ class Excellon(Geometry):
                     match = self.coordsnoperiod_re.search(eline)
                     if match:
                         matchr = self.repeat_re.search(eline)
-                        if matchr:
+                        if matchr:  # if we have a repeat command
                             repeat = int(matchr.group(1))
 
-                        try:
-                            x = self.parse_number(match.group(1))
-                            repeating_x = current_x
-                            current_x = x
-                        except TypeError:
-                            x = current_x
-                            repeating_x = 0
-                        except Exception:
-                            return
+                            if match.group(1):
+                                repeating_x = self.parse_number(match.group(1))
+                            else:
+                                repeating_x = 0
 
-                        try:
-                            y = self.parse_number(match.group(2))
-                            repeating_y = current_y
-                            current_y = y
-                        except TypeError:
-                            y = current_y
-                            repeating_y = 0
-                        except Exception:
-                            return
+                            if match.group(2):
+                                repeating_y = self.parse_number(match.group(2))
+                            else:
+                                repeating_y = 0
 
-                        if x is None or y is None:
-                            log.error("Missing coordinates")
+                            coordx = current_x
+                            coordy = current_y
+
+                            while repeat > 0:
+                                if repeating_x:
+                                    coordx += repeating_x
+                                if repeating_y:
+                                    coordy += repeating_y
+                                self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
+
+                                repeat -= 1
+                            current_x = coordx
+                            current_y = coordy
                             continue
 
-                        # ## Excellon Routing parse
-                        if len(re.findall("G00", eline)) > 0:
-                            self.match_routing_start = 'G00'
+                        else:   # those are normal coordinates
+                            try:
+                                x = self.parse_number(match.group(1))
+                                current_x = x
+                            except TypeError:
+                                x = current_x
+                            except Exception:
+                                return
 
-                            # signal that there are milling slots operations
-                            self.defaults['excellon_drills'] = False
+                            try:
+                                y = self.parse_number(match.group(2))
+                                current_y = y
+                            except TypeError:
+                                y = current_y
+                            except Exception:
+                                return
 
-                            self.routing_flag = 0
-                            slot_start_x = x
-                            slot_start_y = y
-                            continue
+                            if x is None or y is None:
+                                log.error("Missing coordinates")
+                                continue
 
-                        if self.routing_flag == 0:
-                            if len(re.findall("G01", eline)) > 0:
-                                self.match_routing_stop = 'G01'
+                            # ## Excellon Routing parse
+                            if len(re.findall("G00", eline)) > 0:
+                                self.match_routing_start = 'G00'
 
                                 # signal that there are milling slots operations
                                 self.defaults['excellon_drills'] = False
 
-                                self.routing_flag = 1
-                                slot_stop_x = x
-                                slot_stop_y = y
-                                self.slots.append(
-                                    {
-                                        'start': Point(slot_start_x, slot_start_y),
-                                        'stop': Point(slot_stop_x, slot_stop_y),
-                                        'tool': current_tool
-                                    }
-                                )
+                                self.routing_flag = 0
+                                slot_start_x = x
+                                slot_start_y = y
                                 continue
 
-                        if self.match_routing_start is None and self.match_routing_stop is None:
-                            if repeat == 0:
+                            if self.routing_flag == 0:
+                                if len(re.findall("G01", eline)) > 0:
+                                    self.match_routing_stop = 'G01'
+
+                                    # signal that there are milling slots operations
+                                    self.defaults['excellon_drills'] = False
+
+                                    self.routing_flag = 1
+                                    slot_stop_x = x
+                                    slot_stop_y = y
+                                    self.slots.append(
+                                        {
+                                            'start': Point(slot_start_x, slot_start_y),
+                                            'stop': Point(slot_stop_x, slot_stop_y),
+                                            'tool': current_tool
+                                        }
+                                    )
+                                    continue
+
+                            if self.match_routing_start is None and self.match_routing_stop is None:
                                 # signal that there are drill operations
                                 self.defaults['excellon_drills'] = True
                                 self.drills.append({'point': Point((x, y)), 'tool': current_tool})
-                            else:
-                                coordx = x
-                                coordy = y
-                                while repeat > 0:
-                                    if repeating_x:
-                                        coordx = (repeat * x) + repeating_x
-                                    if repeating_y:
-                                        coordy = (repeat * y) + repeating_y
-                                    self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
-                                    repeat -= 1
-                            repeating_x = repeating_y = 0
-                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
-                            continue
+                                # log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                                continue
 
                     # ## Coordinates with period: Use literally. # ##
                     match = self.coordsperiod_re.search(eline)
@@ -961,14 +972,12 @@ class Excellon(Geometry):
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                try:
-                    self.tools[tool]['solid_geometry'][:] = []
-                except KeyError:
-                    self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['data'] = {}
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
-                if drill['tool'] is '':
+                if drill['tool'] == '':
                     self.app.inform.emit('[WARNING] %s' %
                                          _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"
@@ -979,7 +988,10 @@ class Excellon(Geometry):
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[drill['tool']]['solid_geometry'].append(poly)
+
+                tool_in_drills = drill['tool']
+                self.tools[tool_in_drills]['solid_geometry'].append(poly)
+                self.tools[tool_in_drills]['data'] = deepcopy(self.default_data)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -989,8 +1001,10 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[slot['tool']]['solid_geometry'].append(poly)
 
+                tool_in_slots = slot['tool']
+                self.tools[tool_in_slots]['solid_geometry'].append(poly)
+                self.tools[tool_in_slots]['data'] = deepcopy(self.default_data)
         except Exception as e:
             log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
