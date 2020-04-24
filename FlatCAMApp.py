@@ -3971,7 +3971,7 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter__ = "Config File (*.FlatConfig);;All Files (*.*)"
+        filter__ = "Config File .FlatConfig (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
@@ -4031,6 +4031,67 @@ class App(QtCore.QObject):
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
         self.inform.emit('[success] %s: %s' % (_("Exported preferences to"), filename))
+
+    def save_to_file(self, content_to_save):
+        """
+        Save something to a file.
+
+        :return: None
+        """
+        self.report_usage("save_to_file")
+        App.log.debug("save_to_file()")
+
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
+
+        filter__ = "HTML File .html (*.html);;All Files (*.*)"
+        path_to_save = self.defaults["global_last_save_folder"] if\
+            self.defaults["global_last_save_folder"] is not None else self.data_path
+        try:
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save to file"),
+                directory=path_to_save + '/file_' + self.date,
+                filter=filter__
+            )
+        except TypeError:
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), filter=filter__)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Saving to file cancelled."))
+            return
+        else:
+            try:
+                f = open(filename, 'w')
+                defaults_file_content = f.read()
+                f.close()
+            except PermissionError:
+                self.inform.emit('[WARNING] %s' %
+                                 _("Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return
+            except IOError:
+                App.log.debug('Creating a new file ...')
+                f = open(filename, 'w')
+                f.close()
+            except Exception:
+                e = sys.exc_info()[0]
+                App.log.error("Could not load the file.")
+                App.log.error(str(e))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load the file."))
+                return
+
+            # Save content
+            try:
+                with open(filename, "w") as f:
+                    f.write(content_to_save)
+            except Exception:
+                self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+                return
+
+        self.inform.emit('[success] %s: %s' % (_("Exported file to"), filename))
 
     def save_geometry(self, x, y, width, height, notebook_width):
         """

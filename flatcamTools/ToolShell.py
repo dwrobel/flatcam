@@ -118,7 +118,7 @@ class TermWidget(QWidget):
 
         scrollbar = self._browser.verticalScrollBar()
         old_value = scrollbar.value()
-        scrollattheend = old_value == scrollbar.maximum()
+        # scrollattheend = old_value == scrollbar.maximum()
 
         self._browser.moveCursor(QTextCursor.End)
         self._browser.insertHtml(text)
@@ -251,11 +251,12 @@ class FCShell(TermWidget):
         self._sysShell = sysShell
 
     def is_command_complete(self, text):
-        def skipQuotes(text):
-            quote = text[0]
-            text = text[1:]
-            endIndex = str(text).index(quote)
+        def skipQuotes(txt):
+            quote = txt[0]
+            text_val = txt[1:]
+            endIndex = str(text_val).index(quote)
             return text[endIndex:]
+
         while text:
             if text[0] in ('"', "'"):
                 try:

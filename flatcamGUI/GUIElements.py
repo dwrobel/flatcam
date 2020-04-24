@@ -2568,13 +2568,19 @@ class _BrowserTextEdit(QTextEdit):
 
     def contextMenuEvent(self, event):
         self.menu = self.createStandardContextMenu(event.pos())
-        clear_action = QAction("Clear", self)
+
+        if self.app:
+            save_action = QAction(_("Save Log"), self)
+            self.menu.addAction(save_action)
+            save_action.triggered.connect(lambda: self.save_log(app=self.app))
+
+        clear_action = QAction(_("Clear"), self)
         clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
 
         if self.app:
-            close_action = QAction("Close", self)
+            close_action = QAction(_("Close"), self)
             self.menu.addAction(close_action)
             close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
 
@@ -2587,6 +2593,10 @@ class _BrowserTextEdit(QTextEdit):
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)
         self.insertHtml(text)
+
+    def save_log(self, app):
+        html_content = self.toHtml()
+        app.save_to_file(content_to_save=html_content)
 
 
 class _ExpandableTextEdit(QTextEdit):

@@ -9,7 +9,6 @@
 from tclCommands.TclCommand import TclCommand
 
 import collections
-import math
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -109,6 +108,7 @@ class TclCommandHelp(TclCommand):
                     displayed_text = ['> %s\n' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
 
                 cmd_enum += '<br>'.join(displayed_text)
-                cmd_enum += '<br><br>%s<br>%s' % (_("Type help <command_name> for usage."), _("Example: help open_gerber"))
+                cmd_enum += '<br><br>%s<br>%s<br>' % (
+                    _("Type help <command_name> for usage."), _("Example: help open_gerber"))
 
                 self.app.shell.append_raw(cmd_enum)
