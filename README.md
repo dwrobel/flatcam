@@ -20,21 +20,7 @@ Menu -> Help -> About FlatCAM -> Programmers -> Marius Stanciu
 - Download sources from: https://bitbucket.org/jpcgt/flatcam/downloads/
 - Unzip them on a HDD location that your user has permissions for.
 
-1. MacOS
-- none (yet)
-
-2. Linux
-- make sure that Python 3.8 is installed on your OS and that the command: python3 -V confirm it
-- verify that the pip package is installed for your Python installation (e.g 3.8) by running the command pip3 -V. 
-If it is not installed, install it. In Ubuntu-like OS's it is done like this: 
-sudo apt-get install python3-pip 
-or:
-sudo apt-get install python3.8-pip
-- verify that the file setup_ubuntu.sh has Linux line-endings (LF) and that it is executable (chmod +x setup_ubuntu.sh)
-- run the file setup_ubuntu.sh and install all the dependencies with the command: ./setup_ubuntu.sh
-- if the previous command is successful and has no errors, run FlatCAM with the command: python3 FlatCAM.py
-
-3. Windows
+1. Windows
 - download the provided installer (for your OS flavor 64bit or 32bit) from:
 https://bitbucket.org/jpcgt/flatcam/downloads/
 - execute the installer and install the program. It is recommended to install as a Local User.
@@ -63,3 +49,39 @@ D:\my_folder\> pip install --upgrade package_from_requirements.whl
 Run FlatCAM beta from the installation folder (e.g D:\FlatCAM_beta) in the Command Prompt with the following command:
 cd D:\FlatCAM_beta
 python FlatCAM.py
+
+2. Linux
+- make sure that Python 3.8 is installed on your OS and that the command: python3 -V confirm it
+- verify that the pip package is installed for your Python installation (e.g 3.8) by running the command pip3 -V. 
+If it is not installed, install it. In Ubuntu-like OS's it is done like this: 
+sudo apt-get install python3-pip 
+or:
+sudo apt-get install python3.8-pip
+- verify that the file setup_ubuntu.sh has Linux line-endings (LF) and that it is executable (chmod +x setup_ubuntu.sh)
+- run the file setup_ubuntu.sh and install all the dependencies with the command: ./setup_ubuntu.sh
+- if the previous command is successful and has no errors, run FlatCAM with the command: python3 FlatCAM.py
+
+3. MacOS
+Instructions from here: https://gist.github.com/natevw/3e6fc929aff358b38c0a#gistcomment-3111878
+
+- create a folder to hold the sources somewhere on your HDD:
+mkdir FlatCAM
+
+- unzip in this folder the sources downloaded from https://bitbucket.org/jpcgt/flatcam/downloads/
+Using commands (e.g using the sources for FlatCAM beta 8.991):
+cd ~/FlatCAM
+wget https://bitbucket.org/jpcgt/flatcam/downloads/FlatCAM_beta_8.991_sources.zip
+unzip FlatCAM_beta_8.991_sources.zip
+cd FlatCAM_beta_8.991_sources
+
+- check if Homebrew is installed:
+xcode-select --install
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+- install dependencies:
+brew install pyqt
+python3 -m ensurepip
+python3 -m pip install -r requirements.txt
+
+- run FlatCAM
+python3 FlatCAM.py

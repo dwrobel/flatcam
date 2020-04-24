@@ -16,6 +16,9 @@ CHANGELOG for FlatCAM beta
 - some message strings cleanup
 - added possibility to save as text file the content in Tcl Shell browser window when clicking the Save log context menu entry
 - fixed an issue regarding the statusbar pixmap selection
+- update the language template strings.pot and updated the Romanian translation
+- updated the Readme file with the steps for installation for MacOS
+- updated the requirements.txt file
 
 23.04.2020 
 
