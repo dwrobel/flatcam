@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-04-24 09:23+0300\n"
-"PO-Revision-Date: 2020-04-24 11:22+0300\n"
+"POT-Creation-Date: 2020-04-24 21:10+0300\n"
+"PO-Revision-Date: 2020-04-24 21:13+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -30,9 +30,9 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:6056 flatcamTools/ToolNCC.py:431
 #: flatcamTools/ToolNCC.py:2401 flatcamTools/ToolNCC.py:2429
 #: flatcamTools/ToolNCC.py:2699 flatcamTools/ToolNCC.py:2731
-#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:1832
-#: flatcamTools/ToolPaint.py:2723 flatcamTools/ToolPaint.py:3178
-#: flatcamTools/ToolPaint.py:3544
+#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:1836
+#: tclCommands/TclCommandCopperClear.py:128
+#: tclCommands/TclCommandCopperClear.py:136 tclCommands/TclCommandPaint.py:127
 msgid "Seed"
 msgstr "Punct_arbitrar"
 
@@ -41,12 +41,13 @@ msgstr "Punct_arbitrar"
 #: flatcamTools/ToolNCC.py:535 flatcamTools/ToolNCC.py:1299
 #: flatcamTools/ToolNCC.py:1638 flatcamTools/ToolNCC.py:1919
 #: flatcamTools/ToolNCC.py:1983 flatcamTools/ToolNCC.py:2967
-#: flatcamTools/ToolNCC.py:2976
+#: flatcamTools/ToolNCC.py:2976 tclCommands/TclCommandCopperClear.py:190
 msgid "Itself"
 msgstr "Însuşi"
 
 #: FlatCAMApp.py:817 flatcamGUI/PreferencesUI.py:6119
 #: flatcamTools/ToolPaint.py:486 flatcamTools/ToolPaint.py:1415
+#: tclCommands/TclCommandPaint.py:162
 msgid "All Polygons"
 msgstr "Toate Poligoanele"
 
@@ -792,7 +793,7 @@ msgstr "Preferințele au fost editate dar nu au fost salvate."
 #: FlatCAMApp.py:8038 FlatCAMCommon.py:1182 FlatCAMCommon.py:1357
 #: FlatCAMCommon.py:2612 FlatCAMCommon.py:2820 FlatCAMObj.py:4798
 #: flatcamTools/ToolNCC.py:3963 flatcamTools/ToolNCC.py:4047
-#: flatcamTools/ToolPaint.py:4027 flatcamTools/ToolPaint.py:4112
+#: flatcamTools/ToolPaint.py:3537 flatcamTools/ToolPaint.py:3622
 msgid "Tools Database"
 msgstr "Baza de Date Unelte"
 
@@ -801,7 +802,7 @@ msgid "Tools in Tools Database edited but not saved."
 msgstr "Uneltele din Baza de date au fost editate dar nu au fost salvate."
 
 #: FlatCAMApp.py:7975 flatcamTools/ToolNCC.py:3970
-#: flatcamTools/ToolPaint.py:4034
+#: flatcamTools/ToolPaint.py:3544
 msgid "Tool from DB added in Tool Table."
 msgstr "Unealtă din Baza de date adăugată in Tabela de Unelte."
 
@@ -2496,9 +2497,9 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:6056 flatcamTools/ToolNCC.py:431
 #: flatcamTools/ToolNCC.py:2395 flatcamTools/ToolNCC.py:2424
 #: flatcamTools/ToolNCC.py:2693 flatcamTools/ToolNCC.py:2725
-#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:1818
-#: flatcamTools/ToolPaint.py:2717 flatcamTools/ToolPaint.py:3198
-#: flatcamTools/ToolPaint.py:3538
+#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:1822
+#: tclCommands/TclCommandCopperClear.py:126
+#: tclCommands/TclCommandCopperClear.py:134 tclCommands/TclCommandPaint.py:125
 msgid "Standard"
 msgstr "Standard"
 
@@ -2507,8 +2508,8 @@ msgstr "Standard"
 #: flatcamEditors/FlatCAMGeoEditor.py:5156 flatcamGUI/PreferencesUI.py:5509
 #: flatcamGUI/PreferencesUI.py:6056 flatcamTools/ToolNCC.py:431
 #: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:696
-#: flatcamTools/ToolPaint.py:1846 flatcamTools/ToolPaint.py:2729
-#: flatcamTools/ToolPaint.py:3188 flatcamTools/ToolPaint.py:3550
+#: flatcamTools/ToolPaint.py:1850 tclCommands/TclCommandCopperClear.py:130
+#: tclCommands/TclCommandPaint.py:129
 msgid "Lines"
 msgstr "Linii"
 
@@ -2624,15 +2625,13 @@ msgstr ""
 #: FlatCAMCommon.py:2040 FlatCAMCommon.py:2042 flatcamGUI/PreferencesUI.py:6056
 #: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:392
 #: flatcamTools/ToolPaint.py:690 flatcamTools/ToolPaint.py:695
-#: flatcamTools/ToolPaint.py:1860 flatcamTools/ToolPaint.py:2735
-#: flatcamTools/ToolPaint.py:3207 flatcamTools/ToolPaint.py:3556
+#: flatcamTools/ToolPaint.py:1864 tclCommands/TclCommandPaint.py:131
 msgid "Laser_lines"
 msgstr "Linii-laser"
 
 #: FlatCAMCommon.py:2040 flatcamGUI/PreferencesUI.py:6056
-#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:2011
-#: flatcamTools/ToolPaint.py:2861 flatcamTools/ToolPaint.py:3333
-#: flatcamTools/ToolPaint.py:3682
+#: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:2015
+#: tclCommands/TclCommandPaint.py:133
 msgid "Combo"
 msgstr "Combinat"
 
@@ -9976,7 +9975,6 @@ msgstr ""
 "proiectul intr-un mod periodic."
 
 #: flatcamGUI/PreferencesUI.py:1834
-#| msgid "Interior"
 msgid "Interval"
 msgstr "Interval"
 
@@ -11405,7 +11403,8 @@ msgstr "Selecţie zonă"
 #: flatcamTools/ToolNCC.py:1998 flatcamTools/ToolNCC.py:2306
 #: flatcamTools/ToolNCC.py:2586 flatcamTools/ToolNCC.py:3012
 #: flatcamTools/ToolPaint.py:486 flatcamTools/ToolPaint.py:924
-#: flatcamTools/ToolPaint.py:1456
+#: flatcamTools/ToolPaint.py:1456 tclCommands/TclCommandCopperClear.py:192
+#: tclCommands/TclCommandPaint.py:166
 msgid "Reference Object"
 msgstr "Obiect Ref"
 
@@ -11669,6 +11668,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:6119 flatcamTools/ToolPaint.py:486
 #: flatcamTools/ToolPaint.py:935 flatcamTools/ToolPaint.py:1420
+#: tclCommands/TclCommandPaint.py:164
 msgid "Polygon Selection"
 msgstr "Selecție Poligon"
 
@@ -14425,7 +14425,7 @@ msgstr "Geometria nu este acceptată pentru caseta de delimitare"
 
 #: flatcamTools/ToolCopperThieving.py:1068 flatcamTools/ToolNCC.py:1933
 #: flatcamTools/ToolNCC.py:1988 flatcamTools/ToolNCC.py:2992
-#: flatcamTools/ToolPaint.py:3854
+#: flatcamTools/ToolPaint.py:3368
 msgid "No object available."
 msgstr "Nici-un obiect disponibil."
 
@@ -15784,13 +15784,13 @@ msgid "Please enter a tool diameter to add, in Float format."
 msgstr "Introduce diametrul unei unelte pt a fi adăugată, in format Real."
 
 #: flatcamTools/ToolNCC.py:1460 flatcamTools/ToolNCC.py:4013
-#: flatcamTools/ToolPaint.py:1196 flatcamTools/ToolPaint.py:4077
+#: flatcamTools/ToolPaint.py:1196 flatcamTools/ToolPaint.py:3587
 #: flatcamTools/ToolSolderPaste.py:917
 msgid "Cancelled. Tool already in Tool Table."
 msgstr "Anulat. Unealta există deja in Tabela de Unelte."
 
 #: flatcamTools/ToolNCC.py:1467 flatcamTools/ToolNCC.py:4030
-#: flatcamTools/ToolPaint.py:1201 flatcamTools/ToolPaint.py:4094
+#: flatcamTools/ToolPaint.py:1201 flatcamTools/ToolPaint.py:3604
 msgid "New tool added to Tool Table."
 msgstr "O noua unealtă a fost adăugată in Tabela de Unelte."
 
@@ -16219,69 +16219,70 @@ msgstr ""
 "Faceți clic pentru a adăuga / elimina următorul poligon sau faceți clic "
 "dreapta pentru a începe Paint."
 
-#: flatcamTools/ToolPaint.py:2013
+#: flatcamTools/ToolPaint.py:2017
 msgid "Painting polygon with method: lines."
 msgstr "Se pictează poligonul cu metoda: linii."
 
-#: flatcamTools/ToolPaint.py:2025
+#: flatcamTools/ToolPaint.py:2029
 msgid "Failed. Painting polygon with method: seed."
 msgstr "Esuat. Se pictează poligonul cu metoda: sămantă."
 
-#: flatcamTools/ToolPaint.py:2036
+#: flatcamTools/ToolPaint.py:2040
 msgid "Failed. Painting polygon with method: standard."
 msgstr "Esuat. Se picteaza poligonul cu metoda: standard."
 
-#: flatcamTools/ToolPaint.py:2052
+#: flatcamTools/ToolPaint.py:2056
 msgid "Geometry could not be painted completely"
 msgstr "Geometria nu a fost posibil să fie 'pictată' complet"
 
-#: flatcamTools/ToolPaint.py:2081 flatcamTools/ToolPaint.py:2084
-#: flatcamTools/ToolPaint.py:2092 flatcamTools/ToolPaint.py:2634
-#: flatcamTools/ToolPaint.py:2638 flatcamTools/ToolPaint.py:2641
-#: flatcamTools/ToolPaint.py:3448 flatcamTools/ToolPaint.py:3452
-#: flatcamTools/ToolPaint.py:3455
+#: flatcamTools/ToolPaint.py:2085 flatcamTools/ToolPaint.py:2088
+#: flatcamTools/ToolPaint.py:2096 flatcamTools/ToolPaint.py:2399
+#: flatcamTools/ToolPaint.py:2402 flatcamTools/ToolPaint.py:2410
+#: flatcamTools/ToolPaint.py:2898 flatcamTools/ToolPaint.py:2901
+#: flatcamTools/ToolPaint.py:2907
 msgid "Paint Tool."
 msgstr "Unealta Paint."
 
-#: flatcamTools/ToolPaint.py:2081 flatcamTools/ToolPaint.py:2084
-#: flatcamTools/ToolPaint.py:2092
+#: flatcamTools/ToolPaint.py:2085 flatcamTools/ToolPaint.py:2088
+#: flatcamTools/ToolPaint.py:2096
 msgid "Normal painting polygon task started."
 msgstr "Taskul de pictare normal a unui polygon a inceput."
 
-#: flatcamTools/ToolPaint.py:2082 flatcamTools/ToolPaint.py:2423
-#: flatcamTools/ToolPaint.py:2635 flatcamTools/ToolPaint.py:3085
-#: flatcamTools/ToolPaint.py:3449
+#: flatcamTools/ToolPaint.py:2086 flatcamTools/ToolPaint.py:2400
+#: flatcamTools/ToolPaint.py:2899
 msgid "Buffering geometry..."
 msgstr "Crează o geometrie de tipul Bufer..."
 
-#: flatcamTools/ToolPaint.py:2105
+#: flatcamTools/ToolPaint.py:2108 flatcamTools/ToolPaint.py:2417
+#: flatcamTools/ToolPaint.py:2915
 msgid "No polygon found."
 msgstr "Nu s-a gasit nici-un poligon."
 
-#: flatcamTools/ToolPaint.py:2135
+#: flatcamTools/ToolPaint.py:2138
 msgid "Painting polygon..."
 msgstr "Se 'pictează' un poligon..."
 
-#: flatcamTools/ToolPaint.py:2144 flatcamTools/ToolPaint.py:2466
-#: flatcamTools/ToolPaint.py:2674 flatcamTools/ToolPaint.py:3132
-#: flatcamTools/ToolPaint.py:3492
+#: flatcamTools/ToolPaint.py:2148 flatcamTools/ToolPaint.py:2463
+#: flatcamTools/ToolPaint.py:2653 flatcamTools/ToolPaint.py:2961
+#: flatcamTools/ToolPaint.py:3140
 msgid "Painting with tool diameter = "
 msgstr "Pictand cu o unealtă cu diametrul = "
 
-#: flatcamTools/ToolPaint.py:2145 flatcamTools/ToolPaint.py:2469
-#: flatcamTools/ToolPaint.py:2677 flatcamTools/ToolPaint.py:3135
-#: flatcamTools/ToolPaint.py:3495
+#: flatcamTools/ToolPaint.py:2149 flatcamTools/ToolPaint.py:2464
+#: flatcamTools/ToolPaint.py:2654 flatcamTools/ToolPaint.py:2962
+#: flatcamTools/ToolPaint.py:3141
 msgid "started"
 msgstr "a inceput"
 
-#: flatcamTools/ToolPaint.py:2170 flatcamTools/ToolPaint.py:2494
-#: flatcamTools/ToolPaint.py:2703 flatcamTools/ToolPaint.py:3161
-#: flatcamTools/ToolPaint.py:3524
+#: flatcamTools/ToolPaint.py:2174 flatcamTools/ToolPaint.py:2490
+#: flatcamTools/ToolPaint.py:2680 flatcamTools/ToolPaint.py:2988
+#: flatcamTools/ToolPaint.py:3167
 msgid "Margin parameter too big. Tool is not used"
 msgstr "Parametrul Margine este prea mare. Unealta nu este folosită"
 
-#: flatcamTools/ToolPaint.py:2210 flatcamTools/ToolPaint.py:2564
-#: flatcamTools/ToolPaint.py:3377
+#: flatcamTools/ToolPaint.py:2232 flatcamTools/ToolPaint.py:2559
+#: flatcamTools/ToolPaint.py:2737 flatcamTools/ToolPaint.py:3051
+#: flatcamTools/ToolPaint.py:3229
 msgid ""
 "Could not do Paint. Try a different combination of parameters. Or a "
 "different strategy of paint"
@@ -16289,9 +16290,9 @@ msgstr ""
 "Nu s-a putut face operatia de 'pictare'. Incearcă o combinaţie diferita de "
 "parametri. Sau o strategie diferita de 'pictare'"
 
-#: flatcamTools/ToolPaint.py:2268 flatcamTools/ToolPaint.py:2614
-#: flatcamTools/ToolPaint.py:2955 flatcamTools/ToolPaint.py:3428
-#: flatcamTools/ToolPaint.py:3771
+#: flatcamTools/ToolPaint.py:2289 flatcamTools/ToolPaint.py:2625
+#: flatcamTools/ToolPaint.py:2794 flatcamTools/ToolPaint.py:3112
+#: flatcamTools/ToolPaint.py:3291
 msgid ""
 "There is no Painting Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted "
@@ -16303,79 +16304,60 @@ msgstr ""
 "geometrice.\n"
 "Schimbă parametrii de 'pictare' și încearcă din nou."
 
-#: flatcamTools/ToolPaint.py:2300
+#: flatcamTools/ToolPaint.py:2312
 msgid "Paint Single failed."
 msgstr "Pictarea unui polygon a esuat."
 
-#: flatcamTools/ToolPaint.py:2306
+#: flatcamTools/ToolPaint.py:2318
 msgid "Paint Single Done."
 msgstr "Pictarea unui polygon efectuată."
 
-#: flatcamTools/ToolPaint.py:2308 flatcamTools/ToolPaint.py:2983
-#: flatcamTools/ToolPaint.py:3799
+#: flatcamTools/ToolPaint.py:2320 flatcamTools/ToolPaint.py:2830
+#: flatcamTools/ToolPaint.py:3327
 msgid "Polygon Paint started ..."
 msgstr "Paint pt poligon a inceput ..."
 
-#: flatcamTools/ToolPaint.py:2347 flatcamTools/ToolPaint.py:3023
+#: flatcamTools/ToolPaint.py:2399 flatcamTools/ToolPaint.py:2402
+#: flatcamTools/ToolPaint.py:2410
+msgid "Paint all polygons task started."
+msgstr "Taskul de pictare pt toate poligoanele a inceput."
+
+#: flatcamTools/ToolPaint.py:2441 flatcamTools/ToolPaint.py:2939
 msgid "Painting polygons..."
 msgstr "Se 'pictează' poligoane..."
 
-#: flatcamTools/ToolPaint.py:2422 flatcamTools/ToolPaint.py:2425
-#: flatcamTools/ToolPaint.py:2427
-msgid "Paint Tool. Normal painting all task started."
-msgstr "Unealta Paint. Taskul de pictare a tuturor poligoanelor a inceput."
-
-#: flatcamTools/ToolPaint.py:2623
+#: flatcamTools/ToolPaint.py:2634
 msgid "Paint All Done."
 msgstr "Pictarea Tuturor poligoanelor efectuată."
 
-#: flatcamTools/ToolPaint.py:2634 flatcamTools/ToolPaint.py:2638
-#: flatcamTools/ToolPaint.py:2641
-msgid "Rest machining painting all task started."
-msgstr ""
-"Taskul de pictare prin prelucrare 'rest' a tuturor poligoanelor a inceput."
-
-#: flatcamTools/ToolPaint.py:2862 flatcamTools/ToolPaint.py:3334
-#: flatcamTools/ToolPaint.py:3683
-msgid "Painting polygons with method: lines."
-msgstr "Se pictează poligoane aflat icu metoda: linii."
-
-#: flatcamTools/ToolPaint.py:2875 flatcamTools/ToolPaint.py:3347
-#: flatcamTools/ToolPaint.py:3695
-msgid "Failed. Painting polygons with method: seed."
-msgstr "Esuat. Se pictează poligoanele cu metoda: sămantă."
-
-#: flatcamTools/ToolPaint.py:2887 flatcamTools/ToolPaint.py:3359
-#: flatcamTools/ToolPaint.py:3707
-msgid "Failed. Painting polygons with method: standard."
-msgstr "Esuat. Se pictează poligoanele cu metoda: standard."
-
-#: flatcamTools/ToolPaint.py:2904 flatcamTools/ToolPaint.py:3723
-msgid ""
-"Could not do Paint All. Try a different combination of parameters. Or a "
-"different Method of paint"
-msgstr ""
-"Nu s-a efectuat op. 'Paint' pt toate poligoanele. Incearcă o combinaţie "
-"diferită de parametri. Sau încearcă o alta metoda de 'pictat'"
-
-#: flatcamTools/ToolPaint.py:2964 flatcamTools/ToolPaint.py:3780
+#: flatcamTools/ToolPaint.py:2803 flatcamTools/ToolPaint.py:3300
 msgid "Paint All with Rest-Machining done."
 msgstr "'Paint' pentru toate poligoanele cu strategia Rest a fost efectuată."
 
-#: flatcamTools/ToolPaint.py:3084 flatcamTools/ToolPaint.py:3087
-#: flatcamTools/ToolPaint.py:3089
-msgid "Paint Tool. Normal painting area task started."
-msgstr "Unealta Paint. Taskul de pictare a unei arii a inceput."
+#: flatcamTools/ToolPaint.py:2822
+msgid "Paint All failed."
+msgstr "Pictarea pt toate poligoanele a easuat."
 
-#: flatcamTools/ToolPaint.py:3437
+#: flatcamTools/ToolPaint.py:2828
+msgid "Paint Poly All Done."
+msgstr "Pictarea pt toate poligoanele efectuată."
+
+#: flatcamTools/ToolPaint.py:2898 flatcamTools/ToolPaint.py:2901
+#: flatcamTools/ToolPaint.py:2907
+msgid "Painting area task started."
+msgstr "Taskul de pictare a unei arii a inceput."
+
+#: flatcamTools/ToolPaint.py:3121
 msgid "Paint Area Done."
 msgstr "Paint pt o zona efectuata."
 
-#: flatcamTools/ToolPaint.py:3448 flatcamTools/ToolPaint.py:3452
-#: flatcamTools/ToolPaint.py:3455
-msgid "Rest machining painting area task started."
-msgstr ""
-"Taskul de pictare a unei arii cu strategia de masinare 'rest' a inceput."
+#: flatcamTools/ToolPaint.py:3319
+msgid "Paint Area failed."
+msgstr "Pictarea unei Zone a esuat."
+
+#: flatcamTools/ToolPaint.py:3325
+msgid "Paint Poly Area Done."
+msgstr "Paint pt o Zonă efectuat."
 
 #: flatcamTools/ToolPanelize.py:34
 msgid "Panelize PCB"
@@ -17805,12 +17787,12 @@ msgstr ""
 msgid "TclCommand Bounds done."
 msgstr "TclCommand Bounds executata."
 
-#: tclCommands/TclCommandCopperClear.py:256 tclCommands/TclCommandPaint.py:261
+#: tclCommands/TclCommandCopperClear.py:276 tclCommands/TclCommandPaint.py:272
 #: tclCommands/TclCommandScale.py:81
 msgid "Could not retrieve box object"
 msgstr "Nu s-a putut incărca obiectul"
 
-#: tclCommands/TclCommandCopperClear.py:279
+#: tclCommands/TclCommandCopperClear.py:299
 msgid "Expected either -box <value> or -all."
 msgstr "Asteptăm -box <value> sau -all."
 
@@ -17848,15 +17830,15 @@ msgstr "Introduceți help <nume_comanda> pentru utilizare."
 msgid "Example: help open_gerber"
 msgstr "Exemplu: help open_gerber"
 
-#: tclCommands/TclCommandPaint.py:229
+#: tclCommands/TclCommandPaint.py:244
 msgid "Expected -x <value> and -y <value>."
 msgstr "Asteptam -x <value> si -y <value>."
 
-#: tclCommands/TclCommandPaint.py:254
+#: tclCommands/TclCommandPaint.py:265
 msgid "Expected -box <value>."
 msgstr "Asteptăm -box <value>."
 
-#: tclCommands/TclCommandPaint.py:279
+#: tclCommands/TclCommandPaint.py:286
 msgid ""
 "None of the following args: 'box', 'single', 'all' were used.\n"
 "Paint failed."
@@ -17889,6 +17871,36 @@ msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Nici-un nume de Geometrie in argumente. Furnizați un nume și încercați din "
 "nou."
+
+#~ msgid "Paint Tool. Normal painting all task started."
+#~ msgstr "Unealta Paint. Taskul de pictare a tuturor poligoanelor a inceput."
+
+#~ msgid "Rest machining painting all task started."
+#~ msgstr ""
+#~ "Taskul de pictare prin prelucrare 'rest' a tuturor poligoanelor a inceput."
+
+#~ msgid "Painting polygons with method: lines."
+#~ msgstr "Se pictează poligoane aflat icu metoda: linii."
+
+#~ msgid "Failed. Painting polygons with method: seed."
+#~ msgstr "Esuat. Se pictează poligoanele cu metoda: sămantă."
+
+#~ msgid "Failed. Painting polygons with method: standard."
+#~ msgstr "Esuat. Se pictează poligoanele cu metoda: standard."
+
+#~ msgid ""
+#~ "Could not do Paint All. Try a different combination of parameters. Or a "
+#~ "different Method of paint"
+#~ msgstr ""
+#~ "Nu s-a efectuat op. 'Paint' pt toate poligoanele. Incearcă o combinaţie "
+#~ "diferită de parametri. Sau încearcă o alta metoda de 'pictat'"
+
+#~ msgid "Paint Tool. Normal painting area task started."
+#~ msgstr "Unealta Paint. Taskul de pictare a unei arii a inceput."
+
+#~ msgid "Rest machining painting area task started."
+#~ msgstr ""
+#~ "Taskul de pictare a unei arii cu strategia de masinare 'rest' a inceput."
 
 #~ msgid "Executing Tcl Script ..."
 #~ msgstr "Rulează Tcl Script..."
@@ -18206,9 +18218,6 @@ msgstr ""
 
 #~ msgid "Paint Tool. Reading parameters."
 #~ msgstr "Unealta Paint. Se citesc parametrii."
-
-#~ msgid "Normal painting area task started."
-#~ msgstr "Taskul de pictare normal a unei arii a inceput."
 
 #~ msgid "Paint Tool. Rest machining painting area task started."
 #~ msgstr ""
