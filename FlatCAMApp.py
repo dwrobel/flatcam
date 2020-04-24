@@ -2961,7 +2961,7 @@ class App(QtCore.QObject):
 
                     if project_name == "":
                         if silent is False:
-                            self.inform.emit(_("Open cancelled."))
+                            self.inform.emit(_("Cancelled."))
                     else:
                         # self.open_project(project_name)
                         run_from_arg = True
@@ -3881,7 +3881,7 @@ class App(QtCore.QObject):
         filename = self.data_path + '/factory_defaults.FlatConfig'
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences default restore was cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 f = open(filename)
@@ -3930,7 +3930,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences import cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 f = open(filename)
@@ -3985,7 +3985,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences export cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -4060,7 +4060,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Saving to file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -6104,7 +6104,7 @@ class App(QtCore.QObject):
             val_x = float(self.defaults['global_gridx'])
             val_y = float(self.defaults['global_gridy'])
 
-            self.inform.emit('[WARNING_NOTCL]%s' % _("Units conversion cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
 
         self.defaults_read_form()
 
@@ -7368,7 +7368,7 @@ class App(QtCore.QObject):
         self.report_usage("on_locate()")
 
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("There is no object selected..."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return 'fail'
 
         class DialogBoxChoice(QtWidgets.QDialog):
@@ -9470,7 +9470,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Open Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9507,8 +9507,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL]%s' %
-                             _(" Open Excellon cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9550,8 +9549,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open G-Code cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9580,8 +9578,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -9621,7 +9618,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Open HPGL2 file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -9646,8 +9643,7 @@ class App(QtCore.QObject):
                                                                  filter=_filter_)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open Config cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -9662,8 +9658,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -9700,8 +9695,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL]%s' %
-                             _(" Export SVG cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -9737,7 +9731,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("Export PNG cancelled."))
+            self.inform.emit(_("Cancelled."))
             return
         else:
             if self.is_legacy is False:
@@ -9760,8 +9754,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Gerber object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
@@ -9784,8 +9777,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Gerber source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9804,14 +9796,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Script object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMScript):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Script objects can be saved as TCL Script files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Script objects can be saved as TCL Script files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -9828,8 +9818,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Script source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9848,14 +9837,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Document object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMScript):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Document objects can be saved as Document files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Document objects can be saved as Document files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -9872,8 +9859,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Document source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9892,14 +9878,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please select an Excellon object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -9916,8 +9900,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Saving Excellon source file cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -9936,8 +9919,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please Select an Excellon object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
@@ -9959,7 +9941,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Export Excellon cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -9981,14 +9963,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected. Please Select an Gerber object to export."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGerber):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Gerber objects can be saved as Gerber files..."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -10005,7 +9985,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Export Gerber cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             used_extension = filename.rpartition('.')[2]
@@ -10061,7 +10041,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Export DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.export_dxf(name, filename)
@@ -10093,7 +10073,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Open SVG cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10125,7 +10105,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Open DXF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10362,7 +10342,7 @@ class App(QtCore.QObject):
 
         if len(filenames) == 0:
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' % _("Open TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -10406,7 +10386,7 @@ class App(QtCore.QObject):
 
         if filename == "":
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' % _("Run TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             if self.cmd_line_headless != 1:
                 if self.ui.shell_dock.isHidden():
@@ -10483,7 +10463,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
 
         if use_thread is True:
@@ -10538,7 +10518,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Object PDF cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
 
         if use_thread is True:

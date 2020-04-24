@@ -1457,7 +1457,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             # self.tools_table.itemChanged.connect(self.on_tool_edit)
             self.blockSignals(False)
 
@@ -1520,7 +1520,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         break
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Edit cancelled. "
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. "
                                                               "New diameter value is already in the Tool Table."))
         self.blockSignals(False)
         self.build_ui()
@@ -4010,7 +4010,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
 
         if float('%.*f' % (self.decimals, tooldia)) in tool_dias:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.ui_connect()
             return 'fail'
 

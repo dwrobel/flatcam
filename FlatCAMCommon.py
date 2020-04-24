@@ -368,7 +368,7 @@ class BookmarkManager(QtWidgets.QWidget):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM bookmarks export cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -410,7 +410,7 @@ class BookmarkManager(QtWidgets.QWidget):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM bookmarks import cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 with open(filename) as f:
@@ -1104,7 +1104,7 @@ class ToolsDB(QtWidgets.QWidget):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB export cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -1150,7 +1150,7 @@ class ToolsDB(QtWidgets.QWidget):
         filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Tools DB"), filter=filter__)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB import cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 with open(filename) as f:
@@ -2534,7 +2534,7 @@ class ToolsDB2(QtWidgets.QWidget):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB export cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -2580,7 +2580,7 @@ class ToolsDB2(QtWidgets.QWidget):
         filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Tools DB"), filter=filter__)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB import cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             try:
                 with open(filename) as f:

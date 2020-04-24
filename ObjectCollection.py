@@ -119,7 +119,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
                 # file drop from outside application
                 if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
                     if self.filename == "":
-                        self.app.inform.emit(_("Open cancelled."))
+                        self.app.inform.emit(_("Cancelled."))
                     else:
                         if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
                             self.app.worker_task.emit({'fcn': self.app.open_gerber,

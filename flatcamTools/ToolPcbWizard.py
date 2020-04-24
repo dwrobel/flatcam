@@ -298,7 +298,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_excellon, 'params': [filename]})
 
@@ -321,7 +321,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_inf, 'params': [filename]})
 

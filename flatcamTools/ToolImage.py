@@ -244,7 +244,7 @@ class ToolImage(FlatCAMTool):
                 self.mask_b_entry.get_value()]
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.import_image,
                                        'params': [filename, type_obj, dpi, mode, mask]})

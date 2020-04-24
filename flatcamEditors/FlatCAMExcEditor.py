@@ -1021,8 +1021,7 @@ class FCDrillResize(FCShapeTool):
                             self.geometry.append(DrawToolShape(new_poly))
                         else:
                             # unexpected geometry so we cancel
-                            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                          _("Cancelled."))
+                            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled."))
                             return
 
                         # remove the geometry with the old size
@@ -1090,8 +1089,7 @@ class FCDrillResize(FCShapeTool):
                     except KeyError:
                         # if the exception happen here then we are not dealing with slots neither
                         # therefore something else is not OK so we return
-                        self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                      _("Cancelled."))
+                        self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled."))
                         return
 
             # this simple hack is used so we can delete form self.draw_app.selected but

@@ -7,7 +7,15 @@ from copy import deepcopy
 from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
 log = logging.getLogger('base')
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class TclCommandGeoCutout(TclCommandSignaled):
@@ -137,7 +145,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             name = args['name']
         else:
             self.app.inform.emit(
-                "[WARNING]The name of the object for which cutout is done is missing. Add it and retry.")
+                "[WARNING] %s" % _("The name of the object for which cutout is done is missing. Add it and retry."))
             return
 
         if 'margin' in args:
@@ -173,12 +181,13 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
-            self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive real number.")
+            self.app.inform.emit(
+                "[WARNING] %s" % _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
-            self.app.inform.emit("[WARNING]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. ")
+            self.app.inform.emit(
+                "[WARNING] %s" % _("Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."))
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -290,7 +299,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
                 app_obj.disable_plots(objects=[cutout_obj])
 
-                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
+                app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
@@ -348,11 +357,11 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 geo_obj.options['ymin'] = cutout_obj.options['ymin']
                 geo_obj.options['xmax'] = cutout_obj.options['xmax']
                 geo_obj.options['ymax'] = cutout_obj.options['ymax']
-                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
+                app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
             self.app.new_object('geometry', outname, geo_init, plot=False)
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:
-            self.app.inform.emit("[ERROR]Cancelled. Object type is not supported.")
+            self.app.inform.emit("[ERROR] %s" % _("Cancelled. Object type is not supported."))
             return

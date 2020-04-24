@@ -220,7 +220,7 @@ class TextEditor(QtWidgets.QWidget):
             filename = str(FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), filter=_filter_)[0])
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Code cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:

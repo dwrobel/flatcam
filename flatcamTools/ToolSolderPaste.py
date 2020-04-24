@@ -914,14 +914,12 @@ class SolderPaste(FlatCAMTool):
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Adding Nozzle tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit('[success] %s' %
-                                     _("New Nozzle tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' % _("New Nozzle tool added to Tool Table."))
             self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
@@ -976,7 +974,7 @@ class SolderPaste(FlatCAMTool):
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Edit cancelled. New diameter value is already in the Tool Table."))
+                                     _("Cancelled. New diameter value is already in the Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all=None):
@@ -1241,12 +1239,10 @@ class SolderPaste(FlatCAMTool):
                         if not geo_obj.tools[tooluid_key]['solid_geometry']:
                             a += 1
                     if a == len(geo_obj.tools):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _('Cancelled. Empty file, it has no geometry...'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _('Cancelled. Empty file, it has no geometry...'))
                         return 'fail'
 
-                    app_obj.inform.emit('[success] %s...' %
-                                        _("Solder Paste geometry generated successfully"))
+                    app_obj.inform.emit('[success] %s...' % _("Solder Paste geometry generated successfully"))
                     return
 
             # if we still have geometry not processed at the end of the tools then we failed

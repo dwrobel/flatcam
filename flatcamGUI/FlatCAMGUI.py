@@ -3614,8 +3614,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.delete_selected()
                         self.app.grb_editor.plot_all()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete aperture in apertures table if delete key event comes from the Selected Tab
@@ -3699,8 +3698,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
                         return
 
                     # Add Disc Tool
@@ -3746,8 +3744,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
                         return
 
                     # Add Region Tool
@@ -3828,8 +3825,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete tools in tools table if delete key event comes from the Selected Tab
@@ -3945,8 +3941,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
                         return
 
                     # Add Drill Hole Tool
@@ -3975,8 +3970,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
                         return
 
                     # Add Array of Slots Hole Tool
@@ -4131,7 +4125,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.filename = str(url.toLocalFile())
 
                 if self.filename == "":
-                    self.app.inform.emit("Open cancelled.")
+                    self.app.inform.emit("Cancelled.")
                 else:
                     extension = self.filename.lower().rpartition('.')[-1]
 

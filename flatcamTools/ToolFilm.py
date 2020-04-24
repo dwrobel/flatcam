@@ -751,7 +751,7 @@ class Film(FlatCAMTool):
         filename = str(filename)
 
         if str(filename) == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export positive film cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             pagesize = self.pagesize_combo.get_value()
@@ -897,7 +897,7 @@ class Film(FlatCAMTool):
         filename = str(filename)
 
         if str(filename) == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export negative film cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.export_negative(name, boxname, filename, border,

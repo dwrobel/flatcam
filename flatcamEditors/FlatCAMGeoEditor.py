@@ -581,7 +581,7 @@ class PaintOptionsTool(FlatCAMTool):
 
     def on_paint(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Paint cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         tooldia = self.painttooldia_entry.get_value()
@@ -1053,7 +1053,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def template(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Transformation cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         self.draw_app.select_tool("select")
@@ -3022,7 +3022,7 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         try:
@@ -3050,7 +3050,7 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         try:
@@ -3078,7 +3078,7 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         try:
@@ -4499,8 +4499,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def on_copy_click(self):
         if not self.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Copy cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         self.app.ui.geo_copy_btn.setChecked(True)

@@ -111,7 +111,7 @@ class ToolMove(FlatCAMTool):
                 self.draw_sel_bbox()
             else:
                 self.toggle()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("MOVE action cancelled. No object(s) to move."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No object(s) to move."))
 
     def on_left_click(self, event):
         # mouse click will be accepted only if the left button is clicked
@@ -267,7 +267,7 @@ class ToolMove(FlatCAMTool):
     def on_key_press(self, event):
         if event.key == 'escape':
             # abort the move action
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Move action cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             self.toggle()
         return
 

@@ -4262,8 +4262,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Cancelled. No aperture is selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No aperture is selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_gerber:
@@ -5599,8 +5598,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def template(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Transformation cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         self.draw_app.select_tool("select")
