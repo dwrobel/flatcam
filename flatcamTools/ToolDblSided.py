@@ -315,6 +315,7 @@ class DblSidedTool(FlatCAMTool):
 
         # Center point value
         self.center_entry = FCEntry()
+        self.center_entry.setPlaceholderText(_("Center point coordinates"))
 
         self.center_btn = FCButton('%s:' % _("Centroid"))
         self.center_btn.setToolTip(
@@ -502,7 +503,6 @@ class DblSidedTool(FlatCAMTool):
         self.center_btn.clicked.connect(
             lambda: self.point_entry.set_value(self.center_entry.get_value())
         )
-
 
         self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
         self.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)

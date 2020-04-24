@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.04.2020
+
+- some PEP changes, some method descriptions updated
+- added a placeholder text to 2Sided Tool
+
 23.04.2020 
 
 - fixed the Tcl Command Help to work as expected; made the text of the commands to be colored in Red color and bold
