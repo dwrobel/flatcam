@@ -253,6 +253,11 @@ class App(QtCore.QObject):
     # close app signal
     close_app_signal = pyqtSignal()
 
+    # will perform the cleanup operation after a Graceful Exit
+    # usefull for the NCC Tool and Paint Tool where some progressive plotting might leave
+    # graphic residues behind
+    cleanup = pyqtSignal()
+
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -7781,6 +7786,7 @@ class App(QtCore.QObject):
         if self.abort_flag is False:
             self.inform.emit(_("Aborting. The current task will be gracefully closed as soon as possible..."))
             self.abort_flag = True
+            self.cleanup.emit()
 
     def app_is_idle(self):
         if self.abort_flag:
