@@ -3448,7 +3448,9 @@ msgstr "В файле нет инструментов. Прерывание со
 
 #: flatcamEditors/FlatCAMExcEditor.py:3328
 msgid "An internal error has ocurred. See Shell.\n"
-msgstr "Произошла внутренняя ошибка. Посмотрите в командную строку.\n"
+msgstr ""
+"Произошла внутренняя ошибка. Смотрите командную строку.\n"
+"\n"
 
 #: flatcamEditors/FlatCAMExcEditor.py:3333
 msgid "Creating Excellon."
@@ -10510,7 +10512,6 @@ msgstr ""
 " для черчения контуров."
 
 #: flatcamGUI/PreferencesUI.py:4468
-#| msgid "No-Decimal"
 msgid "G-code Decimals"
 msgstr "G-code десятичные"
 
@@ -12769,7 +12770,9 @@ msgstr ""
 
 #: flatcamParsers/ParseExcellon.py:886 flatcamTools/ToolSolderPaste.py:1330
 msgid "An internal error has ocurred. See shell.\n"
-msgstr "Произошла внутренняя ошибка. Посмотрите в командную строку.\n"
+msgstr ""
+"Произошла внутренняя ошибка. Смотрите командную строку.\n"
+"\n"
 
 #: flatcamParsers/ParseExcellon.py:889
 msgid ""
