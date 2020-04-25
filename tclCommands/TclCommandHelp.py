@@ -68,7 +68,8 @@ class TclCommandHelp(TclCommand):
             if name not in self.app.tcl_commands_storage:
                 return "Unknown command: %s" % name
 
-            self.app.shell.append_output(self.app.tcl_commands_storage[name]["help"])
+            help_for_command = self.app.tcl_commands_storage[name]["help"] + '\n\n'
+            self.app.shell.append_output(help_for_command)
         else:
             if not args:
                 cmd_enum = '%s\n' % _("Available commands:")
@@ -108,7 +109,7 @@ class TclCommandHelp(TclCommand):
                     displayed_text = ['> %s\n' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
 
                 cmd_enum += '<br>'.join(displayed_text)
-                cmd_enum += '<br><br>%s<br>%s<br>' % (
+                cmd_enum += '<br><br>%s<br>%s<br><br>' % (
                     _("Type help <command_name> for usage."), _("Example: help open_gerber"))
 
                 self.app.shell.append_raw(cmd_enum)
