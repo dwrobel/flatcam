@@ -665,6 +665,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.reset_button.clicked.connect(self.set_tool_ui)
 
+        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
+        self.app.cleanup.connect(self.reset_usage)
+
         # #############################################################################
         # ###################### Setup CONTEXT MENU ###################################
         # #############################################################################
@@ -860,6 +863,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
+
+        assert isinstance(cw, QtWidgets.QComboBox), \
+            "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
+
         cw_index = self.tools_table.indexAt(cw.pos())
         cw_row = cw_index.row()
         cw_col = cw_index.column()
@@ -2285,10 +2292,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                     has_solid_geo += 1
 
             if has_solid_geo == 0:
-                self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no Painting Geometry in the file.\n"
-                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                       "Change the painting parameters and try again."))
+                app_obj.inform.emit('[ERROR] %s' %
+                                    _("There is no Painting Geometry in the file.\n"
+                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                      "Change the painting parameters and try again."))
                 return "fail"
 
             # Experimental...
@@ -3494,6 +3501,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
+
+        prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
+        if prog_plot:
+            self.temp_shapes.clear(update=True)
 
         self.sel_rect = []
 

@@ -8,8 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, FCComboBox, \
-    OptionalInputSection
+from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
+    FCComboBox, OptionalInputSection
 from flatcamParsers.ParseGerber import Gerber
 
 import FlatCAMApp
@@ -743,6 +743,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.reset_button.clicked.connect(self.set_tool_ui)
 
+        # Cleanup on Graceful exit (CTRL+ALT+X combo key)
+        self.app.cleanup.connect(self.reset_usage)
+
     def on_type_obj_index_changed(self, val):
         obj_type = 0 if val == 'gerber' else 2
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -872,7 +875,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         for tooluid_key, tooluid_val in self.ncc_tools.items():
             tooluid_val['data'] = deepcopy(temp_tool_data)
-
 
         # store all the data associated with the row parameter to the self.tools storage
         # tooldia_item = float(self.tools_table.item(row, 1).text())
@@ -1343,6 +1345,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
+        assert isinstance(cw, QtWidgets.QComboBox),\
+            "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
+
         cw_index = self.tools_table.indexAt(cw.pos())
         cw_row = cw_index.row()
         cw_col = cw_index.column()
@@ -1358,20 +1363,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 'type': typ,
                 'tool_type': tt,
             })
-
-        # if cw_col == 4:
-        #     op = cw.currentText()
-        #
-        #     if op == 'iso_op':
-        #         self.milling_type_label.show()
-        #         self.milling_type_radio.show()
-        #     else:
-        #         self.milling_type_label.hide()
-        #         self.milling_type_radio.hide()
-        #
-        #     self.ncc_tools[current_uid].update({
-        #         'operation': op
-        #     })
 
     def on_tool_type(self, val):
         if val == 'V':
@@ -1851,8 +1842,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.draw_moving_selection_shape_poly(points=self.points, data=(curr_pos[0], curr_pos[1]))
 
     def on_key_press(self, event):
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-        matplotlib_key_flag = False
+        # modifiers = QtWidgets.QApplication.keyboardModifiers()
+        # matplotlib_key_flag = False
 
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
@@ -1861,7 +1852,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
-            matplotlib_key_flag = True
+            # matplotlib_key_flag = True
 
             key = event.key
             key = QtGui.QKeySequence(key)
@@ -1871,13 +1862,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.ControlModifier
+                    pass
                 elif mod.lower() == 'alt':
-                    modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.AltModifier
+                    pass
                 elif mod.lower() == 'shift':
-                    modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.ShiftModifier
+                    pass
                 else:
-                    modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.NoModifier
+                    pass
                 key = QtGui.QKeySequence(key_text)
 
         # events from Vispy are of type KeyEvent
@@ -3078,7 +3073,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             app_obj.poly_not_cleared = False
 
             # Generate area for each tool
-            offset = sum(sorted_tools)
+            offset_a = sum(sorted_tools)
             current_uid = int(1)
             try:
                 tool = eval(self.app.defaults["tools_ncctools"])[0]
@@ -3154,8 +3149,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for poly in geo_elem:
-                                        for ring in self.poly2rings(poly):
+                                    for a_poly in geo_elem:
+                                        for ring in self.poly2rings(a_poly):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
                                                 new_geometry.append(new_geo)
@@ -3260,10 +3255,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 cleared_geo[:] = []
 
                 # Get remaining tools offset
-                offset -= (tool - 1e-12)
+                offset_a -= (tool - 1e-12)
 
                 # Area to clear
-                area = empty.buffer(-offset)
+                area = empty.buffer(-offset_a)
                 try:
                     area = area.difference(cleared)
                 except Exception:
@@ -3369,7 +3364,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
                             # Overall cleared area
-                            cleared = empty.buffer(-offset * (1 + overlap)).buffer(-tool / 1.999999).buffer(
+                            cleared = empty.buffer(-offset_a * (1 + overlap)).buffer(-tool / 1.999999).buffer(
                                 tool / 1.999999)
 
                             # clean-up cleared geo
@@ -3533,8 +3528,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                                 elif isinstance(geo_elem, MultiPolygon):
-                                    for poly in geo_elem:
-                                        for ring in self.poly2rings(poly):
+                                    for poly_g in geo_elem:
+                                        for ring in self.poly2rings(poly_g):
                                             new_geo = ring.intersection(bounding_box)
                                             if new_geo and not new_geo.is_empty:
                                                 new_geometry.append(new_geo)
@@ -3647,7 +3642,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 cleared_geo[:] = []
 
                 # Area to clear
-                for poly in cleared_by_last_tool:
+                for poly_r in cleared_by_last_tool:
                     # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
@@ -3655,7 +3650,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         # graceful abort requested by the user
                         raise FlatCAMApp.GracefulException
                     try:
-                        area = area.difference(poly)
+                        area = area.difference(poly_r)
                     except Exception:
                         pass
                 cleared_by_last_tool[:] = []
@@ -3716,27 +3711,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         # a smaller tool
                                         rest_geo.append(p)
                                 elif isinstance(p, MultiPolygon):
-                                    for poly in p:
-                                        if poly is not None:
+                                    for poly_p in p:
+                                        if poly_p is not None:
                                             # provide the app with a way to process the GUI events when
                                             # in a blocking loop
                                             QtWidgets.QApplication.processEvents()
 
                                             try:
                                                 if ncc_method == 'standard':
-                                                    cp = self.clear_polygon(poly, tool_used,
+                                                    cp = self.clear_polygon(poly_p, tool_used,
                                                                             self.grb_circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=False)
                                                 elif ncc_method == 'seed':
-                                                    cp = self.clear_polygon2(poly, tool_used,
+                                                    cp = self.clear_polygon2(poly_p, tool_used,
                                                                              self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=False)
                                                 else:
-                                                    cp = self.clear_polygon3(poly, tool_used,
+                                                    cp = self.clear_polygon3(poly_p, tool_used,
                                                                              self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
@@ -3746,7 +3741,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                 log.warning("Polygon can't be cleared. %s" % str(eee))
                                                 # this polygon should be added to a list and then try clear it with
                                                 # a smaller tool
-                                                rest_geo.append(poly)
+                                                rest_geo.append(poly_p)
 
                                 pol_nr += 1
                                 disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -3779,8 +3774,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     # graceful abort requested by the user
                                     raise FlatCAMApp.GracefulException
 
-                                poly = p.buffer(buffer_value)
-                                cleared_by_last_tool.append(poly)
+                                r_poly = p.buffer(buffer_value)
+                                cleared_by_last_tool.append(r_poly)
 
                             # find the tooluid associated with the current tool_dia so we know
                             # where to add the tool solid_geometry
@@ -4064,5 +4059,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
+
+        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        if prog_plot:
+            self.temp_shapes.clear(update=True)
 
         self.sel_rect = []
