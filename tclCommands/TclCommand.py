@@ -3,8 +3,7 @@ import re
 import FlatCAMApp
 import abc
 import collections
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
 from contextlib import contextmanager
 
 
@@ -58,6 +57,8 @@ class TclCommand(object):
             raise TypeError('Expected FlatCAMApp, got %s.' % type(app))
 
         self.log = self.app.log
+        self.error_info = None
+        self.error = None
 
     def raise_tcl_error(self, text):
         """
@@ -78,7 +79,7 @@ class TclCommand(object):
 
         :return: current command
         """
-        command_string = list()
+        command_string = []
         command_string.append(self.aliases[0])
 
         if self.original_args is not None:
@@ -288,7 +289,7 @@ class TclCommand(object):
 
         # self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
         try:
-            self.log.debug("TCL command '%s' executed." % str(self.__class__))
+            self.log.debug("TCL command '%s' executed." % str(type(self).__name__))
             self.original_args = args
             args, unnamed_args = self.check_args(args)
             return self.execute(args, unnamed_args)
@@ -387,7 +388,8 @@ class TclCommandSignaled(TclCommand):
 
             # Terminate on timeout
             if timeout is not None:
-                QtCore.QTimer.singleShot(timeout, report_quit)
+                time_val = int(timeout)
+                QtCore.QTimer.singleShot(time_val, report_quit)
 
             # Block
             loop.exec_()
@@ -403,7 +405,7 @@ class TclCommandSignaled(TclCommand):
                                                  "'set_sys global_background_timeout <miliseconds>'.")
 
         try:
-            self.log.debug("TCL command '%s' executed." % str(self.__class__))
+            self.log.debug("TCL command '%s' executed." % str(type(self).__name__))
             self.original_args = args
             args, unnamed_args = self.check_args(args)
             if 'timeout' in args:

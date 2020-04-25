@@ -22,6 +22,8 @@ class TclCommandNregions(TclCommand):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['non_copper_regions', 'ncr']
 
+    description = '%s %s' % ("--", "Creates a Geometry object with the non-copper regions.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -31,7 +33,7 @@ class TclCommandNregions(TclCommand):
     option_types = collections.OrderedDict([
         ('outname', str),
         ('margin', float),
-        ('rounded', bool)
+        ('rounded', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -39,15 +41,15 @@ class TclCommandNregions(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a geometry object with the non-copper regions.",
+        'main': "Creates a Geometry object with the non-copper regions.",
         'args': collections.OrderedDict([
-            ('name', 'Object name for which to create non-copper regions. String'),
+            ('name', 'Object name for which to create non-copper regions. String. Required.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
             ('margin', "Specify the edge of the PCB by drawing a box around all objects with this minimum distance. "
                        "Float number."),
-            ('rounded', "Resulting geometry will have rounded corners. True or False.")
+            ('rounded', "Resulting geometry will have rounded corners. True (1) or False (0).")
         ]),
-        'examples': ['ncr name -outname name_ncr']
+        'examples': ['ncr name -margin 0.1 -rounded True -outname name_ncr']
     }
 
     def execute(self, args, unnamed_args):
@@ -76,9 +78,14 @@ class TclCommandNregions(TclCommand):
             args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
         margin = float(args['margin'])
 
-        if 'rounded' not in args:
-            args['rounded'] = self.app.defaults["gerber_noncopperrounded"]
-        rounded = bool(args['rounded'])
+        if 'rounded' in args:
+            try:
+                par = args['rounded'].capitalize()
+            except AttributeError:
+                par = args['rounded']
+            rounded = bool(eval(par))
+        else:
+            rounded = bool(eval(self.app.defaults["gerber_noncopperrounded"]))
 
         del args['name']
 

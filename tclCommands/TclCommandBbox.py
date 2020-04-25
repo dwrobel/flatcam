@@ -21,6 +21,8 @@ class TclCommandBbox(TclCommand):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['bounding_box', 'bbox']
 
+    description = '%s %s' % ("--", "Creates a rectangular Geometry object that surrounds the object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -30,7 +32,7 @@ class TclCommandBbox(TclCommand):
     option_types = collections.OrderedDict([
         ('outname', str),
         ('margin', float),
-        ('rounded', bool)
+        ('rounded', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -38,14 +40,14 @@ class TclCommandBbox(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a Geometry object that surrounds the object.",
+        'main': "Creates a rectangular Geometry object that surrounds the object.",
         'args': collections.OrderedDict([
             ('name', 'Object name for which to create bounding box. String'),
-            ('outname', 'Name of the resulting Geometry object. String.'),
             ('margin', "Distance of the edges of the box to the nearest polygon."
                        "Float number."),
             ('rounded', "If the bounding box is to have rounded corners their radius is equal to the margin. "
-                        "True or False.")
+                        "True (1) or False (0)."),
+            ('outname', 'Name of the resulting Geometry object. String.')
         ]),
         'examples': ['bbox name -outname name_bbox']
     }
@@ -77,9 +79,14 @@ class TclCommandBbox(TclCommand):
             args['margin'] = float(self.app.defaults["gerber_bboxmargin"])
         margin = args['margin']
 
-        if 'rounded' not in args:
-            args['rounded'] = self.app.defaults["gerber_bboxrounded"]
-        rounded = bool(args['rounded'])
+        if 'rounded' in args:
+            try:
+                par = args['rounded'].capitalize()
+            except AttributeError:
+                par = args['rounded']
+            rounded = bool(eval(par))
+        else:
+            rounded = bool(eval(self.app.defaults["gerber_bboxrounded"]))
 
         del args['name']
 

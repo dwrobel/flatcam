@@ -16,8 +16,7 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
-from copy import deepcopy
-from datetime import datetime
+from ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
@@ -43,16 +42,28 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Divine icon pack by Ipapun @ finicons.com
 
-        # ################################## ##
-        # ## BUILDING THE GUI IS DONE HERE # ##
-        # ################################## ##
+        # #######################################################################
+        # ############ BUILDING THE GUI IS EXECUTED HERE ########################
+        # #######################################################################
 
-        # ######### ##
-        # ## Menu # ##
-        # ######### ##
+        # #######################################################################
+        # ####################### TCL Shell DOCK ################################
+        # #######################################################################
+        self.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
+        self.shell_dock.setObjectName('Shell_DockWidget')
+        self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
+        self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
+                                    QtWidgets.QDockWidget.DockWidgetFloatable |
+                                    QtWidgets.QDockWidget.DockWidgetClosable)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.shell_dock)
+
+        # #######################################################################
+        # ###################### Menu BUILDING ##################################
+        # #######################################################################
         self.menu = self.menuBar()
 
-        self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Panel"))
+        self.menu_toggle_nb = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Panel"))
         self.menu_toggle_nb.setToolTip(
             _("Toggle Panel")
         )
@@ -69,7 +80,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # New Project
         self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/file16.png'),
-                                                    _('&New Project ...\tCTRL+N'), self)
+                                                    _('&New Project ...\tCtrl+N'), self)
         self.menufilenewproject.setToolTip(
             _("Will create a new, blank project")
         )
@@ -114,12 +125,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Open Gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                    _('Open &Gerber ...\tCTRL+G'), self)
+                                                    _('Open &Gerber ...\tCtrl+G'), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                      _('Open &Excellon ...\tCTRL+E'), self)
+                                                      _('Open &Excellon ...\tCtrl+E'), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
@@ -140,6 +151,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.recent = self.menufile.addMenu(
             QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent files"))
 
+        # SAVE category
+        self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
+
+        # Save Project
+        self.menufilesaveproject = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...\tCtrl+S'), self)
+        self.menufile_save.addAction(self.menufilesaveproject)
+
+        # Save Project As ...
+        self.menufilesaveprojectas = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project &As ...\tCtrl+Shift+S'), self)
+        self.menufile_save.addAction(self.menufilesaveprojectas)
+
+        # Save Project Copy ...
+        # self.menufilesaveprojectcopy = QtWidgets.QAction(
+        #     QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
+        # self.menufile_save.addAction(self.menufilesaveprojectcopy)
+
+        self.menufile_save.addSeparator()
+
         # Separator
         self.menufile.addSeparator()
 
@@ -153,7 +184,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileopenscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
         self.menufilerunscript = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tSHIFT+S' % _('Run Script ...'), self)
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tShift+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
            _("Will run the opened Tcl Script thus\n"
              "enabling the automation of certain\n"
@@ -263,27 +294,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menufile.addSeparator()
         self.menufile_print = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCTRL+P' % _('Print (PDF)'))
+            QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCtrl+P' % _('Print (PDF)'))
         self.menufile.addAction(self.menufile_print)
-
-        self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
-
-        # Save Project
-        self.menufilesaveproject = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...'), self)
-        self.menufile_save.addAction(self.menufilesaveproject)
-
-        # Save Project As ...
-        self.menufilesaveprojectas = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save Project &As ...\tCTRL+S'), self)
-        self.menufile_save.addAction(self.menufilesaveprojectas)
-
-        # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtWidgets.QAction(
-            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
-        self.menufile_save.addAction(self.menufilesaveprojectcopy)
-
-        self.menufile_save.addSeparator()
 
         # Separator
         self.menufile.addSeparator()
@@ -304,7 +316,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menueditedit = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit16.png'), _('Edit Object\tE'))
         self.menueditok = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'), _('Close Editor\tCTRL+S'))
+            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'), _('Close Editor\tCtrl+S'))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -360,7 +372,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menueditcopyobject = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCTRL+C'))
+            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCtrl+C'))
 
         # Separator
         self.menuedit.addSeparator()
@@ -371,20 +383,25 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit.addSeparator()
         self.menueditorigin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
+        self.menuedit_move2origin = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tShift+O'))
+
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
+        self.menueditlocate = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate16.png'), _('Locate in Object\tShift+J'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menuedittoggleunits = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/toggle_units16.png'), _('Toggle Units\tQ'))
         self.menueditselectall = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCTRL+A'))
+            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCtrl+A'))
 
         # Separator
         self.menuedit.addSeparator()
         self.menueditpreferences = self.menuedit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tSHIFT+P'))
+            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tShift+P'))
 
         # ########################################################################
         # ########################## OPTIONS # ###################################
@@ -392,14 +409,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menuoptions = self.menu.addMenu(_('Options'))
         self.menuoptions_transform_rotate = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tSHIFT+(R)"))
+            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tShift+(R)"))
         # Separator
         self.menuoptions.addSeparator()
 
         self.menuoptions_transform_skewx = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tSHIFT+X"))
+            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tShift+X"))
         self.menuoptions_transform_skewy = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tSHIFT+Y"))
+            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tShift+Y"))
 
         # Separator
         self.menuoptions.addSeparator()
@@ -411,9 +428,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuoptions.addSeparator()
 
         self.menuoptions_view_source = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/source32.png'), _("View source\tALT+S"))
+            QtGui.QIcon(self.app.resource_location + '/source32.png'), _("View source\tAlt+S"))
         self.menuoptions_tools_db = self.menuoptions.addAction(
-            QtGui.QIcon(self.app.resource_location + '/database32.png'), _("Tools DataBase\tCTRL+D"))
+            QtGui.QIcon(self.app.resource_location + '/database32.png'), _("Tools DataBase\tCtrl+D"))
         # Separator
         self.menuoptions.addSeparator()
 
@@ -422,11 +439,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.menuview = self.menu.addMenu(_('View'))
         self.menuviewenable = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tALT+1'))
+            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tAlt+1'))
         self.menuviewdisableall = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tALT+2'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tAlt+2'))
         self.menuviewdisableother = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tALT+3'))
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tAlt+3'))
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(
@@ -443,12 +460,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview.addSeparator()
 
         self.menuview_toggle_code_editor = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tSHIFT+E'))
+            QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tShift+E'))
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tALT+F10"))
+            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tAlt+F10"))
         self.menuview_toggle_parea = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCTRL+F10"))
+            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCtrl+F10"))
         self.menuview_toggle_notebook = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
 
@@ -456,11 +473,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_grid = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Snap\tG"))
         self.menuview_toggle_grid_lines = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tALT+G"))
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tAlt+G"))
         self.menuview_toggle_axis = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tSHIFT+G"))
+            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tShift+G"))
         self.menuview_toggle_workspace = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tSHIFT+W"))
+            QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
 
         # ########################################################################
         # ########################## Objects # ###################################
@@ -537,7 +554,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text\tT'))
         self.geo_editor_menu.addSeparator()
         self.geo_union_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/union16.png'),_('Polygon Union\tU'))
+            QtGui.QIcon(self.app.resource_location + '/union16.png'), _('Polygon Union\tU'))
         self.geo_intersection_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/intersection16.png'), _('Polygon Intersection\tE'))
         self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
@@ -546,7 +563,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath16.png'), _('Cut Path\tX'))
-        # self.move_menuitem = self.menu.addAction(QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
+        # self.move_menuitem = self.menu.addAction(
+        #   QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
         self.geo_copy_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy16.png'), _("Copy Geom\tC"))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
@@ -562,7 +580,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/paint16.png'), _("Paint Tool\tI")
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool\tALT+R")
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool\tAlt+R")
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -617,7 +635,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_menu.addSeparator()
 
         self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize\tALT+N"))
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize\tAlt+N"))
         self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("Add SemiDisc\tE"))
         self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(
@@ -627,11 +645,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale\tS'))
         self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area\tALT+A'))
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area\tAlt+A'))
         self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser\tCTRL+E'))
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser\tCtrl+E'))
         self.grb_transform_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform\tALT+R"))
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform\tAlt+R"))
         self.grb_editor_menu.addSeparator()
 
         self.grb_copy_menuitem = self.grb_editor_menu.addAction(
@@ -684,8 +702,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject_brown = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
 
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/white32.png'), _('White'))
+
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/black32.png'), _('Black'))
+
+        self.menuprojectcolor.addSeparator()
+
         self.menuproject_custom = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Custom'))
+
+        self.menuprojectcolor.addSeparator()
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Opacity'))
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Default'))
 
         self.menuproject.addSeparator()
 
@@ -712,7 +746,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
 
         # IMPORTANT #
-        # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
+        # The order: SPLITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
         # desired.
         self.splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.splitter)
@@ -772,12 +806,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setObjectName('Snap_TB')
         self.addToolBar(self.snap_toolbar)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                pass
-            elif layout == 'compact':
+        flat_settings = QSettings("Open Source", "FlatCAM")
+        if flat_settings.contains("layout"):
+            layout = flat_settings.value('layout', type=str)
+            if layout == 'compact':
                 self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
@@ -823,8 +855,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.move2origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
+
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+        self.locate_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -859,6 +896,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(
@@ -895,6 +937,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
         self.cal_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
+        self.punch_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+        self.invert_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -1077,10 +1123,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## SELECTED Tab # ##############################
         # ########################################################################
         self.selected_tab = QtWidgets.QWidget()
+        # self.selected_tab.setMinimumWidth(270)
         self.selected_tab.setObjectName("selected_tab")
         self.selected_tab_layout = QtWidgets.QVBoxLayout(self.selected_tab)
         self.selected_tab_layout.setContentsMargins(2, 2, 2, 2)
+
         self.selected_scroll_area = VerticalScrollArea()
+        # self.selected_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.selected_tab_layout.addWidget(self.selected_scroll_area)
         self.notebook.addTab(self.selected_tab, _("Selected"))
 
@@ -1093,6 +1142,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.tool_tab, _("Tool"))
         self.tool_scroll_area = VerticalScrollArea()
+        # self.tool_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tool_tab_layout.addWidget(self.tool_scroll_area)
 
         # ########################################################################
@@ -1411,95 +1461,51 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+A</strong></td>
+                        <td height="20"><strong>Ctrl+A</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+C</strong></td>
+                        <td height="20"><strong>Ctrl+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+D</strong></td>
+                        <td height="20"><strong>Ctrl+D</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+E</strong></td>
+                        <td height="20"><strong>Ctrl+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+G</strong></td>
+                        <td height="20"><strong>Ctrl+G</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+M</strong></td>
+                        <td height="20"><strong>Ctrl+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+N</strong></td>
+                        <td height="20"><strong>Ctrl+N</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>                   
                     <tr height="20">
-                        <td height="20"><strong>CTRL+O</strong></td>
+                        <td height="20"><strong>Ctrl+O</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+P</strong></td>
+                        <td height="20"><strong>Ctrl+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr> 
                     <tr height="20">
-                        <td height="20"><strong>CTRL+Q</strong></td>
+                        <td height="20"><strong>Ctrl+Q</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
+                        <td height="20"><strong>Ctrl+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+F10</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+C</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+E</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+G</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+M</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+P</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+S</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+W</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+X</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>SHIFT+Y</strong></td>
+                        <td height="20"><strong>Ctrl+F10</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1507,71 +1513,47 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+C</strong></td>
+                        <td height="20"><strong>Shift+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+D</strong></td>
+                        <td height="20"><strong>Shift+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+E</strong></td>
+                        <td height="20"><strong>Shift+G</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+J</strong></td>
+                        <td height="20"><strong>Shift+J</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+K</strong></td>
+                        <td height="20"><strong>Shift+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+L</strong></td>
+                        <td height="20"><strong>Shift+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+N</strong></td>
+                        <td height="20"><strong>Shift+R</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+O</strong></td>
+                        <td height="20"><strong>Shift+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+P</strong></td>
+                        <td height="20"><strong>Shift+W</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+Q</strong></td>
+                        <td height="20"><strong>Shift+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+S</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+U</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+1</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+2</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+3</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+F10</strong></td>
+                        <td height="20"><strong>Shift+Y</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1579,7 +1561,104 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+ALT+X</strong></td>
+                        <td height="20"><strong>Alt+A</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+C</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+D</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+E</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+H</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+I</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+J</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+K</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+L</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+N</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+O</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+P</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+Q</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+R</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+U</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+1</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+2</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+3</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+F10</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+Alt+X</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+Shift+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+Shift+V</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1633,15 +1712,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # CTRL section
                 _("Select All"), _("Copy Obj"), _("Open Tools Database"),
                 _("Open Excellon File"), _("Open Gerber File"), _("Distance Tool"), _("New Project"),
-                _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
+                _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project"), _("Toggle Plot Area"),
 
                 # SHIFT section
                 _("Copy Obj_Name"),
-                _("Toggle Code Editor"), _("Toggle the axis"), _("Distance Minimum Tool"), _("Open Preferences Window"),
+                _("Toggle Code Editor"), _("Toggle the axis"), _("Locate in Object"), _("Distance Minimum Tool"),
+                _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"),
+
                 # ALT section
-                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"), _("Fiducials Tool"),
+                _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
@@ -1651,6 +1733,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # CTRL + ALT section
                 _("Abort current task (gracefully)"),
+
+                # CTRL + SHIFT section
+                _("Save Project As"),
+                _("Paste Special. Will convert a Windows path style to the one required in Tcl Shell"),
 
                 # F keys section
                 _("Open Online Manual"),
@@ -1757,31 +1843,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+M</strong></td>
+                        <td height="20"><strong>Shift+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+X</strong></td>
+                        <td height="20"><strong>Shift+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>SHIFT+Y</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+X</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+Y</strong></td>
+                        <td height="20"><strong>Shift+Y</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1789,15 +1859,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+M</strong></td>
+                        <td height="20"><strong>Alt+R</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
+                        <td height="20"><strong>Alt+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+X</strong></td>
+                        <td height="20"><strong>Alt+Y</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+M</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+S</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Ctrl+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1883,7 +1969,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>SHIFT+M</strong></td>
+                    <td height="20"><strong>Shift+M</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -1907,7 +1993,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td height="20"><strong>Ctrl+S</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
             </tbody>
@@ -1999,7 +2085,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>SHIFT+M</strong></td>
+                    <td height="20"><strong>Shift+M</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -2007,11 +2093,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+E</strong></td>
+                    <td height="20"><strong>Ctrl+E</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td height="20"><strong>Ctrl+S</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
@@ -2019,15 +2105,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                  <tr height="20">
-                    <td height="20"><strong>ALT+A</strong></td>
+                    <td height="20"><strong>Alt+A</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>ALT+N</strong></td>
+                    <td height="20"><strong>Alt+N</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>ALT+R</strong></td>
+                    <td height="20"><strong>Alt+R</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
             </tbody>
@@ -2200,7 +2286,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
-        self.snap_infobar_label = QtWidgets.QLabel()
+        self.snap_infobar_label = FCLabel()
         self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
         self.infobar.addWidget(self.snap_infobar_label)
 
@@ -2277,49 +2363,42 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         QtWidgets.qApp.installEventFilter(self)
 
-        # restore the Toolbar State from file
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("saved_gui_state"):
-            saved_gui_state = settings.value('saved_gui_state')
+        # ########################################################################
+        # ################## RESTORE THE TOOLBAR STATE from file #################
+        # ########################################################################
+
+        flat_settings = QSettings("Open Source", "FlatCAM")
+        if flat_settings.contains("saved_gui_state"):
+            saved_gui_state = flat_settings.value('saved_gui_state')
             self.restoreState(saved_gui_state)
-            log.debug("FlatCAMGUI.__init__() --> UI state restored.")
+            log.debug("FlatCAMGUI.__init__() --> UI state restored from QSettings.")
 
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
+        if flat_settings.contains("layout"):
+            layout = flat_settings.value('layout', type=str)
+            self.exc_edit_toolbar.setDisabled(True)
+            self.geo_edit_toolbar.setDisabled(True)
+            self.grb_edit_toolbar.setDisabled(True)
+
             if layout == 'standard':
-                # self.exc_edit_toolbar.setVisible(False)
-                self.exc_edit_toolbar.setDisabled(True)
-                # self.geo_edit_toolbar.setVisible(False)
-                self.geo_edit_toolbar.setDisabled(True)
-                # self.grb_edit_toolbar.setVisible(False)
-                self.grb_edit_toolbar.setDisabled(True)
-
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setDisabled(True)
-
+            else:
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setDisabled(True)
                 self.corner_snap_btn.setDisabled(True)
-            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings.")
+            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
         else:
-            # self.exc_edit_toolbar.setVisible(False)
             self.exc_edit_toolbar.setDisabled(True)
-            # self.geo_edit_toolbar.setVisible(False)
             self.geo_edit_toolbar.setDisabled(True)
-            # self.grb_edit_toolbar.setVisible(False)
             self.grb_edit_toolbar.setDisabled(True)
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
 
-            settings.setValue('layout', "standard")
+            flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
-            del settings
+            del flat_settings
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
 
         # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
@@ -2327,8 +2406,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.setText(_("Lock Toolbars"))
         self.lock_action.setCheckable(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("toolbar_lock"):
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("toolbar_lock"):
             lock_val = settings.value('toolbar_lock')
             if lock_val == 'true':
                 lock_state = True
@@ -2339,10 +2418,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.lock_action.setChecked(False)
         else:
             lock_state = False
-            settings.setValue('toolbar_lock', lock_state)
+            qsettings.setValue('toolbar_lock', lock_state)
 
             # This will write the setting to the platform specific storage.
-            del settings
+            del qsettings
 
         self.lock_toolbar(lock=lock_state)
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
@@ -2405,19 +2484,22 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         response = msgbox.clickedButton()
 
         if response == bt_yes:
-            settings = QSettings("Open Source", "FlatCAM")
-            for key in settings.allKeys():
-                settings.remove(key)
+            qsettings = QSettings("Open Source", "FlatCAM")
+            for key in qsettings.allKeys():
+                qsettings.remove(key)
             # This will write the setting to the platform specific storage.
-            del settings
+            del qsettings
 
     def populate_toolbars(self):
         """
-        Will populate the App Toolbars with theie actions
+        Will populate the App Toolbars with their actions
+
         :return: None
         """
 
+        # ########################################################################
         # ## File Toolbar # ##
+        # ########################################################################
         self.file_open_gerber_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
         self.file_open_excellon_btn = self.toolbarfile.addAction(
@@ -2428,7 +2510,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_save_btn = self.toolbarfile.addAction(
             QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
+        # ########################################################################
         # ## Edit Toolbar # ##
+        # ########################################################################
         self.newgeo_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
         self.newgrb_btn = self.toolbargeo.addAction(
@@ -2457,8 +2541,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+        self.locate_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
-        # ## View Toolbar # ##
+        # ########################################################################
+        # ########################## View Toolbar# ###############################
+        # ########################################################################
         self.replot_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
@@ -2470,9 +2558,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.zoom_fit_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
 
-        # self.toolbarview.setVisible(False)
-
-        # ## Shell Toolbar # ##
+        # ########################################################################
+        # ########################## Shell Toolbar# ##############################
+        # ########################################################################
         self.shell_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
@@ -2482,9 +2570,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.run_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
 
+        # ########################################################################
         # ## Tools Toolbar # ##
+        # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("&Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(
@@ -2498,10 +2593,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'),
-                                                      _("SolderPaste Tool"))
+            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
         self.sub_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        self.rules_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules Tool"))
+        self.optimal_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -2519,7 +2617,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cal_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
 
+        # ########################################################################
         # ## Excellon Editor Toolbar # ##
+        # ########################################################################
         self.select_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(
@@ -2543,7 +2643,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.move_drill_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
 
+        # ########################################################################
         # ## Geometry Editor Toolbar # ##
+        # ########################################################################
         self.geo_select_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select 'Esc'"))
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
@@ -2593,7 +2695,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
+        # ########################################################################
         # ## Gerber Editor Toolbar # ##
+        # ########################################################################
         self.grb_select_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
@@ -2633,10 +2737,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
+        # ########################################################################
         # ## Snap Toolbar # ##
+        # ########################################################################
+
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         # self.addToolBar(self.snap_toolbar)
-
         self.grid_snap_btn = self.snap_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
@@ -2672,31 +2778,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                self.exc_edit_toolbar.setVisible(True)
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(True)
-                self.grb_edit_toolbar.setDisabled(True)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("layout"):
+            layout = qsettings.value('layout', type=str)
 
+            if layout == 'standard':
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
-                self.exc_edit_toolbar.setVisible(True)
-                self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(True)
-                self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(True)
-                self.grb_edit_toolbar.setDisabled(True)
-
+            else:
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setDisabled(True)
                 self.snap_magnet.setDisabled(True)
+
+            # on 'minimal' layout only some toolbars are active
+            if layout != 'minimal':
+                self.exc_edit_toolbar.setVisible(True)
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setVisible(True)
+                self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setVisible(True)
+                self.grb_edit_toolbar.setDisabled(True)
 
     def keyPressEvent(self, event):
         """
@@ -2709,6 +2811,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         active = self.app.collection.get_active()
         selected = self.app.collection.get_selected()
+        names_list = self.app.collection.get_names()
 
         matplotlib_key_flag = False
 
@@ -2747,7 +2850,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
-
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_file_saveprojectas()
+                    return
             elif modifiers == QtCore.Qt.ControlModifier:
                 # Select All
                 if key == QtCore.Qt.Key_A:
@@ -2762,7 +2868,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_tool_copy()
                         return
 
-                    self.app.on_copy_object()
+                    self.app.on_copy_command()
 
                 # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_D:
@@ -2834,6 +2940,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_axis()
 
+                # Locate in Object
+                if key == QtCore.Qt.Key_J:
+                    self.app.on_locate(obj=self.app.collection.get_active())
+
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M:
                     self.app.distance_min_tool.run()
@@ -2869,7 +2979,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_skewy()
                     return
             elif modifiers == QtCore.Qt.AltModifier:
-
                 # Eanble all plots
                 if key == Qt.Key_1:
                     self.app.enable_all_plots()
@@ -2881,6 +2990,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Disable all other plots
                 if key == Qt.Key_3:
                     self.app.disable_other_plots()
+
+                # Align in Object Tool
+                if key == QtCore.Qt.Key_A:
+                    self.app.align_objects_tool.run(toggle=True)
 
                 # Calculator Tool
                 if key == QtCore.Qt.Key_C:
@@ -2905,6 +3018,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_grid_lines()
                     return
+
+                # Align in Object Tool
+                if key == QtCore.Qt.Key_H:
+                    self.app.punch_tool.run(toggle=True)
+
+                # Extract Drills Tool
+                if key == QtCore.Qt.Key_I:
+                    self.app.edrills_tool.run(toggle=True)
 
                 # Fiducials Tool
                 if key == QtCore.Qt.Key_J:
@@ -3046,6 +3167,36 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.collection.update_view()
                     self.app.delete_selection_shape()
 
+                # Select the object in the Tree above the current one
+                if key == QtCore.Qt.Key_Up:
+                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    focused_wdg = QtWidgets.QApplication.focusWidget()
+                    if isinstance(focused_wdg, KeySensitiveListView):
+                        self.app.collection.set_all_inactive()
+                        if active is None:
+                            return
+                        active_name = active.options['name']
+                        active_index = names_list.index(active_name)
+                        if active_index == 0:
+                            self.app.collection.set_active(names_list[-1])
+                        else:
+                            self.app.collection.set_active(names_list[active_index-1])
+
+                # Select the object in the Tree bellow the current one
+                if key == QtCore.Qt.Key_Down:
+                    # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
+                    focused_wdg = QtWidgets.QApplication.focusWidget()
+                    if isinstance(focused_wdg, KeySensitiveListView):
+                        self.app.collection.set_all_inactive()
+                        if active is None:
+                            return
+                        active_name = active.options['name']
+                        active_index = names_list.index(active_name)
+                        if active_index == len(names_list) - 1:
+                            self.app.collection.set_active(names_list[0])
+                        else:
+                            self.app.collection.set_active(names_list[active_index+1])
+
                 # New Geometry
                 if key == QtCore.Qt.Key_B:
                     self.app.new_gerber_object()
@@ -3103,7 +3254,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Shell toggle
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_toggle_shell()
+                    self.app.toggle_shell()
 
                 # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:
@@ -3234,7 +3385,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
-                    # TODO: ...?
                     # self.on_tool_select("select")
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
@@ -3464,8 +3614,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.delete_selected()
                         self.app.grb_editor.plot_all()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete aperture in apertures table if delete key event comes from the Selected Tab
@@ -3549,8 +3698,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
                         return
 
                     # Add Disc Tool
@@ -3596,8 +3744,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
                         return
 
                     # Add Region Tool
@@ -3678,8 +3825,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete tools in tools table if delete key event comes from the Selected Tab
@@ -3760,7 +3906,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
                 # Propagate to tool
-                response = None
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
@@ -3796,8 +3941,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to copy."))
                         return
 
                     # Add Drill Hole Tool
@@ -3826,8 +3970,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.exc_editor.active_tool.set_origin(
                                 (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                         else:
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Nothing selected to move."))
                         return
 
                     # Add Array of Slots Hole Tool
@@ -3982,7 +4125,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.filename = str(url.toLocalFile())
 
                 if self.filename == "":
-                    self.app.inform.emit("Open cancelled.")
+                    self.app.inform.emit("Cancelled.")
                 else:
                     extension = self.filename.lower().rpartition('.')[-1]
 
@@ -4032,8 +4175,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.app.save_in_progress:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Application is saving the project. Please wait ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Application is saving the project. Please wait ..."))
         else:
             grect = self.geometry()
 
@@ -4192,12 +4334,12 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             # Open Gerber ...
             menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
-                                                _('Open &Gerber ...\tCTRL+G'), self)
+                                                _('Open &Gerber ...\tCtrl+G'), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
             menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
-                                                  _('Open &Excellon ...\tCTRL+E'), self)
+                                                  _('Open &Excellon ...\tCtrl+E'), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...

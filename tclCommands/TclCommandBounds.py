@@ -12,6 +12,7 @@ if '_' not in builtins.__dict__:
 
 log = logging.getLogger('base')
 
+
 class TclCommandBounds(TclCommand):
     """
     Tcl shell command to return the bounds values for a supplied list of objects (identified by their names).
@@ -21,6 +22,8 @@ class TclCommandBounds(TclCommand):
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['get_bounds', 'bounds']
+
+    description = '%s %s' % ("--", "Return in the console a list of bounds values for a list of objects.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -37,7 +40,7 @@ class TclCommandBounds(TclCommand):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Will return a list of bounds values, each set of bound values is "
-                "a list itself: [xmin, ymin, xmax, ymax].",
+                "a list itself: [xmin, ymin, xmax, ymax] corresponding to each of the provided objects.",
         'args': collections.OrderedDict([
             ('objects', 'A list of object names separated by comma without spaces.'),
         ]),
@@ -52,7 +55,7 @@ class TclCommandBounds(TclCommand):
         :return:
         """
 
-        obj_list = list()
+        obj_list = []
         if 'objects' in args:
             try:
                 obj_list = [str(obj_name) for obj_name in str(args['objects']).split(",") if obj_name != '']
@@ -68,7 +71,7 @@ class TclCommandBounds(TclCommand):
                 _("Expected a list of objects names separated by comma. Got"), str(args['objects'])))
             return 'fail'
 
-        result_list = list()
+        result_list = []
         for name in obj_list:
             obj = self.app.collection.get_by_name(name)
 

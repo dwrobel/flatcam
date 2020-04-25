@@ -288,14 +288,14 @@ class FCPad(FCShapeTool):
 
         ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
         if ap_type == 'C':
-            new_geo_el = dict()
+            new_geo_el = {}
 
             center = Point([point_x, point_y])
             new_geo_el['solid'] = center.buffer(self.radius)
             new_geo_el['follow'] = center
             return new_geo_el
         elif ap_type == 'R':
-            new_geo_el = dict()
+            new_geo_el = {}
 
             p1 = (point_x - self.half_width, point_y - self.half_height)
             p2 = (point_x + self.half_width, point_y - self.half_height)
@@ -307,7 +307,7 @@ class FCPad(FCShapeTool):
             return new_geo_el
         elif ap_type == 'O':
             geo = []
-            new_geo_el = dict()
+            new_geo_el = {}
 
             if self.half_height > self.half_width:
                 p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
@@ -423,7 +423,7 @@ class FCPadArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -515,9 +515,8 @@ class FCPadArray(FCShapeTool):
                 self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                               _("The value is not Float. Check for comma instead of dot separator."))
                 return
-        except Exception as e:
-            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
-                                          _("The value is mistyped. Check the value."))
+        except Exception:
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' % _("The value is mistyped. Check the value."))
             return
 
         if self.pad_array == 'Linear':
@@ -545,7 +544,7 @@ class FCPadArray(FCShapeTool):
                     )
 
                 if static is None or static is False:
-                    new_geo_el = dict()
+                    new_geo_el = {}
 
                     if 'solid' in geo_el:
                         new_geo_el['solid'] = affinity.translate(
@@ -602,14 +601,14 @@ class FCPadArray(FCShapeTool):
 
         ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
         if ap_type == 'C':
-            new_geo_el = dict()
+            new_geo_el = {}
 
             center = Point([point_x, point_y])
             new_geo_el['solid'] = center.buffer(self.radius)
             new_geo_el['follow'] = center
             return new_geo_el
         elif ap_type == 'R':
-            new_geo_el = dict()
+            new_geo_el = {}
 
             p1 = (point_x - self.half_width, point_y - self.half_height)
             p2 = (point_x + self.half_width, point_y - self.half_height)
@@ -620,7 +619,7 @@ class FCPadArray(FCShapeTool):
             return new_geo_el
         elif ap_type == 'O':
             geo = []
-            new_geo_el = dict()
+            new_geo_el = {}
 
             if self.half_height > self.half_width:
                 p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
@@ -812,7 +811,7 @@ class FCPoligonize(FCShapeTool):
                     except KeyError:
                         self.draw_app.on_aperture_add(apid='0')
                         current_storage = self.draw_app.storage_dict['0']['geometry']
-                new_el = dict()
+                new_el = {}
                 new_el['solid'] = geo
                 new_el['follow'] = geo.exterior
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
@@ -827,7 +826,7 @@ class FCPoligonize(FCShapeTool):
                     self.draw_app.on_aperture_add(apid='0')
                     current_storage = self.draw_app.storage_dict['0']['geometry']
 
-            new_el = dict()
+            new_el = {}
             new_el['solid'] = fused_geo
             new_el['follow'] = fused_geo.exterior
             self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
@@ -915,7 +914,7 @@ class FCRegion(FCShapeTool):
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
-        new_geo_el = dict()
+        new_geo_el = {}
 
         x = data[0]
         y = data[1]
@@ -983,7 +982,7 @@ class FCRegion(FCShapeTool):
                     self.inter_point = data
 
             self.temp_points.append(data)
-            new_geo_el = dict()
+            new_geo_el = {}
 
             if len(self.temp_points) > 1:
                 try:
@@ -1049,7 +1048,7 @@ class FCRegion(FCShapeTool):
 
                         self.temp_points.append(self.inter_point)
             self.temp_points.append(data)
-            new_geo_el = dict()
+            new_geo_el = {}
 
             new_geo_el['solid'] = LinearRing(self.temp_points).buffer(self.buf_val,
                                                                       resolution=int(self.steps_per_circle / 4),
@@ -1070,7 +1069,7 @@ class FCRegion(FCShapeTool):
             else:
                 self.draw_app.last_aperture_selected = '0'
 
-            new_geo_el = dict()
+            new_geo_el = {}
 
             new_geo_el['solid'] = Polygon(self.points).buffer(self.buf_val,
                                                               resolution=int(self.steps_per_circle / 4),
@@ -1183,7 +1182,7 @@ class FCTrack(FCRegion):
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
     def make(self):
-        new_geo_el = dict()
+        new_geo_el = {}
         if len(self.temp_points) == 1:
             new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
                                                                  resolution=int(self.steps_per_circle / 4))
@@ -1219,7 +1218,7 @@ class FCTrack(FCRegion):
         except IndexError:
             self.points.append(point)
 
-        new_geo_el = dict()
+        new_geo_el = {}
 
         if len(self.temp_points) == 1:
             new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
@@ -1242,7 +1241,7 @@ class FCTrack(FCRegion):
 
     def utility_geometry(self, data=None):
         self.update_grid_info()
-        new_geo_el = dict()
+        new_geo_el = {}
 
         if len(self.points) == 0:
             new_geo_el['solid'] = Point(data).buffer(self.buf_val,
@@ -1427,10 +1426,10 @@ class FCDisc(FCShapeTool):
         if '0' in self.draw_app.storage_dict:
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
         else:
-            self.draw_app.storage_dict['0'] = dict()
+            self.draw_app.storage_dict['0'] = {}
             self.draw_app.storage_dict['0']['type'] = 'C'
             self.draw_app.storage_dict['0']['size'] = 0.0
-            self.draw_app.storage_dict['0']['geometry'] = list()
+            self.draw_app.storage_dict['0']['geometry'] = []
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -1453,7 +1452,7 @@ class FCDisc(FCShapeTool):
         return ""
 
     def utility_geometry(self, data=None):
-        new_geo_el = dict()
+        new_geo_el = {}
         if len(self.points) == 1:
             p1 = self.points[0]
             p2 = data
@@ -1464,7 +1463,7 @@ class FCDisc(FCShapeTool):
         return None
 
     def make(self):
-        new_geo_el = dict()
+        new_geo_el = {}
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1530,10 +1529,10 @@ class FCSemiDisc(FCShapeTool):
         if '0' in self.draw_app.storage_dict:
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
         else:
-            self.draw_app.storage_dict['0'] = dict()
+            self.draw_app.storage_dict['0'] = {}
             self.draw_app.storage_dict['0']['type'] = 'C'
             self.draw_app.storage_dict['0']['size'] = 0.0
-            self.draw_app.storage_dict['0']['geometry'] = list()
+            self.draw_app.storage_dict['0']['geometry'] = []
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
@@ -1592,10 +1591,10 @@ class FCSemiDisc(FCShapeTool):
                 return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
-        new_geo_el = dict()
-        new_geo_el_pt1 = dict()
-        new_geo_el_pt2 = dict()
-        new_geo_el_pt3 = dict()
+        new_geo_el = {}
+        new_geo_el_pt1 = {}
+        new_geo_el_pt2 = {}
+        new_geo_el_pt3 = {}
 
         if len(self.points) == 1:  # Show the radius
             center = self.points[0]
@@ -1681,7 +1680,7 @@ class FCSemiDisc(FCShapeTool):
 
     def make(self):
         self.draw_app.current_storage = self.storage_obj
-        new_geo_el = dict()
+        new_geo_el = {}
 
         if self.mode == 'c12':
             center = self.points[0]
@@ -2031,7 +2030,7 @@ class FCApertureMove(FCShapeTool):
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage:
                     geometric_data = select_shape.geo
-                    new_geo_el = dict()
+                    new_geo_el = {}
                     if 'solid' in geometric_data:
                         new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
@@ -2084,7 +2083,7 @@ class FCApertureMove(FCShapeTool):
 
         if len(self.draw_app.get_selected()) <= self.sel_limit:
             for geom in self.draw_app.get_selected():
-                new_geo_el = dict()
+                new_geo_el = {}
                 if 'solid' in geom.geo:
                     new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
                 if 'follow' in geom.geo:
@@ -2094,7 +2093,7 @@ class FCApertureMove(FCShapeTool):
                 geo_list.append(deepcopy(new_geo_el))
             return DrawToolUtilityShape(geo_list)
         else:
-            ss_el = dict()
+            ss_el = {}
             ss_el['solid'] = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
             return DrawToolUtilityShape(ss_el)
 
@@ -2115,7 +2114,7 @@ class FCApertureCopy(FCApertureMove):
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage:
                     geometric_data = select_shape.geo
-                    new_geo_el = dict()
+                    new_geo_el = {}
                     if 'solid' in geometric_data:
                         new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
                     if 'follow' in geometric_data:
@@ -2274,7 +2273,7 @@ class FCEraser(FCShapeTool):
         dy = data[1] - self.origin[1]
 
         for geom in self.draw_app.get_selected():
-            new_geo_el = dict()
+            new_geo_el = {}
             if 'solid' in geom.geo:
                 new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
             if 'follow' in geom.geo:
@@ -2300,10 +2299,10 @@ class FCApertureSelect(DrawTool):
 
         # since FCApertureSelect tool is activated whenever a tool is exited I place here the reinitialization of the
         # bending modes using in FCRegion and FCTrack
-        self.draw_app.bend_mode = 1
+        self.grb_editor_app.bend_mode = 1
 
         # here store the selected apertures
-        self.sel_aperture = set()
+        self.sel_aperture = []
 
         try:
             self.grb_editor_app.apertures_table.clearSelection()
@@ -2332,7 +2331,7 @@ class FCApertureSelect(DrawTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
             self.grb_editor_app.selected = []
@@ -2348,46 +2347,53 @@ class FCApertureSelect(DrawTool):
         else:
             mod_key = None
 
+        if mod_key != self.grb_editor_app.app.defaults["global_mselect_key"]:
+            self.grb_editor_app.selected.clear()
+            self.sel_aperture.clear()
+
         for storage in self.grb_editor_app.storage_dict:
             try:
-                for geo_el in self.grb_editor_app.storage_dict[storage]['geometry']:
-                    if 'solid' in geo_el.geo:
-                        geometric_data = geo_el.geo['solid']
+                for shape_stored in self.grb_editor_app.storage_dict[storage]['geometry']:
+                    if 'solid' in shape_stored.geo:
+                        geometric_data = shape_stored.geo['solid']
                         if Point(point).within(geometric_data):
-                            if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
-                                if geo_el in self.draw_app.selected:
-                                    self.draw_app.selected.remove(geo_el)
-                                    self.sel_aperture.remove(storage)
-                                else:
-                                    # add the object to the selected shapes
-                                    self.draw_app.selected.append(geo_el)
-                                    self.sel_aperture.add(storage)
+                            if shape_stored in self.grb_editor_app.selected:
+                                self.grb_editor_app.selected.remove(shape_stored)
                             else:
-                                self.draw_app.selected.append(geo_el)
-                                self.sel_aperture.add(storage)
+                                # add the object to the selected shapes
+                                self.grb_editor_app.selected.append(shape_stored)
             except KeyError:
                 pass
 
         # select the aperture in the Apertures Table that is associated with the selected shape
+        self.sel_aperture.clear()
+
+        self.grb_editor_app.apertures_table.clearSelection()
         try:
-            self.draw_app.apertures_table.cellPressed.disconnect()
+            self.grb_editor_app.apertures_table.cellPressed.disconnect()
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
-        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for shape_s in self.grb_editor_app.selected:
+            for storage in self.grb_editor_app.storage_dict:
+                if shape_s in self.grb_editor_app.storage_dict[storage]['geometry']:
+                    self.sel_aperture.append(storage)
+
+        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in self.sel_aperture:
             for row in range(self.grb_editor_app.apertures_table.rowCount()):
                 if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
-                    self.grb_editor_app.apertures_table.selectRow(row)
-                    self.draw_app.last_aperture_selected = aper
-        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+                    if not self.grb_editor_app.apertures_table.item(row, 0).isSelected():
+                        self.grb_editor_app.apertures_table.selectRow(row)
+                        self.grb_editor_app.last_aperture_selected = aper
+        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-        self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+        self.grb_editor_app.apertures_table.cellPressed.connect(self.grb_editor_app.on_row_selected)
 
         return ""
 
     def clean_up(self):
-        self.draw_app.plot_all()
+        self.grb_editor_app.plot_all()
 
 
 class FCTransform(FCShapeTool):
@@ -2915,30 +2921,30 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # ## Data
         self.active_tool = None
 
-        self.storage_dict = dict()
-        self.current_storage = list()
+        self.storage_dict = {}
+        self.current_storage = []
 
-        self.sorted_apid = list()
+        self.sorted_apid = []
 
-        self.new_apertures = dict()
-        self.new_aperture_macros = dict()
+        self.new_apertures = {}
+        self.new_aperture_macros = {}
 
         # store here the plot promises, if empty the delayed plot will be activated
-        self.grb_plot_promises = list()
+        self.grb_plot_promises = []
 
         # dictionary to store the tool_row and aperture codes in Tool_table
         # it will be updated everytime self.build_ui() is called
-        self.olddia_newdia = dict()
+        self.olddia_newdia = {}
 
-        self.tool2tooldia = dict()
+        self.tool2tooldia = {}
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
         self.last_aperture_selected = None
-        self.utility = list()
+        self.utility = []
 
         # this will store the polygons marked by mark are to be perhaps deleted
-        self.geo_to_delete = list()
+        self.geo_to_delete = []
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
@@ -2950,7 +2956,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apdim_lbl.hide()
         self.apdim_entry.hide()
         self.gerber_obj = None
-        self.gerber_obj_options = dict()
+        self.gerber_obj_options = {}
 
         # VisPy Visuals
         if self.app.is_legacy is False:
@@ -3033,10 +3039,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pool = self.app.pool
 
         # Multiprocessing results
-        self.results = list()
+        self.results = []
 
         # A QTimer
         self.plot_thread = None
+
+        # a QThread for the edit process
+        self.thread = QtCore.QThread()
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -3093,12 +3102,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.conversion_factor = 1
 
+        self.apertures_row = 0
+
+        self.complete = True
+
         self.set_ui()
         log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
         self.tool_shape.pool = pool
+        self.pool = pool
 
     def set_ui(self):
         # updated units
@@ -3321,8 +3335,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 self.storage_dict[ap_id]['geometry'] = []
 
-                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
-                # each time a aperture code is edited or added
+                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and
+                # gets updated on values each time a aperture code is edited or added
                 self.olddia_newdia[ap_id] = ap_id
         else:
             if ap_id not in self.olddia_newdia:
@@ -3423,7 +3437,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 # I've added this flag_del variable because dictionary don't like
                 # having keys deleted while iterating through them
-                flag_del = list()
+                flag_del = []
                 for deleted_tool in self.tool2tooldia:
                     if self.tool2tooldia[deleted_tool] == deleted_aperture:
                         flag_del.append(deleted_tool)
@@ -3493,7 +3507,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             geometry = []
             for geo_el in self.storage_dict[dia_changed]:
                 geometric_data = geo_el.geo
-                new_geo_el = dict()
+                new_geo_el = {}
                 if 'solid' in geometric_data:
                     new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
                                                                   xfact=factor, yfact=factor))
@@ -3612,7 +3626,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif layout == 'compact':
+            else:
                 # self.app.ui.exc_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
@@ -3742,7 +3756,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_command)
         self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 
@@ -3920,101 +3934,131 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #     # and add the first aperture to have something to play with
         #     self.on_aperture_add('10')
 
-        def worker_job(app_obj):
-            with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
-                # ############################################################# ##
-                # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-                # ############################################################# ##
+        # self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
 
-                # list of clear geos that are to be applied to the entire file
-                global_clear_geo = []
+        class Execute_Edit(QtCore.QObject):
 
-                # create one big geometry made out of all 'negative' (clear) polygons
-                for apid in app_obj.gerber_obj.apertures:
-                    # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
-                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
-                            if 'clear' in elem:
-                                global_clear_geo.append(elem['clear'])
-                log.warning("Found %d clear polygons." % len(global_clear_geo))
+            start = QtCore.pyqtSignal(str)
 
-                global_clear_geo = MultiPolygon(global_clear_geo)
-                if isinstance(global_clear_geo, Polygon):
-                    global_clear_geo = list(global_clear_geo)
+            def __init__(self, app):
+                super(Execute_Edit, self).__init__()
+                self.app = app
+                self.start.connect(self.run)
 
-                # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
-                # clear geometry that fits inside the solid. otherwise we may loose the solid
-                for apid in app_obj.gerber_obj.apertures:
-                    temp_solid_geometry = []
-                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
-                        # for elem in self.gerber_obj.apertures[apid]['geometry']:
-                        #     if 'solid' in elem:
-                        #         solid_geo = elem['solid']
-                        #         for clear_geo in global_clear_geo:
-                        #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                        #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                        #             # delete it
-                        #             if clear_geo.within(solid_geo):
-                        #                 solid_geo = solid_geo.difference(clear_geo)
-                        #         try:
-                        #             for poly in solid_geo:
-                        #                 new_elem = dict()
-                        #
-                        #                 new_elem['solid'] = poly
-                        #                 if 'clear' in elem:
-                        #                     new_elem['clear'] = poly
-                        #                 if 'follow' in elem:
-                        #                     new_elem['follow'] = poly
-                        #                 temp_elem.append(deepcopy(new_elem))
-                        #         except TypeError:
-                        #             new_elem = dict()
-                        #             new_elem['solid'] = solid_geo
-                        #             if 'clear' in elem:
-                        #                 new_elem['clear'] = solid_geo
-                        #             if 'follow' in elem:
-                        #                 new_elem['follow'] = solid_geo
-                        #             temp_elem.append(deepcopy(new_elem))
-                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
-                            new_elem = dict()
-                            if 'solid' in elem:
-                                solid_geo = elem['solid']
+            @staticmethod
+            def worker_job(app_obj):
+                with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
+                    # ###############################################################
+                    # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
+                    # ###############################################################
 
-                                for clear_geo in global_clear_geo:
-                                    # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                    # the solid_geometry. We want for clear_geometry just to cut into solid_geometry
-                                    # not to delete it
-                                    if clear_geo.within(solid_geo):
-                                        solid_geo = solid_geo.difference(clear_geo)
+                    # list of clear geos that are to be applied to the entire file
+                    global_clear_geo = []
 
-                                new_elem['solid'] = solid_geo
-                            if 'clear' in elem:
-                                new_elem['clear'] = elem['clear']
-                            if 'follow' in elem:
-                                new_elem['follow'] = elem['follow']
-                            temp_solid_geometry.append(deepcopy(new_elem))
+                    # create one big geometry made out of all 'negative' (clear) polygons
+                    for apid in app_obj.gerber_obj.apertures:
+                        # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
+                        if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                            for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                                if 'clear' in elem:
+                                    global_clear_geo.append(elem['clear'])
+                    log.warning("Found %d clear polygons." % len(global_clear_geo))
 
-                        app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
-                log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
+                    if global_clear_geo:
+                        global_clear_geo = MultiPolygon(global_clear_geo)
+                        if isinstance(global_clear_geo, Polygon):
+                            global_clear_geo = list(global_clear_geo)
 
-                # Loading the Geometry into Editor Storage
-                for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
-                    app_obj.results.append(app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict)))
+                    # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
+                    # clear geometry that fits inside the solid. otherwise we may loose the solid
+                    for ap_id in app_obj.gerber_obj.apertures:
+                        temp_solid_geometry = []
+                        if 'geometry' in app_obj.gerber_obj.apertures[ap_id]:
+                            # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                            #     if 'solid' in elem:
+                            #         solid_geo = elem['solid']
+                            #         for clear_geo in global_clear_geo:
+                            #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                            #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                            #             # delete it
+                            #             if clear_geo.within(solid_geo):
+                            #                 solid_geo = solid_geo.difference(clear_geo)
+                            #         try:
+                            #             for poly in solid_geo:
+                            #                 new_elem = {}
+                            #
+                            #                 new_elem['solid'] = poly
+                            #                 if 'clear' in elem:
+                            #                     new_elem['clear'] = poly
+                            #                 if 'follow' in elem:
+                            #                     new_elem['follow'] = poly
+                            #                 temp_elem.append(deepcopy(new_elem))
+                            #         except TypeError:
+                            #             new_elem = {}
+                            #             new_elem['solid'] = solid_geo
+                            #             if 'clear' in elem:
+                            #                 new_elem['clear'] = solid_geo
+                            #             if 'follow' in elem:
+                            #                 new_elem['follow'] = solid_geo
+                            #             temp_elem.append(deepcopy(new_elem))
+                            for elem in app_obj.gerber_obj.apertures[ap_id]['geometry']:
+                                new_elem = {}
+                                if 'solid' in elem:
+                                    solid_geo = elem['solid']
+                                    if not global_clear_geo or global_clear_geo.is_empty:
+                                        pass
+                                    else:
+                                        for clear_geo in global_clear_geo:
+                                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                            # the solid_geometry. We want for clear_geometry just to cut into
+                                            # solid_geometry not to delete it
+                                            if clear_geo.within(solid_geo):
+                                                solid_geo = solid_geo.difference(clear_geo)
 
-                output = list()
-                for p in app_obj.results:
-                    output.append(p.get())
+                                    new_elem['solid'] = solid_geo
+                                if 'clear' in elem:
+                                    new_elem['clear'] = elem['clear']
+                                if 'follow' in elem:
+                                    new_elem['follow'] = elem['follow']
+                                temp_solid_geometry.append(deepcopy(new_elem))
 
-                for elem in output:
-                    app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
+                            app_obj.gerber_obj.apertures[ap_id]['geometry'] = deepcopy(temp_solid_geometry)
 
-                app_obj.mp_finished.emit(output)
+                    log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
-        self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
+                    try:
+                        # Loading the Geometry into Editor Storage
+                        for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
+                            app_obj.results.append(
+                                app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict))
+                            )
+                    except Exception as ee:
+                        log.debug(
+                            "FlatCAMGrbEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
+                        traceback.print_exc()
+
+                    output = []
+                    for p in app_obj.results:
+                        output.append(p.get())
+
+                    for elem in output:
+                        app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
+
+                    app_obj.mp_finished.emit(output)
+
+            def run(self):
+                self.worker_job(self.app)
+
+        self.thread.start(QtCore.QThread.NormalPriority)
+
+        executable_edit = Execute_Edit(app=self)
+        executable_edit.moveToThread(self.thread)
+        executable_edit.start.emit("Started")
 
     @staticmethod
     def add_apertures(aperture_id, aperture_dict):
-        storage_elem = list()
-        storage_dict = dict()
+        storage_elem = []
+        storage_dict = {}
 
         for k, v in list(aperture_dict.items()):
             try:
@@ -4073,7 +4117,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def update_options(obj):
         try:
             if not obj.options:
-                obj.options = dict()
+                obj.options = {}
                 obj.options['xmin'] = 0
                 obj.options['ymin'] = 0
                 obj.options['xmax'] = 0
@@ -4082,7 +4126,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 return False
         except AttributeError:
-            obj.options = dict()
+            obj.options = {}
             return True
 
     def new_edited_gerber(self, outname, aperture_storage):
@@ -4101,7 +4145,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         out_name = outname
         storage_dict = aperture_storage
 
-        local_storage_dict = dict()
+        local_storage_dict = {}
         for aperture in storage_dict:
             if 'geometry' in storage_dict[aperture]:
                 # add aperture only if it has geometry
@@ -4122,7 +4166,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         grb_obj.apertures[storage_apid][k] = []
                         for geo_el in val:
                             geometric_data = geo_el.geo
-                            new_geo_el = dict()
+                            new_geo_el = {}
                             if 'solid' in geometric_data:
                                 new_geo_el['solid'] = geometric_data['solid']
                                 poly_buffer.append(deepcopy(new_geo_el['solid']))
@@ -4182,7 +4226,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             except KeyError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Aperture definitions in the file. Aborting Gerber creation."))
-            except Exception as e:
+            except Exception:
                 msg = '[ERROR] %s' % \
                       _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
@@ -4197,12 +4241,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             except Exception as e:
                 log.error("Error on Edited object creation: %s" % str(e))
                 # make sure to clean the previous results
-                self.results = list()
+                self.results = []
                 return
 
-            self.app.inform.emit('[success] %s' %  _("Done. Gerber editing finished."))
+            self.app.inform.emit('[success] %s' % _("Done. Gerber editing finished."))
             # make sure to clean the previous results
-            self.results = list()
+            self.results = []
 
     def on_tool_select(self, tool):
         """
@@ -4214,12 +4258,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_aperture_selected is None and current_tool is not 'select':
+        if self.last_aperture_selected is None and current_tool != 'select':
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Cancelled. No aperture is selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No aperture is selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_gerber:
@@ -4355,7 +4398,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -4371,7 +4414,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
                 if modifiers == QtCore.Qt.ShiftModifier:
                     self.app.clipboard.setText(
-                        self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1])
+                        self.app.defaults["global_point_clipboard_format"] %
+                        (self.decimals, self.pos[0], self.decimals, self.pos[1])
                     )
                     self.app.inform.emit('[success] %s' %
                                          _("Coordinates copied to clipboard."))
@@ -4421,7 +4465,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -4584,7 +4628,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         # # ## Snap coordinates
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
@@ -4603,12 +4647,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         if self.pos is None:
             self.pos = (0, 0)
-        dx = x - self.pos[0]
-        dy = y - self.pos[1]
+        self.app.dx = x - self.pos[0]
+        self.app.dy = y - self.pos[1]
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: " 
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         self.update_utility_geometry(data=(x, y))
 
@@ -4714,7 +4758,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0, tolerance=self.tolerance)
-        except AttributeError as e:
+        except AttributeError:
             if type(geometry) == Point:
                 return
             if len(color) == 9:
@@ -4911,14 +4955,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         def buffer_recursion(geom_el, selection):
             if type(geom_el) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom_el:
                     geoms.append(buffer_recursion(local_geom, selection=selection))
                 return geoms
             else:
                 if geom_el in selection:
                     geometric_data = geom_el.geo
-                    buffered_geom_el = dict()
+                    buffered_geom_el = {}
                     if 'solid' in geometric_data:
                         buffered_geom_el['solid'] = geometric_data['solid'].buffer(buff_value, join_style=join_style)
                     if 'follow' in geometric_data:
@@ -4967,14 +5011,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         def scale_recursion(geom_el, selection):
             if type(geom_el) == list:
-                geoms = list()
+                geoms = []
                 for local_geom in geom_el:
                     geoms.append(scale_recursion(local_geom, selection=selection))
                 return geoms
             else:
                 if geom_el in selection:
                     geometric_data = geom_el.geo
-                    scaled_geom_el = dict()
+                    scaled_geom_el = {}
                     if 'solid' in geometric_data:
                         scaled_geom_el['solid'] = affinity.scale(
                             geometric_data['solid'], scale_factor, scale_factor, origin='center'
@@ -5028,12 +5072,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         area = geo_el.geo['solid'].area
                         try:
                             upper_threshold_val = self.ma_upper_threshold_entry.get_value()
-                        except Exception as e:
+                        except Exception:
                             return
 
                         try:
                             lower_threshold_val = self.ma_lower_threshold_entry.get_value()
-                        except Exception as e:
+                        except Exception:
                             lower_threshold_val = 0.0
 
                         if float(upper_threshold_val) > area > float(lower_threshold_val):
@@ -5493,7 +5537,7 @@ class TransformEditorTool(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
     def set_tool_ui(self):
         # Initialize form
@@ -5554,8 +5598,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def template(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Transformation cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 
         self.draw_app.select_tool("select")
@@ -5826,7 +5869,7 @@ class TransformEditorTool(FlatCAMTool):
                 # execute mirroring
                 for sel_el_shape in elem_list:
                     sel_el = sel_el_shape.geo
-                    if axis is 'X':
+                    if axis == 'X':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
                         if 'follow' in sel_el:
@@ -5835,7 +5878,7 @@ class TransformEditorTool(FlatCAMTool):
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
                         self.app.inform.emit('[success] %s...' %
                                              _('Flip on the Y axis done'))
-                    elif axis is 'Y':
+                    elif axis == 'Y':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
                         if 'follow' in sel_el:
@@ -5883,14 +5926,14 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
-                        if axis is 'X':
+                        if axis == 'X':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.skew(sel_el['solid'], num, 0, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
                                 sel_el['follow'] = affinity.skew(sel_el['follow'], num, 0, origin=(xminimal, yminimal))
                             if 'clear' in sel_el:
                                 sel_el['clear'] = affinity.skew(sel_el['clear'], num, 0, origin=(xminimal, yminimal))
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.skew(sel_el['solid'], 0, num, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
@@ -5990,14 +6033,14 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
-                        if axis is 'X':
+                        if axis == 'X':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.translate(sel_el['solid'], num, 0)
                             if 'follow' in sel_el:
                                 sel_el['follow'] = affinity.translate(sel_el['follow'], num, 0)
                             if 'clear' in sel_el:
                                 sel_el['clear'] = affinity.translate(sel_el['clear'], num, 0)
-                        elif axis is 'Y':
+                        elif axis == 'Y':
                             if 'solid' in sel_el:
                                 sel_el['solid'] = affinity.translate(sel_el['solid'], 0, num)
                             if 'follow' in sel_el:

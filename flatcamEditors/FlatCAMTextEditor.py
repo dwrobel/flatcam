@@ -5,14 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from flatcamGUI.GUIElements import *
-from PyQt5 import QtPrintSupport
+from flatcamGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber
+from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch, mm
 
-from io import StringIO
+# from io import StringIO
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -29,6 +29,8 @@ class TextEditor(QtWidgets.QWidget):
         super().__init__()
 
         self.app = app
+        self.plain_text = plain_text
+
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
             QtWidgets.QSizePolicy.MinimumExpanding
@@ -45,7 +47,7 @@ class TextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
-        if plain_text:
+        if self.plain_text:
             self.editor_class = FCTextAreaLineNumber()
             self.code_editor = self.editor_class.edit
 
@@ -209,16 +211,16 @@ class TextEditor(QtWidgets.QWidget):
                     _filter_ = "FlatConfig Files (*.FlatConfig);;PDF Files (*.pdf);;All Files (*.*)"
 
         try:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(
+            filename = str(FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Code ..."),
                 directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
                 filter=_filter_
             )[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Code ..."), filter=_filter_)[0])
+            filename = str(FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), filter=_filter_)[0])
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Code cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
@@ -234,7 +236,7 @@ class TextEditor(QtWidgets.QWidget):
 
                     styles = getSampleStyleSheet()
                     styleN = styles['Normal']
-                    styleH = styles['Heading1']
+                    # styleH = styles['Heading1']
                     story = []
 
                     if self.app.defaults['units'].lower() == 'mm':
@@ -313,7 +315,7 @@ class TextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

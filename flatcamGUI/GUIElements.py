@@ -152,6 +152,124 @@ class RadioSet(QtWidgets.QWidget):
 #             wgt.show()
 
 
+class FCTree(QtWidgets.QTreeWidget):
+    resize_sig = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False, protected_column=None):
+        super(FCTree, self).__init__(parent)
+
+        self.setColumnCount(columns)
+        self.setHeaderHidden(header_hidden)
+        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
+                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+
+        # make inactive rows text some color as active; may be useful in the future
+        # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
+        #                  palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
+        self.setPalette(palette)
+
+        if extended_sel:
+            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+        self.protected_column = protected_column
+        self.itemDoubleClicked.connect(self.on_double_click)
+        self.header().sectionDoubleClicked.connect(self.on_header_double_click)
+        self.resize_sig.connect(self.on_resize)
+
+    def on_double_click(self, item, column):
+        # from here: https://stackoverflow.com/questions/2801959/making-only-one-column-of-a-qtreewidgetitem-editable
+        tmp_flags = item.flags()
+        if self.is_editable(column):
+            item.setFlags(tmp_flags | QtCore.Qt.ItemIsEditable)
+        elif tmp_flags & QtCore.Qt.ItemIsEditable:
+            item.setFlags(tmp_flags ^ QtCore.Qt.ItemIsEditable)
+
+    def on_header_double_click(self, column):
+        header = self.header()
+        header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+        width = header.sectionSize(column)
+        header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+        header.resizeSection(column, width)
+
+    def is_editable(self, tested_col):
+        try:
+            ret_val = False if tested_col in self.protected_column else True
+        except TypeError:
+            ret_val = False
+        return ret_val
+
+    def addParent(self, parent, title, expanded=False, color=None, font=None):
+        item = QtWidgets.QTreeWidgetItem(parent, [title])
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.ShowIndicator)
+        item.setExpanded(expanded)
+        if color is not None:
+            # item.setTextColor(0, color) # PyQt4
+            item.setForeground(0, QtGui.QBrush(color))
+        if font is not None:
+            item.setFont(0, font)
+        return item
+
+    def addParentEditable(self, parent, title, color=None, font=None, font_items=None, editable=False):
+        item = QtWidgets.QTreeWidgetItem(parent)
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.DontShowIndicator)
+        if editable:
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+        item.setFlags(item.flags() | QtCore.Qt.ItemIsSelectable)
+
+        for t in range(len(title)):
+            item.setText(t, title[t])
+
+        if color is not None:
+            # item.setTextColor(0, color) # PyQt4
+            item.setForeground(0, QtGui.QBrush(color))
+
+        if font and font_items:
+            try:
+                for fi in font_items:
+                    item.setFont(fi, font)
+            except TypeError:
+                item.setFont(font_items, font)
+        elif font:
+            item.setFont(0, font)
+        return item
+
+    def addChild(self, parent, title, column1=None, font=None, font_items=None, editable=False):
+        item = QtWidgets.QTreeWidgetItem(parent)
+        if editable:
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+
+        item.setText(0, str(title[0]))
+        if column1 is not None:
+            item.setText(1, str(title[1]))
+        if font and font_items:
+            try:
+                for fi in font_items:
+                    item.setFont(fi, font)
+            except TypeError:
+                item.setFont(font_items, font)
+
+    def resizeEvent(self, event):
+        """ Resize all sections to content and user interactive """
+
+        super(FCTree, self).resizeEvent(event)
+        self.on_resize()
+
+    def on_resize(self):
+        header = self.header()
+        for column in range(header.count()):
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.ResizeToContents)
+            width = header.sectionSize(column)
+            header.setSectionResizeMode(column, QtWidgets.QHeaderView.Interactive)
+            header.resizeSection(column, width)
+
+
 class LengthEntry(QtWidgets.QLineEdit):
     def __init__(self, output_units='IN', decimals=None, parent=None):
         super(LengthEntry, self).__init__(parent)
@@ -201,7 +319,7 @@ class LengthEntry(QtWidgets.QLineEdit):
             units = raw[-2:]
             units = self.scales[self.output_units][units.upper()]
             value = raw[:-2]
-            return float(eval(value))*  units
+            return float(eval(value)) * units
         except IndexError:
             value = raw
             return float(eval(value))
@@ -233,7 +351,7 @@ class FloatEntry(QtWidgets.QLineEdit):
 
     def mousePressEvent(self, e, Parent=None):
         super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit == True:
+        if self.readyToEdit is True:
             self.selectAll()
             self.readyToEdit = False
 
@@ -258,7 +376,7 @@ class FloatEntry(QtWidgets.QLineEdit):
             evaled = eval(raw)
             return float(evaled)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -304,7 +422,7 @@ class FloatEntry2(QtWidgets.QLineEdit):
             evaled = eval(raw)
             return float(evaled)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -407,6 +525,8 @@ class FCEntry(QtWidgets.QLineEdit):
         decimal_digits = decimals if decimals is not None else self.decimals
         if type(val) is float:
             self.setText('%.*f' % (decimal_digits, val))
+        elif val is None:
+            self.setText('')
         else:
             self.setText(str(val))
 
@@ -482,7 +602,7 @@ class EvalEntry(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled
@@ -522,7 +642,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if raw is not '':
+            if raw != '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled
@@ -538,12 +658,16 @@ class EvalEntry2(QtWidgets.QLineEdit):
 class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
+    confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
 
         self.editingFinished.connect(self.on_edit_finished)
+        if callback:
+            self.confirmation_signal.connect(callback)
+
         self.lineEdit().installEventFilter(self)
 
         if suffix:
@@ -602,6 +726,14 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.readyToEdit = True
             self.prev_readyToEdit = True
 
+    def valueFromText(self, text):
+        txt = text.strip('%%')
+        try:
+            ret_val = int(txt)
+        except ValueError:
+            ret_val = 0
+        return ret_val
+
     def get_value(self):
         return int(self.value())
 
@@ -613,8 +745,30 @@ class FCSpinner(QtWidgets.QSpinBox):
             return
         self.setValue(k)
 
+    def validate(self, p_str, p_int):
+        text = p_str
+
+        min_val = self.minimum()
+        max_val = self.maximum()
+        try:
+            if int(text) < min_val or int(text) > max_val:
+                self.confirmation_signal.emit(False, min_val, max_val)
+                return QtGui.QValidator.Intermediate, text, p_int
+        except ValueError:
+            pass
+
+        self.confirmation_signal.emit(True, min_val, max_val)
+        return QtGui.QValidator.Acceptable, p_str, p_int
+
     def set_range(self, min_val, max_val):
+        self.blockSignals(True)
         self.setRange(min_val, max_val)
+        self.blockSignals(False)
+
+    def set_step(self, p_int):
+        self.blockSignals(True)
+        self.setSingleStep(p_int)
+        self.blockSignals(False)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCSpinner, self).sizeHint()
@@ -624,12 +778,23 @@ class FCSpinner(QtWidgets.QSpinBox):
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
+    confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+        """
+
+        :param suffix:      a char added to the end of the value in the LineEdit; like a '%' or '$' etc
+        :param alignment:   the value is aligned to left or right
+        :param parent:
+        :param callback:    called when the entered value is outside limits; the min and max value will be passed to it
+        """
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
         self.editingFinished.connect(self.on_edit_finished)
+        if callback:
+            self.confirmation_signal.connect(callback)
+
         self.lineEdit().installEventFilter(self)
 
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
@@ -690,20 +855,26 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')
+        text = text.strip('%%')
         try:
             ret_val = float(text)
         except ValueError:
             ret_val = 0.0
-
         return ret_val
 
     def validate(self, p_str, p_int):
         text = p_str.replace(',', '.')
+
+        min_val = self.minimum()
+        max_val = self.maximum()
         try:
-            if float(text) < self.minimum() or float(text) > self.maximum():
+            if float(text) < min_val or float(text) > max_val:
+                self.confirmation_signal.emit(False, min_val, max_val)
                 return QtGui.QValidator.Intermediate, text, p_int
         except ValueError:
             pass
+
+        self.confirmation_signal.emit(True, min_val, max_val)
         return QtGui.QValidator.Acceptable, p_str, p_int
 
     def get_value(self):
@@ -734,6 +905,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
+
+    # def sizeHint(self):
+    #     default_hint_size = super(FCDoubleSpinner, self).sizeHint()
+    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
 class FCCheckBox(QtWidgets.QCheckBox):
@@ -1139,6 +1314,9 @@ class FCComboBox(QtWidgets.QComboBox):
         self.view.viewport().installEventFilter(self)
         self.view.setContextMenuPolicy(Qt.CustomContextMenu)
 
+        self._set_last = False
+        self._obj_type = None
+
         # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
         # pos = mouse right click click position
         # self = is the combobox object itself
@@ -1159,6 +1337,29 @@ class FCComboBox(QtWidgets.QComboBox):
 
     def set_value(self, val):
         self.setCurrentIndex(self.findText(str(val)))
+
+    @property
+    def is_last(self):
+        return self._set_last
+
+    @is_last.setter
+    def is_last(self, val):
+        self._set_last = val
+        if self._set_last is True:
+            self.model().rowsInserted.connect(self.on_model_changed)
+        self.setCurrentIndex(1)
+
+    @property
+    def obj_type(self):
+        return self._obj_type
+
+    @obj_type.setter
+    def obj_type(self, val):
+        self._obj_type = val
+
+    def on_model_changed(self, parent, first, last):
+        if self.model().data(parent, QtCore.Qt.DisplayRole) == self.obj_type:
+            self.setCurrentIndex(first)
 
 
 class FCInputDialog(QtWidgets.QInputDialog):
@@ -1216,8 +1417,18 @@ class FCButton(QtWidgets.QPushButton):
 
 
 class FCLabel(QtWidgets.QLabel):
+
+    clicked = QtCore.pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super(FCLabel, self).__init__(parent)
+
+        # for the usage of this label as a clickable label, to know that current state
+        self.clicked_state = False
+
+    def mousePressEvent(self, event):
+        self.clicked_state = not self.clicked_state
+        self.clicked.emit(self.clicked_state)
 
     def get_value(self):
         return self.text()
@@ -1230,10 +1441,12 @@ class FCMenu(QtWidgets.QMenu):
     def __init__(self):
         super().__init__()
         self.mouse_is_panning = False
+        self.popup_active = False
 
     def popup(self, pos, action=None):
-        self.mouse_is_panning = False
         super().popup(pos)
+        self.mouse_is_panning = False
+        self.popup_active = True
 
 
 class FCTab(QtWidgets.QTabWidget):
@@ -1290,7 +1503,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.protect_by_name = protect_by_name if isinstance(protect_by_name, list) else None
 
         # Close all detached tabs if the application is closed explicitly
-        QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs) # @UndefinedVariable
+        QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
 
         # used by the property self.useOldIndex(param)
         self.use_old_index = None
@@ -1770,7 +1983,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if ((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged:
+            if (event.buttons() & QtCore.Qt.LeftButton) and self.dragInitiated and self.can_be_dragged:
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
@@ -1885,7 +2098,7 @@ class FCDetachableTab2(FCDetachableTab):
 class VerticalScrollArea(QtWidgets.QScrollArea):
     """
     This widget extends QtGui.QScrollArea to make a vertical-only
-    scroll area that also expands horizontally to accomodate
+    scroll area that also expands horizontally to accommodate
     its contents.
     """
     def __init__(self, parent=None):
@@ -2009,6 +2222,10 @@ class FCTable(QtWidgets.QTableWidget):
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
                          palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+
+        # make inactive rows text some color as active; may be useful in the future
+        # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
+        #                  palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
         self.setPalette(palette)
 
         if drag_drop:
@@ -2022,7 +2239,7 @@ class FCTable(QtWidgets.QTableWidget):
             self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
             self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
 
-        self.rows_not_for_drag_and_drop = list()
+        self.rows_not_for_drag_and_drop = []
         if protected_rows:
             try:
                 for r in protected_rows:
@@ -2030,7 +2247,7 @@ class FCTable(QtWidgets.QTableWidget):
             except TypeError:
                 self.rows_not_for_drag_and_drop = [protected_rows]
 
-        self.rows_to_move = list()
+        self.rows_to_move = []
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -2086,7 +2303,7 @@ class FCTable(QtWidgets.QTableWidget):
     #         # ]
     #         self.rows_to_move[:] = []
     #         for row_index in rows:
-    #             row_items = list()
+    #             row_items = []
     #             for column_index in range(self.columnCount()):
     #                 r_item = self.item(row_index, column_index)
     #                 w_item = self.cellWidget(row_index, column_index)
@@ -2167,7 +2384,7 @@ class FCTable(QtWidgets.QTableWidget):
             for _ in range(len(rows)):
                 self.insertRow(targetRow)
 
-            rowMapping = dict()  # Src row to target row.
+            rowMapping = {}  # Src row to target row.
             for idx, row in enumerate(rows):
                 if row < targetRow:
                     rowMapping[row] = targetRow + idx
@@ -2274,7 +2491,7 @@ class Dialog_box(QtWidgets.QWidget):
 
 
 class DialogBoxRadio(QtWidgets.QDialog):
-    def __init__(self, title=None, label=None, icon=None, initial_text=None, reference='abs'):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None, reference='abs', parent=None):
         """
 
         :param title: string with the window title
@@ -2318,8 +2535,10 @@ class DialogBoxRadio(QtWidgets.QDialog):
               "If the reference is Relative then the Jump will be at the (x,y) distance\n"
               "from the current mouse location point.")
         )
-        self.lineEdit = EvalEntry()
+        self.lineEdit = EvalEntry(self)
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
+        self.lineEdit.selectAll()
+        self.lineEdit.setFocus()
         self.form.addRow(self.loc_label, self.lineEdit)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
@@ -2341,26 +2560,48 @@ class DialogBoxRadio(QtWidgets.QDialog):
 
 class _BrowserTextEdit(QTextEdit):
 
-    def __init__(self, version):
+    def __init__(self, version, app=None):
         QTextEdit.__init__(self)
         self.menu = None
         self.version = version
+        self.app = app
 
     def contextMenuEvent(self, event):
         self.menu = self.createStandardContextMenu(event.pos())
-        clear_action = QAction("Clear", self)
+
+        if self.app:
+            save_action = QAction(_("Save Log"), self)
+            self.menu.addAction(save_action)
+            save_action.triggered.connect(lambda: self.save_log(app=self.app))
+
+        clear_action = QAction(_("Clear"), self)
         clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
+
+        if self.app:
+            close_action = QAction(_("Close"), self)
+            self.menu.addAction(close_action)
+            close_action.triggered.connect(lambda: self.app.ui.shell_dock.hide())
+
         self.menu.exec_(event.globalPos())
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM %s - Type >help< to get started\n\n" % self.version
+
+        text = "!FlatCAM %s? - %s" % (self.version, _("Type >help< to get started"))
         text = html.escape(text)
-        text = text.replace('\n', '<br/>')
+        # hack so I can make text bold because the escape method will replace the '<' and '>' signs with html code
+        text = text.replace('!', '<b>')
+        text = text.replace('?', '</b>')
+        text += '<br><br>'
         self.moveCursor(QTextCursor.End)
         self.insertHtml(text)
+
+    def save_log(self, app):
+        html_content = self.toHtml()
+        txt_content = self.toPlainText()
+        app.save_to_file(content_to_save=html_content, txt_content=txt_content)
 
 
 class _ExpandableTextEdit(QTextEdit):
@@ -2650,6 +2891,30 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
     def setLineWrapMode(self, mode):
         self.edit.setLineWrapMode(mode)
+
+
+class FCFileSaveDialog(QtWidgets.QFileDialog):
+
+    def __init__(self, *args):
+        super(FCFileSaveDialog, self).__init__(*args)
+
+    @staticmethod
+    def get_saved_filename(parent=None, caption='', directory='', filter='', initialFilter=''):
+        filename, _filter = QtWidgets.QFileDialog.getSaveFileName(parent=parent, caption=caption,
+                                                                  directory=directory, filter=filter,
+                                                                  initialFilter=initialFilter)
+
+        filename = str(filename)
+        if filename == '':
+            return filename, _filter
+
+        extension = '.' + _filter.strip(')').rpartition('.')[2]
+
+        if filename.endswith(extension) or extension == '.*':
+            return filename, _filter
+        else:
+            filename += extension
+            return filename, _filter
 
 
 def rreplace(s, old, new, occurrence):

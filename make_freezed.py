@@ -108,9 +108,9 @@ exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targe
 
 setup(
     name="FlatCAM",
-    author="Juan Pablo Caram",
+    author="Community effort",
     version="8.9",
-    description="FlatCAM: 2D Computer Aided PCB Manufacturing",
+    description="FlatCAM Evo: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
     executables=[exe]
 )

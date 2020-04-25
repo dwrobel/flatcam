@@ -21,6 +21,8 @@ class TclCommandGetSys(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['get_sys', 'getsys']
 
+    description = '%s %s' % ("--", "Returns to TCL the value for the entered system variable.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -36,9 +38,9 @@ class TclCommandGetSys(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Returns the value of the system variable.",
+        'main': "Returns to TCL the value for the entered system variable.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the system variable.'),
+            ('name', 'Name of the system variable. Required.'),
         ]),
         'examples': ['get_sys excellon_zeros']
     }

@@ -12,6 +12,8 @@ class TclCommandWriteGCode(TclCommandSignaled):
     # old names for backward compatibility (add_poly, add_polygon)
     aliases = ['write_gcode']
 
+    description = '%s %s' % ("--", "Saves G-code of a CNC Job object to file.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -24,7 +26,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
     option_types = collections.OrderedDict([
         ('preamble', str),
         ('postamble', str),
-        ('muted', int)
+        ('muted', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -34,11 +36,11 @@ class TclCommandWriteGCode(TclCommandSignaled):
     help = {
         'main': "Saves G-code of a CNC Job object to file.",
         'args': collections.OrderedDict([
-            ('name', 'Source CNC Job object.'),
-            ('filename', 'Output filename.'),
+            ('name', 'Source CNC Job object. Required.'),
+            ('filename', 'Output filename. Required.'),
             ('preamble', 'Text to append at the beginning.'),
             ('postamble', 'Text to append at the end.'),
-            ('muted', 'It will not put errors in the Shell or status bar.')
+            ('muted', 'It will not put errors in the Shell or status bar. True (1) or False (0)')
 
         ]),
         'examples': ["write_gcode name c:\\\\gcode_repo"]
@@ -67,11 +69,15 @@ class TclCommandWriteGCode(TclCommandSignaled):
         postamble = args['postamble'] if 'postamble' in args else ''
 
         if 'muted' in args:
-            muted = args['muted']
+            try:
+                par = args['muted'].capitalize()
+            except AttributeError:
+                par = args['muted']
+            muted = bool(eval(par))
         else:
-            muted = 0
+            muted = False
 
-        # TODO: This is not needed any more? All targets should be present.
+        # This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.
         # if self.collection.has_promises():
         #     def write_gcode_on_object(new_object):
@@ -91,7 +97,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
         except Exception:
-            if muted == 0:
+            if muted is False:
                 return "Could not retrieve object: %s" % obj_name
             else:
                 return "fail"
@@ -99,7 +105,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
         try:
             obj.export_gcode(str(filename), str(preamble), str(postamble))
         except Exception as e:
-            if not muted:
+            if muted is False:
                 return "Operation failed: %s" % str(e)
             else:
                 return

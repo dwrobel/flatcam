@@ -49,9 +49,9 @@ class HPGL2:
         self.units = 'MM'
 
         # storage for the tools
-        self.tools = dict()
+        self.tools = {}
 
-        self.default_data = dict()
+        self.default_data = {}
         self.default_data.update({
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
@@ -72,6 +72,8 @@ class HPGL2:
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],
+            "endxy": self.app.defaults["geometry_endxy"],
+
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
@@ -151,7 +153,7 @@ class HPGL2:
         """
 
         # Coordinates of the current path, each is [x, y]
-        path = list()
+        path = []
 
         geo_buffer = []
 
@@ -207,7 +209,7 @@ class HPGL2:
                     match = self.sp_re.search(gline)
                     if match:
                         tool = match.group(1)
-                        # self.tools[tool] = dict()
+                        # self.tools[tool] = {}
                         self.tools.update({
                             tool: {
                                 'tooldia': float('%.*f' %

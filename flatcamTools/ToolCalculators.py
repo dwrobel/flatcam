@@ -92,7 +92,7 @@ class ToolCalculator(FlatCAMTool):
         self.layout.addLayout(form_layout)
 
         self.tipDia_label = QtWidgets.QLabel('%s:' % _("Tip Diameter"))
-        self.tipDia_entry = FCDoubleSpinner()
+        self.tipDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipDia_entry.set_precision(self.decimals)
         self.tipDia_entry.set_range(0.0, 9999.9999)
         self.tipDia_entry.setSingleStep(0.1)
@@ -103,16 +103,16 @@ class ToolCalculator(FlatCAMTool):
               "It is specified by manufacturer.")
         )
         self.tipAngle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
-        self.tipAngle_entry = FCSpinner()
+        self.tipAngle_entry = FCSpinner(callback=self.confirmation_message_int)
         self.tipAngle_entry.set_range(0,180)
-        self.tipAngle_entry.setSingleStep(5)
+        self.tipAngle_entry.set_step(5)
 
         # self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
                                          "It is specified by manufacturer."))
 
         self.cutDepth_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
-        self.cutDepth_entry = FCDoubleSpinner()
+        self.cutDepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutDepth_entry.set_range(-9999.9999, 9999.9999)
         self.cutDepth_entry.set_precision(self.decimals)
 
@@ -121,7 +121,7 @@ class ToolCalculator(FlatCAMTool):
                                          "In the CNCJob is the CutZ parameter."))
 
         self.effectiveToolDia_label = QtWidgets.QLabel('%s:' % _("Tool Diameter"))
-        self.effectiveToolDia_entry = FCDoubleSpinner()
+        self.effectiveToolDia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.effectiveToolDia_entry.set_precision(self.decimals)
 
         # self.effectiveToolDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -165,7 +165,7 @@ class ToolCalculator(FlatCAMTool):
         self.layout.addLayout(plate_form_layout)
 
         self.pcblengthlabel = QtWidgets.QLabel('%s:' % _("Board Length"))
-        self.pcblength_entry = FCDoubleSpinner()
+        self.pcblength_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pcblength_entry.set_precision(self.decimals)
         self.pcblength_entry.set_range(0.0, 9999.9999)
 
@@ -173,7 +173,7 @@ class ToolCalculator(FlatCAMTool):
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
 
         self.pcbwidthlabel = QtWidgets.QLabel('%s:' % _("Board Width"))
-        self.pcbwidth_entry = FCDoubleSpinner()
+        self.pcbwidth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pcbwidth_entry.set_precision(self.decimals)
         self.pcbwidth_entry.set_range(0.0, 9999.9999)
 
@@ -181,7 +181,7 @@ class ToolCalculator(FlatCAMTool):
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
 
         self.cdensity_label = QtWidgets.QLabel('%s:' % _("Current Density"))
-        self.cdensity_entry = FCDoubleSpinner()
+        self.cdensity_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cdensity_entry.set_precision(self.decimals)
         self.cdensity_entry.set_range(0.0, 9999.9999)
         self.cdensity_entry.setSingleStep(0.1)
@@ -191,7 +191,7 @@ class ToolCalculator(FlatCAMTool):
                                          "In Amps per Square Feet ASF."))
 
         self.growth_label = QtWidgets.QLabel('%s:' % _("Copper Growth"))
-        self.growth_entry = FCDoubleSpinner()
+        self.growth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.growth_entry.set_precision(self.decimals)
         self.growth_entry.set_range(0.0, 9999.9999)
         self.growth_entry.setSingleStep(0.01)
@@ -203,7 +203,7 @@ class ToolCalculator(FlatCAMTool):
         # self.growth_entry.setEnabled(False)
 
         self.cvaluelabel = QtWidgets.QLabel('%s:' % _("Current Value"))
-        self.cvalue_entry = FCDoubleSpinner()
+        self.cvalue_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cvalue_entry.set_precision(self.decimals)
         self.cvalue_entry.set_range(0.0, 9999.9999)
         self.cvalue_entry.setSingleStep(0.1)
@@ -214,7 +214,7 @@ class ToolCalculator(FlatCAMTool):
         self.cvalue_entry.setReadOnly(True)
 
         self.timelabel = QtWidgets.QLabel('%s:' % _("Time"))
-        self.time_entry = FCDoubleSpinner()
+        self.time_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.time_entry.set_precision(self.decimals)
         self.time_entry.set_range(0.0, 9999.9999)
         self.time_entry.setSingleStep(0.1)
@@ -242,6 +242,19 @@ class ToolCalculator(FlatCAMTool):
 
         self.layout.addStretch()
 
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
+
         self.units = ''
 
         # ## Signals
@@ -255,6 +268,7 @@ class ToolCalculator(FlatCAMTool):
         self.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
 
         self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalculators()")
@@ -285,7 +299,7 @@ class ToolCalculator(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

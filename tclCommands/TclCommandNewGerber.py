@@ -18,6 +18,8 @@ class TclCommandNewGerber(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['new_gerber']
 
+    description = '%s %s' % ("--", "Creates a new empty Gerber object.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -39,7 +41,7 @@ class TclCommandNewGerber(TclCommandSignaled):
         'args': collections.OrderedDict([
             ('name', 'New object name.'),
         ]),
-        'examples': []
+        'examples': ['new_gerber', 'new_gerber my_new_gerber_name']
     }
 
     def execute(self, args, unnamed_args):

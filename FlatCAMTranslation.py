@@ -183,6 +183,12 @@ def restart_program(app, ask=None):
     else:
         resource_loc = 'share'
 
+    # close the Socket in ArgsThread class
+    app.new_launch.listener.close()
+
+    # close the QThread that runs ArgsThread class
+    app.th.quit()
+
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("There are files/objects modified in FlatCAM. "

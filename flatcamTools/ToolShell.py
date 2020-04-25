@@ -14,6 +14,8 @@ from flatcamGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit
 import html
 import sys
 
+import tkinter as tk
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -31,10 +33,10 @@ class TermWidget(QWidget):
     User pressed Enter. Client class should decide, if command must be executed or user may continue edit it
     """
 
-    def __init__(self, version, *args):
+    def __init__(self, version, app, *args):
         QWidget.__init__(self, *args)
 
-        self._browser = _BrowserTextEdit(version=version)
+        self._browser = _BrowserTextEdit(version=version, app=app)
         self._browser.setStyleSheet("font: 9pt \"Courier\";")
         self._browser.setReadOnly(True)
         self._browser.document().setDefaultStyleSheet(
@@ -90,27 +92,46 @@ class TermWidget(QWidget):
         """
         Convert text to HTML for inserting it to browser
         """
-        assert style in ('in', 'out', 'err', 'warning', 'success', 'selected')
+        assert style in ('in', 'out', 'err', 'warning', 'success', 'selected', 'raw')
 
-        text = html.escape(text)
-        text = text.replace('\n', '<br/>')
+        if style != 'raw':
+            text = html.escape(text)
+            text = text.replace('\n', '<br/>')
+        else:
+            text = text.replace('\n', '<br>')
+            text = text.replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 
+        idx = text.find(']')
+        mtype = text[:idx+1].upper()
+        mtype = mtype.replace('_NOTCL', '')
+        body = text[idx+1:]
         if style == 'in':
             text = '<span style="font-weight: bold;">%s</span>' % text
         elif style == 'err':
-            text = '<span style="font-weight: bold; color: red;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: red;">%s</span>'\
+                   '<span style="font-weight: bold;">%s</span>'\
+                   %(mtype, body)
         elif style == 'warning':
-            text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
+            # text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' \
+                   '<span style="font-weight: bold;">%s</span>' \
+                   % (mtype, body)
         elif style == 'success':
-            text = '<span style="font-weight: bold; color: #084400;">%s</span>' % text
+            # text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #15b300;">%s</span>' \
+                   '<span style="font-weight: bold;">%s</span>' \
+                   % (mtype, body)
         elif style == 'selected':
             text = ''
+        elif style == 'raw':
+            text = text
         else:
-            text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
+            # without span <br/> is ignored!!!
+            text = '<span>%s</span>' % text
 
         scrollbar = self._browser.verticalScrollBar()
         old_value = scrollbar.value()
-        scrollattheend = old_value == scrollbar.maximum()
+        # scrollattheend = old_value == scrollbar.maximum()
 
         self._browser.moveCursor(QTextCursor.End)
         self._browser.insertHtml(text)
@@ -175,23 +196,29 @@ class TermWidget(QWidget):
         """
         self._append_to_browser('out', text)
 
+    def append_raw(self, text):
+        """
+        Append text to output widget as it is
+        """
+        self._append_to_browser('raw', text)
+
     def append_success(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('success', text)
 
     def append_selected(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('selected', text)
 
     def append_warning(self, text):
-        """Appent text to output widget
+        """Append text to output widget
         """
         self._append_to_browser('warning', text)
 
     def append_error(self, text):
-        """Appent error text to output widget. Text is drawn with red background
+        """Append error text to output widget. Text is drawn with red background
         """
         self._append_to_browser('err', text)
 
@@ -227,15 +254,22 @@ class TermWidget(QWidget):
 
 class FCShell(TermWidget):
     def __init__(self, sysShell, version, *args):
-        TermWidget.__init__(self, version, *args)
+        """
+
+        :param sysShell:    When instantiated the sysShell will be actually the FlatCAMApp.App() class
+        :param version:     FlatCAM version string
+        :param args:        Parameters passed to the TermWidget parent class
+        """
+        TermWidget.__init__(self, version, *args, app=sysShell)
         self._sysShell = sysShell
 
     def is_command_complete(self, text):
-        def skipQuotes(text):
-            quote = text[0]
-            text = text[1:]
-            endIndex = str(text).index(quote)
+        def skipQuotes(txt):
+            quote = txt[0]
+            text_val = txt[1:]
+            endIndex = str(text_val).index(quote)
             return text[endIndex:]
+
         while text:
             if text[0] in ('"', "'"):
                 try:
@@ -246,4 +280,94 @@ class FCShell(TermWidget):
         return True
 
     def child_exec_command(self, text):
-        self._sysShell.exec_command(text)
+        self.exec_command(text)
+
+    def exec_command(self, text, no_echo=False):
+        """
+        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
+        Also handles execution in separated threads
+
+        :param text: FlatCAM TclCommand with parameters
+        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
+        will create crashes of the _Expandable_Edit widget
+        :return: output if there was any
+        """
+
+        self._sysShell.report_usage('exec_command')
+
+        return self.exec_command_test(text, False, no_echo=no_echo)
+
+    def exec_command_test(self, text, reraise=True, no_echo=False):
+        """
+        Same as exec_command(...) with additional control over  exceptions.
+        Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
+
+        :param text: Input command
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unittests).
+        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
+        will create crashes of the _Expandable_Edit widget
+        :return: Output from the command
+        """
+
+        tcl_command_string = str(text)
+
+        try:
+            if no_echo is False:
+                self.open_processing()  # Disables input box.
+
+            result = self._sysShell.tcl.eval(str(tcl_command_string))
+            if result != 'None' and no_echo is False:
+                self.append_output(result + '\n')
+
+        except tk.TclError as e:
+
+            # This will display more precise answer if something in TCL shell fails
+            result = self._sysShell.tcl.eval("set errorInfo")
+            self._sysShell.log.error("Exec command Exception: %s" % (result + '\n'))
+            if no_echo is False:
+                self.append_error('ERROR: ' + result + '\n')
+            # Show error in console and just return or in test raise exception
+            if reraise:
+                raise e
+        finally:
+            if no_echo is False:
+                self.close_processing()
+            pass
+        return result
+
+        # """
+        # Code below is unsused. Saved for later.
+        # """
+
+        # parts = re.findall(r'([\w\\:\.]+|".*?")+', text)
+        # parts = [p.replace('\n', '').replace('"', '') for p in parts]
+        # self.log.debug(parts)
+        # try:
+        #     if parts[0] not in commands:
+        #         self.shell.append_error("Unknown command\n")
+        #         return
+        #
+        #     #import inspect
+        #     #inspect.getargspec(someMethod)
+        #     if (type(commands[parts[0]]["params"]) is not list and len(parts)-1 != commands[parts[0]]["params"]) or \
+        #             (type(commands[parts[0]]["params"]) is list and len(parts)-1 not in commands[parts[0]]["params"]):
+        #         self.shell.append_error(
+        #             "Command %s takes %d arguments. %d given.\n" %
+        #             (parts[0], commands[parts[0]]["params"], len(parts)-1)
+        #         )
+        #         return
+        #
+        #     cmdfcn = commands[parts[0]]["fcn"]
+        #     cmdconv = commands[parts[0]]["converters"]
+        #     if len(parts) - 1 > 0:
+        #         retval = cmdfcn(*[cmdconv[i](parts[i + 1]) for i in range(len(parts)-1)])
+        #     else:
+        #         retval = cmdfcn()
+        #     retfcn = commands[parts[0]]["retfcn"]
+        #     if retval and retfcn(retval):
+        #         self.shell.append_output(retfcn(retval) + "\n")
+        #
+        # except Exception as e:
+        #     #self.shell.append_error(''.join(traceback.format_exc()))
+        #     #self.shell.append_error("?\n")
+        #     self.shell.append_error(str(e) + "\n")

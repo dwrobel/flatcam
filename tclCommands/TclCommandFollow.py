@@ -12,6 +12,8 @@ class TclCommandFollow(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['follow']
 
+    description = '%s %s' % ("--", "Creates a Geometry object following Gerber paths.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -27,12 +29,12 @@ class TclCommandFollow(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates a geometry object following gerber paths.",
+        'main': "Creates a Geometry object following Gerber paths.",
         'args': collections.OrderedDict([
-            ('name', 'Object name to follow.'),
+            ('name', 'Object name to follow. Required.'),
             ('outname', 'Name of the resulting Geometry object.')
         ]),
-        'examples': ['follow name -outname name_follow']
+        'examples': ['follow name -outname "name_follow"']
     }
 
     def execute(self, args, unnamed_args):
@@ -64,4 +66,4 @@ class TclCommandFollow(TclCommandSignaled):
             return "Operation failed: %s" % str(e)
 
         # in the end toggle the visibility of the origin object so we can see the generated Geometry
-        self.app.collection.get_by_name(name).ui.plot_cb.toggle()
+        # self.app.collection.get_by_name(name).ui.plot_cb.toggle()

@@ -22,7 +22,7 @@ class Berta_CNC(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '(This preprocessor is used with a BERTA CNC router.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -35,24 +35,57 @@ class Berta_CNC(FlatCAMPostProc):
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
 
         if str(p['options']['type']) == 'Geometry':
+            gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
+            gcode += '(Feedrate_XY: ' + str(p['feedrate']) + units + '/min' + ')\n'
             gcode += '(Feedrate_Z: ' + str(p['z_feedrate']) + units + '/min' + ')\n'
-
-        gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
-        gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
-
-        if str(p['options']['type']) == 'Geometry':
+            gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+            gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
             if p['multidepth'] is True:
                 gcode += '(DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
                          str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + ')\n'
+            gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
 
-        gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
-        gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
+        elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
+            gcode += '\n(TOOLS DIAMETER: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["C"]) + ')\n'
 
-        if coords_xy is not None:
-            gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
-                                                           p.decimals, coords_xy[1]) + units + ')\n'
-        else:
-            gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
+            gcode += '\n(FEEDRATE Z: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % str(val['data']["feedrate_z"]) + ')\n'
+
+            gcode += '\n(FEEDRATE RAPIDS: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate Rapids: %s' % \
+                         str(val['data']["feedrate_rapid"]) + ')\n'
+
+            gcode += '\n(Z_CUT: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["cutz"]) + ')\n'
+
+            gcode += '\n(Tools Offset: )\n'
+            for tool, val in p['exc_cnc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % str(val['offset_z']) + ')\n'
+
+            if p['multidepth'] is True:
+                gcode += '\n(DEPTH_PER_CUT: )\n'
+                for tool, val in p['exc_tools'].items():
+                    gcode += '(Tool: %s -> ' % str(tool) + 'DeptPerCut: %s' % \
+                             str(val['data']["depthperpass"]) + ')\n'
+
+            gcode += '\n(Z_MOVE: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["travelz"]) + ')\n'
+            gcode += '\n'
+
+        if p['toolchange'] is True:
+            gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
+
+            if coords_xy is not None:
+                gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                               p.decimals, coords_xy[1]) + units + ')\n'
+            else:
+                gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
 
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
@@ -80,7 +113,7 @@ class Berta_CNC(FlatCAMPostProc):
         gcode += 'G54\n'
         gcode += 'G0\n'
         gcode += '(Berta)\n'
-        gcode += 'G94\n'
+        gcode += 'G94'
 
         return gcode
 
@@ -194,10 +227,10 @@ M0""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolcha
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
-        coords_xy = p['xy_toolchange']
+        coords_xy = p['xy_end']
         gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
-        if coords_xy is not None:
+        if coords_xy and coords_xy != '':
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
 
         gcode += '(Berta)\n'

@@ -20,6 +20,8 @@ class TclCommandCncjob(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['cncjob']
 
+    description = '%s %s' % ("--", "Generates a CNC Job object from a Geometry Object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -34,7 +36,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('feedrate_z', float),
         ('feedrate_rapid', float),
         ('extracut_length', float),
-        ('depthperpass', float),
+        ('dpp', float),
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('startz', float),
@@ -42,7 +44,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('spindlespeed', int),
         ('dwelltime', float),
         ('pp', str),
-        ('muted', int),
+        ('muted', str),
         ('outname', str)
     ])
 
@@ -51,7 +53,7 @@ class TclCommandCncjob(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Generates a CNC Job from a Geometry Object.",
+        'main': "Generates a CNC Job object from a Geometry Object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source object.'),
             ('dia', 'Tool diameter to show on screen.'),
@@ -61,7 +63,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
             ('extracut_length', 'The value for extra cnccut over the first point in path,in the job end; float'),
-            ('depthperpass', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
+            ('dpp', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
@@ -72,7 +74,7 @@ class TclCommandCncjob(TclCommandSignaled):
                           'If it is not used in command then it will not be included'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
-            ('muted', 'It will not put errors in the Shell.')
+            ('muted', 'It will not put errors in the Shell. Can be True (1) or False (0)')
         ]),
         'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -pp default']
     }
@@ -90,14 +92,18 @@ class TclCommandCncjob(TclCommandSignaled):
         name = ''
 
         if 'muted' in args:
-            muted = args['muted']
+            try:
+                par = args['muted'].capitalize()
+            except AttributeError:
+                par = args['muted']
+            muted = bool(eval(par))
         else:
-            muted = 0
+            muted = False
 
         try:
             name = args['name']
         except KeyError:
-            if muted == 0:
+            if muted is False:
                 self.raise_tcl_error("Object name is missing")
             else:
                 return "fail"
@@ -108,13 +114,13 @@ class TclCommandCncjob(TclCommandSignaled):
         obj = self.app.collection.get_by_name(str(name), isCaseSensitive=False)
 
         if obj is None:
-            if muted == 0:
+            if muted is False:
                 self.raise_tcl_error("Object not found: %s" % str(name))
             else:
                 return "fail"
 
         if not isinstance(obj, FlatCAMGeometry):
-            if muted == 0:
+            if muted is False:
                 self.raise_tcl_error('Expected FlatCAMGeometry, got %s %s.' % (str(name), type(obj)))
             else:
                 return
@@ -139,12 +145,12 @@ class TclCommandCncjob(TclCommandSignaled):
         else:
             args["extracut"] = False
 
-        if "depthperpass" in args:
+        if "dpp" in args:
             args["multidepth"] = True
-            if args["depthperpass"] is None:
-                args["depthperpass"] = obj.options["depthperpass"]
+            if args["dpp"] is None:
+                args["dpp"] = obj.options["dpp"]
             else:
-                args["depthperpass"] = float(args["depthperpass"])
+                args["dpp"] = float(args["dpp"])
         else:
             args["multidepth"] = False
 
@@ -187,7 +193,7 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 if args[arg] is None:
                     print(arg, args[arg])
-                    if muted == 0:
+                    if muted is False:
                         self.raise_tcl_error('One of the command parameters that have to be not None, is None.\n'
                                              'The parameter that is None is in the default values found in the list \n'
                                              'generated by the TclCommand "list_sys geom". or in the arguments.')
@@ -213,8 +219,13 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['feedrate_rapid'] = args["feedrate_rapid"]
                     local_tools_dict[tool_uid]['data']['multidepth'] = args["multidepth"]
                     local_tools_dict[tool_uid]['data']['extracut'] = args["extracut"]
-                    local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
-                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["depthperpass"]
+
+                    if args["extracut"] is True:
+                        local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
+                    else:
+                        local_tools_dict[tool_uid]['data']['extracut_length'] = None
+
+                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["dpp"]
                     local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
                     local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]
                     local_tools_dict[tool_uid]['data']['toolchangexy'] = args["toolchangexy"]

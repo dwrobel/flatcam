@@ -14,7 +14,7 @@ from PyQt5.QtCore import pyqtSignal
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
 
-from shapely.geometry import Polygon, LineString, LinearRing, Point, MultiPolygon, MultiLineString
+from shapely.geometry import Polygon, LineString, LinearRing
 
 import FlatCAMApp
 
@@ -158,7 +158,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
         self.workspace_line = None
 
-        self.pagesize_dict = dict()
+        self.pagesize_dict = {}
         self.pagesize_dict.update(
             {
                 'A0': (841, 1189),
@@ -219,7 +219,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.container = container
 
         # Plots go onto a single matplotlib.figure
-        self.figure = Figure(dpi=50)  # TODO: dpi needed?
+        self.figure = Figure(dpi=50)
         self.figure.patch.set_visible(True)
         self.figure.set_facecolor(theme_color)
 
@@ -254,7 +254,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         # self.canvas.set_can_focus(True)  # For key press
 
         # Attach to parent
-        # self.container.attach(self.canvas, 0, 0, 600, 400)  # TODO: Height and width are num. columns??
+        # self.container.attach(self.canvas, 0, 0, 600, 400)
         self.container.addWidget(self.canvas)  # Qt
 
         # Copy a bitmap of the canvas for quick animation.
@@ -430,7 +430,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     # Pointer (snapped)
                     # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
                     # one in the OpenGL(3D) graphic engine
-                    pointer_size = int(float(self.app.defaults["global_cursor_size"] ) * 1.65)
+                    pointer_size = int(float(self.app.defaults["global_cursor_size"]) * 1.65)
                     elements = self.axes.plot(x, y, '+', color=color, ms=pointer_size,
                                               mew=self.app.defaults["global_cursor_width"], animated=True)
                     for el in elements:
@@ -946,21 +946,23 @@ class ShapeCollectionLegacy:
     hold the collection of shapes into a dict self._shapes.
     This handles the shapes redraw on canvas.
     """
-    def __init__(self, obj, app, name=None, annotation_job=None):
+    def __init__(self, obj, app, name=None, annotation_job=None, linewidth=1):
         """
 
-        :param obj: this is the object to which the shapes collection is attached and for
+        :param obj:             This is the object to which the shapes collection is attached and for
         which it will have to draw shapes
-        :param app: this is the FLatCAM.App usually, needed because we have to access attributes there
-        :param name: this is the name given to the Matplotlib axes; it needs to be unique due of Matplotlib requurements
-        :param annotation_job: make this True if the job needed is just for annotation
+        :param app:             This is the FLatCAM.App usually, needed because we have to access attributes there
+        :param name:            This is the name given to the Matplotlib axes; it needs to be unique due of
+        Matplotlib requurements
+        :param annotation_job:  Make this True if the job needed is just for annotation
+        :param linewidth:       THe width of the line (outline where is the case)
         """
         self.obj = obj
         self.app = app
         self.annotation_job = annotation_job
 
-        self._shapes = dict()
-        self.shape_dict = dict()
+        self._shapes = {}
+        self.shape_dict = {}
         self.shape_id = 0
 
         self._color = None
@@ -973,6 +975,8 @@ class ShapeCollectionLegacy:
 
         self._obj = None
         self._gcode_parsed = None
+
+        self._linewidth = linewidth
 
         if name is None:
             axes_name = self.obj.options['name']
@@ -1005,14 +1009,21 @@ class ShapeCollectionLegacy:
         :return:
         """
         self._color = color if color is not None else "#006E20"
-        self._face_color = face_color if face_color is not None else "#BBF268"
+        # self._face_color = face_color if face_color is not None else "#BBF268"
+        self._face_color = face_color
+
+        if linewidth is None:
+            line_width = self._linewidth
+        else:
+            line_width = linewidth
 
         if len(self._color) > 7:
             self._color = self._color[:7]
 
-        if len(self._face_color) > 7:
-            self._face_color = self._face_color[:7]
-            # self._alpha = int(self._face_color[-2:], 16) / 255
+        if self._face_color is not None:
+            if len(self._face_color) > 7:
+                self._face_color = self._face_color[:7]
+                # self._alpha = int(self._face_color[-2:], 16) / 255
 
         self._alpha = 0.75
 
@@ -1037,7 +1048,7 @@ class ShapeCollectionLegacy:
                 self.shape_dict.update({
                     'color': self._color,
                     'face_color': self._face_color,
-                    'linewidth': linewidth,
+                    'linewidth': line_width,
                     'alpha': self._alpha,
                     'shape': sh
                 })
@@ -1050,7 +1061,7 @@ class ShapeCollectionLegacy:
             self.shape_dict.update({
                 'color': self._color,
                 'face_color': self._face_color,
-                'linewidth': linewidth,
+                'linewidth': line_width,
                 'alpha': self._alpha,
                 'shape': shape
             })
@@ -1112,36 +1123,50 @@ class ShapeCollectionLegacy:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
                     if self.obj.options["solid"] and isinstance(local_shapes[element]['shape'], Polygon):
-                        patch = PolygonPatch(local_shapes[element]['shape'],
-                                             facecolor="#C40000",
-                                             edgecolor="#750000",
-                                             alpha=local_shapes[element]['alpha'],
-                                             zorder=3)
-                        self.axes.add_patch(patch)
+                        try:
+                            patch = PolygonPatch(local_shapes[element]['shape'],
+                                                 facecolor="#C40000",
+                                                 edgecolor="#750000",
+                                                 alpha=local_shapes[element]['alpha'],
+                                                 zorder=3,
+                                                 linewidth=local_shapes[element]['linewidth']
+                                                 )
+                            self.axes.add_patch(patch)
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() excellon poly --> %s" % str(e))
                     else:
-                        x, y = local_shapes[element]['shape'].exterior.coords.xy
-                        self.axes.plot(x, y, 'r-')
-                        for ints in local_shapes[element]['shape'].interiors:
-                            x, y = ints.coords.xy
-                            self.axes.plot(x, y, 'o-')
+                        try:
+                            x, y = local_shapes[element]['shape'].exterior.coords.xy
+                            self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
+                            for ints in local_shapes[element]['shape'].interiors:
+                                x, y = ints.coords.xy
+                                self.axes.plot(x, y, 'o-', linewidth=local_shapes[element]['linewidth'])
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() excellon no poly --> %s" % str(e))
                 elif obj_type == 'geometry':
                     if type(local_shapes[element]['shape']) == Polygon:
-                        x, y = local_shapes[element]['shape'].exterior.coords.xy
-                        self.axes.plot(x, y, local_shapes[element]['color'],
-                                       linestyle='-',
-                                       linewidth=local_shapes[element]['linewidth'])
-                        for ints in local_shapes[element]['shape'].interiors:
-                            x, y = ints.coords.xy
+                        try:
+                            x, y = local_shapes[element]['shape'].exterior.coords.xy
                             self.axes.plot(x, y, local_shapes[element]['color'],
                                            linestyle='-',
                                            linewidth=local_shapes[element]['linewidth'])
+                            for ints in local_shapes[element]['shape'].interiors:
+                                x, y = ints.coords.xy
+                                self.axes.plot(x, y, local_shapes[element]['color'],
+                                               linestyle='-',
+                                               linewidth=local_shapes[element]['linewidth'])
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() geometry poly --> %s" % str(e))
                     elif type(local_shapes[element]['shape']) == LineString or \
                             type(local_shapes[element]['shape']) == LinearRing:
 
-                        x, y = local_shapes[element]['shape'].coords.xy
-                        self.axes.plot(x, y, local_shapes[element]['color'],
-                                       linestyle='-',
-                                       linewidth=local_shapes[element]['linewidth'])
+                        try:
+                            x, y = local_shapes[element]['shape'].coords.xy
+                            self.axes.plot(x, y, local_shapes[element]['color'],
+                                           linestyle='-',
+                                           linewidth=local_shapes[element]['linewidth'])
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() geometry no poly --> %s" % str(e))
                 elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
                         linespec = '-'
@@ -1161,47 +1186,60 @@ class ShapeCollectionLegacy:
                                                  facecolor=gerber_fill_color,
                                                  edgecolor=gerber_outline_color,
                                                  alpha=local_shapes[element]['alpha'],
-                                                 zorder=2)
+                                                 zorder=2,
+                                                 linewidth=local_shapes[element]['linewidth'])
                             self.axes.add_patch(patch)
                         except AssertionError:
                             FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
                             FlatCAMApp.App.log.warning(str(element))
                         except Exception as e:
-                            FlatCAMApp.App.log.debug("PlotCanvasLegacy.ShepeCollectionLegacy.redraw() --> %s" % str(e))
+                            FlatCAMApp.App.log.debug(
+                                "PlotCanvasLegacy.ShepeCollectionLegacy.redraw() gerber 'solid' --> %s" % str(e))
                     else:
-                        x, y = local_shapes[element]['shape'].exterior.xy
-                        self.axes.plot(x, y, linespec)
-                        for ints in local_shapes[element]['shape'].interiors:
-                            x, y = ints.coords.xy
-                            self.axes.plot(x, y, linespec)
+                        try:
+                            x, y = local_shapes[element]['shape'].exterior.xy
+                            self.axes.plot(x, y, linespec, linewidth=local_shapes[element]['linewidth'])
+                            for ints in local_shapes[element]['shape'].interiors:
+                                x, y = ints.coords.xy
+                                self.axes.plot(x, y, linespec, linewidth=local_shapes[element]['linewidth'])
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() gerber no 'solid' --> %s" % str(e))
                 elif obj_type == 'cncjob':
 
                     if local_shapes[element]['face_color'] is None:
-                        linespec = '--'
-                        linecolor = local_shapes[element]['color']
-                        # if geo['kind'][0] == 'C':
-                        #     linespec = 'k-'
-                        x, y = local_shapes[element]['shape'].coords.xy
-                        self.axes.plot(x, y, linespec, color=linecolor)
+                        try:
+                            linespec = '--'
+                            linecolor = local_shapes[element]['color']
+                            # if geo['kind'][0] == 'C':
+                            #     linespec = 'k-'
+                            x, y = local_shapes[element]['shape'].coords.xy
+                            self.axes.plot(x, y, linespec, color=linecolor,
+                                           linewidth=local_shapes[element]['linewidth'])
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() cncjob with face_color --> %s" % str(e))
                     else:
-                        path_num += 1
-                        if self.obj.ui.annotation_cb.get_value():
-                            if isinstance(local_shapes[element]['shape'], Polygon):
-                                self.axes.annotate(
-                                    str(path_num),
-                                    xy=local_shapes[element]['shape'].exterior.coords[0],
-                                    xycoords='data', fontsize=20)
-                            else:
-                                self.axes.annotate(
-                                    str(path_num),
-                                    xy=local_shapes[element]['shape'].coords[0],
-                                    xycoords='data', fontsize=20)
+                        try:
+                            path_num += 1
+                            if self.obj.ui.annotation_cb.get_value():
+                                if isinstance(local_shapes[element]['shape'], Polygon):
+                                    self.axes.annotate(
+                                        str(path_num),
+                                        xy=local_shapes[element]['shape'].exterior.coords[0],
+                                        xycoords='data', fontsize=20)
+                                else:
+                                    self.axes.annotate(
+                                        str(path_num),
+                                        xy=local_shapes[element]['shape'].coords[0],
+                                        xycoords='data', fontsize=20)
 
-                        patch = PolygonPatch(local_shapes[element]['shape'],
-                                             facecolor=local_shapes[element]['face_color'],
-                                             edgecolor=local_shapes[element]['color'],
-                                             alpha=local_shapes[element]['alpha'], zorder=2)
-                        self.axes.add_patch(patch)
+                            patch = PolygonPatch(local_shapes[element]['shape'],
+                                                 facecolor=local_shapes[element]['face_color'],
+                                                 edgecolor=local_shapes[element]['color'],
+                                                 alpha=local_shapes[element]['alpha'], zorder=2,
+                                                 linewidth=local_shapes[element]['linewidth'])
+                            self.axes.add_patch(patch)
+                        except Exception as e:
+                            log.debug("ShapeCollectionLegacy.redraw() cncjob no face_color --> %s" % str(e))
                 elif obj_type == 'utility':
                     # not a FlatCAM object, must be utility
                     if local_shapes[element]['face_color']:
@@ -1210,26 +1248,35 @@ class ShapeCollectionLegacy:
                                                  facecolor=local_shapes[element]['face_color'],
                                                  edgecolor=local_shapes[element]['color'],
                                                  alpha=local_shapes[element]['alpha'],
-                                                 zorder=2)
+                                                 zorder=2,
+                                                 linewidth=local_shapes[element]['linewidth'])
 
                             self.axes.add_patch(patch)
                         except Exception as e:
-                            log.debug("ShapeCollectionLegacy.redraw() --> %s" % str(e))
+                            log.debug("ShapeCollectionLegacy.redraw() utility poly with face_color --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
-                            ext_shape = local_shapes[element]['shape'].exterior
-                            if ext_shape is not None:
-                                x, y = ext_shape.xy
-                                self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-                            for ints in local_shapes[element]['shape'].interiors:
-                                if ints is not None:
-                                    x, y = ints.coords.xy
-                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            try:
+                                ext_shape = local_shapes[element]['shape'].exterior
+                                if ext_shape is not None:
+                                    x, y = ext_shape.xy
+                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
+                                                   linewidth=local_shapes[element]['linewidth'])
+                                for ints in local_shapes[element]['shape'].interiors:
+                                    if ints is not None:
+                                        x, y = ints.coords.xy
+                                        self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
+                                                       linewidth=local_shapes[element]['linewidth'])
+                            except Exception as e:
+                                log.debug("ShapeCollectionLegacy.redraw() utility poly no face_color --> %s" % str(e))
                         else:
-                            if local_shapes[element]['shape'] is not None:
-                                x, y = local_shapes[element]['shape'].coords.xy
-                                self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-
+                            try:
+                                if local_shapes[element]['shape'] is not None:
+                                    x, y = local_shapes[element]['shape'].coords.xy
+                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-',
+                                                   linewidth=local_shapes[element]['linewidth'])
+                            except Exception as e:
+                                log.debug("ShapeCollectionLegacy.redraw() utility lines no face_color --> %s" % str(e))
         self.app.plotcanvas.auto_adjust_axes()
 
     def set(self, text, pos, visible=True, font_size=16, color=None):

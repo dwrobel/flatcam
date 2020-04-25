@@ -13,6 +13,8 @@ class TclCommandMirror(TclCommandSignaled):
     # old names for backward compatibility (add_poly, add_polygon)
     aliases = ['mirror']
 
+    description = '%s %s' % ("--", "Will mirror the geometry of a named object. Does not create a new object.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -24,22 +26,25 @@ class TclCommandMirror(TclCommandSignaled):
     option_types = collections.OrderedDict([
         ('axis', str),
         ('box', str),
-        ('dist', float)
+        ('origin', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name', 'axis']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens an Excellon file.",
+        'main': "Will mirror the geometry of a named object. Does not create a new object.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
-            ('box', 'Name of object which act as box (cutout for example.)'),
+            ('name', 'Name of the object (Gerber, Geometry or Excellon) to be mirrored. Required.'),
             ('axis', 'Mirror axis parallel to the X or Y axis.'),
-            ('dist', 'Distance of the mirror axis to the X or Y axis.')
+            ('box', 'Name of object which act as box (cutout for example.)'),
+            ('origin', 'Reference point . It is used only if the box is not used. Format (x,y).\n'
+                       'Comma will separate the X and Y coordinates.\n'
+                       'WARNING: no spaces are allowed. If uncertain enclose the two values inside parenthesis.\n'
+                       'See the example.')
         ]),
-        'examples': []
+        'examples': ['mirror obj_name -box box_geo -axis X -origin 3.2,4.7']
     }
 
     def execute(self, args, unnamed_args):
@@ -69,10 +74,13 @@ class TclCommandMirror(TclCommandSignaled):
             return "ERROR: Only Gerber, Excellon and Geometry objects can be mirrored."
 
         # Axis
-        try:
-            axis = args['axis'].upper()
-        except KeyError:
-            return "ERROR: Specify -axis X or -axis Y"
+        if 'axis' in args:
+            try:
+                axis = args['axis'].upper()
+            except KeyError:
+                axis = 'Y'
+        else:
+            axis = 'Y'
 
         # Box
         if 'box' in args:
@@ -91,19 +99,22 @@ class TclCommandMirror(TclCommandSignaled):
 
                 obj.mirror(axis, [px, py])
                 obj.plot()
-
+                return
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-        else:
+        # Origin
+        if 'origin' in args:
             try:
-                dist = float(args['dist'])
+                origin_val = eval(args['origin'])
+                x = float(origin_val[0])
+                y = float(origin_val[1])
             except KeyError:
-                dist = 0.0
+                x, y = (0, 0)
             except ValueError:
-                return "Invalid distance: %s" % args['dist']
+                return "Invalid distance: %s" % str(args['origin'])
 
             try:
-                obj.mirror(axis, [dist, dist])
+                obj.mirror(axis, [x, y])
             except Exception as e:
                 return "Operation failed: %s" % str(e)
