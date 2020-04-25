@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 25.04.2020
 
 - ensured that on Graceful Exit (CTRL+ALT+X key combo) if using Progressive Plotting, the eventual residual plotted lines are deleted. This apply for Tool NCC and Tool Paint
+- fixed links in Attributions tab in Help -> About FlatCAM to be able to open external links.
 
 24.04.2020
 

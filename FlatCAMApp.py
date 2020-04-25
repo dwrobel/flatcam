@@ -4657,6 +4657,7 @@ class App(QtCore.QObject):
                         'Icons by <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>'
                     )
                 )
+                attributions_label.setOpenExternalLinks(True)
 
                 # layouts
                 layout1 = QtWidgets.QVBoxLayout()
