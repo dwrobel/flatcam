@@ -1,5 +1,5 @@
 from tclCommands.TclCommand import TclCommand
-from FlatCAMObj import FlatCAMExcellon
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
 
 import collections
 
@@ -62,7 +62,7 @@ class TclCommandJoinExcellon(TclCommand):
                 objs.append(obj)
 
         def initialize(obj_, app):
-            FlatCAMExcellon.merge(self, objs, obj_)
+            ExcellonObject.merge(self, objs, obj_)
 
         if objs and len(objs) >= 2:
             self.app.new_object("excellon", outname, initialize, plot=False)

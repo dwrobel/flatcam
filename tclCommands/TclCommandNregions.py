@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommand
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
 
 from shapely.ops import cascaded_union
 
@@ -71,8 +70,8 @@ class TclCommandNregions(TclCommand):
         if obj is None:
             self.raise_tcl_error("%s: %s" % (_("Object not found"), name))
 
-        if not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMGeometry):
-            self.raise_tcl_error('%s %s: %s.' % (_("Expected FlatCAMGerber or FlatCAMGeometry, got"), name, type(obj)))
+        if obj.kind != 'gerber' and obj.kind != 'geometry':
+            self.raise_tcl_error('%s %s: %s.' % (_("Expected GerberObject or GeometryObject, got"), name, type(obj)))
 
         if 'margin' not in args:
             args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
@@ -91,7 +90,7 @@ class TclCommandNregions(TclCommand):
 
         try:
             def geo_init(geo_obj, app_obj):
-                assert isinstance(geo_obj, FlatCAMGeometry)
+                assert geo_obj.kind == 'geometry'
 
                 geo = cascaded_union(obj.solid_geometry)
                 bounding_box = geo.envelope.buffer(float(margin))

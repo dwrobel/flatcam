@@ -16,8 +16,14 @@ from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QColor
 # from PyQt5.QtCore import QModelIndex
 
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript, \
-    FlatCAMObj
+from flatcamObjects.FlatCAMObj import FlatCAMObj
+from flatcamObjects.FlatCAMCNCJob import CNCJobObject
+from flatcamObjects.FlatCAMDocument import DocumentObject
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
+from flatcamObjects.FlatCAMGeometry import GeometryObject
+from flatcamObjects.FlatCAMGerber import GerberObject
+from flatcamObjects.FlatCAMScript import ScriptObject
+
 import inspect  # TODO: Remove
 
 import re
@@ -233,12 +239,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     ]
 
     classdict = {
-        "gerber": FlatCAMGerber,
-        "excellon": FlatCAMExcellon,
-        "cncjob": FlatCAMCNCjob,
-        "geometry": FlatCAMGeometry,
-        "script": FlatCAMScript,
-        "document": FlatCAMDocument
+        "gerber": GerberObject,
+        "excellon": ExcellonObject,
+        "cncjob": CNCJobObject,
+        "geometry": GeometryObject,
+        "script": ScriptObject,
+        "document": DocumentObject
     }
 
     icon_files = {
@@ -372,17 +378,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectcolor.setEnabled(False)
 
             for obj in self.get_selected():
-                if type(obj) == FlatCAMGerber or type(obj) == FlatCAMExcellon:
+                if type(obj) == GerberObject or type(obj) == ExcellonObject:
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
-                if type(obj) != FlatCAMGeometry:
+                if type(obj) != GeometryObject:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
-                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMGerber:
+                if type(obj) != GeometryObject and type(obj) != ExcellonObject and type(obj) != GerberObject:
                     self.app.ui.menuprojectedit.setVisible(False)
-                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
+                if type(obj) != GerberObject and type(obj) != ExcellonObject and type(obj) != CNCJobObject:
                     self.app.ui.menuprojectviewsource.setVisible(False)
-                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and \
-                        type(obj) != FlatCAMCNCjob:
+                if type(obj) != GerberObject and type(obj) != GeometryObject and type(obj) != ExcellonObject and \
+                        type(obj) != CNCJobObject:
                     # meaning for Scripts and for Document type of FlatCAM object
                     self.app.ui.menuprojectenable.setVisible(False)
                     self.app.ui.menuprojectdisable.setVisible(False)

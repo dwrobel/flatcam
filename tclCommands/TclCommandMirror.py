@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMExcellon, FlatCAMGeometry, FlatCAMGerber
 
 import collections
 
@@ -68,9 +67,7 @@ class TclCommandMirror(TclCommandSignaled):
         if obj is None:
             return "Object not found: %s" % name
 
-        if not isinstance(obj, FlatCAMGerber) and \
-                not isinstance(obj, FlatCAMExcellon) and \
-                not isinstance(obj, FlatCAMGeometry):
+        if obj.kind != 'gerber' and obj.kind != 'geometry' and obj.kind != 'excellon':
             return "ERROR: Only Gerber, Excellon and Geometry objects can be mirrored."
 
         # Axis

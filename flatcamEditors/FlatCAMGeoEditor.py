@@ -87,8 +87,8 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded for exterior buffer.\n"
-              " - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
-              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
+              " - 'Square': the corner is met in a sharp angle for exterior buffer.\n"
+              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
         )
         self.buffer_corner_cb = FCComboBox()
         self.buffer_corner_cb.addItem(_("Round"))
@@ -4035,7 +4035,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Imports the geometry from the given FlatCAM Geometry object
         into the editor.
 
-        :param fcgeometry:      FlatCAMGeometry
+        :param fcgeometry:      GeometryObject
         :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
         :return:                None
         """
@@ -4750,7 +4750,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Transfers the geometry tool shape buffer to the selected geometry
         object. The geometry already in the object are removed.
 
-        :param fcgeometry: FlatCAMGeometry
+        :param fcgeometry: GeometryObject
         :return: None
         """
         if self.multigeo_tool:

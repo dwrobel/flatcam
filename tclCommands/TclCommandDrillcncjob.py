@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMExcellon
 
 import collections
 import math
@@ -125,9 +124,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             else:
                 return "fail"
 
-        if not isinstance(obj, FlatCAMExcellon):
+        if obj.kind != 'excellon':
             if muted is False:
-                self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
+                self.raise_tcl_error('Expected ExcellonObject, got %s %s.' % (name, type(obj)))
             else:
                 return "fail"
 

@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
 
 import logging
 import collections
@@ -209,7 +208,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
         except ValueError:
             gaps_u = gaps
 
-        if isinstance(cutout_obj, FlatCAMGeometry):
+        if cutout_obj.kind == 'geometry':
             # rename the obj name so it can be identified as cutout
             # cutout_obj.options["name"] += "_cutout"
 
@@ -306,7 +305,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             # cutout_obj.plot()
             # self.app.inform.emit("[success] Any-form Cutout operation finished.")
             # self.app.plots_updated.emit()
-        elif isinstance(cutout_obj, FlatCAMGerber):
+        elif cutout_obj.kind == 'gerber':
 
             def geo_init(geo_obj, app_obj):
                 try:

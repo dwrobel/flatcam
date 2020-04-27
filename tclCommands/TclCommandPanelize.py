@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommand
-from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.affinity as affinity
 
@@ -153,12 +152,12 @@ class TclCommandPanelize(TclCommand):
         #         objs.append(obj_init)
         #
         #     def initialize_geometry(obj_init, app):
-        #         FlatCAMGeometry.merge(objs, obj_init)
+        #         GeometryObject.merge(objs, obj_init)
         #
         #     def initialize_excellon(obj_init, app):
         #         # merge expects tools to exist in the target object
         #         obj_init.tools = obj.tools.copy()
-        #         FlatCAMExcellon.merge(objs, obj_init)
+        #         ExcellonObject.merge(objs, obj_init)
         #
         #     objs = []
         #     if obj is not None:
@@ -167,7 +166,7 @@ class TclCommandPanelize(TclCommand):
         #             currentx = 0
         #             for col in range(columns):
         #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
-        #                 if isinstance(obj, FlatCAMExcellon):
+        #                 if isinstance(obj, ExcellonObject):
         #                     self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
         #                                         autoselected=False)
         #                 else:
@@ -177,7 +176,7 @@ class TclCommandPanelize(TclCommand):
         #                 currentx += lenghtx
         #             currenty += lenghty
         #
-        #         if isinstance(obj, FlatCAMExcellon):
+        #         if isinstance(obj, ExcellonObject):
         #             self.app.new_object("excellon", outname, initialize_excellon)
         #         else:
         #             self.app.new_object("geometry", outname, initialize_geometry)
@@ -258,7 +257,7 @@ class TclCommandPanelize(TclCommand):
 
                     obj_fin.solid_geometry = []
 
-                    if isinstance(obj, FlatCAMGeometry):
+                    if obj.kind == 'geometry':
                         obj_fin.multigeo = obj.multigeo
                         obj_fin.tools = deepcopy(obj.tools)
                         if obj.multigeo is True:
@@ -269,7 +268,7 @@ class TclCommandPanelize(TclCommand):
                         currentx = 0.0
 
                         for col in range(columns):
-                            if isinstance(obj, FlatCAMGeometry):
+                            if obj.kind == 'geometry':
                                 if obj.multigeo is True:
                                     for tool in obj.tools:
                                         obj_fin.tools[tool]['solid_geometry'].append(translate_recursion(
@@ -287,7 +286,7 @@ class TclCommandPanelize(TclCommand):
                             currentx += lenghtx
                         currenty += lenghty
 
-                if isinstance(obj, FlatCAMExcellon):
+                if obj.kind == 'excellon':
                     self.app.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
                 else:
                     self.app.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)

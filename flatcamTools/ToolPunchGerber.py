@@ -604,8 +604,8 @@ class ToolPunchGerber(FlatCAMTool):
                 if grb_obj.apertures[apid]['type'] == 'C' and self.circular_cb.get_value():
                     if punch_size >= float(grb_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole Gerber because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
+                                             _("Could not generate punched hole Gerber because the punch hole size"
+                                               " is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
                         for elem in grb_obj.apertures[apid]['geometry']:
@@ -617,7 +617,7 @@ class ToolPunchGerber(FlatCAMTool):
                             punch_size >= float(grb_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Could not generate punched hole Gerber because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
+                                               " is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     elif round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
                             round(float(grb_obj.apertures[apid]['height']), self.decimals) and \

@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGeometry
 
 import collections
 from copy import deepcopy
@@ -119,9 +118,9 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 return "fail"
 
-        if not isinstance(obj, FlatCAMGeometry):
+        if obj.kind != 'geometry':
             if muted is False:
-                self.raise_tcl_error('Expected FlatCAMGeometry, got %s %s.' % (str(name), type(obj)))
+                self.raise_tcl_error('Expected GeometryObject, got %s %s.' % (str(name), type(obj)))
             else:
                 return
 

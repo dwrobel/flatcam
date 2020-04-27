@@ -14,24 +14,22 @@ import getopt
 import random
 import simplejson as json
 import lzma
-# import threading
 import shutil
 import stat
-
+from datetime import datetime
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import ctypes
+import traceback
 
-# import tkinter as tk
-# from PyQt5 import QtPrintSupport
+from shapely.geometry import Point, MultiPolygon
+from io import StringIO
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
-# from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import landscape, portrait
 from svglib.svglib import svg2rlg
 
-# from contextlib import contextmanager
 import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
@@ -39,9 +37,6 @@ from xml.dom.minidom import parseString as parse_xml_string
 from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
-# from array import array
-
-# import vispy.scene as scene
 
 # #######################################
 # #      Imports part of FlatCAM       ##
@@ -51,8 +46,17 @@ from FlatCAMBookmark import BookmarkManager
 from FlatCAMDB import ToolsDB2
 
 from ObjectCollection import *
-from FlatCAMObj import *
-from camlib import to_dict, dict2obj, ET, ParseError
+from flatcamObjects.FlatCAMObj import FlatCAMObj
+from flatcamObjects.FlatCAMCNCJob import CNCJobObject
+from flatcamObjects.FlatCAMDocument import DocumentObject
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
+from flatcamObjects.FlatCAMGeometry import GeometryObject
+from flatcamObjects.FlatCAMGerber import GerberObject
+from flatcamObjects.FlatCAMScript import ScriptObject
+
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
+from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
@@ -3411,14 +3415,14 @@ class App(QtCore.QObject):
 
         edited_object = self.collection.get_active()
 
-        if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
-                isinstance(edited_object, FlatCAMExcellon):
+        if isinstance(edited_object, GerberObject) or isinstance(edited_object, GeometryObject) or \
+                isinstance(edited_object, ExcellonObject):
             pass
         else:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
-        if isinstance(edited_object, FlatCAMGeometry):
+        if isinstance(edited_object, GeometryObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
@@ -3451,7 +3455,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
-        elif isinstance(edited_object, FlatCAMExcellon):
+        elif isinstance(edited_object, ExcellonObject):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
 
@@ -3463,7 +3467,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
 
-        elif isinstance(edited_object, FlatCAMGerber):
+        elif isinstance(edited_object, GerberObject):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
 
@@ -3527,7 +3531,7 @@ class App(QtCore.QObject):
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
                     self.ui.notebook.setTabText(2, "Tool")
 
-                    if isinstance(edited_obj, FlatCAMGeometry):
+                    if isinstance(edited_obj, GeometryObject):
                         obj_type = "Geometry"
                         if cleanup is None:
                             self.geo_editor.update_fcgeometry(edited_obj)
@@ -3553,7 +3557,7 @@ class App(QtCore.QObject):
                         edited_obj.build_ui()
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
-                    elif isinstance(edited_obj, FlatCAMGerber):
+                    elif isinstance(edited_obj, GerberObject):
                         obj_type = "Gerber"
                         if cleanup is None:
                             self.grb_editor.update_fcgerber()
@@ -3578,7 +3582,7 @@ class App(QtCore.QObject):
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
 
-                    elif isinstance(edited_obj, FlatCAMExcellon):
+                    elif isinstance(edited_obj, ExcellonObject):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
@@ -3610,13 +3614,13 @@ class App(QtCore.QObject):
 
                     self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
-                    if isinstance(edited_obj, FlatCAMGeometry):
+                    if isinstance(edited_obj, GeometryObject):
                         self.geo_editor.deactivate()
                         edited_obj.build_ui()
-                    elif isinstance(edited_obj, FlatCAMGerber):
+                    elif isinstance(edited_obj, GerberObject):
                         self.grb_editor.deactivate_grb_editor()
                         edited_obj.build_ui()
-                    elif isinstance(edited_obj, FlatCAMExcellon):
+                    elif isinstance(edited_obj, ExcellonObject):
                         self.exc_editor.deactivate()
                         edited_obj.build_ui()
                     else:
@@ -3631,11 +3635,11 @@ class App(QtCore.QObject):
                 # Switch notebook to Selected page
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
-                if isinstance(edited_obj, FlatCAMGeometry):
+                if isinstance(edited_obj, GeometryObject):
                     self.geo_editor.deactivate()
-                elif isinstance(edited_obj, FlatCAMGerber):
+                elif isinstance(edited_obj, GerberObject):
                     self.grb_editor.deactivate_grb_editor()
-                elif isinstance(edited_obj, FlatCAMExcellon):
+                elif isinstance(edited_obj, ExcellonObject):
                     self.exc_editor.deactivate()
                 else:
                     self.inform.emit('[WARNING_NOTCL] %s' %
@@ -4227,12 +4231,12 @@ class App(QtCore.QObject):
 
         # ## Create object
         classdict = {
-            "gerber": FlatCAMGerber,
-            "excellon": FlatCAMExcellon,
-            "cncjob": FlatCAMCNCjob,
-            "geometry": FlatCAMGeometry,
-            "script": FlatCAMScript,
-            "document": FlatCAMDocument
+            "gerber": GerberObject,
+            "excellon": ExcellonObject,
+            "cncjob": CNCJobObject,
+            "geometry": GeometryObject,
+            "script": ScriptObject,
+            "document": DocumentObject
         }
 
         App.log.debug("Calling object constructor...")
@@ -4497,7 +4501,7 @@ class App(QtCore.QObject):
         # here it is done the object plotting
         def worker_task(t_obj):
             with self.proc_container.new(_("Plotting")):
-                if isinstance(t_obj, FlatCAMCNCjob):
+                if isinstance(t_obj, CNCJobObject):
                     t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
                 else:
                     t_obj.plot()
@@ -5661,7 +5665,7 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
+                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -5671,7 +5675,7 @@ class App(QtCore.QObject):
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=False)
+                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=False)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -5694,7 +5698,7 @@ class App(QtCore.QObject):
         objs = self.collection.get_selected()
 
         for obj in objs:
-            if not isinstance(obj, FlatCAMExcellon):
+            if not isinstance(obj, ExcellonObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Excellon joining works only on Excellon objects."))
                 return
 
@@ -5704,7 +5708,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(exc_obj, app):
-            FlatCAMExcellon.merge(self, exc_list=objs, exc_final=exc_obj)
+            ExcellonObject.merge(self, exc_list=objs, exc_final=exc_obj)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
@@ -5722,7 +5726,7 @@ class App(QtCore.QObject):
         objs = self.collection.get_selected()
 
         for obj in objs:
-            if not isinstance(obj, FlatCAMGerber):
+            if not isinstance(obj, GerberObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Gerber joining works only on Gerber objects."))
                 return
 
@@ -5732,7 +5736,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(grb_obj, app):
-            FlatCAMGerber.merge(self, grb_list=objs, grb_final=grb_obj)
+            GerberObject.merge(self, grb_list=objs, grb_final=grb_obj)
             app.inform.emit('[success] %s.' % _("Gerber merging finished"))
 
         self.new_object("gerber", 'Combo_Gerber', initialize)
@@ -5756,8 +5760,8 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Select a Geometry Object and try again."))
             return
 
-        if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Expected a FlatCAMGeometry, got"), type(obj)))
+        if not isinstance(obj, GeometryObject):
+            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Expected a GeometryObject, got"), type(obj)))
             return
 
         obj.multigeo = True
@@ -5791,9 +5795,9 @@ class App(QtCore.QObject):
                              _("Failed. Select a Geometry Object and try again."))
             return
 
-        if not isinstance(obj, FlatCAMGeometry):
+        if not isinstance(obj, GeometryObject):
             self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                             (_("Expected a FlatCAMGeometry, got"), type(obj)))
+                             (_("Expected a GeometryObject, got"), type(obj)))
             return
 
         obj.multigeo = False
@@ -6078,7 +6082,7 @@ class App(QtCore.QObject):
             current = self.collection.get_active()
             if current is not None:
                 # the transfer of converted values to the UI form for Geometry is done local in the FlatCAMObj.py
-                if not isinstance(current, FlatCAMGeometry):
+                if not isinstance(current, GeometryObject):
                     current.to_form()
 
             # replot all objects
@@ -6943,7 +6947,7 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.GeometryObject'>":
                 self.collection.get_active().on_tool_delete()
 
         # work only if the notebook tab on focus is the Tools_Tab
@@ -7007,14 +7011,14 @@ class App(QtCore.QObject):
                     self.log.debug("App.on_delete()")
 
                     for obj_active in self.collection.get_selected():
-                        # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
-                        if isinstance(obj_active, FlatCAMGerber):
+                        # if the deleted object is GerberObject then make sure to delete the possible mark shapes
+                        if isinstance(obj_active, GerberObject):
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
-                        elif isinstance(obj_active, FlatCAMCNCjob):
+                        elif isinstance(obj_active, CNCJobObject):
                             try:
                                 obj_active.text_col.enabled = False
                                 del obj_active.text_col
@@ -7556,15 +7560,15 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
-                elif isinstance(obj, FlatCAMGerber):
+                elif isinstance(obj, GerberObject):
                     self.new_object("gerber", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("geometry", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, FlatCAMScript):
+                elif isinstance(obj, ScriptObject):
                     self.new_object("script", str(obj_name) + "_copy", initialize_script)
-                elif isinstance(obj, FlatCAMDocument):
+                elif isinstance(obj, DocumentObject):
                     self.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -7608,11 +7612,11 @@ class App(QtCore.QObject):
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
-                elif isinstance(obj, FlatCAMGerber):
+                elif isinstance(obj, GerberObject):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
             except Exception as er:
                 return "Operation failed: %s" % str(er)
@@ -7662,7 +7666,7 @@ class App(QtCore.QObject):
 
         def initialize_excellon(obj_init, app):
             # objs = self.collection.get_selected()
-            # FlatCAMGeometry.merge(objs, obj)
+            # GeometryObject.merge(objs, obj)
             solid_geo = []
             for tool in obj.tools:
                 for geo in obj.tools[tool]['solid_geometry']:
@@ -7679,7 +7683,7 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
                     self.new_object("geometry", str(obj_name) + "_conv", initialize)
@@ -7757,9 +7761,9 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
                     log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
@@ -7960,7 +7964,7 @@ class App(QtCore.QObject):
         tool_from_db = deepcopy(tool)
 
         obj = self.collection.get_active()
-        if isinstance(obj, FlatCAMGeometry):
+        if isinstance(obj, GeometryObject):
             obj.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
@@ -8994,8 +8998,8 @@ class App(QtCore.QObject):
         curr_x, curr_y = self.pos
 
         for obj in self.all_objects_list:
-            # FlatCAMScript and FlatCAMDocument objects can't be selected
-            if isinstance(obj, FlatCAMScript) or isinstance(obj, FlatCAMDocument):
+            # ScriptObject and DocumentObject objects can't be selected
+            if isinstance(obj, ScriptObject) or isinstance(obj, DocumentObject):
                 continue
 
             if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
@@ -9336,7 +9340,7 @@ class App(QtCore.QObject):
 
         for obj in self.collection.get_list():
             # delete shapes left drawn from mark shape_collections, if any
-            if isinstance(obj, FlatCAMGerber):
+            if isinstance(obj, GerberObject):
                 try:
                     for el in obj.mark_shapes:
                         obj.mark_shapes[el].clear(update=True)
@@ -9346,7 +9350,7 @@ class App(QtCore.QObject):
                     pass
 
             # also delete annotation shapes, if any
-            elif isinstance(obj, FlatCAMCNCjob):
+            elif isinstance(obj, CNCJobObject):
                 try:
                     obj.text_col.enabled = False
                     del obj.text_col
@@ -9409,17 +9413,17 @@ class App(QtCore.QObject):
         """
 
         obj = self.collection.get_active()
-        if type(obj) == FlatCAMGeometry:
+        if type(obj) == GeometryObject:
             self.on_file_exportdxf()
-        elif type(obj) == FlatCAMExcellon:
+        elif type(obj) == ExcellonObject:
             self.on_file_saveexcellon()
-        elif type(obj) == FlatCAMCNCjob:
+        elif type(obj) == CNCJobObject:
             obj.on_exportgcode_button_click()
-        elif type(obj) == FlatCAMGerber:
+        elif type(obj) == GerberObject:
             self.on_file_savegerber()
-        elif type(obj) == FlatCAMScript:
+        elif type(obj) == ScriptObject:
             self.on_file_savescript()
-        elif type(obj) == FlatCAMDocument:
+        elif type(obj) == DocumentObject:
             self.on_file_savedocument()
 
     def obj_move(self):
@@ -9672,10 +9676,10 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if (not isinstance(obj, FlatCAMGeometry)
-                and not isinstance(obj, FlatCAMGerber)
-                and not isinstance(obj, FlatCAMCNCjob)
-                and not isinstance(obj, FlatCAMExcellon)):
+        if (not isinstance(obj, GeometryObject)
+                and not isinstance(obj, GerberObject)
+                and not isinstance(obj, CNCJobObject)
+                and not isinstance(obj, ExcellonObject)):
             msg = '[ERROR_NOTCL] %s' % \
                   _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
@@ -9761,7 +9765,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGerber):
+        if not isinstance(obj, GerberObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
@@ -9802,7 +9806,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMScript):
+        if not isinstance(obj, ScriptObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Script objects can be saved as TCL Script files..."))
             return
 
@@ -9843,7 +9847,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMScript):
+        if not isinstance(obj, ScriptObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Document objects can be saved as Document files..."))
             return
 
@@ -9884,7 +9888,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
@@ -9925,7 +9929,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
@@ -9969,7 +9973,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGerber):
+        if not isinstance(obj, GerberObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
@@ -10019,7 +10023,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGeometry):
+        if not isinstance(obj, GeometryObject):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -10368,7 +10372,7 @@ class App(QtCore.QObject):
                 self.splash.showMessage('%s: %ssec\n%s' %
                                         (_("Canvas initialization started.\n"
                                            "Canvas initialization finished in"), '%.2f' % self.used_time,
-                                         _("Executing FlatCAMScript file.")
+                                         _("Executing ScriptObject file.")
                                          ),
                                         alignment=Qt.AlignBottom | Qt.AlignLeft,
                                         color=QtGui.QColor("gray"))
@@ -10847,7 +10851,7 @@ class App(QtCore.QObject):
         else:
             obj = local_use
 
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' %
                              _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
@@ -11253,8 +11257,8 @@ class App(QtCore.QObject):
         # How the object should be initialized
         def obj_init(gerber_obj, app_obj):
 
-            assert isinstance(gerber_obj, FlatCAMGerber), \
-                "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
+            assert isinstance(gerber_obj, GerberObject), \
+                "Expected to initialize a GerberObject but got %s" % type(gerber_obj)
 
             # Opening the file happens here
             try:
@@ -11439,8 +11443,8 @@ class App(QtCore.QObject):
         # How the object should be initialized
         def obj_init(geo_obj, app_obj):
 
-            assert isinstance(geo_obj, FlatCAMGeometry), \
-                "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
+            assert isinstance(geo_obj, GeometryObject), \
+                "Expected to initialize a GeometryObject but got %s" % type(geo_obj)
 
             # Opening the file happens here
             obj = HPGL2(self)
@@ -12330,7 +12334,7 @@ class App(QtCore.QObject):
             with self.proc_container.new(_("Enabling plots ...")):
                 for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(plot_obj, FlatCAMCNCjob):
+                    if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=True)
@@ -12382,7 +12386,7 @@ class App(QtCore.QObject):
             with self.proc_container.new(_("Disabling plots ...")):
                 for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(plot_obj, FlatCAMCNCjob):
+                    if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=False)

@@ -4318,7 +4318,7 @@ class CNCjob(Geometry):
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
         self.app.inform.emit(
-            '%s... %s %s' % (_("Finished SolderPste G-Code generation"), str(path_count), _("paths traced."))
+            '%s... %s %s' % (_("Finished SolderPaste G-Code generation"), str(path_count), _("paths traced."))
         )
 
         # Finish

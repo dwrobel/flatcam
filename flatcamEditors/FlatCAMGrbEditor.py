@@ -2621,8 +2621,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded.\n"
-              " - 'Square:' the corner is met in a sharp angle.\n"
-              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
+              " - 'Square': the corner is met in a sharp angle.\n"
+              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
         )
         self.buffer_corner_cb = FCComboBox()
         self.buffer_corner_cb.addItem(_("Round"))
@@ -3833,7 +3833,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         Imports the geometry found in self.apertures from the given FlatCAM Gerber object
         into the editor.
 
-        :param orig_grb_obj: FlatCAMExcellon
+        :param orig_grb_obj: ExcellonObject
         :return: None
         """
 

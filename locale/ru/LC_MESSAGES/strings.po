@@ -546,8 +546,8 @@ msgid "Failed. Select a Geometry Object and try again."
 msgstr "Неудалось. Выберите объект Geometry и попробуйте снова."
 
 #: FlatCAMApp.py:5652 FlatCAMApp.py:5688
-msgid "Expected a FlatCAMGeometry, got"
-msgstr "Ожидается FlatCAMGeometry, получено"
+msgid "Expected a GeometryObject, got"
+msgstr "Ожидается GeometryObject, получено"
 
 #: FlatCAMApp.py:5665
 msgid "A Geometry object was converted to MultiGeo type."
@@ -1189,8 +1189,8 @@ msgid "Open TCL script cancelled."
 msgstr "Открытие сценария отменено."
 
 #: FlatCAMApp.py:9993
-msgid "Executing FlatCAMScript file."
-msgstr "Выполнение файла FlatCAMScript."
+msgid "Executing ScriptObject file."
+msgstr "Выполнение файла ScriptObject."
 
 #: FlatCAMApp.py:10000 FlatCAMApp.py:10003
 msgid "Run TCL script"
@@ -16746,8 +16746,8 @@ msgid "Buffer done"
 msgstr "Буфер готов"
 
 #: tclCommands/TclCommandBbox.py:74 tclCommands/TclCommandNregions.py:73
-msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
-msgstr "Ожидался FlatCAMGerber или FlatCAMGeometry, получено"
+msgid "Expected GerberObject or GeometryObject, got"
+msgstr "Ожидался GerberObject или GeometryObject, получено"
 
 #: tclCommands/TclCommandBounds.py:64 tclCommands/TclCommandBounds.py:68
 msgid "Expected a list of objects names separated by comma. Got"
@@ -17431,8 +17431,8 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "<span style=\"color:red;\"><b>%s</b></span>"
 #~ msgstr "<span style=\"color:red;\"><b>%s</b></span>"
 
-#~ msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
-#~ msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
+#~ msgid "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
+#~ msgstr "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
 
 #~ msgid "FlatCAMCNNJob.on_edit_code_click() -->"
 #~ msgstr "FlatCAMCNNJob.on_edit_code_click() -->"
@@ -17603,8 +17603,8 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ "a><BR><b>ЗАГРУЗИТЬ</B> можно <a href = \"https://bitbucket.org/jpcgt/"
 #~ "flatcam/downloads/\">отсюда.</a><BR>"
 
-#~ msgid "Expected a FlatCAMGeometry, got %s"
-#~ msgstr "Ожидается FlatCAMGeometry, получено %s"
+#~ msgid "Expected a GeometryObject, got %s"
+#~ msgstr "Ожидается GeometryObject, получено %s"
 
 #~ msgid "Saved to: %s"
 #~ msgstr "Сохранёно в: %s"

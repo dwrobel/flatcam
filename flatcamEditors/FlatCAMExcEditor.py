@@ -3039,7 +3039,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         Imports the geometry from the given FlatCAM Excellon object
         into the editor.
 
-        :param exc_obj: FlatCAMExcellon object
+        :param exc_obj: ExcellonObject object
         :return: None
         """
 
@@ -3115,7 +3115,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         """
         Create a new Excellon object that contain the edited content of the source Excellon object
 
-        :param exc_obj: FlatCAMExcellon
+        :param exc_obj: ExcellonObject
         :return: None
         """
 

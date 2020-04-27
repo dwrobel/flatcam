@@ -1,6 +1,5 @@
 import collections
 from tclCommands.TclCommand import TclCommand
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
 
 from shapely.ops import cascaded_union
 
@@ -73,7 +72,7 @@ class TclCommandBbox(TclCommand):
 
         if not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMGeometry):
             self.raise_tcl_error('%s %s: %s.' % (
-                _("Expected FlatCAMGerber or FlatCAMGeometry, got"), name, type(obj)))
+                _("Expected GerberObject or GeometryObject, got"), name, type(obj)))
 
         if 'margin' not in args:
             args['margin'] = float(self.app.defaults["gerber_bboxmargin"])
@@ -92,7 +91,7 @@ class TclCommandBbox(TclCommand):
 
         try:
             def geo_init(geo_obj, app_obj):
-                assert isinstance(geo_obj, FlatCAMGeometry)
+                # assert geo_obj.kind == 'geometry'
 
                 # Bounding box with rounded corners
                 geo = cascaded_union(obj.solid_geometry)

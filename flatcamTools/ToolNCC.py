@@ -2263,7 +2263,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ##########################################################################################
         def gen_clear_area(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
@@ -2551,7 +2551,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
@@ -3045,7 +3045,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ##########################################################################################
         def gen_clear_area(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
@@ -3446,7 +3446,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')

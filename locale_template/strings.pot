@@ -498,7 +498,7 @@ msgid "Failed. Select a Geometry Object and try again."
 msgstr ""
 
 #: FlatCAMApp.py:5765 FlatCAMApp.py:5801
-msgid "Expected a FlatCAMGeometry, got"
+msgid "Expected a GeometryObject, got"
 msgstr ""
 
 #: FlatCAMApp.py:5778
@@ -1056,7 +1056,7 @@ msgid "Open TCL script"
 msgstr ""
 
 #: FlatCAMApp.py:10373
-msgid "Executing FlatCAMScript file."
+msgid "Executing ScriptObject file."
 msgstr ""
 
 #: FlatCAMApp.py:10381 FlatCAMApp.py:10384
@@ -15065,7 +15065,7 @@ msgid "Buffer done"
 msgstr ""
 
 #: tclCommands/TclCommandBbox.py:76 tclCommands/TclCommandNregions.py:75
-msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
+msgid "Expected GerberObject or GeometryObject, got"
 msgstr ""
 
 #: tclCommands/TclCommandBounds.py:67 tclCommands/TclCommandBounds.py:71

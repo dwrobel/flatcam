@@ -1335,7 +1335,7 @@ class SolderPaste(FlatCAMTool):
         # RUNNING ON SEPARATE THREAD!
         def job_init(job_obj):
             assert job_obj.kind == 'cncjob', \
-                "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
+                "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -1365,7 +1365,7 @@ class SolderPaste(FlatCAMTool):
                 res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
 
                 if res == 'fail':
-                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
                     tool_cnc_dict['gcode'] = res
