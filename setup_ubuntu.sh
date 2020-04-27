@@ -41,6 +41,7 @@ sudo -H python3 -m pip install --upgrade \
 	ezdxf \
 	matplotlib \
 	qrcode \
+	pyqt5 \
 	reportlab \
 	svglib
 
