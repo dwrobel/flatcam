@@ -14,6 +14,14 @@ ASSEST_PATH = assets/linux
 INSTALL_PATH = /usr/share/flatcam-beta
 APPS_PATH = /usr/share/applications
 
+MIN_PY3_MINOR_VERSION := 5
+PY3_MINOR_VERSION := $(shell python3 --version | cut -d'.' -f2)
+
+ifneq ($(MIN_PY3_MINOR_VERSION), $(firstword $(sort $(PY3_MINOR_VERSION) $(MIN_PY3_MINOR_VERSION))))
+    $(info Current python version is "3.$(PY3_MINOR_VERSION)")
+    $(error You must have at least 3.$(MIN_PY3_MINOR_VERSION) installed)
+endif
+
 install:
 ifeq ($(USER_ID), 0)
 	@ echo "Installing it system-wide"
