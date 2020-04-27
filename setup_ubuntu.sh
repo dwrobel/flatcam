@@ -17,15 +17,11 @@ sudo apt-get install -y \
 	python3-tk
 
 
-#python3-imaging \
-
-
 # Python packages
 
 sudo -H python3 -m pip install --upgrade \
 	pip \
 	numpy \
-	scipy \
 	shapely \
 	rtree \
 	tk \
