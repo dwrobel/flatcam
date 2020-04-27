@@ -16,7 +16,7 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
-from ObjectCollection import KeySensitiveListView
+from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
