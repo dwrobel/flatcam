@@ -20,7 +20,6 @@ from flatcamGUI.ObjectUI import RadioSet
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
     FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
 from flatcamParsers.ParseFont import *
-import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
 from shapely.ops import cascaded_union, unary_union, linemerge
@@ -88,8 +87,8 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded for exterior buffer.\n"
-              " - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
-              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
+              " - 'Square': the corner is met in a sharp angle for exterior buffer.\n"
+              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
         )
         self.buffer_corner_cb = FCComboBox()
         self.buffer_corner_cb.addItem(_("Round"))
@@ -3299,8 +3298,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
     draw_shape_idx = -1
 
     def __init__(self, app, disabled=False):
-        assert isinstance(app, FlatCAMApp.App), \
-            "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
+        # assert isinstance(app, FlatCAMApp.App), \
+        #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
         super(FlatCAMGeoEditor, self).__init__()
 
@@ -4011,6 +4010,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return:        Boolean. Status of the checkbox that toggled the Editor Tool
         """
         cb_widget = self.sender()
+        assert isinstance(cb_widget, QtWidgets.QAction), "Expected a QAction got %s" % type(cb_widget)
         self.options[key] = cb_widget.isChecked()
 
         return 1 if self.options[key] is True else 0
@@ -4035,7 +4035,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Imports the geometry from the given FlatCAM Geometry object
         into the editor.
 
-        :param fcgeometry:      FlatCAMGeometry
+        :param fcgeometry:      GeometryObject
         :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
         :return:                None
         """
@@ -4750,7 +4750,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Transfers the geometry tool shape buffer to the selected geometry
         object. The geometry already in the object are removed.
 
-        :param fcgeometry: FlatCAMGeometry
+        :param fcgeometry: GeometryObject
         :return: None
         """
         if self.multigeo_tool:

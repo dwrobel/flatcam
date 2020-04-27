@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 
 from shapely.geometry import Point, Polygon, LineString, MultiPolygon
 from shapely.ops import unary_union
@@ -190,7 +190,7 @@ class ToolPDF(FlatCAMTool):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         with self.app.proc_container.new(_("Parsing PDF file ...")):
             with open(filename, "rb") as f:
@@ -200,7 +200,7 @@ class ToolPDF(FlatCAMTool):
             for s in re.findall(self.stream_re, pdf):
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 stream_nr += 1
                 log.debug(" PDF STREAM: %d\n" % stream_nr)
@@ -291,7 +291,7 @@ class ToolPDF(FlatCAMTool):
     def layer_rendering_as_gerber(self, filename, ap_dict, layer_nr):
         outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)
 
-        def obj_init(grb_obj, app_obj):
+        def obj_init(grb_obj):
 
             grb_obj.apertures = ap_dict
 
@@ -404,7 +404,7 @@ class ToolPDF(FlatCAMTool):
                     for object_name in self.pdf_parsed:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         filename = deepcopy(self.pdf_parsed[object_name]['filename'])
                         pdf_content = deepcopy(self.pdf_parsed[object_name]['pdf'])
@@ -412,7 +412,7 @@ class ToolPDF(FlatCAMTool):
                         for k in pdf_content:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             ap_dict = pdf_content[k]
                             if ap_dict:
@@ -493,7 +493,7 @@ class ToolPDF(FlatCAMTool):
         for pline in lines:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             line_nr += 1
             log.debug("line %d: %s" % (line_nr, pline))
@@ -868,7 +868,6 @@ class ToolPDF(FlatCAMTool):
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
-                        found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
                             aperture += 1
@@ -1231,7 +1230,6 @@ class ToolPDF(FlatCAMTool):
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
-                        found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
                             aperture += 1
@@ -1355,7 +1353,7 @@ class ToolPDF(FlatCAMTool):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         return object_dict
 

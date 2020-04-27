@@ -8,7 +8,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
-from FlatCAMObj import FlatCAMGerber
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing
 from shapely.ops import cascaded_union, unary_union
@@ -270,7 +269,7 @@ class CutOut(FlatCAMTool):
         form_layout_2.addRow(gaps_label, self.gaps)
 
         # Buttons
-        self.ff_cutout_object_btn = QtWidgets.QPushButton(_("Generate Freeform Geometry"))
+        self.ff_cutout_object_btn = FCButton(_("Generate Freeform Geometry"))
         self.ff_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
               "The cutout shape can be of any shape.\n"
@@ -284,7 +283,7 @@ class CutOut(FlatCAMTool):
                         """)
         grid0.addWidget(self.ff_cutout_object_btn, 20, 0, 1, 2)
 
-        self.rect_cutout_object_btn = QtWidgets.QPushButton(_("Generate Rectangular Geometry"))
+        self.rect_cutout_object_btn = FCButton(_("Generate Rectangular Geometry"))
         self.rect_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
               "The resulting cutout shape is\n"
@@ -335,7 +334,7 @@ class CutOut(FlatCAMTool):
 
         # form_layout_3.addRow(e_lab_0)
 
-        self.man_geo_creation_btn = QtWidgets.QPushButton(_("Generate Manual Geometry"))
+        self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
         self.man_geo_creation_btn.setToolTip(
             _("If the object to be cutout is a Gerber\n"
               "first create a Geometry that surrounds it,\n"
@@ -350,7 +349,7 @@ class CutOut(FlatCAMTool):
                         """)
         grid0.addWidget(self.man_geo_creation_btn, 24, 0, 1, 2)
 
-        self.man_gaps_creation_btn = QtWidgets.QPushButton(_("Manual Add Bridge Gaps"))
+        self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setToolTip(
             _("Use the left mouse button (LMB) click\n"
               "to create a bridge gap to separate the PCB from\n"
@@ -369,7 +368,7 @@ class CutOut(FlatCAMTool):
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )
@@ -525,7 +524,7 @@ class CutOut(FlatCAMTool):
         def geo_init(geo_obj, app_obj):
             solid_geo = []
 
-            if isinstance(cutout_obj, FlatCAMGerber):
+            if cutout_obj.kind == 'gerber':
                 if isinstance(cutout_obj.solid_geometry, list):
                     cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
 
@@ -542,12 +541,12 @@ class CutOut(FlatCAMTool):
 
             def cutout_handler(geom):
                 # Get min and max data for each object as we just cut rectangles across X or Y
-                xmin, ymin, xmax, ymax = recursive_bounds(geom)
+                xxmin, yymin, xxmax, yymax = recursive_bounds(geom)
 
-                px = 0.5 * (xmin + xmax) + margin
-                py = 0.5 * (ymin + ymax) + margin
-                lenx = (xmax - xmin) + (margin * 2)
-                leny = (ymax - ymin) + (margin * 2)
+                px = 0.5 * (xxmin + xxmax) + margin
+                py = 0.5 * (yymin + yymax) + margin
+                lenx = (xxmax - xxmin) + (margin * 2)
+                leny = (yymax - yymin) + (margin * 2)
 
                 proc_geometry = []
                 if gaps == 'None':
@@ -555,41 +554,41 @@ class CutOut(FlatCAMTool):
                 else:
                     if gaps == '8' or gaps == '2LR':
                         geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,  # botleft_x
+                                                           xxmin - gapsize,  # botleft_x
                                                            py - gapsize + leny / 4,  # botleft_y
-                                                           xmax + gapsize,  # topright_x
+                                                           xxmax + gapsize,  # topright_x
                                                            py + gapsize + leny / 4)  # topright_y
                         geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,
+                                                           xxmin - gapsize,
                                                            py - gapsize - leny / 4,
-                                                           xmax + gapsize,
+                                                           xxmax + gapsize,
                                                            py + gapsize - leny / 4)
 
                     if gaps == '8' or gaps == '2TB':
                         geom = self.subtract_poly_from_geo(geom,
                                                            px - gapsize + lenx / 4,
-                                                           ymin - gapsize,
+                                                           yymin - gapsize,
                                                            px + gapsize + lenx / 4,
-                                                           ymax + gapsize)
+                                                           yymax + gapsize)
                         geom = self.subtract_poly_from_geo(geom,
                                                            px - gapsize - lenx / 4,
-                                                           ymin - gapsize,
+                                                           yymin - gapsize,
                                                            px + gapsize - lenx / 4,
-                                                           ymax + gapsize)
+                                                           yymax + gapsize)
 
                     if gaps == '4' or gaps == 'LR':
                         geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,
+                                                           xxmin - gapsize,
                                                            py - gapsize,
-                                                           xmax + gapsize,
+                                                           xxmax + gapsize,
                                                            py + gapsize)
 
                     if gaps == '4' or gaps == 'TB':
                         geom = self.subtract_poly_from_geo(geom,
                                                            px - gapsize,
-                                                           ymin - gapsize,
+                                                           yymin - gapsize,
                                                            px + gapsize,
-                                                           ymax + gapsize)
+                                                           yymax + gapsize)
 
                 try:
                     for g in geom:
@@ -603,7 +602,7 @@ class CutOut(FlatCAMTool):
                 object_geo = unary_union(object_geo)
 
                 # for geo in object_geo:
-                if isinstance(cutout_obj, FlatCAMGerber):
+                if cutout_obj.kind == 'gerber':
                     if isinstance(object_geo, MultiPolygon):
                         x0, y0, x1, y1 = object_geo.bounds
                         object_geo = box(x0, y0, x1, y1)
@@ -623,7 +622,7 @@ class CutOut(FlatCAMTool):
                     object_geo = [object_geo]
 
                 for geom_struct in object_geo:
-                    if isinstance(cutout_obj, FlatCAMGerber):
+                    if cutout_obj.kind == 'gerber':
                         if margin >= 0:
                             geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
                         else:
@@ -775,7 +774,7 @@ class CutOut(FlatCAMTool):
 
                 # if Gerber create a buffer at a distance
                 # if Geometry then cut through the geometry
-                if isinstance(cutout_obj, FlatCAMGerber):
+                if cutout_obj.kind == 'gerber':
                     if margin >= 0:
                         geo = geo.buffer(margin + abs(dia / 2))
                     else:
@@ -909,7 +908,7 @@ class CutOut(FlatCAMTool):
                                    "Select one and try again."))
             return
 
-        if not isinstance(cutout_obj, FlatCAMGerber):
+        if cutout_obj.kind != 'gerber':
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("The selected object has to be of Gerber type.\n"
                                    "Select a Gerber file and try again."))
@@ -988,11 +987,11 @@ class CutOut(FlatCAMTool):
 
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         try:
@@ -1038,11 +1037,11 @@ class CutOut(FlatCAMTool):
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
-            right_button = 2
+            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
+            # right_button = 3
 
         try:
             x = float(event_pos[0])
@@ -1159,13 +1158,17 @@ class CutOut(FlatCAMTool):
             if '+' in key_string:
                 mod, __, key_text = key_string.rpartition('+')
                 if mod.lower() == 'ctrl':
-                    modifiers = QtCore.Qt.ControlModifier
+                    # modifiers = QtCore.Qt.ControlModifier
+                    pass
                 elif mod.lower() == 'alt':
-                    modifiers = QtCore.Qt.AltModifier
+                    # modifiers = QtCore.Qt.AltModifier
+                    pass
                 elif mod.lower() == 'shift':
-                    modifiers = QtCore.Qt.ShiftModifier
+                    # modifiers = QtCore.Qt.ShiftModifier
+                    pass
                 else:
-                    modifiers = QtCore.Qt.NoModifier
+                    # modifiers = QtCore.Qt.NoModifier
+                    pass
                 key = QtGui.QKeySequence(key_text)
         # events from Vispy are of type KeyEvent
         else:
@@ -1203,7 +1206,8 @@ class CutOut(FlatCAMTool):
             geo = self.cutting_geo(pos=(l_x, l_y))
             self.draw_utility_geometry(geo=geo)
 
-    def subtract_poly_from_geo(self, solid_geo, x0, y0, x1, y1):
+    @staticmethod
+    def subtract_poly_from_geo(solid_geo, x0, y0, x1, y1):
         """
         Subtract polygon made from points from the given object.
         This only operates on the paths in the original geometry,
@@ -1270,8 +1274,9 @@ def flatten(geometry):
 
 def recursive_bounds(geometry):
     """
-    Returns coordinates of rectangular bounds
-    of geometry: (xmin, ymin, xmax, ymax).
+
+    :param geometry:    a iterable object that holds geometry
+    :return:            Returns coordinates of rectangular bounds of geometry: (xmin, ymin, xmax, ymax).
     """
 
     # now it can get bounds for nested lists of objects

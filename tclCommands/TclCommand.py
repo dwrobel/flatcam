@@ -71,7 +71,7 @@ class TclCommand(object):
         :return: none
         """
 
-        self.app.raise_tcl_error(text)
+        self.app.shell.raise_tcl_error(text)
 
     def get_current_command(self):
         """
@@ -275,7 +275,7 @@ class TclCommand(object):
         # because of signaling we cannot call error to TCL from here but when task
         # is finished also non-signaled are handled here to better exception
         # handling and  displayed after command is finished
-        raise self.app.TclErrorException(text)
+        raise self.app.shell.TclErrorException(text)
 
     def execute_wrapper(self, *args):
         """
@@ -296,7 +296,7 @@ class TclCommand(object):
         except Exception as unknown:
             error_info = sys.exc_info()
             self.log.error("TCL command '%s' failed. Error text: %s" % (str(self), str(unknown)))
-            self.app.display_tcl_error(unknown, error_info)
+            self.app.shell.display_tcl_error(unknown, error_info)
             self.raise_tcl_unknown_error(unknown)
 
     @abc.abstractmethod
@@ -400,9 +400,9 @@ class TclCommandSignaled(TclCommand):
                 raise ex[0]
 
             if status['timed_out']:
-                self.app.raise_tcl_unknown_error("Operation timed outed! Consider increasing option "
-                                                 "'-timeout <miliseconds>' for command or "
-                                                 "'set_sys global_background_timeout <miliseconds>'.")
+                self.app.shell.raise_tcl_unknown_error("Operation timed outed! Consider increasing option "
+                                                       "'-timeout <miliseconds>' for command or "
+                                                       "'set_sys global_background_timeout <miliseconds>'.")
 
         try:
             self.log.debug("TCL command '%s' executed." % str(type(self).__name__))
@@ -439,5 +439,5 @@ class TclCommandSignaled(TclCommand):
             else:
                 error_info = sys.exc_info()
             self.log.error("TCL command '%s' failed." % str(self))
-            self.app.display_tcl_error(unknown, error_info)
+            self.app.shell.display_tcl_error(unknown, error_info)
             self.raise_tcl_unknown_error(unknown)

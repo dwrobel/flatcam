@@ -29,6 +29,7 @@ languages_dict = {
     'en': 'English',
     'es': 'Spanish',
     'fr': 'French',
+    'hu': 'Hungarian',
     'it': 'Italian',
     'ro': 'Romanian',
     'ru': 'Russian',

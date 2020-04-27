@@ -557,7 +557,7 @@ msgid "Failed. Select a Geometry Object and try again."
 msgstr "Falha. Selecione um Objeto de Geometria e tente novamente."
 
 #: FlatCAMApp.py:5652 FlatCAMApp.py:5688
-msgid "Expected a FlatCAMGeometry, got"
+msgid "Expected a GeometryObject, got"
 msgstr "Geometria FlatCAM esperada, recebido"
 
 #: FlatCAMApp.py:5665
@@ -1211,7 +1211,7 @@ msgid "Open TCL script cancelled."
 msgstr "Abrir script TCL cancelado."
 
 #: FlatCAMApp.py:9993
-msgid "Executing FlatCAMScript file."
+msgid "Executing ScriptObject file."
 msgstr "Executando arquivo de Script FlatCAM."
 
 #: FlatCAMApp.py:10000 FlatCAMApp.py:10003
@@ -16677,8 +16677,8 @@ msgid "Buffer done"
 msgstr "Buffer concluído"
 
 #: tclCommands/TclCommandBbox.py:74 tclCommands/TclCommandNregions.py:73
-msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
-msgstr "Esperando FlatCAMGerber ou FlatCAMGeometry, recebido"
+msgid "Expected GerberObject or GeometryObject, got"
+msgstr "Esperando GerberObject ou GeometryObject, recebido"
 
 #: tclCommands/TclCommandBounds.py:64 tclCommands/TclCommandBounds.py:68
 msgid "Expected a list of objects names separated by comma. Got"
@@ -17323,8 +17323,8 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "<span style=\"color:red;\"><b>%s</b></span>"
 #~ msgstr "<span style=\"color:red;\"><b>%s</b></span>"
 
-#~ msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
-#~ msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
+#~ msgid "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
+#~ msgstr "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
 
 #~ msgid "FlatCAMCNNJob.on_edit_code_click() -->"
 #~ msgstr "FlatCAMCNNJob.on_edit_code_click() -->"
@@ -17580,7 +17580,7 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ "flatcam/src/Beta/\">aqui.</a><BR>Área de <B>DOWNLOAD</B> <a href = "
 #~ "\"https://bitbucket.org/jpcgt/flatcam/downloads/\">aqui.</a><BR>"
 
-#~ msgid "Expected a FlatCAMGeometry, got %s"
+#~ msgid "Expected a GeometryObject, got %s"
 #~ msgstr "Geometria FlatCAM esperada, recebido %s"
 
 #~ msgid "Saved to: %s"

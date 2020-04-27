@@ -1,6 +1,5 @@
 import collections
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
 
 from shapely.geometry import Point
 import shapely.affinity as affinity
@@ -89,9 +88,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         if obj is None:
             return "Object not found: %s" % name
 
-        if not isinstance(obj, FlatCAMGeometry) and \
-                not isinstance(obj, FlatCAMGerber) and \
-                not isinstance(obj, FlatCAMExcellon):
+        if obj.kind != "geometry" and obj.kind != 'gerber' and obj.kind != 'excellon':
             return "ERROR: Only Gerber, Geometry and Excellon objects can be used."
 
         # Axis

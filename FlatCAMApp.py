@@ -14,24 +14,22 @@ import getopt
 import random
 import simplejson as json
 import lzma
-# import threading
 import shutil
 import stat
-
+from datetime import datetime
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import ctypes
+import traceback
 
-# import tkinter as tk
-# from PyQt5 import QtPrintSupport
+from shapely.geometry import Point, MultiPolygon
+from io import StringIO
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
-# from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import landscape, portrait
 from svglib.svglib import svg2rlg
 
-# from contextlib import contextmanager
 import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
@@ -39,23 +37,32 @@ from xml.dom.minidom import parseString as parse_xml_string
 from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
-# from array import array
-
-# import vispy.scene as scene
 
 # #######################################
 # #      Imports part of FlatCAM       ##
 # #######################################
+from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMBookmark import BookmarkManager
+from FlatCAMDB import ToolsDB2
+
 from ObjectCollection import *
-from FlatCAMObj import *
-from camlib import to_dict, dict2obj, ET, ParseError
+from flatcamObjects.FlatCAMObj import FlatCAMObj
+from flatcamObjects.FlatCAMCNCJob import CNCJobObject
+from flatcamObjects.FlatCAMDocument import DocumentObject
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
+from flatcamObjects.FlatCAMGeometry import GeometryObject
+from flatcamObjects.FlatCAMGerber import GerberObject
+from flatcamObjects.FlatCAMScript import ScriptObject
+
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
+from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 from flatcamGUI.GUIElements import FCFileSaveDialog
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, ToolsDB2, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -72,8 +79,6 @@ from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
 from flatcamTools import *
-
-import tclCommands
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -1174,6 +1179,15 @@ class App(QtCore.QObject):
         self.set_screen_units(self.defaults['units'])
 
         # #############################################################################
+        # ################################ AUTOSAVE SETUP #############################
+        # #############################################################################
+
+        self.block_autosave = False
+        self.autosave_timer = QtCore.QTimer(self)
+        self.save_project_auto_update()
+        self.autosave_timer.timeout.connect(self.save_project_auto)
+
+        # #############################################################################
         # ######################## UPDATE PREFERENCES GUI FORMS #######################
         # #############################################################################
 
@@ -1961,15 +1975,6 @@ class App(QtCore.QObject):
         self.log.debug("Finished creating Workers crew.")
 
         # #############################################################################
-        # ################################ AUTOSAVE SETUP #############################
-        # #############################################################################
-
-        self.block_autosave = False
-        self.autosave_timer = QtCore.QTimer(self)
-        self.save_project_auto_update()
-        self.autosave_timer.timeout.connect(self.save_project_auto)
-
-        # #############################################################################
         # ################################# Activity Monitor ##########################
         # #############################################################################
         self.activity_view = FlatCAMActivityView(app=self)
@@ -2553,23 +2558,11 @@ class App(QtCore.QObject):
         # ####################################################################################
         # ####################### Shell SETUP ################################################
         # ####################################################################################
-        # this will hold the TCL instance
-        self.tcl = None
 
-        # the actual variable will be redeclared in setup_tcl()
-        self.tcl_commands_storage = None
-
-        self.init_tcl()
-
-        self.shell = FCShell(self, version=self.version)
-        self.shell._edit.set_model_data(self.myKeywords)
-        self.shell.setWindowIcon(self.ui.app_icon)
-        self.shell.setWindowTitle("FlatCAM Shell")
-        self.shell.resize(*self.defaults["global_shell_shape"])
-        self.shell._append_to_browser('in', "FlatCAM %s - " % self.version)
-        self.shell.append_output('%s\n\n' % _("Type >help< to get started"))
+        self.shell = FCShell(app=self, version=self.version)
 
         self.ui.shell_dock.setWidget(self.shell)
+        self.log.debug("TCL Shell has been initialized.")
 
         # show TCL shell at start-up based on the Menu -? Edit -> Preferences setting.
         if self.defaults["global_shell_at_startup"]:
@@ -3422,14 +3415,14 @@ class App(QtCore.QObject):
 
         edited_object = self.collection.get_active()
 
-        if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
-                isinstance(edited_object, FlatCAMExcellon):
+        if isinstance(edited_object, GerberObject) or isinstance(edited_object, GeometryObject) or \
+                isinstance(edited_object, ExcellonObject):
             pass
         else:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
-        if isinstance(edited_object, FlatCAMGeometry):
+        if isinstance(edited_object, GeometryObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
@@ -3462,7 +3455,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
-        elif isinstance(edited_object, FlatCAMExcellon):
+        elif isinstance(edited_object, ExcellonObject):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
 
@@ -3474,7 +3467,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
 
-        elif isinstance(edited_object, FlatCAMGerber):
+        elif isinstance(edited_object, GerberObject):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
 
@@ -3538,7 +3531,7 @@ class App(QtCore.QObject):
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
                     self.ui.notebook.setTabText(2, "Tool")
 
-                    if isinstance(edited_obj, FlatCAMGeometry):
+                    if isinstance(edited_obj, GeometryObject):
                         obj_type = "Geometry"
                         if cleanup is None:
                             self.geo_editor.update_fcgeometry(edited_obj)
@@ -3564,7 +3557,7 @@ class App(QtCore.QObject):
                         edited_obj.build_ui()
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
-                    elif isinstance(edited_obj, FlatCAMGerber):
+                    elif isinstance(edited_obj, GerberObject):
                         obj_type = "Gerber"
                         if cleanup is None:
                             self.grb_editor.update_fcgerber()
@@ -3589,7 +3582,7 @@ class App(QtCore.QObject):
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
 
-                    elif isinstance(edited_obj, FlatCAMExcellon):
+                    elif isinstance(edited_obj, ExcellonObject):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
@@ -3621,13 +3614,13 @@ class App(QtCore.QObject):
 
                     self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
-                    if isinstance(edited_obj, FlatCAMGeometry):
+                    if isinstance(edited_obj, GeometryObject):
                         self.geo_editor.deactivate()
                         edited_obj.build_ui()
-                    elif isinstance(edited_obj, FlatCAMGerber):
+                    elif isinstance(edited_obj, GerberObject):
                         self.grb_editor.deactivate_grb_editor()
                         edited_obj.build_ui()
-                    elif isinstance(edited_obj, FlatCAMExcellon):
+                    elif isinstance(edited_obj, ExcellonObject):
                         self.exc_editor.deactivate()
                         edited_obj.build_ui()
                     else:
@@ -3642,11 +3635,11 @@ class App(QtCore.QObject):
                 # Switch notebook to Selected page
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
-                if isinstance(edited_obj, FlatCAMGeometry):
+                if isinstance(edited_obj, GeometryObject):
                     self.geo_editor.deactivate()
-                elif isinstance(edited_obj, FlatCAMGerber):
+                elif isinstance(edited_obj, GerberObject):
                     self.grb_editor.deactivate_grb_editor()
-                elif isinstance(edited_obj, FlatCAMExcellon):
+                elif isinstance(edited_obj, ExcellonObject):
                     self.exc_editor.deactivate()
                 else:
                     self.inform.emit('[WARNING_NOTCL] %s' %
@@ -4238,12 +4231,12 @@ class App(QtCore.QObject):
 
         # ## Create object
         classdict = {
-            "gerber": FlatCAMGerber,
-            "excellon": FlatCAMExcellon,
-            "cncjob": FlatCAMCNCjob,
-            "geometry": FlatCAMGeometry,
-            "script": FlatCAMScript,
-            "document": FlatCAMDocument
+            "gerber": GerberObject,
+            "excellon": ExcellonObject,
+            "cncjob": CNCJobObject,
+            "geometry": GeometryObject,
+            "script": ScriptObject,
+            "document": DocumentObject
         }
 
         App.log.debug("Calling object constructor...")
@@ -4251,7 +4244,7 @@ class App(QtCore.QObject):
         # Object creation/instantiation
         obj = classdict[kind](name)
 
-        obj.units = self.options["units"]  # TODO: The constructor should look at defaults.
+        obj.units = self.options["units"]
 
         # IMPORTANT
         # The key names in defaults and options dictionary's are not random:
@@ -4327,7 +4320,7 @@ class App(QtCore.QObject):
         # update the KeyWords list with the name of the file
         self.myKeywords.append(obj.options['name'])
 
-        FlatCAMApp.App.log.debug("Moving new object back to main thread.")
+        log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(self.main_thread)
@@ -4508,7 +4501,7 @@ class App(QtCore.QObject):
         # here it is done the object plotting
         def worker_task(t_obj):
             with self.proc_container.new(_("Plotting")):
-                if isinstance(t_obj, FlatCAMCNCjob):
+                if isinstance(t_obj, CNCJobObject):
                     t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
                 else:
                     t_obj.plot()
@@ -5672,7 +5665,7 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
+                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -5682,7 +5675,7 @@ class App(QtCore.QObject):
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=False)
+                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=False)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -5705,7 +5698,7 @@ class App(QtCore.QObject):
         objs = self.collection.get_selected()
 
         for obj in objs:
-            if not isinstance(obj, FlatCAMExcellon):
+            if not isinstance(obj, ExcellonObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Excellon joining works only on Excellon objects."))
                 return
 
@@ -5715,7 +5708,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(exc_obj, app):
-            FlatCAMExcellon.merge(self, exc_list=objs, exc_final=exc_obj)
+            ExcellonObject.merge(self, exc_list=objs, exc_final=exc_obj)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
@@ -5733,7 +5726,7 @@ class App(QtCore.QObject):
         objs = self.collection.get_selected()
 
         for obj in objs:
-            if not isinstance(obj, FlatCAMGerber):
+            if not isinstance(obj, GerberObject):
                 self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Gerber joining works only on Gerber objects."))
                 return
 
@@ -5743,7 +5736,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(grb_obj, app):
-            FlatCAMGerber.merge(self, grb_list=objs, grb_final=grb_obj)
+            GerberObject.merge(self, grb_list=objs, grb_final=grb_obj)
             app.inform.emit('[success] %s.' % _("Gerber merging finished"))
 
         self.new_object("gerber", 'Combo_Gerber', initialize)
@@ -5767,8 +5760,8 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Select a Geometry Object and try again."))
             return
 
-        if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Expected a FlatCAMGeometry, got"), type(obj)))
+        if not isinstance(obj, GeometryObject):
+            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Expected a GeometryObject, got"), type(obj)))
             return
 
         obj.multigeo = True
@@ -5802,9 +5795,9 @@ class App(QtCore.QObject):
                              _("Failed. Select a Geometry Object and try again."))
             return
 
-        if not isinstance(obj, FlatCAMGeometry):
+        if not isinstance(obj, GeometryObject):
             self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                             (_("Expected a FlatCAMGeometry, got"), type(obj)))
+                             (_("Expected a GeometryObject, got"), type(obj)))
             return
 
         obj.multigeo = False
@@ -6089,7 +6082,7 @@ class App(QtCore.QObject):
             current = self.collection.get_active()
             if current is not None:
                 # the transfer of converted values to the UI form for Geometry is done local in the FlatCAMObj.py
-                if not isinstance(current, FlatCAMGeometry):
+                if not isinstance(current, GeometryObject):
                     current.to_form()
 
             # replot all objects
@@ -6128,9 +6121,10 @@ class App(QtCore.QObject):
     def on_fullscreen(self, disable=False):
         self.report_usage("on_fullscreen()")
 
+        flags = self.ui.windowFlags()
         if self.toggle_fscreen is False and disable is False:
             # self.ui.showFullScreen()
-            self.ui.setWindowFlags(self.ui.windowFlags() | Qt.FramelessWindowHint)
+            self.ui.setWindowFlags(flags | Qt.FramelessWindowHint)
             a = self.ui.geometry()
             self.x_pos = a.x()
             self.y_pos = a.y()
@@ -6158,7 +6152,7 @@ class App(QtCore.QObject):
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         elif self.toggle_fscreen is True or disable is True:
-            self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.FramelessWindowHint)
+            self.ui.setWindowFlags(flags & ~Qt.FramelessWindowHint)
             self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
             self.ui.showNormal()
             self.restore_toolbar_view()
@@ -6953,7 +6947,7 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.GeometryObject'>":
                 self.collection.get_active().on_tool_delete()
 
         # work only if the notebook tab on focus is the Tools_Tab
@@ -7017,14 +7011,14 @@ class App(QtCore.QObject):
                     self.log.debug("App.on_delete()")
 
                     for obj_active in self.collection.get_selected():
-                        # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
-                        if isinstance(obj_active, FlatCAMGerber):
+                        # if the deleted object is GerberObject then make sure to delete the possible mark shapes
+                        if isinstance(obj_active, GerberObject):
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
-                        elif isinstance(obj_active, FlatCAMCNCjob):
+                        elif isinstance(obj_active, CNCJobObject):
                             try:
                                 obj_active.text_col.enabled = False
                                 del obj_active.text_col
@@ -7566,15 +7560,15 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
-                elif isinstance(obj, FlatCAMGerber):
+                elif isinstance(obj, GerberObject):
                     self.new_object("gerber", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("geometry", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj, FlatCAMScript):
+                elif isinstance(obj, ScriptObject):
                     self.new_object("script", str(obj_name) + "_copy", initialize_script)
-                elif isinstance(obj, FlatCAMDocument):
+                elif isinstance(obj, DocumentObject):
                     self.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -7618,11 +7612,11 @@ class App(QtCore.QObject):
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
-                elif isinstance(obj, FlatCAMGerber):
+                elif isinstance(obj, GerberObject):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
             except Exception as er:
                 return "Operation failed: %s" % str(er)
@@ -7672,7 +7666,7 @@ class App(QtCore.QObject):
 
         def initialize_excellon(obj_init, app):
             # objs = self.collection.get_selected()
-            # FlatCAMGeometry.merge(objs, obj)
+            # GeometryObject.merge(objs, obj)
             solid_geo = []
             for tool in obj.tools:
                 for geo in obj.tools[tool]['solid_geometry']:
@@ -7689,7 +7683,7 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
                     self.new_object("geometry", str(obj_name) + "_conv", initialize)
@@ -7767,9 +7761,9 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, FlatCAMExcellon):
+                if isinstance(obj, ExcellonObject):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
-                elif isinstance(obj, FlatCAMGeometry):
+                elif isinstance(obj, GeometryObject):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
                     log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
@@ -7970,7 +7964,7 @@ class App(QtCore.QObject):
         tool_from_db = deepcopy(tool)
 
         obj = self.collection.get_active()
-        if isinstance(obj, FlatCAMGeometry):
+        if isinstance(obj, GeometryObject):
             obj.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
@@ -8312,7 +8306,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if self.is_legacy is False:
-            self.plotcanvas.update()  # TODO: Need update canvas?
+            self.plotcanvas.update()
         else:
             self.plotcanvas.auto_adjust_axes()
 
@@ -8320,7 +8314,6 @@ class App(QtCore.QObject):
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
 
-    # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
         """
         Callback for toolbar button. Re-plots all objects.
@@ -8372,7 +8365,6 @@ class App(QtCore.QObject):
     def on_collection_updated(self, obj, state, old_name):
         """
         Create a menu from the object loaded in the collection.
-        TODO: should use the collection model to do this
 
         :param obj:         object that was changed (added, deleted, renamed)
         :param state:       what was done with the object. Can be: added, deleted, delete_all, renamed
@@ -8572,8 +8564,11 @@ class App(QtCore.QObject):
         grid_toggle.triggered.connect(lambda: self.ui.grid_snap_btn.trigger())
 
     def set_grid(self):
-        self.ui.grid_gap_x_entry.setText(self.sender().text())
-        self.ui.grid_gap_y_entry.setText(self.sender().text())
+        menu_action = self.sender()
+        assert isinstance(menu_action, QtWidgets.QAction), "Expected QAction got %s" % type(menu_action)
+
+        self.ui.grid_gap_x_entry.setText(menu_action.text())
+        self.ui.grid_gap_y_entry.setText(menu_action.text())
 
     def on_grid_add(self):
         # ## Current application units in lower Case
@@ -9003,8 +8998,8 @@ class App(QtCore.QObject):
         curr_x, curr_y = self.pos
 
         for obj in self.all_objects_list:
-            # FlatCAMScript and FlatCAMDocument objects can't be selected
-            if isinstance(obj, FlatCAMScript) or isinstance(obj, FlatCAMDocument):
+            # ScriptObject and DocumentObject objects can't be selected
+            if isinstance(obj, ScriptObject) or isinstance(obj, DocumentObject):
                 continue
 
             if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
@@ -9324,7 +9319,8 @@ class App(QtCore.QObject):
         """
         Returns the application to its startup state. This method is thread-safe.
 
-        :return: None
+        :param cli:     Boolean. If True this method was run from command line
+        :return:        None
         """
 
         self.report_usage("on_file_new")
@@ -9344,7 +9340,7 @@ class App(QtCore.QObject):
 
         for obj in self.collection.get_list():
             # delete shapes left drawn from mark shape_collections, if any
-            if isinstance(obj, FlatCAMGerber):
+            if isinstance(obj, GerberObject):
                 try:
                     for el in obj.mark_shapes:
                         obj.mark_shapes[el].clear(update=True)
@@ -9354,7 +9350,7 @@ class App(QtCore.QObject):
                     pass
 
             # also delete annotation shapes, if any
-            elif isinstance(obj, FlatCAMCNCjob):
+            elif isinstance(obj, CNCJobObject):
                 try:
                     obj.text_col.enabled = False
                     del obj.text_col
@@ -9417,17 +9413,17 @@ class App(QtCore.QObject):
         """
 
         obj = self.collection.get_active()
-        if type(obj) == FlatCAMGeometry:
+        if type(obj) == GeometryObject:
             self.on_file_exportdxf()
-        elif type(obj) == FlatCAMExcellon:
+        elif type(obj) == ExcellonObject:
             self.on_file_saveexcellon()
-        elif type(obj) == FlatCAMCNCjob:
+        elif type(obj) == CNCJobObject:
             obj.on_exportgcode_button_click()
-        elif type(obj) == FlatCAMGerber:
+        elif type(obj) == GerberObject:
             self.on_file_savegerber()
-        elif type(obj) == FlatCAMScript:
+        elif type(obj) == ScriptObject:
             self.on_file_savescript()
-        elif type(obj) == FlatCAMDocument:
+        elif type(obj) == DocumentObject:
             self.on_file_savedocument()
 
     def obj_move(self):
@@ -9440,7 +9436,7 @@ class App(QtCore.QObject):
         self.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
-    def on_fileopengerber(self, signal: bool = None, name=None):
+    def on_fileopengerber(self, signal, name=None):
         """
         File menu callback for opening a Gerber.
 
@@ -9487,7 +9483,7 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_gerber, 'params': [filename]})
 
-    def on_fileopenexcellon(self, signal: bool = None, name=None):
+    def on_fileopenexcellon(self, signal, name=None):
         """
         File menu callback for opening an Excellon file.
 
@@ -9524,7 +9520,7 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_excellon, 'params': [filename]})
 
-    def on_fileopengcode(self, signal: bool = None, name=None):
+    def on_fileopengcode(self, signal, name=None):
         """
 
         File menu call back for opening gcode.
@@ -9566,7 +9562,7 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_gcode, 'params': [filename, None, True]})
 
-    def on_file_openproject(self, signal: bool = None):
+    def on_file_openproject(self, signal):
         """
         File menu callback for opening a project.
 
@@ -9597,12 +9593,13 @@ class App(QtCore.QObject):
             # thread safe. The new_project()
             self.open_project(filename)
 
-    def on_fileopenhpgl2(self, signal: bool = None, name=None):
+    def on_fileopenhpgl2(self, signal, name=None):
         """
         File menu callback for opening a HPGL2.
 
-        :param signal: required because clicking the entry will generate a checked signal which needs a container
-        :return: None
+        :param signal:  required because clicking the entry will generate a checked signal which needs a container
+        :param name:
+        :return:        None
         """
 
         self.report_usage("on_fileopenhpgl2")
@@ -9635,12 +9632,12 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_hpgl2, 'params': [filename]})
 
-    def on_file_openconfig(self, signal: bool = None):
+    def on_file_openconfig(self, signal):
         """
         File menu callback for opening a config file.
 
-        :param signal: required because clicking the entry will generate a checked signal which needs a container
-        :return: None
+        :param signal:  required because clicking the entry will generate a checked signal which needs a container
+        :return:        None
         """
 
         self.report_usage("on_file_openconfig")
@@ -9679,10 +9676,10 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if (not isinstance(obj, FlatCAMGeometry)
-                and not isinstance(obj, FlatCAMGerber)
-                and not isinstance(obj, FlatCAMCNCjob)
-                and not isinstance(obj, FlatCAMExcellon)):
+        if (not isinstance(obj, GeometryObject)
+                and not isinstance(obj, GerberObject)
+                and not isinstance(obj, CNCJobObject)
+                and not isinstance(obj, ExcellonObject)):
             msg = '[ERROR_NOTCL] %s' % \
                   _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
@@ -9726,8 +9723,7 @@ class App(QtCore.QObject):
             image = _screenshot()
             data = np.asarray(image)
             if not data.ndim == 3 and data.shape[-1] in (3, 4):
-                self.inform.emit('[[WARNING_NOTCL]] %s' %
-                                 _('Data must be a 3D array with last dimension 3 or 4'))
+                self.inform.emit('[[WARNING_NOTCL]] %s' % _('Data must be a 3D array with last dimension 3 or 4'))
                 return
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
@@ -9769,9 +9765,8 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGerber):
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed. Only Gerber objects can be saved as Gerber files..."))
+        if not isinstance(obj, GerberObject):
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -9811,7 +9806,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMScript):
+        if not isinstance(obj, ScriptObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Script objects can be saved as TCL Script files..."))
             return
 
@@ -9852,7 +9847,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMScript):
+        if not isinstance(obj, ScriptObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Document objects can be saved as Document files..."))
             return
 
@@ -9893,7 +9888,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
@@ -9934,7 +9929,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
@@ -9978,7 +9973,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGerber):
+        if not isinstance(obj, GerberObject):
             self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
@@ -10028,7 +10023,7 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if not isinstance(obj, FlatCAMGeometry):
+        if not isinstance(obj, GeometryObject):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -10377,7 +10372,7 @@ class App(QtCore.QObject):
                 self.splash.showMessage('%s: %ssec\n%s' %
                                         (_("Canvas initialization started.\n"
                                            "Canvas initialization finished in"), '%.2f' % self.used_time,
-                                         _("Executing FlatCAMScript file.")
+                                         _("Executing ScriptObject file.")
                                          ),
                                         alignment=Qt.AlignBottom | Qt.AlignLeft,
                                         color=QtGui.QColor("gray"))
@@ -10392,7 +10387,6 @@ class App(QtCore.QObject):
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
         filename = str(filename)
 
         if filename == "":
@@ -10853,12 +10847,11 @@ class App(QtCore.QObject):
             try:
                 obj = self.collection.get_by_name(str(obj_name))
             except Exception:
-                # TODO: The return behavior has not been established... should raise exception?
                 return "Could not retrieve object: %s" % obj_name
         else:
             obj = local_use
 
-        if not isinstance(obj, FlatCAMExcellon):
+        if not isinstance(obj, ExcellonObject):
             self.inform.emit('[ERROR_NOTCL] %s' %
                              _("Failed. Only Excellon objects can be saved as Excellon files..."))
             return
@@ -11003,7 +10996,6 @@ class App(QtCore.QObject):
             try:
                 obj = self.collection.get_by_name(str(obj_name))
             except Exception:
-                # TODO: The return behavior has not been established... should raise exception?
                 return "Could not retrieve object: %s" % obj_name
         else:
             obj = local_use
@@ -11265,8 +11257,8 @@ class App(QtCore.QObject):
         # How the object should be initialized
         def obj_init(gerber_obj, app_obj):
 
-            assert isinstance(gerber_obj, FlatCAMGerber), \
-                "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
+            assert isinstance(gerber_obj, GerberObject), \
+                "Expected to initialize a GerberObject but got %s" % type(gerber_obj)
 
             # Opening the file happens here
             try:
@@ -11451,8 +11443,8 @@ class App(QtCore.QObject):
         # How the object should be initialized
         def obj_init(geo_obj, app_obj):
 
-            assert isinstance(geo_obj, FlatCAMGeometry), \
-                "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
+            assert isinstance(geo_obj, GeometryObject), \
+                "Expected to initialize a GeometryObject but got %s" % type(geo_obj)
 
             # Opening the file happens here
             obj = HPGL2(self)
@@ -11806,7 +11798,6 @@ class App(QtCore.QObject):
 
         :return:
         """
-        # TODO: Move this to constructor
         icons = {
             "gerber": self.resource_location + "/flatcam_icon16.png",
             "excellon": self.resource_location + "/drill16.png",
@@ -11990,32 +11981,38 @@ class App(QtCore.QObject):
         tsize = fsize + int(fsize / 2)
 
         #         selected_text = (_('''
-        # <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+        # <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span>
+        # </p>
         #
         # <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
         # The normal flow when working in FlatCAM is the following:</span></p>
         #
         # <ol>
-        # 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into
+        # 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG
+        # 	file into
         # 	FlatCAM using either the menu&#39;s, toolbars, key shortcuts or
         # 	even dragging and dropping the files on the GUI.<br />
         # 	<br />
-        # 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the
+        # 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp;
+        # 	drop of the
         # 	file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
         # 	&nbsp;</li>
-        # 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then
+        # 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it
+        # 	and then
         # 	focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the
         # 	Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to
         # 	it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
         # 	<br />
-        # 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong>
+        # 	If the selection of the object is done on the canvas by single click instead, and the
+        # 	<strong>SELECTED TAB</strong>
         # 	is in focus, again the object properties will be displayed into the Selected Tab. Alternatively,
         # 	double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate
         # 	it even if it was out of focus.<br />
         # 	<br />
         # 	You can change the parameters in this screen and the flow direction is like this:<br />
         # 	<br />
-        # 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object
+        # 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;
+        # 	<strong> Geometry Object
         # 	</strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object
         # 	</strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in
         # 	<strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
@@ -12128,7 +12125,7 @@ class App(QtCore.QObject):
             # no_stats dict; just so it won't break things on website
             no_ststs_dict = {}
             no_ststs_dict["global_ststs"] = {}
-            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) + \
+            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) +\
                        "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
         App.log.debug("Checking for updates @ %s" % full_url)
@@ -12337,7 +12334,7 @@ class App(QtCore.QObject):
             with self.proc_container.new(_("Enabling plots ...")):
                 for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(plot_obj, FlatCAMCNCjob):
+                    if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=True)
@@ -12389,7 +12386,7 @@ class App(QtCore.QObject):
             with self.proc_container.new(_("Disabling plots ...")):
                 for plot_obj in objs:
                     # obj.options['plot'] = True
-                    if isinstance(plot_obj, FlatCAMCNCjob):
+                    if isinstance(plot_obj, CNCJobObject):
                         plot_obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
                     else:
                         plot_obj.plot(visible=False)
@@ -12441,7 +12438,7 @@ class App(QtCore.QObject):
         new_color = self.defaults['gerber_plot_fill']
         clicked_action = self.sender()
 
-        assert isinstance(clicked_action, QAction), "Expected a QAction, got %s" % isinstance(clicked_action, QAction)
+        assert isinstance(clicked_action, QAction), "Expected a QAction, got %s" % type(clicked_action)
         act_name = clicked_action.text()
         sel_obj_list = self.collection.get_selected()
 
@@ -12717,8 +12714,12 @@ class App(QtCore.QObject):
         :return:
         """
         log.debug("App.save_project_auto_update() --> updated the interval timeout.")
-        if self.autosave_timer.isActive():
-            self.autosave_timer.stop()
+        try:
+            if self.autosave_timer.isActive():
+                self.autosave_timer.stop()
+        except Exception:
+            pass
+
         if self.defaults['global_autosave'] is True:
             self.autosave_timer.setInterval(int(self.defaults['global_autosave_timeout']))
             self.autosave_timer.start()
@@ -12748,211 +12749,6 @@ class App(QtCore.QObject):
         self.defaults_read_form()
         self.options.update(self.defaults)
         # self.options_write_form()
-
-    def init_tcl(self):
-        """
-        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
-        :return: None
-        """
-        if hasattr(self, 'tcl') and self.tcl is not None:
-            # self.tcl = None
-            # TODO  we need  to clean  non default variables and procedures here
-            # new object cannot be used here as it  will not remember values created for next passes,
-            # because tcl was executed in old instance of TCL
-            pass
-        else:
-            self.tcl = tk.Tcl()
-            self.setup_shell()
-        self.log.debug("TCL Shell has been initialized.")
-
-    def setup_shell(self):
-        """
-        Creates shell functions. Runs once at startup.
-
-        :return: None
-        """
-
-        self.log.debug("setup_shell()")
-
-        # def shelp(p=None):
-        #     pass
-
-        # --- Migrated to new architecture ---
-        # def options(name):
-        #     ops = self.collection.get_by_name(str(name)).options
-        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
-
-        # def h(*args):
-        #     """
-        #     Pre-processes arguments to detect '-keyword value' pairs into dictionary
-        #     and standalone parameters into list.
-        #     """
-        #
-        #     kwa = {}
-        #     a = []
-        #     n = len(args)
-        #     name = None
-        #     for i in range(n):
-        #         match = re.search(r'^-([a-zA-Z].*)', args[i])
-        #         if match:
-        #             assert name is None
-        #             name = match.group(1)
-        #             continue
-        #
-        #         if name is None:
-        #             a.append(args[i])
-        #         else:
-        #             kwa[name] = args[i]
-        #             name = None
-        #
-        #     return a, kwa
-
-        # @contextmanager
-        # def wait_signal(signal, timeout=10000):
-        #     """
-        #     Block loop until signal emitted, timeout (ms) elapses
-        #     or unhandled exception happens in a thread.
-        #
-        #     :param timeout: time after which the loop is exited
-        #     :param signal: Signal to wait for.
-        #     """
-        #     loop = QtCore.QEventLoop()
-        #
-        #     # Normal termination
-        #     signal.connect(loop.quit)
-        #
-        #     # Termination by exception in thread
-        #     self.thread_exception.connect(loop.quit)
-        #
-        #     status = {'timed_out': False}
-        #
-        #     def report_quit():
-        #         status['timed_out'] = True
-        #         loop.quit()
-        #
-        #     yield
-        #
-        #     # Temporarily change how exceptions are managed.
-        #     oeh = sys.excepthook
-        #     ex = []
-        #
-        #     def except_hook(type_, value, traceback_):
-        #         ex.append(value)
-        #         oeh(type_, value, traceback_)
-        #
-        #     sys.excepthook = except_hook
-        #
-        #     # Terminate on timeout
-        #     if timeout is not None:
-        #         QtCore.QTimer.singleShot(timeout, report_quit)
-        #
-        #     # # ## Block ## ##
-        #     loop.exec_()
-        #
-        #     # Restore exception management
-        #     sys.excepthook = oeh
-        #     if ex:
-        #         self.raise_tcl_error(str(ex[0]))
-        #
-        #     if status['timed_out']:
-        #         raise Exception('Timed out!')
-        #
-        # def make_docs():
-        #     output = ''
-        #     import collections
-        #     od = collections.OrderedDict(sorted(self.tcl_commands_storage.items()))
-        #     for cmd_, val in od.items():
-        #         output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
-        #
-        #         t = val['help']
-        #         usage_i = t.find('>')
-        #         if usage_i < 0:
-        #             expl = t
-        #             output += expl + '\n\n'
-        #             continue
-        #
-        #         expl = t[:usage_i - 1]
-        #         output += expl + '\n\n'
-        #
-        #         end_usage_i = t[usage_i:].find('\n')
-        #
-        #         if end_usage_i < 0:
-        #             end_usage_i = len(t[usage_i:])
-        #             output += '    ' + t[usage_i:] + '\n       No parameters.\n'
-        #         else:
-        #             extras = t[usage_i + end_usage_i + 1:]
-        #             parts = [s.strip() for s in extras.split('\n')]
-        #
-        #             output += '    ' + t[usage_i:usage_i + end_usage_i] + '\n'
-        #             for p in parts:
-        #                 output += '       ' + p + '\n\n'
-        #
-        #     return output
-
-        '''
-            Howto implement TCL shell commands:
-
-            All parameters passed to command should be possible to set as None and test it afterwards.
-            This is because we need to see error caused in tcl,
-            if None value as default parameter is not allowed TCL will return empty error.
-            Use:
-                def mycommand(name=None,...):
-
-            Test it like this:
-            if name is None:
-
-                self.raise_tcl_error('Argument name is missing.')
-
-            When error ocurre, always use raise_tcl_error, never return "sometext" on error,
-            otherwise we will miss it and processing will silently continue.
-            Method raise_tcl_error  pass error into TCL interpreter, then raise python exception,
-            which is catched in exec_command and displayed in TCL shell console with red background.
-            Error in console is displayed  with TCL  trace.
-
-            This behavior works only within main thread,
-            errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
-            TCL shell.
-
-            Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
-
-        '''
-
-        self.tcl_commands_storage = {}
-        # commands = {
-        #     'help': {
-        #         'fcn': shelp,
-        #         'help': _("Shows list of commands."),
-        #         'description': ''
-        #     },
-        # }
-
-        # Import/overwrite tcl commands as objects of TclCommand descendants
-        # This modifies the variable 'commands'.
-        tclCommands.register_all_commands(self, self.tcl_commands_storage)
-
-        # Add commands to the tcl interpreter
-        for cmd in self.tcl_commands_storage:
-            self.tcl.createcommand(cmd, self.tcl_commands_storage[cmd]['fcn'])
-
-        # Make the tcl puts function return instead of print to stdout
-        self.tcl.eval('''
-            rename puts original_puts
-            proc puts {args} {
-                if {[llength $args] == 1} {
-                    return "[lindex $args 0]"
-                } else {
-                    eval original_puts $args
-                }
-            }
-            ''')
-
-    # TODO: This shouldn't be here.
-    class TclErrorException(Exception):
-        """
-        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
-        """
-        pass
 
     def toggle_shell(self):
         """
@@ -13025,62 +12821,6 @@ class App(QtCore.QObject):
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
-    def raise_tcl_unknown_error(self, unknownException):
-        """
-        Raise exception if is different type than TclErrorException
-        this is here mainly to show unknown errors inside TCL shell console.
-
-        :param unknownException:
-        :return:
-        """
-
-        if not isinstance(unknownException, self.TclErrorException):
-            self.raise_tcl_error("Unknown error: %s" % str(unknownException))
-        else:
-            raise unknownException
-
-    def display_tcl_error(self, error, error_info=None):
-        """
-        Escape bracket [ with '\' otherwise there is error
-        "ERROR: missing close-bracket" instead of real error
-
-        :param error: it may be text  or exception
-        :param error_info: Some informations about the error
-        :return: None
-        """
-
-        if isinstance(error, Exception):
-            exc_type, exc_value, exc_traceback = error_info
-            if not isinstance(error, self.TclErrorException):
-                show_trace = 1
-            else:
-                show_trace = int(self.defaults['global_verbose_error_level'])
-
-            if show_trace > 0:
-                trc = traceback.format_list(traceback.extract_tb(exc_traceback))
-                trc_formated = []
-                for a in reversed(trc):
-                    trc_formated.append(a.replace("    ", " > ").replace("\n", ""))
-                text = "%s\nPython traceback: %s\n%s" % (exc_value, exc_type, "\n".join(trc_formated))
-            else:
-                text = "%s" % error
-        else:
-            text = error
-
-        text = text.replace('[', '\\[').replace('"', '\\"')
-        self.tcl.eval('return -code error "%s"' % text)
-
-    def raise_tcl_error(self, text):
-        """
-        This method  pass exception from python into TCL as error, so we get stacktrace and reason
-
-        :param text: text of error
-        :return: raise exception
-        """
-
-        self.display_tcl_error(text)
-        raise self.TclErrorException(text)
-
 
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)
@@ -13128,14 +12868,5 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
-
-
-class GracefulException(Exception):
-    # Graceful Exception raised when the user is requesting to cancel the current threaded task
-    def __init__(self):
-        super().__init__()
-
-    def __str__(self):
-        return '\n\n%s' % _("The user requested a graceful exit of the current task.")
 
 # end of file

@@ -1241,6 +1241,7 @@ class ExcellonObjectUI(ObjectUI):
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
+        self.pdepth_entry.setObjectName("e_depth_probe")
 
         self.grid5.addWidget(self.pdepth_label, 13, 0)
         self.grid5.addWidget(self.pdepth_entry, 13, 1)
@@ -1258,7 +1259,7 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0.0, 9999.9999)
         self.feedrate_probe_entry.setSingleStep(0.1)
-        self.feedrate_probe_entry.setObjectName(_("e_fr_probe"))
+        self.feedrate_probe_entry.setObjectName("e_fr_probe")
 
         self.grid5.addWidget(self.feedrate_probe_label, 14, 0)
         self.grid5.addWidget(self.feedrate_probe_entry, 14, 1)

@@ -21,7 +21,6 @@ from camlib import distance, arc, three_point_circle
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
 from FlatCAMTool import FlatCAMTool
-import FlatCAMApp
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm
@@ -182,6 +181,7 @@ class FCShapeTool(DrawTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = None
 
     def make(self):
         pass
@@ -199,7 +199,7 @@ class FCPad(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_circle.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1415,7 +1415,7 @@ class FCDisc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_disc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2422,8 +2422,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
     mp_finished = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
-        assert isinstance(app, FlatCAMApp.App), \
-            "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
+        # assert isinstance(app, FlatCAMApp.App), \
+        #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
         super(FlatCAMGrbEditor, self).__init__()
 
@@ -2621,8 +2621,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded.\n"
-              " - 'Square:' the corner is met in a sharp angle.\n"
-              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
+              " - 'Square': the corner is met in a sharp angle.\n"
+              " - 'Beveled': the corner is a line that directly connects the features meeting in the corner")
         )
         self.buffer_corner_cb = FCComboBox()
         self.buffer_corner_cb.addItem(_("Round"))
@@ -3479,7 +3479,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 current_table_dia_edited = float(self.apertures_table.currentItem().text())
             except ValueError as e:
                 log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
-                self.apertures_table.setCurrentItem(None)
+                # self.apertures_table.setCurrentItem(None)
                 return
 
         row_of_item_changed = self.apertures_table.currentRow()
@@ -3833,7 +3833,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         Imports the geometry found in self.apertures from the given FlatCAM Gerber object
         into the editor.
 
-        :param orig_grb_obj: FlatCAMExcellon
+        :param orig_grb_obj: ExcellonObject
         :return: None
         """
 
@@ -3956,10 +3956,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     global_clear_geo = []
 
                     # create one big geometry made out of all 'negative' (clear) polygons
-                    for apid in app_obj.gerber_obj.apertures:
+                    for aper_id in app_obj.gerber_obj.apertures:
                         # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-                        if 'geometry' in app_obj.gerber_obj.apertures[apid]:
-                            for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                        if 'geometry' in app_obj.gerber_obj.apertures[aper_id]:
+                            for elem in app_obj.gerber_obj.apertures[aper_id]['geometry']:
                                 if 'clear' in elem:
                                     global_clear_geo.append(elem['clear'])
                     log.warning("Found %d clear polygons." % len(global_clear_geo))
@@ -3967,7 +3967,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if global_clear_geo:
                         global_clear_geo = MultiPolygon(global_clear_geo)
                         if isinstance(global_clear_geo, Polygon):
-                            global_clear_geo = list(global_clear_geo)
+                            global_clear_geo = [global_clear_geo]
 
                     # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
                     # clear geometry that fits inside the solid. otherwise we may loose the solid
@@ -3979,8 +3979,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             #         solid_geo = elem['solid']
                             #         for clear_geo in global_clear_geo:
                             #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                            #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                            #             # delete it
+                            #             # the solid_geometry. We want for clear_geometry just to cut
+                            #             # into solid_geometry not to delete it
                             #             if clear_geo.within(solid_geo):
                             #                 solid_geo = solid_geo.difference(clear_geo)
                             #         try:
@@ -4307,14 +4307,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.plot_all()
 
-    def toolbar_tool_toggle(self, key):
-        """
-
-        :param key: key to update in self.options dictionary
-        :return:
-        """
-        self.options[key] = self.sender().isChecked()
-        return self.options[key]
+    # def toolbar_tool_toggle(self, key):
+    #     """
+    #
+    #     :param key: key to update in self.options dictionary
+    #     :return:
+    #     """
+    #     self.options[key] = self.sender().isChecked()
+    #     return self.options[key]
 
     def on_grb_shape_complete(self, storage=None, specific_shape=None, no_plot=False):
         """
@@ -4389,12 +4389,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         """
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
-            right_button = 2
+            # event_is_dragging = event.is_dragging
+            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
+            # event_is_dragging = self.app.plotcanvas.is_dragging
+            # right_button = 3
 
         self.pos = self.canvas.translate_coords(event_pos)
 
@@ -4457,11 +4457,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
@@ -4747,10 +4747,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
 
-        :param geometry: Geometry to be plotted (Any Shapely.geom kind or list of such)
-        :param color: Shape color
-        :param linewidth: Width of lines in # of pixels.
-        :return: List of plotted elements.
+        :param geometry:    Geometry to be plotted (Any Shapely.geom kind or list of such)
+        :param color:       Shape color
+        :param linewidth:   Width of lines in # of pixels.
+        :return:            List of plotted elements.
         """
 
         if geometry is None:
@@ -5597,7 +5597,7 @@ class TransformEditorTool(FlatCAMTool):
             self.flip_ref_entry.set_value((0, 0))
 
     def template(self):
-        if not self.fcdraw.selected:
+        if not self.draw_app.selected:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. No shape selected."))
             return
 

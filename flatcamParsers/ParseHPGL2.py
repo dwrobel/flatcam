@@ -7,7 +7,6 @@
 # ############################################################
 
 from camlib import arc, three_point_circle
-import FlatCAMApp
 
 import numpy as np
 import re
@@ -19,6 +18,7 @@ import sys
 from shapely.ops import unary_union
 from shapely.geometry import LineString, Point
 
+from FlatCAMCommon import GracefulException as grace
 import FlatCAMTranslation as fcTranslate
 import gettext
 import builtins
@@ -180,7 +180,7 @@ class HPGL2:
             for gline in glines:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 line_num += 1
                 self.source_file += gline + '\n'
@@ -304,7 +304,7 @@ class HPGL2:
                                                  (_("Coordinates missing, line ignored"), str(gline)))
 
                         if current_x is not None and current_y is not None:
-                            radius = match.group(1)
+                            radius = float(match.group(1))
                             geo = Point((current_x, current_y)).buffer(radius, int(self.steps_per_circle))
                             geo_line = geo.exterior
                             self.tools[current_tool]['solid_geometry'].append(geo_line)

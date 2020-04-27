@@ -12,7 +12,7 @@ from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTabl
     FCComboBox, OptionalInputSection
 from flatcamParsers.ParseGerber import Gerber
 
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 
 from copy import deepcopy
 
@@ -1987,7 +1987,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             for poly in env_obj:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
             bounding_box = cascaded_union(geo_buff_list)
         elif ncc_select == _("Reference Object"):
@@ -1996,7 +1996,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 for poly in env_obj:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
@@ -2090,7 +2090,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             if isinstance(geo_elem, Polygon):
                                 for ring in self.poly2rings(geo_elem):
@@ -2263,7 +2263,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ##########################################################################################
         def gen_clear_area(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
@@ -2312,7 +2312,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
@@ -2377,7 +2377,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # clean the polygon
                             p = p.buffer(0)
@@ -2551,7 +2551,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
@@ -2595,7 +2595,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
@@ -2644,7 +2644,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
                     try:
                         area = area.difference(poly)
                     except Exception:
@@ -2674,7 +2674,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         for p in area.geoms:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # clean the polygon
                             p = p.buffer(0)
@@ -2753,7 +2753,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
@@ -2771,7 +2771,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             for p in cleared_area:
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 poly = p.buffer(buffer_value)
                                 cleared_by_last_tool.append(poly)
@@ -2836,7 +2836,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_clear_area_rest)
                 else:
                     app_obj.new_object("geometry", name, gen_clear_area)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 if run_threaded:
                     proc.done()
                 return
@@ -2999,7 +2999,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             for poly in geo_n:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
             bounding_box = cascaded_union(geo_buff_list)
@@ -3017,7 +3017,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 for poly in geo_n:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
@@ -3045,7 +3045,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ##########################################################################################
         def gen_clear_area(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
@@ -3141,7 +3141,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 if isinstance(geo_elem, Polygon):
                                     for ring in self.poly2rings(geo_elem):
@@ -3242,7 +3242,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
@@ -3283,7 +3283,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # clean the polygon
                             p = p.buffer(0)
@@ -3446,7 +3446,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
             assert geo_obj.kind == 'geometry', \
-                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+                "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
@@ -3520,7 +3520,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 if isinstance(geo_elem, Polygon):
                                     for ring in self.poly2rings(geo_elem):
@@ -3614,7 +3614,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
@@ -3628,7 +3628,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             while sorted_tools:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 tool = sorted_tools.pop(0)
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
@@ -3648,7 +3648,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
                     try:
                         area = area.difference(poly_r)
                     except Exception:
@@ -3678,7 +3678,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         for p in area.geoms:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # clean the polygon
                             p = p.buffer(0)
@@ -3754,7 +3754,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
@@ -3772,7 +3772,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             for p in cleared_area:
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 r_poly = p.buffer(buffer_value)
                                 cleared_by_last_tool.append(r_poly)
@@ -3833,7 +3833,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_clear_area_rest, plot=plot)
                 else:
                     app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 if run_threaded:
                     proc.done()
                 return
@@ -3887,7 +3887,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
                     boundary = boundary.difference(el)
                     pol_nr += 1
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))

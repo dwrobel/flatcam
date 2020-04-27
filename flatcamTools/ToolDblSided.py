@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
-from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
 
 from numpy import Inf
 
@@ -192,7 +191,7 @@ class DblSidedTool(FlatCAMTool):
         # Add a reference
         self.add_point_button = QtWidgets.QPushButton(_("Add"))
         self.add_point_button.setToolTip(
-            _("Add the coordinates in format <b>(x, y)</b> through which the mirroring axis \n "
+            _("Add the coordinates in format <b>(x, y)</b> through which the mirroring axis\n "
               "selected in 'MIRROR AXIS' pass.\n"
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coordinates manually.")
@@ -658,7 +657,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGerber):
+        if fcobj.kind != 'gerber':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 
@@ -701,7 +700,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMExcellon):
+        if fcobj.kind != 'excellon':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 
@@ -745,7 +744,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Geometry object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGeometry):
+        if fcobj.kind != 'geometry':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 

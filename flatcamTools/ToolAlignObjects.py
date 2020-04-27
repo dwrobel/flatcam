@@ -382,7 +382,7 @@ class AlignObjects(FlatCAMTool):
     def check_points(self):
         if len(self.clicked_points) == 1:
             self.app.inform.emit('%s: %s. %s' % (
-                _("First Point"), _("Click on the DESTINATION point."), _(" Or right click to cancel.")))
+                _("First Point"), _("Click on the DESTINATION point."), _("Or right click to cancel.")))
             self.target_obj = self.aligner_obj
             self.reset_color()
             self.set_color()
@@ -397,14 +397,14 @@ class AlignObjects(FlatCAMTool):
                 return
             else:
                 self.app.inform.emit('%s: %s. %s' % (
-                    _("Second Point"), _("Click on the START point."), _(" Or right click to cancel.")))
+                    _("Second Point"), _("Click on the START point."), _("Or right click to cancel.")))
                 self.target_obj = self.aligned_obj
                 self.reset_color()
                 self.set_color()
 
         if len(self.clicked_points) == 3:
             self.app.inform.emit('%s: %s. %s' % (
-                _("Second Point"), _("Click on the DESTINATION point."), _(" Or right click to cancel.")))
+                _("Second Point"), _("Click on the DESTINATION point."), _("Or right click to cancel.")))
             self.target_obj = self.aligner_obj
             self.reset_color()
             self.set_color()

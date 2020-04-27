@@ -16,8 +16,6 @@ from descartes.patch import PolygonPatch
 
 from shapely.geometry import Polygon, LineString, LinearRing
 
-import FlatCAMApp
-
 from copy import deepcopy
 import logging
 
@@ -496,7 +494,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         :param event:
         :return:
         """
-        FlatCAMApp.App.log.debug('on_key_down(): ' + str(event.key))
+        log.debug('on_key_down(): ' + str(event.key))
         self.key = event.key
 
     def on_key_up(self, event):
@@ -531,7 +529,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         try:
             self.figure.clf()
         except KeyError:
-            FlatCAMApp.App.log.warning("KeyError in MPL figure.clf()")
+            log.warning("KeyError in MPL figure.clf()")
 
         # Re-build
         self.figure.add_axes(self.axes)
@@ -582,7 +580,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         try:
             r = width / height
         except ZeroDivisionError:
-            FlatCAMApp.App.log.error("Height is %f" % height)
+            log.error("Height is %f" % height)
             return
         canvas_w, canvas_h = self.canvas.get_width_height()
         canvas_r = float(canvas_w) / canvas_h
@@ -1190,10 +1188,10 @@ class ShapeCollectionLegacy:
                                                  linewidth=local_shapes[element]['linewidth'])
                             self.axes.add_patch(patch)
                         except AssertionError:
-                            FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
-                            FlatCAMApp.App.log.warning(str(element))
+                            log.warning("A geometry component was not a polygon:")
+                            log.warning(str(element))
                         except Exception as e:
-                            FlatCAMApp.App.log.debug(
+                            log.debug(
                                 "PlotCanvasLegacy.ShepeCollectionLegacy.redraw() gerber 'solid' --> %s" % str(e))
                     else:
                         try:
