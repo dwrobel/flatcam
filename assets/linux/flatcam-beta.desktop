@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=FlatCAM Beta
+Exec=./bin/flatcam-beta
+Type=Application
+StartupNotify=true
+Icon=./assets/icon.png
+Comment=G-Code from GERBERS
