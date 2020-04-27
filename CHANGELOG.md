@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - solved some bugs that were not so visible in the Editors and HPGL parser
 - split the FlatCAMObj file into multiple files located in the flatcamObjects folder and renamed the contained classes with names more suggestive
 - updated the Google Translation for the German language
+- added support for Hungarian language - no translation for now
 
 25.04.2020
 
