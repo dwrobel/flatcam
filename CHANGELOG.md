@@ -22,6 +22,8 @@ CHANGELOG for FlatCAM beta
 - split the FlatCAMObj file into multiple files located in the flatcamObjects folder and renamed the contained classes with names more suggestive
 - updated the Google Translation for the German language
 - added support for Hungarian language - no translation for now
+- minor changes
+- moved the ObjectCollection class to the flatcamObjects folder where it belongs
 
 25.04.2020
 
