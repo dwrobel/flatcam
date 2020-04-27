@@ -18,6 +18,7 @@ install:
 ifeq ($(USER_ID), 0)
 	@ echo "Installing it system-wide"
 	cp -rf $(LOCAL_PATH) $(INSTALL_PATH)
+	@ sed -i "s|python_script_path=.*|python_script_path=$(INSTALL_PATH)|g" $(INSTALL_PATH)/assets/linux/flatcam-beta
 	ln -sf $(INSTALL_PATH)/assets/linux/flatcam-beta /usr/local/bin
 	cp -f $(ASSEST_PATH)/flatcam-beta.desktop $(APPS_PATH)
 	@ sed -i "s|Exec=.*|Exec=$(INSTALL_PATH)/$(ASSEST_PATH)/flatcam-beta|g" $(APPS_PATH)/flatcam-beta.desktop

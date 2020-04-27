@@ -1,10 +1,5 @@
 #!/bin/bash
 
-current_path=$(dirname $0)
-cd $current_path
-current_path=$(pwd)
-cd -
-
-script_path=$(dirname $current_path)
-
-python3 $script_path/FlatCAM.py $*
+script_path=$(readlink -f $0)
+python_script_path=$(dirname $script_path)/../../
+python3 $python_script_path/FlatCAM.py $*
