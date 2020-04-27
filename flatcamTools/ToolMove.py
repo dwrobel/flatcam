@@ -8,7 +8,6 @@
 from PyQt5 import QtWidgets, QtCore
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.VisPyVisuals import *
-from FlatCAMObj import FlatCAMGerber
 
 from copy import copy
 import logging
@@ -128,7 +127,7 @@ class ToolMove(FlatCAMTool):
                 pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
 
                 # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() == True:
+                if self.app.grid_status():
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 else:
                     pos = pos_canvas
@@ -148,7 +147,7 @@ class ToolMove(FlatCAMTool):
                     self.delete_shape()
 
                     # if GRID is active we need to get the snapped positions
-                    if self.app.grid_status() == True:
+                    if self.app.grid_status():
                         pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     else:
                         pos = pos_canvas
@@ -171,7 +170,7 @@ class ToolMove(FlatCAMTool):
                                 # remove any mark aperture shape that may be displayed
                                 for sel_obj in obj_list:
                                     # if the Gerber mark shapes are enabled they need to be disabled before move
-                                    if isinstance(sel_obj, FlatCAMGerber):
+                                    if sel_obj.kind == 'gerber':
                                         sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
 
                                     try:
@@ -198,8 +197,8 @@ class ToolMove(FlatCAMTool):
                                     elif sel_obj.kind == 'excellon':
                                         sel_obj.source_file = self.app.export_excellon(
                                             obj_name=out_name, filename=None, local_use=sel_obj, use_thread=False)
-                            except Exception as e:
-                                log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(e)))
+                            except Exception as err:
+                                log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(err)))
                                 return "fail"
 
                             # time to plot the moved objects
@@ -249,7 +248,7 @@ class ToolMove(FlatCAMTool):
         pos_canvas = self.app.plotcanvas.translate_coords((x, y))
 
         # if GRID is active we need to get the snapped positions
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = pos_canvas

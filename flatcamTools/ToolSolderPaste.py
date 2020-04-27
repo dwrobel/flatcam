@@ -11,7 +11,6 @@ from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
 from FlatCAMApp import log
 from camlib import distance
-from FlatCAMObj import FlatCAMCNCjob
 from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -506,7 +505,8 @@ class SolderPaste(FlatCAMTool):
         self.flat_geometry = []
 
         # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'), _("Delete Object"))
+        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
+                                                          _("Delete Object"))
 
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
@@ -966,6 +966,7 @@ class SolderPaste(FlatCAMTool):
                 self.build_ui()
                 return
             else:
+                old_tool_dia = ''
                 # identify the old tool_dia and restore the text in tool table
                 for k, v in self.tooltable_tools.items():
                     if k == tooluid:
@@ -1332,8 +1333,8 @@ class SolderPaste(FlatCAMTool):
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
-        def job_init(job_obj, app_obj):
-            assert isinstance(job_obj, FlatCAMCNCjob), \
+        def job_init(job_obj):
+            assert job_obj.kind == 'cncjob', \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
             # this turn on the FlatCAMCNCJob plot for multiple tools

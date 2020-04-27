@@ -20,7 +20,6 @@ from flatcamGUI.ObjectUI import RadioSet
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
     FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
 from flatcamParsers.ParseFont import *
-import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
 from shapely.ops import cascaded_union, unary_union, linemerge
@@ -3299,8 +3298,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
     draw_shape_idx = -1
 
     def __init__(self, app, disabled=False):
-        assert isinstance(app, FlatCAMApp.App), \
-            "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
+        # assert isinstance(app, FlatCAMApp.App), \
+        #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
         super(FlatCAMGeoEditor, self).__init__()
 
@@ -4011,6 +4010,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return:        Boolean. Status of the checkbox that toggled the Editor Tool
         """
         cb_widget = self.sender()
+        assert isinstance(cb_widget, QtWidgets.QAction), "Expected a QAction got %s" % type(cb_widget)
         self.options[key] = cb_widget.isChecked()
 
         return 1 if self.options[key] is True else 0

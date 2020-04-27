@@ -2876,7 +2876,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key_E:
-                    self.app.on_fileopenexcellon()
+                    self.app.on_fileopenexcellon(signal=None)
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key_G:
@@ -2884,7 +2884,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.on_fileopengerber()
+                        self.app.on_fileopengerber(signal=None)
 
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:

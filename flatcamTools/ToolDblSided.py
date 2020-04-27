@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
-from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
 
 from numpy import Inf
 
@@ -658,7 +657,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGerber):
+        if fcobj.kind != 'gerber':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 
@@ -701,7 +700,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMExcellon):
+        if fcobj.kind != 'excellon':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 
@@ -745,7 +744,7 @@ class DblSidedTool(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Geometry object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGeometry):
+        if fcobj.kind != 'geometry':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
             return
 

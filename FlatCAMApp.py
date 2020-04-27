@@ -46,6 +46,10 @@ import socket
 # #######################################
 # #      Imports part of FlatCAM       ##
 # #######################################
+from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMBookmark import BookmarkManager
+from FlatCAMDB import ToolsDB2
+
 from ObjectCollection import *
 from FlatCAMObj import *
 from camlib import to_dict, dict2obj, ET, ParseError
@@ -55,7 +59,6 @@ from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 from flatcamGUI.GUIElements import FCFileSaveDialog
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, ToolsDB2, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -4313,7 +4316,7 @@ class App(QtCore.QObject):
         # update the KeyWords list with the name of the file
         self.myKeywords.append(obj.options['name'])
 
-        FlatCAMApp.App.log.debug("Moving new object back to main thread.")
+        log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(self.main_thread)
@@ -12861,14 +12864,5 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
-
-
-class GracefulException(Exception):
-    # Graceful Exception raised when the user is requesting to cancel the current threaded task
-    def __init__(self):
-        super().__init__()
-
-    def __str__(self):
-        return '\n\n%s' % _("The user requested a graceful exit of the current task.")
 
 # end of file

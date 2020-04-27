@@ -13,6 +13,12 @@ CHANGELOG for FlatCAM beta
 - updated the requirements.txt file to request that the Shapely package needs to be at least version 1.7.0 as it is needed in the latest versions of FlatCAM beta
 - some TOOD cleanups
 - minor changes
+- replaced the testing if instance of FlatCAMObj with testing the obj.kind attribute
+- removed the import of the whole FlatCAMApp file only for the usage of GracefulException
+- remove the import of FlatCAMApp and used alternate ways
+- optimized the imports in some files
+- moved the Bookmarksmanager and ToolDB classes into their own files
+- solved some bugs that were not so visible in the Editors and HPGL parser
 
 25.04.2020
 

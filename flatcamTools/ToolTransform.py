@@ -8,7 +8,6 @@
 from PyQt5 import QtWidgets
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, EvalEntry2
-from FlatCAMObj import FlatCAMCNCjob
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -681,7 +680,7 @@ class ToolTransform(FlatCAMTool):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                        if obj.kind == 'cncjob':
                             pass
                         else:
                             xmin, ymin, xmax, ymax = obj.bounds()
@@ -699,7 +698,7 @@ class ToolTransform(FlatCAMTool):
                     px = 0.5 * (xminimal + xmaximal)
                     py = 0.5 * (yminimal + ymaximal)
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be rotated."))
                         else:
                             sel_obj.rotate(-num, point=(px, py))
@@ -735,7 +734,7 @@ class ToolTransform(FlatCAMTool):
                     else:
                         # first get a bounding box to fit all
                         for obj in obj_list:
-                            if isinstance(obj, FlatCAMCNCjob):
+                            if obj.kind == 'cncjob':
                                 pass
                             else:
                                 xmin, ymin, xmax, ymax = obj.bounds()
@@ -755,7 +754,7 @@ class ToolTransform(FlatCAMTool):
 
                     # execute mirroring
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be mirrored/flipped."))
                         else:
                             if axis == 'X':
@@ -803,7 +802,7 @@ class ToolTransform(FlatCAMTool):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                        if obj.kind == 'cncjob':
                             pass
                         else:
                             xmin, ymin, xmax, ymax = obj.bounds()
@@ -815,7 +814,7 @@ class ToolTransform(FlatCAMTool):
                     yminimal = min(yminlist)
 
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be skewed."))
                         else:
                             if axis == 'X':
@@ -842,15 +841,14 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No object selected. Please Select an object to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to scale!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                        if obj.kind == 'cncjob':
                             pass
                         else:
                             xmin, ymin, xmax, ymax = obj.bounds()
@@ -873,7 +871,7 @@ class ToolTransform(FlatCAMTool):
                         py = 0
 
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be scaled."))
                         else:
                             sel_obj.scale(xfactor, yfactor, point=(px, py))
@@ -883,8 +881,7 @@ class ToolTransform(FlatCAMTool):
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
-                    self.app.inform.emit('[success] %s %s %s...' %
-                                         (_('Scale on the'), str(axis), _('axis done')))
+                    self.app.inform.emit('[success] %s %s %s...' % (_('Scale on the'), str(axis), _('axis done')))
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e), _("action was not executed.")))
@@ -894,14 +891,13 @@ class ToolTransform(FlatCAMTool):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No object selected. Please Select an object to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to offset!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be offset."))
                         else:
                             if axis == 'X':
@@ -915,8 +911,7 @@ class ToolTransform(FlatCAMTool):
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
-                    self.app.inform.emit('[success] %s %s %s...' %
-                                         (_('Offset on the'), str(axis), _('axis done')))
+                    self.app.inform.emit('[success] %s %s %s...' % (_('Offset on the'), str(axis), _('axis done')))
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e),  _("action was not executed.")))
@@ -932,7 +927,7 @@ class ToolTransform(FlatCAMTool):
             with self.app.proc_container.new(_("Applying Buffer")):
                 try:
                     for sel_obj in obj_list:
-                        if isinstance(sel_obj, FlatCAMCNCjob):
+                        if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be buffered."))
                         elif sel_obj.kind.lower() == 'gerber':
                             sel_obj.buffer(value, join, factor)

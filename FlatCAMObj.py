@@ -31,7 +31,6 @@ from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from flatcamParsers.ParseExcellon import Excellon
 from flatcamParsers.ParseGerber import Gerber
 from camlib import Geometry, CNCjob
-import FlatCAMApp
 
 # from flatcamGUI.VisPyVisuals import ShapeCollection
 
@@ -224,7 +223,7 @@ class FlatCAMObj(QtCore.QObject):
         """
 
         self.muted_ui = True
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.build_ui()")
+        log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.build_ui()")
 
         try:
             # HACK: disconnect the scale entry signal since on focus out event will trigger an undesired scale()
@@ -334,7 +333,7 @@ class FlatCAMObj(QtCore.QObject):
 
         :return: None
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.to_form()")
+        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.to_form()")
         for option in self.options:
             try:
                 self.set_form_item(option)
@@ -348,7 +347,7 @@ class FlatCAMObj(QtCore.QObject):
         :return: None
         :rtype: None
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.read_form()")
+        log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.read_form()")
         for option in self.options:
             try:
                 self.read_form_item(option)
@@ -392,7 +391,7 @@ class FlatCAMObj(QtCore.QObject):
         :param kind:    Used by only some of the FlatCAM objects
         :return:        Whether to continue plotting or not depending on the "plot" option. Boolean
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
+        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
 
         if self.deleted:
             return False
@@ -691,7 +690,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         """
         FlatCAMObj.set_ui(self, ui)
-        FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
+        log.debug("FlatCAMGerber.set_ui()")
 
         self.units = self.app.defaults['units'].upper()
 
@@ -1768,7 +1767,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param kwargs:  Color and face_color, visible
         :return:
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
+        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -1871,7 +1870,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return:
         """
 
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot_aperture()")
+        log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot_aperture()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -1961,8 +1960,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         """
 
         self.ui_disconnect()
-        cw = self.sender()
         try:
+            cw = self.sender()
+            assert isinstance(cw, FCCheckBox),\
+                "Expected a cellWidget but got %s" % type(cw)
             cw_index = self.ui.apertures_table.indexAt(cw.pos())
             cw_row = cw_index.row()
         except AttributeError:
@@ -2870,7 +2871,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
         FlatCAMObj.set_ui(self, ui)
 
-        FlatCAMApp.App.log.debug("FlatCAMExcellon.set_ui()")
+        log.debug("FlatCAMExcellon.set_ui()")
 
         self.units = self.app.defaults['units'].upper()
 
@@ -6570,7 +6571,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                  feedrate=3.0, feedrate_rapid=3.0, z_cut=-0.002, tooldia=0.0,
                  spindlespeed=None):
 
-        FlatCAMApp.App.log.debug("Creating CNCJob object...")
+        log.debug("Creating CNCJob object...")
 
         self.decimals = self.app.decimals
 
@@ -6882,7 +6883,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
-        FlatCAMApp.App.log.debug("FlatCAMCNCJob.set_ui()")
+        log.debug("FlatCAMCNCJob.set_ui()")
 
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
@@ -7756,7 +7757,7 @@ class FlatCAMScript(FlatCAMObj):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        FlatCAMApp.App.log.debug("Creating a FlatCAMScript object...")
+        log.debug("Creating a FlatCAMScript object...")
         FlatCAMObj.__init__(self, name)
 
         self.kind = "script"
@@ -7785,7 +7786,7 @@ class FlatCAMScript(FlatCAMObj):
         :return:
         """
         FlatCAMObj.set_ui(self, ui)
-        FlatCAMApp.App.log.debug("FlatCAMScript.set_ui()")
+        log.debug("FlatCAMScript.set_ui()")
 
         assert isinstance(self.ui, ScriptObjectUI), \
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
@@ -7960,7 +7961,7 @@ class FlatCAMDocument(FlatCAMObj):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        FlatCAMApp.App.log.debug("Creating a Document object...")
+        log.debug("Creating a Document object...")
         FlatCAMObj.__init__(self, name)
 
         self.kind = "document"
@@ -7982,7 +7983,7 @@ class FlatCAMDocument(FlatCAMObj):
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
-        FlatCAMApp.App.log.debug("FlatCAMDocument.set_ui()")
+        log.debug("FlatCAMDocument.set_ui()")
 
         assert isinstance(self.ui, DocumentObjectUI), \
             "Expected a DocumentObjectUI, got %s" % type(self.ui)

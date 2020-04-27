@@ -12,7 +12,6 @@ from camlib import distance, arc, FlatCAMRTreeStorage
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
 from flatcamParsers.ParseExcellon import Excellon
-import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
 import shapely.affinity as affinity
@@ -179,7 +178,7 @@ class FCDrillArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_drill_array.png'))
@@ -1516,7 +1515,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     draw_shape_idx = -1
 
     def __init__(self, app):
-        assert isinstance(app, FlatCAMApp.App), "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
+        # assert isinstance(app, FlatCAMApp.App), "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
         super(FlatCAMExcEditor, self).__init__()
 
@@ -2230,8 +2229,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
 
-        def entry2option(option, entry):
-            self.options[option] = float(entry.text())
+        # def entry2option(option, entry):
+        #     self.options[option] = float(entry.text())
 
         # Event signals disconnect id holders
         self.mp = None
@@ -2388,7 +2387,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             try:
                 # Find no of slots for the current tool
-                for slot in self.slots:
+                for slot in self.slot_points_edit:
                     if slot['tool'] == tool_no:
                         slot_cnt += 1
 
@@ -2661,15 +2660,13 @@ class FlatCAMExcEditor(QtCore.QObject):
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
-        new_dia = None
+        # new_dia = None
 
-        if self.tools_table_exc.currentItem() is not None:
-            try:
-                new_dia = float(self.tools_table_exc.currentItem().text())
-            except ValueError as e:
-                log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
-                self.tools_table_exc.setCurrentItem(None)
-                return
+        try:
+            new_dia = float(self.tools_table_exc.currentItem().text())
+        except ValueError as e:
+            log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
+            return
 
         row_of_item_changed = self.tools_table_exc.currentRow()
         # rows start with 0, tools start with 1 so we adjust the value by 1
@@ -3297,7 +3294,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         return self.edited_obj_name
 
-    def update_options(self, obj):
+    @staticmethod
+    def update_options(obj):
         try:
             if not obj.options:
                 obj.options = {}
@@ -3316,10 +3314,14 @@ class FlatCAMExcEditor(QtCore.QObject):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
-        :type outname: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the
+                            name to be that of the file.
+        :type outname:      str
+
+        :param n_drills:    The new Drills storage
+        :param n_slots:     The new Slots storage
+        :param n_tools:     The new Tools storage
+        :return:            None
         """
 
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
@@ -3429,12 +3431,12 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             self.replot()
 
-    def toolbar_tool_toggle(self, key):
-        self.options[key] = self.sender().isChecked()
-        if self.options[key] is True:
-            return 1
-        else:
-            return 0
+    # def toolbar_tool_toggle(self, key):
+    #     self.options[key] = self.sender().isChecked()
+    #     if self.options[key] is True:
+    #         return 1
+    #     else:
+    #         return 0
 
     def on_canvas_click(self, event):
         """
@@ -3446,12 +3448,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         """
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
-            right_button = 2
+            # event_is_dragging = event.is_dragging
+            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
+            # event_is_dragging = self.app.plotcanvas.is_dragging
+            # right_button = 3
 
         self.pos = self.canvas.translate_coords(event_pos)
 
@@ -3575,8 +3577,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
-        else:
-            self.storage.insert(shape)  # TODO: Check performance
+        # else:
+        #     self.storage.insert(shape)
 
     def on_exc_click_release(self, event):
         """
@@ -3591,11 +3593,11 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
@@ -4027,7 +4029,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     del self.slot_points_edit[storage][0]
 
         if del_shape in self.selected:
-            self.selected.remove(del_shape)  # TODO: Check performance
+            self.selected.remove(del_shape)
 
     def delete_utility_geometry(self):
         for_deletion = [util_shape for util_shape in self.utility]

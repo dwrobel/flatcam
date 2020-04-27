@@ -9,10 +9,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
 
 from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 from copy import deepcopy
-# from ObjectCollection import *
 import numpy as np
 
 import shapely.affinity as affinity
@@ -480,13 +478,13 @@ class Panelize(FlatCAMTool):
                     rows -= 1
                     panel_lengthy = ((ymax - ymin) * rows) + (spacing_rows * (rows - 1))
 
-        if isinstance(panel_obj, FlatCAMExcellon) or isinstance(panel_obj, FlatCAMGeometry):
+        if panel_obj.kind == 'excellon' or panel_obj.kind == 'geometry':
             # make a copy of the panelized Excellon or Geometry tools
             copied_tools = {}
             for tt, tt_val in list(panel_obj.tools.items()):
                 copied_tools[tt] = deepcopy(tt_val)
 
-        if isinstance(panel_obj, FlatCAMGerber):
+        if panel_obj.kind == 'gerber':
             # make a copy of the panelized Gerber apertures
             copied_apertures = {}
             for tt, tt_val in list(panel_obj.apertures.items()):
@@ -525,7 +523,7 @@ class Panelize(FlatCAMTool):
                                 for tool_dict in panel_obj.drills:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
                                     obj_fin.drills.append(
@@ -550,7 +548,7 @@ class Panelize(FlatCAMTool):
                                 for tool_dict in panel_obj.slots:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
                                     stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
@@ -600,20 +598,20 @@ class Panelize(FlatCAMTool):
                     obj_fin.solid_geometry = []
 
                     # create the initial structure on which to create the panel
-                    if isinstance(panel_obj, FlatCAMGeometry):
+                    if panel_obj.kind == 'geometry':
                         obj_fin.multigeo = panel_obj.multigeo
                         obj_fin.tools = copied_tools
                         if panel_obj.multigeo is True:
                             for tool in panel_obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
-                    elif isinstance(panel_obj, FlatCAMGerber):
+                    elif panel_obj.kind == 'gerber':
                         obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
                             obj_fin.apertures[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
-                    if isinstance(panel_obj, FlatCAMGeometry):
+                    if panel_obj.kind == 'geometry':
                         if panel_obj.multigeo is True:
                             for tool in panel_obj.tools:
                                 try:
@@ -625,7 +623,7 @@ class Panelize(FlatCAMTool):
                                 geo_len = len(panel_obj.solid_geometry)
                             except TypeError:
                                 geo_len = 1
-                    elif isinstance(panel_obj, FlatCAMGerber):
+                    elif panel_obj.kind == 'gerber':
                         for ap in panel_obj.apertures:
                             if 'geometry' in panel_obj.apertures[ap]:
                                 try:
@@ -641,12 +639,12 @@ class Panelize(FlatCAMTool):
                             element += 1
                             old_disp_number = 0
 
-                            if isinstance(panel_obj, FlatCAMGeometry):
+                            if panel_obj.kind == 'geometry':
                                 if panel_obj.multigeo is True:
                                     for tool in panel_obj.tools:
                                         if self.app.abort_flag:
                                             # graceful abort requested by the user
-                                            raise FlatCAMApp.GracefulException
+                                            raise grace
 
                                         # geo = translate_recursion(panel_obj.tools[tool]['solid_geometry'])
                                         # if isinstance(geo, list):
@@ -678,7 +676,7 @@ class Panelize(FlatCAMTool):
                                     #     obj_fin.solid_geometry.append(geo)
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     try:
                                         # calculate the number of polygons
@@ -690,7 +688,7 @@ class Panelize(FlatCAMTool):
                                         for geo_el in panel_obj.solid_geometry:
                                             if self.app.abort_flag:
                                                 # graceful abort requested by the user
-                                                raise FlatCAMApp.GracefulException
+                                                raise grace
 
                                             trans_geo = translate_recursion(geo_el)
                                             obj_fin.solid_geometry.append(trans_geo)
@@ -715,13 +713,13 @@ class Panelize(FlatCAMTool):
                                 #     obj_fin.solid_geometry.append(geo)
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 try:
                                     for geo_el in panel_obj.solid_geometry:
                                         if self.app.abort_flag:
                                             # graceful abort requested by the user
-                                            raise FlatCAMApp.GracefulException
+                                            raise grace
 
                                         trans_geo = translate_recursion(geo_el)
                                         obj_fin.solid_geometry.append(trans_geo)
@@ -732,7 +730,7 @@ class Panelize(FlatCAMTool):
                                 for apid in panel_obj.apertures:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
                                     if 'geometry' in panel_obj.apertures[apid]:
                                         try:
                                             # calculate the number of polygons
@@ -743,7 +741,7 @@ class Panelize(FlatCAMTool):
                                         for el in panel_obj.apertures[apid]['geometry']:
                                             if self.app.abort_flag:
                                                 # graceful abort requested by the user
-                                                raise FlatCAMApp.GracefulException
+                                                raise grace
 
                                             new_el = {}
                                             if 'solid' in el:
@@ -786,7 +784,7 @@ class Panelize(FlatCAMTool):
                     self.app.proc_container.update_view_text('')
 
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
-                if isinstance(panel_obj, FlatCAMExcellon):
+                if panel_obj.kind == 'excellon':
                     self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
                     self.app.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)

@@ -33,9 +33,11 @@ from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
 
-# needed for legacy mode
+# ---------------------------------------
+# NEEDED for Legacy mode
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
+# ---------------------------------------
 
 import collections
 from collections import Iterable
@@ -43,6 +45,8 @@ from collections import Iterable
 import rasterio
 from rasterio.features import shapes
 import ezdxf
+
+from FlatCAMCommon import GracefulException as grace
 
 # TODO: Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
@@ -56,7 +60,7 @@ if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import routing_enums_pb2
 
 import logging
-import FlatCAMApp
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -635,26 +639,26 @@ class Geometry(object):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = np.Inf
-                miny = np.Inf
-                maxx = -np.Inf
-                maxy = -np.Inf
+                gminx = np.Inf
+                gminy = np.Inf
+                gmaxx = -np.Inf
+                gmaxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
                         for key in k:
                             minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
-                            minx = min(minx, minx_)
-                            miny = min(miny, miny_)
-                            maxx = max(maxx, maxx_)
-                            maxy = max(maxy, maxy_)
+                            gminx = min(gminx, minx_)
+                            gminy = min(gminy, miny_)
+                            gmaxx = max(gmaxx, maxx_)
+                            gmaxy = max(gmaxy, maxy_)
                     else:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                        minx = min(minx, minx_)
-                        miny = min(miny, miny_)
-                        maxx = max(maxx, maxx_)
-                        maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
+                        gminx = min(gminx, minx_)
+                        gminy = min(gminy, miny_)
+                        gmaxx = max(gmaxx, maxx_)
+                        gmaxy = max(gmaxy, maxy_)
+                return gminx, gminy, gmaxx, gmaxy
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
@@ -678,7 +682,7 @@ class Geometry(object):
                 maxx_list.append(maxx)
                 maxy_list.append(maxy)
 
-            return(min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
+            return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
         else:
             if flatten:
                 self.flatten(reset=True)
@@ -710,7 +714,6 @@ class Geometry(object):
         #         return 0, 0, 0, 0
         #
         #     if type(self.solid_geometry) is list:
-        #         # TODO: This can be done faster. See comment from Shapely mailing lists.
         #         if len(self.solid_geometry) == 0:
         #             log.debug('solid_geometry is empty []')
         #             return 0, 0, 0, 0
@@ -726,7 +729,6 @@ class Geometry(object):
         #     return 0, 0, 0, 0
         #
         # if type(self.solid_geometry) is list:
-        #     # TODO: This can be done faster. See comment from Shapely mailing lists.
         #     if len(self.solid_geometry) == 0:
         #         log.debug('solid_geometry is empty []')
         #         return 0, 0, 0, 0
@@ -930,7 +932,7 @@ class Geometry(object):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         geo_iso = []
 
@@ -954,7 +956,7 @@ class Geometry(object):
             for pol in working_geo:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
                 if offset == 0:
                     geo_iso.append(pol)
                 else:
@@ -1005,13 +1007,13 @@ class Geometry(object):
         """
         Imports shapes from an SVG file into the object's geometry.
 
-        :param filename: Path to the SVG file.
-        :type filename: str
+        :param filename:    Path to the SVG file.
+        :type filename:     str
         :param object_type: parameter passed further along
-        :param flip: Flip the vertically.
-        :type flip: bool
-        :param units: FlatCAM units
-        :return: None
+        :param flip:        Flip the vertically.
+        :type flip:         bool
+        :param units:       FlatCAM units
+        :return:            None
         """
 
         log.debug("camlib.Geometry.import_svg()")
@@ -1060,10 +1062,10 @@ class Geometry(object):
         """
         Imports shapes from an DXF file into the object's geometry.
 
-        :param filename: Path to the DXF file.
-        :type filename: str
-        :param units: Application units
-        :type flip: str
+        :param filename:    Path to the DXF file.
+        :type filename:     str
+        :param object_type:
+        :param units:       Application units
         :return: None
         """
 
@@ -1212,15 +1214,15 @@ class Geometry(object):
         This algorithm shrinks the edges of the polygon and takes
         the resulting edges as toolpaths.
 
-        :param polygon: Polygon to clear.
-        :param tooldia: Diameter of the tool.
-        :param steps_per_circle: number of linear segments to be used to approximate a circle
-        :param overlap: Overlap of toolpasses.
-        :param connect: Draw lines between disjoint segments to
-                        minimize tool lifts.
-        :param contour: Paint around the edges. Inconsequential in
-                        this painting method.
-        :param prog_plot: boolean; if Ture use the progressive plotting
+        :param polygon:             Polygon to clear.
+        :param tooldia:             Diameter of the tool.
+        :param steps_per_circle:    number of linear segments to be used to approximate a circle
+        :param overlap:             Overlap of toolpasses.
+        :param connect:             Draw lines between disjoint segments to
+                                    minimize tool lifts.
+        :param contour:             Paint around the edges. Inconsequential in
+                                    this painting method.
+        :param prog_plot:           boolean; if Ture use the progressive plotting
         :return:
         """
 
@@ -1261,7 +1263,7 @@ class Geometry(object):
         while True:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
@@ -1353,7 +1355,7 @@ class Geometry(object):
         while True:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
@@ -1467,7 +1469,7 @@ class Geometry(object):
                 while y > bot + tooldia / 1.999999999:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
 
                     # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
@@ -1504,7 +1506,7 @@ class Geometry(object):
                 while x < right - tooldia / 1.999999999:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
 
                     # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
@@ -1594,15 +1596,15 @@ class Geometry(object):
 
         This algorithm draws parallel lines inside the polygon.
 
-        :param line: The target line that create painted polygon.
-        :param aperture_size:   the size of the aperture that is used to draw the 'line' as a polygon
-        :type line: shapely.geometry.LineString or shapely.geometry.MultiLineString
-        :param tooldia: Tool diameter.
-        :param steps_per_circle: how many linear segments to use to approximate a circle
-        :param overlap: Tool path overlap percentage.
-        :param connect: Connect lines to avoid tool lifts.
-        :param contour: Paint around the edges.
-        :param prog_plot: boolean; if to use the progressive plotting
+        :param line:                The target line that create painted polygon.
+        :param aperture_size:       the size of the aperture that is used to draw the 'line' as a polygon
+        :type line:                 shapely.geometry.LineString or shapely.geometry.MultiLineString
+        :param tooldia:             Tool diameter.
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param overlap:             Tool path overlap percentage.
+        :param connect:             Connect lines to avoid tool lifts.
+        :param contour:             Paint around the edges.
+        :param prog_plot:           boolean; if to use the progressive plotting
         :return:
         """
 
@@ -1635,7 +1637,7 @@ class Geometry(object):
             while delta < aperture_size / 2:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
@@ -1800,7 +1802,7 @@ class Geometry(object):
         #         #storage.insert(shape)
 
         # ## Iterate over geometry paths getting the nearest each time.
-        #optimized_paths = []
+        # optimized_paths = []
         optimized_paths = FlatCAMRTreeStorage()
         optimized_paths.get_points = get_pts
         path_count = 0
@@ -1870,12 +1872,13 @@ class Geometry(object):
     def path_connect(storage, origin=(0, 0)):
         """
         Simplifies paths in the FlatCAMRTreeStorage storage by
-        connecting paths that touch on their enpoints.
+        connecting paths that touch on their endpoints.
 
-        :param storage: Storage containing the initial paths.
-        :rtype storage: FlatCAMRTreeStorage
-        :return: Simplified storage.
-        :rtype: FlatCAMRTreeStorage
+        :param storage:     Storage containing the initial paths.
+        :rtype storage:     FlatCAMRTreeStorage
+        :param origin:      tuple; point from which to calculate the nearest point
+        :return:            Simplified storage.
+        :rtype:             FlatCAMRTreeStorage
         """
 
         log.debug("path_connect()")
@@ -1888,7 +1891,7 @@ class Geometry(object):
         # storage.get_points = get_pts
         #
         # for shape in pathlist:
-        #     if shape is not None:  # TODO: This shouldn't have happened.
+        #     if shape is not None:
         #         storage.insert(shape)
 
         path_count = 0
@@ -2113,11 +2116,11 @@ class Geometry(object):
         Mirrors the object around a specified axis passign through
         the given point.
 
-        :param axis: "X" or "Y" indicates around which axis to mirror.
-        :type axis: str
-        :param point: [x, y] point belonging to the mirror axis.
-        :type point: list
-        :return: None
+        :param axis:    "X" or "Y" indicates around which axis to mirror.
+        :type axis:     str
+        :param point:   [x, y] point belonging to the mirror axis.
+        :type point:    list
+        :return:        None
         """
         log.debug("camlib.Geometry.mirror()")
 
@@ -2148,8 +2151,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2160,19 +2162,16 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.solid_geometry = mirror_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was mirrored'))
+            self.app.inform.emit('[success] %s...' % _('Object was mirrored'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to mirror. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to mirror. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2180,29 +2179,28 @@ class Geometry(object):
         """
         Rotate an object by an angle (in degrees) around the provided coordinates.
 
-        Parameters
-        ----------
+        :param angle:
         The angle of rotation are specified in degrees (default). Positive angles are
         counter-clockwise and negative are clockwise rotations.
 
+        :param point:
         The point of origin can be a keyword 'center' for the bounding box
         center (default), 'centroid' for the geometry's centroid, a Point object
         or a coordinate tuple (x0, y0).
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.Geometry.rotate()")
 
         px, py = point
 
         def rotate_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
                 for g in obj:
                     new_obj.append(rotate_geom(g))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     self.el_count += 1
                     disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
@@ -2220,8 +2218,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2232,19 +2229,16 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.solid_geometry = rotate_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was rotated'))
+            self.app.inform.emit('[success] %s...' % _('Object was rotated'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to rotate. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to rotate. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2252,28 +2246,29 @@ class Geometry(object):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.
 
-        Parameters
-        ----------
+        :param angle_x:
+        :param angle_y:
         angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
+
+        :param point:   Origin point for Skew
         point: tuple of coordinates (x,y)
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.Geometry.skew()")
 
         px, py = point
 
         def skew_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
                 for g in obj:
                     new_obj.append(skew_geom(g))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     self.el_count += 1
                     disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
@@ -2291,8 +2286,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2310,11 +2304,9 @@ class Geometry(object):
                 self.el_count = 0
 
                 self.solid_geometry = skew_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was skewed'))
+            self.app.inform.emit('[success] %s...' % _('Object was skewed'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to skew. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to skew. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2328,8 +2320,9 @@ class Geometry(object):
     def buffer(self, distance, join, factor):
         """
 
-        :param distance: if 'factor' is True then distance is the factor
-        :param factor: True or False (None)
+        :param distance:    if 'factor' is True then distance is the factor
+        :param join:        The kind of join used by the shapely buffer method: round, square or bevel
+        :param factor:      True or False (None)
         :return:
         """
 
@@ -2476,6 +2469,8 @@ class CNCjob(Geometry):
 
         self.multidepth = False
         self.z_depthpercut = depthpercut
+
+        self.extracut_length = None
 
         self.excellon_optimization_type = 'B'
 
@@ -2779,7 +2774,7 @@ class CNCjob(Geometry):
         for drill in exobj.drills:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if drill['tool'] in tools:
                 try:
@@ -2813,11 +2808,11 @@ class CNCjob(Geometry):
 
             def __init__(self, tool):
                 """Initialize distance array."""
-                locations = create_data_array(tool)
+                locs = create_data_array(tool)
                 self.matrix = {}
 
-                if locations:
-                    size = len(locations)
+                if locs:
+                    size = len(locs)
 
                     for from_node in range(size):
                         self.matrix[from_node] = {}
@@ -2825,10 +2820,10 @@ class CNCjob(Geometry):
                             if from_node == to_node:
                                 self.matrix[from_node][to_node] = 0
                             else:
-                                x1 = locations[from_node][0]
-                                y1 = locations[from_node][1]
-                                x2 = locations[to_node][0]
-                                y2 = locations[to_node][1]
+                                x1 = locs[from_node][0]
+                                y1 = locs[from_node][1]
+                                x2 = locs[to_node][0]
+                                y2 = locs[to_node][1]
                                 self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
 
             # def Distance(self, from_node, to_node):
@@ -2846,8 +2841,8 @@ class CNCjob(Geometry):
             if tool not in points:
                 return None
 
-            for point in points[tool]:
-                loc_list.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+            for pt in points[tool]:
+                loc_list.append((pt.coords.xy[0][0], pt.coords.xy[1][0]))
             return loc_list
 
         if self.xy_toolchange is not None:
@@ -2873,7 +2868,7 @@ class CNCjob(Geometry):
                     for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         self.tool = tool
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
@@ -2973,7 +2968,7 @@ class CNCjob(Geometry):
                                 while not routing.IsEnd(node):
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     node_list.append(node)
                                     node = assignment.Value(routing.NextVar(node))
@@ -2987,7 +2982,7 @@ class CNCjob(Geometry):
                         if tool in points:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # Tool change sequence (optional)
                             if self.toolchange:
@@ -3031,7 +3026,7 @@ class CNCjob(Geometry):
                                 for k in node_list:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     locx = locations[k][0]
                                     locy = locations[k][1]
@@ -3103,7 +3098,7 @@ class CNCjob(Geometry):
                     for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         self.tool = tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
@@ -3206,7 +3201,7 @@ class CNCjob(Geometry):
                         if tool in points:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # Tool change sequence (optional)
                             if self.toolchange:
@@ -3249,7 +3244,7 @@ class CNCjob(Geometry):
                                 for k in node_list:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     locx = locations[k][0]
                                     locy = locations[k][1]
@@ -3323,7 +3318,7 @@ class CNCjob(Geometry):
             for tool in tools:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 if exobj.drills:
                     self.tool = tool
@@ -3370,7 +3365,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # Tool change sequence (optional)
                         if self.toolchange:
@@ -3418,7 +3413,7 @@ class CNCjob(Geometry):
                             for point in node_list:
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
                                 locx = point[0]
                                 locy = point[1]
@@ -3675,13 +3670,13 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for shape in flat_geometry:
+        for geo_shape in flat_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
-            if shape is not None:  # TODO: This shouldn't have happened.
-                storage.insert(shape)
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         # self.input_geometry_bounds = geometry.bounds()
 
@@ -3757,7 +3752,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -3839,14 +3834,31 @@ class CNCjob(Geometry):
         :param geometry:
         :param append:
         :param tooldia:
+        :param offset:
         :param tolerance:
-        :param multidepth: If True, use multiple passes to reach
-           the desired depth.
-        :param depthpercut: Maximum depth in each pass.
-        :param extracut: Adds (or not) an extra cut at the end of each path
-            overlapping the first point in path to ensure complete copper removal
-        :param extracut_length: The extra cut length
-        :return: None
+        :param z_cut:
+        :param z_move:
+        :param feedrate:
+        :param feedrate_z:
+        :param feedrate_rapid:
+        :param spindlespeed:
+        :param spindledir:
+        :param dwell:
+        :param dwelltime:
+        :param multidepth:          If True, use multiple passes to reach the desired depth.
+        :param depthpercut:         Maximum depth in each pass.
+        :param toolchange:
+        :param toolchangez:
+        :param toolchangexy:
+        :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the first point in
+                                    path to ensure complete copper removal
+        :param extracut_length:     The extra cut length
+        :param startz:
+        :param endz:
+        :param endxy:
+        :param pp_geometry_name:
+        :param tool_no:
+        :return:                    None
         """
 
         if not isinstance(geometry, Geometry):
@@ -4049,13 +4061,13 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for shape in flat_geometry:
+        for geo_shape in flat_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
-            if shape is not None:  # TODO: This shouldn't have happened.
-                storage.insert(shape)
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         if not append:
             self.gcode = ""
@@ -4080,7 +4092,7 @@ class CNCjob(Geometry):
 
         if toolchange is False:
             self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
-            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy)
+            self.gcode += self.doformat(p.startz_code, x=self.oldx, y=self.oldy)
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
@@ -4130,7 +4142,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -4219,7 +4231,6 @@ class CNCjob(Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("There is no tool data in the SolderPaste geometry."))
 
-
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
 
@@ -4254,9 +4265,13 @@ class CNCjob(Geometry):
 
         # Store the geometry
         log.debug("Indexing geometry before generating G-Code...")
-        for shape in flat_geometry:
-            if shape is not None:
-                storage.insert(shape)
+        for geo_shape in flat_geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         # Initial G-Code
         self.gcode = self.doformat(p.start_code)
@@ -4278,7 +4293,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -5014,18 +5029,25 @@ class CNCjob(Geometry):
                      z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
+
         Generates G-code to cut along the linear feature.
 
-        :param linear: The path to cut along.
-        :type: Shapely.LinearRing or Shapely.Linear String
-        :param tolerance: All points in the simplified object will be within the
-            tolerance distance of the original geometry.
-        :type tolerance: float
-        :param feedrate: speed for cut on X - Y plane
-        :param feedrate_z: speed for cut on Z plane
-        :param feedrate_rapid: speed to move between cuts; usually is G0 but some CNC require to specify it
-        :return: G-code to cut along the linear feature.
-        :rtype: str
+        :param linear:          The path to cut along.
+        :type:                  Shapely.LinearRing or Shapely.Linear String
+        :param tolerance:       All points in the simplified object will be within the
+                                tolerance distance of the original geometry.
+        :type tolerance:        float
+        :param down:
+        :param up:
+        :param z_cut:
+        :param z_move:
+        :param zdownrate:
+        :param feedrate:        speed for cut on X - Y plane
+        :param feedrate_z:      speed for cut on Z plane
+        :param feedrate_rapid:  speed to move between cuts; usually is G0 but some CNC require to specify it
+        :param cont:
+        :param old_point:
+        :return:                G-code to cut along the linear feature.
         """
 
         if z_cut is None:
@@ -5087,7 +5109,7 @@ class CNCjob(Geometry):
         for pt in path[1:]:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -5112,22 +5134,30 @@ class CNCjob(Geometry):
         return gcode
 
     def linear2gcode_extra(self, linear, extracut_length, tolerance=0, down=True, up=True,
-                     z_cut=None, z_move=None, zdownrate=None,
-                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
+                           z_cut=None, z_move=None, zdownrate=None,
+                           feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
+
         Generates G-code to cut along the linear feature.
 
-        :param linear: The path to cut along.
-        :param extracut_length: how much to cut extra over the first point at the end of the path
-        :type: Shapely.LinearRing or Shapely.Linear String
-        :param tolerance: All points in the simplified object will be within the
-            tolerance distance of the original geometry.
-        :type tolerance: float
-        :param feedrate: speed for cut on X - Y plane
-        :param feedrate_z: speed for cut on Z plane
-        :param feedrate_rapid: speed to move between cuts; usually is G0 but some CNC require to specify it
-        :return: G-code to cut along the linear feature.
-        :rtype: str
+        :param linear:              The path to cut along.
+        :type:                      Shapely.LinearRing or Shapely.Linear String
+        :param extracut_length:     how much to cut extra over the first point at the end of the path
+        :param tolerance:           All points in the simplified object will be within the
+                                    tolerance distance of the original geometry.
+        :type tolerance:            float
+        :param down:
+        :param up:
+        :param z_cut:
+        :param z_move:
+        :param zdownrate:
+        :param feedrate:            speed for cut on X - Y plane
+        :param feedrate_z:          speed for cut on Z plane
+        :param feedrate_rapid:      speed to move between cuts; usually is G0 but some CNC require to specify it
+        :param cont:
+        :param old_point:
+        :return:                    G-code to cut along the linear feature.
+        :rtype:                     str
         """
 
         if z_cut is None:
@@ -5190,7 +5220,7 @@ class CNCjob(Geometry):
         for pt in path[1:]:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -5342,7 +5372,7 @@ class CNCjob(Geometry):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         path = list(point.coords)
         p = self.pp_geometry
@@ -5401,7 +5431,7 @@ class CNCjob(Geometry):
         for g in self.gcode_parsed:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if g['kind'][0] == 'C':
                 cuts.append(g)
@@ -5417,7 +5447,7 @@ class CNCjob(Geometry):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         if cuts:
             cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
@@ -5433,38 +5463,38 @@ class CNCjob(Geometry):
 
         return svg_elem
 
-    def bounds(self):
+    def bounds(self, flatten=None):
         """
         Returns coordinates of rectangular bounds
         of geometry: (xmin, ymin, xmax, ymax).
+
+        :param flatten:     Not used, it is here for compatibility with base class method
         """
-        # fixed issue of getting bounds only for one level lists of objects
-        # now it can get bounds for nested lists of objects
 
         log.debug("camlib.CNCJob.bounds()")
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = np.Inf
-                miny = np.Inf
-                maxx = -np.Inf
-                maxy = -np.Inf
+                cminx = np.Inf
+                cminy = np.Inf
+                cmaxx = -np.Inf
+                cmaxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
                         for key in k:
                             minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
-                            minx = min(minx, minx_)
-                            miny = min(miny, miny_)
-                            maxx = max(maxx, maxx_)
-                            maxy = max(maxy, maxy_)
+                            cminx = min(cminx, minx_)
+                            cminy = min(cminy, miny_)
+                            cmaxx = max(cmaxx, maxx_)
+                            cmaxy = max(cmaxy, maxy_)
                     else:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                        minx = min(minx, minx_)
-                        miny = min(miny, miny_)
-                        maxx = max(maxx, maxx_)
-                        maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
+                        cminx = min(cminx, minx_)
+                        cminy = min(cminy, miny_)
+                        cmaxx = max(cmaxx, maxx_)
+                        cmaxy = max(cmaxy, maxy_)
+                return cminx, cminy, cmaxx, cmaxy
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
@@ -5510,12 +5540,12 @@ class CNCjob(Geometry):
         given factor. Tool sizes, feedrates, or Z-axis dimensions are
         not altered.
 
-        :param factor: Number by which to scale the object.
-        :type factor: float
-        :param point: the (x,y) coords for the point of origin of scale
-        :type tuple of floats
-        :return: None
-        :rtype: None
+        :param factor:  Number by which to scale the object.
+        :type factor:   float
+        :param point:   the (x,y) coords for the point of origin of scale
+        :type           tuple of floats
+        :return:        None
+        :rtype:         None
         """
         log.debug("camlib.CNCJob.scale()")
 
@@ -5638,8 +5668,7 @@ class CNCjob(Geometry):
             # variables to display the percentage of work done
             self.geo_len = 0
             try:
-                for g in self.gcode_parsed:
-                    self.geo_len += 1
+                self.geo_len = len(self.gcode_parsed)
             except TypeError:
                 self.geo_len = 1
             self.old_disp_number = 0
@@ -5667,8 +5696,7 @@ class CNCjob(Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in v['gcode_parsed']:
-                        self.geo_len += 1
+                    self.geo_len = len(v['gcode_parsed'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -5700,9 +5728,9 @@ class CNCjob(Geometry):
 
         g_offsetx_re, g_offsety_re, multitool, cnnc_tools are attributes of FlatCAMCNCJob class in camlib
 
-        :param vect: (x, y) offset vector.
-        :type vect: tuple
-        :return: None
+        :param vect:    (x, y) offset vector.
+        :type vect:     tuple
+        :return:        None
         """
         log.debug("camlib.CNCJob.offset()")
 
@@ -5748,8 +5776,7 @@ class CNCjob(Geometry):
             # variables to display the percentage of work done
             self.geo_len = 0
             try:
-                for g in self.gcode_parsed:
-                    self.geo_len += 1
+                self.geo_len = len(self.gcode_parsed)
             except TypeError:
                 self.geo_len = 1
             self.old_disp_number = 0
@@ -5777,8 +5804,7 @@ class CNCjob(Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in v['gcode_parsed']:
-                        self.geo_len += 1
+                    self.geo_len = len(v['gcode_parsed'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -5804,9 +5830,10 @@ class CNCjob(Geometry):
 
     def mirror(self, axis, point):
         """
-        Mirror the geometrys of an object by an given axis around the coordinates of the 'point'
-        :param angle:
-        :param point: tupple of coordinates (x,y)
+        Mirror the geometry of an object by an given axis around the coordinates of the 'point'
+
+        :param axis:    Axis for Mirror
+        :param point:   tuple of coordinates (x,y). Point of origin for Mirror
         :return:
         """
         log.debug("camlib.CNCJob.mirror()")
@@ -5817,8 +5844,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5843,16 +5869,16 @@ class CNCjob(Geometry):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.
 
-        Parameters
-        ----------
+        :param angle_x:
+        :param angle_y:
         angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
-        point: tupple of coordinates (x,y)
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        :param point:   tupple of coordinates (x,y)
+
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.CNCJob.skew()")
 
@@ -5861,8 +5887,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5885,9 +5910,10 @@ class CNCjob(Geometry):
 
     def rotate(self, angle, point):
         """
-        Rotate the geometrys of an object by an given angle around the coordinates of the 'point'
-        :param angle:
-        :param point: tupple of coordinates (x,y)
+        Rotate the geometry of an object by an given angle around the coordinates of the 'point'
+
+        :param angle:   Angle of Rotation
+        :param point:   tuple of coordinates (x,y). Origin point for Rotation
         :return:
         """
         log.debug("camlib.CNCJob.rotate()")
@@ -5897,8 +5923,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5921,6 +5946,12 @@ class CNCjob(Geometry):
 
 
 def get_bounds(geometry_list):
+    """
+    Will return limit values for a list of geometries
+
+    :param geometry_list:   List of geometries for which to calculate the bounds limits
+    :return:
+    """
     xmin = np.Inf
     ymin = np.Inf
     xmax = -np.Inf
@@ -5943,21 +5974,21 @@ def arc(center, radius, start, stop, direction, steps_per_circ):
     """
     Creates a list of point along the specified arc.
 
-    :param center: Coordinates of the center [x, y]
-    :type center: list
-    :param radius: Radius of the arc.
-    :type radius: float
-    :param start: Starting angle in radians
-    :type start: float
-    :param stop: End angle in radians
-    :type stop: float
-    :param direction: Orientation of the arc, "CW" or "CCW"
-    :type direction: string
-    :param steps_per_circ: Number of straight line segments to
-        represent a circle.
-    :type steps_per_circ: int
-    :return: The desired arc, as list of tuples
-    :rtype: list
+    :param center:          Coordinates of the center [x, y]
+    :type center:           list
+    :param radius:          Radius of the arc.
+    :type radius:           float
+    :param start:           Starting angle in radians
+    :type start:            float
+    :param stop:            End angle in radians
+    :type stop:             float
+    :param direction:       Orientation of the arc, "CW" or "CCW"
+    :type direction:        string
+    :param steps_per_circ:  Number of straight line segments to
+                            represent a circle.
+    :type steps_per_circ:   int
+    :return:                The desired arc, as list of tuples
+    :rtype:                 list
     """
     # TODO: Resolution should be established by maximum error from the exact arc.
 
@@ -6031,10 +6062,10 @@ def to_dict(obj):
     * ApertureMacro
     * BaseGeometry
 
-    :param obj: Shapely geometry.
-    :type obj: BaseGeometry
-    :return: Dictionary with serializable form if ``obj`` was
-        BaseGeometry or ApertureMacro, otherwise returns ``obj``.
+    :param obj:     Shapely geometry.
+    :type obj:      BaseGeometry
+    :return:        Dictionary with serializable form if ``obj`` was
+                    BaseGeometry or ApertureMacro, otherwise returns ``obj``.
     """
     if isinstance(obj, ApertureMacro):
         return {
@@ -6053,9 +6084,9 @@ def dict2obj(d):
     """
     Default deserializer.
 
-    :param d:  Serializable dictionary representation of an object
-        to be reconstructed.
-    :return: Reconstructed object.
+    :param d:   Serializable dictionary representation of an object
+                to be reconstructed.
+    :return:    Reconstructed object.
     """
     if '__class__' in d and '__inst__' in d:
         if d['__class__'] == "Shply":
@@ -6390,10 +6421,10 @@ def three_point_circle(p1, p2, p3):
     Computes the center and radius of a circle from
     3 points on its circumference.
 
-    :param p1: Point 1
-    :param p2: Point 2
-    :param p3: Point 3
-    :return: center, radius
+    :param p1:  Point 1
+    :param p2:  Point 2
+    :param p3:  Point 3
+    :return:    center, radius
     """
     # Midpoints
     a1 = (p1 + p2) / 2.0

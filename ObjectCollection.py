@@ -19,7 +19,6 @@ from PyQt5.QtGui import QColor
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript, \
     FlatCAMObj
 import inspect  # TODO: Remove
-import FlatCAMApp
 
 import re
 import logging
@@ -332,7 +331,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.update_list_signal.connect(self.on_update_list_signal)
 
     def promise(self, obj_name):
-        FlatCAMApp.App.log.debug("Object %s has been promised." % obj_name)
+        log.debug("Object %s has been promised." % obj_name)
         self.promises.add(obj_name)
 
     def has_promises(self):
@@ -349,7 +348,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return len(self.plot_promises) > 0
 
     def on_mouse_down(self, event):
-        FlatCAMApp.App.log.debug("Mouse button pressed on list")
+        log.debug("Mouse button pressed on list")
 
     def on_menu_request(self, pos):
 
@@ -532,21 +531,21 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
     def append(self, obj, active=False, to_index=None):
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
+        log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]
 
         # Check promises and clear if exists
         if name in self.promises:
             self.promises.remove(name)
-            # FlatCAMApp.App.log.debug("Promised object %s became available." % name)
-            # FlatCAMApp.App.log.debug("%d promised objects remaining." % len(self.promises))
+            # log.debug("Promised object %s became available." % name)
+            # log.debug("%d promised objects remaining." % len(self.promises))
 
         # Prevent same name
         while name in self.get_names():
             # ## Create a new name
             # Ends with number?
-            FlatCAMApp.App.log.debug("new_object(): Object name (%s) exists, changing." % name)
+            log.debug("new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
             if match:  # Yes: Increment the number!
                 base = match.group(1) or ''
@@ -596,7 +595,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :rtype: list
         """
 
-        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
+        # log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
         return [x.options['name'] for x in self.get_list()]
 
     def get_bounds(self):
@@ -606,7 +605,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: [xmin, ymin, xmax, ymax]
         :rtype: list
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
+        log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
 
         # TODO: Move the operation out of here.
 
@@ -624,7 +623,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
+                log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
 
         return [xmin, ymin, xmax, ymax]
 
@@ -638,7 +637,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
-        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
+        # log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
@@ -760,7 +759,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.all_objects_list = self.get_list()
 
     def delete_all(self):
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+        log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
         self.app.object_status_changed.emit(None, 'delete_all', '')
 
@@ -897,8 +896,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.set_inactive(name)
 
     def on_list_selection_change(self, current, previous):
-        # FlatCAMApp.App.log.debug("on_list_selection_change()")
-        # FlatCAMApp.App.log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
+        """
+
+        :param current:     Current selected item
+        :param previous:    Previously selected item
+        :return:
+        """
+
+        # log.debug("on_list_selection_change()")
+        # log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
 
         try:
             obj = current.indexes()[0].internalPointer().obj
@@ -942,12 +948,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 )
         except IndexError:
             self.item_selected.emit('none')
-            # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
+            # log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()
             except Exception as e:
-                FlatCAMApp.App.log.debug("Nothing to remove. %s" % str(e))
+                log.debug("Nothing to remove. %s" % str(e))
 
             self.app.setup_component_editor()
             return
