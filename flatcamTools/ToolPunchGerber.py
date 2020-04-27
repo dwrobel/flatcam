@@ -142,7 +142,7 @@ class ToolPunchGerber(FlatCAMTool):
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
               "- Fixed Diameter -> will try to use the pads center as reference adding fixed diameter holes.\n"
               "- Fixed Annular Ring -> will try to keep a set annular ring.\n"
-              "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.\n")
+              "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.")
         )
         self.method_punch = RadioSet(
             [

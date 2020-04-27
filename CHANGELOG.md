@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.04.2020
+
+- finished the moving of all Tcl Shell stuff out of the FlatCAAMApp class to flatcamTools.ToolShell class
+- updated the requirements.txt file to request that the Shapely package needs to be at least version 1.7.0 as it is needed in the latest versions of FlatCAM beta
+- some TOOD cleanups
+- minor changes
+
 25.04.2020
 
 - ensured that on Graceful Exit (CTRL+ALT+X key combo) if using Progressive Plotting, the eventual residual plotted lines are deleted. This apply for Tool NCC and Tool Paint
