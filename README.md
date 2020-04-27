@@ -61,6 +61,18 @@ sudo apt-get install python3.8-pip
 - run the file setup_ubuntu.sh and install all the dependencies with the command: ./setup_ubuntu.sh
 - if the previous command is successful and has no errors, run FlatCAM with the command: python3 FlatCAM.py
 
+- Alternatively you can install it on Ubuntu with:
+```
+# Optional if depencencies are missing
+make install_dependencies
+
+# Install for the current user only (using the folder in its place)
+make install
+
+# System-wide instalation
+sudo make install
+```
+
 3. MacOS
 Instructions from here: https://gist.github.com/natevw/3e6fc929aff358b38c0a#gistcomment-3111878
 
