@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.04.2020
+
+- handled a possible situation in App.load_defaults() method
+- fixed some issues in FlatCAMDB that may appear in certain scenarios
+
 27.04.2020
 
 - finished the moving of all Tcl Shell stuff out of the FlatCAAMApp class to flatcamTools.ToolShell class
@@ -24,6 +29,7 @@ CHANGELOG for FlatCAM beta
 - added support for Hungarian language - no translation for now
 - minor changes
 - moved the ObjectCollection class to the flatcamObjects folder where it belongs
+- Linux Makefile 
 
 25.04.2020
 
