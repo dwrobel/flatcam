@@ -107,25 +107,25 @@ class TermWidget(QWidget):
         mtype = text[:idx+1].upper()
         mtype = mtype.replace('_NOTCL', '')
         body = text[idx+1:]
-        if style == 'in':
+        if style.lower() == 'in':
             text = '<span style="font-weight: bold;">%s</span>' % text
-        elif style == 'err':
+        elif style.lower() == 'err':
             text = '<span style="font-weight: bold; color: red;">%s</span>'\
                    '<span style="font-weight: bold;">%s</span>'\
                    % (mtype, body)
-        elif style == 'warning':
+        elif style.lower() == 'warning':
             # text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
             text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' \
                    '<span style="font-weight: bold;">%s</span>' \
                    % (mtype, body)
-        elif style == 'success':
+        elif style.lower() == 'success':
             # text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
             text = '<span style="font-weight: bold; color: #15b300;">%s</span>' \
                    '<span style="font-weight: bold;">%s</span>' \
                    % (mtype, body)
-        elif style == 'selected':
+        elif style.lower() == 'selected':
             text = ''
-        elif style == 'raw':
+        elif style.lower() == 'raw':
             text = text
         else:
             # without span <br/> is ignored!!!
@@ -226,7 +226,7 @@ class TermWidget(QWidget):
 
     def is_command_complete(self, text):
         """
-        Executed by _ExpandableTextEdit. Reimplement this function in the child classes.
+        Executed by _ExpandableTextEdit. Re-implement this function in the child classes.
         """
         return True
 
@@ -344,19 +344,23 @@ class FCShell(TermWidget):
             ''')
 
     def is_command_complete(self, text):
+
         def skipQuotes(txt):
             quote = txt[0]
             text_val = txt[1:]
             endIndex = str(text_val).index(quote)
             return text[endIndex:]
 
-        while text:
-            if text[0] in ('"', "'"):
-                try:
-                    text = skipQuotes(text)
-                except ValueError:
-                    return False
-            text = text[1:]
+        # I'm disabling this because I need to be able to load paths that have spaces by
+        # enclosing them in quotes --- Marius Stanciu
+        # while text:
+        #     if text[0] in ('"', "'"):
+        #         try:
+        #             text = skipQuotes(text)
+        #         except ValueError:
+        #             return False
+        #     text = text[1:]
+
         return True
 
     def child_exec_command(self, text):
