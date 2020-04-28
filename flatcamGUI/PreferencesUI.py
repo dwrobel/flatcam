@@ -1116,9 +1116,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         # Create a grid layout for the Application general settings
         grid0 = QtWidgets.QGridLayout()

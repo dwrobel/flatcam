@@ -88,9 +88,9 @@ def on_language_apply_click(app, restart=False):
         theme = 'white'
 
     if theme == 'white':
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
     else:
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
 
     # do nothing if trying to apply the language that is the current language (already applied).
     settings = QSettings("Open Source", "FlatCAM")
@@ -180,9 +180,9 @@ def restart_program(app, ask=None):
         theme = 'white'
 
     if theme == 'white':
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
     else:
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
 
     # close the Socket in ArgsThread class
     app.new_launch.listener.close()
