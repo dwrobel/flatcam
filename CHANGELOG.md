@@ -28,7 +28,7 @@ CHANGELOG for FlatCAM beta
 - in SVG parser modified some imports to be one on each line
 - fixed the Tcl Command BBox (leftovers from recent global changes)
 - fixed some typos in strings reported by @pcb-hobbyst on FlatCAM forum
-
+- disabled a skip_quotes method in ToolShell.FCShell class so I can now use quotes to enclose file paths with spaces inside
 
 27.04.2020
 

@@ -2694,8 +2694,7 @@ class _ExpandableTextEdit(QTextEdit):
             if line_count <= 1:
                 self.historyPrev.emit()
                 return
-        elif event.matches(QKeySequence.MoveToNextPage) or \
-                event.matches(QKeySequence.MoveToPreviousPage):
+        elif event.matches(QKeySequence.MoveToNextPage) or event.matches(QKeySequence.MoveToPreviousPage):
             return self._termWidget.browser().keyPressEvent(event)
 
         tc = self.textCursor()
