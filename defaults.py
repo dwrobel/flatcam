@@ -753,6 +753,10 @@ class FlatCAMDefaults:
 
     @classmethod
     def save_factory_defaults_file(cls, file_path: str):
+        """
+        Writes the factory defaults to a file at the given path, overwriting any existing file.
+        Sets the file to be read only.
+        """
         # Delete any existing factory defaults file
         if os.path.isfile(file_path):
             os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)

@@ -1098,10 +1098,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         if self.defaults["first_run"] is True:
-            self.save_factory_defaults(silent_message=False)
-            # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
-            filename_factory = self.data_path + '/factory_defaults.FlatConfig'
-            os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
@@ -4367,63 +4363,7 @@ class App(QtCore.QObject):
 
         self.defaults["global_toolbar_view"] = tb_status
 
-    def save_factory_defaults(self, silent_message=False, data_path=None):
-        """
-        Saves application factory default options
-        ``self.defaults`` to factory_defaults.FlatConfig.
-        It's a one time job done just after the first install.
 
-        :param silent_message: whether to display a message in status bar or not; boolean
-        :param data_path: the path where to save the default preferences file (factory_defaults.FlatConfig)
-        When the application is portable it should be a mobile location.
-        :return: None
-        """
-
-        self.report_usage("save_factory_defaults")
-
-        if data_path is None:
-            data_path = self.data_path
-
-        # Read options from file
-        try:
-            f_f_def = open(data_path + "/factory_defaults.FlatConfig")
-            factory_defaults_file_content = f_f_def.read()
-            f_f_def.close()
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Could not load factory defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load factory defaults file."))
-            return
-
-        try:
-            factory_defaults = json.loads(factory_defaults_file_content)
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Failed to parse factory defaults file.")
-            App.log.error(str(e))
-            if silent_message is False:
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
-            return
-
-        # Update options
-        self.defaults_read_form()
-        factory_defaults.update(self.defaults)
-        self.propagate_defaults(silent=True)
-
-        # Save update options
-        try:
-            f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
-            json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
-            f_f_def_s.close()
-        except Exception as e:
-            log.debug("App.save_factory_default() save update --> %s" % str(e))
-            if silent_message is False:
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write factory defaults to file."))
-            return
-
-        if silent_message is False:
-            self.inform.emit(_("Factory defaults saved."))
 
     def final_save(self):
         """
@@ -4626,7 +4566,6 @@ class App(QtCore.QObject):
 
             # save the current defaults to the new defaults file
             self.save_defaults(silent=True, data_path=current_data_path)
-            self.save_factory_defaults(silent_message=True, data_path=current_data_path)
 
         else:
             data[line_no] = 'portable=False\n'
