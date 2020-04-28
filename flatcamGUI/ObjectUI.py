@@ -308,7 +308,7 @@ class GerberObjectUI(ObjectUI):
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
         self.tool_type_label.setToolTip(
-            _("Choose what tool to use for Gerber isolation:\n"
+            _("Choose which tool to use for Gerber isolation:\n"
               "'Circular' or 'V-shape'.\n"
               "When the 'V-shape' is selected then the tool\n"
               "diameter will depend on the chosen cut depth.")
@@ -435,7 +435,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.follow_cb, 8, 1)
 
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
-                                    "by checking this, the area of the object bellow\n"
+                                    "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         grid1.addWidget(self.except_cb, 8, 2)
 
@@ -1532,7 +1532,7 @@ class GeometryObjectUI(ObjectUI):
                 "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the cut width in material\n"
                 "is exactly the tool diameter.\n"
                 "- Ball -> informative only and make reference to the Ball type endmill.\n"
-                "- V-Shape -> it will disable de Z-Cut parameter in the UI form and enable two additional UI form\n"
+                "- V-Shape -> it will disable Z-Cut parameter in the UI form and enable two additional UI form\n"
                 "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
                 "as the cut width into material will be equal with the value in the Tool "
                 "Diameter column of this table.\n"

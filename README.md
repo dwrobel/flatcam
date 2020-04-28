@@ -22,6 +22,7 @@ Menu -> Help -> About FlatCAM -> Programmers -> Marius Stanciu
 - Unzip them on a HDD location that your user has permissions for.
 
 1.Windows
+
 - download the provided installer (for your OS flavor 64bit or 32bit) from:
 https://bitbucket.org/jpcgt/flatcam/downloads/
 - execute the installer and install the program. It is recommended to install as a Local User.
@@ -61,6 +62,7 @@ cd D:\FlatCAM_beta
 python FlatCAM.py
 
 2.Linux
+
 - make sure that Python 3.8 is installed on your OS and that the command: python3 -V confirm it
 - verify that the pip package is installed for your Python installation (e.g 3.8) by running the command:
 ```

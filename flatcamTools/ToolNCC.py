@@ -151,7 +151,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- Circular with 1 ... 4 teeth -> it is informative only. Being circular,\n"
               "the cut width in material is exactly the tool diameter.\n"
               "- Ball -> informative only and make reference to the Ball type endmill.\n"
-              "- V-Shape -> it will disable de Z-Cut parameter in the resulting geometry UI form\n"
+              "- V-Shape -> it will disable Z-Cut parameter in the resulting geometry UI form\n"
               "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and\n"
               "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
               "as the cut width into material will be equal with the value in the Tool Diameter\n"

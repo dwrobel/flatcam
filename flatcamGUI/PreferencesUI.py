@@ -2396,7 +2396,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Tool Type'))
         self.tool_type_label.setToolTip(
-            _("Choose what tool to use for Gerber isolation:\n"
+            _("Choose which tool to use for Gerber isolation:\n"
               "'Circular' or 'V-shape'.\n"
               "When the 'V-shape' is selected then the tool\n"
               "diameter will depend on the chosen cut depth.")

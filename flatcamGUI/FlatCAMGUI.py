@@ -1744,7 +1744,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # F keys section
                 _("Open Online Manual"),
                 _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
-                _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
+                _("(left to Key_1)Toggle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
                 _("Deselects all objects")
             )
         )
@@ -2296,13 +2296,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.rel_position_label = QtWidgets.QLabel(
             "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
         self.rel_position_label.setMinimumWidth(110)
-        self.rel_position_label.setToolTip(_("Relative neasurement.\nReference is last click position"))
+        self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
         self.infobar.addWidget(self.rel_position_label)
 
         self.position_label = QtWidgets.QLabel(
             "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
         self.position_label.setMinimumWidth(110)
-        self.position_label.setToolTip(_("Absolute neasurement.\nReference is (X=0, Y= 0) position"))
+        self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
         self.infobar.addWidget(self.position_label)
 
         self.units_label = QtWidgets.QLabel("[in]")
