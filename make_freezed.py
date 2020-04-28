@@ -62,7 +62,7 @@ include_files.append(("assets", "lib/assets"))
 include_files.append(("assets/examples", "lib/assets/examples"))
 include_files.append(("assets/linux", "lib/assets/linux"))
 include_files.append(("assets/resources", "lib/assets/resources"))
-include_files.append(("share", "lib/share"))
+# include_files.append(("share", "lib/share"))
 include_files.append(("flatcamGUI/VisPyData", "lib/vispy"))
 include_files.append(("config", "lib/config"))
 
@@ -108,7 +108,7 @@ def getTargetName():
         return "FlatCAM.dmg"
 
 
-exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targetName=getTargetName())
+exe = Executable("FlatCAM.py", icon='assets/resources/flatcam_icon48.ico', base=base, targetName=getTargetName())
 
 setup(
     name="FlatCAM",

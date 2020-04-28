@@ -1096,9 +1096,9 @@ class App(QtCore.QObject):
             self.decimals = int(self.defaults['decimals_inch'])
 
         if self.defaults["global_gray_icons"] is False:
-            self.resource_location = 'share'
+            self.resource_location = 'assets/resources'
         else:
-            self.resource_location = 'share/dark_resources'
+            self.resource_location = 'assets/resources/dark_resources'
 
         self.current_units = self.defaults['units']
 
@@ -3032,7 +3032,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Excellon file failed."))
                         else:
-                            self.on_fileopenexcellon(name=file_name)
+                            self.on_fileopenexcellon(name=file_name, signal=None)
                             return
 
                 gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
@@ -3045,7 +3045,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open GCode file failed."))
                         else:
-                            self.on_fileopengcode(name=file_name)
+                            self.on_fileopengcode(name=file_name, signal=None)
                             return
 
                 grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
@@ -3058,7 +3058,7 @@ class App(QtCore.QObject):
                             if silent is False:
                                 self.inform.emit(_("Open Gerber file failed."))
                         else:
-                            self.on_fileopengerber(name=file_name)
+                            self.on_fileopengerber(name=file_name, signal=None)
                             return
 
         # if it reached here without already returning then the app was registered with a file that it does not
@@ -12929,16 +12929,26 @@ class ArgsThread(QtCore.QObject):
                 conn = self.listener.accept()
                 self.serve(conn)
         except socket.error:
-            conn = Client(*address)
-            conn.send(sys.argv)
-            conn.send('close')
-            # close the current instance only if there are args
-            if len(sys.argv) > 1:
-                try:
-                    self.listener.close()
-                except Exception:
+            try:
+                conn = Client(*address)
+                conn.send(sys.argv)
+                conn.send('close')
+                # close the current instance only if there are args
+                if len(sys.argv) > 1:
+                    try:
+                        self.listener.close()
+                    except Exception:
+                        pass
+                    sys.exit()
+            except ConnectionRefusedError:
+                if sys.platform == 'win32':
                     pass
-                sys.exit()
+                else:
+                    os.system('rm /tmp/testipc')
+                    self.listener = Listener(*address)
+                    while True:
+                        conn = self.listener.accept()
+                        self.serve(conn)
 
     def serve(self, conn):
         while True:

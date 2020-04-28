@@ -8,6 +8,7 @@ sudo apt-get install -y \
 	libgeos-dev \
 	libpng-dev \
 	libspatialindex-dev \
+	qt5-style-plugins \
 	python3-dev \
 	python3-gdal \
 	python3-pip \

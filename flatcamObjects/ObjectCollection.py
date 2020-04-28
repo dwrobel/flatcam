@@ -248,12 +248,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     }
 
     icon_files = {
-        "gerber": "share/flatcam_icon16.png",
-        "excellon": "share/drill16.png",
-        "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png",
-        "script": "share/script_new16.png",
-        "document": "share/notes16_1.png"
+        "gerber": "assets/resources/flatcam_icon16.png",
+        "excellon": "assets/resources/drill16.png",
+        "cncjob": "assets/resources/cnc16.png",
+        "geometry": "assets/resources/geometry16.png",
+        "script": "assets/resources/script_new16.png",
+        "document": "assets/resources/notes16_1.png"
     }
 
     # will emit the name of the object that was just selected
@@ -273,7 +273,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.icons = {}
         for kind in ObjectCollection.icon_files:
             self.icons[kind] = QtGui.QPixmap(
-                ObjectCollection.icon_files[kind].replace('share', self.app.resource_location))
+                ObjectCollection.icon_files[kind].replace('assets/resources', self.app.resource_location))
 
         # Create root tree view item
         self.root_item = TreeItem(["root"])
