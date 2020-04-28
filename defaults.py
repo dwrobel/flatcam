@@ -748,7 +748,7 @@ class FlatCAMDefaults:
                 # may be stored as strings we check their types.
                 try:
                     target = eval(self.defaults[k])
-                except NameError:
+                except (NameError, TypeError):
                     # it's an unknown string leave it as it is
                     target = deepcopy(self.factory_defaults[k])
 
