@@ -389,15 +389,8 @@ class App(QtCore.QObject):
             json.dump({}, f)
             f.close()
 
-        # create factory_defaults.FlatConfig file if there is none
-        try:
-            f = open(self.data_path + '/factory_defaults.FlatConfig')
-            f.close()
-        except IOError:
-            App.log.debug('Creating empty factory_defaults.FlatConfig')
-            f = open(self.data_path + '/factory_defaults.FlatConfig', 'w')
-            json.dump({}, f)
-            f.close()
+        # Write factory_defaults.FlatConfig file to disk
+        FlatCAMDefaults.save_factory_defaults_file(os.path.join(self.data_path, "factory_defaults.FlatConfig"))
 
         # create a recent files json file if there is none
         try:
@@ -438,7 +431,8 @@ class App(QtCore.QObject):
         # ############################################################################################################
         self.fcDefaults = FlatCAMDefaults()
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
-        self.fcDefaults.load_defaults(filename=current_defaults_path)
+        if user_defaults:
+            self.fcDefaults.load_defaults(filename=current_defaults_path)
         self.defaults = self.fcDefaults.defaults
 
         if self.defaults["global_gray_icons"] is False:

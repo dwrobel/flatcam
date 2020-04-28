@@ -20,6 +20,7 @@ if '_' not in builtins.__dict__:
 
 log = logging.getLogger('base')
 
+
 class FlatCAMDefaults:
 
     factory_defaults = {
@@ -673,7 +674,6 @@ class FlatCAMDefaults:
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
-
     def load_defaults(self, filename: str):
         """
         Loads the application's default settings from current_defaults.FlatConfig into
@@ -711,7 +711,6 @@ class FlatCAMDefaults:
         if self.is_old_defaults(defaults):
             self.old_defaults_found = True
             defaults = self.migrate_old_defaults(defaults=defaults)
-            self.recreate_factory_defaults_file(data_path=os.path.dirname(filename))
         else:
             self.old_defaults_found = False
 
@@ -752,19 +751,22 @@ class FlatCAMDefaults:
                     migrated[k] = v
         return migrated
 
-    def recreate_factory_defaults_file(self, data_path: str):
-        try:
-            fact_def_file_path = os.path.join(data_path, 'factory_defaults.FlatConfig')
-            os.chmod(fact_def_file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-            os.remove(fact_def_file_path)
+    @classmethod
+    def save_factory_defaults_file(cls, file_path: str):
+        # Delete any existing factory defaults file
+        if os.path.isfile(file_path):
+            os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+            os.remove(file_path)
 
+        try:
             # recreate a new factory defaults file and save the factory defaults data into it
-            f_f_def_s = open(fact_def_file_path, "w")
-            simplejson.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
+            f_f_def_s = open(file_path, "w")
+            simplejson.dump(cls.factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
 
             # and then make the factory_defaults.FlatConfig file read_only
             # so it can't be modified after creation.
-            os.chmod(fact_def_file_path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
+            os.chmod(file_path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
+            log.debug("FlatCAM factory defaults written to: %s" % file_path)
         except Exception as e:
-            log.debug("recreate_factory_defaults_file() -> %s" % str(e))
+            log.error("save_factory_defaults_file() -> %s" % str(e))
