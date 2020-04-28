@@ -390,7 +390,7 @@ class App(QtCore.QObject):
             f.close()
 
         # Write factory_defaults.FlatConfig file to disk
-        FlatCAMDefaults.save_factory_defaults_file(os.path.join(self.data_path, "factory_defaults.FlatConfig"))
+        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"))
 
         # create a recent files json file if there is none
         try:
@@ -432,7 +432,7 @@ class App(QtCore.QObject):
         self.fcDefaults = FlatCAMDefaults()
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
-            self.fcDefaults.load_defaults(filename=current_defaults_path)
+            self.fcDefaults.load(filename=current_defaults_path)
         self.defaults = self.fcDefaults.defaults
 
         if self.defaults["global_gray_icons"] is False:
@@ -3229,7 +3229,7 @@ class App(QtCore.QObject):
             return
 
         # Load in the defaults from the chosen file
-        self.fcDefaults.load_defaults(filename=filename)
+        self.fcDefaults.load(filename=filename)
 
         self.on_preferences_edited()
         self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
@@ -3245,66 +3245,35 @@ class App(QtCore.QObject):
 
         defaults_file_content = None
 
-        self.date = str(datetime.today()).rpartition('.')[0]
-        self.date = ''.join(c for c in self.date if c not in ':-')
-        self.date = self.date.replace(' ', '_')
-
+        # Show file chooser
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
         filter__ = "Config File .FlatConfig (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
-                directory=self.data_path + '/preferences_' + self.date,
+                directory=self.data_path + '/preferences_' + date,
                 filter=filter__
             )
         except TypeError:
             filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Preferences"), filter=filter__)
-
         filename = str(filename)
-        defaults_from_file = {}
-
         if filename == "":
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
-        else:
-            try:
-                f = open(filename, 'w')
-                defaults_file_content = f.read()
-                f.close()
-            except PermissionError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("Permission denied, saving not possible.\n"
-                                   "Most likely another app is holding the file open and not accessible."))
-                return
-            except IOError:
-                App.log.debug('Creating a new preferences file ...')
-                f = open(filename, 'w')
-                json.dump({}, f)
-                f.close()
-            except Exception:
-                e = sys.exc_info()[0]
-                App.log.error("Could not load defaults file.")
-                App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load preferences file."))
-                return
 
-            try:
-                defaults_from_file = json.loads(defaults_file_content)
-            except Exception:
-                App.log.warning("Trying to read an empty Preferences file. Continue.")
+        # Update options
+        self.defaults_read_form()
+        self.propagate_defaults()
 
-            # Update options
-            self.defaults_read_form()
-            defaults_from_file.update(self.defaults)
-            self.propagate_defaults(silent=True)
+        # Save update options
+        try:
+            self.fcDefaults.write(filename=filename)
+        except Exception:
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+            return
 
-            # Save update options
-            try:
-                f = open(filename, "w")
-                json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
-                f.close()
-            except Exception:
-                self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
-                return
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
@@ -4231,35 +4200,9 @@ class App(QtCore.QObject):
 
         :return: None
         """
-
         self.save_defaults()
 
-    # def on_app_exit(self):
-    #     self.report_usage("on_app_exit()")
-    #
-    #     if self.collection.get_list():
-    #         msgbox = QtWidgets.QMessageBox()
-    #         # msgbox.setText("<B>Save changes ...</B>")
-    #         msgbox.setText("There are files/objects opened in FlatCAM. "
-    #                        "\n"
-    #                        "Do you want to Save the project?")
-    #         msgbox.setWindowTitle("Save changes")
-    #         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-    #         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-    #                                   QtWidgets.QMessageBox.Cancel)
-    #         msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
-    #
-    #         response = msgbox.exec_()
-    #
-    #         if response == QtWidgets.QMessageBox.Yes:
-    #             self.on_file_saveprojectas(thread=False)
-    #         elif response == QtWidgets.QMessageBox.Cancel:
-    #             return
-    #         self.save_defaults()
-    #     else:
-    #         self.save_defaults()
-    #     log.debug("Application defaults saved ... Exit event.")
-    #     QtWidgets.qApp.quit()
+
 
     def save_defaults(self, silent=False, data_path=None, first_time=False):
         """
@@ -4279,43 +4222,16 @@ class App(QtCore.QObject):
         if data_path is None:
             data_path = self.data_path
 
-        # Read options from file
-        try:
-            f = open(data_path + "/current_defaults.FlatConfig")
-            defaults_file_content = f.read()
-            f.close()
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Could not load defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load defaults file."))
-            return
-
-        try:
-            defaults = json.loads(defaults_file_content)
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Failed to parse defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse defaults file."))
-            return
-
-        # Update options
-        self.defaults_read_form()
-        defaults.update(self.defaults)
-        self.propagate_defaults(silent=True)
+        self.propagate_defaults()
 
         if first_time is False:
             self.save_toolbar_view()
 
-        # Save update options
-        filename = data_path + "/current_defaults.FlatConfig"
+        # Save the options to disk
         try:
-            f = open(filename, "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
+            self.fcDefaults.write(filename=os.path.join(data_path, "current_defaults.FlatConfig"))
         except Exception as e:
-            log.debug("App.save_defaults() --> %s" % str(e))
+            log.error("save_defaults() --> Failed to write defaults to file %s" % str(e))
             self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
             return
 
@@ -10917,18 +10833,13 @@ class App(QtCore.QObject):
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
-    def propagate_defaults(self, silent=False):
+    def propagate_defaults(self):
         """
         This method is used to set default values in classes. It's
         an alternative to project options but allows the use
         of values invisible to the user.
-
-        :param silent:  No messages
-        :return:        None
         """
-
-        if silent is False:
-            self.log.debug("propagate_defaults()")
+        self.log.debug("propagate_defaults()")
 
         # Which objects to update the given parameters.
         routes = {
@@ -10947,11 +10858,8 @@ class App(QtCore.QObject):
             if param in routes[param].defaults:
                 try:
                     routes[param].defaults[param] = self.defaults[param]
-                    if silent is False:
-                        self.log.debug("  " + param + " OK")
                 except KeyError:
-                    if silent is False:
-                        self.log.debug("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
+                    self.log.error("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
             else:
                 # Try extracting the name:
                 # classname_param here is param in the object
@@ -10959,8 +10867,9 @@ class App(QtCore.QObject):
                     p = param[len(routes[param].__name__) + 1:]
                     if p in routes[param].defaults:
                         routes[param].defaults[p] = self.defaults[param]
-                        if silent is False:
-                            self.log.debug("  " + param + " OK!")
+
+
+
 
     def plot_all(self, fit_view=True, use_thread=True):
         """

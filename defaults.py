@@ -6,19 +6,13 @@ from FlatCAMCommon import LoudDict
 from camlib import to_dict
 import simplejson
 import logging
-# FlatCAM Translation
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-# TODO:
-# * on_import_preferences
-# * on_export_preferences
-
-log = logging.getLogger('base')
+log = logging.getLogger('FlatCAMDefaults')
 
 
 class FlatCAMDefaults:
@@ -667,6 +661,27 @@ class FlatCAMDefaults:
         "document_tab_size": 80,
     }
 
+    @classmethod
+    def save_factory_defaults(cls, file_path: str):
+        """Writes the factory defaults to a file at the given path, overwriting any existing file."""
+        # Delete any existing factory defaults file
+        if os.path.isfile(file_path):
+            os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+            os.remove(file_path)
+
+        try:
+            # recreate a new factory defaults file and save the factory defaults data into it
+            f_f_def_s = open(file_path, "w")
+            simplejson.dump(cls.factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
+            f_f_def_s.close()
+
+            # and then make the factory_defaults.FlatConfig file read_only
+            # so it can't be modified after creation.
+            os.chmod(file_path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
+            log.debug("FlatCAM factory defaults written to: %s" % file_path)
+        except Exception as e:
+            log.error("save_factory_defaults() -> %s" % str(e))
+
     def __init__(self):
         self.defaults = LoudDict()
         self.defaults.update(self.factory_defaults)
@@ -674,13 +689,13 @@ class FlatCAMDefaults:
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
-    def load_defaults(self, filename: str):
-        """
-        Loads the application's default settings from current_defaults.FlatConfig into
-        ``self.defaults``.
+    def write(self, filename: str):
+        """Saves the defaults to a file on disk"""
+        with open(filename, "w") as file:
+            simplejson.dump(self.defaults, file, default=to_dict, indent=2, sort_keys=True)
 
-        :return: None
-        """
+    def load(self, filename: str):
+        """Loads the defaults from a file on disk, performing migration if required."""
 
         # Read in the file
         try:
@@ -708,9 +723,9 @@ class FlatCAMDefaults:
             return
 
         # Perform migration if necessary
-        if self.is_old_defaults(defaults):
+        if self.__is_old_defaults(defaults):
             self.old_defaults_found = True
-            defaults = self.migrate_old_defaults(defaults=defaults)
+            defaults = self.__migrate_old_defaults(defaults=defaults)
         else:
             self.old_defaults_found = False
 
@@ -720,16 +735,12 @@ class FlatCAMDefaults:
 
         log.debug("FlatCAM defaults loaded from: %s" % filename)
 
-    def is_old_defaults(self, defaults: dict) -> bool:
-        """
-        Takes a defaults dict and determines whether or not migration is necessary.
-        """
+    def __is_old_defaults(self, defaults: dict) -> bool:
+        """Takes a defaults dict and determines whether or not migration is necessary."""
         return 'version' not in defaults or defaults['version'] != self.factory_defaults['version']
 
-    def migrate_old_defaults(self, defaults: dict) -> dict:
-        """
-        Performs migration on the passed-in defaults dictionary, and returns the migrated dict
-        """
+    def __migrate_old_defaults(self, defaults: dict) -> dict:
+        """Performs migration on the passed-in defaults dictionary, and returns the migrated dict"""
         migrated = {}
         for k, v in defaults.items():
             if k in self.factory_defaults and k != 'version':
@@ -751,26 +762,6 @@ class FlatCAMDefaults:
                     migrated[k] = v
         return migrated
 
-    @classmethod
-    def save_factory_defaults_file(cls, file_path: str):
-        """
-        Writes the factory defaults to a file at the given path, overwriting any existing file.
-        Sets the file to be read only.
-        """
-        # Delete any existing factory defaults file
-        if os.path.isfile(file_path):
-            os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-            os.remove(file_path)
 
-        try:
-            # recreate a new factory defaults file and save the factory defaults data into it
-            f_f_def_s = open(file_path, "w")
-            simplejson.dump(cls.factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
-            f_f_def_s.close()
 
-            # and then make the factory_defaults.FlatConfig file read_only
-            # so it can't be modified after creation.
-            os.chmod(file_path, stat.S_IREAD | stat.S_IRGRP | stat.S_IROTH)
-            log.debug("FlatCAM factory defaults written to: %s" % file_path)
-        except Exception as e:
-            log.error("save_factory_defaults_file() -> %s" % str(e))
+
