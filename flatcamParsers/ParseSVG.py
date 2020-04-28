@@ -21,7 +21,8 @@
 
 # import xml.etree.ElementTree as ET
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
-from svg.path.path import Move, Close
+from svg.path.path import Move
+from svg.path.path import Close
 from shapely.geometry import LineString, LinearRing, MultiLineString
 from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
