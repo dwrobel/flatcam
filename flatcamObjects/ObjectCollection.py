@@ -28,7 +28,6 @@ import inspect  # TODO: Remove
 
 import re
 import logging
-import collections
 from copy import deepcopy
 from numpy import Inf
 
