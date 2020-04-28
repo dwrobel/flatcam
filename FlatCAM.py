@@ -14,6 +14,8 @@ if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
     pass
 
+MIN_VERSION_MAJOR = 3
+MIN_VERSION_MINOR = 5
 
 def debug_trace():
     """
@@ -32,17 +34,19 @@ if __name__ == '__main__':
     # NOTE: Never talk to the GUI from threads! This is why I commented the above.
     freeze_support()
 
+    major_v = sys.version_info.major
+    minor_v = sys.version_info.minor
     # Supported Python version is >= 3.5
-    if sys.version_info.major >= 3:
-        if sys.version_info.minor >= 5:
+    if major_v >= MIN_VERSION_MAJOR:
+        if minor_v >= MIN_VERSION_MINOR:
             pass
         else:
-            print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
-                  "Your Python version is: %s" % str(sys.version_info))
+            print("FlatCAM BETA uses PYTHON 3 or later. The version minimum is %s.%s\n"
+                  "Your Python version is: %s.%s" % (MIN_VERSION_MAJOR, MIN_VERSION_MINOR, str(major_v), str(minor_v)))
             os._exit(0)
     else:
-        print("FlatCAM BETA uses PYTHON 3. The version minimum is 3.5\n"
-              "Your Python version is: %s" % str(sys.version_info))
+        print("FlatCAM BETA uses PYTHON 3 or later. The version minimum is %s.%s\n"
+              "Your Python version is: %s.%s" % (MIN_VERSION_MAJOR, MIN_VERSION_MINOR, str(major_v), str(minor_v)))
         os._exit(0)
 
     debug_trace()

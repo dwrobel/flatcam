@@ -268,6 +268,16 @@ class FCShell(TermWidget):
 
         self.tcl_commands_storage = {}
 
+        self.init_tcl()
+
+        self._edit.set_model_data(self.app.myKeywords)
+        self.setWindowIcon(self.app.ui.app_icon)
+        self.setWindowTitle("FlatCAM Shell")
+        self.resize(*self.app.defaults["global_shell_shape"])
+        self._append_to_browser('in', "FlatCAM %s - " % version)
+        self.append_output('%s\n\n' % _("Type >help< to get started"))
+
+    def init_tcl(self):
         if hasattr(self, 'tcl') and self.tcl is not None:
             # self.tcl = None
             # new object cannot be used here as it will not remember values created for next passes,
@@ -276,13 +286,6 @@ class FCShell(TermWidget):
         else:
             self.tcl = tk.Tcl()
             self.setup_shell()
-
-        self._edit.set_model_data(self.app.myKeywords)
-        self.setWindowIcon(self.app.ui.app_icon)
-        self.setWindowTitle("FlatCAM Shell")
-        self.resize(*self.app.defaults["global_shell_shape"])
-        self._append_to_browser('in', "FlatCAM %s - " % version)
-        self.append_output('%s\n\n' % _("Type >help< to get started"))
 
     def setup_shell(self):
         """

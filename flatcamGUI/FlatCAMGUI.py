@@ -183,6 +183,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/script_new16.png'), _('New Script ...'), self)
         self.menufileopenscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
+        self.menufileopenscriptexample = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Example ...'), self)
         self.menufilerunscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tShift+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
@@ -192,6 +194,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufile_scripting.addAction(self.menufilenewscript)
         self.menufile_scripting.addAction(self.menufileopenscript)
+        self.menufile_scripting.addAction(self.menufileopenscriptexample)
         self.menufile_scripting.addSeparator()
         self.menufile_scripting.addAction(self.menufilerunscript)
 
@@ -4284,20 +4287,24 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
     def set_status(self, text, level="info"):
         level = str(level)
+
         self.pmap.fill()
         if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
-        elif level == "success" or level == "SUCCESS":
+        elif level.lower() == "success":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
-        elif level == "selected" or level == "SELECTED":
+        elif level.lower() == "selected":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         else:
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
-        self.set_text_(text)
-        self.icon.setPixmap(self.pmap)
+        try:
+            self.set_text_(text)
+            self.icon.setPixmap(self.pmap)
+        except Exception as e:
+            log.debug("FlatCAMInfoBar.set_status() --> %s" % str(e))
 
 
 class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):

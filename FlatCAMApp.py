@@ -455,6 +455,7 @@ class App(QtCore.QObject):
             "global_tpdf_rmargin": 20.0,
             "global_autosave": False,
             "global_autosave_timeout": 300000,
+            "global_tcl_path": '',
 
             # General
             "global_graphic_engine": '3D',
@@ -2029,6 +2030,7 @@ class App(QtCore.QObject):
 
         self.ui.menufilenewscript.triggered.connect(self.on_filenewscript)
         self.ui.menufileopenscript.triggered.connect(self.on_fileopenscript)
+        self.ui.menufileopenscriptexample.triggered.connect(self.on_fileopenscript_example)
 
         self.ui.menufilerunscript.triggered.connect(self.on_filerunscript)
 
@@ -2342,15 +2344,16 @@ class App(QtCore.QObject):
                                   'del', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon',
                                   'export_exc',
                                   'export_gcode', 'export_gerber', 'export_svg', 'ext', 'exteriors', 'follow',
-                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_sys', 'help', 'import_svg',
+                                  'geo_union', 'geocutout', 'get_bounds', 'get_names', 'get_path', 'get_sys', 'help',
                                   'interiors', 'isolate', 'join_excellon',
                                   'join_geometry', 'list_sys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
                                   'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
-                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
+                                  'open_dxf', 'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'open_svg',
+                                  'options', 'origin',
                                   'paint', 'panelize', 'plot_all', 'plot_objects', 'plot_status', 'quit_flatcam',
                                   'save', 'save_project',
-                                  'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
+                                  'save_sys', 'scale', 'set_active', 'set_origin', 'set_path', 'set_sys',
                                   'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
@@ -4400,23 +4403,24 @@ class App(QtCore.QObject):
         if text is not None:
             new_source_file = text
         else:
-            commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-                            "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
-                            "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-                            "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
-                            "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-                            "ListSys, MillDrills,\n" \
-                            "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-                            "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
-                            "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
-                            "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
-                            "# SubtractRectangle, Version, WriteGCode\n"
+            # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
+            #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
+            #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
+            #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
+            #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
+            #                 "ListSys, MillDrills,\n" \
+            #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
+            #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
+            #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
+            #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
+            #                 "# SubtractRectangle, Version, WriteGCode\n"
 
             new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
                               '# %s:\n' % _('TCL Tutorial is here') + \
                               '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
                               '# %s:\n' % _("FlatCAM commands list")
-            new_source_file += commands_list + '\n'
+            new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
+                                              "(displayed in Tcl Shell).")
 
         def initialize(obj, app):
             obj.source_file = deepcopy(new_source_file)
@@ -4736,11 +4740,11 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Program Author"), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
-
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("BETA Maintainer >= 2019")), 4, 1)
@@ -4753,36 +4757,37 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Victor Benso"), 9, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Barnaby Walters"), 11, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jørn Sandvik Nilsson"), 12, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lei Zheng"), 13, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marco A Quezada"), 14, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 12, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Leandro Heck"), 14, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marco A Quezada"), 15, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 16, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Cedric Dussud"), 15, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Hemingway"), 16, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Damian Wrobel"), 17, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Daniel Sallin"), 18, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 19, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Cedric Dussud"), 20, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Hemingway"), 22, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Damian Wrobel"), 24, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Daniel Sallin"), 28, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 32, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Bruno Vunderl"), 20, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Gonzalo Lopez"), 21, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jakob Staudt"), 22, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Smith"), 23, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Bruno Vunderl"), 40, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Gonzalo Lopez"), 42, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jakob Staudt"), 45, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Smith"), 49, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 24, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 52, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 25, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Steve Martina"), 26, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Thomas Duffin"), 27, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 28, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Barnaby Walters"), 55, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Steve Martina"), 57, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Thomas Duffin"), 59, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 61, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 29, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 63, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 30, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 31, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 65, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 67, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 69, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 34, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 74, 0)
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 100, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 101, 0)
@@ -9371,7 +9376,7 @@ class App(QtCore.QObject):
                     pass
 
         # tcl needs to be reinitialized, otherwise old shell variables etc  remains
-        self.init_tcl()
+        self.shell.init_tcl()
 
         self.delete_selection_shape()
         self.collection.delete_all()
@@ -10365,6 +10370,45 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_script, 'params': [filename]})
 
+    def on_fileopenscript_example(self, name=None, silent=False):
+        """
+        Will open a Tcl script file into the Code Editor
+
+        :param silent: if True will not display status messages
+        :param name: name of a Tcl script file to open
+        :return:
+        """
+
+        self.report_usage("on_fileopenscript_example")
+        App.log.debug("on_fileopenscript_example()")
+
+        _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
+                   "All Files (*.*)"
+
+
+        # test if the app was frozen and choose the path for the configuration file
+        if getattr(sys, "frozen", False) is True:
+            example_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\assets\\examples'
+        else:
+            example_path = os.path.dirname(os.path.realpath(__file__)) + '\\assets\\examples'
+
+        if name:
+            filenames = [name]
+        else:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(
+                    caption=_("Open TCL script"), directory=example_path, filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open TCL script"), filter=_filter_)
+
+        if len(filenames) == 0:
+            if silent is False:
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+        else:
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_script, 'params': [filename]})
+
     def on_filerunscript(self, name=None, silent=False):
         """
         File menu callback for loading and running a TCL script.
@@ -11170,7 +11214,7 @@ class App(QtCore.QObject):
                 self.inform.emit('[WARNING_NOTCL] %s' % _('Could not export DXF file.'))
                 return
 
-    def import_svg(self, filename, geo_type='geometry', outname=None):
+    def import_svg(self, filename, geo_type='geometry', outname=None, plot=True):
         """
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the SVG file.
@@ -11205,7 +11249,11 @@ class App(QtCore.QObject):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            self.new_object(obj_type, name, obj_init, autoselected=False)
+            ret = self.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
+
+            if ret == 'fail':
+                self.inform.emit('[ERROR_NOTCL]%s' % _('Import failed.'))
+                return 'fail'
 
             # Register recent file
             self.file_opened.emit("svg", filename)
@@ -11213,7 +11261,7 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-    def import_dxf(self, filename, geo_type='geometry', outname=None):
+    def import_dxf(self, filename, geo_type='geometry', outname=None, plot=True):
         """
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the DXF file.
@@ -11241,27 +11289,34 @@ class App(QtCore.QObject):
             geo_obj.import_dxf(filename, obj_type, units=units)
             geo_obj.multigeo = False
 
-        with self.proc_container.new(_("Importing DXF")) as proc:
+        with self.proc_container.new(_("Importing DXF")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            self.new_object(obj_type, name, obj_init, autoselected=False)
+            ret = self.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
+
+            if ret == 'fail':
+                self.inform.emit('[ERROR_NOTCL]%s' % _('Import failed.'))
+                return 'fail'
+
             # Register recent file
             self.file_opened.emit("dxf", filename)
 
             # GUI feedback
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-    def open_gerber(self, filename, outname=None):
+    def open_gerber(self, filename, outname=None, plot=True, from_tcl=False):
         """
         Opens a Gerber file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file. Str.
-        :param filename: Gerber file filename
-        :type filename: str
+        :param outname:     Name of the resulting object. None causes the
+                            name to be that of the file. Str.
+        :param filename:    Gerber file filename
+        :type filename:     str
+        :param plot:        boolean, to plot or not the resulting object
+        :param from_tcl:    True if run from Tcl Shell
         :return: None
         """
 
@@ -11295,15 +11350,19 @@ class App(QtCore.QObject):
 
         App.log.debug("open_gerber()")
 
-        with self.proc_container.new(_("Opening Gerber")) as proc:
+        with self.proc_container.new(_("Opening Gerber")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # # ## Object creation # ##
-            ret = self.new_object("gerber", name, obj_init, autoselected=False)
-            if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open Gerber failed. Probable not a Gerber file.'))
-                return 'fail'
+            ret_val = self.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
+            if ret_val == 'fail':
+                if from_tcl:
+                    filename = self.defaults['global_tcl_path'] + '/' + name
+                    ret_val = self.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
+                if ret_val == 'fail':
+                    self.inform.emit('[ERROR_NOTCL]%s' % _('Open Gerber failed. Probable not a Gerber file.'))
+                    return 'fail'
 
             # Register recent file
             self.file_opened.emit("gerber", filename)
@@ -11311,7 +11370,7 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-    def open_excellon(self, filename, outname=None, plot=True):
+    def open_excellon(self, filename, outname=None, plot=True, from_tcl=False):
         """
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -11320,6 +11379,7 @@ class App(QtCore.QObject):
         :param filename:    Excellon file filename
         :type filename:     str
         :param plot:        boolean, to plot or not the resulting object
+        :param from_tcl:    True if run from Tcl Shell
         :return:            None
         """
 
@@ -11355,28 +11415,29 @@ class App(QtCore.QObject):
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                (_("No geometry found in file"), filename))
+            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), filename))
             return "fail"
 
         with self.proc_container.new(_("Opening Excellon.")):
-
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
             ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('Open Excellon file failed. Probable not an Excellon file.'))
-                return
+                if from_tcl:
+                    filename = self.defaults['global_tcl_path'] + '/' + name
+                    ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
+                if ret_val == 'fail':
+                    self.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('Open Excellon file failed. Probable not an Excellon file.'))
+                    return
 
             # Register recent file
             self.file_opened.emit("excellon", filename)
 
             # GUI feedback
-            self.inform.emit('[success] %s: %s' %
-                             (_("Opened"), filename))
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
-    def open_gcode(self, filename, outname=None, force_parsing=None, plot=True):
+    def open_gcode(self, filename, outname=None, force_parsing=None, plot=True, from_tcl=False):
         """
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -11384,7 +11445,8 @@ class App(QtCore.QObject):
         :param filename:        G-code file filename
         :param outname:         Name of the resulting object. None causes the name to be that of the file.
         :param force_parsing:
-        :param plot:
+        :param plot:            If True plot the object on canvas
+        :param from_tcl:        True if run from Tcl Shell
         :return:                None
         """
         App.log.debug("open_gcode()")
@@ -11404,16 +11466,14 @@ class App(QtCore.QObject):
                 gcode = f.read()
                 f.close()
             except IOError:
-                app_obj_.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                     (_("Failed to open"), filename))
+                app_obj_.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open"), filename))
                 return "fail"
 
             job_obj.gcode = gcode
 
             gcode_ret = job_obj.gcode_parse(force_parsing=force_parsing)
             if gcode_ret == "fail":
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("This is not GCODE"))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("This is not GCODE"))
                 return "fail"
 
             job_obj.create_geometry()
@@ -11424,21 +11484,24 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # New object creation and file processing
-            obj_ret = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
-            if obj_ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to create CNCJob Object. Probable not a GCode file. "
-                                   "Try to load it from File menu.\n "
-                                   "Attempting to create a FlatCAM CNCJob Object from "
-                                   "G-Code file failed during processing"))
-                return "fail"
+            ret_val = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
+            if ret_val == 'fail':
+                if from_tcl:
+                    filename = self.defaults['global_tcl_path'] + '/' + name
+                    ret_val = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
+                if ret_val == 'fail':
+                    self.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Failed to create CNCJob Object. Probable not a GCode file. "
+                                       "Try to load it from File menu.\n "
+                                       "Attempting to create a FlatCAM CNCJob Object from "
+                                       "G-Code file failed during processing"))
+                    return "fail"
 
             # Register recent file
             self.file_opened.emit("cncjob", filename)
 
             # GUI feedback
-            self.inform.emit('[success] %s: %s' %
-                             (_("Opened"), filename))
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_hpgl2(self, filename, outname=None):
         """
@@ -11586,7 +11649,7 @@ class App(QtCore.QObject):
                              (_("Failed to open config file"), filename))
             return
 
-    def open_project(self, filename, run_from_arg=None, plot=True, cli=None):
+    def open_project(self, filename, run_from_arg=None, plot=True, cli=None, from_tcl=False):
         """
         Loads a project from the specified file.
 
@@ -11601,6 +11664,7 @@ class App(QtCore.QObject):
         :param run_from_arg:    True if run for arguments
         :param plot:            If True plot all objects in the project
         :param cli:             Run from command line
+        :param from_tcl:        True if run from Tcl Sehll
         :return:                None
         """
         App.log.debug("Opening project: " + filename)
@@ -11624,16 +11688,25 @@ class App(QtCore.QObject):
         try:
             f = open(filename, 'r')
         except IOError:
-            App.log.error("Failed to open project file: %s" % filename)
-            self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                             (_("Failed to open project file"), filename))
-            return
+            if from_tcl:
+                name = filename.split('/')[-1].split('\\')[-1]
+                filename = self.defaults['global_tcl_path'] + '/' + name
+                try:
+                    f = open(filename, 'r')
+                except IOError:
+                    log.error("Failed to open project file: %s" % filename)
+                    self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
+                    return
+            else:
+                log.error("Failed to open project file: %s" % filename)
+                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
+                return
 
         try:
             d = json.load(f, object_hook=dict2obj)
         except Exception as e:
-            App.log.error("Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
-                          (filename, str(e)))
+            log.error("Failed to parse project file, trying to see if it loads as an LZMA archive: %s because %s" %
+                      (filename, str(e)))
             f.close()
 
             # Open and parse a compressed Project file
@@ -12589,7 +12662,7 @@ class App(QtCore.QObject):
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename, quit_action=False, silent=False):
+    def save_project(self, filename, quit_action=False, silent=False, from_tcl=False):
         """
         Saves the current project to the specified file.
 
@@ -12597,6 +12670,7 @@ class App(QtCore.QObject):
         :type filename:         str
         :param quit_action:     if the project saving will be followed by an app quit; boolean
         :param silent:          if True will not display status messages
+        :param from_tcl         True is run from Tcl Shell
         :return:                None
         """
         self.log.debug("save_project()")

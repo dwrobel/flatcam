@@ -49,25 +49,11 @@ class TclCommandOpenGerber(TclCommandSignaled):
         :return: None or exception
         """
 
-        # How the object should be initialized
-        def obj_init(gerber_obj, app_obj):
+        if 'follow' in args:
+            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' "
+                                 "parameter for the Tcl Command isolate()")
 
-            if gerber_obj.kind != 'gerber':
-                self.raise_tcl_error('Expected GerberObject, got %s %s.' % (outname, type(gerber_obj)))
-
-            # Opening the file happens here
-            try:
-                gerber_obj.parse_file(filename)
-            except IOError:
-                app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: %s " % filename)
-                self.raise_tcl_error('Failed to open file: %s' % filename)
-
-            except ParseError as e:
-                app_obj.inform.emit("[ERROR_NOTCL] Failed to parse file: %s, %s " % (filename, str(e)))
-                self.log.error(str(e))
-                return
-
-        filename = args['filename']
+        filename = args.pop('filename')
 
         if ' ' in filename:
             return "The absolute path to the project file contain spaces which is not allowed.\n" \
@@ -78,17 +64,6 @@ class TclCommandOpenGerber(TclCommandSignaled):
         else:
             outname = filename.split('/')[-1].split('\\')[-1]
 
-        if 'follow' in args:
-            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' "
-                                 "parameter for the Tcl Command isolate()")
-
-        with self.app.proc_container.new("Opening Gerber"):
-
-            # Object creation
-            self.app.new_object("gerber", outname, obj_init, plot=False)
-
-            # Register recent file
-            self.app.file_opened.emit("gerber", filename)
-
-            # GUI feedback
-            self.app.inform.emit("[success] Opened: " + filename)
+        args['plot'] = False
+        args['from_tcl'] = True
+        self.app.open_gerber(filename, outname, **args)

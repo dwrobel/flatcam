@@ -177,7 +177,7 @@ class ScriptObject(FlatCAMObj):
                 try:
                     self.app.shell.open_processing()  # Disables input box.
 
-                    result = self.app.tcl.eval(str(new_command))
+                    result = self.app.shell.tcl.eval(str(new_command))
                     if result != 'None':
                         self.app.shell.append_output(result + '\n')
 
@@ -189,9 +189,9 @@ class ScriptObject(FlatCAMObj):
 
         if old_line != '':
             # it means that the script finished with an error
-            result = self.app.tcl.eval("set errorInfo")
-            log.error("Exec command Exception: %s" % (result + '\n'))
-            self.app.shell.append_error('ERROR: ' + result + '\n')
+            result = self.app.shell.tcl.eval("set errorInfo")
+            log.error("Exec command Exception: %s\n" % result)
+            self.app.shell.append_error('ERROR: %s\n '% result)
 
         self.app.shell.close_processing()
 
