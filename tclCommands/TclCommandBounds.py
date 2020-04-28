@@ -78,7 +78,6 @@ class TclCommandBounds(TclCommand):
             xmin, ymin, xmax, ymax = obj.bounds()
             result_list.append([xmin, ymin, xmax, ymax])
 
-        self.app.inform.emit('[success] %s ...' %
-                             _('TclCommand Bounds done.'))
+        self.app.inform.emit('[success] %s ...' % _('TclCommand Bounds done.'))
 
         return result_list

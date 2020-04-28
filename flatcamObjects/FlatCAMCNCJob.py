@@ -716,7 +716,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         else:
             return 'M02'
 
-    def export_gcode(self, filename=None, preamble='', postamble='', to_file=False):
+    def export_gcode(self, filename=None, preamble='', postamble='', to_file=False, from_tcl=False):
         """
         This will save the GCode from the Gcode object to a file on the OS filesystem
 
@@ -724,6 +724,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :param preamble:    a custom Gcode block to be added at the beginning of the Gcode file
         :param postamble:   a custom Gcode block to be added at the end of the Gcode file
         :param to_file:     if False then no actual file is saved but the app will know that a file was created
+        :param from_tcl:    True if run from Tcl Shell
         :return:            None
         """
         # gcode = ''

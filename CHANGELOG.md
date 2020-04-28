@@ -11,6 +11,15 @@ CHANGELOG for FlatCAM beta
 
 - handled a possible situation in App.load_defaults() method
 - fixed some issues in FlatCAMDB that may appear in certain scenarios
+- some minor changes in the Python version detection
+- added a new Tcl Command named SetPath which will set a path to be used by the Tcl commands. Once set will serve as a fallback path in case that the files fail to be opened first time. It will be persistent, saved in preferences.
+- added the GUI for the new Open Example in the FIle -> Scripting menu.
+- I am modifying all the open ... handlers to add a parameter that will flag if the method was launched from Tcl Shell. This way if the method will fail to open the filename (which include the path) it will try to open from a set fallback path.
+- fixed issue #406, bug introduced recently (leftover changes).
+- modified the ImportSVG Tcl command name to OpenSVG (open_svg alias)
+- added a new Tcl command named OpenDXF (open_dxf alias)
+- fixed some errors in Scripting features
+- added a new Tcl command named GetPath as a convenient way to get the current default path stored in App.defaults['global_tcl_path']
 
 27.04.2020
 
