@@ -3,6 +3,8 @@
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 10/10/2019                                         #
 # MIT Licence                                              #
+#                                                          #
+# Modified by David Robertson   29.04.2020                 #
 # ##########################################################
 import os
 
@@ -14,6 +16,7 @@ import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 log = logging.getLogger('PreferencesUI')
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -26,11 +29,18 @@ else:
     machinist_setting = 0
 
 
-class PreferencesUIManager():
+class PreferencesUIManager:
 
-    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform, app):
-        # FIXME: Ideally we would not pass in the app here
-        self.app = app
+    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform):
+        """
+        Class that control the Preferences Tab
+
+        :param defaults:    a dictionary storage where all the application settings are stored
+        :param data_path:   a path to the file where all the preferences are stored for persistence
+        :param ui:          reference to the FlatCAMGUI class which constructs the UI
+        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        """
+
         self.defaults = defaults
         self.data_path = data_path
         self.ui = ui
@@ -627,7 +637,7 @@ class PreferencesUIManager():
 
         try:
             value = def_dict[field]
-            log.debug("value is "+str(value)+ " and factor is "+str(factor))
+            log.debug("value is " + str(value) + " and factor is "+str(factor))
             if factor is not None:
                 value *= factor
 
@@ -913,7 +923,7 @@ class PreferencesUIManager():
             self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
 
         # Re-fresh project options
-        self.app.on_options_app2project()
+        self.ui.app.on_options_app2project()
 
         settgs = QSettings("Open Source", "FlatCAM")
 
@@ -956,7 +966,7 @@ class PreferencesUIManager():
             pass
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.app.on_toggle_units(no_pref=False))
+            lambda: self.ui.app.on_toggle_units(no_pref=False))
         self.defaults.update(self.defaults.current_defaults)
 
         # Preferences save, update the color of the Preferences Tab text
@@ -1016,7 +1026,7 @@ class PreferencesUIManager():
             self.inform.emit('[success] %s' % _("Preferences saved."))
 
         # update the autosave timer
-        self.app.save_project_auto_update()
+        self.ui.app.save_project_auto_update()
 
     def save_toolbar_view(self):
         """
@@ -1111,7 +1121,7 @@ class PreferencesUIManager():
             msgbox.setText(_("One or more values are changed.\n"
                              "Do you want to save the Preferences?"))
             msgbox.setWindowTitle(_("Save Preferences"))
-            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -1506,9 +1516,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.layout_combo, 4, 1)
 
         # Set the current index for layout_combo
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("layout"):
+            layout = qsettings.value('layout', type=str)
             idx = self.layout_combo.findText(layout.capitalize())
             self.layout_combo.setCurrentIndex(idx)
 
@@ -1535,9 +1545,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "It will be applied at the next app start.")
         )
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("hdpi"):
-            self.hdpi_cb.set_value(settings.value('hdpi', type=int))
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hdpi"):
+            self.hdpi_cb.set_value(qsettings.value('hdpi', type=int))
         else:
             self.hdpi_cb.set_value(False)
         self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
@@ -1826,7 +1836,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         # Setting Editor Draw colors signals
         self.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.draw_color_button.clicked.connect( self.on_draw_color_button)
+        self.draw_color_button.clicked.connect(self.on_draw_color_button)
 
         self.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
         self.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
@@ -1839,32 +1849,33 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.layout_combo.activated.connect(self.on_layout)
 
-
     def on_theme_change(self):
         val = self.theme_radio.get_value()
-        t_settings = QSettings("Open Source", "FlatCAM")
-        t_settings.setValue('theme', val)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('theme', val)
 
         # This will write the setting to the platform specific storage.
-        del t_settings
+        del qsettings
 
         self.app.on_app_restart()
 
-    def handle_style(self, style):
+    @staticmethod
+    def handle_style(style):
         # set current style
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('style', style)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('style', style)
 
         # This will write the setting to the platform specific storage.
-        del settings
+        del qsettings
 
-    def handle_hdpi(self, state):
+    @staticmethod
+    def handle_hdpi(state):
         # set current HDPI
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('hdpi', state)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('hdpi', state)
 
         # This will write the setting to the platform specific storage.
-        del settings
+        del qsettings
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
@@ -2394,9 +2405,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.notebook_font_size_spinner.set_range(8, 40)
         self.notebook_font_size_spinner.setWrapping(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("notebook_font_size"):
-            self.notebook_font_size_spinner.set_value(settings.value('notebook_font_size', type=int))
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("notebook_font_size"):
+            self.notebook_font_size_spinner.set_value(qsettings.value('notebook_font_size', type=int))
         else:
             self.notebook_font_size_spinner.set_value(12)
 
@@ -2413,9 +2424,9 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.axis_font_size_spinner.set_range(0, 40)
         self.axis_font_size_spinner.setWrapping(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("axis_font_size"):
-            self.axis_font_size_spinner.set_value(settings.value('axis_font_size', type=int))
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("axis_font_size"):
+            self.axis_font_size_spinner.set_value(qsettings.value('axis_font_size', type=int))
         else:
             self.axis_font_size_spinner.set_value(8)
 
@@ -2433,8 +2444,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.textbox_font_size_spinner.set_range(8, 40)
         self.textbox_font_size_spinner.setWrapping(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
             self.textbox_font_size_spinner.set_value(settings.value('textbox_font_size', type=int))
         else:
             self.textbox_font_size_spinner.set_value(10)
@@ -2799,8 +2810,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Enable display of the splash screen at application startup.")
         )
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.value("splash_screen"):
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.value("splash_screen"):
             self.splash_cb.set_value(True)
         else:
             self.splash_cb.set_value(False)
@@ -3024,12 +3035,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.language_apply_btn.clicked.connect(lambda: fcTranslate.on_language_apply_click(app=self.app, restart=True))
 
-    def on_splash_changed(self, state):
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('splash_screen', 1) if state else settings.setValue('splash_screen', 0)
+    @staticmethod
+    def on_splash_changed(state):
+        qsettings = QSettings("Open Source", "FlatCAM")
+        qsettings.setValue('splash_screen', 1) if state else qsettings.setValue('splash_screen', 0)
 
         # This will write the setting to the platform specific storage.
-        del settings
+        del qsettings
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
@@ -3037,6 +3049,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
         super(GerberGenPrefGroupUI, self).__init__(self)
 
+        self.parent = parent
         self.setTitle(str(_("Gerber General")))
         self.decimals = decimals
 
@@ -3233,7 +3246,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
     def on_pf_color_entry(self):
         self.app.defaults['gerber_plot_fill'] = self.pf_color_entry.get_value()[:7] + \
             self.app.defaults['gerber_plot_fill'][7:9]
-        self.pf_color_button.setStyleSheet("background-color:%s" % str(self.defaults['gerber_plot_fill'])[:7])
+        self.pf_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['gerber_plot_fill'])[:7])
 
     def on_pf_color_button(self):
         current_color = QtGui.QColor(self.app.defaults['gerber_plot_fill'][:7])
@@ -6167,9 +6180,9 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_gcode_label)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
         font = QtGui.QFont()
@@ -6244,9 +6257,9 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(toolchangelabel)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
         font = QtGui.QFont()
@@ -8030,7 +8043,6 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.buffer_rounded_cb, 19, 0, 1, 2)
 
-
         self.layout.addStretch()
 
 
@@ -9740,9 +9752,9 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         )
         self.vertical_lay.addWidget(list_label)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
 
@@ -9813,9 +9825,9 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.gco_list_label)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
 
@@ -9883,9 +9895,9 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
 
@@ -9955,9 +9967,9 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("textbox_font_size"):
-            tb_fsize = settings.value('textbox_font_size', type=int)
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
         else:
             tb_fsize = 10
 
