@@ -95,6 +95,7 @@ import builtins
 
 if sys.platform == 'win32':
     import winreg
+    from win32comext.shell import shell, shellcon
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -304,7 +305,6 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
-            from win32comext.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
             else:
@@ -4225,54 +4225,92 @@ class App(QtCore.QObject):
             return
 
         # Options to scale
-        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin', "gerber_isooverlap",
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
+        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "gerber_vtipdia",
+                      "gerber_vcutz", "gerber_editor_newdim", "gerber_editor_ma_low",
+                      "gerber_editor_ma_high",
 
                       'excellon_cutz', 'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
-                      'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
+                      'excellon_feedrate_z', 'excellon_feedrate_rapid', 'excellon_toolchangez',
                       'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', 'excellon_endxy',
-                      "excellon_feedrate_probe",
+                      "excellon_feedrate_probe", "excellon_milling_dia",
                       "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",
-                      "excellon_editor_slot_lin_pitch",
+                      "excellon_editor_slot_lin_pitch", "excellon_editor_slot_length",
 
                       'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
                       'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
                       "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
-                      "geometry_z_pdepth",
-                      "geometry_feedrate_probe", "geometry_startz",
+                      "geometry_extracut_length", "geometry_z_pdepth",
+                      "geometry_feedrate_probe", "geometry_startz", "geometry_segx", "geometry_segy",
 
                       'cncjob_tooldia',
 
-                      'tools_paintmargin', 'tools_painttooldia', 'tools_paintoverlap',
-                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",
-                      "tools_nccnewdia",
-                      "tools_2sided_drilldia", "tools_film_boundary",
-                      "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize',
-                      "tools_panelize_constrainx", "tools_panelize_constrainy",
+                      'tools_paintmargin', 'tools_painttooldia', "tools_paintcutz", "tools_painttipdia",
+                      "tools_paintnewdia",
+
+                      "tools_ncctools", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",
+                      "tools_nccnewdia", "tools_ncc_offset_value",
+
+                      "tools_2sided_drilldia",
+                      "tools_film_boundary", "tools_film_scale_stroke",
+
+                      "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize', "tools_cutout_z",
+                      "tools_cutout_depthperpass",
+
+                      "tools_panelize_constrainx", "tools_panelize_constrainy", "tools_panelize_spacing_columns",
+                      "tools_panelize_spacing_rows",
+
                       "tools_calc_vshape_tip_dia", "tools_calc_vshape_cut_z",
-                      "tools_transform_skew_x", "tools_transform_skew_y", "tools_transform_offset_x",
-                      "tools_transform_offset_y",
+
+                      "tools_transform_offset_x", "tools_transform_offset_y", "tools_transform_mirror_point",
+                      "tools_transform_buffer_dis",
 
                       "tools_solderpaste_tools", "tools_solderpaste_new", "tools_solderpaste_z_start",
                       "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
                       "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
                       "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
+
                       "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val",
                       "tools_cr_s2sm_val", "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val",
-                      "tools_cr_h2h_val", "tools_cr_dh_val", "tools_fiducials_dia", "tools_fiducials_margin",
-                      "tools_fiducials_line_thickness",
+                      "tools_cr_h2h_val", "tools_cr_dh_val",
+
+                      "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
+
                       "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
                       "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
                       "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
                       "tools_copper_thieving_lines_size", "tools_copper_thieving_lines_spacing",
                       "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
+                      "tools_copper_thieving_mask_clearance",
+
+                      "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
+
+                      "tools_edrills_hole_fixed_dia", "tools_edrills_circular_ring", "tools_edrills_oblong_ring",
+                      "tools_edrills_square_ring", "tools_edrills_rectangular_ring", "tools_edrills_others_ring",
+
+                      "tools_punch_hole_fixed_dia", "tools_punch_circular_ring", "tools_punch_oblong_ring",
+                      "tools_punch_square_ring", "tools_punch_rectangular_ring", "tools_punch_others_ring",
+
+                      "tools_invert_margin",
 
                       'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance",
                       'global_tpdf_bmargin', 'global_tpdf_tmargin', 'global_tpdf_rmargin', 'global_tpdf_lmargin']
 
         def scale_defaults(sfactor):
             for dim in dimensions:
+
+                if dim == 'gerber_editor_newdim':
+                    if self.defaults["gerber_editor_newdim"] is None or self.defaults["gerber_editor_newdim"] == '':
+                        continue
+                    coordinates = self.defaults["gerber_editor_newdim"].split(",")
+                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    coords_xy[0] *= sfactor
+                    coords_xy[1] *= sfactor
+                    self.defaults['gerber_editor_newdim'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
+                                                                            self.decimals, coords_xy[1])
                 if dim == 'excellon_toolchangexy':
+                    if self.defaults["excellon_toolchangexy"] is None or self.defaults["excellon_toolchangexy"] == '':
+                        continue
                     coordinates = self.defaults["excellon_toolchangexy"].split(",")
                     coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
@@ -4280,6 +4318,8 @@ class App(QtCore.QObject):
                     self.defaults['excellon_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
                                                                              self.decimals, coords_xy[1])
                 elif dim == 'geometry_toolchangexy':
+                    if self.defaults["geometry_toolchangexy"] is None or self.defaults["geometry_toolchangexy"] == '':
+                        continue
                     coordinates = self.defaults["geometry_toolchangexy"].split(",")
                     coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
@@ -4287,6 +4327,9 @@ class App(QtCore.QObject):
                     self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
                                                                              self.decimals, coords_xy[1])
                 elif dim == 'excellon_endxy':
+                    if self.defaults["excellon_endxy"] is None or self.defaults["excellon_endxy"] == '':
+                        continue
+
                     coordinates = self.defaults["excellon_endxy"].split(",")
                     end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     end_coords_xy[0] *= sfactor
@@ -4294,14 +4337,19 @@ class App(QtCore.QObject):
                     self.defaults['excellon_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
                                                                       self.decimals, end_coords_xy[1])
                 elif dim == 'geometry_endxy':
+                    if self.defaults["geometry_endxy"] is None or self.defaults["geometry_endxy"] == '':
+                        continue
                     coordinates = self.defaults["geometry_endxy"].split(",")
                     end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     end_coords_xy[0] *= sfactor
                     end_coords_xy[1] *= sfactor
                     self.defaults['geometry_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
                                                                       self.decimals, end_coords_xy[1])
+
                 elif dim == 'geometry_cnctooldia':
-                    if type(self.defaults["geometry_cnctooldia"]) == float:
+                    if self.defaults["geometry_cnctooldia"] is None or self.defaults["geometry_cnctooldia"] == '':
+                        continue
+                    if type(self.defaults["geometry_cnctooldia"]) is float:
                         tools_diameters = [self.defaults["geometry_cnctooldia"]]
                     else:
                         try:
@@ -4316,6 +4364,8 @@ class App(QtCore.QObject):
                         tools_diameters[t] *= sfactor
                         self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
                 elif dim == 'tools_ncctools':
+                    if self.defaults["tools_ncctools"] is None or self.defaults["tools_ncctools"] == '':
+                        continue
                     if type(self.defaults["tools_ncctools"]) == float:
                         ncctools = [self.defaults["tools_ncctools"]]
                     else:
@@ -4331,6 +4381,9 @@ class App(QtCore.QObject):
                         ncctools[t] *= sfactor
                         self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
                 elif dim == 'tools_solderpaste_tools':
+                    if self.defaults["tools_solderpaste_tools"] is None or \
+                            self.defaults["tools_solderpaste_tools"] == '':
+                        continue
                     if type(self.defaults["tools_solderpaste_tools"]) == float:
                         sptools = [self.defaults["tools_solderpaste_tools"]]
                     else:
@@ -4346,6 +4399,9 @@ class App(QtCore.QObject):
                         sptools[t] *= sfactor
                         self.defaults['tools_solderpaste_tools'] += "%.*f," % (self.decimals, sptools[t])
                 elif dim == 'tools_solderpaste_xy_toolchange':
+                    if self.defaults["tools_solderpaste_xy_toolchange"] is None or \
+                            self.defaults["tools_solderpaste_xy_toolchange"] == '':
+                        continue
                     try:
                         coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
                         sp_coords = [float(eval(a)) for a in coordinates if a != '']
@@ -4356,6 +4412,16 @@ class App(QtCore.QObject):
                     except Exception as e:
                         log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
                         continue
+                elif dim == 'tools_cal_toolchange_xy':
+                    if self.defaults["tools_cal_toolchange_xy"] is None or \
+                            self.defaults["tools_cal_toolchange_xy"] == '':
+                        continue
+                    coordinates = self.defaults["tools_cal_toolchange_xy"].split(",")
+                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                    end_coords_xy[0] *= sfactor
+                    end_coords_xy[1] *= sfactor
+                    self.defaults['tools_cal_toolchange_xy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
+                                                                               self.decimals, end_coords_xy[1])
 
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
