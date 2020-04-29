@@ -129,7 +129,7 @@ class ToolPDF(FlatCAMTool):
         self.point_to_unit_factor = 0.01388888888
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPDF()")
+        self.app.defaults.report_usage("ToolPDF()")
 
         self.set_tool_ui()
         self.on_open_pdf_click()
@@ -147,7 +147,7 @@ class ToolPDF(FlatCAMTool):
         :return: None
         """
 
-        self.app.report_usage("ToolPDF.on_open_pdf_click()")
+        self.app.defaults.report_usage("ToolPDF.on_open_pdf_click()")
         self.app.log.debug("ToolPDF.on_open_pdf_click()")
 
         _filter_ = "Adobe PDF Files (*.pdf);;" \

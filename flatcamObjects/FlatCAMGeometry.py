@@ -1575,7 +1575,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def on_generatecnc_button_click(self, *args):
         log.debug("Generating CNCJob from Geometry ...")
-        self.app.report_usage("geometry_on_generatecnc_button")
+        self.app.defaults.report_usage("geometry_on_generatecnc_button")
 
         # this reads the values in the UI form to the self.options dictionary
         self.read_form()

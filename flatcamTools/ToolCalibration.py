@@ -731,7 +731,7 @@ class ToolCalibration(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCalibration()")
+        self.app.defaults.report_usage("ToolCalibration()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

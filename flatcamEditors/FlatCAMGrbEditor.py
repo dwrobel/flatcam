@@ -5516,7 +5516,7 @@ class TransformEditorTool(FlatCAMTool):
         self.set_tool_ui()
 
     def run(self, toggle=True):
-        self.app.report_usage("Geo Editor Transform Tool()")
+        self.app.defaults.report_usage("Geo Editor Transform Tool()")
 
         # if the splitter is hidden, display it, else hide it but only if the current widget is the same
         if self.app.ui.splitter.sizes()[0] == 0:

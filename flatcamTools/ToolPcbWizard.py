@@ -170,7 +170,7 @@ class PcbWizard(FlatCAMTool):
         self.tools_from_inf = {}
 
     def run(self, toggle=False):
-        self.app.report_usage("PcbWizard Tool()")
+        self.app.defaults.report_usage("PcbWizard Tool()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

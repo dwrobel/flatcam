@@ -31,8 +31,7 @@ class GracefulException(Exception):
 
 class LoudDict(dict):
     """
-    A Dictionary with a callback for
-    item changes.
+    A Dictionary with a callback for item changes.
     """
 
     def __init__(self, *args, **kwargs):
@@ -41,8 +40,7 @@ class LoudDict(dict):
 
     def __setitem__(self, key, value):
         """
-        Overridden __setitem__ method. Will emit 'changed(QString)'
-        if the item was changed, with key as parameter.
+        Overridden __setitem__ method. Will emit 'changed(QString)' if the item was changed, with key as parameter.
         """
         if key in self and self.__getitem__(key) == value:
             return

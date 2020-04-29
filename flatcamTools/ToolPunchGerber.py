@@ -397,7 +397,7 @@ class ToolPunchGerber(FlatCAMTool):
         )
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPunchGerber()")
+        self.app.defaults.report_usage("ToolPunchGerber()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

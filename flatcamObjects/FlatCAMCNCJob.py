@@ -487,7 +487,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :param args:
         :return:
         """
-        self.app.report_usage("cncjob_on_exportgcode_button")
+        self.app.defaults.report_usage("cncjob_on_exportgcode_button")
 
         self.read_form()
         name = self.app.collection.get_active().options['name']

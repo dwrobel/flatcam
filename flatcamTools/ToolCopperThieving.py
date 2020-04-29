@@ -540,7 +540,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCopperThieving()")
+        self.app.defaults.report_usage("ToolCopperThieving()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

@@ -377,7 +377,7 @@ class FCShell(TermWidget):
         :return: output if there was any
         """
 
-        self.app.report_usage('exec_command')
+        self.app.defaults.report_usage('exec_command')
 
         return self.exec_command_test(text, False, no_echo=no_echo)
 

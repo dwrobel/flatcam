@@ -433,7 +433,7 @@ class ToolTransform(FlatCAMTool):
         # self.buffer_entry.returnPressed.connect(self.on_buffer_by_distance)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolTransform()")
+        self.app.defaults.report_usage("ToolTransform()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

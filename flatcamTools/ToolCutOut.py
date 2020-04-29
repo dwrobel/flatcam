@@ -419,7 +419,7 @@ class CutOut(FlatCAMTool):
         self.obj_combo.obj_type = {"grb": "Gerber", "geo": "Geometry"}[val]
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCutOut()")
+        self.app.defaults.report_usage("ToolCutOut()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

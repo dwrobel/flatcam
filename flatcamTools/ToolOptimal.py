@@ -280,7 +280,7 @@ class ToolOptimal(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolOptimal()")
+        self.app.defaults.report_usage("ToolOptimal()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

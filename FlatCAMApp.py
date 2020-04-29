@@ -15,10 +15,8 @@ import random
 import simplejson as json
 import lzma
 import shutil
-import stat
 from datetime import datetime
 import time
-from stat import S_IREAD, S_IRGRP, S_IROTH
 import ctypes
 import traceback
 
@@ -52,6 +50,7 @@ from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
 # FlatCAM Objects
+from defaults import FlatCAMDefaults
 from flatcamObjects.ObjectCollection import *
 from flatcamObjects.FlatCAMObj import FlatCAMObj
 from flatcamObjects.FlatCAMCNCJob import CNCJobObject
@@ -389,15 +388,8 @@ class App(QtCore.QObject):
             json.dump({}, f)
             f.close()
 
-        # create factory_defaults.FlatConfig file if there is none
-        try:
-            f = open(self.data_path + '/factory_defaults.FlatConfig')
-            f.close()
-        except IOError:
-            App.log.debug('Creating empty factory_defaults.FlatConfig')
-            f = open(self.data_path + '/factory_defaults.FlatConfig', 'w')
-            json.dump({}, f)
-            f.close()
+        # Write factory_defaults.FlatConfig file to disk
+        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"))
 
         # create a recent files json file if there is none
         try:
@@ -436,659 +428,15 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
-        self.defaults = LoudDict()
-        self.defaults.update({
-            # Global APP Preferences
-            "decimals_inch": 4,
-            "decimals_metric": 4,
-            "version": self.version,
-            "first_run": True,
-            "units": "MM",
-            "global_serial": 0,
-            "global_stats": dict(),
-            "global_tabs_detachable": True,
-            "global_jump_ref": 'abs',
-            "global_locate_pt": 'bl',
-            "global_tpdf_tmargin": 15.0,
-            "global_tpdf_bmargin": 10.0,
-            "global_tpdf_lmargin": 20.0,
-            "global_tpdf_rmargin": 20.0,
-            "global_autosave": False,
-            "global_autosave_timeout": 300000,
-            "global_tcl_path": '',
-
-            # General
-            "global_graphic_engine": '3D',
-            "global_app_level": 'b',
-            "global_portable": False,
-            "global_language": 'English',
-            "global_version_check": True,
-            "global_send_stats": True,
-            "global_pan_button": '2',
-            "global_mselect_key": 'Control',
-            "global_project_at_startup": False,
-            "global_systray_icon": True,
-            "global_project_autohide": True,
-            "global_toggle_tooltips": True,
-            "global_worker_number": 2,
-            "global_tolerance": 0.005,
-            "global_open_style": True,
-            "global_delete_confirmation": True,
-            "global_compression_level": 3,
-            "global_save_compressed": True,
-
-            "global_machinist_setting": False,
-
-            # Global GUI Preferences
-            "global_gridx": 1.0,
-            "global_gridy": 1.0,
-            "global_snap_max": 0.05,
-            "global_workspace": False,
-            "global_workspaceT": "A4",
-            "global_workspace_orientation": 'p',
-
-            "global_grid_context_menu": {
-                'in': [0.01, 0.02, 0.025, 0.05, 0.1],
-                'mm': [0.1, 0.2, 0.5, 1, 2.54]
-            },
-
-            "global_sel_fill": '#a5a5ffbf',
-            "global_sel_line": '#0000ffbf',
-            "global_alt_sel_fill": '#BBF268BF',
-            "global_alt_sel_line": '#006E20BF',
-            "global_draw_color": '#FF0000',
-            "global_sel_draw_color": '#0000FF',
-            "global_proj_item_color": '#000000',
-            "global_proj_item_dis_color": '#b7b7cb',
-            "global_activity_icon": 'Ball green',
-
-            "global_toolbar_view": 511,
-
-            "global_background_timeout": 300000,  # Default value is 5 minutes
-            "global_verbose_error_level": 0,  # Shell verbosity 0 = default
-            # (python trace only for unknown errors),
-            # 1 = show trace(show trace always),
-            # 2 = (For the future).
-
-            # Persistence
-            "global_last_folder": None,
-            "global_last_save_folder": None,
-
-            # Default window geometry
-            "global_def_win_x": 100,
-            "global_def_win_y": 100,
-            "global_def_win_w": 1024,
-            "global_def_win_h": 650,
-            "global_def_notebook_width": 1,
-
-            # Constants...
-            "global_defaults_save_period_ms": 20000,  # Time between default saves.
-            "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
-            "global_shell_at_startup": False,  # Show the shell at startup.
-            "global_recent_limit": 10,  # Max. items in recent list.
-
-            "global_bookmarks": dict(),
-            "global_bookmarks_limit": 10,
-
-            "fit_key": 'V',
-            "zoom_out_key": '-',
-            "zoom_in_key": '=',
-            "grid_toggle_key": 'G',
-            "global_zoom_ratio": 1.5,
-            "global_point_clipboard_format": "(%.*f, %.*f)",
-            "global_zdownrate": None,
-
-            # General GUI Settings
-            "global_theme": 'white',
-            "global_gray_icons": False,
-            "global_hover": False,
-            "global_selection_shape": True,
-            "global_layout": "compact",
-            "global_cursor_type": "small",
-            "global_cursor_size": 20,
-            "global_cursor_width": 2,
-            "global_cursor_color": '#FF0000',
-            "global_cursor_color_enabled": True,
-
-            # Gerber General
-            "gerber_plot": True,
-            "gerber_solid": True,
-            "gerber_multicolored": False,
-            "gerber_circle_steps": 64,
-            "gerber_use_buffer_for_union": True,
-            "gerber_clean_apertures": True,
-            "gerber_extra_buffering": True,
-
-            "gerber_plot_fill": '#BBF268BF',
-            "gerber_plot_line": '#006E20BF',
-
-            "gerber_def_units": 'IN',
-            "gerber_def_zeros": 'L',
-            "gerber_save_filters": "Gerber File .gbr (*.gbr);;Gerber File .bot (*.bot);;Gerber File .bsm (*.bsm);;"
-                                   "Gerber File .cmp (*.cmp);;Gerber File .crc (*.crc);;Gerber File .crs (*.crs);;"
-                                   "Gerber File .gb0 (*.gb0);;Gerber File .gb1 (*.gb1);;Gerber File .gb2 (*.gb2);;"
-                                   "Gerber File .gb3 (*.gb3);;Gerber File .gb4 (*.gb4);;Gerber File .gb5 (*.gb5);;"
-                                   "Gerber File .gb6 (*.gb6);;Gerber File .gb7 (*.gb7);;Gerber File .gb8 (*.gb8);;"
-                                   "Gerber File .gb9 (*.gb9);;Gerber File .gbd (*.gbd);;Gerber File .gbl (*.gbl);;"
-                                   "Gerber File .gbo (*.gbo);;Gerber File .gbp (*.gbp);;Gerber File .gbs (*.gbs);;"
-                                   "Gerber File .gdo (*.gdo);;Gerber File .ger (*.ger);;Gerber File .gko (*.gko);;"
-                                   "Gerber File .gm1 (*.gm1);;Gerber File .gm2 (*.gm2);;Gerber File .gm3 (*.gm3);;"
-                                   "Gerber File .grb (*.grb);;Gerber File .gtl (*.gtl);;Gerber File .gto (*.gto);;"
-                                   "Gerber File .gtp (*.gtp);;Gerber File .gts (*.gts);;Gerber File .ly15 (*.ly15);;"
-                                   "Gerber File .ly2 (*.ly2);;Gerber File .mil (*.mil);;"
-                                   "Gerber File .outline (*.outline);;Gerber File .pho (*.pho);;"
-                                   "Gerber File .plc (*.plc);;Gerber File .pls (*.pls);;Gerber File .smb (*.smb);;"
-                                   "Gerber File .smt (*.smt);;Gerber File .sol (*.sol);;Gerber File .spb (*.spb);;"
-                                   "Gerber File .spt (*.spt);;Gerber File .ssb (*.ssb);;Gerber File .sst (*.sst);;"
-                                   "Gerber File .stc (*.stc);;Gerber File .sts (*.sts);;Gerber File .top (*.top);;"
-                                   "Gerber File .tsm (*.tsm);;Gerber File .art (*.art)"
-                                   "All Files (*.*)",
-
-            # Gerber Options
-            "gerber_isotooldia": 0.1,
-            "gerber_isopasses": 1,
-            "gerber_isooverlap": 10,
-            "gerber_milling_type": "cl",
-            "gerber_combine_passes": False,
-            "gerber_iso_scope": 'all',
-            "gerber_noncoppermargin": 0.1,
-            "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.1,
-            "gerber_bboxrounded": False,
-
-            # Gerber Advanced Options
-            "gerber_aperture_display": False,
-            "gerber_aperture_scale_factor": 1.0,
-            "gerber_aperture_buffer_factor": 0.0,
-            "gerber_follow": False,
-            "gerber_tool_type": 'circular',
-            "gerber_vtipdia": 0.1,
-            "gerber_vtipangle": 30,
-            "gerber_vcutz": -0.05,
-            "gerber_iso_type": "full",
-            "gerber_buffering": "full",
-            "gerber_simplification": False,
-            "gerber_simp_tolerance": 0.0005,
-
-            # Gerber Export
-            "gerber_exp_units": 'IN',
-            "gerber_exp_integer": 2,
-            "gerber_exp_decimals": 4,
-            "gerber_exp_zeros": 'L',
-
-            # Gerber Editor
-            "gerber_editor_sel_limit": 30,
-            "gerber_editor_newcode": 10,
-            "gerber_editor_newsize": 0.8,
-            "gerber_editor_newtype": 'C',
-            "gerber_editor_newdim": "0.5, 0.5",
-            "gerber_editor_array_size": 5,
-            "gerber_editor_lin_axis": 'X',
-            "gerber_editor_lin_pitch": 0.1,
-            "gerber_editor_lin_angle": 0.0,
-            "gerber_editor_circ_dir": 'CW',
-            "gerber_editor_circ_angle": 0.0,
-            "gerber_editor_scale_f": 1.0,
-            "gerber_editor_buff_f": 0.1,
-            "gerber_editor_ma_low": 0.0,
-            "gerber_editor_ma_high": 1.0,
-
-            # Excellon General
-            "excellon_plot": True,
-            "excellon_solid": True,
-            "excellon_format_upper_in": 2,
-            "excellon_format_lower_in": 4,
-            "excellon_format_upper_mm": 3,
-            "excellon_format_lower_mm": 3,
-            "excellon_zeros": "L",
-            "excellon_units": "INCH",
-            "excellon_update": True,
-
-            "excellon_optimization_type": 'B',
-
-            "excellon_search_time": 3,
-            "excellon_save_filters": "Excellon File .txt (*.txt);;Excellon File .drd (*.drd);;"
-                                     "Excellon File .drill (*.drill);;"
-                                     "Excellon File .drl (*.drl);;Excellon File .exc (*.exc);;"
-                                     "Excellon File .ncd (*.ncd);;Excellon File .tap (*.tap);;"
-                                     "Excellon File .xln (*.xln);;All Files (*.*)",
-            "excellon_plot_fill": '#C40000BF',
-            "excellon_plot_line": '#750000BF',
-
-            # Excellon Options
-            "excellon_operation": "drill",
-            "excellon_milling_type": "drills",
-
-            "excellon_milling_dia": 0.8,
-
-            "excellon_cutz": -1.7,
-            "excellon_multidepth": False,
-            "excellon_depthperpass": 0.7,
-            "excellon_travelz": 2,
-            "excellon_endz": 0.5,
-            "excellon_endxy": None,
-            "excellon_feedrate_z": 300,
-            "excellon_spindlespeed": 0,
-            "excellon_dwell": False,
-            "excellon_dwelltime": 1,
-            "excellon_toolchange": False,
-            "excellon_toolchangez": 15,
-            "excellon_ppname_e": 'default',
-            "excellon_tooldia": 0.8,
-            "excellon_slot_tooldia": 1.8,
-            "excellon_gcode_type": "drills",
-
-            # Excellon Advanced Options
-            "excellon_offset": 0.0,
-            "excellon_toolchangexy": "0.0, 0.0",
-            "excellon_startz": None,
-            "excellon_feedrate_rapid": 1500,
-            "excellon_z_pdepth": -0.02,
-            "excellon_feedrate_probe": 75,
-            "excellon_spindledir": 'CW',
-            "excellon_f_plunge": False,
-            "excellon_f_retract": False,
-
-            # Excellon Export
-            "excellon_exp_units": 'INCH',
-            "excellon_exp_format": 'ndec',
-            "excellon_exp_integer": 2,
-            "excellon_exp_decimals": 4,
-            "excellon_exp_zeros": 'LZ',
-            "excellon_exp_slot_type": 'routing',
-
-            # Excellon Editor
-            "excellon_editor_sel_limit": 30,
-            "excellon_editor_newdia": 1.0,
-            "excellon_editor_array_size": 5,
-            "excellon_editor_lin_dir": 'X',
-            "excellon_editor_lin_pitch": 2.54,
-            "excellon_editor_lin_angle": 0.0,
-            "excellon_editor_circ_dir": 'CW',
-            "excellon_editor_circ_angle": 12,
-            # Excellon Slots
-            "excellon_editor_slot_direction": 'X',
-            "excellon_editor_slot_angle": 0.0,
-            "excellon_editor_slot_length": 5.0,
-            # Excellon Slot Array
-            "excellon_editor_slot_array_size": 5,
-            "excellon_editor_slot_lin_dir": 'X',
-            "excellon_editor_slot_lin_pitch": 2.54,
-            "excellon_editor_slot_lin_angle": 0.0,
-            "excellon_editor_slot_circ_dir": 'CW',
-            "excellon_editor_slot_circ_angle": 0.0,
-
-            # Geometry General
-            "geometry_plot": True,
-            "geometry_circle_steps": 64,
-            "geometry_cnctooldia": "2.4",
-            "geometry_plot_line": "#FF0000",
-
-            # Geometry Options
-            "geometry_cutz": -2.4,
-            "geometry_vtipdia": 0.1,
-            "geometry_vtipangle": 30,
-            "geometry_multidepth": False,
-            "geometry_depthperpass": 0.8,
-            "geometry_travelz": 2,
-            "geometry_toolchange": False,
-            "geometry_toolchangez": 15.0,
-            "geometry_endz": 15.0,
-            "geometry_endxy": None,
-
-            "geometry_feedrate": 120,
-            "geometry_feedrate_z": 60,
-            "geometry_spindlespeed": 0,
-            "geometry_dwell": False,
-            "geometry_dwelltime": 1,
-            "geometry_ppname_g": 'default',
-
-            # Geometry Advanced Options
-            "geometry_toolchangexy": "0.0, 0.0",
-            "geometry_startz": None,
-            "geometry_feedrate_rapid": 1500,
-            "geometry_extracut": False,
-            "geometry_extracut_length": 0.1,
-            "geometry_z_pdepth": -0.02,
-            "geometry_f_plunge": False,
-            "geometry_spindledir": 'CW',
-            "geometry_feedrate_probe": 75,
-            "geometry_segx": 0.0,
-            "geometry_segy": 0.0,
-
-            # Geometry Editor
-            "geometry_editor_sel_limit": 30,
-            "geometry_editor_milling_type": "cl",
-
-            # CNC Job General
-            "cncjob_plot": True,
-            "cncjob_plot_kind": 'all',
-            "cncjob_annotation": True,
-            "cncjob_tooldia": 1.0,
-            "cncjob_coords_type": "G90",
-            "cncjob_coords_decimals": 4,
-            "cncjob_fr_decimals": 2,
-            "cncjob_steps_per_circle": 64,
-            "cncjob_footer": False,
-            "cncjob_line_ending": False,
-            "cncjob_save_filters": "G-Code Files .nc (*.nc);;G-Code Files .din (*.din);;G-Code Files .dnc (*.dnc);;"
-                                   "G-Code Files .ecs (*.ecs);;G-Code Files .eia (*.eia);;G-Code Files .fan (*.fan);;"
-                                   "G-Code Files .fgc (*.fgc);;G-Code Files .fnc (*.fnc);;G-Code Files . gc (*.gc);;"
-                                   "G-Code Files .gcd (*.gcd);;G-Code Files .gcode (*.gcode);;G-Code Files .h (*.h);;"
-                                   "G-Code Files .hnc (*.hnc);;G-Code Files .i (*.i);;G-Code Files .min (*.min);;"
-                                   "G-Code Files .mpf (*.mpf);;G-Code Files .mpr (*.mpr);;G-Code Files .cnc (*.cnc);;"
-                                   "G-Code Files .ncc (*.ncc);;G-Code Files .ncg (*.ncg);;G-Code Files .ncp (*.ncp);;"
-                                   "G-Code Files .ngc (*.ngc);;G-Code Files .out (*.out);;G-Code Files .ply (*.ply);;"
-                                   "G-Code Files .sbp (*.sbp);;G-Code Files .tap (*.tap);;G-Code Files .xpi (*.xpi);;"
-                                   "All Files (*.*)",
-            "cncjob_plot_line": '#4650BDFF',
-            "cncjob_plot_fill": '#5E6CFFFF',
-            "cncjob_travel_line": '#B5AB3A4C',
-            "cncjob_travel_fill": '#F0E24D4C',
-
-            # CNC Job Options
-            "cncjob_prepend": "",
-            "cncjob_append": "",
-
-            # CNC Job Advanced Options
-            "cncjob_toolchange_macro": "",
-            "cncjob_toolchange_macro_enable": False,
-            "cncjob_annotation_fontsize": 9,
-            "cncjob_annotation_fontcolor": '#990000',
-
-            # NCC Tool
-            "tools_ncctools": "1.0, 0.5",
-            "tools_nccorder": 'rev',
-            "tools_nccoperation": 'clear',
-            "tools_nccoverlap": 40,
-            "tools_nccmargin": 1.0,
-            "tools_nccmethod": _("Seed"),
-            "tools_nccconnect": True,
-            "tools_ncccontour": True,
-            "tools_nccrest": False,
-            "tools_ncc_offset_choice": False,
-            "tools_ncc_offset_value": 0.0000,
-            "tools_nccref": _('Itself'),
-            "tools_ncc_area_shape": "square",
-            "tools_ncc_plotting": 'normal',
-            "tools_nccmilling_type": 'cl',
-            "tools_ncctool_type": 'C1',
-            "tools_ncccutz": -0.05,
-            "tools_ncctipdia": 0.1,
-            "tools_ncctipangle": 30,
-            "tools_nccnewdia": 0.1,
-
-            # Cutout Tool
-            "tools_cutouttooldia": 2.4,
-            "tools_cutoutkind": "single",
-            "tools_cutoutmargin": 0.1,
-            "tools_cutout_z": -1.8,
-            "tools_cutout_depthperpass": 0.6,
-            "tools_cutout_mdepth": True,
-            "tools_cutoutgapsize": 4,
-            "tools_gaps_ff": "4",
-            "tools_cutout_convexshape": False,
-
-            # Paint Tool
-            "tools_painttooldia": 0.3,
-            "tools_paintorder": 'rev',
-            "tools_paintoverlap": 20,
-            "tools_paintmargin": 0.0,
-            "tools_paintmethod": _("Seed"),
-            "tools_selectmethod": _("All Polygons"),
-            "tools_paint_area_shape": "square",
-            "tools_pathconnect": True,
-            "tools_paintcontour": True,
-            "tools_paint_plotting": 'normal',
-            "tools_paintrest": False,
-            "tools_painttool_type": 'C1',
-            "tools_paintcutz": -0.05,
-            "tools_painttipdia": 0.1,
-            "tools_painttipangle": 30,
-            "tools_paintnewdia": 0.1,
-
-            # 2-Sided Tool
-            "tools_2sided_mirror_axis": "X",
-            "tools_2sided_axis_loc": "point",
-            "tools_2sided_drilldia": 3.125,
-            "tools_2sided_allign_axis": "X",
-
-            # Film Tool
-            "tools_film_type": 'neg',
-            "tools_film_boundary": 1.0,
-            "tools_film_scale_stroke": 0,
-            "tools_film_color": '#000000',
-            "tools_film_scale_cb": False,
-            "tools_film_scale_x_entry": 1.0,
-            "tools_film_scale_y_entry": 1.0,
-            "tools_film_skew_cb": False,
-            "tools_film_skew_x_entry": 0.0,
-            "tools_film_skew_y_entry": 0.0,
-            "tools_film_skew_ref_radio": 'bottomleft',
-            "tools_film_mirror_cb": False,
-            "tools_film_mirror_axis_radio": 'none',
-            "tools_film_file_type_radio": 'svg',
-            "tools_film_orientation": 'p',
-            "tools_film_pagesize": 'A4',
-
-            # Panel Tool
-            "tools_panelize_spacing_columns": 0,
-            "tools_panelize_spacing_rows": 0,
-            "tools_panelize_columns": 1,
-            "tools_panelize_rows": 1,
-            "tools_panelize_constrain": False,
-            "tools_panelize_constrainx": 200.0,
-            "tools_panelize_constrainy": 290.0,
-            "tools_panelize_panel_type": 'gerber',
-
-            # Calculators Tool
-            "tools_calc_vshape_tip_dia": 0.2,
-            "tools_calc_vshape_tip_angle": 30,
-            "tools_calc_vshape_cut_z": 0.05,
-            "tools_calc_electro_length": 10.0,
-            "tools_calc_electro_width": 10.0,
-            "tools_calc_electro_cdensity": 13.0,
-            "tools_calc_electro_growth": 10.0,
-
-            # Transform Tool
-            "tools_transform_rotate": 90,
-            "tools_transform_skew_x": 0.0,
-            "tools_transform_skew_y": 0.0,
-            "tools_transform_scale_x": 1.0,
-            "tools_transform_scale_y": 1.0,
-            "tools_transform_scale_link": True,
-            "tools_transform_scale_reference": True,
-            "tools_transform_offset_x": 0.0,
-            "tools_transform_offset_y": 0.0,
-            "tools_transform_mirror_reference": False,
-            "tools_transform_mirror_point": (0, 0),
-            "tools_transform_buffer_dis": 0.0,
-            "tools_transform_buffer_factor": 100.0,
-            "tools_transform_buffer_corner": True,
-
-            # SolderPaste Tool
-            "tools_solderpaste_tools": "1.0, 0.3",
-            "tools_solderpaste_new": 0.3,
-            "tools_solderpaste_z_start": 0.05,
-            "tools_solderpaste_z_dispense": 0.1,
-            "tools_solderpaste_z_stop": 0.05,
-            "tools_solderpaste_z_travel": 0.1,
-            "tools_solderpaste_z_toolchange": 1.0,
-            "tools_solderpaste_xy_toolchange": "0.0, 0.0",
-            "tools_solderpaste_frxy": 150,
-            "tools_solderpaste_frz": 150,
-            "tools_solderpaste_frz_dispense": 1.0,
-            "tools_solderpaste_speedfwd": 300,
-            "tools_solderpaste_dwellfwd": 1,
-            "tools_solderpaste_speedrev": 200,
-            "tools_solderpaste_dwellrev": 1,
-            "tools_solderpaste_pp": 'Paste_1',
-
-            # Subtract Tool
-            "tools_sub_close_paths": True,
-
-            # Distance Tool
-            "tools_dist_snap_center": False,
-
-            # ########################################################################################################
-            # ################################ TOOLS 2 ###############################################################
-            # ########################################################################################################
-
-            # Optimal Tool
-            "tools_opt_precision": 4,
-
-            # Check Rules Tool
-            "tools_cr_trace_size": True,
-            "tools_cr_trace_size_val": 0.25,
-            "tools_cr_c2c": True,
-            "tools_cr_c2c_val": 0.25,
-            "tools_cr_c2o": True,
-            "tools_cr_c2o_val": 1.0,
-            "tools_cr_s2s": True,
-            "tools_cr_s2s_val": 0.25,
-            "tools_cr_s2sm": True,
-            "tools_cr_s2sm_val": 0.25,
-            "tools_cr_s2o": True,
-            "tools_cr_s2o_val": 1.0,
-            "tools_cr_sm2sm": True,
-            "tools_cr_sm2sm_val": 0.25,
-            "tools_cr_ri": True,
-            "tools_cr_ri_val": 0.3,
-            "tools_cr_h2h": True,
-            "tools_cr_h2h_val": 0.3,
-            "tools_cr_dh": True,
-            "tools_cr_dh_val": 0.3,
-
-            # QRCode Tool
-            "tools_qrcode_version": 1,
-            "tools_qrcode_error": 'L',
-            "tools_qrcode_box_size": 3,
-            "tools_qrcode_border_size": 4,
-            "tools_qrcode_qrdata": '',
-            "tools_qrcode_polarity": 'pos',
-            "tools_qrcode_rounded": 's',
-            "tools_qrcode_fill_color": '#000000',
-            "tools_qrcode_back_color": '#FFFFFF',
-            "tools_qrcode_sel_limit": 330,
-
-            # Copper Thieving Tool
-            "tools_copper_thieving_clearance": 0.25,
-            "tools_copper_thieving_margin": 1.0,
-            "tools_copper_thieving_reference": 'itself',
-            "tools_copper_thieving_box_type": 'rect',
-            "tools_copper_thieving_circle_steps": 64,
-            "tools_copper_thieving_fill_type": 'solid',
-            "tools_copper_thieving_dots_dia": 1.0,
-            "tools_copper_thieving_dots_spacing": 2.0,
-            "tools_copper_thieving_squares_size": 1.0,
-            "tools_copper_thieving_squares_spacing": 2.0,
-            "tools_copper_thieving_lines_size": 0.25,
-            "tools_copper_thieving_lines_spacing": 2.0,
-            "tools_copper_thieving_rb_margin": 1.0,
-            "tools_copper_thieving_rb_thickness": 1.0,
-            "tools_copper_thieving_mask_clearance": 0.0,
-
-            # Fiducials Tool
-            "tools_fiducials_dia": 1.0,
-            "tools_fiducials_margin": 1.0,
-            "tools_fiducials_mode": 'auto',
-            "tools_fiducials_second_pos": 'up',
-            "tools_fiducials_type": 'circular',
-            "tools_fiducials_line_thickness": 0.25,
-
-            # Calibration Tool
-            "tools_cal_calsource": 'object',
-            "tools_cal_travelz": 2.0,
-            "tools_cal_verz": 0.1,
-            "tools_cal_zeroz": False,
-            "tools_cal_toolchangez": 15,
-            "tools_cal_toolchange_xy": '',
-            "tools_cal_sec_point": 'tl',
-
-            # Drills Extraction Tool
-            "tools_edrills_hole_type": 'fixed',
-            "tools_edrills_hole_fixed_dia": 0.5,
-            "tools_edrills_hole_prop_factor": 80.0,
-            "tools_edrills_circular_ring": 0.2,
-            "tools_edrills_oblong_ring": 0.2,
-            "tools_edrills_square_ring": 0.2,
-            "tools_edrills_rectangular_ring": 0.2,
-            "tools_edrills_others_ring": 0.2,
-            "tools_edrills_circular": True,
-            "tools_edrills_oblong": False,
-            "tools_edrills_square": False,
-            "tools_edrills_rectangular": False,
-            "tools_edrills_others": False,
-
-            # Punch Gerber Tool
-            "tools_punch_hole_type": 'exc',
-            "tools_punch_hole_fixed_dia": 0.5,
-            "tools_punch_hole_prop_factor": 80.0,
-            "tools_punch_circular_ring": 0.2,
-            "tools_punch_oblong_ring": 0.2,
-            "tools_punch_square_ring": 0.2,
-            "tools_punch_rectangular_ring": 0.2,
-            "tools_punch_others_ring": 0.2,
-            "tools_punch_circular": True,
-            "tools_punch_oblong": False,
-            "tools_punch_square": True,
-            "tools_punch_rectangular": False,
-            "tools_punch_others": False,
-
-            # Align Objects Tool
-            "tools_align_objects_align_type": 'sp',
-
-            # Invert Gerber Tool
-            "tools_invert_margin": 0.1,
-            "tools_invert_join_style": 's',
-
-            # Utilities
-            # file associations
-            "fa_excellon": 'drd, drill, drl, exc, ncd, tap, xln',
-            "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
-                        'ncg, ncp, ngc, out, ply, rol, sbp, tap, xpi',
-            "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, gb0, gb1, gb2, gb3, gb4, gb5, gb6, gb7, gb8, gb9, gbd, '
-                         'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
-                         'mil, outline, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
-            # Keyword list
-            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, False, '
-                                          'Marius, My Documents, Paste_1, '
-                                          'Repetier, Roland_MDX_20, True, Users, Toolchange_Custom, '
-                                          'Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, axis, auto, axisoffset, '
-                                          'box, center_x, center_y, columns, combine, connect, contour, default, '
-                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dpp, dwelltime, '
-                                          'endxy, endz, extracut_length, f, feedrate, '
-                                          'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
-                                          'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
-                                          'minoffset, name, offset, opt_type, order, outname, overlap, '
-                                          'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
-                                          'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'startz, startxy, toolchange_xy, toolchangez, '
-                                          'tooldia, travelz, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
-                                          'z_move',
-            "script_autocompleter": True,
-            "script_text": "",
-            "script_plot": True,
-            "script_source_file": "",
-
-            "document_autocompleter": False,
-            "document_text": "",
-            "document_plot": True,
-            "document_source_file": "",
-            "document_font_color": '#000000',
-            "document_sel_color": '#0055ff',
-            "document_font_size": 6,
-            "document_tab_size": 80,
-        })
-
-        # ###########################################################################################################
-        # ################################# Load defaults from file #################################################
-        # ###########################################################################################################
-        self.old_defaults_found = False
-
+        self.defaults = FlatCAMDefaults()
+        current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
-            self.load_defaults(filename='current_defaults')
+            self.defaults.load(filename=current_defaults_path)
+
+        if self.defaults["global_gray_icons"] is False:
+            self.resource_location = 'share'
+        else:
+            self.resource_location = 'share/dark_resources'
 
         if self.defaults['units'] == 'MM':
             self.decimals = int(self.defaults['decimals_metric'])
@@ -1102,9 +450,8 @@ class App(QtCore.QObject):
 
         self.current_units = self.defaults['units']
 
-        # store here the current self.defaults so it can be restored if Preferences changes are cancelled
-        self.current_defaults = {}
-        self.current_defaults.update(self.defaults)
+
+
 
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################
@@ -1202,549 +549,9 @@ class App(QtCore.QObject):
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
         # ###########################################################################################################
 
-        # when adding entries here read the comments in the  method found bellow named:
-        # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
-        self.defaults_form_fields = {
-            # General App
-            "decimals_inch": self.ui.general_defaults_form.general_app_group.precision_inch_entry,
-            "decimals_metric": self.ui.general_defaults_form.general_app_group.precision_metric_entry,
-            "units": self.ui.general_defaults_form.general_app_group.units_radio,
-            "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
-            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
-            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
-            "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
-
-            "global_systray_icon": self.ui.general_defaults_form.general_app_group.systray_cb,
-            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
-            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
-            "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
-            "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
-
-            "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
-            "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
-
-            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
-            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
-            "global_autosave": self.ui.general_defaults_form.general_app_group.autosave_cb,
-            "global_autosave_timeout": self.ui.general_defaults_form.general_app_group.autosave_entry,
-
-            "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
-            "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
-            "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
-            "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
-
-            # General GUI Preferences
-            "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
-            "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
-            "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
-            "global_hover": self.ui.general_defaults_form.general_gui_group.hover_cb,
-            "global_selection_shape": self.ui.general_defaults_form.general_gui_group.selection_cb,
-
-            "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
-            "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
-            "global_alt_sel_fill": self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry,
-            "global_alt_sel_line": self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry,
-            "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
-            "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
-
-            "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
-            "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
-            "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
-
-            # General GUI Settings
-            "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
-            "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
-            "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
-            "global_workspace": self.ui.general_defaults_form.general_app_set_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_app_set_group.wk_cb,
-            "global_workspace_orientation": self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio,
-
-            "global_cursor_type": self.ui.general_defaults_form.general_app_set_group.cursor_radio,
-            "global_cursor_size": self.ui.general_defaults_form.general_app_set_group.cursor_size_entry,
-            "global_cursor_width": self.ui.general_defaults_form.general_app_set_group.cursor_width_entry,
-            "global_cursor_color_enabled": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_color_cb,
-            "global_cursor_color": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry,
-            "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
-            "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
-            "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
-
-            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_set_group.bm_limit_spinner,
-            "global_activity_icon": self.ui.general_defaults_form.general_app_set_group.activity_combo,
-
-            # Gerber General
-            "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
-            "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
-            "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
-            "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
-            "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
-            "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
-            "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
-            "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
-            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry,
-            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
-
-            # Gerber Options
-            "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
-            "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
-            "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
-            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.iso_scope_radio,
-            "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
-            "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
-            "gerber_bboxrounded": self.ui.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
-
-            # Gerber Advanced Options
-            "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
-            # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
-            # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
-            "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
-            "gerber_tool_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.tool_type_radio,
-            "gerber_vtipdia": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipdia_spinner,
-            "gerber_vtipangle": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipangle_spinner,
-            "gerber_vcutz": self.ui.gerber_defaults_form.gerber_adv_opt_group.cutz_spinner,
-            "gerber_iso_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.iso_type_radio,
-
-            "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
-            "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
-            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
-
-            # Gerber Export
-            "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
-            "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
-            "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
-            "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
-
-            # Gerber Editor
-            "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
-            "gerber_editor_newcode": self.ui.gerber_defaults_form.gerber_editor_group.addcode_entry,
-            "gerber_editor_newsize": self.ui.gerber_defaults_form.gerber_editor_group.addsize_entry,
-            "gerber_editor_newtype": self.ui.gerber_defaults_form.gerber_editor_group.addtype_combo,
-            "gerber_editor_newdim": self.ui.gerber_defaults_form.gerber_editor_group.adddim_entry,
-            "gerber_editor_array_size": self.ui.gerber_defaults_form.gerber_editor_group.grb_array_size_entry,
-            "gerber_editor_lin_axis": self.ui.gerber_defaults_form.gerber_editor_group.grb_axis_radio,
-            "gerber_editor_lin_pitch": self.ui.gerber_defaults_form.gerber_editor_group.grb_pitch_entry,
-            "gerber_editor_lin_angle": self.ui.gerber_defaults_form.gerber_editor_group.grb_angle_entry,
-            "gerber_editor_circ_dir": self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_dir_radio,
-            "gerber_editor_circ_angle":
-                self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_angle_entry,
-            "gerber_editor_scale_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_scale_entry,
-            "gerber_editor_buff_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_buff_entry,
-            "gerber_editor_ma_low": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_low_entry,
-            "gerber_editor_ma_high": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_high_entry,
-
-            # Excellon General
-            "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
-            "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
-            "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
-            "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
-            "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
-            "excellon_plot_fill": self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry,
-            "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
-
-            # Excellon Options
-            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
-            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
-
-            "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
-
-            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
-            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
-
-            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
-            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
-            "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
-
-            # Excellon Advanced Options
-            "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
-
-            # Excellon Export
-            "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
-            "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
-            "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
-            "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
-            "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
-            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
-
-            # Excellon Editor
-            "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
-            "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
-            "excellon_editor_array_size": self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
-            "excellon_editor_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
-            "excellon_editor_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
-            "excellon_editor_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
-            "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
-            "excellon_editor_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
-            # Excellon Slots
-            "excellon_editor_slot_direction":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
-            "excellon_editor_slot_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
-            "excellon_editor_slot_length":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
-            # Excellon Slots
-            "excellon_editor_slot_array_size":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
-            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
-            "excellon_editor_slot_lin_pitch":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
-            "excellon_editor_slot_lin_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
-            "excellon_editor_slot_circ_dir":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
-            "excellon_editor_slot_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
-
-            # Geometry General
-            "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_plot_line": self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
-
-            # Geometry Options
-            "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
-            "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
-            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
-            "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
-
-            # Geometry Advanced Options
-            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
-            "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
-            "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
-            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
-            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
-            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
-            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
-            "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
-            "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
-
-            # Geometry Editor
-            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
-            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
-
-            # CNCJob General
-            "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
-
-            "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
-            "cncjob_coords_type": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
-            "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
-            "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
-            "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
-            "cncjob_line_ending": self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
-            "cncjob_plot_line": self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
-            "cncjob_plot_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
-            "cncjob_travel_line": self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
-            "cncjob_travel_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
-
-            # CNC Job Options
-            "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
-
-            # CNC Job Advanced Options
-            "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
-            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
-            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
-
-            # NCC Tool
-            "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
-            "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
-            "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
-            "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
-            "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
-            "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
-            "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
-            "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
-            "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
-            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.select_combo,
-            "tools_ncc_area_shape": self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
-            "tools_ncc_plotting": self.ui.tools_defaults_form.tools_ncc_group.ncc_plotting_radio,
-            "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
-            "tools_ncctool_type": self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
-            "tools_ncccutz": self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
-            "tools_ncctipdia": self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
-            "tools_ncctipangle": self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
-            "tools_nccnewdia": self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
-
-            # CutOut Tool
-            "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
-            "tools_cutoutkind": self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
-            "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
-            "tools_cutout_z": self.ui.tools_defaults_form.tools_cutout_group.cutz_entry,
-            "tools_cutout_depthperpass": self.ui.tools_defaults_form.tools_cutout_group.maxdepth_entry,
-            "tools_cutout_mdepth": self.ui.tools_defaults_form.tools_cutout_group.mpass_cb,
-            "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
-            "tools_cutout_convexshape": self.ui.tools_defaults_form.tools_cutout_group.convex_box,
-
-            # Paint Area Tool
-            "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
-            "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
-            "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
-            "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
-            "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
-            "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
-            "tools_paint_area_shape": self.ui.tools_defaults_form.tools_paint_group.area_shape_radio,
-            "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
-            "tools_paint_plotting": self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
-
-            "tools_paintrest": self.ui.tools_defaults_form.tools_paint_group.rest_cb,
-            "tools_painttool_type": self.ui.tools_defaults_form.tools_paint_group.tool_type_radio,
-            "tools_paintcutz": self.ui.tools_defaults_form.tools_paint_group.cutz_entry,
-            "tools_painttipdia": self.ui.tools_defaults_form.tools_paint_group.tipdia_entry,
-            "tools_painttipangle": self.ui.tools_defaults_form.tools_paint_group.tipangle_entry,
-            "tools_paintnewdia": self.ui.tools_defaults_form.tools_paint_group.newdia_entry,
-
-            # 2-sided Tool
-            "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
-            "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
-            "tools_2sided_allign_axis": self.ui.tools_defaults_form.tools_2sided_group.align_axis_radio,
-
-            # Film Tool
-            "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
-            "tools_film_boundary": self.ui.tools_defaults_form.tools_film_group.film_boundary_entry,
-            "tools_film_scale_stroke": self.ui.tools_defaults_form.tools_film_group.film_scale_stroke_entry,
-            "tools_film_color": self.ui.tools_defaults_form.tools_film_group.film_color_entry,
-            "tools_film_scale_cb": self.ui.tools_defaults_form.tools_film_group.film_scale_cb,
-            "tools_film_scale_x_entry": self.ui.tools_defaults_form.tools_film_group.film_scalex_entry,
-            "tools_film_scale_y_entry": self.ui.tools_defaults_form.tools_film_group.film_scaley_entry,
-            "tools_film_skew_cb": self.ui.tools_defaults_form.tools_film_group.film_skew_cb,
-            "tools_film_skew_x_entry": self.ui.tools_defaults_form.tools_film_group.film_skewx_entry,
-            "tools_film_skew_y_entry": self.ui.tools_defaults_form.tools_film_group.film_skewy_entry,
-            "tools_film_skew_ref_radio": self.ui.tools_defaults_form.tools_film_group.film_skew_reference,
-            "tools_film_mirror_cb": self.ui.tools_defaults_form.tools_film_group.film_mirror_cb,
-            "tools_film_mirror_axis_radio": self.ui.tools_defaults_form.tools_film_group.film_mirror_axis,
-            "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
-            "tools_film_orientation": self.ui.tools_defaults_form.tools_film_group.orientation_radio,
-            "tools_film_pagesize": self.ui.tools_defaults_form.tools_film_group.pagesize_combo,
-
-            # Panelize Tool
-            "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
-            "tools_panelize_spacing_rows": self.ui.tools_defaults_form.tools_panelize_group.pspacing_rows,
-            "tools_panelize_columns": self.ui.tools_defaults_form.tools_panelize_group.pcolumns,
-            "tools_panelize_rows": self.ui.tools_defaults_form.tools_panelize_group.prows,
-            "tools_panelize_constrain": self.ui.tools_defaults_form.tools_panelize_group.pconstrain_cb,
-            "tools_panelize_constrainx": self.ui.tools_defaults_form.tools_panelize_group.px_width_entry,
-            "tools_panelize_constrainy": self.ui.tools_defaults_form.tools_panelize_group.py_height_entry,
-            "tools_panelize_panel_type": self.ui.tools_defaults_form.tools_panelize_group.panel_type_radio,
-
-            # Calculators Tool
-            "tools_calc_vshape_tip_dia": self.ui.tools_defaults_form.tools_calculators_group.tip_dia_entry,
-            "tools_calc_vshape_tip_angle": self.ui.tools_defaults_form.tools_calculators_group.tip_angle_entry,
-            "tools_calc_vshape_cut_z": self.ui.tools_defaults_form.tools_calculators_group.cut_z_entry,
-            "tools_calc_electro_length": self.ui.tools_defaults_form.tools_calculators_group.pcblength_entry,
-            "tools_calc_electro_width": self.ui.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
-            "tools_calc_electro_cdensity": self.ui.tools_defaults_form.tools_calculators_group.cdensity_entry,
-            "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
-
-            # Transformations Tool
-            "tools_transform_rotate": self.ui.tools_defaults_form.tools_transform_group.rotate_entry,
-            "tools_transform_skew_x": self.ui.tools_defaults_form.tools_transform_group.skewx_entry,
-            "tools_transform_skew_y": self.ui.tools_defaults_form.tools_transform_group.skewy_entry,
-            "tools_transform_scale_x": self.ui.tools_defaults_form.tools_transform_group.scalex_entry,
-            "tools_transform_scale_y": self.ui.tools_defaults_form.tools_transform_group.scaley_entry,
-            "tools_transform_scale_link": self.ui.tools_defaults_form.tools_transform_group.link_cb,
-            "tools_transform_scale_reference": self.ui.tools_defaults_form.tools_transform_group.reference_cb,
-            "tools_transform_offset_x": self.ui.tools_defaults_form.tools_transform_group.offx_entry,
-            "tools_transform_offset_y": self.ui.tools_defaults_form.tools_transform_group.offy_entry,
-            "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
-            "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
-            "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
-            "tools_transform_buffer_factor": self.ui.tools_defaults_form.tools_transform_group.buffer_factor_entry,
-            "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
-
-            # SolderPaste Dispensing Tool
-            "tools_solderpaste_tools": self.ui.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
-            "tools_solderpaste_new": self.ui.tools_defaults_form.tools_solderpaste_group.addtool_entry,
-            "tools_solderpaste_z_start": self.ui.tools_defaults_form.tools_solderpaste_group.z_start_entry,
-            "tools_solderpaste_z_dispense": self.ui.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
-            "tools_solderpaste_z_stop": self.ui.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
-            "tools_solderpaste_z_travel": self.ui.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
-            "tools_solderpaste_z_toolchange": self.ui.tools_defaults_form.tools_solderpaste_group.z_toolchange_entry,
-            "tools_solderpaste_xy_toolchange": self.ui.tools_defaults_form.tools_solderpaste_group.xy_toolchange_entry,
-            "tools_solderpaste_frxy": self.ui.tools_defaults_form.tools_solderpaste_group.frxy_entry,
-            "tools_solderpaste_frz": self.ui.tools_defaults_form.tools_solderpaste_group.frz_entry,
-            "tools_solderpaste_frz_dispense": self.ui.tools_defaults_form.tools_solderpaste_group.frz_dispense_entry,
-            "tools_solderpaste_speedfwd": self.ui.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
-            "tools_solderpaste_dwellfwd": self.ui.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
-            "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
-            "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
-            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
-            "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
-
-            # #######################################################################################################
-            # ########################################## TOOLS 2 ####################################################
-            # #######################################################################################################
-
-            # Optimal Tool
-            "tools_opt_precision": self.ui.tools2_defaults_form.tools2_optimal_group.precision_sp,
-
-            # Check Rules Tool
-            "tools_cr_trace_size": self.ui.tools2_defaults_form.tools2_checkrules_group.trace_size_cb,
-            "tools_cr_trace_size_val": self.ui.tools2_defaults_form.tools2_checkrules_group.trace_size_entry,
-            "tools_cr_c2c": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2copper_cb,
-            "tools_cr_c2c_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2copper_entry,
-            "tools_cr_c2o": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2ol_cb,
-            "tools_cr_c2o_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2ol_entry,
-            "tools_cr_s2s": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2silk_cb,
-            "tools_cr_s2s_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2silk_entry,
-            "tools_cr_s2sm": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2sm_cb,
-            "tools_cr_s2sm_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2sm_entry,
-            "tools_cr_s2o": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2ol_cb,
-            "tools_cr_s2o_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2ol_entry,
-            "tools_cr_sm2sm": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_sm2sm_cb,
-            "tools_cr_sm2sm_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_sm2sm_entry,
-            "tools_cr_ri": self.ui.tools2_defaults_form.tools2_checkrules_group.ring_integrity_cb,
-            "tools_cr_ri_val": self.ui.tools2_defaults_form.tools2_checkrules_group.ring_integrity_entry,
-            "tools_cr_h2h": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_d2d_cb,
-            "tools_cr_h2h_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_d2d_entry,
-            "tools_cr_dh": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_cb,
-            "tools_cr_dh_val": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_entry,
-
-            # QRCode Tool
-            "tools_qrcode_version": self.ui.tools2_defaults_form.tools2_qrcode_group.version_entry,
-            "tools_qrcode_error": self.ui.tools2_defaults_form.tools2_qrcode_group.error_radio,
-            "tools_qrcode_box_size": self.ui.tools2_defaults_form.tools2_qrcode_group.bsize_entry,
-            "tools_qrcode_border_size": self.ui.tools2_defaults_form.tools2_qrcode_group.border_size_entry,
-            "tools_qrcode_qrdata": self.ui.tools2_defaults_form.tools2_qrcode_group.text_data,
-            "tools_qrcode_polarity": self.ui.tools2_defaults_form.tools2_qrcode_group.pol_radio,
-            "tools_qrcode_rounded": self.ui.tools2_defaults_form.tools2_qrcode_group.bb_radio,
-            "tools_qrcode_fill_color": self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry,
-            "tools_qrcode_back_color": self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry,
-            "tools_qrcode_sel_limit": self.ui.tools2_defaults_form.tools2_qrcode_group.sel_limit_entry,
-
-            # Copper Thieving Tool
-            "tools_copper_thieving_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_entry,
-            "tools_copper_thieving_margin": self.ui.tools2_defaults_form.tools2_cfill_group.margin_entry,
-            "tools_copper_thieving_reference": self.ui.tools2_defaults_form.tools2_cfill_group.reference_radio,
-            "tools_copper_thieving_box_type": self.ui.tools2_defaults_form.tools2_cfill_group.bbox_type_radio,
-            "tools_copper_thieving_circle_steps": self.ui.tools2_defaults_form.tools2_cfill_group.circlesteps_entry,
-            "tools_copper_thieving_fill_type": self.ui.tools2_defaults_form.tools2_cfill_group.fill_type_radio,
-            "tools_copper_thieving_dots_dia": self.ui.tools2_defaults_form.tools2_cfill_group.dot_dia_entry,
-            "tools_copper_thieving_dots_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.dot_spacing_entry,
-            "tools_copper_thieving_squares_size": self.ui.tools2_defaults_form.tools2_cfill_group.square_size_entry,
-            "tools_copper_thieving_squares_spacing":
-                self.ui.tools2_defaults_form.tools2_cfill_group.squares_spacing_entry,
-            "tools_copper_thieving_lines_size": self.ui.tools2_defaults_form.tools2_cfill_group.line_size_entry,
-            "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
-            "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
-            "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
-            "tools_copper_thieving_mask_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_ppm_entry,
-
-            # Fiducials Tool
-            "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,
-            "tools_fiducials_margin": self.ui.tools2_defaults_form.tools2_fiducials_group.margin_entry,
-            "tools_fiducials_mode": self.ui.tools2_defaults_form.tools2_fiducials_group.mode_radio,
-            "tools_fiducials_second_pos": self.ui.tools2_defaults_form.tools2_fiducials_group.pos_radio,
-            "tools_fiducials_type": self.ui.tools2_defaults_form.tools2_fiducials_group.fid_type_radio,
-            "tools_fiducials_line_thickness": self.ui.tools2_defaults_form.tools2_fiducials_group.line_thickness_entry,
-
-            # Calibration Tool
-            "tools_cal_calsource": self.ui.tools2_defaults_form.tools2_cal_group.cal_source_radio,
-            "tools_cal_travelz": self.ui.tools2_defaults_form.tools2_cal_group.travelz_entry,
-            "tools_cal_verz": self.ui.tools2_defaults_form.tools2_cal_group.verz_entry,
-            "tools_cal_zeroz": self.ui.tools2_defaults_form.tools2_cal_group.zeroz_cb,
-            "tools_cal_toolchangez": self.ui.tools2_defaults_form.tools2_cal_group.toolchangez_entry,
-            "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
-            "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
-
-            # Extract Drills Tool
-            "tools_edrills_hole_type": self.ui.tools2_defaults_form.tools2_edrills_group.hole_size_radio,
-            "tools_edrills_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_edrills_group.dia_entry,
-            "tools_edrills_hole_prop_factor": self.ui.tools2_defaults_form.tools2_edrills_group.factor_entry,
-            "tools_edrills_circular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.circular_ring_entry,
-            "tools_edrills_oblong_ring": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_ring_entry,
-            "tools_edrills_square_ring": self.ui.tools2_defaults_form.tools2_edrills_group.square_ring_entry,
-            "tools_edrills_rectangular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_ring_entry,
-            "tools_edrills_others_ring": self.ui.tools2_defaults_form.tools2_edrills_group.other_ring_entry,
-            "tools_edrills_circular": self.ui.tools2_defaults_form.tools2_edrills_group.circular_cb,
-            "tools_edrills_oblong": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_cb,
-            "tools_edrills_square": self.ui.tools2_defaults_form.tools2_edrills_group.square_cb,
-            "tools_edrills_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
-            "tools_edrills_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
-
-            # Punch Gerber Tool
-            "tools_punch_hole_type": self.ui.tools2_defaults_form.tools2_punch_group.hole_size_radio,
-            "tools_punch_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_punch_group.dia_entry,
-            "tools_punch_hole_prop_factor": self.ui.tools2_defaults_form.tools2_punch_group.factor_entry,
-            "tools_punch_circular_ring": self.ui.tools2_defaults_form.tools2_punch_group.circular_ring_entry,
-            "tools_punch_oblong_ring": self.ui.tools2_defaults_form.tools2_punch_group.oblong_ring_entry,
-            "tools_punch_square_ring": self.ui.tools2_defaults_form.tools2_punch_group.square_ring_entry,
-            "tools_punch_rectangular_ring": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_ring_entry,
-            "tools_punch_others_ring": self.ui.tools2_defaults_form.tools2_punch_group.other_ring_entry,
-            "tools_punch_circular": self.ui.tools2_defaults_form.tools2_punch_group.circular_cb,
-            "tools_punch_oblong": self.ui.tools2_defaults_form.tools2_punch_group.oblong_cb,
-            "tools_punch_square": self.ui.tools2_defaults_form.tools2_punch_group.square_cb,
-            "tools_punch_rectangular": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_cb,
-            "tools_punch_others": self.ui.tools2_defaults_form.tools2_punch_group.other_cb,
-
-            # Invert Gerber Tool
-            "tools_invert_margin": self.ui.tools2_defaults_form.tools2_invert_group.margin_entry,
-            "tools_invert_join_style": self.ui.tools2_defaults_form.tools2_invert_group.join_radio,
-
-            # Utilities
-            # File associations
-            "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,
-            "fa_gcode": self.ui.util_defaults_form.fa_gcode_group.gco_list_text,
-            # "fa_geometry": self.ui.util_defaults_form.fa_geometry_group.close_paths_cb,
-            "fa_gerber": self.ui.util_defaults_form.fa_gerber_group.grb_list_text,
-            "util_autocomplete_keywords": self.ui.util_defaults_form.kw_group.kw_list_text,
-
-        }
-
-        # update the Preferences GUI elements with the values in the self.defaults
-        self.defaults_write_form()
+        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
+                                                         inform=self.inform, app=self)
+        self.preferencesUiManager.defaults_write_form()
 
         # When the self.defaults dictionary changes will update the Preferences GUI forms
         self.defaults.set_change_callback(self.on_defaults_dict_change)
@@ -1755,10 +562,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         if self.defaults["first_run"] is True:
-            self.save_factory_defaults(silent_message=False)
-            # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
-            filename_factory = self.data_path + '/factory_defaults.FlatConfig'
-            os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
@@ -1770,7 +573,7 @@ class App(QtCore.QObject):
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False
-            self.save_defaults(silent=True)
+            self.preferencesUiManager.save_defaults(silent=True)
 
         # ###########################################################################################################
         # ############################################ Data #########################################################
@@ -1849,20 +652,9 @@ class App(QtCore.QObject):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
             self.defaults['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
-            self.save_defaults(silent=True, first_time=True)
+            self.preferencesUiManager.save_defaults(silent=True, first_time=True)
 
-        self.propagate_defaults(silent=True)
-
-        # def auto_save_defaults():
-        #     try:
-        #         self.save_defaults(silent=True)
-        #         self.propagate_defaults(silent=True)
-        #     finally:
-        #         QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
-
-        # the following lines activates automatic defaults save
-        # if user_defaults:
-        #     QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
+        self.defaults.propagate_defaults()
 
         # ###########################################################################################################
         # ######################################## UPDATE THE OPTIONS ###############################################
@@ -1876,21 +668,9 @@ class App(QtCore.QObject):
         # Copy app defaults to project options
         for def_key, def_val in self.defaults.items():
             self.options[def_key] = deepcopy(def_val)
-        # self.options.update(self.defaults)
 
-        self.gen_form = None
-        self.ger_form = None
-        self.exc_form = None
-        self.geo_form = None
-        self.cnc_form = None
-        self.tools_form = None
-        self.tools2_form = None
-        self.fa_form = None
+        self.preferencesUiManager.show_preferences_gui()
 
-        # Will show the Preferences GUI
-        self.show_preferences_gui()
-        # Initialize the color box's color in Preferences -> Global -> Color
-        self.init_color_pickers_in_preferences_gui()
 
         # ### End of Data ####
 
@@ -2178,13 +958,6 @@ class App(QtCore.QObject):
         # Project Context Menu -> Color Setting
         for act in self.ui.menuprojectcolor.actions():
             act.triggered.connect(self.on_set_color_action_triggered)
-
-        # Preferences Plot Area TAB
-        self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
-        self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
-        self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
-
-        self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
 
         # ###########################################################################################################
         # #################################### GUI PREFERENCES SIGNALS ##############################################
@@ -2742,9 +1515,6 @@ class App(QtCore.QObject):
         self.reference_code_editor = None
         self.script_code = ''
 
-        # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
-        self.preferences_changed_flag = False
-
         # if Tools DB are changed/edited in the Edit -> Tools Database tab the value will be set to True
         self.tools_db_changed_flag = False
 
@@ -2921,10 +1691,11 @@ class App(QtCore.QObject):
         if App.args:
             self.args_at_startup.emit(App.args)
 
-        if self.old_defaults_found is True:
+
+        if self.defaults.old_defaults_found is True:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
                                                       "Please reboot the application to update."))
-            self.old_defaults_found = False
+            self.defaults.old_defaults_found = False
 
     # ######################################### INIT FINISHED  #######################################################
     # #################################################################################################################
@@ -2932,6 +1703,26 @@ class App(QtCore.QObject):
     # #################################################################################################################
     # #################################################################################################################
     # #################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -3019,7 +1810,7 @@ class App(QtCore.QObject):
 
             elif 'save'.lower() in argument.lower():
                 log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
-                self.save_defaults()
+                self.preferencesUiManager.save_defaults()
             else:
                 exc_list = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
                 proc_arg = argument.lower()
@@ -3097,74 +1888,7 @@ class App(QtCore.QObject):
 
         fcTranslate.restart_program(app=self)
 
-    def defaults_read_form(self):
-        """
-        Will read all the values in the Preferences GUI and update the defaults dictionary.
 
-        :return: None
-        """
-        for option in self.defaults_form_fields:
-            try:
-                self.defaults[option] = self.defaults_form_fields[option].get_value()
-            except Exception as e:
-                log.debug("App.defaults_read_form() --> %s" % str(e))
-
-    def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
-        """
-        Will set the values for all the GUI elements in Preferences GUI based on the values found in the
-        self.defaults dictionary.
-
-        :param factor: will apply a factor to the values that written in the GUI elements
-        :param fl_units: current measuring units in FlatCAM: Metric or Inch
-        :param source_dict: the repository of options, usually is the self.defaults
-        :return: None
-        """
-
-        options_storage = self.defaults if source_dict is None else source_dict
-
-        for option in options_storage:
-            if source_dict:
-                self.defaults_write_form_field(option, factor=factor, units=fl_units, defaults_dict=source_dict)
-            else:
-                self.defaults_write_form_field(option, factor=factor, units=fl_units)
-
-            # try:
-            #     self.defaults_form_fields[option].set_value(self.defaults[option])
-            # except KeyError:
-            #     #self.log.debug("defaults_write_form(): No field for: %s" % option)
-            #     pass
-
-    def defaults_write_form_field(self, field, factor=None, units=None, defaults_dict=None):
-        """
-        Basically it is the worker in the self.defaults_write_form()
-
-        :param field: the GUI element in Preferences GUI to be updated
-        :param factor: factor to be applied to the field parameter
-        :param units: current FLatCAM measuring units
-        :param defaults_dict: the defaults storage
-        :return: None, it updates GUI elements
-        """
-
-        def_dict = self.defaults if defaults_dict is None else defaults_dict
-        try:
-            if factor is None:
-                if units is None:
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-            else:
-                if units is None:
-                    self.defaults_form_fields[field].set_value(def_dict[field] * factor)
-                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
-                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
-        except KeyError:
-            pass
-        except AttributeError:
-            log.debug(field)
 
     def clear_pool(self):
         """
@@ -3422,7 +2146,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("object2editor()")
+        self.defaults.report_usage("object2editor()")
 
         # disable the objects menu as it may interfere with the Editors
         self.ui.menuobjects.setDisabled(True)
@@ -3516,7 +2240,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("editor2object()")
+        self.defaults.report_usage("editor2object()")
 
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
@@ -3694,19 +2418,6 @@ class App(QtCore.QObject):
             loc = os.path.dirname(__file__)
         return loc
 
-    def report_usage(self, resource):
-        """
-        Increments usage counter for the given resource
-        in self.defaults['global_stats'].
-
-        :param resource: Name of the resource.
-        :return: None
-        """
-
-        if resource in self.defaults['global_stats']:
-            self.defaults['global_stats'][resource] += 1
-        else:
-            self.defaults['global_stats'][resource] = 1
 
     def info(self, msg):
         """
@@ -3806,118 +2517,6 @@ class App(QtCore.QObject):
         else:
             self.ui.toolbarshell.setVisible(False)
 
-    def load_defaults(self, filename):
-        """
-        Loads the aplication's default settings from current_defaults.FlatConfig into
-        ``self.defaults``.
-
-        :return: None
-        """
-        try:
-            f = open(self.data_path + "/" + filename + ".FlatConfig")
-            options = f.read()
-            f.close()
-        except IOError:
-            self.log.error("Could not load defaults file.")
-            self.inform.emit('[ERROR] %s' % _("Could not load defaults file."))
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            return
-
-        try:
-            defaults = json.loads(options)
-        except Exception:
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 511
-            e = sys.exc_info()[0]
-            App.log.error(str(e))
-            self.inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
-            return
-
-        if defaults:
-            if 'version' not in defaults or defaults['version'] != self.defaults['version']:
-                for k, v in defaults.items():
-                    if k in self.defaults and k != 'version':
-
-                        # check if the types are the same. Because some types (tuple, float, int etc)
-                        # may be stored as strings we check their types.
-                        try:
-                            target = eval(self.defaults[k])
-                        except (NameError, TypeError):
-                            # it's an unknown string leave it as it is
-                            target = deepcopy(self.defaults[k])
-
-                        try:
-                            source = eval(v)
-                        except NameError:
-                            # it's an unknown string leave it as it is
-                            source = deepcopy(v)
-
-                        if type(target) == type(source):
-                            self.defaults[k] = v
-
-                # delete old factory defaults
-                try:
-                    fact_def_file_path = os.path.join(self.data_path, 'factory_defaults.FlatConfig')
-                    os.chmod(fact_def_file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-                    os.remove(fact_def_file_path)
-
-                    # recreate a new factory defaults file and save the factory defaults data into it
-                    f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
-                    json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
-                    f_f_def_s.close()
-
-                    # and then make the factory_defaults.FlatConfig file read_only
-                    # so it can't be modified after creation.
-                    os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
-                except Exception as e:
-                    log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
-
-                self.old_defaults_found = True
-            else:
-                self.old_defaults_found = False
-                self.defaults.update(defaults)
-
-        log.debug("FlatCAM defaults loaded from: %s" % filename)
-
-    def on_restore_defaults_preferences(self):
-        """
-        Loads the application's factory default settings from factory_defaults.FlatConfig into
-        ``self.defaults``.
-
-        :return: None
-        """
-
-        App.log.debug("App.on_restore_defaults_preferences()")
-
-        filename = self.data_path + '/factory_defaults.FlatConfig'
-
-        if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-        else:
-            try:
-                f = open(filename)
-                options = f.read()
-                f.close()
-            except IOError:
-                self.log.error("Could not load factory defaults file.")
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load factory defaults file."))
-                return
-
-            try:
-                defaults_from_file = json.loads(options)
-            except Exception:
-                e = sys.exc_info()[0]
-                App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
-                return
-            self.defaults.update(defaults_from_file)
-            # update the dict that is used to restore the values in the defaults form if Cancel is clicked in the
-            # Preferences window
-            self.current_defaults.update(defaults_from_file)
-
-            self.on_preferences_edited()
-            self.inform.emit('[success] %s' % _("Preferences default values are restored."))
 
     def on_import_preferences(self):
         """
@@ -3927,9 +2526,10 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_import_preferences")
+        self.defaults.report_usage("on_import_preferences")
         App.log.debug("App.on_import_preferences()")
 
+        # Show file chooser
         filter_ = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Preferences"),
@@ -3938,35 +2538,16 @@ class App(QtCore.QObject):
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Preferences"),
                                                                  filter=filter_)
-
         filename = str(filename)
-
         if filename == "":
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-        else:
-            try:
-                f = open(filename)
-                options = f.read()
-                f.close()
-            except IOError:
-                self.log.error("Could not load defaults file.")
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load defaults file."))
-                return
+            return
 
-            try:
-                defaults_from_file = json.loads(options)
-            except Exception:
-                e = sys.exc_info()[0]
-                App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse defaults file."))
-                return
-            self.defaults.update(defaults_from_file)
-            # update the dict that is used to restore the values in the defaults form if Cancel is clicked in the
-            # Preferences window
-            self.current_defaults.update(defaults_from_file)
+        # Load in the defaults from the chosen file
+        self.defaults.load(filename=filename)
 
-            self.on_preferences_edited()
-            self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
+        self.preferencesUiManager.on_preferences_edited()
+        self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
 
     def on_export_preferences(self):
         """
@@ -3974,71 +2555,40 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_export_preferences")
+        self.defaults.report_usage("on_export_preferences")
         App.log.debug("on_export_preferences()")
 
         defaults_file_content = None
 
-        self.date = str(datetime.today()).rpartition('.')[0]
-        self.date = ''.join(c for c in self.date if c not in ':-')
-        self.date = self.date.replace(' ', '_')
-
+        # Show file chooser
+        date = str(datetime.today()).rpartition('.')[0]
+        date = ''.join(c for c in date if c not in ':-')
+        date = date.replace(' ', '_')
         filter__ = "Config File .FlatConfig (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
-                directory=self.data_path + '/preferences_' + self.date,
+                directory=self.data_path + '/preferences_' + date,
                 filter=filter__
             )
         except TypeError:
             filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Preferences"), filter=filter__)
-
         filename = str(filename)
-        defaults_from_file = {}
-
         if filename == "":
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
-        else:
-            try:
-                f = open(filename, 'w')
-                defaults_file_content = f.read()
-                f.close()
-            except PermissionError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("Permission denied, saving not possible.\n"
-                                   "Most likely another app is holding the file open and not accessible."))
-                return
-            except IOError:
-                App.log.debug('Creating a new preferences file ...')
-                f = open(filename, 'w')
-                json.dump({}, f)
-                f.close()
-            except Exception:
-                e = sys.exc_info()[0]
-                App.log.error("Could not load defaults file.")
-                App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load preferences file."))
-                return
 
-            try:
-                defaults_from_file = json.loads(defaults_file_content)
-            except Exception:
-                App.log.warning("Trying to read an empty Preferences file. Continue.")
+        # Update options
+        self.preferencesUiManager.defaults_read_form()
+        self.defaults.propagate_defaults()
 
-            # Update options
-            self.defaults_read_form()
-            defaults_from_file.update(self.defaults)
-            self.propagate_defaults(silent=True)
+        # Save update options
+        try:
+            self.defaults.write(filename=filename)
+        except Exception:
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
+            return
 
-            # Save update options
-            try:
-                f = open(filename, "w")
-                json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
-                f.close()
-            except Exception:
-                self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
-                return
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
@@ -4050,7 +2600,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("save_to_file")
+        self.defaults.report_usage("save_to_file")
         App.log.debug("save_to_file()")
 
         self.date = str(datetime.today()).rpartition('.')[0]
@@ -4127,7 +2677,7 @@ class App(QtCore.QObject):
         self.defaults["global_def_win_w"] = width
         self.defaults["global_def_win_h"] = height
         self.defaults["global_def_notebook_width"] = notebook_width
-        self.save_defaults()
+        self.preferencesUiManager.save_defaults()
 
     def restore_main_win_geom(self):
         try:
@@ -4348,7 +2898,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_excellon_object()")
+        self.defaults.report_usage("new_excellon_object()")
 
         self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
 
@@ -4358,7 +2908,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_geometry_object()")
+        self.defaults.report_usage("new_geometry_object()")
 
         def initialize(obj, app):
             obj.multitool = False
@@ -4371,7 +2921,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_gerber_object()")
+        self.defaults.report_usage("new_gerber_object()")
 
         def initialize(grb_obj, app):
             grb_obj.multitool = False
@@ -4398,7 +2948,7 @@ class App(QtCore.QObject):
         :param text: pass a source file to the newly created script to be loaded in it
         :return: None
         """
-        self.report_usage("new_script_object()")
+        self.defaults.report_usage("new_script_object()")
 
         if text is not None:
             new_source_file = text
@@ -4438,7 +2988,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_document_object()")
+        self.defaults.report_usage("new_document_object()")
 
         def initialize(obj, app):
             obj.source_file = ""
@@ -4564,7 +3114,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_about")
+        self.defaults.report_usage("on_about")
 
         version = self.version
         version_date = self.version_date
@@ -4967,195 +3517,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-
-        self.save_defaults()
-
-    # def on_app_exit(self):
-    #     self.report_usage("on_app_exit()")
-    #
-    #     if self.collection.get_list():
-    #         msgbox = QtWidgets.QMessageBox()
-    #         # msgbox.setText("<B>Save changes ...</B>")
-    #         msgbox.setText("There are files/objects opened in FlatCAM. "
-    #                        "\n"
-    #                        "Do you want to Save the project?")
-    #         msgbox.setWindowTitle("Save changes")
-    #         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-    #         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-    #                                   QtWidgets.QMessageBox.Cancel)
-    #         msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
-    #
-    #         response = msgbox.exec_()
-    #
-    #         if response == QtWidgets.QMessageBox.Yes:
-    #             self.on_file_saveprojectas(thread=False)
-    #         elif response == QtWidgets.QMessageBox.Cancel:
-    #             return
-    #         self.save_defaults()
-    #     else:
-    #         self.save_defaults()
-    #     log.debug("Application defaults saved ... Exit event.")
-    #     QtWidgets.qApp.quit()
-
-    def save_defaults(self, silent=False, data_path=None, first_time=False):
-        """
-        Saves application default options
-        ``self.defaults`` to current_defaults.FlatConfig file.
-        Save the toolbars visibility status to the preferences file (current_defaults.FlatConfig) to be
-        used at the next launch of the application.
-
-        :param silent:      Whether to display a message in status bar or not; boolean
-        :param data_path:   The path where to save the preferences file (current_defaults.FlatConfig)
-        When the application is portable it should be a mobile location.
-        :param first_time:  Boolean. If True will execute some code when the app is run first time
-        :return:            None
-        """
-        self.report_usage("save_defaults")
-
-        if data_path is None:
-            data_path = self.data_path
-
-        # Read options from file
-        try:
-            f = open(data_path + "/current_defaults.FlatConfig")
-            defaults_file_content = f.read()
-            f.close()
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Could not load defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load defaults file."))
-            return
-
-        try:
-            defaults = json.loads(defaults_file_content)
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Failed to parse defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse defaults file."))
-            return
-
-        # Update options
-        self.defaults_read_form()
-        defaults.update(self.defaults)
-        self.propagate_defaults(silent=True)
-
-        if first_time is False:
-            self.save_toolbar_view()
-
-        # Save update options
-        filename = data_path + "/current_defaults.FlatConfig"
-        try:
-            f = open(filename, "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-        except Exception as e:
-            log.debug("App.save_defaults() --> %s" % str(e))
-            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
-            return
-
-        if not silent:
-            self.inform.emit('[success] %s' % _("Preferences saved."))
-
-        # update the autosave timer
-        self.save_project_auto_update()
-
-    def save_toolbar_view(self):
-        """
-        Will save the toolbar view state to the defaults
-
-        :return:            None
-        """
-
-        # Save the toolbar view
-        tb_status = 0
-        if self.ui.toolbarfile.isVisible():
-            tb_status += 1
-
-        if self.ui.toolbargeo.isVisible():
-            tb_status += 2
-
-        if self.ui.toolbarview.isVisible():
-            tb_status += 4
-
-        if self.ui.toolbartools.isVisible():
-            tb_status += 8
-
-        if self.ui.exc_edit_toolbar.isVisible():
-            tb_status += 16
-
-        if self.ui.geo_edit_toolbar.isVisible():
-            tb_status += 32
-
-        if self.ui.grb_edit_toolbar.isVisible():
-            tb_status += 64
-
-        if self.ui.snap_toolbar.isVisible():
-            tb_status += 128
-
-        if self.ui.toolbarshell.isVisible():
-            tb_status += 256
-
-        self.defaults["global_toolbar_view"] = tb_status
-
-    def save_factory_defaults(self, silent_message=False, data_path=None):
-        """
-        Saves application factory default options
-        ``self.defaults`` to factory_defaults.FlatConfig.
-        It's a one time job done just after the first install.
-
-        :param silent_message: whether to display a message in status bar or not; boolean
-        :param data_path: the path where to save the default preferences file (factory_defaults.FlatConfig)
-        When the application is portable it should be a mobile location.
-        :return: None
-        """
-
-        self.report_usage("save_factory_defaults")
-
-        if data_path is None:
-            data_path = self.data_path
-
-        # Read options from file
-        try:
-            f_f_def = open(data_path + "/factory_defaults.FlatConfig")
-            factory_defaults_file_content = f_f_def.read()
-            f_f_def.close()
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Could not load factory defaults file.")
-            App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load factory defaults file."))
-            return
-
-        try:
-            factory_defaults = json.loads(factory_defaults_file_content)
-        except Exception:
-            e = sys.exc_info()[0]
-            App.log.error("Failed to parse factory defaults file.")
-            App.log.error(str(e))
-            if silent_message is False:
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
-            return
-
-        # Update options
-        self.defaults_read_form()
-        factory_defaults.update(self.defaults)
-        self.propagate_defaults(silent=True)
-
-        # Save update options
-        try:
-            f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
-            json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
-            f_f_def_s.close()
-        except Exception as e:
-            log.debug("App.save_factory_default() save update --> %s" % str(e))
-            if silent_message is False:
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write factory defaults to file."))
-            return
-
-        if silent_message is False:
-            self.inform.emit(_("Factory defaults saved."))
+        self.preferencesUiManager.save_defaults()
 
     def final_save(self):
         """
@@ -5211,7 +3573,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.save_defaults(silent=True)
+        self.preferencesUiManager.save_defaults(silent=True)
         log.debug("App.quit_application() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
@@ -5363,8 +3725,7 @@ class App(QtCore.QObject):
                 fp.close()
 
             # save the current defaults to the new defaults file
-            self.save_defaults(silent=True, data_path=current_data_path)
-            self.save_factory_defaults(silent_message=True, data_path=current_data_path)
+            self.preferencesUiManager.save_defaults(silent=True, data_path=current_data_path)
 
         else:
             data[line_no] = 'portable=False\n'
@@ -5656,7 +4017,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join()")
+        self.defaults.report_usage("on_edit_join()")
 
         obj_name_single = str(name) if name else "Combo_SingleGeo"
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
@@ -5715,7 +4076,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join_exc()")
+        self.defaults.report_usage("on_edit_join_exc()")
 
         objs = self.collection.get_selected()
 
@@ -5730,7 +4091,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(exc_obj, app):
-            ExcellonObject.merge(self, exc_list=objs, exc_final=exc_obj)
+            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
@@ -5743,7 +4104,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join_grb()")
+        self.defaults.report_usage("on_edit_join_grb()")
 
         objs = self.collection.get_selected()
 
@@ -5774,7 +4135,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_convert_singlegeo_to_multigeo()")
+        self.defaults.report_usage("on_convert_singlegeo_to_multigeo()")
 
         obj = self.collection.get_active()
 
@@ -5808,7 +4169,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_convert_multigeo_to_singlegeo()")
+        self.defaults.report_usage("on_convert_multigeo_to_singlegeo()")
 
         obj = self.collection.get_active()
 
@@ -5844,7 +4205,7 @@ class App(QtCore.QObject):
         :param field: the key of the self.defaults dictionary that was changed.
         :return: None
         """
-        self.defaults_write_form_field(field)
+        self.preferencesUiManager.defaults_write_form_field(field=field)
 
         if field == "units":
             self.set_screen_units(self.defaults['units'])
@@ -5884,7 +4245,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toggle_units")
+        self.defaults.report_usage("on_toggle_units")
 
         if self.toggle_units_ignore:
             return
@@ -6075,9 +4436,9 @@ class App(QtCore.QObject):
 
         if response == bt_ok:
             if no_pref is False:
-                self.defaults_read_form()
+                self.preferencesUiManager.defaults_read_form()
                 scale_defaults(factor)
-                self.defaults_write_form(fl_units=new_units)
+                self.preferencesUiManager.defaults_write_form(fl_units=new_units)
 
                 self.defaults["units"] = new_units
 
@@ -6131,9 +4492,9 @@ class App(QtCore.QObject):
 
             self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
 
-        self.defaults_read_form()
+        self.preferencesUiManager.defaults_read_form()
 
-        # the self.defaults_read_form() will update all defaults values in self.defaults from the GUI elements but
+        # the self.preferencesUiManager.defaults_read_form() will update all defaults values in self.defaults from the GUI elements but
         # I don't want it for the grid values, so I update them here
         self.defaults['global_gridx'] = val_x
         self.defaults['global_gridy'] = val_y
@@ -6141,7 +4502,7 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
     def on_fullscreen(self, disable=False):
-        self.report_usage("on_fullscreen()")
+        self.defaults.report_usage("on_fullscreen()")
 
         flags = self.ui.windowFlags()
         if self.toggle_fscreen is False and disable is False:
@@ -6182,7 +4543,7 @@ class App(QtCore.QObject):
             self.toggle_fscreen = False
 
     def on_toggle_plotarea(self):
-        self.report_usage("on_toggle_plotarea()")
+        self.defaults.report_usage("on_toggle_plotarea()")
 
         try:
             name = self.ui.plot_tab_area.widget(0).objectName()
@@ -6208,7 +4569,7 @@ class App(QtCore.QObject):
             self.ui.menu_toggle_nb.setChecked(False)
 
     def on_toggle_axis(self):
-        self.report_usage("on_toggle_axis()")
+        self.defaults.report_usage("on_toggle_axis()")
 
         if self.toggle_axis is False:
             if self.is_legacy is False:
@@ -6238,13 +4599,13 @@ class App(QtCore.QObject):
             self.toggle_axis = False
 
     def on_toggle_grid(self):
-        self.report_usage("on_toggle_grid()")
+        self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
         self.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
-        self.report_usage("on_toggle_grd_lines()")
+        self.defaults.report_usage("on_toggle_grd_lines()")
 
         tt_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if tt_settings.contains("theme"):
@@ -6290,245 +4651,10 @@ class App(QtCore.QObject):
                 self.app_cursor.enabled = True
                 self.app_cursor.enabled = False
 
-    def show_preferences_gui(self):
-        """
-        Called to initialize and show the Preferences GUI
 
-        :return: None
-        """
 
-        self.gen_form = self.ui.general_defaults_form
-        self.ger_form = self.ui.gerber_defaults_form
-        self.exc_form = self.ui.excellon_defaults_form
-        self.geo_form = self.ui.geometry_defaults_form
-        self.cnc_form = self.ui.cncjob_defaults_form
-        self.tools_form = self.ui.tools_defaults_form
-        self.tools2_form = self.ui.tools2_defaults_form
-        self.fa_form = self.ui.util_defaults_form
 
-        try:
-            self.ui.general_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.general_scroll_area.setWidget(self.gen_form)
-        self.gen_form.show()
 
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.gerber_scroll_area.setWidget(self.ger_form)
-        self.ger_form.show()
-
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.excellon_scroll_area.setWidget(self.exc_form)
-        self.exc_form.show()
-
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.geometry_scroll_area.setWidget(self.geo_form)
-        self.geo_form.show()
-
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.cncjob_scroll_area.setWidget(self.cnc_form)
-        self.cnc_form.show()
-
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.tools_scroll_area.setWidget(self.tools_form)
-        self.tools_form.show()
-
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.tools2_scroll_area.setWidget(self.tools2_form)
-        self.tools2_form.show()
-
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            self.log.debug("Nothing to remove")
-        self.ui.fa_scroll_area.setWidget(self.fa_form)
-        self.fa_form.show()
-
-        self.log.debug("Finished Preferences GUI form initialization.")
-
-        # self.options2form()
-
-    def init_color_pickers_in_preferences_gui(self):
-        # Init Gerber Plot Colors
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_spinner.set_value(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.setValue(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
-
-        # Init Excellon Plot Colors
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
-            self.defaults['excellon_plot_fill'])
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_spinner.set_value(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.setValue(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
-            self.defaults['excellon_plot_line'])
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
-        # Init Geometry Plot Colors
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry.set_value(
-            self.defaults['geometry_plot_line'])
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['geometry_plot_line'])[:7])
-
-        # Init CNCJob Travel Line Colors
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry.set_value(
-            self.defaults['cncjob_travel_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_fill'])[:7])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_spinner.set_value(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_slider.setValue(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
-
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
-            self.defaults['cncjob_travel_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_line'])[:7])
-
-        # Init CNCJob Plot Colors
-        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry.set_value(
-            self.defaults['cncjob_plot_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_fill'])[:7])
-
-        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry.set_value(
-            self.defaults['cncjob_plot_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
-
-        # Init Left-Right Selection colors
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_line'])[:7])
-
-        # Init Right-Left Selection colors
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
-            self.defaults['global_alt_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
-            self.defaults['global_alt_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_line'])[:7])
-
-        # Init Draw color and Selection Draw Color
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
-            self.defaults['global_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_draw_color'])[:7])
-
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
-            self.defaults['global_sel_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_draw_color'])[:7])
-
-        # Init Project Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
-            self.defaults['global_proj_item_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
-
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
-            self.defaults['global_proj_item_dis_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
-
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(
-            self.defaults['global_cursor_color'])
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
-
-        # Init the Annotation CNC Job color
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
-            self.defaults['cncjob_annotation_fontcolor'])
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
-
-        # Init the Tool Film color
-        self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
-            self.defaults['tools_film_color'])
-        self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_film_color'])[:7]
-        )
-
-        # Init the Tool QRCode colors
-        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(
-            self.defaults['tools_qrcode_fill_color'])
-        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_fill_color'])[:7])
-
-        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(
-            self.defaults['tools_qrcode_back_color'])
-        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])[:7])
 
     def on_update_exc_export(self, state):
         """
@@ -6677,7 +4803,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if film_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
             "background-color:%s;"
@@ -6706,7 +4832,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if fill_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
             "background-color:%s;"
@@ -6736,7 +4862,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if back_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
             "background-color:%s;"
@@ -6779,7 +4905,7 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
         if self.is_legacy is True:
             self.plotcanvas.delete_workspace()
-        self.defaults_read_form()
+        self.preferencesUiManager.defaults_read_form()
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
@@ -6787,7 +4913,7 @@ class App(QtCore.QObject):
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
-        self.defaults_read_form()
+        self.preferencesUiManager.defaults_read_form()
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
@@ -6822,93 +4948,6 @@ class App(QtCore.QObject):
         else:
             self.app_cursor.enabled = False
 
-    def on_save_button(self, save_to_file=True):
-        log.debug("App.on_save_button() --> Applying preferences to file.")
-
-        # Preferences saved, update flag
-        self.preferences_changed_flag = False
-
-        # Preferences save, update the color of the Preferences Tab text
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
-
-        # restore the default stylesheet by setting a blank one
-        self.ui.pref_apply_button.setStyleSheet("")
-
-        self.inform.emit('%s' % _("Preferences applied."))
-
-        # make sure we update the self.current_defaults dict used to undo changes to self.defaults
-        self.current_defaults.update(self.defaults)
-
-        if save_to_file:
-            self.save_defaults(silent=False)
-            # load the defaults so they are updated into the app
-            self.load_defaults(filename='current_defaults')
-
-        # Re-fresh project options
-        self.on_options_app2project()
-
-        settgs = QSettings("Open Source", "FlatCAM")
-
-        # save the notebook font size
-        fsize = self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
-        settgs.setValue('notebook_font_size', fsize)
-
-        # save the axis font size
-        g_fsize = self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
-        settgs.setValue('axis_font_size', g_fsize)
-
-        # save the textbox font size
-        tb_fsize = self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
-        settgs.setValue('textbox_font_size', tb_fsize)
-
-        settgs.setValue(
-            'machinist',
-            1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
-        )
-
-        # This will write the setting to the platform specific storage.
-        del settgs
-
-        if save_to_file:
-            # close the tab and delete it
-            for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
-                    self.ui.plot_tab_area.closeTab(idx)
-                    break
-
-    def on_pref_close_button(self):
-        # Preferences saved, update flag
-        self.preferences_changed_flag = False
-        try:
-            self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_plot_area_tab_closed)
-        except TypeError:
-            pass
-
-        try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
-        except (TypeError, AttributeError):
-            pass
-        self.defaults_write_form(source_dict=self.current_defaults)
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.on_toggle_units(no_pref=False))
-        self.defaults.update(self.current_defaults)
-
-        # shared_items = {k: self.defaults[k] for k in self.defaults if k in self.current_defaults and
-        #                 self.defaults[k] == self.current_defaults[k]}
-        # print(len(self.defaults), len(shared_items))
-
-        # Preferences save, update the color of the Preferences Tab text
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
-                self.ui.plot_tab_area.closeTab(idx)
-                break
-
-        self.inform.emit('%s' % _("Preferences closed without saving."))
-        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
@@ -7002,7 +5041,7 @@ class App(QtCore.QObject):
         :param force_deletion:  used by Tcl command
         :return: None
         """
-        self.report_usage("on_delete()")
+        self.defaults.report_usage("on_delete()")
 
         response = None
         bt_ok = None
@@ -7100,7 +5139,7 @@ class App(QtCore.QObject):
 
         # display the message for the user
         # and ask him to click on the desired position
-        self.report_usage("on_set_origin()")
+        self.defaults.report_usage("on_set_origin()")
 
         def origin_replot():
 
@@ -7270,7 +5309,7 @@ class App(QtCore.QObject):
         :return:
 
         """
-        self.report_usage("on_jump_to()")
+        self.defaults.report_usage("on_jump_to()")
 
         if not custom_location:
             dia_box_location = None
@@ -7391,7 +5430,7 @@ class App(QtCore.QObject):
         :return:            A point location. (x, y) tuple.
 
         """
-        self.report_usage("on_locate()")
+        self.defaults.report_usage("on_locate()")
 
         if obj is None:
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
@@ -7536,7 +5575,7 @@ class App(QtCore.QObject):
         Will copy a selection of objects, creating new objects.
         :return:
         """
-        self.report_usage("on_copy_command()")
+        self.defaults.report_usage("on_copy_command()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
@@ -7595,8 +5634,7 @@ class App(QtCore.QObject):
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-    def on_paste_command(self):
-        pass
+
 
     def on_copy_object2(self, custom_name):
 
@@ -7650,7 +5688,7 @@ class App(QtCore.QObject):
         :param text:    New name for the object.
         :return:
         """
-        self.report_usage("on_rename_object()")
+        self.defaults.report_usage("on_rename_object()")
 
         named_obj = self.collection.get_active()
         for obj in named_obj:
@@ -7667,7 +5705,7 @@ class App(QtCore.QObject):
         Will convert any object out of Gerber, Excellon, Geometry to Geometry object.
         :return:
         """
-        self.report_usage("convert_any2geo()")
+        self.defaults.report_usage("convert_any2geo()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -7719,7 +5757,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("convert_any2gerber()")
+        self.defaults.report_usage("convert_any2gerber()")
 
         def initialize_geometry(obj_init, app):
             apertures = {}
@@ -7816,7 +5854,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.report_usage("on_selectall()")
+        self.defaults.report_usage("on_selectall()")
 
         # delete the possible selection box around a possible selected object
         self.delete_selection_shape()
@@ -7850,65 +5888,49 @@ class App(QtCore.QObject):
             for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
                 try:
                     try:
-                        tb.textEdited.disconnect(self.on_preferences_edited)
+                        tb.textEdited.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.textEdited.connect(self.on_preferences_edited)
+                    tb.textEdited.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.modificationChanged.disconnect(self.on_preferences_edited)
+                        tb.modificationChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.modificationChanged.connect(self.on_preferences_edited)
+                    tb.modificationChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.toggled.disconnect(self.on_preferences_edited)
+                        tb.toggled.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.toggled.connect(self.on_preferences_edited)
+                    tb.toggled.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.valueChanged.disconnect(self.on_preferences_edited)
+                        tb.valueChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.valueChanged.connect(self.on_preferences_edited)
+                    tb.valueChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                        tb.currentIndexChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.currentIndexChanged.connect(self.on_preferences_edited)
+                    tb.currentIndexChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
-    def on_preferences_edited(self):
-        """
-        Executed when a preference was changed in the Edit -> Preferences tab.
-        Will color the Preferences tab text to Red color.
-        :return:
-        """
-        if self.preferences_changed_flag is False:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
-
-            for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
-
-            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
-
-            self.preferences_changed_flag = True
 
     def on_tools_database(self, source='app'):
         """
@@ -8006,57 +6028,10 @@ class App(QtCore.QObject):
         :param title: The name of the tab that was closed.
         :return:
         """
+        # FIXME: doing this based on translated title doesn't seem very robust.
 
         if title == _("Preferences"):
-            # disconnect
-            for idx in range(self.ui.pref_tab_area.count()):
-                for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
-                    try:
-                        tb.textEdited.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.modificationChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.toggled.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.valueChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-            if self.preferences_changed_flag is True:
-                msgbox = QtWidgets.QMessageBox()
-                msgbox.setText(_("One or more values are changed.\n"
-                                 "Do you want to save the Preferences?"))
-                msgbox.setWindowTitle(_("Save Preferences"))
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-
-                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-
-                msgbox.setDefaultButton(bt_yes)
-                msgbox.exec_()
-                response = msgbox.clickedButton()
-
-                if response == bt_yes:
-                    self.on_save_button(save_to_file=True)
-                    self.inform.emit('[success] %s' % _("Preferences saved."))
-                else:
-                    self.preferences_changed_flag = False
-                    self.inform.emit('')
-                    return
+            self.uiPreferencesManager.on_close_preferences_tab()
 
         if title == _("Tools Database"):
             # disconnect the signals from the table widget in tab
@@ -8098,7 +6073,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.report_usage("on_flipy()")
+        self.defaults.report_usage("on_flipy()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -8145,7 +6120,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_flipx()")
+        self.defaults.report_usage("on_flipx()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -8194,7 +6169,7 @@ class App(QtCore.QObject):
         :param preset:  A value to be used as predefined angle for rotation.
         :return:
         """
-        self.report_usage("on_rotate()")
+        self.defaults.report_usage("on_rotate()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -8249,7 +6224,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_skewx()")
+        self.defaults.report_usage("on_skewx()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -8288,7 +6263,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_skewy()")
+        self.defaults.report_usage("on_skewy()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -8343,7 +6318,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toolbar_replot")
+        self.defaults.report_usage("on_toolbar_replot")
         self.log.debug("on_toolbar_replot()")
 
         try:
@@ -8648,7 +6623,7 @@ class App(QtCore.QObject):
                              _("Delete Grid value cancelled"))
 
     def on_shortcut_list(self):
-        self.report_usage("on_shortcut_list()")
+        self.defaults.report_usage("on_shortcut_list()")
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, _("Key Shortcut List"))
@@ -8677,7 +6652,7 @@ class App(QtCore.QObject):
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
     def on_copy_name(self):
-        self.report_usage("on_copy_name()")
+        self.defaults.report_usage("on_copy_name()")
 
         obj = self.collection.get_active()
         try:
@@ -9345,7 +7320,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_file_new")
+        self.defaults.report_usage("on_file_new")
 
         # Remove everything from memory
         App.log.debug("on_file_new()")
@@ -9393,7 +7368,7 @@ class App(QtCore.QObject):
         self.project_filename = None
 
         # Load the application defaults
-        self.load_defaults(filename='current_defaults')
+        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
 
         # Re-fresh project options
         self.on_options_app2project()
@@ -9424,7 +7399,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("obj_properties()")
+        self.defaults.report_usage("obj_properties()")
         self.properties_tool.run(toggle=False)
 
     def on_project_context_save(self):
@@ -9455,7 +7430,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("obj_move()")
+        self.defaults.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
     def on_fileopengerber(self, signal, name=None):
@@ -9467,7 +7442,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_fileopengerber")
+        self.defaults.report_usage("on_fileopengerber")
         App.log.debug("on_fileopengerber()")
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
@@ -9514,7 +7489,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_fileopenexcellon")
+        self.defaults.report_usage("on_fileopenexcellon")
         App.log.debug("on_fileopenexcellon()")
 
         _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
@@ -9552,7 +7527,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_fileopengcode")
+        self.defaults.report_usage("on_fileopengcode")
         App.log.debug("on_fileopengcode()")
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
@@ -9592,7 +7567,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_openproject")
+        self.defaults.report_usage("on_file_openproject")
         App.log.debug("on_file_openproject()")
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
@@ -9624,7 +7599,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_fileopenhpgl2")
+        self.defaults.report_usage("on_fileopenhpgl2")
         App.log.debug("on_fileopenhpgl2()")
 
         _filter_ = "HPGL2 Files (*.plt);;" \
@@ -9662,7 +7637,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_file_openconfig")
+        self.defaults.report_usage("on_file_openconfig")
         App.log.debug("on_file_openconfig()")
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
@@ -9683,7 +7658,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportsvg")
+        self.defaults.report_usage("on_file_exportsvg")
         App.log.debug("on_file_exportsvg()")
 
         obj = self.collection.get_active()
@@ -9734,7 +7709,7 @@ class App(QtCore.QObject):
             self.file_saved.emit("SVG", filename)
 
     def on_file_exportpng(self):
-        self.report_usage("on_file_exportpng")
+        self.defaults.report_usage("on_file_exportpng")
         App.log.debug("on_file_exportpng()")
 
         self.date = str(datetime.today()).rpartition('.')[0]
@@ -9778,7 +7753,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savegerber")
+        self.defaults.report_usage("on_file_savegerber")
         App.log.debug("on_file_savegerber()")
 
         obj = self.collection.get_active()
@@ -9819,7 +7794,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savescript")
+        self.defaults.report_usage("on_file_savescript")
         App.log.debug("on_file_savescript()")
 
         obj = self.collection.get_active()
@@ -9860,7 +7835,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savedocument")
+        self.defaults.report_usage("on_file_savedocument")
         App.log.debug("on_file_savedocument()")
 
         obj = self.collection.get_active()
@@ -9901,7 +7876,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_saveexcellon")
+        self.defaults.report_usage("on_file_saveexcellon")
         App.log.debug("on_file_saveexcellon()")
 
         obj = self.collection.get_active()
@@ -9942,7 +7917,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportexcellon")
+        self.defaults.report_usage("on_file_exportexcellon")
         App.log.debug("on_file_exportexcellon()")
 
         obj = self.collection.get_active()
@@ -9986,7 +7961,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportgerber")
+        self.defaults.report_usage("on_file_exportgerber")
         App.log.debug("on_file_exportgerber()")
 
         obj = self.collection.get_active()
@@ -10030,7 +8005,7 @@ class App(QtCore.QObject):
 
                 :return: None
                 """
-        self.report_usage("on_file_exportdxf")
+        self.defaults.report_usage("on_file_exportdxf")
         App.log.debug("on_file_exportdxf()")
 
         obj = self.collection.get_active()
@@ -10084,7 +8059,7 @@ class App(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.report_usage("on_file_importsvg")
+        self.defaults.report_usage("on_file_importsvg")
         App.log.debug("on_file_importsvg()")
 
         _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
@@ -10115,7 +8090,7 @@ class App(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.report_usage("on_file_importdxf")
+        self.defaults.report_usage("on_file_importdxf")
         App.log.debug("on_file_importdxf()")
 
         _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
@@ -10270,7 +8245,7 @@ class App(QtCore.QObject):
         # self.ui.show()
 
     def on_toggle_code_editor(self):
-        self.report_usage("on_toggle_code_editor()")
+        self.defaults.report_usage("on_toggle_code_editor()")
 
         if self.toggle_codeeditor is False:
             self.init_code_editor(name=_("Code Editor"))
@@ -10353,7 +8328,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_fileopenscript")
+        self.defaults.report_usage("on_fileopenscript")
         App.log.debug("on_fileopenscript()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
@@ -10424,7 +8399,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_filerunscript")
+        self.defaults.report_usage("on_filerunscript")
         App.log.debug("on_file_runscript()")
 
         if name:
@@ -10482,7 +8457,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_saveproject")
+        self.defaults.report_usage("on_file_saveproject")
 
         if self.project_filename is None:
             self.on_file_saveprojectas()
@@ -10509,7 +8484,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_saveprojectas")
+        self.defaults.report_usage("on_file_saveprojectas")
 
         self.date = str(datetime.today()).rpartition('.')[0]
         self.date = ''.join(c for c in self.date if c not in ':-')
@@ -10778,7 +8753,7 @@ class App(QtCore.QObject):
         :param scale_stroke_factor: factor by which to change/scale the thickness of the features
         :return:
         """
-        self.report_usage("export_svg()")
+        self.defaults.report_usage("export_svg()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -10846,7 +8821,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("save source file()")
+        self.defaults.report_usage("save source file()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -10890,7 +8865,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_excellon()")
+        self.defaults.report_usage("export_excellon()")
 
         if filename is None:
             if self.defaults["global_last_save_folder"]:
@@ -11045,7 +9020,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_gerber()")
+        self.defaults.report_usage("export_gerber()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -11178,7 +9153,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_dxf()")
+        self.defaults.report_usage("export_dxf()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -11230,7 +9205,7 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
-        self.report_usage("import_svg()")
+        self.defaults.report_usage("import_svg()")
         log.debug("App.import_svg()")
 
         obj_type = ""
@@ -11277,7 +9252,7 @@ class App(QtCore.QObject):
         :param outname:     Name for the imported Geometry
         :return:
         """
-        self.report_usage("import_dxf()")
+        self.defaults.report_usage("import_dxf()")
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -11785,50 +9760,7 @@ class App(QtCore.QObject):
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
-    def propagate_defaults(self, silent=False):
-        """
-        This method is used to set default values in classes. It's
-        an alternative to project options but allows the use
-        of values invisible to the user.
 
-        :param silent:  No messages
-        :return:        None
-        """
-
-        if silent is False:
-            self.log.debug("propagate_defaults()")
-
-        # Which objects to update the given parameters.
-        routes = {
-            "global_zdownrate": CNCjob,
-            "excellon_zeros": Excellon,
-            "excellon_format_upper_in": Excellon,
-            "excellon_format_lower_in": Excellon,
-            "excellon_format_upper_mm": Excellon,
-            "excellon_format_lower_mm": Excellon,
-            "excellon_units": Excellon,
-            "gerber_use_buffer_for_union": Gerber,
-            "geometry_multidepth": Geometry
-        }
-
-        for param in routes:
-            if param in routes[param].defaults:
-                try:
-                    routes[param].defaults[param] = self.defaults[param]
-                    if silent is False:
-                        self.log.debug("  " + param + " OK")
-                except KeyError:
-                    if silent is False:
-                        self.log.debug("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
-            else:
-                # Try extracting the name:
-                # classname_param here is param in the object
-                if param.find(routes[param].__name__.lower() + "_") == 0:
-                    p = param[len(routes[param].__name__) + 1:]
-                    if p in routes[param].defaults:
-                        routes[param].defaults[p] = self.defaults[param]
-                        if silent is False:
-                            self.log.debug("  " + param + " OK!")
 
     def plot_all(self, fit_view=True, use_thread=True):
         """
@@ -12356,21 +10288,21 @@ class App(QtCore.QObject):
         self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
-        self.report_usage("disable_all_plots()")
+        self.defaults.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
         self.inform.emit('[success] %s' %
                          _("All plots disabled."))
 
     def disable_other_plots(self):
-        self.report_usage("disable_other_plots()")
+        self.defaults.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
         self.inform.emit('[success] %s' %
                          _("All non selected plots disabled."))
 
     def enable_all_plots(self):
-        self.report_usage("enable_all_plots()")
+        self.defaults.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
         self.inform.emit('[success] %s' %
@@ -12661,7 +10593,7 @@ class App(QtCore.QObject):
         :param objects:     Selected objects in the Project Tab
         :return:
         """
-        self.report_usage("generate_cnc_job()")
+        self.defaults.report_usage("generate_cnc_job()")
 
         # for obj in objects:
         #     obj.generatecncjob()
@@ -12835,11 +10767,10 @@ class App(QtCore.QObject):
         :return:    None
         """
 
-        self.report_usage("on_options_app2project")
+        self.defaults.report_usage("on_options_app2project")
 
-        self.defaults_read_form()
+        self.preferencesUiManager.defaults_read_form()
         self.options.update(self.defaults)
-        # self.options_write_form()
 
     def toggle_shell(self):
         """
@@ -12847,7 +10778,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("toggle_shell()")
+        self.defaults.report_usage("toggle_shell()")
 
         if self.ui.shell_dock.isVisible():
             self.ui.shell_dock.hide()
@@ -12875,7 +10806,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toggle_shell_from_settings()")
+        self.defaults.report_usage("on_toggle_shell_from_settings()")
 
         if state is True:
             if not self.ui.shell_dock.isVisible():

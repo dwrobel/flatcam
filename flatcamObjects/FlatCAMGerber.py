@@ -505,7 +505,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
 
     def on_generatenoncopper_button_click(self, *args):
-        self.app.report_usage("gerber_on_generatenoncopper_button")
+        self.app.defaults.report_usage("gerber_on_generatenoncopper_button")
 
         self.read_form()
         name = self.options["name"] + "_noncopper"
@@ -532,7 +532,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.app.new_object("geometry", name, geo_init)
 
     def on_generatebb_button_click(self, *args):
-        self.app.report_usage("gerber_on_generatebb_button")
+        self.app.defaults.report_usage("gerber_on_generatebb_button")
         self.read_form()
         name = self.options["name"] + "_bbox"
 
@@ -574,7 +574,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     # in the end toggle the visibility of the origin object so we can see the generated Geometry
                     iso_obj.ui.plot_cb.toggle()
                 else:
-                    app_obj.report_usage("gerber_on_iso_button")
+                    app_obj.defaults.report_usage("gerber_on_iso_button")
                     self.read_form()
 
                     iso_scope = 'all' if self.ui.iso_scope_radio.get_value() == 'all' else 'single'

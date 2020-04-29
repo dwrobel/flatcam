@@ -180,7 +180,7 @@ class Distance(FlatCAMTool):
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolDistance()")
+        self.app.defaults.report_usage("ToolDistance()")
 
         self.points[:] = []
 
