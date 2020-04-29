@@ -8,7 +8,7 @@
 from PyQt5 import QtCore
 
 import logging
-from flatcamGUI.VisPyCanvas import VisPyCanvas, time, Color
+from flatcamGUI.VisPyCanvas import VisPyCanvas, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
 
@@ -244,7 +244,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         """
         if big is True:
             self.big_cursor = True
-            self.c = CursorBig()
+            self.c = CursorBig(app=self.fcapp)
 
             # in case there are multiple new_cursor calls, best to disconnect first the signals
             try:
@@ -410,9 +410,9 @@ class CursorBig(QtCore.QObject):
     mouse_state_updated = QtCore.pyqtSignal(bool)
     mouse_position_updated = QtCore.pyqtSignal(list)
 
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
-
+        self.app = app
         self._enabled = None
 
     @property

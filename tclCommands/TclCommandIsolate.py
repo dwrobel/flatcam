@@ -1,5 +1,4 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGerber
 
 import collections
 
@@ -96,8 +95,8 @@ class TclCommandIsolate(TclCommandSignaled):
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, FlatCAMGerber):
-            self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (name, type(obj)))
+        if obj.kind != 'gerber':
+            self.raise_tcl_error('Expected GerberObject, got %s %s.' % (name, type(obj)))
 
         del args['name']
         obj.isolate(plot=False, **args)

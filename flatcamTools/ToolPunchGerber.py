@@ -142,7 +142,7 @@ class ToolPunchGerber(FlatCAMTool):
               "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
               "- Fixed Diameter -> will try to use the pads center as reference adding fixed diameter holes.\n"
               "- Fixed Annular Ring -> will try to keep a set annular ring.\n"
-              "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.\n")
+              "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.")
         )
         self.method_punch = RadioSet(
             [
@@ -397,7 +397,7 @@ class ToolPunchGerber(FlatCAMTool):
         )
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPunchGerber()")
+        self.app.defaults.report_usage("ToolPunchGerber()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -604,8 +604,8 @@ class ToolPunchGerber(FlatCAMTool):
                 if grb_obj.apertures[apid]['type'] == 'C' and self.circular_cb.get_value():
                     if punch_size >= float(grb_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole Gerber because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
+                                             _("Could not generate punched hole Gerber because the punch hole size"
+                                               " is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
                         for elem in grb_obj.apertures[apid]['geometry']:
@@ -617,7 +617,7 @@ class ToolPunchGerber(FlatCAMTool):
                             punch_size >= float(grb_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Could not generate punched hole Gerber because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
+                                               " is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     elif round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
                             round(float(grb_obj.apertures[apid]['height']), self.decimals) and \

@@ -7,10 +7,9 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.geometry.base as base
 from shapely.ops import cascaded_union, unary_union
@@ -541,7 +540,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCopperThieving()")
+        self.app.defaults.report_usage("ToolCopperThieving()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -994,7 +993,7 @@ class ToolCopperThieving(FlatCAMTool):
                 for pol in app_obj.grb_object.solid_geometry:
                     if app_obj.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
 
                     clearance_geometry.append(
                         pol.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
@@ -1073,7 +1072,7 @@ class ToolCopperThieving(FlatCAMTool):
                     for poly in working_obj:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
                 except TypeError:
                     geo_buff_list.append(working_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
@@ -1082,7 +1081,7 @@ class ToolCopperThieving(FlatCAMTool):
             else:   # ref_selected == 'box'
                 geo_n = working_obj.solid_geometry
 
-                if isinstance(working_obj, FlatCAMGeometry):
+                if working_obj.kind == 'geometry':
                     try:
                         __ = iter(geo_n)
                     except Exception as e:
@@ -1093,11 +1092,11 @@ class ToolCopperThieving(FlatCAMTool):
                     for poly in geo_n:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
 
                     bounding_box = cascaded_union(geo_buff_list)
-                elif isinstance(working_obj, FlatCAMGerber):
+                elif working_obj.kind == 'gerber':
                     geo_n = cascaded_union(geo_n).convex_hull
                     bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                     bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
@@ -1192,7 +1191,7 @@ class ToolCopperThieving(FlatCAMTool):
                     for pol in app_obj.grb_object.solid_geometry:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         outline_geometry.append(
                             pol.buffer(c_val+half_thick_line, int(int(app_obj.geo_steps_per_circle) / 4))

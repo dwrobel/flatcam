@@ -16,14 +16,18 @@ from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QColor
 # from PyQt5.QtCore import QModelIndex
 
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript, \
-    FlatCAMObj
+from flatcamObjects.FlatCAMObj import FlatCAMObj
+from flatcamObjects.FlatCAMCNCJob import CNCJobObject
+from flatcamObjects.FlatCAMDocument import DocumentObject
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
+from flatcamObjects.FlatCAMGeometry import GeometryObject
+from flatcamObjects.FlatCAMGerber import GerberObject
+from flatcamObjects.FlatCAMScript import ScriptObject
+
 import inspect  # TODO: Remove
-import FlatCAMApp
 
 import re
 import logging
-import collections
 from copy import deepcopy
 from numpy import Inf
 
@@ -234,21 +238,21 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     ]
 
     classdict = {
-        "gerber": FlatCAMGerber,
-        "excellon": FlatCAMExcellon,
-        "cncjob": FlatCAMCNCjob,
-        "geometry": FlatCAMGeometry,
-        "script": FlatCAMScript,
-        "document": FlatCAMDocument
+        "gerber": GerberObject,
+        "excellon": ExcellonObject,
+        "cncjob": CNCJobObject,
+        "geometry": GeometryObject,
+        "script": ScriptObject,
+        "document": DocumentObject
     }
 
     icon_files = {
-        "gerber": "share/flatcam_icon16.png",
-        "excellon": "share/drill16.png",
-        "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png",
-        "script": "share/script_new16.png",
-        "document": "share/notes16_1.png"
+        "gerber": "assets/resources/flatcam_icon16.png",
+        "excellon": "assets/resources/drill16.png",
+        "cncjob": "assets/resources/cnc16.png",
+        "geometry": "assets/resources/geometry16.png",
+        "script": "assets/resources/script_new16.png",
+        "document": "assets/resources/notes16_1.png"
     }
 
     # will emit the name of the object that was just selected
@@ -268,7 +272,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.icons = {}
         for kind in ObjectCollection.icon_files:
             self.icons[kind] = QtGui.QPixmap(
-                ObjectCollection.icon_files[kind].replace('share', self.app.resource_location))
+                ObjectCollection.icon_files[kind].replace('assets/resources', self.app.resource_location))
 
         # Create root tree view item
         self.root_item = TreeItem(["root"])
@@ -332,7 +336,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.update_list_signal.connect(self.on_update_list_signal)
 
     def promise(self, obj_name):
-        FlatCAMApp.App.log.debug("Object %s has been promised." % obj_name)
+        log.debug("Object %s has been promised." % obj_name)
         self.promises.add(obj_name)
 
     def has_promises(self):
@@ -349,7 +353,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return len(self.plot_promises) > 0
 
     def on_mouse_down(self, event):
-        FlatCAMApp.App.log.debug("Mouse button pressed on list")
+        log.debug("Mouse button pressed on list")
 
     def on_menu_request(self, pos):
 
@@ -373,17 +377,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectcolor.setEnabled(False)
 
             for obj in self.get_selected():
-                if type(obj) == FlatCAMGerber or type(obj) == FlatCAMExcellon:
+                if type(obj) == GerberObject or type(obj) == ExcellonObject:
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
-                if type(obj) != FlatCAMGeometry:
+                if type(obj) != GeometryObject:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
-                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMGerber:
+                if type(obj) != GeometryObject and type(obj) != ExcellonObject and type(obj) != GerberObject:
                     self.app.ui.menuprojectedit.setVisible(False)
-                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
+                if type(obj) != GerberObject and type(obj) != ExcellonObject and type(obj) != CNCJobObject:
                     self.app.ui.menuprojectviewsource.setVisible(False)
-                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and \
-                        type(obj) != FlatCAMCNCjob:
+                if type(obj) != GerberObject and type(obj) != GeometryObject and type(obj) != ExcellonObject and \
+                        type(obj) != CNCJobObject:
                     # meaning for Scripts and for Document type of FlatCAM object
                     self.app.ui.menuprojectenable.setVisible(False)
                     self.app.ui.menuprojectdisable.setVisible(False)
@@ -532,21 +536,21 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
     def append(self, obj, active=False, to_index=None):
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
+        log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]
 
         # Check promises and clear if exists
         if name in self.promises:
             self.promises.remove(name)
-            # FlatCAMApp.App.log.debug("Promised object %s became available." % name)
-            # FlatCAMApp.App.log.debug("%d promised objects remaining." % len(self.promises))
+            # log.debug("Promised object %s became available." % name)
+            # log.debug("%d promised objects remaining." % len(self.promises))
 
         # Prevent same name
         while name in self.get_names():
             # ## Create a new name
             # Ends with number?
-            FlatCAMApp.App.log.debug("new_object(): Object name (%s) exists, changing." % name)
+            log.debug("new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
             if match:  # Yes: Increment the number!
                 base = match.group(1) or ''
@@ -596,7 +600,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :rtype: list
         """
 
-        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
+        # log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
         return [x.options['name'] for x in self.get_list()]
 
     def get_bounds(self):
@@ -606,7 +610,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: [xmin, ymin, xmax, ymax]
         :rtype: list
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
+        log.debug(str(inspect.stack()[1][3]) + "--> OC.get_bounds()")
 
         # TODO: Move the operation out of here.
 
@@ -624,7 +628,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
             except Exception as e:
-                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
+                log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
 
         return [xmin, ymin, xmax, ymax]
 
@@ -638,7 +642,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
-        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
+        # log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
@@ -760,7 +764,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.all_objects_list = self.get_list()
 
     def delete_all(self):
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+        log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
         self.app.object_status_changed.emit(None, 'delete_all', '')
 
@@ -897,8 +901,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.set_inactive(name)
 
     def on_list_selection_change(self, current, previous):
-        # FlatCAMApp.App.log.debug("on_list_selection_change()")
-        # FlatCAMApp.App.log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
+        """
+
+        :param current:     Current selected item
+        :param previous:    Previously selected item
+        :return:
+        """
+
+        # log.debug("on_list_selection_change()")
+        # log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
 
         try:
             obj = current.indexes()[0].internalPointer().obj
@@ -942,12 +953,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 )
         except IndexError:
             self.item_selected.emit('none')
-            # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
+            # log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()
             except Exception as e:
-                FlatCAMApp.App.log.debug("Nothing to remove. %s" % str(e))
+                log.debug("Nothing to remove. %s" % str(e))
 
             self.app.setup_component_editor()
             return

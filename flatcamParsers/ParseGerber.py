@@ -1,6 +1,5 @@
 from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro
-import FlatCAMApp
 
 import numpy as np
 import re
@@ -9,15 +8,16 @@ import traceback
 from copy import deepcopy
 import sys
 
-from shapely.ops import cascaded_union, unary_union
-from shapely.geometry import Polygon, MultiPolygon, LineString, Point
+from shapely.ops import cascaded_union
+from shapely.affinity import scale, translate
 import shapely.affinity as affinity
-from shapely.geometry import box as shply_box
+from shapely.geometry import box as shply_box, Polygon, LineString, Point, MultiPolygon
 
 from lxml import etree as ET
-from flatcamParsers.ParseSVG import *
-
+from flatcamParsers.ParseSVG import svgparselength, getsvggeo
+from FlatCAMCommon import GracefulException as grace
 import FlatCAMTranslation as fcTranslate
+
 import gettext
 import builtins
 
@@ -255,7 +255,7 @@ class Gerber(Geometry):
         """
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         # Found some Gerber with a leading zero in the aperture id and the
         # referenced it without the zero, so this is a hack to handle that.
@@ -403,7 +403,7 @@ class Gerber(Geometry):
 
         # Absolute or Relative/Incremental coordinates
         # Not implemented
-        absolute = True
+        # absolute = True
 
         # How to interpret circular interpolation: SINGLE or MULTI
         quadrant_mode = None
@@ -428,7 +428,7 @@ class Gerber(Geometry):
             for gline in glines:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 line_num += 1
                 self.source_file += gline + '\n'
@@ -986,7 +986,7 @@ class Gerber(Geometry):
                                         if 'geometry' not in self.apertures[current_aperture]:
                                             self.apertures[current_aperture]['geometry'] = []
                                         self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
-                                except Exception as e:
+                                except Exception:
                                     pass
                             last_path_aperture = current_aperture
                             # we do this for the case that a region is done without having defined any aperture
@@ -1229,25 +1229,25 @@ class Gerber(Geometry):
                     try:
                         circular_x = parse_gerber_number(circular_x,
                                                          self.int_digits, self.frac_digits, self.gerber_zeros)
-                    except Exception as e:
+                    except Exception:
                         circular_x = current_x
 
                     try:
                         circular_y = parse_gerber_number(circular_y,
                                                          self.int_digits, self.frac_digits, self.gerber_zeros)
-                    except Exception as e:
+                    except Exception:
                         circular_y = current_y
 
                     # According to Gerber specification i and j are not modal, which means that when i or j are missing,
                     # they are to be interpreted as being zero
                     try:
                         i = parse_gerber_number(i, self.int_digits, self.frac_digits, self.gerber_zeros)
-                    except Exception as e:
+                    except Exception:
                         i = 0
 
                     try:
                         j = parse_gerber_number(j, self.int_digits, self.frac_digits, self.gerber_zeros)
-                    except Exception as e:
+                    except Exception:
                         j = 0
 
                     if quadrant_mode is None:
@@ -1668,13 +1668,14 @@ class Gerber(Geometry):
             bbox = bbox.envelope
         return bbox
 
-    def bounds(self):
+    def bounds(self, flatten=None):
         """
         Returns coordinates of rectangular bounds
         of Gerber geometry: (xmin, ymin, xmax, ymax).
+
+        :param flatten:     Not used, it is here for compatibility with base class method
+        :return:            None
         """
-        # fixed issue of getting bounds only for one level lists of objects
-        # now it can get bounds for nested lists of objects
 
         log.debug("parseGerber.Gerber.bounds()")
 
@@ -1833,7 +1834,7 @@ class Gerber(Geometry):
             new_el = {}
             new_el['solid'] = pol
             new_el['follow'] = pol.exterior
-            self.apertures['0']['geometry'].append(deepcopy(new_el))
+            self.apertures['0']['geometry'].append(new_el)
 
     def scale(self, xfactor, yfactor=None, point=None):
         """
@@ -1999,8 +2000,7 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -2078,8 +2078,7 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -2217,8 +2216,7 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -2266,8 +2264,9 @@ class Gerber(Geometry):
     def buffer(self, distance, join, factor=None):
         """
 
-        :param distance: if 'factor' is True then distance is the factor
-        :param factor: True or False (None)
+        :param distance:    If 'factor' is True then distance is the factor
+        :param join:        The type of joining used by the Shapely buffer method. Can be: round, square and bevel
+        :param factor:      True or False (None)
         :return:
         """
         log.debug("parseGerber.Gerber.buffer()")

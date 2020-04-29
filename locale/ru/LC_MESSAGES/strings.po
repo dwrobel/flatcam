@@ -569,9 +569,15 @@ msgstr "Слияние Gerber завершено"
 msgid "Failed. Select a Geometry Object and try again."
 msgstr "Неудалось. Выберите объект Geometry и попробуйте снова."
 
+<<<<<<< HEAD
 #: FlatCAMApp.py:5765 FlatCAMApp.py:5801
 msgid "Expected a FlatCAMGeometry, got"
 msgstr "Ожидается FlatCAMGeometry, получено"
+=======
+#: FlatCAMApp.py:5652 FlatCAMApp.py:5688
+msgid "Expected a GeometryObject, got"
+msgstr "Ожидается GeometryObject, получено"
+>>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMApp.py:5778
 msgid "A Geometry object was converted to MultiGeo type."
@@ -1167,9 +1173,19 @@ msgstr "Новый файл сценария создан в редакторе 
 msgid "Open TCL script"
 msgstr "Открыть сценарий TCL"
 
+<<<<<<< HEAD
 #: FlatCAMApp.py:10373
 msgid "Executing FlatCAMScript file."
 msgstr "Выполнение файла FlatCAMScript."
+=======
+#: FlatCAMApp.py:9969
+msgid "Open TCL script cancelled."
+msgstr "Открытие сценария отменено."
+
+#: FlatCAMApp.py:9993
+msgid "Executing ScriptObject file."
+msgstr "Выполнение файла ScriptObject."
+>>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMApp.py:10381 FlatCAMApp.py:10384
 msgid "Run TCL script"
@@ -17690,9 +17706,15 @@ msgstr "Объекты CNCJob не могут быть буферизирова�
 msgid "Buffer done"
 msgstr "Буфер готов"
 
+<<<<<<< HEAD
 #: tclCommands/TclCommandBbox.py:76 tclCommands/TclCommandNregions.py:75
 msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
 msgstr "Ожидался FlatCAMGerber или FlatCAMGeometry, получено"
+=======
+#: tclCommands/TclCommandBbox.py:74 tclCommands/TclCommandNregions.py:73
+msgid "Expected GerberObject or GeometryObject, got"
+msgstr "Ожидался GerberObject или GeometryObject, получено"
+>>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: tclCommands/TclCommandBounds.py:67 tclCommands/TclCommandBounds.py:71
 msgid "Expected a list of objects names separated by comma. Got"
@@ -18758,8 +18780,8 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "<span style=\"color:red;\"><b>%s</b></span>"
 #~ msgstr "<span style=\"color:red;\"><b>%s</b></span>"
 
-#~ msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
-#~ msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
+#~ msgid "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
+#~ msgstr "FlatCAMObj.GeometryObject.mtool_gen_cncjob() -->"
 
 #~ msgid "FlatCAMCNNJob.on_edit_code_click() -->"
 #~ msgstr "FlatCAMCNNJob.on_edit_code_click() -->"
@@ -18927,8 +18949,8 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ "a><BR><b>ЗАГРУЗИТЬ</B> можно <a href = \"https://bitbucket.org/jpcgt/"
 #~ "flatcam/downloads/\">отсюда.</a><BR>"
 
-#~ msgid "Expected a FlatCAMGeometry, got %s"
-#~ msgstr "Ожидается FlatCAMGeometry, получено %s"
+#~ msgid "Expected a GeometryObject, got %s"
+#~ msgstr "Ожидается GeometryObject, получено %s"
 
 #~ msgid "Saved to: %s"
 #~ msgstr "Сохранёно в: %s"

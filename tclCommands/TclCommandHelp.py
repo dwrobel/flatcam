@@ -65,10 +65,11 @@ class TclCommandHelp(TclCommand):
 
         if 'name' in args:
             name = args['name']
-            if name not in self.app.tcl_commands_storage:
+            if name not in self.app.shell.tcl_commands_storage:
                 return "Unknown command: %s" % name
 
-            self.app.shell.append_output(self.app.tcl_commands_storage[name]["help"])
+            help_for_command = self.app.shell.tcl_commands_storage[name]["help"] + '\n\n'
+            self.app.shell.append_output(help_for_command)
         else:
             if not args:
                 cmd_enum = '%s\n' % _("Available commands:")
@@ -77,19 +78,21 @@ class TclCommandHelp(TclCommand):
                 try:
                     # find the maximum length of a command name
                     max_len = 0
-                    for cmd_name in self.app.tcl_commands_storage:
+                    for cmd_name in self.app.shell.tcl_commands_storage:
                         curr_len = len(cmd_name)
                         if curr_len > max_len:
                             max_len = curr_len
 
                     h_space = "&nbsp;"
                     cnt = 0
-                    for cmd_name in sorted(self.app.tcl_commands_storage):
-                        cmd_description = "<span>%s</span>" % self.app.tcl_commands_storage[cmd_name]['description']
+                    for cmd_name in sorted(self.app.shell.tcl_commands_storage):
+                        cmd_description = "<span>%s</span>" % \
+                                          self.app.shell.tcl_commands_storage[cmd_name]['description']
 
                         curr_len = len(cmd_name)
 
-                        cmd_name_colored = "<span style=\" font-weight: bold; color: red;\" >%s</span>" % str(cmd_name)
+                        cmd_name_colored = "> <span style=\" font-weight: bold; color: red;\" >%s</span>" % \
+                                           str(cmd_name)
 
                         nr_chars = max_len - curr_len
 
@@ -104,11 +107,11 @@ class TclCommandHelp(TclCommand):
                         else:
                             cnt += 1
                 except Exception as err:
-                    self.app.log.debug("App.setup_shell.shelp() when run as 'help' --> %s" % str(err))
-                    displayed_text = ['> %s\n' % cmd for cmd in sorted(self.app.tcl_commands_storage)]
+                    self.app.log.debug("tclCommands.TclCommandHelp() when run as 'help' --> %s" % str(err))
+                    displayed_text = ['> %s' % cmd for cmd in sorted(self.app.shell.tcl_commands_storage)]
 
                 cmd_enum += '<br>'.join(displayed_text)
-                cmd_enum += '<br><br>%s<br>%s<br>' % (
+                cmd_enum += '<br><br>%s<br>%s<br><br>' % (
                     _("Type help <command_name> for usage."), _("Example: help open_gerber"))
 
                 self.app.shell.append_raw(cmd_enum)

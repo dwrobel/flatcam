@@ -2088,9 +2088,9 @@ class FCDetachableTab2(FCDetachableTab):
         :param currentIndex:
         :return:
         """
-        idx = self.currentIndex()
-
-        self.tab_closed_signal.emit(self.tabText(idx))
+        # idx = self.currentIndex()
+        self.tab_name = self.widget(currentIndex).objectName()
+        self.tab_closed_signal.emit(self.tab_name)
 
         self.removeTab(currentIndex)
 
@@ -2694,8 +2694,7 @@ class _ExpandableTextEdit(QTextEdit):
             if line_count <= 1:
                 self.historyPrev.emit()
                 return
-        elif event.matches(QKeySequence.MoveToNextPage) or \
-                event.matches(QKeySequence.MoveToPreviousPage):
+        elif event.matches(QKeySequence.MoveToNextPage) or event.matches(QKeySequence.MoveToPreviousPage):
             return self._termWidget.browser().keyPressEvent(event)
 
         tc = self.textCursor()

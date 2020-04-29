@@ -6,7 +6,6 @@
 # ##########################################################
 
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMExcellon
 
 import math
 import collections
@@ -138,7 +137,7 @@ class TclCommandMillDrills(TclCommandSignaled):
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 
-        if not isinstance(obj, FlatCAMExcellon):
+        if obj.kind != 'excellon':
             self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
 
         if self.app.collection.has_promises():

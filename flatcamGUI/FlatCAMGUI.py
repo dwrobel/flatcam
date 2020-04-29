@@ -16,7 +16,7 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
-from ObjectCollection import KeySensitiveListView
+from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
@@ -183,6 +183,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/script_new16.png'), _('New Script ...'), self)
         self.menufileopenscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
+        self.menufileopenscriptexample = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Example ...'), self)
         self.menufilerunscript = QtWidgets.QAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tShift+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
@@ -192,6 +194,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufile_scripting.addAction(self.menufilenewscript)
         self.menufile_scripting.addAction(self.menufileopenscript)
+        self.menufile_scripting.addAction(self.menufileopenscriptexample)
         self.menufile_scripting.addSeparator()
         self.menufile_scripting.addAction(self.menufilerunscript)
 
@@ -1741,7 +1744,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # F keys section
                 _("Open Online Manual"),
                 _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
-                _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
+                _("(left to Key_1)Toggle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
                 _("Deselects all objects")
             )
         )
@@ -2293,13 +2296,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.rel_position_label = QtWidgets.QLabel(
             "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
         self.rel_position_label.setMinimumWidth(110)
-        self.rel_position_label.setToolTip(_("Relative neasurement.\nReference is last click position"))
+        self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
         self.infobar.addWidget(self.rel_position_label)
 
         self.position_label = QtWidgets.QLabel(
             "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
         self.position_label.setMinimumWidth(110)
-        self.position_label.setToolTip(_("Absolute neasurement.\nReference is (X=0, Y= 0) position"))
+        self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
         self.infobar.addWidget(self.position_label)
 
         self.units_label = QtWidgets.QLabel("[in]")
@@ -2570,9 +2573,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.run_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
 
-        # ########################################################################
-        # ## Tools Toolbar # ##
-        # ########################################################################
+        # #########################################################################
+        # ######################### Tools Toolbar #################################
+        # #########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
@@ -2616,6 +2619,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
         self.cal_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
+        self.punch_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+        self.invert_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
 
         # ########################################################################
         # ## Excellon Editor Toolbar # ##
@@ -2876,7 +2883,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key_E:
-                    self.app.on_fileopenexcellon()
+                    self.app.on_fileopenexcellon(signal=None)
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key_G:
@@ -2884,7 +2891,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.on_fileopengerber()
+                        self.app.on_fileopengerber(signal=None)
 
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:
@@ -2910,7 +2917,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_S:
                     widget_name = self.plot_tab_area.currentWidget().objectName()
                     if widget_name == 'preferences_tab':
-                        self.app.on_save_button(save_to_file=False)
+                        self.app.preferencesUiManager.on_save_button(save_to_file=False)
                         return
 
                     if widget_name == 'database_tab':
@@ -4284,20 +4291,24 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
     def set_status(self, text, level="info"):
         level = str(level)
+
         self.pmap.fill()
         if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
-        elif level == "success" or level == "SUCCESS":
+        elif level.lower() == "success":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
-        elif level == "selected" or level == "SELECTED":
+        elif level.lower() == "selected":
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         else:
             self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
-        self.set_text_(text)
-        self.icon.setPixmap(self.pmap)
+        try:
+            self.set_text_(text)
+            self.icon.setPixmap(self.pmap)
+        except Exception as e:
+            log.debug("FlatCAMInfoBar.set_status() --> %s" % str(e))
 
 
 class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):

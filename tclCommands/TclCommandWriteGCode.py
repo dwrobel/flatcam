@@ -103,7 +103,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
                 return "fail"
 
         try:
-            obj.export_gcode(str(filename), str(preamble), str(postamble))
+            obj.export_gcode(str(filename), str(preamble), str(postamble), from_tcl=True)
         except Exception as e:
             if muted is False:
                 return "Operation failed: %s" % str(e)

@@ -9,8 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
-from FlatCAMObj import FlatCAMGerber
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 
 from shapely.geometry import MultiPolygon
 from shapely.ops import nearest_points
@@ -281,7 +280,7 @@ class ToolOptimal(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolOptimal()")
+        self.app.defaults.report_usage("ToolOptimal()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -343,7 +342,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGerber):
+        if fcobj.kind != 'gerber':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber objects can be evaluated."))
             return
 
@@ -365,7 +364,7 @@ class ToolOptimal(FlatCAMTool):
                         for geo_el in fcobj.apertures[ap]['geometry']:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
                                 total_geo.append(geo_el['solid'])
@@ -395,7 +394,7 @@ class ToolOptimal(FlatCAMTool):
                     for s_geo in total_geo[idx:]:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # minimize the number of distances by not taking into considerations those that are too small
                         dist = geo.distance(s_geo)
@@ -459,7 +458,7 @@ class ToolOptimal(FlatCAMTool):
             log.debug("ToolOptimal.on_locate_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
-            return 'fail'
+            return
 
         try:
             loc_1 = loc[0]
@@ -471,7 +470,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
             log.debug("ToolOptimal.on_locate_position() --> sec try %s" % str(e))
-            return 'fail'
+            return
 
     def on_update_text(self, data):
         txt = ''
@@ -567,12 +566,12 @@ class ToolOptimal(FlatCAMTool):
             if self.selected_locations_text != '':
                 loc = eval(self.selected_locations_text)
             else:
-                return 'fail'
+                return
         except Exception as e:
             log.debug("ToolOptimal.on_locate_sec_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
-            return 'fail'
+            return
 
         try:
             loc_1 = loc[0]
@@ -584,7 +583,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
             log.debug("ToolOptimal.on_locate_sec_position() --> sec try %s" % str(e))
-            return 'fail'
+            return
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

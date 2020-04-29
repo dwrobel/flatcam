@@ -35,7 +35,8 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, app, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True):
+    def __init__(self, app, icon_file='assets/resources/flatcam_icon32.png', title=_('FlatCAM Object'),
+                 parent=None, common=True):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
         self.app = app
@@ -48,9 +49,9 @@ class ObjectUI(QtWidgets.QWidget):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -60,7 +61,7 @@ class ObjectUI(QtWidgets.QWidget):
         layout.addLayout(self.title_box)
 
         # ## Page Title icon
-        pixmap = QtGui.QPixmap(icon_file.replace('share', self.resource_loc))
+        pixmap = QtGui.QPixmap(icon_file.replace('assets/resources', self.resource_loc))
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
@@ -307,7 +308,7 @@ class GerberObjectUI(ObjectUI):
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
         self.tool_type_label.setToolTip(
-            _("Choose what tool to use for Gerber isolation:\n"
+            _("Choose which tool to use for Gerber isolation:\n"
               "'Circular' or 'V-shape'.\n"
               "When the 'V-shape' is selected then the tool\n"
               "diameter will depend on the chosen cut depth.")
@@ -434,7 +435,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.follow_cb, 8, 1)
 
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
-                                    "by checking this, the area of the object bellow\n"
+                                    "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         grid1.addWidget(self.except_cb, 8, 2)
 
@@ -713,9 +714,9 @@ class ExcellonObjectUI(ObjectUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         ObjectUI.__init__(self, title=_('Excellon Object'),
                           icon_file=self.resource_loc + '/drill32.png',
@@ -1241,6 +1242,7 @@ class ExcellonObjectUI(ObjectUI):
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
+        self.pdepth_entry.setObjectName("e_depth_probe")
 
         self.grid5.addWidget(self.pdepth_label, 13, 0)
         self.grid5.addWidget(self.pdepth_entry, 13, 1)
@@ -1258,7 +1260,7 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0.0, 9999.9999)
         self.feedrate_probe_entry.setSingleStep(0.1)
-        self.feedrate_probe_entry.setObjectName(_("e_fr_probe"))
+        self.feedrate_probe_entry.setObjectName("e_fr_probe")
 
         self.grid5.addWidget(self.feedrate_probe_label, 14, 0)
         self.grid5.addWidget(self.feedrate_probe_entry, 14, 1)
@@ -1411,9 +1413,9 @@ class GeometryObjectUI(ObjectUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         super(GeometryObjectUI, self).__init__(
             title=_('Geometry Object'),
@@ -1530,7 +1532,7 @@ class GeometryObjectUI(ObjectUI):
                 "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the cut width in material\n"
                 "is exactly the tool diameter.\n"
                 "- Ball -> informative only and make reference to the Ball type endmill.\n"
-                "- V-Shape -> it will disable de Z-Cut parameter in the UI form and enable two additional UI form\n"
+                "- V-Shape -> it will disable Z-Cut parameter in the UI form and enable two additional UI form\n"
                 "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
                 "as the cut width into material will be equal with the value in the Tool "
                 "Diameter column of this table.\n"
@@ -2107,9 +2109,9 @@ class CNCObjectUI(ObjectUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         ObjectUI.__init__(
             self, title=_('CNC Job Object'),
@@ -2440,9 +2442,9 @@ class ScriptObjectUI(ObjectUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         ObjectUI.__init__(self, title=_('Script Object'),
                           icon_file=self.resource_loc + '/script_new24.png',
@@ -2507,9 +2509,9 @@ class DocumentObjectUI(ObjectUI):
             theme = 'white'
 
         if theme == 'white':
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
         else:
-            self.resource_loc = 'share'
+            self.resource_loc = 'assets/resources'
 
         ObjectUI.__init__(self, title=_('Document Object'),
                           icon_file=self.resource_loc + '/notes16_1.png',

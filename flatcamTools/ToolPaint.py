@@ -14,7 +14,7 @@ from copy import deepcopy
 from flatcamParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage
 from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import cascaded_union, unary_union, linemerge
@@ -143,16 +143,16 @@ class ToolPaint(FlatCAMTool, Gerber):
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
-            _("The Tool Type (TT) can be:<BR>"
-              "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
-              "the cut width in material is exactly the tool diameter.<BR>"
-              "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
-              "- <B>V-Shape</B> -> it will disable de Z-Cut parameter in the resulting geometry UI form "
-              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and "
-              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such "
-              "as the cut width into material will be equal with the value in the Tool Diameter "
-              "column of this table.<BR>"
-              "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
+            _("The Tool Type (TT) can be:\n"
+              "- Circular -> it is informative only. Being circular,\n"
+              "the cut width in material is exactly the tool diameter.\n"
+              "- Ball -> informative only and make reference to the Ball type endmill.\n"
+              "- V-Shape -> it will disable Z-Cut parameter in the resulting geometry UI form\n"
+              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and\n"
+              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
+              "as the cut width into material will be equal with the value in the Tool Diameter\n"
+              "column of this table.\n"
+              "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
               "in the resulting geometry as Isolation."))
 
         self.order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
@@ -710,7 +710,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPaint()")
+        self.app.defaults.report_usage("ToolPaint()")
         log.debug("ToolPaint().run() was launched ...")
 
         if toggle:
@@ -1374,7 +1374,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage("on_paint_button_click")
+        self.app.defaults.report_usage("on_paint_button_click")
         # self.app.call_source = 'paint'
 
         self.select_method = self.selectmethod_combo.get_value()
@@ -1836,7 +1836,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                            contour=cont,
                                            connect=conn,
                                            prog_plot=prog_plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Standard --> %s" % str(ee))
@@ -1850,7 +1850,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                             contour=cont,
                                             connect=conn,
                                             prog_plot=prog_plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Seed --> %s" % str(ee))
@@ -1864,7 +1864,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                             contour=cont,
                                             connect=conn,
                                             prog_plot=prog_plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Lines --> %s" % str(ee))
@@ -2015,7 +2015,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 #                                  contour=cont,
                 #                                  connect=conn,
                 #                                  prog_plot=prog_plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Laser Lines --> %s" % str(ee))
@@ -2052,7 +2052,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                    contour=cont,
                                                    connect=conn,
                                                    prog_plot=prog_plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as ee:
                 log.debug("ToolPaint.paint_polygon_worker() Combo --> %s" % str(ee))
@@ -2199,7 +2199,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
                         geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
                                                             prog_plot=prog_plot)
@@ -2217,7 +2217,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     QtWidgets.QApplication.processEvents()
                     if self.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
 
                     geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
                                                         cont=cont, paint_method=paint_method, obj=obj,
@@ -2230,7 +2230,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     for x in cp:
                         total_geometry += list(x.get_objects())
                     final_solid_geometry += total_geometry
-            except FlatCAMApp.GracefulException:
+            except grace:
                 return "fail"
             except Exception as e:
                 log.debug("Could not Paint the polygons. %s" % str(e))
@@ -2305,7 +2305,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 ret = app_obj.new_object("geometry", name, job_init, plot=plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 proc.done()
                 return
             except Exception as er:
@@ -2376,7 +2376,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             """
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if geometry is None:
                 return
@@ -2517,7 +2517,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                                 cont=cont, paint_method=paint_method, obj=obj,
@@ -2542,7 +2542,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
@@ -2705,7 +2705,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
                             geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                                 cont=cont, paint_method=paint_method, obj=obj,
                                                                 prog_plot=prog_plot)
@@ -2723,7 +2723,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
@@ -2735,7 +2735,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         for x in cp:
                             cleared_geo += list(x.get_objects())
                         final_solid_geometry += cleared_geo
-                except FlatCAMApp.GracefulException:
+                except grace:
                     return "fail"
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
@@ -2815,7 +2815,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     ret = app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
                     ret = app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 proc.done()
                 return
             except Exception as err:
@@ -2873,7 +2873,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             """
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if geometry is None:
                 return
@@ -3015,7 +3015,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                                 cont=cont, paint_method=paint_method, obj=obj,
@@ -3040,7 +3040,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
@@ -3193,7 +3193,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
                                                                 cont=cont, paint_method=paint_method, obj=obj,
@@ -3218,7 +3218,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
                                                             cont=cont, paint_method=paint_method, obj=obj,
@@ -3312,7 +3312,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     ret = app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
                     ret = app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
-            except FlatCAMApp.GracefulException:
+            except grace:
                 proc.done()
                 return
             except Exception as err:

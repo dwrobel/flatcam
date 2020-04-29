@@ -52,10 +52,11 @@ class TclCommandOpenExcellon(TclCommandSignaled):
         """
 
         filename = args.pop('filename')
-        # filename = filename.replace(' ', '')
-        if ' ' in filename:
-            return "The absolute path to the project file contain spaces which is not allowed.\n" \
-                   "Please enclose the path within quotes."
+
+        # if ' ' in filename:
+        #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
+        #            "Please enclose the path within quotes."
 
         args['plot'] = False
+        args['from_tcl'] = True
         self.app.open_excellon(filename, **args)

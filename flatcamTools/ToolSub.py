@@ -236,7 +236,7 @@ class ToolSub(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolSub()")
+        self.app.defaults.report_usage("ToolSub()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

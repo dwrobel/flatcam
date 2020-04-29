@@ -1,9 +1,49 @@
-#!/bin/bash
-sudo apt install --reinstall libpng-dev libfreetype6 libfreetype6-dev libgeos-dev libspatialindex-dev
-sudo apt install --reinstall python3-dev python3-pyqt5 python3-pyqt5.qtopengl python3-gdal python3-simplejson
-sudo apt install --reinstall python3-pip python3-tk
+#!/bin/sh -e
 
-sudo python3 -m pip install --upgrade pyqt5
-sudo python3 -m pip install --upgrade pip numpy shapely rtree tk lxml cycler python-dateutil kiwisolver dill
-sudo python3 -m pip install --upgrade vispy pyopengl setuptools svg.path ortools freetype-py fontTools rasterio ezdxf
-sudo python3 -m pip install --upgrade matplotlib qrcode reportlab svglib
+# Ubuntu packages
+
+sudo apt-get install -y \
+	libfreetype6 \
+	libfreetype6-dev \
+	libgeos-dev \
+	libpng-dev \
+	libspatialindex-dev \
+	qt5-style-plugins \
+	python3-dev \
+	python3-gdal \
+	python3-pip \
+	python3-pyqt5 \
+	python3-pyqt5.qtopengl \
+	python3-simplejson \
+	python3-tk
+
+
+# Python packages
+
+sudo -H python3 -m pip install --upgrade \
+	pip \
+	numpy \
+	shapely \
+	rtree \
+	tk \
+	lxml \
+	cycler \
+	python-dateutil \
+	kiwisolver \
+	dill \
+	vispy \
+	pyopengl \
+	setuptools \
+	svg.path \
+	ortools \
+	freetype-py \
+	fontTools \
+	rasterio \
+	ezdxf \
+	matplotlib \
+	qrcode \
+	pyqt5 \
+	reportlab \
+	svglib
+
+sudo -H easy_install -U distribute

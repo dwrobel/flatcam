@@ -156,7 +156,7 @@ class ToolInvertGerber(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolInvertGerber()")
+        self.app.defaults.report_usage("ToolInvertGerber()")
         log.debug("ToolInvertGerber() is running ...")
 
         if toggle:
