@@ -83,8 +83,7 @@ class TclCommandSetSys(TclCommand):
                 pass
 
             self.app.defaults[param] = value
-
-            self.app.propagate_defaults(silent=True)
+            self.app.defaults.propagate_defaults()
 
         else:
             self.raise_tcl_error("No such system parameter \"{}\".".format(param))

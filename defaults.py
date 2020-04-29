@@ -3,12 +3,16 @@ import stat
 import sys
 from copy import deepcopy
 from FlatCAMCommon import LoudDict
-from camlib import to_dict
+from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -689,6 +693,30 @@ class FlatCAMDefaults:
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
+    ##### Pass-through to the defaults LoudDict #####
+    def __len__(self):
+        return self.defaults.__len__()
+
+    def __getitem__(self, item):
+        return self.defaults.__getitem__(item)
+
+    def __setitem__(self, key, value):
+        return self.defaults.__setitem__(key, value)
+
+    def __delitem__(self, key):
+        return self.defaults.__delitem__(key)
+
+    def __iter__(self):
+        return self.defaults.__iter__()
+
+    def set_change_callback(self, callback):
+        self.defaults.set_change_callback(callback)
+
+    def update(self, *args, **kwargs):
+        return self.defaults.update(*args, **kwargs)
+
+    ##### Additional Methods #####
+
     def write(self, filename: str):
         """Saves the defaults to a file on disk"""
         with open(filename, "w") as file:
@@ -703,7 +731,7 @@ class FlatCAMDefaults:
             options = f.read()
             f.close()
         except IOError:
-            self.log.error("Could not load defaults file.")
+            log.error("Could not load defaults file.")
             self.inform.emit('[ERROR] %s' % _("Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
@@ -762,6 +790,42 @@ class FlatCAMDefaults:
                     migrated[k] = v
         return migrated
 
+    def reset_to_factory_defaults(self):
+        self.defaults.update(self.factory_defaults)
+        self.current_defaults.update(self.factory_defaults)
+        self.old_defaults_found = False
 
+    def propagate_defaults(self):
+        """
+        This method is used to set default values in classes. It's
+        an alternative to project options but allows the use
+        of values invisible to the user.
+        """
+        log.debug("propagate_defaults()")
 
+        # Which objects to update the given parameters.
+        routes = {
+            "global_zdownrate": CNCjob,
+            "excellon_zeros": Excellon,
+            "excellon_format_upper_in": Excellon,
+            "excellon_format_lower_in": Excellon,
+            "excellon_format_upper_mm": Excellon,
+            "excellon_format_lower_mm": Excellon,
+            "excellon_units": Excellon,
+            "gerber_use_buffer_for_union": Gerber,
+            "geometry_multidepth": Geometry
+        }
 
+        for param in routes:
+            if param in routes[param].defaults:
+                try:
+                    routes[param].defaults[param] = self.defaults[param]
+                except KeyError:
+                    log.error("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
+            else:
+                # Try extracting the name:
+                # classname_param here is param in the object
+                if param.find(routes[param].__name__.lower() + "_") == 0:
+                    p = param[len(routes[param].__name__) + 1:]
+                    if p in routes[param].defaults:
+                        routes[param].defaults[p] = self.defaults[param]
