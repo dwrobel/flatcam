@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
-from flatcamGUI.preferences.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
-from flatcamGUI.preferences.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI
+from flatcamGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
+from flatcamGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
+from flatcamGUI.preferences.general.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):

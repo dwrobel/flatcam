@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
-from flatcamGUI.preferences.GerberExpPrefGroupUI import GerberExpPrefGroupUI
-from flatcamGUI.preferences.GerberAdvOptPrefGroupUI import GerberAdvOptPrefGroupUI
-from flatcamGUI.preferences.GerberOptPrefGroupUI import GerberOptPrefGroupUI
-from flatcamGUI.preferences.GerberGenPrefGroupUI import GerberGenPrefGroupUI
+from flatcamGUI.preferences.gerber.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
+from flatcamGUI.preferences.gerber.GerberExpPrefGroupUI import GerberExpPrefGroupUI
+from flatcamGUI.preferences.gerber.GerberAdvOptPrefGroupUI import GerberAdvOptPrefGroupUI
+from flatcamGUI.preferences.gerber.GerberOptPrefGroupUI import GerberOptPrefGroupUI
+from flatcamGUI.preferences.gerber.GerberGenPrefGroupUI import GerberGenPrefGroupUI
 
 
 class GerberPreferencesUI(QtWidgets.QWidget):

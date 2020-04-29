@@ -12,24 +12,21 @@
 # ##########################################################
 import platform
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QSettings, Qt
-
 from flatcamGUI.GUIElements import *
 from flatcamGUI.preferences import settings
-from flatcamGUI.preferences.CNCJobPreferencesUI import CNCJobPreferencesUI
-from flatcamGUI.preferences.ExcellonPreferencesUI import ExcellonPreferencesUI
-from flatcamGUI.preferences.GeneralPreferencesUI import GeneralPreferencesUI
-from flatcamGUI.preferences.GeometryPreferencesUI import GeometryPreferencesUI
-from flatcamGUI.preferences.GerberPreferencesUI import GerberPreferencesUI
+from flatcamGUI.preferences.cncjob.CNCJobPreferencesUI import CNCJobPreferencesUI
+from flatcamGUI.preferences.excellon.ExcellonPreferencesUI import ExcellonPreferencesUI
+from flatcamGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
+from flatcamGUI.preferences.geometry.GeometryPreferencesUI import GeometryPreferencesUI
+from flatcamGUI.preferences.gerber.GerberPreferencesUI import GerberPreferencesUI
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
 
-from flatcamGUI.preferences.Tools2PreferencesUI import Tools2PreferencesUI
-from flatcamGUI.preferences.ToolsPreferencesUI import ToolsPreferencesUI
-from flatcamGUI.preferences.UtilPreferencesUI import UtilPreferencesUI
+from flatcamGUI.preferences.tools.Tools2PreferencesUI import Tools2PreferencesUI
+from flatcamGUI.preferences.tools.ToolsPreferencesUI import ToolsPreferencesUI
+from flatcamGUI.preferences.utilities.UtilPreferencesUI import UtilPreferencesUI
 from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess

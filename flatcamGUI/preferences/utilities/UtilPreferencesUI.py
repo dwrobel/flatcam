@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.AutoCompletePrefGroupUI import AutoCompletePrefGroupUI
-from flatcamGUI.preferences.FAGrbPrefGroupUI import FAGrbPrefGroupUI
-from flatcamGUI.preferences.FAGcoPrefGroupUI import FAGcoPrefGroupUI
-from flatcamGUI.preferences.FAExcPrefGroupUI import FAExcPrefGroupUI
+from flatcamGUI.preferences.utilities.AutoCompletePrefGroupUI import AutoCompletePrefGroupUI
+from flatcamGUI.preferences.utilities.FAGrbPrefGroupUI import FAGrbPrefGroupUI
+from flatcamGUI.preferences.utilities.FAGcoPrefGroupUI import FAGcoPrefGroupUI
+from flatcamGUI.preferences.utilities.FAExcPrefGroupUI import FAExcPrefGroupUI
 
 
 class UtilPreferencesUI(QtWidgets.QWidget):

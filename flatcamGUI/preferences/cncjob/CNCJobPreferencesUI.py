@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.CNCJobAdvOptPrefGroupUI import CNCJobAdvOptPrefGroupUI
-from flatcamGUI.preferences.CNCJobOptPrefGroupUI import CNCJobOptPrefGroupUI
-from flatcamGUI.preferences.CNCJobGenPrefGroupUI import CNCJobGenPrefGroupUI
+from flatcamGUI.preferences.cncjob.CNCJobAdvOptPrefGroupUI import CNCJobAdvOptPrefGroupUI
+from flatcamGUI.preferences.cncjob.CNCJobOptPrefGroupUI import CNCJobOptPrefGroupUI
+from flatcamGUI.preferences.cncjob.CNCJobGenPrefGroupUI import CNCJobGenPrefGroupUI
 
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):

@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.GeometryEditorPrefGroupUI import GeometryEditorPrefGroupUI
-from flatcamGUI.preferences.GeometryAdvOptPrefGroupUI import GeometryAdvOptPrefGroupUI
-from flatcamGUI.preferences.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
-from flatcamGUI.preferences.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
+from flatcamGUI.preferences.geometry.GeometryEditorPrefGroupUI import GeometryEditorPrefGroupUI
+from flatcamGUI.preferences.geometry.GeometryAdvOptPrefGroupUI import GeometryAdvOptPrefGroupUI
+from flatcamGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
+from flatcamGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
 
 
 class GeometryPreferencesUI(QtWidgets.QWidget):

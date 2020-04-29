@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets
 
-from flatcamGUI.preferences.ExcellonEditorPrefGroupUI import ExcellonEditorPrefGroupUI
-from flatcamGUI.preferences.ExcellonExpPrefGroupUI import ExcellonExpPrefGroupUI
-from flatcamGUI.preferences.ExcellonAdvOptPrefGroupUI import ExcellonAdvOptPrefGroupUI
-from flatcamGUI.preferences.ExcellonOptPrefGroupUI import ExcellonOptPrefGroupUI
-from flatcamGUI.preferences.ExcellonGenPrefGroupUI import ExcellonGenPrefGroupUI
+from flatcamGUI.preferences.excellon.ExcellonEditorPrefGroupUI import ExcellonEditorPrefGroupUI
+from flatcamGUI.preferences.excellon.ExcellonExpPrefGroupUI import ExcellonExpPrefGroupUI
+from flatcamGUI.preferences.excellon.ExcellonAdvOptPrefGroupUI import ExcellonAdvOptPrefGroupUI
+from flatcamGUI.preferences.excellon.ExcellonOptPrefGroupUI import ExcellonOptPrefGroupUI
+from flatcamGUI.preferences.excellon.ExcellonGenPrefGroupUI import ExcellonGenPrefGroupUI
 
 
 class ExcellonPreferencesUI(QtWidgets.QWidget):
