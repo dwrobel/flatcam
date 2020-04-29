@@ -11,7 +11,7 @@
 # Date: 3/10/2019                                          #
 # ##########################################################
 
-from flatcamGUI.PreferencesUI import *
+from flatcamGUI.preferences.PreferencesUI import *
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
