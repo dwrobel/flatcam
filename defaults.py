@@ -25,7 +25,7 @@ class FlatCAMDefaults:
         # Global APP Preferences
         "decimals_inch": 4,
         "decimals_metric": 4,
-        "version": 8.992, # defaults format version, not necessarily equal to app version
+        "version": 8.992,   # defaults format version, not necessarily equal to app version
         "first_run": True,
         "units": "MM",
         "global_serial": 0,
@@ -695,7 +695,7 @@ class FlatCAMDefaults:
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
-    ##### Pass-through to the defaults LoudDict #####
+    # #### Pass-through to the defaults LoudDict #####
     def __len__(self):
         return self.defaults.__len__()
 
@@ -715,9 +715,7 @@ class FlatCAMDefaults:
         # Unfortunately this method alone is not enough to pass through the other magic methods above.
         return self.defaults.__getattribute__(item)
 
-
-    ##### Additional Methods #####
-
+    # #### Additional Methods #####
     def write(self, filename: str):
         """Saves the defaults to a file on disk"""
         with open(filename, "w") as file:

@@ -433,11 +433,6 @@ class App(QtCore.QObject):
         if user_defaults:
             self.defaults.load(filename=current_defaults_path)
 
-        if self.defaults["global_gray_icons"] is False:
-            self.resource_location = 'share'
-        else:
-            self.resource_location = 'share/dark_resources'
-
         if self.defaults['units'] == 'MM':
             self.decimals = int(self.defaults['decimals_metric'])
         else:
@@ -449,9 +444,6 @@ class App(QtCore.QObject):
             self.resource_location = 'assets/resources/dark_resources'
 
         self.current_units = self.defaults['units']
-
-
-
 
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################
@@ -550,7 +542,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
-                                                         inform=self.inform, app=self)
+                                                         inform=self.inform)
         self.preferencesUiManager.defaults_write_form()
 
         # When the self.defaults dictionary changes will update the Preferences GUI forms
@@ -564,7 +556,7 @@ class App(QtCore.QObject):
         if self.defaults["first_run"] is True:
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'compact'
+            initial_lay = 'minimal'
             self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
             # Set the combobox in Preferences to the current layout
@@ -6031,7 +6023,7 @@ class App(QtCore.QObject):
         # FIXME: doing this based on translated title doesn't seem very robust.
 
         if title == _("Preferences"):
-            self.uiPreferencesManager.on_close_preferences_tab()
+            self.preferencesUiManager.on_close_preferences_tab()
 
         if title == _("Tools Database"):
             # disconnect the signals from the table widget in tab
@@ -6066,6 +6058,18 @@ class App(QtCore.QObject):
         if title == _("Bookmarks Manager"):
             self.book_dialog_tab.rebuild_actions()
             self.book_dialog_tab.deleteLater()
+
+    def on_plotarea_tab_closed(self, tab_idx):
+        """
+
+        :param tab_idx: Index of the Tab from the plotarea that was closed
+        :return:
+        """
+        widget = self.ui.plot_tab_area.widget(tab_idx)
+
+        if widget is not None:
+            widget.deleteLater()
+        self.ui.plot_tab_area.removeTab(tab_idx)
 
     def on_flipy(self):
         """
@@ -10746,18 +10750,6 @@ class App(QtCore.QObject):
         if self.defaults['global_autosave'] is True:
             self.autosave_timer.setInterval(int(self.defaults['global_autosave_timeout']))
             self.autosave_timer.start()
-
-    def on_plotarea_tab_closed(self, tab_idx):
-        """
-
-        :param tab_idx: Index of the Tab from the plotarea that was closed
-        :return:
-        """
-        widget = self.ui.plot_tab_area.widget(tab_idx)
-
-        if widget is not None:
-            widget.deleteLater()
-        self.ui.plot_tab_area.removeTab(tab_idx)
 
     def on_options_app2project(self):
         """

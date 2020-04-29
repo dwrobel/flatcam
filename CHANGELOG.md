@@ -10,6 +10,12 @@ CHANGELOG for FlatCAM beta
 29.04.2020
 
 - added a try-except clause in the FlatCAMTranslation.restart_program() when closing the Listener and the thread that runs it to adjust to MacOS usage
+- more PEP8 changes
+- in PreferencesUI.PreferencesUIManager class I removed the need to pass reference to the App class since it this was available through the 'ui' parameter
+- some fixes due to recent refactoring
+- minor bugs fixed (not so visible)
+- promoted some methods to be static
+- set the default layout on first run to the 'minimal' value
 
 28.04.2020
 
