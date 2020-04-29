@@ -136,7 +136,7 @@ class DistanceMin(FlatCAMTool):
         self.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolDistanceMin()")
+        self.app.defaults.report_usage("ToolDistanceMin()")
 
         if self.app.tool_tab_locked is True:
             return

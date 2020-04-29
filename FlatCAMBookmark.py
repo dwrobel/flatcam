@@ -270,7 +270,7 @@ class BookmarkManager(QtWidgets.QWidget):
         self.build_bm_ui()
 
     def on_export_bookmarks(self):
-        self.app.report_usage("on_export_bookmarks")
+        self.app.defaults.report_usage("on_export_bookmarks")
         self.app.log.debug("on_export_bookmarks()")
 
         date = str(datetime.today()).rpartition('.')[0]

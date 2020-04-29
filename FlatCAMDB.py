@@ -642,7 +642,7 @@ class ToolsDB(QtWidgets.QWidget):
         self.app.inform.emit('[success] %s' % _("Tool removed from Tools DB."))
 
     def on_export_tools_db_file(self):
-        self.app.report_usage("on_export_tools_db_file")
+        self.app.defaults.report_usage("on_export_tools_db_file")
         self.app.log.debug("on_export_tools_db_file()")
 
         date = str(datetime.today()).rpartition('.')[0]
@@ -699,7 +699,7 @@ class ToolsDB(QtWidgets.QWidget):
         self.app.inform.emit('[success] %s: %s' % (_("Exported Tools DB to"), filename))
 
     def on_import_tools_db_file(self):
-        self.app.report_usage("on_import_tools_db_file")
+        self.app.defaults.report_usage("on_import_tools_db_file")
         self.app.log.debug("on_import_tools_db_file()")
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
@@ -2072,7 +2072,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.app.inform.emit('[success] %s' % _("Tool removed from Tools DB."))
 
     def on_export_tools_db_file(self):
-        self.app.report_usage("on_export_tools_db_file")
+        self.app.defaults.report_usage("on_export_tools_db_file")
         self.app.log.debug("on_export_tools_db_file()")
 
         date = str(datetime.today()).rpartition('.')[0]
@@ -2129,7 +2129,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.app.inform.emit('[success] %s: %s' % (_("Exported Tools DB to"), filename))
 
     def on_import_tools_db_file(self):
-        self.app.report_usage("on_import_tools_db_file")
+        self.app.defaults.report_usage("on_import_tools_db_file")
         self.app.log.debug("on_import_tools_db_file()")
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"

@@ -366,7 +366,7 @@ class ToolExtractDrills(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("Extract Drills()")
+        self.app.defaults.report_usage("Extract Drills()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

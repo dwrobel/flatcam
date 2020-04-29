@@ -207,6 +207,6 @@ def restart_program(app, ask=None):
         if response == bt_yes:
             app.on_file_saveprojectas(use_thread=True, quit_action=True)
 
-    app.save_defaults()
+    app.preferencesUiManager.save_defaults()
     python = sys.executable
     os.execl(python, python, *sys.argv)

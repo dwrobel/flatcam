@@ -293,7 +293,7 @@ class Panelize(FlatCAMTool):
         self.constrain_flag = False
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPanelize()")
+        self.app.defaults.report_usage("ToolPanelize()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

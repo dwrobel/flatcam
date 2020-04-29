@@ -558,7 +558,7 @@ class Film(FlatCAMTool):
         }[self.tf_type_obj_combo.get_value()]
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolFilm()")
+        self.app.defaults.report_usage("ToolFilm()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -933,7 +933,7 @@ class Film(FlatCAMTool):
         :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
         :return:
         """
-        self.app.report_usage("export_negative()")
+        self.app.defaults.report_usage("export_negative()")
 
         if filename is None:
             filename = self.app.defaults["global_last_save_folder"]
@@ -1116,7 +1116,7 @@ class Film(FlatCAMTool):
 
         :return:
         """
-        self.app.report_usage("export_positive()")
+        self.app.defaults.report_usage("export_positive()")
 
         if filename is None:
             filename = self.app.defaults["global_last_save_folder"]

@@ -589,7 +589,7 @@ class RulesCheck(FlatCAMTool):
                 cb.setChecked(False)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolRulesCheck()")
+        self.app.defaults.report_usage("ToolRulesCheck()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

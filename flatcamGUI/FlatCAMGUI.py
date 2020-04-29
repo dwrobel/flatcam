@@ -2913,7 +2913,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_S:
                     widget_name = self.plot_tab_area.currentWidget().objectName()
                     if widget_name == 'preferences_tab':
-                        self.app.on_save_button(save_to_file=False)
+                        self.app.preferencesUiManager.on_save_button(save_to_file=False)
                         return
 
                     if widget_name == 'database_tab':
