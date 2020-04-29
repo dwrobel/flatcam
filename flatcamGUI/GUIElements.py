@@ -2076,7 +2076,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab2(FCDetachableTab):
-    tab_closed_signal = QtCore.pyqtSignal(object)
+    tab_closed_signal = QtCore.pyqtSignal(object, int)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
@@ -2089,8 +2089,8 @@ class FCDetachableTab2(FCDetachableTab):
         :return:
         """
         # idx = self.currentIndex()
-        self.tab_name = self.widget(currentIndex).objectName()
-        self.tab_closed_signal.emit(self.tab_name)
+        tab_name = self.widget(currentIndex).objectName()
+        self.tab_closed_signal.emit(tab_name, currentIndex)
 
         self.removeTab(currentIndex)
 

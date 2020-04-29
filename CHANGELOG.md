@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - updated the Romanian translation
 - fixed units conversion issue
 - updated the units conversion method to convert all the convertible parameters in the Preferences
+- solved the problem with not closing all the tabs in Plot Area when creating a New Project; the issue was that once a tab was removed the indexes are remade (when tab 0 is removed then tab 1 becomes tab 0 and so on)
 
 28.04.2020
 
