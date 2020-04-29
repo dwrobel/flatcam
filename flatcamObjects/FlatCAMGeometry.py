@@ -2519,10 +2519,10 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
 
-    def merge(self, geo_list, geo_final, multigeo=None):
+    @staticmethod
+    def merge(geo_list, geo_final, multigeo=None):
         """
-        Merges the geometry of objects in grb_list into
-        the geometry of geo_final.
+        Merges the geometry of objects in grb_list into the geometry of geo_final.
 
         :param geo_list: List of GerberObject Objects to join.
         :param geo_final: Destination GerberObject object.
@@ -2552,7 +2552,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             # Expand lists
             if type(geo_obj) is list:
-                GeometryObject.merge(self, geo_list=geo_obj, geo_final=geo_final)
+                GeometryObject.merge(geo_list=geo_obj, geo_final=geo_final)
             # If not list, just append
             else:
                 if multigeo is None or multigeo is False:
