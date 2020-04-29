@@ -241,10 +241,6 @@ class CutOut(FlatCAMTool):
         )
         grid0.addWidget(title_param_label, 18, 0, 1, 2)
 
-        # Form Layout
-        form_layout_2 = QtWidgets.QFormLayout()
-        grid0.addLayout(form_layout_2, 19, 0, 1, 2)
-
         # Gaps
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
@@ -266,7 +262,8 @@ class CutOut(FlatCAMTool):
         for it in gaps_items:
             self.gaps.addItem(it)
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        form_layout_2.addRow(gaps_label, self.gaps)
+        grid0.addWidget(gaps_label, 19, 0)
+        grid0.addWidget(self.gaps, 19, 1)
 
         # Buttons
         self.ff_cutout_object_btn = FCButton(_("Generate Freeform Geometry"))
@@ -312,10 +309,6 @@ class CutOut(FlatCAMTool):
         )
         grid0.addWidget(title_manual_label, 22, 0, 1, 2)
 
-        # Form Layout
-        form_layout_3 = QtWidgets.QFormLayout()
-        grid0.addLayout(form_layout_3, 23, 0, 1, 2)
-
         # Manual Geo Object
         self.man_object_combo = FCComboBox()
         self.man_object_combo.setModel(self.app.collection)
@@ -329,10 +322,8 @@ class CutOut(FlatCAMTool):
         )
         # self.man_object_label.setMinimumWidth(60)
 
-        form_layout_3.addRow(self.man_object_label)
-        form_layout_3.addRow(self.man_object_combo)
-
-        # form_layout_3.addRow(e_lab_0)
+        grid0.addWidget(self.man_object_label, 23, 0, 1, 2)
+        grid0.addWidget(self.man_object_combo, 24, 0, 1, 2)
 
         self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
         self.man_geo_creation_btn.setToolTip(
@@ -347,7 +338,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.man_geo_creation_btn, 24, 0, 1, 2)
+        grid0.addWidget(self.man_geo_creation_btn, 25, 0, 1, 2)
 
         self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setToolTip(
