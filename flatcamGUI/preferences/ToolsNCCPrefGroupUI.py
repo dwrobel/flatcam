@@ -142,7 +142,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
 
@@ -152,7 +152,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
         grid0.addWidget(self.ncc_order_label, 8, 0)

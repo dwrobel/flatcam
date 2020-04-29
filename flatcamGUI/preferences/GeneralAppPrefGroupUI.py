@@ -26,7 +26,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
                                      "Whatever is selected here is set every time\n"
-                                     "FLatCAM is started."))
+                                     "FlatCAM is started."))
         self.units_radio = RadioSet([{'label': _('MM'), 'value': 'MM'},
                                      {'label': _('IN'), 'value': 'IN'}])
 

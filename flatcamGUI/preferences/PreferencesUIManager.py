@@ -605,7 +605,7 @@ class PreferencesUIManager:
 
         :param field: the GUI element in Preferences GUI to be updated
         :param factor: factor to be applied to the field parameter
-        :param units: current FLatCAM measuring units
+        :param units: current FlatCAM measuring units
         :param defaults_dict: the defaults storage
         :return: None, it updates GUI elements
         """

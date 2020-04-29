@@ -4530,7 +4530,8 @@ class App(QtCore.QObject):
 
         self.preferencesUiManager.defaults_read_form()
 
-        # the self.preferencesUiManager.defaults_read_form() will update all defaults values in self.defaults from the GUI elements but
+        # the self.preferencesUiManager.defaults_read_form() will update all defaults values
+        # in self.defaults from the GUI elements but
         # I don't want it for the grid values, so I update them here
         self.defaults['global_gridx'] = val_x
         self.defaults['global_gridy'] = val_y
@@ -4686,11 +4687,6 @@ class App(QtCore.QObject):
             else:
                 self.app_cursor.enabled = True
                 self.app_cursor.enabled = False
-
-
-
-
-
 
     def on_update_exc_export(self, state):
         """
@@ -4983,7 +4979,6 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = True
         else:
             self.app_cursor.enabled = False
-
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
@@ -5670,8 +5665,6 @@ class App(QtCore.QObject):
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-
-
     def on_copy_object2(self, custom_name):
 
         def initialize_geometry(obj_init, app):
@@ -5967,7 +5960,6 @@ class App(QtCore.QObject):
                 except AttributeError:
                     pass
 
-
     def on_tools_database(self, source='app'):
         """
         Adds the Tools Database in a Tab in Plot Area.
@@ -6061,7 +6053,7 @@ class App(QtCore.QObject):
         """
         Executed whenever a QTab is closed in the Plot Area.
 
-        :param title: The objectName of the Tab that was closed. This objectName is assigned on Tab creation
+        :param tab_obj_name: The objectName of the Tab that was closed. This objectName is assigned on Tab creation
         :return:
         """
 
@@ -8416,12 +8408,11 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_fileopenscript_example")
-        App.log.debug("on_fileopenscript_example()")
+        self.defaults.report_usage("on_fileopenscript_example")
+        log.debug("on_fileopenscript_example()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
                    "All Files (*.*)"
-
 
         # test if the app was frozen and choose the path for the configuration file
         if getattr(sys, "frozen", False) is True:
@@ -8619,7 +8610,7 @@ class App(QtCore.QObject):
             return
 
         if use_thread is True:
-            proc = self.proc_container.new(_("Printing PDF ... Please wait."))
+            self.proc_container.new(_("Printing PDF ... Please wait."))
             self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_selection]})
         else:
             self.save_pdf(filename, obj_selection)
@@ -9589,7 +9580,7 @@ class App(QtCore.QObject):
 
         App.log.debug("open_hpgl2()")
 
-        with self.proc_container.new(_("Opening HPGL2")) as proc:
+        with self.proc_container.new(_("Opening HPGL2")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
@@ -9612,6 +9603,7 @@ class App(QtCore.QObject):
 
         :param outname:     Name of the resulting object. None causes the name to be that of the file.
         :param filename:    Script file filename
+        :param silent:      If True there will be no messages printed to StatusBar
         :return:            None
         """
         App.log.debug("open_script()")
@@ -9753,8 +9745,7 @@ class App(QtCore.QObject):
                     d = json.loads(file_content, object_hook=dict2obj)
             except Exception as e:
                 App.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
-                self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Failed to open project file"), filename))
+                self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open project file"), filename))
                 return
 
         # Clear the current project
@@ -9815,8 +9806,6 @@ class App(QtCore.QObject):
             self.set_ui_title(name=self.project_filename)
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
-
-
 
     def plot_all(self, fit_view=True, use_thread=True):
         """
@@ -10203,7 +10192,7 @@ class App(QtCore.QObject):
             # no_stats dict; just so it won't break things on website
             no_ststs_dict = {}
             no_ststs_dict["global_ststs"] = {}
-            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) +\
+            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) + \
                        "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
         App.log.debug("Checking for updates @ %s" % full_url)
