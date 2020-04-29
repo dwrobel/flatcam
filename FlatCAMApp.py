@@ -663,7 +663,6 @@ class App(QtCore.QObject):
 
         self.preferencesUiManager.show_preferences_gui()
 
-
         # ### End of Data ####
 
         # ###########################################################################################################
@@ -1683,7 +1682,6 @@ class App(QtCore.QObject):
         if App.args:
             self.args_at_startup.emit(App.args)
 
-
         if self.defaults.old_defaults_found is True:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
                                                       "Please reboot the application to update."))
@@ -1695,26 +1693,6 @@ class App(QtCore.QObject):
     # #################################################################################################################
     # #################################################################################################################
     # #################################################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -1879,8 +1857,6 @@ class App(QtCore.QObject):
             pass
 
         fcTranslate.restart_program(app=self)
-
-
 
     def clear_pool(self):
         """
@@ -2410,7 +2386,6 @@ class App(QtCore.QObject):
             loc = os.path.dirname(__file__)
         return loc
 
-
     def info(self, msg):
         """
         Informs the user. Normally on the status bar, optionally
@@ -2509,7 +2484,6 @@ class App(QtCore.QObject):
         else:
             self.ui.toolbarshell.setVisible(False)
 
-
     def on_import_preferences(self):
         """
         Loads the application default settings from a saved file into
@@ -2550,7 +2524,7 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_export_preferences")
         App.log.debug("on_export_preferences()")
 
-        defaults_file_content = None
+        # defaults_file_content = None
 
         # Show file chooser
         date = str(datetime.today()).rpartition('.')[0]
@@ -3751,20 +3725,20 @@ class App(QtCore.QObject):
             root_path = winreg.HKEY_CURRENT_USER
 
         # create the keys
-        def set_reg(name, root_path, new_reg_path, value):
+        def set_reg(name, root_pth, new_reg_path, value):
             try:
-                winreg.CreateKey(root_path, new_reg_path)
-                with winreg.OpenKey(root_path, new_reg_path, 0, winreg.KEY_WRITE) as registry_key:
+                winreg.CreateKey(root_pth, new_reg_path)
+                with winreg.OpenKey(root_pth, new_reg_path, 0, winreg.KEY_WRITE) as registry_key:
                     winreg.SetValueEx(registry_key, name, 0, winreg.REG_SZ, value)
                 return True
             except WindowsError:
                 return False
 
         # delete key in registry
-        def delete_reg(root_path, reg_path, key_to_del):
+        def delete_reg(root_pth, reg_path, key_to_del):
             key_to_del_path = reg_path + key_to_del
             try:
-                winreg.DeleteKey(root_path, key_to_del_path)
+                winreg.DeleteKey(root_pth, key_to_del_path)
                 return True
             except WindowsError:
                 return False
@@ -4041,7 +4015,7 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=True)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -4051,7 +4025,7 @@ class App(QtCore.QObject):
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                GeometryObject.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=False)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=False)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -4084,7 +4058,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(exc_obj, app):
-            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj)
+            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
@@ -4112,7 +4086,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(grb_obj, app):
-            GerberObject.merge(self, grb_list=objs, grb_final=grb_obj)
+            GerberObject.merge(grb_list=objs, grb_final=grb_obj)
             app.inform.emit('[success] %s.' % _("Gerber merging finished"))
 
         self.new_object("gerber", 'Combo_Gerber', initialize)

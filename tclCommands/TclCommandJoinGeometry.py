@@ -62,7 +62,7 @@ class TclCommandJoinGeometry(TclCommand):
                 objs.append(obj)
 
         def initialize(obj_, app):
-            GeometryObject.merge(self, objs, obj_)
+            GeometryObject.merge(objs, obj_)
 
         if objs and len(objs) >= 2:
             self.app.new_object("geometry", outname, initialize, plot=False)

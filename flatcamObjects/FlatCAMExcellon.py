@@ -130,7 +130,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # from predecessors.
         self.ser_attrs += ['options', 'kind']
 
-    def merge(self, exc_list, exc_final):
+    @staticmethod
+    def merge(exc_list, exc_final, decimals=None):
         """
         Merge Excellon objects found in exc_list parameter into exc_final object.
         Options are always copied from source .
@@ -146,10 +147,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         :return: None
         """
 
-        try:
-            decimals_exc = self.decimals
-        except AttributeError:
-            decimals_exc = 4
+        if decimals is None:
+            decimals = 4
+        decimals_exc = decimals
 
         # flag to signal that we need to reorder the tools dictionary and drills and slots lists
         flag_order = False

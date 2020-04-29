@@ -62,7 +62,7 @@ class TclCommandJoinExcellon(TclCommand):
                 objs.append(obj)
 
         def initialize(obj_, app):
-            ExcellonObject.merge(self, objs, obj_)
+            ExcellonObject.merge(objs, obj_, decimals=self.app.decimals)
 
         if objs and len(objs) >= 2:
             self.app.new_object("excellon", outname, initialize, plot=False)

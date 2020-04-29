@@ -39,7 +39,8 @@ class GerberObject(FlatCAMObj, Gerber):
 
     ui_type = GerberObjectUI
 
-    def merge(self, grb_list, grb_final):
+    @staticmethod
+    def merge(grb_list, grb_final):
         """
         Merges the geometry of objects in geo_list into
         the geometry of geo_final.
@@ -64,7 +65,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
             # Expand lists
             if type(grb) is list:
-                GerberObject.merge(grb, grb_final)
+                GerberObject.merge(grb_list=grb, grb_final=grb_final)
             else:   # If not list, just append
                 for option in grb.options:
                     if option != 'name':
