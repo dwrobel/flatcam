@@ -628,7 +628,7 @@ class PreferencesUIManager:
 
         :param field: the GUI element in Preferences GUI to be updated
         :param factor: factor to be applied to the field parameter
-        :param units: current FLatCAM measuring units
+        :param units: current FlatCAM measuring units
         :param defaults_dict: the defaults storage
         :return: None, it updates GUI elements
         """
@@ -2696,7 +2696,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
                                      "Whatever is selected here is set every time\n"
-                                     "FLatCAM is started."))
+                                     "FlatCAM is started."))
         self.units_radio = RadioSet([{'label': _('MM'), 'value': 'MM'},
                                      {'label': _('IN'), 'value': 'IN'}])
 
@@ -6553,7 +6553,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
 
@@ -6563,7 +6563,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
         grid0.addWidget(self.ncc_order_label, 8, 0)
@@ -7099,7 +7099,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                             "'No' --> means that the used order is the one in the tool table\n"
                                             "'Forward' --> means that the tools will be ordered from small to big\n"
-                                            "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                            "'Reverse' --> means that the tools will ordered from big to small\n\n"
                                             "WARNING: using rest machining will automatically set the order\n"
                                             "in reverse and disable this control."))
 
