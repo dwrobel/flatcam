@@ -143,16 +143,16 @@ class ToolPaint(FlatCAMTool, Gerber):
               "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
-            _("The Tool Type (TT) can be:<BR>"
-              "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
-              "the cut width in material is exactly the tool diameter.<BR>"
-              "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
-              "- <B>V-Shape</B> -> it will disable Z-Cut parameter in the resulting geometry UI form "
-              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and "
-              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such "
-              "as the cut width into material will be equal with the value in the Tool Diameter "
-              "column of this table.<BR>"
-              "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
+            _("The Tool Type (TT) can be:\n"
+              "- Circular -> it is informative only. Being circular,\n"
+              "the cut width in material is exactly the tool diameter.\n"
+              "- Ball -> informative only and make reference to the Ball type endmill.\n"
+              "- V-Shape -> it will disable Z-Cut parameter in the resulting geometry UI form\n"
+              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and\n"
+              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such\n"
+              "as the cut width into material will be equal with the value in the Tool Diameter\n"
+              "column of this table.\n"
+              "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
               "in the resulting geometry as Isolation."))
 
         self.order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
