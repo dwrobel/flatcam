@@ -184,11 +184,18 @@ def restart_program(app, ask=None):
     else:
         resource_loc = 'assets/resources'
 
-    # close the Socket in ArgsThread class
-    app.new_launch.listener.close()
+    # try to quit the Socket opened by ArgsThread class
+    try:
+        app.new_launch.thread_exit = True
+        app.new_launch.listener.close()
+    except Exception as err:
+        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
-    # close the QThread that runs ArgsThread class
-    app.th.quit()
+    # try to quit the QThread that run ArgsThread class
+    try:
+        app.th.quit()
+    except Exception as err:
+        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()

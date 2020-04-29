@@ -2655,10 +2655,10 @@ class App(QtCore.QObject):
                 self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
             App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
-            self.thr2 = QtCore.QThread()
+            # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
                                    'params': []})
-            self.thr2.start(QtCore.QThread.LowPriority)
+            # self.thr2.start(QtCore.QThread.LowPriority)
 
         # ###########################################################################################################
         # ##################################### Register files with FlatCAM;  #######################################
@@ -5164,6 +5164,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+
         if self.save_in_progress:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Application is saving the project. Please wait ..."))
             return
@@ -5245,25 +5246,30 @@ class App(QtCore.QObject):
 
         log.debug("App.quit_application() --> App UI state saved.")
 
-        # try to quit the QThread that run ArgsThread class
-        try:
-            self.th.quit()
-        except Exception as e:
-            log.debug("App.quit_application() --> %s" % str(e))
-
         # try to quit the Socket opened by ArgsThread class
         try:
+            self.new_launch.thread_exit = True
             self.new_launch.listener.close()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
+        # try to quit the QThread that run ArgsThread class
+        try:
+            self.th.terminate()
+        except Exception as e:
+            log.debug("App.quit_application() --> %s" % str(e))
+
+        # terminate workers
+        self.workers.__del__()
+
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
-
         QtWidgets.qApp.quit()
+
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
         # sys.exit(0)
+
         os._exit(0)  # fix to work with Python 3.8
 
     @staticmethod
@@ -12919,13 +12925,14 @@ class ArgsThread(QtCore.QObject):
     def __init__(self):
         super(ArgsThread, self).__init__()
         self.listener = None
+        self.thread_exit = False
 
         self.start.connect(self.run)
 
     def my_loop(self, address):
         try:
             self.listener = Listener(*address)
-            while True:
+            while self.thread_exit is False:
                 conn = self.listener.accept()
                 self.serve(conn)
         except socket.error:
@@ -12951,7 +12958,7 @@ class ArgsThread(QtCore.QObject):
                         self.serve(conn)
 
     def serve(self, conn):
-        while True:
+        while self.thread_exit is False:
             msg = conn.recv()
             if msg == 'close':
                 break
