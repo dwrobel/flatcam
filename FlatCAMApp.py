@@ -20,6 +20,7 @@ import time
 import ctypes
 import traceback
 
+from PyQt5.QtCore import pyqtSlot, Qt
 from shapely.geometry import Point, MultiPolygon
 from io import StringIO
 
@@ -51,6 +52,8 @@ from vispy.io import write_png
 
 # FlatCAM Objects
 from defaults import FlatCAMDefaults
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+from flatcamGUI.preferences.PreferencesUIManager import PreferencesUIManager
 from flatcamObjects.ObjectCollection import *
 from flatcamObjects.FlatCAMObj import FlatCAMObj
 from flatcamObjects.FlatCAMCNCJob import CNCJobObject
