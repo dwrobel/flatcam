@@ -73,7 +73,7 @@ class Properties(FlatCAMTool):
         self.calculations_finished.connect(self.show_area_chull)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolProperties()")
+        self.app.defaults.report_usage("ToolProperties()")
 
         if self.app.tool_tab_locked is True:
             return

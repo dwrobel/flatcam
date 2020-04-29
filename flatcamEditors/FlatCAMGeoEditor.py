@@ -122,7 +122,7 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_distance_entry.set_value(0.01)
 
     def run(self):
-        self.app.report_usage("Geo Editor ToolBuffer()")
+        self.app.defaults.report_usage("Geo Editor ToolBuffer()")
         FlatCAMTool.run(self)
 
         # if the splitter us hidden, display it
@@ -339,7 +339,7 @@ class TextInputTool(FlatCAMTool):
         self.font_italic_tb.clicked.connect(self.on_italic_button)
 
     def run(self):
-        self.app.report_usage("Geo Editor TextInputTool()")
+        self.app.defaults.report_usage("Geo Editor TextInputTool()")
         FlatCAMTool.run(self)
 
         # if the splitter us hidden, display it
@@ -537,7 +537,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.set_tool_ui()
 
     def run(self):
-        self.app.report_usage("Geo Editor ToolPaint()")
+        self.app.defaults.report_usage("Geo Editor ToolPaint()")
         FlatCAMTool.run(self)
 
         # if the splitter us hidden, display it
@@ -980,7 +980,7 @@ class TransformEditorTool(FlatCAMTool):
         self.set_tool_ui()
 
     def run(self):
-        self.app.report_usage("Geo Editor Transform Tool()")
+        self.app.defaults.report_usage("Geo Editor Transform Tool()")
         FlatCAMTool.run(self)
         self.set_tool_ui()
 

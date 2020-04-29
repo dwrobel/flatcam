@@ -709,11 +709,10 @@ class FlatCAMDefaults:
     def __iter__(self):
         return self.defaults.__iter__()
 
-    def set_change_callback(self, callback):
-        self.defaults.set_change_callback(callback)
+    def __getattr__(self, item):
+        # Unfortunately this method alone is not enough to pass through the other magic methods above.
+        return self.defaults.__getattribute__(item)
 
-    def update(self, *args, **kwargs):
-        return self.defaults.update(*args, **kwargs)
 
     ##### Additional Methods #####
 
@@ -829,3 +828,17 @@ class FlatCAMDefaults:
                     p = param[len(routes[param].__name__) + 1:]
                     if p in routes[param].defaults:
                         routes[param].defaults[p] = self.defaults[param]
+
+    def report_usage(self, resource):
+        """
+        Increments usage counter for the given resource
+        in self.defaults['global_stats'].
+
+        :param resource: Name of the resource.
+        :return: None
+        """
+
+        if resource in self.defaults['global_stats']:
+            self.defaults['global_stats'][resource] += 1
+        else:
+            self.defaults['global_stats'][resource] = 1

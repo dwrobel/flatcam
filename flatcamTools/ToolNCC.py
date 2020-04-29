@@ -939,7 +939,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+N', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolNonCopperClear()")
+        self.app.defaults.report_usage("ToolNonCopperClear()")
         log.debug("ToolNCC().run() was launched ...")
 
         if toggle:
@@ -1582,7 +1582,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage("on_paint_button_click")
+        self.app.defaults.report_usage("on_paint_button_click")
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
         self.obj_name = self.object_combo.currentText()

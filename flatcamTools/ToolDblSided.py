@@ -514,7 +514,7 @@ class DblSidedTool(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("Tool2Sided()")
+        self.app.defaults.report_usage("Tool2Sided()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same

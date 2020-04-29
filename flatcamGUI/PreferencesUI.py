@@ -28,11 +28,14 @@ else:
 
 class PreferencesUIManager():
 
-    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform):
+    def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform, app):
+        # FIXME: Ideally we would not pass in the app here
+        self.app = app
         self.defaults = defaults
         self.data_path = data_path
         self.ui = ui
         self.inform = inform
+        self.ignore_tab_close_event = False
 
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
@@ -621,21 +624,19 @@ class PreferencesUIManager():
         """
 
         def_dict = self.defaults if defaults_dict is None else defaults_dict
+
         try:
-            if factor is None:
-                if units is None:
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(def_dict[field])
-            else:
-                if units is None:
-                    self.defaults_form_fields[field].set_value(def_dict[field] * factor)
-                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
-                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
+            value = def_dict[field]
+            log.debug("value is "+str(value)+ " and factor is "+str(factor))
+            if factor is not None:
+                value *= factor
+
+            form_field = self.defaults_form_fields[field]
+            if units is None:
+                form_field.set_value(value)
+            elif (units == 'IN' or units == 'MM') and (field == 'global_gridx' or field == 'global_gridy'):
+                form_field.set_value(value)
+
         except KeyError:
             pass
         except AttributeError:
@@ -909,10 +910,10 @@ class PreferencesUIManager():
         if save_to_file:
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.load_defaults(filename='current_defaults')
+            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
 
         # Re-fresh project options
-        self.on_options_app2project()
+        self.app.on_options_app2project()
 
         settgs = QSettings("Open Source", "FlatCAM")
 
@@ -947,10 +948,7 @@ class PreferencesUIManager():
     def on_pref_close_button(self):
         # Preferences saved, update flag
         self.preferences_changed_flag = False
-        try:
-            self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_plot_area_tab_closed)
-        except TypeError:
-            pass
+        self.ignore_tab_close_event = True
 
         try:
             self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
@@ -958,7 +956,7 @@ class PreferencesUIManager():
             pass
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.on_toggle_units(no_pref=False))
+            lambda: self.app.on_toggle_units(no_pref=False))
         self.defaults.update(self.defaults.current_defaults)
 
         # Preferences save, update the color of the Preferences Tab text
@@ -969,7 +967,7 @@ class PreferencesUIManager():
                 break
 
         self.inform.emit('%s' % _("Preferences closed without saving."))
-        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
+        self.ignore_tab_close_event = False
 
     def on_restore_defaults_preferences(self):
         """
@@ -995,12 +993,12 @@ class PreferencesUIManager():
         :param first_time:  Boolean. If True will execute some code when the app is run first time
         :return:            None
         """
-        self.report_usage("save_defaults")
+        self.defaults.report_usage("save_defaults")
 
         if data_path is None:
             data_path = self.data_path
 
-        self.propagate_defaults()
+        self.defaults.propagate_defaults()
 
         if first_time is False:
             self.save_toolbar_view()
@@ -1018,7 +1016,118 @@ class PreferencesUIManager():
             self.inform.emit('[success] %s' % _("Preferences saved."))
 
         # update the autosave timer
-        self.save_project_auto_update()
+        self.app.save_project_auto_update()
+
+    def save_toolbar_view(self):
+        """
+        Will save the toolbar view state to the defaults
+
+        :return:            None
+        """
+
+        # Save the toolbar view
+        tb_status = 0
+        if self.ui.toolbarfile.isVisible():
+            tb_status += 1
+
+        if self.ui.toolbargeo.isVisible():
+            tb_status += 2
+
+        if self.ui.toolbarview.isVisible():
+            tb_status += 4
+
+        if self.ui.toolbartools.isVisible():
+            tb_status += 8
+
+        if self.ui.exc_edit_toolbar.isVisible():
+            tb_status += 16
+
+        if self.ui.geo_edit_toolbar.isVisible():
+            tb_status += 32
+
+        if self.ui.grb_edit_toolbar.isVisible():
+            tb_status += 64
+
+        if self.ui.snap_toolbar.isVisible():
+            tb_status += 128
+
+        if self.ui.toolbarshell.isVisible():
+            tb_status += 256
+
+        self.defaults["global_toolbar_view"] = tb_status
+
+    def on_preferences_edited(self):
+        """
+        Executed when a preference was changed in the Edit -> Preferences tab.
+        Will color the Preferences tab text to Red color.
+        :return:
+        """
+        if self.preferences_changed_flag is False:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
+
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
+            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+
+            self.preferences_changed_flag = True
+
+    def on_close_preferences_tab(self):
+        if self.ignore_tab_close_event:
+            return
+
+        # disconnect
+        for idx in range(self.ui.pref_tab_area.count()):
+            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
+                try:
+                    tb.textEdited.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.modificationChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.toggled.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.valueChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+        # Prompt user to save
+        if self.preferences_changed_flag is True:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setText(_("One or more values are changed.\n"
+                             "Do you want to save the Preferences?"))
+            msgbox.setWindowTitle(_("Save Preferences"))
+            msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
+
+            if response == bt_yes:
+                self.on_save_button(save_to_file=True)
+                self.inform.emit('[success] %s' % _("Preferences saved."))
+            else:
+                self.preferences_changed_flag = False
+                self.inform.emit('')
+                return
+
 
 class OptionsGroupUI(QtWidgets.QGroupBox):
     app = None
@@ -1954,7 +2063,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         :param lay:     Type of layout to be set on the toolbard
         :return:        None
         """
-        self.app.report_usage("on_layout()")
+        self.app.defaults.report_usage("on_layout()")
         if lay:
             current_layout = lay
         else:
@@ -3158,7 +3267,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
     def on_pl_color_entry(self):
         self.app.defaults['gerber_plot_line'] = self.pl_color_entry.get_value()[:7] + \
                                                 self.app.defaults['gerber_plot_line'][7:9]
-        self.pl_color_button.setStyleSheet("background-color:%s" % str(self.defaults['gerber_plot_line'])[:7])
+        self.pl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['gerber_plot_line'])[:7])
 
     def on_pl_color_button(self):
         current_color = QtGui.QColor(self.app.defaults['gerber_plot_line'][:7])

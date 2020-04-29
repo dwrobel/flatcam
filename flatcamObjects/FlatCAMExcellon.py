@@ -1234,13 +1234,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         return True, ""
 
     def on_generate_milling_button_click(self, *args):
-        self.app.report_usage("excellon_on_create_milling_drills button")
+        self.app.defaults.report_usage("excellon_on_create_milling_drills button")
         self.read_form()
 
         self.generate_milling_drills(use_thread=False)
 
     def on_generate_milling_slots_button_click(self, *args):
-        self.app.report_usage("excellon_on_create_milling_slots_button")
+        self.app.defaults.report_usage("excellon_on_create_milling_slots_button")
         self.read_form()
 
         self.generate_milling_slots(use_thread=False)
@@ -1338,7 +1338,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 pass
 
     def on_create_cncjob_button_click(self, *args):
-        self.app.report_usage("excellon_on_create_cncjob_button")
+        self.app.defaults.report_usage("excellon_on_create_cncjob_button")
         self.read_form()
 
         # Get the tools from the list

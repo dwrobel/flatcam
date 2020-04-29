@@ -152,14 +152,14 @@ class TextEditor(QtWidgets.QWidget):
         self.code_edited = ''
 
     def handlePrint(self):
-        self.app.report_usage("handlePrint()")
+        self.app.defaults.report_usage("handlePrint()")
 
         dialog = QtPrintSupport.QPrintDialog()
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
-        self.app.report_usage("handlePreview()")
+        self.app.defaults.report_usage("handlePreview()")
 
         dialog = QtPrintSupport.QPrintPreviewDialog()
         dialog.paintRequested.connect(self.code_editor.print_)
@@ -172,7 +172,7 @@ class TextEditor(QtWidgets.QWidget):
         pass
 
     def handleOpen(self, filt=None):
-        self.app.report_usage("handleOpen()")
+        self.app.defaults.report_usage("handleOpen()")
 
         if filt:
             _filter_ = filt
@@ -192,7 +192,7 @@ class TextEditor(QtWidgets.QWidget):
                 file.close()
 
     def handleSaveGCode(self, name=None, filt=None, callback=None):
-        self.app.report_usage("handleSaveGCode()")
+        self.app.defaults.report_usage("handleSaveGCode()")
 
         if filt:
             _filter_ = filt
@@ -287,7 +287,7 @@ class TextEditor(QtWidgets.QWidget):
             callback()
 
     def handleFindGCode(self):
-        self.app.report_usage("handleFindGCode()")
+        self.app.defaults.report_usage("handleFindGCode()")
 
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.entryFind.get_value()
@@ -298,7 +298,7 @@ class TextEditor(QtWidgets.QWidget):
             r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
-        self.app.report_usage("handleReplaceGCode()")
+        self.app.defaults.report_usage("handleReplaceGCode()")
 
         old = self.entryFind.get_value()
         new = self.entryReplace.get_value()

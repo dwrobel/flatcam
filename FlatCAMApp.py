@@ -543,7 +543,8 @@ class App(QtCore.QObject):
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
         # ###########################################################################################################
 
-        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui, inform=self.inform)
+        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
+                                                         inform=self.inform, app=self)
         self.preferencesUiManager.defaults_write_form()
 
         # When the self.defaults dictionary changes will update the Preferences GUI forms
@@ -2137,7 +2138,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("object2editor()")
+        self.defaults.report_usage("object2editor()")
 
         # disable the objects menu as it may interfere with the Editors
         self.ui.menuobjects.setDisabled(True)
@@ -2231,7 +2232,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("editor2object()")
+        self.defaults.report_usage("editor2object()")
 
         # re-enable the objects menu that was disabled on entry in Editor mode
         self.ui.menuobjects.setDisabled(False)
@@ -2409,19 +2410,6 @@ class App(QtCore.QObject):
             loc = os.path.dirname(__file__)
         return loc
 
-    def report_usage(self, resource):
-        """
-        Increments usage counter for the given resource
-        in self.defaults['global_stats'].
-
-        :param resource: Name of the resource.
-        :return: None
-        """
-
-        if resource in self.defaults['global_stats']:
-            self.defaults['global_stats'][resource] += 1
-        else:
-            self.defaults['global_stats'][resource] = 1
 
     def info(self, msg):
         """
@@ -2530,7 +2518,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_import_preferences")
+        self.defaults.report_usage("on_import_preferences")
         App.log.debug("App.on_import_preferences()")
 
         # Show file chooser
@@ -2550,7 +2538,7 @@ class App(QtCore.QObject):
         # Load in the defaults from the chosen file
         self.defaults.load(filename=filename)
 
-        self.on_preferences_edited()
+        self.preferencesUiManager.on_preferences_edited()
         self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
 
     def on_export_preferences(self):
@@ -2559,7 +2547,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_export_preferences")
+        self.defaults.report_usage("on_export_preferences")
         App.log.debug("on_export_preferences()")
 
         defaults_file_content = None
@@ -2604,7 +2592,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("save_to_file")
+        self.defaults.report_usage("save_to_file")
         App.log.debug("save_to_file()")
 
         self.date = str(datetime.today()).rpartition('.')[0]
@@ -2902,7 +2890,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_excellon_object()")
+        self.defaults.report_usage("new_excellon_object()")
 
         self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
 
@@ -2912,7 +2900,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_geometry_object()")
+        self.defaults.report_usage("new_geometry_object()")
 
         def initialize(obj, app):
             obj.multitool = False
@@ -2925,7 +2913,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_gerber_object()")
+        self.defaults.report_usage("new_gerber_object()")
 
         def initialize(grb_obj, app):
             grb_obj.multitool = False
@@ -2952,7 +2940,7 @@ class App(QtCore.QObject):
         :param text: pass a source file to the newly created script to be loaded in it
         :return: None
         """
-        self.report_usage("new_script_object()")
+        self.defaults.report_usage("new_script_object()")
 
         if text is not None:
             new_source_file = text
@@ -2991,7 +2979,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("new_document_object()")
+        self.defaults.report_usage("new_document_object()")
 
         def initialize(obj, app):
             obj.source_file = ""
@@ -3117,7 +3105,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_about")
+        self.defaults.report_usage("on_about")
 
         version = self.version
         version_date = self.version_date
@@ -3520,46 +3508,6 @@ class App(QtCore.QObject):
         :return: None
         """
         self.preferencesUiManager.save_defaults()
-
-    def save_toolbar_view(self):
-        """
-        Will save the toolbar view state to the defaults
-
-        :return:            None
-        """
-
-        # Save the toolbar view
-        tb_status = 0
-        if self.ui.toolbarfile.isVisible():
-            tb_status += 1
-
-        if self.ui.toolbargeo.isVisible():
-            tb_status += 2
-
-        if self.ui.toolbarview.isVisible():
-            tb_status += 4
-
-        if self.ui.toolbartools.isVisible():
-            tb_status += 8
-
-        if self.ui.exc_edit_toolbar.isVisible():
-            tb_status += 16
-
-        if self.ui.geo_edit_toolbar.isVisible():
-            tb_status += 32
-
-        if self.ui.grb_edit_toolbar.isVisible():
-            tb_status += 64
-
-        if self.ui.snap_toolbar.isVisible():
-            tb_status += 128
-
-        if self.ui.toolbarshell.isVisible():
-            tb_status += 256
-
-        self.defaults["global_toolbar_view"] = tb_status
-
-
 
     def final_save(self):
         """
@@ -4053,7 +4001,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join()")
+        self.defaults.report_usage("on_edit_join()")
 
         obj_name_single = str(name) if name else "Combo_SingleGeo"
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
@@ -4112,7 +4060,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join_exc()")
+        self.defaults.report_usage("on_edit_join_exc()")
 
         objs = self.collection.get_selected()
 
@@ -4127,7 +4075,7 @@ class App(QtCore.QObject):
             return 'fail'
 
         def initialize(exc_obj, app):
-            ExcellonObject.merge(self, exc_list=objs, exc_final=exc_obj)
+            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
@@ -4140,7 +4088,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_edit_join_grb()")
+        self.defaults.report_usage("on_edit_join_grb()")
 
         objs = self.collection.get_selected()
 
@@ -4171,7 +4119,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_convert_singlegeo_to_multigeo()")
+        self.defaults.report_usage("on_convert_singlegeo_to_multigeo()")
 
         obj = self.collection.get_active()
 
@@ -4205,7 +4153,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_convert_multigeo_to_singlegeo()")
+        self.defaults.report_usage("on_convert_multigeo_to_singlegeo()")
 
         obj = self.collection.get_active()
 
@@ -4241,7 +4189,7 @@ class App(QtCore.QObject):
         :param field: the key of the self.defaults dictionary that was changed.
         :return: None
         """
-        self.preferencesUiManager.defaults_write_form(field)
+        self.preferencesUiManager.defaults_write_form_field(field=field)
 
         if field == "units":
             self.set_screen_units(self.defaults['units'])
@@ -4281,7 +4229,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toggle_units")
+        self.defaults.report_usage("on_toggle_units")
 
         if self.toggle_units_ignore:
             return
@@ -4538,7 +4486,7 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
     def on_fullscreen(self, disable=False):
-        self.report_usage("on_fullscreen()")
+        self.defaults.report_usage("on_fullscreen()")
 
         flags = self.ui.windowFlags()
         if self.toggle_fscreen is False and disable is False:
@@ -4579,7 +4527,7 @@ class App(QtCore.QObject):
             self.toggle_fscreen = False
 
     def on_toggle_plotarea(self):
-        self.report_usage("on_toggle_plotarea()")
+        self.defaults.report_usage("on_toggle_plotarea()")
 
         try:
             name = self.ui.plot_tab_area.widget(0).objectName()
@@ -4605,7 +4553,7 @@ class App(QtCore.QObject):
             self.ui.menu_toggle_nb.setChecked(False)
 
     def on_toggle_axis(self):
-        self.report_usage("on_toggle_axis()")
+        self.defaults.report_usage("on_toggle_axis()")
 
         if self.toggle_axis is False:
             if self.is_legacy is False:
@@ -4635,13 +4583,13 @@ class App(QtCore.QObject):
             self.toggle_axis = False
 
     def on_toggle_grid(self):
-        self.report_usage("on_toggle_grid()")
+        self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
         self.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
-        self.report_usage("on_toggle_grd_lines()")
+        self.defaults.report_usage("on_toggle_grd_lines()")
 
         tt_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if tt_settings.contains("theme"):
@@ -4839,7 +4787,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if film_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
             "background-color:%s;"
@@ -4868,7 +4816,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if fill_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
             "background-color:%s;"
@@ -4898,7 +4846,7 @@ class App(QtCore.QObject):
 
         # if new color is different then mark that the Preferences are changed
         if back_color != current_color:
-            self.on_preferences_edited()
+            self.preferencesUiManager.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
             "background-color:%s;"
@@ -5077,7 +5025,7 @@ class App(QtCore.QObject):
         :param force_deletion:  used by Tcl command
         :return: None
         """
-        self.report_usage("on_delete()")
+        self.defaults.report_usage("on_delete()")
 
         response = None
         bt_ok = None
@@ -5175,7 +5123,7 @@ class App(QtCore.QObject):
 
         # display the message for the user
         # and ask him to click on the desired position
-        self.report_usage("on_set_origin()")
+        self.defaults.report_usage("on_set_origin()")
 
         def origin_replot():
 
@@ -5345,7 +5293,7 @@ class App(QtCore.QObject):
         :return:
 
         """
-        self.report_usage("on_jump_to()")
+        self.defaults.report_usage("on_jump_to()")
 
         if not custom_location:
             dia_box_location = None
@@ -5466,7 +5414,7 @@ class App(QtCore.QObject):
         :return:            A point location. (x, y) tuple.
 
         """
-        self.report_usage("on_locate()")
+        self.defaults.report_usage("on_locate()")
 
         if obj is None:
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
@@ -5611,7 +5559,7 @@ class App(QtCore.QObject):
         Will copy a selection of objects, creating new objects.
         :return:
         """
-        self.report_usage("on_copy_command()")
+        self.defaults.report_usage("on_copy_command()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
@@ -5724,7 +5672,7 @@ class App(QtCore.QObject):
         :param text:    New name for the object.
         :return:
         """
-        self.report_usage("on_rename_object()")
+        self.defaults.report_usage("on_rename_object()")
 
         named_obj = self.collection.get_active()
         for obj in named_obj:
@@ -5741,7 +5689,7 @@ class App(QtCore.QObject):
         Will convert any object out of Gerber, Excellon, Geometry to Geometry object.
         :return:
         """
-        self.report_usage("convert_any2geo()")
+        self.defaults.report_usage("convert_any2geo()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -5793,7 +5741,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("convert_any2gerber()")
+        self.defaults.report_usage("convert_any2gerber()")
 
         def initialize_geometry(obj_init, app):
             apertures = {}
@@ -5890,7 +5838,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.report_usage("on_selectall()")
+        self.defaults.report_usage("on_selectall()")
 
         # delete the possible selection box around a possible selected object
         self.delete_selection_shape()
@@ -5924,65 +5872,49 @@ class App(QtCore.QObject):
             for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
                 try:
                     try:
-                        tb.textEdited.disconnect(self.on_preferences_edited)
+                        tb.textEdited.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.textEdited.connect(self.on_preferences_edited)
+                    tb.textEdited.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.modificationChanged.disconnect(self.on_preferences_edited)
+                        tb.modificationChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.modificationChanged.connect(self.on_preferences_edited)
+                    tb.modificationChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.toggled.disconnect(self.on_preferences_edited)
+                        tb.toggled.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.toggled.connect(self.on_preferences_edited)
+                    tb.toggled.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.valueChanged.disconnect(self.on_preferences_edited)
+                        tb.valueChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.valueChanged.connect(self.on_preferences_edited)
+                    tb.valueChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
                 try:
                     try:
-                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                        tb.currentIndexChanged.disconnect(self.preferencesUiManager.on_preferences_edited)
                     except (TypeError, AttributeError):
                         pass
-                    tb.currentIndexChanged.connect(self.on_preferences_edited)
+                    tb.currentIndexChanged.connect(self.preferencesUiManager.on_preferences_edited)
                 except AttributeError:
                     pass
 
-    def on_preferences_edited(self):
-        """
-        Executed when a preference was changed in the Edit -> Preferences tab.
-        Will color the Preferences tab text to Red color.
-        :return:
-        """
-        if self.preferencesUiManager.preferences_changed_flag is False:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
-
-            for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
-
-            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
-
-            self.preferencesUiManager.preferences_changed_flag = True
 
     def on_tools_database(self, source='app'):
         """
@@ -6080,57 +6012,10 @@ class App(QtCore.QObject):
         :param title: The name of the tab that was closed.
         :return:
         """
+        # FIXME: doing this based on translated title doesn't seem very robust.
 
         if title == _("Preferences"):
-            # disconnect
-            for idx in range(self.ui.pref_tab_area.count()):
-                for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
-                    try:
-                        tb.textEdited.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.modificationChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.toggled.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.valueChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-                    try:
-                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
-                    except (TypeError, AttributeError):
-                        pass
-
-            if self.preferencesUiManager.preferences_changed_flag is True:
-                msgbox = QtWidgets.QMessageBox()
-                msgbox.setText(_("One or more values are changed.\n"
-                                 "Do you want to save the Preferences?"))
-                msgbox.setWindowTitle(_("Save Preferences"))
-                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
-
-                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-
-                msgbox.setDefaultButton(bt_yes)
-                msgbox.exec_()
-                response = msgbox.clickedButton()
-
-                if response == bt_yes:
-                    self.preferencesUiManager.on_save_button(save_to_file=True)
-                    self.inform.emit('[success] %s' % _("Preferences saved."))
-                else:
-                    self.preferencesUiManager.preferences_changed_flag = False
-                    self.inform.emit('')
-                    return
+            self.uiPreferencesManager.on_close_preferences_tab()
 
         if title == _("Tools Database"):
             # disconnect the signals from the table widget in tab
@@ -6172,7 +6057,7 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.report_usage("on_flipy()")
+        self.defaults.report_usage("on_flipy()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -6219,7 +6104,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_flipx()")
+        self.defaults.report_usage("on_flipx()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -6268,7 +6153,7 @@ class App(QtCore.QObject):
         :param preset:  A value to be used as predefined angle for rotation.
         :return:
         """
-        self.report_usage("on_rotate()")
+        self.defaults.report_usage("on_rotate()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -6323,7 +6208,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_skewx()")
+        self.defaults.report_usage("on_skewx()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -6362,7 +6247,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_skewy()")
+        self.defaults.report_usage("on_skewy()")
 
         obj_list = self.collection.get_selected()
         xminlist = []
@@ -6417,7 +6302,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toolbar_replot")
+        self.defaults.report_usage("on_toolbar_replot")
         self.log.debug("on_toolbar_replot()")
 
         try:
@@ -6722,7 +6607,7 @@ class App(QtCore.QObject):
                              _("Delete Grid value cancelled"))
 
     def on_shortcut_list(self):
-        self.report_usage("on_shortcut_list()")
+        self.defaults.report_usage("on_shortcut_list()")
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, _("Key Shortcut List"))
@@ -6751,7 +6636,7 @@ class App(QtCore.QObject):
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
     def on_copy_name(self):
-        self.report_usage("on_copy_name()")
+        self.defaults.report_usage("on_copy_name()")
 
         obj = self.collection.get_active()
         try:
@@ -7419,7 +7304,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_file_new")
+        self.defaults.report_usage("on_file_new")
 
         # Remove everything from memory
         App.log.debug("on_file_new()")
@@ -7467,7 +7352,7 @@ class App(QtCore.QObject):
         self.project_filename = None
 
         # Load the application defaults
-        self.load_defaults(filename='current_defaults')
+        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
 
         # Re-fresh project options
         self.on_options_app2project()
@@ -7498,7 +7383,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("obj_properties()")
+        self.defaults.report_usage("obj_properties()")
         self.properties_tool.run(toggle=False)
 
     def on_project_context_save(self):
@@ -7529,7 +7414,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("obj_move()")
+        self.defaults.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
     def on_fileopengerber(self, signal, name=None):
@@ -7541,7 +7426,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_fileopengerber")
+        self.defaults.report_usage("on_fileopengerber")
         App.log.debug("on_fileopengerber()")
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
@@ -7588,7 +7473,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_fileopenexcellon")
+        self.defaults.report_usage("on_fileopenexcellon")
         App.log.debug("on_fileopenexcellon()")
 
         _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
@@ -7626,7 +7511,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_fileopengcode")
+        self.defaults.report_usage("on_fileopengcode")
         App.log.debug("on_fileopengcode()")
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
@@ -7666,7 +7551,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_openproject")
+        self.defaults.report_usage("on_file_openproject")
         App.log.debug("on_file_openproject()")
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
@@ -7698,7 +7583,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_fileopenhpgl2")
+        self.defaults.report_usage("on_fileopenhpgl2")
         App.log.debug("on_fileopenhpgl2()")
 
         _filter_ = "HPGL2 Files (*.plt);;" \
@@ -7736,7 +7621,7 @@ class App(QtCore.QObject):
         :return:        None
         """
 
-        self.report_usage("on_file_openconfig")
+        self.defaults.report_usage("on_file_openconfig")
         App.log.debug("on_file_openconfig()")
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
@@ -7757,7 +7642,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportsvg")
+        self.defaults.report_usage("on_file_exportsvg")
         App.log.debug("on_file_exportsvg()")
 
         obj = self.collection.get_active()
@@ -7808,7 +7693,7 @@ class App(QtCore.QObject):
             self.file_saved.emit("SVG", filename)
 
     def on_file_exportpng(self):
-        self.report_usage("on_file_exportpng")
+        self.defaults.report_usage("on_file_exportpng")
         App.log.debug("on_file_exportpng()")
 
         self.date = str(datetime.today()).rpartition('.')[0]
@@ -7852,7 +7737,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savegerber")
+        self.defaults.report_usage("on_file_savegerber")
         App.log.debug("on_file_savegerber()")
 
         obj = self.collection.get_active()
@@ -7893,7 +7778,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savescript")
+        self.defaults.report_usage("on_file_savescript")
         App.log.debug("on_file_savescript()")
 
         obj = self.collection.get_active()
@@ -7934,7 +7819,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_savedocument")
+        self.defaults.report_usage("on_file_savedocument")
         App.log.debug("on_file_savedocument()")
 
         obj = self.collection.get_active()
@@ -7975,7 +7860,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_saveexcellon")
+        self.defaults.report_usage("on_file_saveexcellon")
         App.log.debug("on_file_saveexcellon()")
 
         obj = self.collection.get_active()
@@ -8016,7 +7901,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportexcellon")
+        self.defaults.report_usage("on_file_exportexcellon")
         App.log.debug("on_file_exportexcellon()")
 
         obj = self.collection.get_active()
@@ -8060,7 +7945,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.report_usage("on_file_exportgerber")
+        self.defaults.report_usage("on_file_exportgerber")
         App.log.debug("on_file_exportgerber()")
 
         obj = self.collection.get_active()
@@ -8104,7 +7989,7 @@ class App(QtCore.QObject):
 
                 :return: None
                 """
-        self.report_usage("on_file_exportdxf")
+        self.defaults.report_usage("on_file_exportdxf")
         App.log.debug("on_file_exportdxf()")
 
         obj = self.collection.get_active()
@@ -8158,7 +8043,7 @@ class App(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.report_usage("on_file_importsvg")
+        self.defaults.report_usage("on_file_importsvg")
         App.log.debug("on_file_importsvg()")
 
         _filter_ = "SVG File .svg (*.svg);;All Files (*.*)"
@@ -8189,7 +8074,7 @@ class App(QtCore.QObject):
         :type type_of_obj: str
         :return: None
         """
-        self.report_usage("on_file_importdxf")
+        self.defaults.report_usage("on_file_importdxf")
         App.log.debug("on_file_importdxf()")
 
         _filter_ = "DXF File .dxf (*.DXF);;All Files (*.*)"
@@ -8344,7 +8229,7 @@ class App(QtCore.QObject):
         # self.ui.show()
 
     def on_toggle_code_editor(self):
-        self.report_usage("on_toggle_code_editor()")
+        self.defaults.report_usage("on_toggle_code_editor()")
 
         if self.toggle_codeeditor is False:
             self.init_code_editor(name=_("Code Editor"))
@@ -8427,7 +8312,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.report_usage("on_fileopenscript")
+        self.defaults.report_usage("on_fileopenscript")
         App.log.debug("on_fileopenscript()")
 
         _filter_ = "TCL script .FlatScript (*.FlatScript);;TCL script .tcl (*.TCL);;TCL script .txt (*.TXT);;" \
@@ -8459,7 +8344,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_filerunscript")
+        self.defaults.report_usage("on_filerunscript")
         App.log.debug("on_file_runscript()")
 
         if name:
@@ -8517,7 +8402,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_saveproject")
+        self.defaults.report_usage("on_file_saveproject")
 
         if self.project_filename is None:
             self.on_file_saveprojectas()
@@ -8544,7 +8429,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_file_saveprojectas")
+        self.defaults.report_usage("on_file_saveprojectas")
 
         self.date = str(datetime.today()).rpartition('.')[0]
         self.date = ''.join(c for c in self.date if c not in ':-')
@@ -8813,7 +8698,7 @@ class App(QtCore.QObject):
         :param scale_stroke_factor: factor by which to change/scale the thickness of the features
         :return:
         """
-        self.report_usage("export_svg()")
+        self.defaults.report_usage("export_svg()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -8881,7 +8766,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("save source file()")
+        self.defaults.report_usage("save source file()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -8925,7 +8810,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_excellon()")
+        self.defaults.report_usage("export_excellon()")
 
         if filename is None:
             if self.defaults["global_last_save_folder"]:
@@ -9080,7 +8965,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_gerber()")
+        self.defaults.report_usage("export_gerber()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -9213,7 +9098,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread
         :return:
         """
-        self.report_usage("export_dxf()")
+        self.defaults.report_usage("export_dxf()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
@@ -9265,7 +9150,7 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
-        self.report_usage("import_svg()")
+        self.defaults.report_usage("import_svg()")
         log.debug("App.import_svg()")
 
         obj_type = ""
@@ -9308,7 +9193,7 @@ class App(QtCore.QObject):
         :param outname:     Name for the imported Geometry
         :return:
         """
-        self.report_usage("import_dxf()")
+        self.defaults.report_usage("import_dxf()")
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -10319,21 +10204,21 @@ class App(QtCore.QObject):
         self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
-        self.report_usage("disable_all_plots()")
+        self.defaults.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
         self.inform.emit('[success] %s' %
                          _("All plots disabled."))
 
     def disable_other_plots(self):
-        self.report_usage("disable_other_plots()")
+        self.defaults.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
         self.inform.emit('[success] %s' %
                          _("All non selected plots disabled."))
 
     def enable_all_plots(self):
-        self.report_usage("enable_all_plots()")
+        self.defaults.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
         self.inform.emit('[success] %s' %
@@ -10624,7 +10509,7 @@ class App(QtCore.QObject):
         :param objects:     Selected objects in the Project Tab
         :return:
         """
-        self.report_usage("generate_cnc_job()")
+        self.defaults.report_usage("generate_cnc_job()")
 
         # for obj in objects:
         #     obj.generatecncjob()
@@ -10797,11 +10682,10 @@ class App(QtCore.QObject):
         :return:    None
         """
 
-        self.report_usage("on_options_app2project")
+        self.defaults.report_usage("on_options_app2project")
 
         self.preferencesUiManager.defaults_read_form()
         self.options.update(self.defaults)
-        # self.options_write_form()
 
     def toggle_shell(self):
         """
@@ -10809,7 +10693,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("toggle_shell()")
+        self.defaults.report_usage("toggle_shell()")
 
         if self.ui.shell_dock.isVisible():
             self.ui.shell_dock.hide()
@@ -10837,7 +10721,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.report_usage("on_toggle_shell_from_settings()")
+        self.defaults.report_usage("on_toggle_shell_from_settings()")
 
         if state is True:
             if not self.ui.shell_dock.isVisible():

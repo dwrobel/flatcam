@@ -155,7 +155,7 @@ class ToolImage(FlatCAMTool):
         self.image_type.activated_custom.connect(self.on_image_type)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolImage()")
+        self.app.defaults.report_usage("ToolImage()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -263,7 +263,7 @@ class ToolImage(FlatCAMTool):
         :return:
         """
 
-        self.app.report_usage("import_image()")
+        self.app.defaults.report_usage("import_image()")
 
         if mask is None:
             mask = [250, 250, 250, 250]

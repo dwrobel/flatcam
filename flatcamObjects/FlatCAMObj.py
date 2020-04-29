@@ -236,7 +236,7 @@ class FlatCAMObj(QtCore.QObject):
                                      )
 
     def on_offset_button_click(self):
-        self.app.report_usage("obj_on_offset_button")
+        self.app.defaults.report_usage("obj_on_offset_button")
 
         self.read_form()
         vector_val = self.ui.offsetvector_entry.get_value()
@@ -283,7 +283,7 @@ class FlatCAMObj(QtCore.QObject):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_skew_button_click(self):
-        self.app.report_usage("obj_on_skew_button")
+        self.app.defaults.report_usage("obj_on_skew_button")
         self.read_form()
         x_angle = self.ui.xangle_entry.get_value()
         y_angle = self.ui.yangle_entry.get_value()

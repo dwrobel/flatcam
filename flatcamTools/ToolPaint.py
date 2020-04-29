@@ -710,7 +710,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         FlatCAMTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPaint()")
+        self.app.defaults.report_usage("ToolPaint()")
         log.debug("ToolPaint().run() was launched ...")
 
         if toggle:
@@ -1374,7 +1374,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage("on_paint_button_click")
+        self.app.defaults.report_usage("on_paint_button_click")
         # self.app.call_source = 'paint'
 
         self.select_method = self.selectmethod_combo.get_value()
