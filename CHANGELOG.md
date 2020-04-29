@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.04.2020
+
+- added a try-except clause in the FlatCAMTranslation.restart_program() when closing the Listener and the thread that runs it to adjust to MacOS usage
+
 28.04.2020
 
 - handled a possible situation in App.load_defaults() method
