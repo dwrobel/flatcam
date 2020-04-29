@@ -4586,7 +4586,7 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
             return
 
-        if name != 'plotarea':
+        if name != 'plotarea_tab':
             self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
             # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
             self.ui.plot_tab_area.protectTab(0)
@@ -6098,17 +6098,17 @@ class App(QtCore.QObject):
         else:
             return
 
-    def on_plotarea_tab_closed(self, tab_idx):
-        """
-
-        :param tab_idx: Index of the Tab from the plotarea that was closed
-        :return:
-        """
-        widget = self.ui.plot_tab_area.widget(tab_idx)
-
-        if widget is not None:
-            widget.deleteLater()
-        self.ui.plot_tab_area.removeTab(tab_idx)
+    # def on_plotarea_tab_closed(self, tab_idx):
+    #     """
+    #
+    #     :param tab_idx: Index of the Tab from the plotarea that was closed
+    #     :return:
+    #     """
+    #     widget = self.ui.plot_tab_area.widget(tab_idx)
+    #
+    #     if widget is not None:
+    #         widget.deleteLater()
+    #     self.ui.plot_tab_area.removeTab(tab_idx)
 
     def on_flipy(self):
         """
@@ -7368,6 +7368,7 @@ class App(QtCore.QObject):
         # Remove everything from memory
         App.log.debug("on_file_new()")
 
+        # close any editor that might be open
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
             # ## EDITOR section
@@ -7402,9 +7403,13 @@ class App(QtCore.QObject):
         # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.shell.init_tcl()
 
+        # delete any selection shape on canvas
         self.delete_selection_shape()
+
+        # delete all FlatCAM objects
         self.collection.delete_all()
 
+        # add in Selected tab an initial text that describe the flow of work in FlatCAm
         self.setup_component_editor()
 
         # Clear project filename
@@ -7416,18 +7421,23 @@ class App(QtCore.QObject):
         # Re-fresh project options
         self.on_options_app2project()
 
-        # Init Tools
+        # Init FlatCAMTools
         self.init_tools()
 
+        # Try to close all tabs in the PlotArea but only if the GUI is active (CLI is None)
         if cli is None:
-            # Close any Tabs opened in the Plot Tab Area section
-            for index in range(self.ui.plot_tab_area.count()):
-                self.ui.plot_tab_area.closeTab(index)
-                # for whatever reason previous command does not close the last tab so I do it manually
-            self.ui.plot_tab_area.closeTab(0)
+            # we need to go in reverse because once we remove a tab then the index changes
+            # meaning that removing the first tab (idx = 0) then the tab at former idx = 1 will assume idx = 0
+            # and so on. Therefore the deletion should be done in reverse
+            wdg_count = self.ui.plot_tab_area.tabBar.count() - 1
+            for index in range(wdg_count, -1, -1):
+                try:
+                    self.ui.plot_tab_area.closeTab(index)
+                except Exception as e:
+                    log.debug("App.on_file_new() --> %s" % str(e))
 
             # # And then add again the Plot Area
-            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
             self.ui.plot_tab_area.protectTab(0)
 
         # take the focus of the Notebook on Project Tab.

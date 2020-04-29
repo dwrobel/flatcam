@@ -1169,7 +1169,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.plot_tab_area.setTabsClosable(True)
 
         self.plot_tab = QtWidgets.QWidget()
-        self.plot_tab.setObjectName("plotarea")
+        self.plot_tab.setObjectName("plotarea_tab")
         self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
 
         self.right_layout = QtWidgets.QVBoxLayout()

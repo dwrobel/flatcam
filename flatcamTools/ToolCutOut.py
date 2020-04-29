@@ -464,11 +464,11 @@ class CutOut(FlatCAMTool):
         self.type_obj_radio.set_value('grb')
 
     def on_freeform_cutout(self):
+        log.debug("Cutout.on_freeform_cutout() was launched ...")
 
         # def subtract_rectangle(obj_, x0, y0, x1, y1):
         #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
         #     obj_.subtract_polygon(pts)
-
         name = self.obj_combo.currentText()
 
         # Get source object.
@@ -651,6 +651,7 @@ class CutOut(FlatCAMTool):
         self.app.should_we_save = True
 
     def on_rectangular_cutout(self):
+        log.debug("Cutout.on_rectangular_cutout() was launched ...")
 
         # def subtract_rectangle(obj_, x0, y0, x1, y1):
         #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]

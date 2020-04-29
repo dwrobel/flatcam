@@ -17,7 +17,7 @@ if '_' not in builtins.__dict__:
 
 class BookmarkManager(QtWidgets.QWidget):
 
-    mark_rows = QtCore.pyqtSignal()
+    # mark_rows = QtCore.pyqtSignal()
 
     def __init__(self, app, storage, parent=None):
         super(BookmarkManager, self).__init__(parent)
@@ -119,8 +119,17 @@ class BookmarkManager(QtWidgets.QWidget):
         self.link_entry.returnPressed.connect(self.on_add_entry)
         # closebtn.clicked.connect(self.accept)
 
-        self.table_widget.drag_drop_sig.connect(self.mark_table_rows_for_actions)
+        self.ui_connect()
         self.build_bm_ui()
+
+    def ui_connect(self):
+        self.table_widget.drag_drop_sig.connect(self.mark_table_rows_for_actions)
+
+    def ui_disconnect(self):
+        try:
+            self.table_widget.drag_drop_sig.connect(self.mark_table_rows_for_actions)
+        except (TypeError, AttributeError):
+            pass
 
     def build_bm_ui(self):
 
@@ -378,4 +387,5 @@ class BookmarkManager(QtWidgets.QWidget):
 
     def closeEvent(self, QCloseEvent):
         self.rebuild_actions()
+        self.ui_disconnect()
         super().closeEvent(QCloseEvent)
