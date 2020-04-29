@@ -121,6 +121,8 @@ class FlatCAMDefaults:
         "global_point_clipboard_format": "(%.*f, %.*f)",
         "global_zdownrate": None,
 
+        "global_tcl_path": '',
+
         # General GUI Settings
         "global_theme": 'white',
         "global_gray_icons": False,

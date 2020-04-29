@@ -1834,7 +1834,7 @@ class Gerber(Geometry):
             new_el = {}
             new_el['solid'] = pol
             new_el['follow'] = pol.exterior
-            self.apertures['0']['geometry'].append(deepcopy(new_el))
+            self.apertures['0']['geometry'].append(new_el)
 
     def scale(self, xfactor, yfactor=None, point=None):
         """

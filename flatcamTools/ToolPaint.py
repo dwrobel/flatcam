@@ -147,7 +147,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
               "the cut width in material is exactly the tool diameter.<BR>"
               "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
-              "- <B>V-Shape</B> -> it will disable de Z-Cut parameter in the resulting geometry UI form "
+              "- <B>V-Shape</B> -> it will disable Z-Cut parameter in the resulting geometry UI form "
               "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and "
               "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such "
               "as the cut width into material will be equal with the value in the Tool Diameter "

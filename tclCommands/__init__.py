@@ -25,9 +25,9 @@ import tclCommands.TclCommandExteriors
 import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames
+import tclCommands.TclCommandGetPath
 import tclCommands.TclCommandGetSys
 import tclCommands.TclCommandHelp
-import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
 import tclCommands.TclCommandFollow
@@ -43,10 +43,12 @@ import tclCommands.TclCommandNewExcellon
 import tclCommands.TclCommandNewGeometry
 import tclCommands.TclCommandNewGerber
 import tclCommands.TclCommandOffset
+import tclCommands.TclCommandOpenDXF
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandOpenProject
+import tclCommands.TclCommandOpenSVG
 import tclCommands.TclCommandOptions
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
@@ -58,6 +60,7 @@ import tclCommands.TclCommandSaveSys
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
 import tclCommands.TclCommandSetOrigin
+import tclCommands.TclCommandSetPath
 import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSkew
 import tclCommands.TclCommandSubtractPoly

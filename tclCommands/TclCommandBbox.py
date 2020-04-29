@@ -44,7 +44,7 @@ class TclCommandBbox(TclCommand):
             ('name', 'Object name for which to create bounding box. String'),
             ('margin', "Distance of the edges of the box to the nearest polygon."
                        "Float number."),
-            ('rounded', "If the bounding box is to have rounded corners their radius is equal to the margin. "
+            ('rounded', "If the bounding box has to have rounded corners their radius is equal to the margin. "
                         "True (1) or False (0)."),
             ('outname', 'Name of the resulting Geometry object. String.')
         ]),
@@ -70,7 +70,7 @@ class TclCommandBbox(TclCommand):
         if obj is None:
             self.raise_tcl_error("%s: %s" % (_("Object not found"), name))
 
-        if not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMGeometry):
+        if obj.kind != 'gerber' and obj.kind != 'geometry':
             self.raise_tcl_error('%s %s: %s.' % (
                 _("Expected GerberObject or GeometryObject, got"), name, type(obj)))
 

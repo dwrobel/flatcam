@@ -51,9 +51,10 @@ class TclCommandOpenGCode(TclCommandSignaled):
         :return: None or exception
         """
         args['plot'] = False
+        args['from_tcl'] = True
         filename = args["filename"]
-        if ' ' in filename:
-            return "The absolute path to the project file contain spaces which is not allowed.\n" \
-                   "Please enclose the path within quotes."
+        # if ' ' in filename:
+        #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
+        #            "Please enclose the path within quotes."
 
         self.app.open_gcode(filename, **args)

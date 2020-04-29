@@ -50,4 +50,4 @@ class TclCommandSaveProject(TclCommandSignaled):
         :return: None or exception
         """
 
-        self.app.save_project(args['filename'])
+        self.app.save_project(args['filename'], from_tcl=True)

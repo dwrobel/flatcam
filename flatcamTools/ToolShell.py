@@ -107,25 +107,25 @@ class TermWidget(QWidget):
         mtype = text[:idx+1].upper()
         mtype = mtype.replace('_NOTCL', '')
         body = text[idx+1:]
-        if style == 'in':
+        if style.lower() == 'in':
             text = '<span style="font-weight: bold;">%s</span>' % text
-        elif style == 'err':
+        elif style.lower() == 'err':
             text = '<span style="font-weight: bold; color: red;">%s</span>'\
                    '<span style="font-weight: bold;">%s</span>'\
                    % (mtype, body)
-        elif style == 'warning':
+        elif style.lower() == 'warning':
             # text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
             text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' \
                    '<span style="font-weight: bold;">%s</span>' \
                    % (mtype, body)
-        elif style == 'success':
+        elif style.lower() == 'success':
             # text = '<span style="font-weight: bold; color: #15b300;">%s</span>' % text
             text = '<span style="font-weight: bold; color: #15b300;">%s</span>' \
                    '<span style="font-weight: bold;">%s</span>' \
                    % (mtype, body)
-        elif style == 'selected':
+        elif style.lower() == 'selected':
             text = ''
-        elif style == 'raw':
+        elif style.lower() == 'raw':
             text = text
         else:
             # without span <br/> is ignored!!!
@@ -226,7 +226,7 @@ class TermWidget(QWidget):
 
     def is_command_complete(self, text):
         """
-        Executed by _ExpandableTextEdit. Reimplement this function in the child classes.
+        Executed by _ExpandableTextEdit. Re-implement this function in the child classes.
         """
         return True
 
@@ -268,6 +268,16 @@ class FCShell(TermWidget):
 
         self.tcl_commands_storage = {}
 
+        self.init_tcl()
+
+        self._edit.set_model_data(self.app.myKeywords)
+        self.setWindowIcon(self.app.ui.app_icon)
+        self.setWindowTitle("FlatCAM Shell")
+        self.resize(*self.app.defaults["global_shell_shape"])
+        self._append_to_browser('in', "FlatCAM %s - " % version)
+        self.append_output('%s\n\n' % _("Type >help< to get started"))
+
+    def init_tcl(self):
         if hasattr(self, 'tcl') and self.tcl is not None:
             # self.tcl = None
             # new object cannot be used here as it will not remember values created for next passes,
@@ -276,13 +286,6 @@ class FCShell(TermWidget):
         else:
             self.tcl = tk.Tcl()
             self.setup_shell()
-
-        self._edit.set_model_data(self.app.myKeywords)
-        self.setWindowIcon(self.app.ui.app_icon)
-        self.setWindowTitle("FlatCAM Shell")
-        self.resize(*self.app.defaults["global_shell_shape"])
-        self._append_to_browser('in', "FlatCAM %s - " % version)
-        self.append_output('%s\n\n' % _("Type >help< to get started"))
 
     def setup_shell(self):
         """
@@ -341,19 +344,23 @@ class FCShell(TermWidget):
             ''')
 
     def is_command_complete(self, text):
+
         def skipQuotes(txt):
             quote = txt[0]
             text_val = txt[1:]
             endIndex = str(text_val).index(quote)
             return text[endIndex:]
 
-        while text:
-            if text[0] in ('"', "'"):
-                try:
-                    text = skipQuotes(text)
-                except ValueError:
-                    return False
-            text = text[1:]
+        # I'm disabling this because I need to be able to load paths that have spaces by
+        # enclosing them in quotes --- Marius Stanciu
+        # while text:
+        #     if text[0] in ('"', "'"):
+        #         try:
+        #             text = skipQuotes(text)
+        #         except ValueError:
+        #             return False
+        #     text = text[1:]
+
         return True
 
     def child_exec_command(self, text):

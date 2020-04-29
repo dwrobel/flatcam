@@ -916,19 +916,19 @@ class ToolsDB(QtWidgets.QWidget):
                 self.app.ui.plot_tab_area.removeTab(idx)
         self.app.inform.emit('%s' % _("Cancelled adding tool from DB."))
 
-    def resize_new_tool_table_widget(self, min_size, max_size):
-        """
-        Resize the table widget responsible for adding new tool in the Tool Database
-
-        :param min_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
-        :param max_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
-        :return:
-        """
-        t_height = self.t_height
-        if max_size > min_size:
-            t_height = self.t_height + self.new_tool_table_widget.verticalScrollBar().height()
-
-        self.new_tool_table_widget.setMaximumHeight(t_height)
+    # def resize_new_tool_table_widget(self, min_size, max_size):
+    #     """
+    #     Resize the table widget responsible for adding new tool in the Tool Database
+    #
+    #     :param min_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+    #     :param max_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+    #     :return:
+    #     """
+    #     t_height = self.t_height
+    #     if max_size > min_size:
+    #         t_height = self.t_height + self.new_tool_table_widget.verticalScrollBar().height()
+    #
+    #     self.new_tool_table_widget.setMaximumHeight(t_height)
 
     def closeEvent(self, QCloseEvent):
         super().closeEvent(QCloseEvent)
@@ -2120,7 +2120,7 @@ class ToolsDB2(QtWidgets.QWidget):
                         json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
                 except Exception as e:
                     self.app.log.debug("App.on_save_tools_db() --> %s" % str(e))
-                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                     return
             except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
