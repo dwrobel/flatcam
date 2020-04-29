@@ -3474,6 +3474,7 @@ class App(QtCore.QObject):
 
         # BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec_()
         self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui)
+        self.book_dialog_tab.setObjectName("bookmarks_tab")
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.book_dialog_tab, _("Bookmarks Manager"))
@@ -6013,19 +6014,17 @@ class App(QtCore.QObject):
         else:
             self.inform.emit('[ERROR_NOTCL] %s' % _("Adding tool from DB is not allowed for this object."))
 
-    def on_plot_area_tab_closed(self, title):
+    def on_plot_area_tab_closed(self, tab_obj_name):
         """
-        Executed whenever a tab is closed in the Plot Area.
+        Executed whenever a QTab is closed in the Plot Area.
 
-        :param title: The name of the tab that was closed.
+        :param title: The objectName of the Tab that was closed. This objectName is assigned on Tab creation
         :return:
         """
-        # FIXME: doing this based on translated title doesn't seem very robust.
 
-        if title == _("Preferences"):
+        if tab_obj_name == "preferences_tab":
             self.preferencesUiManager.on_close_preferences_tab()
-
-        if title == _("Tools Database"):
+        elif tab_obj_name == "database_tab":
             # disconnect the signals from the table widget in tab
             self.tools_db_tab.ui_disconnect()
 
@@ -6051,13 +6050,13 @@ class App(QtCore.QObject):
                     self.inform.emit('')
                     return
             self.tools_db_tab.deleteLater()
-
-        if title == _("Code Editor"):
+        elif tab_obj_name == "text_editor_tab":
             self.toggle_codeeditor = False
-
-        if title == _("Bookmarks Manager"):
+        elif tab_obj_name == "bookmarks_tab":
             self.book_dialog_tab.rebuild_actions()
             self.book_dialog_tab.deleteLater()
+        else:
+            return
 
     def on_plotarea_tab_closed(self, tab_idx):
         """

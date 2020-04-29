@@ -2088,9 +2088,9 @@ class FCDetachableTab2(FCDetachableTab):
         :param currentIndex:
         :return:
         """
-        idx = self.currentIndex()
-
-        self.tab_closed_signal.emit(self.tabText(idx))
+        # idx = self.currentIndex()
+        self.tab_name = self.widget(currentIndex).objectName()
+        self.tab_closed_signal.emit(self.tab_name)
 
         self.removeTab(currentIndex)
 

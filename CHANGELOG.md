@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - minor bugs fixed (not so visible)
 - promoted some methods to be static
 - set the default layout on first run to the 'minimal' value
+- modified the method that detects which tab was closed in the Plot Area so it will no longer depend on it's translated text but on it's objectName set on the QTab creation
 
 28.04.2020
 
