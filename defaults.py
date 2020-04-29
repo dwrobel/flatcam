@@ -457,8 +457,8 @@ class FlatCAMDefaults:
         "tools_film_pagesize": 'A4',
 
         # Panel Tool
-        "tools_panelize_spacing_columns": 0,
-        "tools_panelize_spacing_rows": 0,
+        "tools_panelize_spacing_columns": 0.0,
+        "tools_panelize_spacing_rows": 0.0,
         "tools_panelize_columns": 1,
         "tools_panelize_rows": 1,
         "tools_panelize_constrain": False,

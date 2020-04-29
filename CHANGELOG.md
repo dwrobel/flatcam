@@ -21,6 +21,8 @@ CHANGELOG for FlatCAM beta
 - fixed a SyntaxError Exception when checking for types of found old preferences
 - updated the French, German and Spanish Google translations
 - updated the Romanian translation
+- fixed units conversion issue
+- updated the units conversion method to convert all the convertible parameters in the Preferences
 
 28.04.2020
 
