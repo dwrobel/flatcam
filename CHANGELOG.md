@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed issue #409; problem was due of an assert I used in the handler of the Menu ->Options -> Flip X(Y) menu entry
 - activated and updated the editing in the Aperture Table in the Gerber Editor; not all parameters can be edited for every type of aperture
 - some strings updated
+- fixed a small issue in loading the Projects
 
 29.04.2020
 
