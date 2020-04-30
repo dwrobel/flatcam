@@ -1672,6 +1672,12 @@ class ToolsDB2(QtWidgets.QWidget):
         )
         self.buttons_box.addWidget(import_db_btn)
 
+        self.save_db_btn = FCButton(_("Save DB"))
+        self.save_db_btn.setToolTip(
+            _("Save the Tools Database information's.")
+        )
+        self.buttons_box.addWidget(self.save_db_btn)
+
         self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
         self.add_tool_from_db.setToolTip(
             _("Add a new tool in the Tools Table of the\n"
@@ -1796,6 +1802,7 @@ class ToolsDB2(QtWidgets.QWidget):
         remove_entry_btn.clicked.connect(self.on_tool_delete)
         export_db_btn.clicked.connect(self.on_export_tools_db_file)
         import_db_btn.clicked.connect(self.on_import_tools_db_file)
+        self.save_db_btn.clicked.connect(self.on_save_db_btn_click)
         # closebtn.clicked.connect(self.accept)
 
         self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
@@ -2026,6 +2033,14 @@ class ToolsDB2(QtWidgets.QWidget):
         # add the new entry to the Tools DB table
         self.update_storage()
         self.build_db_ui()
+
+        # select the last Tree item just added
+        nr_items = self.tree_widget.topLevelItemCount()
+        if nr_items:
+            last_item = self.tree_widget.topLevelItem(nr_items - 1)
+            self.tree_widget.setCurrentItem(last_item)
+            last_item.setSelected(True)
+
         self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
@@ -2050,6 +2065,15 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.update_storage()
         self.build_db_ui()
+
+        # select the last Tree item just added
+        nr_items = self.tree_widget.topLevelItemCount()
+        if nr_items:
+            last_item = self.tree_widget.topLevelItem(nr_items - 1)
+            self.tree_widget.setCurrentItem(last_item)
+            last_item.setSelected(True)
+
+        self.callback_app()
         self.app.inform.emit('[success] %s' % _("Tool copied from Tools DB."))
 
     def on_tool_delete(self):
@@ -2069,6 +2093,14 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.update_storage()
         self.build_db_ui()
+
+        # select the first Tree item
+        nr_items = self.tree_widget.topLevelItemCount()
+        if nr_items:
+            first_item = self.tree_widget.topLevelItem(0)
+            self.tree_widget.setCurrentItem(first_item)
+            first_item.setSelected(True)
+
         self.app.inform.emit('[success] %s' % _("Tool removed from Tools DB."))
 
     def on_export_tools_db_file(self):
@@ -2167,6 +2199,7 @@ class ToolsDB2(QtWidgets.QWidget):
         for idx in range(self.app.ui.plot_tab_area.count()):
             if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.save_db_btn.setStyleSheet("")
 
                 # Save Tools DB in a file
                 try:
@@ -2180,6 +2213,10 @@ class ToolsDB2(QtWidgets.QWidget):
 
                 if not silent:
                     self.app.inform.emit('[success] %s' % _("Saved Tools DB."))
+
+    def on_save_db_btn_click(self):
+        self.app.tools_db_changed_flag = False
+        self.on_save_tools_db()
 
     def ui_connect(self):
         # make sure that we don't make multiple connections to the widgets
@@ -2258,6 +2295,8 @@ class ToolsDB2(QtWidgets.QWidget):
         val = self.name_entry.get_value()
 
         item = self.tree_widget.currentItem()
+        if item is None:
+            return
         # I'm setting the value for the second column (designated by 1) because first column holds the ID
         # and second column holds the Name (this behavior is set in the build_ui method)
         item.setData(1, QtCore.Qt.DisplayRole, val)
@@ -2272,7 +2311,8 @@ class ToolsDB2(QtWidgets.QWidget):
         try:
             wdg = self.sender()
 
-            assert isinstance(wdg, QtWidgets.QWidget), "Expected a QWidget got %s" % type(wdg)
+            assert isinstance(wdg, QtWidgets.QWidget) or isinstance(wdg, QtWidgets.QAction), \
+                "Expected a QWidget got %s" % type(wdg)
 
             if wdg is None:
                 return

@@ -11,6 +11,10 @@ CHANGELOG for FlatCAM beta
 
 - made some corrections - due of recent refactoring PyCharm reported errors all over (not correct but it made programming difficult)
 - modified the requirements.txt file to force svg.path module to be at least version 4.0
+- fixed bug in Tools DB that crashed when a tool is copied
+- in Tools Database added a Save Button whose color is changed in Red if the DB was modified and back to default when the DB is saved.
+- fixed bug in Tool DB that crashed the app when the Tool Name was modified but there was no tree item (a tool in the list) selected in the Tree widget (list of tools)
+- now on tool add and tool copy, the last item (tool, which is the one added) is autoselected; o tool delete always the first item (tool) is selected
 
 29.04.2020
 

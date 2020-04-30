@@ -31,6 +31,7 @@ from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
+import sys
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -2864,14 +2865,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             key = event.key
 
         if self.app.call_source == 'app':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
+            # CTRL + SHIFT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 if key == QtCore.Qt.Key_S:
                     self.app.on_file_saveprojectas()
                     return
+            # CTRL
             elif modifiers == QtCore.Qt.ControlModifier:
                 # Select All
                 if key == QtCore.Qt.Key_A:
@@ -2944,6 +2948,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_toggle_plotarea()
 
                 return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
 
                 # Copy Object Name
@@ -2996,6 +3001,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y:
                     self.app.on_skewy()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 # Eanble all plots
                 if key == Qt.Key_1:
@@ -3114,6 +3120,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F10 or key == 'F10':
                     self.app.on_fullscreen()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Open Manual
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
@@ -3311,6 +3318,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 return
         elif self.app.call_source == 'geo_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
@@ -3340,6 +3348,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -3355,6 +3364,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y or key == 'Y':
                     self.app.geo_editor.transform_tool.on_skewy_key()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
 
                 # Transformation Tool
@@ -3371,6 +3381,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y or key == 'Y':
                     self.app.geo_editor.transform_tool.on_offy_key()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
@@ -3578,6 +3589,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == 'F3':
                     self.app.on_shortcut_list()
         elif self.app.call_source == 'grb_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # Eraser Tool
                 if key == QtCore.Qt.Key_E or key == 'E':
@@ -3593,11 +3605,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_min_tool.run()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 # Mark Area Tool
                 if key == QtCore.Qt.Key_A or key == 'A':
@@ -3612,6 +3626,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.grb_editor.on_transform()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -3807,6 +3822,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_shortcut_list()
                     return
         elif self.app.call_source == 'exc_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
@@ -3817,13 +3833,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_min_tool.run()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -4036,6 +4055,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # abort the measurement action
@@ -4051,6 +4071,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_J or key == 'J':
                     self.app.on_jump_to()
         elif self.app.call_source == 'qrcode_tool':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
@@ -4062,6 +4083,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -4075,17 +4097,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_J:
                     self.app.on_jump_to()
         elif self.app.call_source == 'copper_thieving_tool':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
-
             elif modifiers == QtCore.Qt.ControlModifier:
                 pass
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':

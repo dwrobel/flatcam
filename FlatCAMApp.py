@@ -6022,6 +6022,7 @@ class App(QtCore.QObject):
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+                self.tools_db_tab.save_db_btn.setStyleSheet("QPushButton {color: red;}")
 
         self.tools_db_changed_flag = True
 
