@@ -3,12 +3,25 @@ from PyQt5.QtCore import QSettings, Qt
 
 from flatcamGUI.GUIElements import FCTextArea, FCCheckBox, FCComboBox, FCSpinner, FCEntry
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job Advanced Options Preferences", parent=None)
-        super(CNCJobAdvOptPrefGroupUI, self).__init__(self)
+        super(CNCJobAdvOptPrefGroupUI, self).__init__(self, parent=parent)
         self.decimals = decimals
 
         self.setTitle(str(_("CNC Job Adv. Options")))

@@ -13,4 +13,3 @@ if settings.contains("machinist"):
     machinist_setting = settings.value('machinist', type=int)
 else:
     machinist_setting = 0
-

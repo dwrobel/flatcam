@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.tools.ToolsSubPrefGroupUI import ToolsSubPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsSolderpastePrefGroupUI import ToolsSolderpastePrefGroupUI
@@ -10,6 +11,20 @@ from flatcamGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGro
 from flatcamGUI.preferences.tools.Tools2sidedPrefGroupUI import Tools2sidedPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsCutoutPrefGroupUI import ToolsCutoutPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class ToolsPreferencesUI(QtWidgets.QWidget):

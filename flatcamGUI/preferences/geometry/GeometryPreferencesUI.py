@@ -1,9 +1,24 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.geometry.GeometryEditorPrefGroupUI import GeometryEditorPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryAdvOptPrefGroupUI import GeometryAdvOptPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class GeometryPreferencesUI(QtWidgets.QWidget):

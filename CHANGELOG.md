@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.04.2020 
+
+- made some corrections - due of recent refactoring PyCharm reported errors all over (not correct but it made programming difficult)
+- modified the requirements.txt file to force svg.path module to be at least version 4.0
+
 29.04.2020
 
 - added a try-except clause in the FlatCAMTranslation.restart_program() when closing the Listener and the thread that runs it to adjust to MacOS usage

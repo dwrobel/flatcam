@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.tools.Tools2InvertPrefGroupUI import Tools2InvertPrefGroupUI
 from flatcamGUI.preferences.tools.Tools2PunchGerberPrefGroupUI import Tools2PunchGerberPrefGroupUI
@@ -9,6 +10,20 @@ from flatcamGUI.preferences.tools.Tools2CThievingPrefGroupUI import Tools2CThiev
 from flatcamGUI.preferences.tools.Tools2QRCodePrefGroupUI import Tools2QRCodePrefGroupUI
 from flatcamGUI.preferences.tools.Tools2OptimalPrefGroupUI import Tools2OptimalPrefGroupUI
 from flatcamGUI.preferences.tools.Tools2RulesCheckPrefGroupUI import Tools2RulesCheckPrefGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class Tools2PreferencesUI(QtWidgets.QWidget):

@@ -1,14 +1,28 @@
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 
 from flatcamGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCEntry
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class Tools2QRCodePrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
 
-        super(Tools2QRCodePrefGroupUI, self).__init__(self)
+        super(Tools2QRCodePrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("QRCode Tool Options")))
         self.decimals = decimals

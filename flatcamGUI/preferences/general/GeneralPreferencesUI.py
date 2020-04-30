@@ -1,8 +1,23 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
 from flatcamGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
 from flatcamGUI.preferences.general.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):

@@ -1,10 +1,25 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.gerber.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberExpPrefGroupUI import GerberExpPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberAdvOptPrefGroupUI import GerberAdvOptPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberOptPrefGroupUI import GerberOptPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberGenPrefGroupUI import GerberGenPrefGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class GerberPreferencesUI(QtWidgets.QWidget):
