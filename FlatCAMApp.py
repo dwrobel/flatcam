@@ -3598,9 +3598,11 @@ class App(QtCore.QObject):
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        # sys.exit(0)
-
-        os._exit(0)  # fix to work with Python 3.8
+        minor_v = sys.version_info.minor
+        if minor_v < 8:
+            sys.exit(0)
+        else:
+            os._exit(0)  # fix to work with Python 3.8
 
     @staticmethod
     def kill_app():

@@ -43,11 +43,15 @@ if __name__ == '__main__':
         else:
             print("FlatCAM BETA uses PYTHON 3 or later. The version minimum is %s.%s\n"
                   "Your Python version is: %s.%s" % (MIN_VERSION_MAJOR, MIN_VERSION_MINOR, str(major_v), str(minor_v)))
-            os._exit(0)
+
+            if minor_v >= 8:
+                os._exit(0)
+            else:
+                sys.exit(0)
     else:
         print("FlatCAM BETA uses PYTHON 3 or later. The version minimum is %s.%s\n"
               "Your Python version is: %s.%s" % (MIN_VERSION_MAJOR, MIN_VERSION_MINOR, str(major_v), str(minor_v)))
-        os._exit(0)
+        sys.exit(0)
 
     debug_trace()
     VisPyPatches.apply_patches()
@@ -86,5 +90,5 @@ if __name__ == '__main__':
         app.setStyle(style)
 
     fc = App()
-    # sys.exit(app.exec_())
-    app.exec_()
+    sys.exit(app.exec_())
+    # app.exec_()

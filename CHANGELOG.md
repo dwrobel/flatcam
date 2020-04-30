@@ -15,6 +15,9 @@ CHANGELOG for FlatCAM beta
 - in Tools Database added a Save Button whose color is changed in Red if the DB was modified and back to default when the DB is saved.
 - fixed bug in Tool DB that crashed the app when the Tool Name was modified but there was no tree item (a tool in the list) selected in the Tree widget (list of tools)
 - now on tool add and tool copy, the last item (tool, which is the one added) is autoselected; o tool delete always the first item (tool) is selected
+- fixed issue #409; problem was due of an assert I used in the handler of the Menu ->Options -> Flip X(Y) menu entry
+- activated and updated the editing in the Aperture Table in the Gerber Editor; not all parameters can be edited for every type of aperture
+- some strings updated
 
 29.04.2020
 

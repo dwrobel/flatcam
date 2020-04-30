@@ -11690,12 +11690,12 @@ msgstr "Calculadora de electrochapado"
 #: flatcamGUI/PreferencesUI.py:7763 flatcamTools/ToolCalculators.py:158
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
-"using a method like grahite ink or calcium hypophosphite ink or palladium "
+"using a method like graphite ink or calcium hypophosphite ink or palladium "
 "chloride."
 msgstr ""
 "Esta calculadora es útil para aquellos que platican la vía / la "
 "almohadilla / los agujeros de perforación,\n"
-"Utilizando un método como tinta de grahite o tinta de hipofosfito de calcio "
+"Utilizando un método como tinta de graphite o tinta de hipofosfito de calcio "
 "o cloruro de paladio."
 
 #: flatcamGUI/PreferencesUI.py:7774 flatcamTools/ToolCalculators.py:167
