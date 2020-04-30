@@ -10,12 +10,23 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
 # ##########################################################
+import platform
 
-from flatcamGUI.PreferencesUI import *
+from flatcamGUI.GUIElements import *
+from flatcamGUI.preferences import settings
+from flatcamGUI.preferences.cncjob.CNCJobPreferencesUI import CNCJobPreferencesUI
+from flatcamGUI.preferences.excellon.ExcellonPreferencesUI import ExcellonPreferencesUI
+from flatcamGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
+from flatcamGUI.preferences.geometry.GeometryPreferencesUI import GeometryPreferencesUI
+from flatcamGUI.preferences.gerber.GerberPreferencesUI import GerberPreferencesUI
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
+
+from flatcamGUI.preferences.tools.Tools2PreferencesUI import Tools2PreferencesUI
+from flatcamGUI.preferences.tools.ToolsPreferencesUI import ToolsPreferencesUI
+from flatcamGUI.preferences.utilities.UtilPreferencesUI import UtilPreferencesUI
 from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess
