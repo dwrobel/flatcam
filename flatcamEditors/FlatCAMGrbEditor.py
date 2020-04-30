@@ -8,7 +8,7 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
-from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon
+from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
@@ -771,15 +771,15 @@ class FCPoligonize(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
-        apid_set = set()
+        apcode_set = set()
         for elem in self.draw_app.selected:
-            for apid in self.draw_app.storage_dict:
-                if 'geometry' in self.draw_app.storage_dict[apid]:
-                    if elem in self.draw_app.storage_dict[apid]['geometry']:
-                        apid_set.add(apid)
+            for apcode in self.draw_app.storage_dict:
+                if 'geometry' in self.draw_app.storage_dict[apcode]:
+                    if elem in self.draw_app.storage_dict[apcode]['geometry']:
+                        apcode_set.add(apcode)
                         break
 
-        if len(apid_set) > 1:
+        if len(apcode_set) > 1:
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
@@ -809,7 +809,7 @@ class FCPoligonize(FCShapeTool):
                     try:
                         current_storage = self.draw_app.storage_dict['0']['geometry']
                     except KeyError:
-                        self.draw_app.on_aperture_add(apid='0')
+                        self.draw_app.on_aperture_add(apcode='0')
                         current_storage = self.draw_app.storage_dict['0']['geometry']
                 new_el = {}
                 new_el['solid'] = geo
@@ -823,7 +823,7 @@ class FCPoligonize(FCShapeTool):
                 try:
                     current_storage = self.draw_app.storage_dict['0']['geometry']
                 except KeyError:
-                    self.draw_app.on_aperture_add(apid='0')
+                    self.draw_app.on_aperture_add(apcode='0')
                     current_storage = self.draw_app.storage_dict['0']['geometry']
 
             new_el = {}
@@ -1065,7 +1065,7 @@ class FCRegion(FCShapeTool):
 
             # regions are added always in the '0' aperture
             if '0' not in self.draw_app.storage_dict:
-                self.draw_app.on_aperture_add(apid='0')
+                self.draw_app.on_aperture_add(apcode='0')
             else:
                 self.draw_app.last_aperture_selected = '0'
 
@@ -2485,6 +2485,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_table.setColumnCount(5)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
         self.apertures_table.setSortingEnabled(False)
+        self.apertures_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self.apertures_table.horizontalHeaderItem(0).setToolTip(
             _("Index"))
@@ -2924,7 +2925,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.storage_dict = {}
         self.current_storage = []
 
-        self.sorted_apid = []
+        self.sorted_apcode = []
 
         self.new_apertures = {}
         self.new_aperture_macros = {}
@@ -2934,9 +2935,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # dictionary to store the tool_row and aperture codes in Tool_table
         # it will be updated everytime self.build_ui() is called
-        self.olddia_newdia = {}
+        self.oldapcode_newapcode = {}
 
-        self.tool2tooldia = {}
+        self.tid2apcode = {}
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
@@ -3119,22 +3120,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
 
-        self.olddia_newdia.clear()
-        self.tool2tooldia.clear()
+        self.oldapcode_newapcode.clear()
+        self.tid2apcode.clear()
 
-        # update the olddia_newdia dict to make sure we have an updated state of the tool_table
+        # update the oldapcode_newapcode dict to make sure we have an updated state of the tool_table
         for key in self.storage_dict:
-            self.olddia_newdia[key] = key
+            self.oldapcode_newapcode[key] = key
 
         sort_temp = []
-        for aperture in self.olddia_newdia:
+        for aperture in self.oldapcode_newapcode:
             sort_temp.append(int(aperture))
-        self.sorted_apid = sorted(sort_temp)
+        self.sorted_apcode = sorted(sort_temp)
 
         # populate self.intial_table_rows dict with the tool number as keys and aperture codes as values
-        for i in range(len(self.sorted_apid)):
-            tt_aperture = self.sorted_apid[i]
-            self.tool2tooldia[i + 1] = tt_aperture
+        for i in range(len(self.sorted_apcode)):
+            tt_aperture = self.sorted_apcode[i]
+            self.tid2apcode[i + 1] = tt_aperture
 
         # Init GUI
 
@@ -3197,15 +3198,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
 
-            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+            ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.apertures_table.setItem(self.apertures_row, 0, ap_code_item)  # Tool name/id
 
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-            ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             ap_type_item = QtWidgets.QTableWidgetItem(str(self.storage_dict[ap_code]['type']))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
@@ -3213,16 +3214,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     self.decimals, self.storage_dict[ap_code]['height']
                                     )
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
             elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
                     '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['diam'],
                                     self.decimals, self.storage_dict[ap_code]['nVertices'])
                 )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
             else:
                 ap_dim_item = QtWidgets.QTableWidgetItem('')
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             try:
                 if self.storage_dict[ap_code]['size'] is not None:
@@ -3232,11 +3233,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
                 ap_size_item = QtWidgets.QTableWidgetItem('')
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            if str(self.storage_dict[ap_code]['type']) == 'C':
+                ap_size_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable)
+            else:
+                ap_size_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
             self.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
             self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-            self.apertures_table.setItem(self.apertures_row, 3, ap_size_item)  # Aperture Dimensions
+            self.apertures_table.setItem(self.apertures_row, 3, ap_size_item)  # Aperture Size
             self.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)  # Aperture Dimensions
 
             self.apertures_row += 1
@@ -3247,9 +3252,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # for ap_code in sorted_macros:
         #     ap_code = str(ap_code)
         #
-        #     ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-        #     ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        #     self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+        #     ap_code_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+        #     ap_code_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.apertures_table.setItem(self.apertures_row, 0, ap_code_item)  # Tool name/id
         #
         #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
         #
@@ -3304,52 +3309,52 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # for convenience set the next aperture code in the apcode field
         try:
-            self.apcode_entry.set_value(max(self.tool2tooldia.values()) + 1)
+            self.apcode_entry.set_value(max(self.tid2apcode.values()) + 1)
         except ValueError:
             # this means that the edited object has no apertures so we start with 10 (Gerber specifications)
             self.apcode_entry.set_value(self.app.defaults["gerber_editor_newcode"])
 
-    def on_aperture_add(self, apid=None):
+    def on_aperture_add(self, apcode=None):
         self.is_modified = True
-        if apid:
-            ap_id = apid
+        if apcode:
+            ap_code = apcode
         else:
             try:
-                ap_id = str(self.apcode_entry.get_value())
+                ap_code = str(self.apcode_entry.get_value())
             except ValueError:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
-            if ap_id == '':
+            if ap_code == '':
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
 
-        if ap_id == '0':
-            if ap_id not in self.tool2tooldia:
-                self.storage_dict[ap_id] = {}
-                self.storage_dict[ap_id]['type'] = 'REG'
+        if ap_code == '0':
+            if ap_code not in self.tid2apcode:
+                self.storage_dict[ap_code] = {}
+                self.storage_dict[ap_code]['type'] = 'REG'
                 size_val = 0
                 self.apsize_entry.set_value(size_val)
-                self.storage_dict[ap_id]['size'] = size_val
+                self.storage_dict[ap_code]['size'] = size_val
 
-                self.storage_dict[ap_id]['geometry'] = []
+                self.storage_dict[ap_code]['geometry'] = []
 
-                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and
+                # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and
                 # gets updated on values each time a aperture code is edited or added
-                self.olddia_newdia[ap_id] = ap_id
+                self.oldapcode_newapcode[ap_code] = ap_code
         else:
-            if ap_id not in self.olddia_newdia:
-                self.storage_dict[ap_id] = {}
+            if ap_code not in self.oldapcode_newapcode:
+                self.storage_dict[ap_code] = {}
 
                 type_val = self.aptype_cb.currentText()
-                self.storage_dict[ap_id]['type'] = type_val
+                self.storage_dict[ap_code]['type'] = type_val
 
                 if type_val == 'R' or type_val == 'O':
                     try:
                         dims = self.apdim_entry.get_value()
-                        self.storage_dict[ap_id]['width'] = dims[0]
-                        self.storage_dict[ap_id]['height'] = dims[1]
+                        self.storage_dict[ap_code]['width'] = dims[0]
+                        self.storage_dict[ap_code]['height'] = dims[1]
 
                         size_val = np.sqrt((dims[0] ** 2) + (dims[1] ** 2))
                         self.apsize_entry.set_value(size_val)
@@ -3373,61 +3378,63 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                                  _("Aperture size value is missing or wrong format. Add it and retry."))
                             return
-                self.storage_dict[ap_id]['size'] = size_val
+                self.storage_dict[ap_code]['size'] = size_val
 
-                self.storage_dict[ap_id]['geometry'] = []
+                self.storage_dict[ap_code]['geometry'] = []
 
-                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on
+                # self.oldapcode_newapcode dict keeps the evidence on current aperture codes as keys and gets updated on
                 # values  each time a aperture code is edited or added
-                self.olddia_newdia[ap_id] = ap_id
+                self.oldapcode_newapcode[ap_code] = ap_code
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Aperture already in the aperture table."))
                 return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
-        # we add a new entry in the tool2tooldia dict
-        self.tool2tooldia[len(self.olddia_newdia)] = int(ap_id)
+        # we add a new entry in the tid2apcode dict
+        self.tid2apcode[len(self.oldapcode_newapcode)] = int(ap_code)
 
-        self.app.inform.emit('[success] %s: %s' %
-                             (_("Added new aperture with code"), str(ap_id)))
+        self.app.inform.emit('[success] %s: %s' % (_("Added new aperture with code"), str(ap_code)))
 
         self.build_ui()
 
-        self.last_aperture_selected = ap_id
+        self.last_aperture_selected = ap_code
 
-        # make a quick sort through the tool2tooldia dict so we find which row to select
+        # make a quick sort through the tid2apcode dict so we find which row to select
         row_to_be_selected = None
-        for key in sorted(self.tool2tooldia):
-            if self.tool2tooldia[key] == int(ap_id):
+        for key in sorted(self.tid2apcode):
+            if self.tid2apcode[key] == int(ap_code):
                 row_to_be_selected = int(key) - 1
                 break
         self.apertures_table.selectRow(row_to_be_selected)
 
-    def on_aperture_delete(self, ap_id=None):
+    def on_aperture_delete(self, ap_code=None):
+        """
+        Called for aperture deletion.
+
+        :param ap_code:     An Aperture code; String
+        :return:
+        """
         self.is_modified = True
-        deleted_apcode_list = []
 
         try:
-            if ap_id:
-                if isinstance(ap_id, list):
-                    for dd in ap_id:
-                        deleted_apcode_list.append(dd)
-                else:
-                    deleted_apcode_list.append(ap_id)
+            if ap_code:
+                try:
+                    deleted_apcode_list = [dd for dd in ap_code]
+                except TypeError:
+                    deleted_apcode_list = [ap_code]
             else:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 if len(self.apertures_table.selectionModel().selectedRows()) == 0:
-                    self.app.inform.emit('[WARNING_NOTCL]%s' %
-                                         _(" Select an aperture in Aperture Table"))
+                    self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Select an aperture in Aperture Table"))
                     return
 
+                deleted_apcode_list = []
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
         except Exception as exc:
-            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
-                                 (_("Select an aperture in Aperture Table -->", str(exc))))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' % (_("Select an aperture in Aperture Table -->", str(exc))))
             return
 
         if deleted_apcode_list:
@@ -3435,23 +3442,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # delete the storage used for that tool
                 self.storage_dict.pop(deleted_aperture, None)
 
-                # I've added this flag_del variable because dictionary don't like
-                # having keys deleted while iterating through them
-                flag_del = []
-                for deleted_tool in self.tool2tooldia:
-                    if self.tool2tooldia[deleted_tool] == deleted_aperture:
-                        flag_del.append(deleted_tool)
-
-                if flag_del:
-                    for aperture_to_be_deleted in flag_del:
+                for deleted_tool in list(self.tid2apcode.keys()):
+                    if self.tid2apcode[deleted_tool] == deleted_aperture:
                         # delete the tool
-                        self.tool2tooldia.pop(aperture_to_be_deleted, None)
+                        self.tid2apcode.pop(deleted_tool, None)
 
-                    self.olddia_newdia.pop(deleted_aperture, None)
-
-                    self.app.inform.emit('[success] %s: %s' %
-                                         (_("Deleted aperture with code"), str(deleted_aperture)))
-                    flag_del.clear()
+                self.oldapcode_newapcode.pop(deleted_aperture, None)
+                self.app.inform.emit('[success] %s: %s' % (_("Deleted aperture with code"), str(deleted_aperture)))
 
         self.plot_all()
         self.build_ui()
@@ -3462,69 +3459,188 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if self.last_aperture_selected in deleted_apcode_list:
             if self.apertures_table.rowCount() == 0:
                 self.on_aperture_add('10')
+                self.last_aperture_selected = '10'
             else:
                 self.last_aperture_selected = self.apertures_table.item(0, 1).text()
 
     def on_tool_edit(self):
+        if self.apertures_table.currentItem() is None:
+            return
 
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.apertures_table.itemChanged.disconnect()
         # self.apertures_table.cellPressed.disconnect()
 
         self.is_modified = True
-        current_table_dia_edited = None
-
-        if self.apertures_table.currentItem() is not None:
-            try:
-                current_table_dia_edited = float(self.apertures_table.currentItem().text())
-            except ValueError as e:
-                log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
-                # self.apertures_table.setCurrentItem(None)
-                return
+        val_edited = None
 
         row_of_item_changed = self.apertures_table.currentRow()
+        col_of_item_changed = self.apertures_table.currentColumn()
 
         # rows start with 0, tools start with 1 so we adjust the value by 1
-        key_in_tool2tooldia = row_of_item_changed + 1
+        key_in_tid2apcode = row_of_item_changed + 1
+        ap_code_old = str(self.tid2apcode[key_in_tid2apcode])
 
-        dia_changed = self.tool2tooldia[key_in_tool2tooldia]
+        ap_code_new = self.apertures_table.item(row_of_item_changed, 1).text()
 
-        # aperture code is not used so we create a new tool with the desired diameter
-        if current_table_dia_edited not in self.olddia_newdia.values():
-            # update the dict that holds as keys our initial diameters and as values the edited diameters
-            self.olddia_newdia[dia_changed] = current_table_dia_edited
-            # update the dict that holds tool_no as key and tool_dia as value
-            self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
+        if col_of_item_changed == 1:
+            # we edited the Aperture Code column (int)
+            try:
+                val_edited = int(self.apertures_table.currentItem().text())
+            except ValueError as e:
+                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                # self.apertures_table.setCurrentItem(None)
+                # we reactivate the signals after the after the tool editing
+                self.apertures_table.itemChanged.connect(self.on_tool_edit)
+                return
+        elif col_of_item_changed == 3:
+            # we edited the Size column (float)
+            try:
+                val_edited = float(self.apertures_table.currentItem().text())
+            except ValueError as e:
+                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                # self.apertures_table.setCurrentItem(None)
+                # we reactivate the signals after the after the tool editing
+                self.apertures_table.itemChanged.connect(self.on_tool_edit)
+                return
+        elif col_of_item_changed == 4:
+            # we edit the Dimensions column (tuple)
+            try:
+                val_edited = [
+                    float(x.strip()) for x in self.apertures_table.currentItem().text().split(",") if x != ''
+                ]
+            except ValueError as e:
+                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                # we reactivate the signals after the after the tool editing
+                self.apertures_table.itemChanged.connect(self.on_tool_edit)
+                return
 
-            # update the tool offset
-            modified_offset = self.gerber_obj.tool_offset.pop(dia_changed)
-            self.gerber_obj.tool_offset[current_table_dia_edited] = modified_offset
+            if len(val_edited) != 2:
+                self.app.inform.emit("[WARNING_NOTCL] %s" % _("Dimensions need two float values separated by comma."))
+                old_dims_txt = '%s, %s' % (str(self.storage_dict[ap_code_new]['width']),
+                                           str(self.storage_dict[ap_code_new]['height']))
 
-            self.plot_all()
-        else:
-            # aperture code is already in use so we move the pads from the prior tool to the new tool
-            factor = current_table_dia_edited / dia_changed
+                self.apertures_table.currentItem().setText(old_dims_txt)
+                # we reactivate the signals after the after the tool editing
+                self.apertures_table.itemChanged.connect(self.on_tool_edit)
+                return
+            else:
+                self.app.inform.emit("[success] %s" % _("Dimensions edited."))
+
+        # In case we edited the Aperture Code therefore the val_edited holds a new Aperture Code
+        # TODO Edit of the Aperture Code is not active yet
+        if col_of_item_changed == 1:
+            # aperture code is not used so we create a new Aperture with the desired Aperture Code
+            if val_edited not in self.oldapcode_newapcode.values():
+                # update the dict that holds as keys old Aperture Codes and as values the new Aperture Codes
+                self.oldapcode_newapcode[ap_code_old] = val_edited
+                # update the dict that holds tool_no as key and tool_dia as value
+                self.tid2apcode[key_in_tid2apcode] = val_edited
+
+                old_aperture_val = self.storage_dict.pop(ap_code_old)
+                self.storage_dict[val_edited] = old_aperture_val
+
+            else:
+                # aperture code is already in use so we move the pads from the prior tool to the new tool
+                # but only if they are of the same type
+
+                if self.storage_dict[ap_code_old]['type'] == self.storage_dict[ap_code_new]['type']:
+                    # TODO I have to work here; if type == 'R' or 'O' have t otake care of all attributes ...
+                    factor = val_edited / float(ap_code_old)
+                    geometry = []
+                    for geo_el in self.storage_dict[ap_code_old]:
+                        geometric_data = geo_el.geo
+                        new_geo_el = {}
+                        if 'solid' in geometric_data:
+                            new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
+                                                                          xfact=factor, yfact=factor))
+                        if 'follow' in geometric_data:
+                            new_geo_el['follow'] = deepcopy(affinity.scale(geometric_data['follow'],
+                                                                           xfact=factor, yfact=factor))
+                        if 'clear' in geometric_data:
+                            new_geo_el['clear'] = deepcopy(affinity.scale(geometric_data['clear'],
+                                                                          xfact=factor, yfact=factor))
+                        geometry.append(new_geo_el)
+
+                    self.add_gerber_shape(geometry, self.storage_dict[val_edited])
+
+                    self.on_aperture_delete(apcode=ap_code_old)
+
+        # In case we edited the Size of the Aperture therefore the val_edited holds the new Aperture Size
+        # It will happen only for the Aperture Type == 'C' - I make sure of that in the self.build_ui()
+        elif col_of_item_changed == 3:
+            old_size = float(self.storage_dict[ap_code_old]['size'])
+            new_size = float(val_edited)
+            adjust_size = (new_size - old_size) / 2
             geometry = []
-            for geo_el in self.storage_dict[dia_changed]:
-                geometric_data = geo_el.geo
+            for geo_el in self.storage_dict[ap_code_old]['geometry']:
+                g_data = geo_el.geo
                 new_geo_el = {}
-                if 'solid' in geometric_data:
-                    new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
-                                                                  xfact=factor, yfact=factor))
-                if 'follow' in geometric_data:
-                    new_geo_el['follow'] = deepcopy(affinity.scale(geometric_data['follow'],
-                                                                   xfact=factor, yfact=factor))
-                if 'clear' in geometric_data:
-                    new_geo_el['clear'] = deepcopy(affinity.scale(geometric_data['clear'],
-                                                                  xfact=factor, yfact=factor))
-                geometry.append(new_geo_el)
+                if 'solid' in g_data:
+                    if 'follow' in g_data:
+                        if isinstance(g_data['follow'], Point):
+                            new_geo_el['solid'] = deepcopy(g_data['solid'].buffer(adjust_size))
+                        else:
+                            new_geo_el['solid'] = deepcopy(g_data['solid'].buffer(adjust_size, join_style=2))
+                if 'follow' in g_data:
+                    new_geo_el['follow'] = deepcopy(g_data['follow'])
+                if 'clear' in g_data:
+                    new_geo_el['clear'] = deepcopy(g_data['clear'].buffer(adjust_size, join_style=2))
+                geometry.append(DrawToolShape(new_geo_el))
 
-            self.add_gerber_shape(geometry, self.storage_dict[current_table_dia_edited])
+            self.storage_dict[ap_code_old]['geometry'].clear()
+            self.add_gerber_shape(geometry, self.storage_dict[ap_code_old]['geometry'])
+            # self.storage_dict[ap_code_old]['geometry'] = geometry
 
-            self.on_aperture_delete(apid=dia_changed)
+        # In case we edited the Dims of the Aperture therefore the val_edited holds a list with the dimensions
+        # in the format [width, height]
+        # It will happen only for the Aperture Type in ['R', 'O'] - I make sure of that in the self.build_ui()
+        # and below
+        elif col_of_item_changed == 4:
+            if str(self.storage_dict[ap_code_old]['type']) == 'R' or str(self.storage_dict[ap_code_old]['type']) == 'O':
+                # use the biggest from them
+                buff_val_lines = max(val_edited)
+                new_width = val_edited[0]
+                new_height = val_edited[1]
 
-            # delete the tool offset
-            self.gerber_obj.tool_offset.pop(dia_changed, None)
+                geometry = []
+                for geo_el in self.storage_dict[ap_code_old]['geometry']:
+                    g_data = geo_el.geo
+                    new_geo_el = {}
+                    if 'solid' in g_data:
+                        if 'follow' in g_data:
+                            if isinstance(g_data['follow'], Point):
+                                x = g_data['follow'].x
+                                y = g_data['follow'].y
+                                minx = x - (new_width / 2)
+                                miny = y - (new_height / 2)
+                                maxx = x + (new_width / 2)
+                                maxy = y + (new_height / 2)
+                                geo = box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
+                                new_geo_el['solid'] = deepcopy(geo)
+                            else:
+                                new_geo_el['solid'] = deepcopy(g_data['solid'].buffer(buff_val_lines))
+                    if 'follow' in g_data:
+                        new_geo_el['follow'] = deepcopy(g_data['follow'])
+                    if 'clear' in g_data:
+                        if 'follow' in g_data:
+                            if isinstance(g_data['follow'], Point):
+                                x = g_data['follow'].x
+                                y = g_data['follow'].y
+                                minx = x - (new_width / 2)
+                                miny = y - (new_height / 2)
+                                maxx = x + (new_width / 2)
+                                maxy = y + (new_height / 2)
+                                geo = box(minx=minx, miny=miny, maxx=maxx, maxy=maxy)
+                                new_geo_el['clear'] = deepcopy(geo)
+                            else:
+                                new_geo_el['clear'] = deepcopy(g_data['clear'].buffer(buff_val_lines, join_style=2))
+                    geometry.append(DrawToolShape(new_geo_el))
+
+                self.storage_dict[ap_code_old]['geometry'].clear()
+                self.add_gerber_shape(geometry, self.storage_dict[ap_code_old]['geometry'])
+
+        self.plot_all()
 
         # we reactivate the signals after the after the tool editing
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3557,12 +3673,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # init working objects
         self.storage_dict = {}
         self.current_storage = []
-        self.sorted_apid = []
+        self.sorted_apcode = []
         self.new_apertures = {}
         self.new_aperture_macros = {}
         self.grb_plot_promises = []
-        self.olddia_newdia = {}
-        self.tool2tooldia = {}
+        self.oldapcode_newapcode = {}
+        self.tid2apcode = {}
 
         self.shapes.enabled = True
         self.tool_shape.enabled = True
@@ -3870,18 +3986,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # apply the conversion factor on the obj.apertures
         conv_apertures = deepcopy(self.gerber_obj.apertures)
-        for apid in self.gerber_obj.apertures:
-            for key in self.gerber_obj.apertures[apid]:
+        for apcode in self.gerber_obj.apertures:
+            for key in self.gerber_obj.apertures[apcode]:
                 if key == 'width':
-                    conv_apertures[apid]['width'] = self.gerber_obj.apertures[apid]['width'] * self.conversion_factor
+                    conv_apertures[apcode]['width'] = self.gerber_obj.apertures[apcode]['width'] * \
+                                                      self.conversion_factor
                 elif key == 'height':
-                    conv_apertures[apid]['height'] = self.gerber_obj.apertures[apid]['height'] * self.conversion_factor
+                    conv_apertures[apcode]['height'] = self.gerber_obj.apertures[apcode]['height'] * \
+                                                       self.conversion_factor
                 elif key == 'diam':
-                    conv_apertures[apid]['diam'] = self.gerber_obj.apertures[apid]['diam'] * self.conversion_factor
+                    conv_apertures[apcode]['diam'] = self.gerber_obj.apertures[apcode]['diam'] * self.conversion_factor
                 elif key == 'size':
-                    conv_apertures[apid]['size'] = self.gerber_obj.apertures[apid]['size'] * self.conversion_factor
+                    conv_apertures[apcode]['size'] = self.gerber_obj.apertures[apcode]['size'] * self.conversion_factor
                 else:
-                    conv_apertures[apid][key] = self.gerber_obj.apertures[apid][key]
+                    conv_apertures[apcode][key] = self.gerber_obj.apertures[apcode][key]
 
         self.gerber_obj.apertures = conv_apertures
         self.gerber_obj.units = app_units
@@ -3916,9 +4034,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #
         # # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
         # # as DrawToolShapes
-        # for ap_id in self.gerber_obj.apertures:
-        #     self.grb_plot_promises.append(ap_id)
-        #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
+        # for ap_code in self.gerber_obj.apertures:
+        #     self.grb_plot_promises.append(ap_code)
+        #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_code]})
         #
         # self.set_ui()
         #
@@ -3971,10 +4089,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                     # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
                     # clear geometry that fits inside the solid. otherwise we may loose the solid
-                    for ap_id in app_obj.gerber_obj.apertures:
+                    for ap_code in app_obj.gerber_obj.apertures:
                         temp_solid_geometry = []
-                        if 'geometry' in app_obj.gerber_obj.apertures[ap_id]:
-                            # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                        if 'geometry' in app_obj.gerber_obj.apertures[ap_code]:
+                            # for elem in self.gerber_obj.apertures[apcode]['geometry']:
                             #     if 'solid' in elem:
                             #         solid_geo = elem['solid']
                             #         for clear_geo in global_clear_geo:
@@ -4001,7 +4119,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             #             if 'follow' in elem:
                             #                 new_elem['follow'] = solid_geo
                             #             temp_elem.append(deepcopy(new_elem))
-                            for elem in app_obj.gerber_obj.apertures[ap_id]['geometry']:
+                            for elem in app_obj.gerber_obj.apertures[ap_code]['geometry']:
                                 new_elem = {}
                                 if 'solid' in elem:
                                     solid_geo = elem['solid']
@@ -4022,15 +4140,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     new_elem['follow'] = elem['follow']
                                 temp_solid_geometry.append(deepcopy(new_elem))
 
-                            app_obj.gerber_obj.apertures[ap_id]['geometry'] = deepcopy(temp_solid_geometry)
+                            app_obj.gerber_obj.apertures[ap_code]['geometry'] = deepcopy(temp_solid_geometry)
 
                     log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
                     try:
                         # Loading the Geometry into Editor Storage
-                        for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
+                        for ap_code, ap_dict in app_obj.gerber_obj.apertures.items():
                             app_obj.results.append(
-                                app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict))
+                                app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_code, ap_dict))
                             )
                     except Exception as ee:
                         log.debug(
@@ -4158,12 +4276,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             poly_buffer = []
             follow_buffer = []
 
-            for storage_apid, storage_val in local_storage_dict.items():
-                grb_obj.apertures[storage_apid] = {}
+            for storage_apcode, storage_val in local_storage_dict.items():
+                grb_obj.apertures[storage_apcode] = {}
 
                 for k, val in storage_val.items():
                     if k == 'geometry':
-                        grb_obj.apertures[storage_apid][k] = []
+                        grb_obj.apertures[storage_apcode][k] = []
                         for geo_el in val:
                             geometric_data = geo_el.geo
                             new_geo_el = {}
@@ -4190,9 +4308,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 new_geo_el['clear'] = geometric_data['clear']
 
                             if new_geo_el:
-                                grb_obj.apertures[storage_apid][k].append(deepcopy(new_geo_el))
+                                grb_obj.apertures[storage_apcode][k].append(deepcopy(new_geo_el))
                     else:
-                        grb_obj.apertures[storage_apid][k] = val
+                        grb_obj.apertures[storage_apcode][k] = val
 
             grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
 
@@ -4284,28 +4402,28 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.active_tool = FCApertureSelect(self)
 
     def on_row_selected(self, row, col):
-        if col == 0:
-            key_modifier = QtWidgets.QApplication.keyboardModifiers()
-            if self.app.defaults["global_mselect_key"] == 'Control':
-                modifier_to_use = Qt.ControlModifier
-            else:
-                modifier_to_use = Qt.ShiftModifier
+        # if col == 0:
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+        if self.app.defaults["global_mselect_key"] == 'Control':
+            modifier_to_use = Qt.ControlModifier
+        else:
+            modifier_to_use = Qt.ShiftModifier
 
-            if key_modifier == modifier_to_use:
-                pass
-            else:
-                self.selected = []
+        if key_modifier == modifier_to_use:
+            pass
+        else:
+            self.selected = []
 
-            try:
-                selected_ap_id = self.apertures_table.item(row, 1).text()
-                self.last_aperture_selected = copy(selected_ap_id)
+        try:
+            selected_ap_code = self.apertures_table.item(row, 1).text()
+            self.last_aperture_selected = copy(selected_ap_code)
 
-                for obj in self.storage_dict[selected_ap_id]['geometry']:
-                    self.selected.append(obj)
-            except Exception as e:
-                self.app.log.debug(str(e))
+            for obj in self.storage_dict[selected_ap_code]['geometry']:
+                self.selected.append(obj)
+        except Exception as e:
+            self.app.log.debug(str(e))
 
-            self.plot_all()
+        self.plot_all()
 
     # def toolbar_tool_toggle(self, key):
     #     """
@@ -4980,11 +5098,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         for x in self.apertures_table.selectedItems():
             try:
-                apid = self.apertures_table.item(x.row(), 1).text()
+                apcode = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['geometry'], self.selected))
-                self.storage_dict[apid]['geometry'] = []
-                self.storage_dict[apid]['geometry'] = temp_storage
+                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apcode]['geometry'], self.selected))
+                self.storage_dict[apcode]['geometry'] = []
+                self.storage_dict[apcode]['geometry'] = temp_storage
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
@@ -5043,11 +5161,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         for x in self.apertures_table.selectedItems():
             try:
-                apid = self.apertures_table.item(x.row(), 1).text()
+                apcode = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['geometry'], self.selected))
-                self.storage_dict[apid]['geometry'] = []
-                self.storage_dict[apid]['geometry'] = temp_storage
+                temp_storage = deepcopy(scale_recursion(self.storage_dict[apcode]['geometry'], self.selected))
+                self.storage_dict[apcode]['geometry'] = []
+                self.storage_dict[apcode]['geometry'] = temp_storage
 
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.on_scale() --> %s" % str(e))
@@ -5065,9 +5183,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         text = []
         position = []
 
-        for apid in self.storage_dict:
-            if 'geometry' in self.storage_dict[apid]:
-                for geo_el in self.storage_dict[apid]['geometry']:
+        for apcode in self.storage_dict:
+            if 'geometry' in self.storage_dict[apcode]:
+                for geo_el in self.storage_dict[apcode]['geometry']:
                     if 'solid' in geo_el.geo:
                         area = geo_el.geo['solid'].area
                         try:

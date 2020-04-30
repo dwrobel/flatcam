@@ -156,7 +156,7 @@ class ToolCalculator(FlatCAMTool):
         plate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.eplateName)
         plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
-              "using a method like grahite ink or calcium hypophosphite ink or palladium chloride.")
+              "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
         )
         self.layout.addWidget(plate_title_label)
 

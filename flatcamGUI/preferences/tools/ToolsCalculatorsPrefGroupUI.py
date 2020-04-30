@@ -87,7 +87,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.plate_title_label = QtWidgets.QLabel("<b>%s:</b>" % _("ElectroPlating Calculator"))
         self.plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
-              "using a method like grahite ink or calcium hypophosphite ink or palladium chloride.")
+              "using a method like graphite ink or calcium hypophosphite ink or palladium chloride.")
         )
         grid0.addWidget(self.plate_title_label, 3, 0, 1, 2)
 

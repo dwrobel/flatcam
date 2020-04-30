@@ -11764,7 +11764,7 @@ msgstr "Galvanikrechner"
 #: flatcamGUI/PreferencesUI.py:7763 flatcamTools/ToolCalculators.py:158
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
-"using a method like grahite ink or calcium hypophosphite ink or palladium "
+"using a method like graphite ink or calcium hypophosphite ink or palladium "
 "chloride."
 msgstr ""
 "Dieser Rechner ist nützlich für diejenigen, die die Durchgangslöcher / "
