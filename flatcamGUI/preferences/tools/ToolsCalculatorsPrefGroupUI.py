@@ -1,13 +1,28 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.GUIElements import FCDoubleSpinner
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Calculators Tool Options", parent=parent)
-        super(ToolsCalculatorsPrefGroupUI, self).__init__(self)
+        super(ToolsCalculatorsPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Calculators Tool Options")))
         self.decimals = decimals

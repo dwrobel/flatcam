@@ -16,7 +16,7 @@ rtree
 pyopengl
 vispy
 ortools>=7.0
-svg.path
+svg.path>=4.0
 simplejson
 shapely>=1.7.0
 freetype-py

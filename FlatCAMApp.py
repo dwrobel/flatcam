@@ -2729,7 +2729,7 @@ class App(QtCore.QObject):
         # Re-build the recent items menu
         self.setup_recent_items()
 
-    def new_object(self, kind, name, initialize, active=True, fit=True, plot=True, autoselected=True):
+    def new_object(self, kind, name, initialize, plot=True, autoselected=True):
         """
         Creates a new specialized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
@@ -2747,8 +2747,6 @@ class App(QtCore.QObject):
         :param initialize: Function to run after creation of the object but before it is attached to the application.
         The function is called with 2 parameters: the new object and the App instance.
         :type initialize: function
-        :param active:
-        :param fit:
         :param plot: If to plot the resulting object
         :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
         self.collection
@@ -9247,9 +9245,10 @@ class App(QtCore.QObject):
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the SVG file.
 
-        :param filename: Path to the SVG file.
-        :param geo_type: Type of FlatCAM object that will be created from SVG
-        :param outname:
+        :param plot:        If True then the resulting object will be plotted on canvas
+        :param filename:    Path to the SVG file.
+        :param geo_type:    Type of FlatCAM object that will be created from SVG
+        :param outname:     The name given to the resulting FlatCAM object
         :return:
         """
         self.defaults.report_usage("import_svg()")
@@ -9297,6 +9296,7 @@ class App(QtCore.QObject):
         :param filename:    Path to the DXF file.
         :param geo_type:    Type of FlatCAM object that will be created from DXF
         :param outname:     Name for the imported Geometry
+        :param plot:        If True then the resulting object will be plotted on canvas
         :return:
         """
         self.defaults.report_usage("import_dxf()")

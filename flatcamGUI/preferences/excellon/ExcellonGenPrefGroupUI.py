@@ -1,16 +1,30 @@
 import platform
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
 
 class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
     def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
-        super(ExcellonGenPrefGroupUI, self).__init__(self)
+        super(ExcellonGenPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Excellon General")))
         self.decimals = decimals

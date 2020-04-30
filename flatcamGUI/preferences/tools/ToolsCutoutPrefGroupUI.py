@@ -1,14 +1,29 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox
 from flatcamGUI.preferences import machinist_setting
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class ToolsCutoutPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
-        super(ToolsCutoutPrefGroupUI, self).__init__(self)
+        super(ToolsCutoutPrefGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("Cutout Tool Options")))
         self.decimals = decimals

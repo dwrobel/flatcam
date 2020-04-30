@@ -6,10 +6,24 @@ from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, Radi
 from flatcamGUI.preferences import settings
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class GeneralAPPSetGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        super(GeneralAPPSetGroupUI, self).__init__(self)
+        super(GeneralAPPSetGroupUI, self).__init__(self, parent=parent)
 
         self.setTitle(str(_("App Settings")))
         self.decimals = decimals
