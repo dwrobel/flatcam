@@ -9791,7 +9791,7 @@ class App(QtCore.QObject):
                                                               )
                                       )
 
-                self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+                self.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
             except Exception as e:
                 print('App.open_project() --> ' + str(e))
 
