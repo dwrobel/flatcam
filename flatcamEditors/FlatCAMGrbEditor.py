@@ -12,6 +12,8 @@ from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Pol
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
+from vispy.geometry import Rect
+
 import threading
 import time
 from copy import copy, deepcopy
@@ -4926,6 +4928,39 @@ class FlatCAMGrbEditor(QtCore.QObject):
     #     # - perhaps is a bug in VisPy implementation
     #     self.app.app_cursor.enabled = False
     #     self.app.app_cursor.enabled = True
+
+    def on_zoom_fit(self):
+        """
+        Callback for zoom-fit request in Gerber Editor
+
+        :return:        None
+        """
+        log.debug("FlatCAMGrbEditor.on_zoom_fit()")
+
+        # calculate all the geometry in the edited Gerber object
+        edit_geo = []
+        for ap_code in self.storage_dict:
+            for geo_el in self.storage_dict[ap_code]['geometry']:
+                actual_geo = geo_el.geo
+                if 'solid' in actual_geo:
+                    edit_geo.append(actual_geo['solid'])
+
+        all_geo = cascaded_union(edit_geo)
+
+        # calculate the bounds values for the edited Gerber object
+        xmin, ymin, xmax, ymax = all_geo.bounds
+
+        if self.app.is_legacy is False:
+            new_rect = Rect(xmin, ymin, xmax, ymax)
+            self.app.plotcanvas.fit_view(rect=new_rect)
+        else:
+            width = xmax - xmin
+            height = ymax - ymin
+            xmin -= 0.05 * width
+            xmax += 0.05 * width
+            ymin -= 0.05 * height
+            ymax += 0.05 * height
+            self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def get_selected(self):
         """
