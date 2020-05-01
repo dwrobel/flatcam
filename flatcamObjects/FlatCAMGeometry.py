@@ -1114,6 +1114,26 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.tipanglelabel.show()
             self.ui.tipangle_entry.show()
             self.ui.cutz_entry.setDisabled(True)
+            self.ui.cutzlabel.setToolTip(
+                _("Disabled because the tool is V-shape.\n"
+                  "For V-shape tools the depth of cut is\n"
+                  "calculated from other parameters like:\n"
+                  "- 'V-tip Angle' -> angle at the tip of the tool\n"
+                  "- 'V-tip Dia' -> diameter at the tip of the tool \n"
+                  "- Tool Dia -> 'Dia' column found in the Tool Table\n"
+                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'"
+                )
+            )
+            self.ui.cutz_entry.setToolTip(
+                _("Disabled because the tool is V-shape.\n"
+                  "For V-shape tools the depth of cut is\n"
+                  "calculated from other parameters like:\n"
+                  "- 'V-tip Angle' -> angle at the tip of the tool\n"
+                  "- 'V-tip Dia' -> diameter at the tip of the tool \n"
+                  "- Tool Dia -> 'Dia' column found in the Tool Table\n"
+                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'"
+                  )
+            )
 
             self.update_cutz()
         else:
@@ -1122,6 +1142,12 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.tipanglelabel.hide()
             self.ui.tipangle_entry.hide()
             self.ui.cutz_entry.setDisabled(False)
+            self.ui.cutzlabel.setToolTip(
+                _("Cutting depth (negative)\n"
+                  "below the copper surface."
+                )
+            )
+            self.ui.cutz_entry.setToolTip('')
 
     def update_cutz(self):
         vdia = float(self.ui.tipdia_entry.get_value())

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+01.05.2020
+
+- added some ToolTips (strings needed to be translated too) for the Cut Z entry in Geometry Object UI that explain why is sometime disabled and reason for it's value (sometime is zero)
+
 30.04.2020 
 
 - made some corrections - due of recent refactoring PyCharm reported errors all over (not correct but it made programming difficult)
