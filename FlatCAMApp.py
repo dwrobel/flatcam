@@ -506,7 +506,6 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
-        self.on_grid_snap_triggered(state=True)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -1073,9 +1072,6 @@ class App(QtCore.QObject):
 
         # signal emitted when a tab is closed in the Plot Area
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
-
-        self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
-        self.ui.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
@@ -4634,7 +4630,7 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
-        self.on_grid_snap_triggered(state=True)
+        self.ui.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -10621,29 +10617,6 @@ class App(QtCore.QObject):
             sel_obj.shapes.redraw(
                 update_colors=(new_color, new_line_color)
             )
-
-    def on_grid_snap_triggered(self, state):
-        """
-
-        :param state:   A parameter with the state of the grid, boolean
-
-        :return:
-        """
-        if state:
-            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
-        else:
-            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
-
-        self.ui.snap_infobar_label.clicked_state = state
-
-    def on_grid_icon_snap_clicked(self):
-        """
-        Slot called by clicking a GUI element, in this case a FCLabel
-
-        :return:
-        """
-        if isinstance(self.sender(), FCLabel):
-            self.ui.grid_snap_btn.trigger()
 
     def generate_cnc_job(self, objects):
         """
