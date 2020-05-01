@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.05.2020
+
+- changed the icons for the grid snap in the status bar
+- moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
+
 01.05.2020
 
 - added some ToolTips (strings needed to be translated too) for the Cut Z entry in Geometry Object UI that explain why is sometime disabled and reason for it's value (sometime is zero)
