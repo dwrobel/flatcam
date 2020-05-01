@@ -3811,10 +3811,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.select_tool('track')
                         return
 
-                    # Zoom Fit
+                    # Zoom fit
                     if key == QtCore.Qt.Key_V or key == 'V':
                         self.app.grb_editor.launched_from_shortcuts = True
-                        self.app.on_zoom_fit(None)
+                        self.app.grb_editor.on_zoom_fit()
                         return
 
                 # Show Shortcut list

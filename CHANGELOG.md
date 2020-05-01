@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - solve parenting issues when trying to load a FlatScript from Menu -> File -> Scripting
 - added a first new example script and added some files to work with
 - added a new parameter that will store the home folder of the FlatCAM installation so we can access the example folder
+- added in Gerber editor a method for zoom fit that takes into consideration the current geometry of the edited object
 
 30.04.2020 
 
