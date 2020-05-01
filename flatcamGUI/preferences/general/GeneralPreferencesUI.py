@@ -1,9 +1,10 @@
-from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
 from flatcamGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
 from flatcamGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
-from flatcamGUI.preferences.general.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI
+from flatcamGUI.preferences.general.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI, GeneralGUIPrefGroupUI2
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -20,24 +21,21 @@ else:
     machinist_setting = 0
 
 
-class GeneralPreferencesUI(QtWidgets.QWidget):
-    def __init__(self, decimals, parent=None):
-        QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
-        self.setLayout(self.layout)
+class GeneralPreferencesUI(PreferencesSectionUI):
+
+    def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-
-        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
-        self.general_app_group.setMinimumWidth(250)
-
         self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
-        self.general_gui_group.setMinimumWidth(250)
-
+        #self.general_gui_group2 = GeneralGUIPrefGroupUI2(decimals=self.decimals)
+        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
         self.general_app_set_group = GeneralAPPSetGroupUI(decimals=self.decimals)
-        self.general_app_set_group.setMinimumWidth(250)
+        super().__init__(**kwargs)
 
-        self.layout.addWidget(self.general_app_group)
-        self.layout.addWidget(self.general_gui_group)
-        self.layout.addWidget(self.general_app_set_group)
+    def build_groups(self) -> [OptionsGroupUI]:
+        return [
+            self.general_app_group,
+            self.general_gui_group,
+            self.general_gui_group2,
+            self.general_app_set_group
+        ]
 
-        self.layout.addStretch()

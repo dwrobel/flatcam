@@ -22,7 +22,6 @@ else:
 
 log = logging.getLogger('PreferencesUIManager')
 
-
 class PreferencesUIManager:
 
     def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform):
