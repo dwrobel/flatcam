@@ -1,4 +1,6 @@
 import os
+from typing import Any, Dict
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import QSettings
 from defaults import FlatCAMDefaults
@@ -583,15 +585,44 @@ class PreferencesUIManager:
 
         }
 
+        self.child_forms = {
+            "general": ui.general_defaults_form,
+            "gerber": ui.gerber_defaults_form,
+            "excellon": ui.excellon_defaults_form,
+            "geometry": ui.geometry_defaults_form,
+            "cncjob": ui.cncjob_defaults_form,
+            "tools": ui.tools_defaults_form,
+            "tools2": ui.tools2_defaults_form,
+            "util": ui.util_defaults_form
+        }
+        self.child_scroll_areas = {
+            "general": ui.general_scroll_area,
+            "gerber": ui.gerber_scroll_area,
+            "excellon": ui.excellon_scroll_area,
+            "geometry": ui.geometry_scroll_area,
+            "cncjob": ui.cncjob_scroll_area,
+            "tools": ui.tools_scroll_area,
+            "tools2": ui.tools2_scroll_area,
+            "util": ui.fa_scroll_area
+        }
+
+    def get_form_fields(self) -> Dict[str, Any]:
+        return self.defaults_form_fields
+
+    def get_form_field(self, option: str) -> Any:
+        return self.get_form_fields()[option]
+
+
+
     def defaults_read_form(self):
         """
         Will read all the values in the Preferences GUI and update the defaults dictionary.
 
         :return: None
         """
-        for option in self.defaults_form_fields:
+        for option in self.get_form_fields():
             try:
-                self.defaults[option] = self.defaults_form_fields[option].get_value()
+                self.defaults[option] = self.get_form_field(option=option).get_value()
             except Exception as e:
                 log.debug("App.defaults_read_form() --> %s" % str(e))
 
@@ -633,7 +664,7 @@ class PreferencesUIManager:
             if factor is not None:
                 value *= factor
 
-            form_field = self.defaults_form_fields[field]
+            form_field = self.get_form_field(option=field)
             if units is None:
                 form_field.set_value(value)
             elif (units == 'IN' or units == 'MM') and (field == 'global_gridx' or field == 'global_gridy'):
@@ -651,69 +682,15 @@ class PreferencesUIManager:
         :return: None
         """
 
-        gen_form = self.ui.general_defaults_form
-        try:
-            self.ui.general_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.general_scroll_area.setWidget(gen_form)
-        gen_form.show()
-
-        ger_form = self.ui.gerber_defaults_form
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.gerber_scroll_area.setWidget(ger_form)
-        ger_form.show()
-
-        exc_form = self.ui.excellon_defaults_form
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.excellon_scroll_area.setWidget(exc_form)
-        exc_form.show()
-
-        geo_form = self.ui.geometry_defaults_form
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.geometry_scroll_area.setWidget(geo_form)
-        geo_form.show()
-
-        cnc_form = self.ui.cncjob_defaults_form
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.cncjob_scroll_area.setWidget(cnc_form)
-        cnc_form.show()
-
-        tools_form = self.ui.tools_defaults_form
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.tools_scroll_area.setWidget(tools_form)
-        tools_form.show()
-
-        tools2_form = self.ui.tools2_defaults_form
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.tools2_scroll_area.setWidget(tools2_form)
-        tools2_form.show()
-
-        fa_form = self.ui.util_defaults_form
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.fa_scroll_area.setWidget(fa_form)
-        fa_form.show()
+        for section in self.child_scroll_areas:
+            scroll_area = self.child_scroll_areas[section]
+            form = self.child_forms[section]
+            try:
+                scroll_area.takeWidget()
+            except Exception:
+                log.debug("Nothing to remove for section "+section)
+            scroll_area.setWidget(form)
+            form.show()
 
         # Initialize the color box's color in Preferences -> Global -> Colo
         self.__init_color_pickers()
