@@ -136,7 +136,7 @@ class Panelize(FlatCAMTool):
         self.box_combo.is_last = True
 
         self.box_combo.setToolTip(
-            _("The actual object that is used a container for the\n "
+            _("The actual object that is used as container for the\n "
               "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo)

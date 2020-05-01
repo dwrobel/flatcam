@@ -50,14 +50,13 @@ class ScriptObject(FlatCAMObj):
 
         self.units = ''
 
+        self.script_editor_tab = None
+
         self.ser_attrs = ['options', 'kind', 'source_file']
         self.source_file = ''
         self.script_code = ''
 
         self.units_found = self.app.defaults['units']
-
-        # self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
-        self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
 
     def set_ui(self, ui):
         """
@@ -87,6 +86,8 @@ class ScriptObject(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
+        self.script_editor_tab = TextEditor(app=self.app, plain_text=True, parent=self.app.ui)
+
         # tab_here = False
         # # try to not add too many times a tab that it is already installed
         # for idx in range(self.app.ui.plot_tab_area.count()):
@@ -99,8 +100,8 @@ class ScriptObject(FlatCAMObj):
         #     self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
         #     self.script_editor_tab.setObjectName(self.options['name'])
 
-        self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
-        self.script_editor_tab.setObjectName(self.options['name'])
+        # self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+        # self.script_editor_tab.setObjectName(self.options['name'])
 
         # first clear previous text in text editor (if any)
         # self.script_editor_tab.code_editor.clear()
@@ -111,7 +112,7 @@ class ScriptObject(FlatCAMObj):
 
         self.script_editor_tab.buttonRun.show()
 
-        # Switch plot_area to CNCJob tab
+        # Switch plot_area to Script Editor tab
         self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
 
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
@@ -149,6 +150,32 @@ class ScriptObject(FlatCAMObj):
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
+
+        tab_here = False
+        # try to not add too many times a tab that it is already installed
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+                tab_here = True
+                break
+
+        # add the tab if it is not already added
+        if tab_here is False:
+            self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+            self.script_editor_tab.setObjectName(self.options['name'])
+            self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
+
+    def parse_file(self, filename):
+        """
+        Will set an attribute of the object, self.source_file, with the parsed data.
+
+        :param filename:    Tcl Script file to parse
+        :return:            None
+        """
+        with open(filename, "r") as opened_script:
+            script_content = opened_script.readlines()
+            script_content = ''.join(script_content)
+
+        self.source_file = script_content
 
     def handle_run_code(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell

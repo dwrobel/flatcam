@@ -1,0 +1,19 @@
+# ----------- START: This is needed only for the examples ----------------
+# first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable 
+set ROOT_FOLDER  [get_sys root_folder_path]
+
+# calculate the resources path for the examples we need to run and store it inside the PATH varaible
+set PATH ${ROOT_FOLDER}/assets/examples/files
+# ----------- END: This is needed only for the examples ----------------
+
+# set the working path to the path that holds the files we are going to work with
+set_path $PATH
+
+# load the GERBER file 
+open_gerber test.gbr
+
+# load the Excellon ifle
+open_excellon test.txt
+
+# plot them all so we can see them on canvas
+plot_all 

@@ -432,6 +432,9 @@ class App(QtCore.QObject):
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
         self.defaults = FlatCAMDefaults()
+
+        self.defaults["root_folder_path"] = self.app_home
+
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
             self.defaults.load(filename=current_defaults_path)
@@ -2908,45 +2911,37 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
-    def new_script_object(self, name=None, text=None):
+    def new_script_object(self):
         """
         Creates a new, blank TCL Script object.
-        :param name: a name for the new object
-        :param text: pass a source file to the newly created script to be loaded in it
+
         :return: None
         """
         self.defaults.report_usage("new_script_object()")
 
-        if text is not None:
-            new_source_file = text
-        else:
-            # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-            #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
-            #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-            #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
-            #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-            #                 "ListSys, MillDrills,\n" \
-            #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-            #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
-            #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
-            #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
-            #                 "# SubtractRectangle, Version, WriteGCode\n"
+        # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
+        #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
+        #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
+        #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
+        #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
+        #                 "ListSys, MillDrills,\n" \
+        #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
+        #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
+        #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
+        #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
+        #                 "# SubtractRectangle, Version, WriteGCode\n"
 
-            new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
-                              '# %s:\n' % _('TCL Tutorial is here') + \
-                              '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
-                              '# %s:\n' % _("FlatCAM commands list")
-            new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
-                                              "(displayed in Tcl Shell).")
+        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
+                          '# %s:\n' % _('TCL Tutorial is here') + \
+                          '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
+                          '# %s:\n' % _("FlatCAM commands list")
+        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
+                                          "(displayed in Tcl Shell).")
 
         def initialize(obj, app):
             obj.source_file = deepcopy(new_source_file)
 
-        if name is None:
-            outname = 'new_script'
-        else:
-            outname = name
-
+        outname = 'new_script'
         self.new_object('script', outname, initialize, plot=False)
 
     def new_document_object(self):
@@ -8339,14 +8334,14 @@ class App(QtCore.QObject):
             # set cursor of the code editor with the cursor at the searcehd line
             self.ui.plot_tab_area.currentWidget().code_editor.setTextCursor(cursor)
 
-    def on_filenewscript(self, silent=False, name=None, text=None):
+    def on_filenewscript(self, silent=False):
         """
         Will create a new script file and open it in the Code Editor
 
-        :param silent: if True will not display status messages
-        :param name: if specified will be the name of the new script
-        :param text: pass a source file to the newly created script to be loaded in it
-        :return: None
+        :param silent:  if True will not display status messages
+        :param name:    if specified will be the name of the new script
+        :param text:    pass a source file to the newly created script to be loaded in it
+        :return:        None
         """
         if silent is False:
             self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
@@ -8355,10 +8350,7 @@ class App(QtCore.QObject):
         self.ui.position_label.setText("")
         self.ui.rel_position_label.setText("")
 
-        if name is not None:
-            self.new_script_object(name=name, text=text)
-        else:
-            self.new_script_object(text=text)
+        self.new_script_object()
 
         # script_text = script_obj.source_file
         #
@@ -8372,9 +8364,9 @@ class App(QtCore.QObject):
         """
         Will open a Tcl script file into the Code Editor
 
-        :param silent: if True will not display status messages
-        :param name: name of a Tcl script file to open
-        :return:
+        :param silent:  if True will not display status messages
+        :param name:    name of a Tcl script file to open
+        :return:        None
         """
 
         self.defaults.report_usage("on_fileopenscript")
@@ -9609,27 +9601,46 @@ class App(QtCore.QObject):
         :param silent:      If True there will be no messages printed to StatusBar
         :return:            None
         """
+
+        def obj_init(script_obj, app_obj):
+
+            assert isinstance(script_obj, ScriptObject), \
+                "Expected to initialize a ScriptObject but got %s" % type(script_obj)
+
+            if silent is False:
+                app_obj.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
+
+            try:
+                script_obj.parse_file(filename)
+            except IOError:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
+                return "fail"
+            except ParseError as err:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' % (_("Failed to parse file"), filename, str(err)))
+                app_obj.log.error(str(err))
+                return "fail"
+            except Exception as e:
+                log.debug("App.open_script() -> %s" % str(e))
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
+                msg += traceback.format_exc()
+                app_obj.inform.emit(msg)
+                return "fail"
+
         App.log.debug("open_script()")
 
         with self.proc_container.new(_("Opening TCL Script...")):
 
-            try:
-                with open(filename, "r") as opened_script:
-                    script_content = opened_script.readlines()
-                    script_content = ''.join(script_content)
-
-                    if silent is False:
-                        self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
-            except Exception as e:
-                log.debug("App.open_script() -> %s" % str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to open TCL Script."))
-                return
-
             # Object name
             script_name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            # New object creation and file processing
-            self.on_filenewscript(name=script_name, text=script_content)
+            # Object creation
+            ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+            if ret_val == 'fail':
+                filename = self.defaults['global_tcl_path'] + '/' + script_name
+                ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+                if ret_val == 'fail':
+                    self.inform.emit('[ERROR_NOTCL]%s' % _('Failed to open TCL Script.'))
+                    return 'fail'
 
             # Register recent file
             self.file_opened.emit("script", filename)

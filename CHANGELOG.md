@@ -10,6 +10,9 @@ CHANGELOG for FlatCAM beta
 01.05.2020
 
 - added some ToolTips (strings needed to be translated too) for the Cut Z entry in Geometry Object UI that explain why is sometime disabled and reason for it's value (sometime is zero)
+- solve parenting issues when trying to load a FlatScript from Menu -> File -> Scripting
+- added a first new example script and added some files to work with
+- added a new parameter that will store the home folder of the FlatCAM installation so we can access the example folder
 
 30.04.2020 
 

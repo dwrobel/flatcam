@@ -28,6 +28,7 @@ class FlatCAMDefaults:
         "version": 8.992,   # defaults format version, not necessarily equal to app version
         "first_run": True,
         "units": "MM",
+        "root_folder_path": '',
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": True,
