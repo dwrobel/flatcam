@@ -15368,7 +15368,7 @@ msgstr "Container"
 
 #: flatcamTools/ToolFilm.py:131
 msgid ""
-"The actual object that is used a container for the\n"
+"The actual object that is used as container for the\n"
 " selected object for which we create the film.\n"
 "Usually it is the PCB outline but it can be also the\n"
 "same object for which the film is created."
@@ -16473,7 +16473,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:139
 msgid ""
-"The actual object that is used a container for the\n"
+"The actual object that is used as container for the\n"
 " selected object that is to be panelized."
 msgstr ""
 "Obiectul care este folosit ca și container \n"
