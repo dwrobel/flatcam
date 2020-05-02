@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
 - modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
 - some string corrections
+- updated the Italian translation done by user @pcb-hobbyst
 
 01.05.2020
 
