@@ -17254,7 +17254,7 @@ msgstr "ÉTAPE 1"
 #: flatcamTools/ToolSolderPaste.py:157
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 "La première étape consiste à sélectionner un certain nombre d’outils de buse "
 "à utiliser.\n"
@@ -17498,7 +17498,7 @@ msgstr ""
 "à partir de l'objet Gerber cible."
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr "Soustraire Gerber"
 
 #: flatcamTools/ToolSub.py:102

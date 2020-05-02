@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
 - fixed bug in Gerber Editor in which the QThread that is started on object edit was not stopped at clean up stage
 - fixed bug in Gerber Editor that kept all the apertures (including the geometry) of a previously edited object that was not saved after edit
+- modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
+- modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
+- some string corrections
 
 01.05.2020
 

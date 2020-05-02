@@ -155,7 +155,7 @@ class SolderPaste(FlatCAMTool):
         step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1'))
         step1_lbl.setToolTip(
             _("First step is to select a number of nozzle tools for usage\n"
-              "and then optionally modify the GCode parameters bellow.")
+              "and then optionally modify the GCode parameters below.")
         )
         step1_description_lbl = QtWidgets.QLabel(_("Select tools.\n"
                                                    "Modify parameters."))

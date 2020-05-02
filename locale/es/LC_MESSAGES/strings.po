@@ -17257,7 +17257,7 @@ msgstr "PASO 1"
 #: flatcamTools/ToolSolderPaste.py:157
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 "El primer paso es seleccionar una serie de herramientas de boquillas para su "
 "uso\n"
@@ -17502,7 +17502,7 @@ msgstr ""
 "del objeto objetivo de Gerber."
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr "Restar Gerber"
 
 #: flatcamTools/ToolSub.py:102
@@ -19224,7 +19224,7 @@ msgstr ""
 #~ msgid "[success] Paint Area Done."
 #~ msgstr "[éxito] Área de pintura realizada."
 
-#~ msgid "...proccessing... [%s]"
+#~ msgid "...processing... [%s]"
 #~ msgstr "... procesando ... [% s]"
 
 #~ msgid "Parsing aperture %s geometry ..."

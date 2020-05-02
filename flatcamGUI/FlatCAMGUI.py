@@ -3232,7 +3232,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         else:
                             self.app.collection.set_active(names_list[active_index-1])
 
-                # Select the object in the Tree bellow the current one
+                # Select the object in the Tree below the current one
                 if key == QtCore.Qt.Key_Down:
                     # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
                     focused_wdg = QtWidgets.QApplication.focusWidget()

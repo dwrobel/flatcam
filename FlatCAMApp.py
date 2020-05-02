@@ -4111,9 +4111,11 @@ class App(QtCore.QObject):
         obj.multigeo = True
         for tooluid, dict_value in obj.tools.items():
             dict_value['solid_geometry'] = deepcopy(obj.solid_geometry)
+
         if not isinstance(obj.solid_geometry, list):
             obj.solid_geometry = [obj.solid_geometry]
-        obj.solid_geometry[:] = []
+
+        # obj.solid_geometry[:] = []
         obj.plot()
 
         self.should_we_save = True
@@ -5024,7 +5026,7 @@ class App(QtCore.QObject):
                 self.paste_tool.on_add_tool_by_key()
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
-    # See description bellow.
+    # See description below.
     def on_delete_keypress(self):
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
