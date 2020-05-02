@@ -16458,8 +16458,8 @@ msgid "Excellon merging is in progress. Please wait..."
 msgstr "Excellon merging is in progress. Please wait..."
 
 #: flatcamTools/ToolPcbWizard.py:474
-msgid "The imported Excellon file is None."
-msgstr "The imported Excellon file is None."
+msgid "The imported Excellon file is empty."
+msgstr "The imported Excellon file is empty."
 
 #: flatcamTools/ToolProperties.py:131
 msgid "Object Properties are displayed."

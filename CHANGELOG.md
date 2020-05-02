@@ -11,6 +11,9 @@ CHANGELOG for FlatCAM beta
 
 - changed the icons for the grid snap in the status bar
 - moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
+- fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
+- fixed bug in Gerber Editor in which the QThread that is started on object edit was not stopped at clean up stage
+- fixed bug in Gerber Editor that kept all the apertures (including the geometry) of a previously edited object that was not saved after edit
 
 01.05.2020
 

@@ -2837,7 +2837,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.on_grid_snap_triggered(state=True)
+            self.app.ui.on_grid_snap_triggered(state=True)
 
         self.app.ui.popmenu_disable.setVisible(False)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
