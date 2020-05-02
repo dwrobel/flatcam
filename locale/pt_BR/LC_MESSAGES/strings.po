@@ -17045,7 +17045,7 @@ msgstr "PASSO 1"
 #: flatcamTools/ToolSolderPaste.py:157
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 "O primeiro passo é selecionar um número de ferramentas de bico para usar,\n"
 "e opcionalmente, modificar os parâmetros do G-Code abaixo."
@@ -17286,7 +17286,7 @@ msgstr ""
 "do objeto Gerber de destino."
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr "Subtrair Gerber"
 
 #: flatcamTools/ToolSub.py:102
@@ -20225,7 +20225,7 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 #~ msgid "Generating panel ... Please wait."
 #~ msgstr "Gerando painel ... Por favor, aguarde."
 
-#~ msgid "...proccessing... [%s]"
+#~ msgid "...processing... [%s]"
 #~ msgstr "...processando... [%s]"
 
 #~ msgid "Parsing aperture %s geometry ..."

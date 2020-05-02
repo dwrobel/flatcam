@@ -17265,7 +17265,7 @@ msgstr "PAS 1"
 #: flatcamTools/ToolSolderPaste.py:157
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 "Primul pas este să se efectueza o selecţie de unelte Nozzl pt \n"
 "utilizare și apoi in mod optional, să se modifice parametrii\n"
@@ -17512,7 +17512,7 @@ msgstr ""
 "obiectul Gerber tintă."
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr "Execută"
 
 #: flatcamTools/ToolSub.py:102
@@ -20553,7 +20553,7 @@ msgstr ""
 #~ msgid "Generating panel ... Please wait."
 #~ msgstr "Se generează panelul ... Va rugăm asteptati."
 
-#~ msgid "...proccessing... [%s]"
+#~ msgid "...processing... [%s]"
 #~ msgstr "...in procesare... [%s]"
 
 #~ msgid "Parsing aperture %s geometry ..."

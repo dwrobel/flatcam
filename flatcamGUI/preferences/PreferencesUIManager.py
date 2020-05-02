@@ -42,7 +42,7 @@ class PreferencesUIManager:
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 
-        # when adding entries here read the comments in the  method found bellow named:
+        # when adding entries here read the comments in the  method found below named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
             # General App

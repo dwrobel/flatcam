@@ -16981,10 +16981,10 @@ msgstr "STEP 1"
 #: flatcamTools/ToolSolderPaste.py:157
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 
 #: flatcamTools/ToolSolderPaste.py:160
 msgid ""
@@ -17216,8 +17216,8 @@ msgstr ""
 "from the target Gerber object."
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
-msgstr "Substract Gerber"
+msgid "Subtract Gerber"
+msgstr "Subtract Gerber"
 
 #: flatcamTools/ToolSub.py:102
 msgid ""
@@ -20512,8 +20512,8 @@ msgstr "No Geometry name in args. Provide a name and try again."
 #~ msgid "Generating panel ... Please wait."
 #~ msgstr "Generating panel ... Please wait."
 
-#~ msgid "...proccessing... [%s]"
-#~ msgstr "...proccessing... [%s]"
+#~ msgid "...processing... [%s]"
+#~ msgstr "...processing... [%s]"
 
 #~ msgid "Parsing aperture %s geometry ..."
 #~ msgstr "Parsing aperture %s geometry ..."

@@ -364,7 +364,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.units_found = self.app.defaults['units']
 
         # this signal has to be connected to it's slot before the defaults are populated
-        # the decision done in the slot has to override the default value set bellow
+        # the decision done in the slot has to override the default value set below
         self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
 
         self.form_fields.update({

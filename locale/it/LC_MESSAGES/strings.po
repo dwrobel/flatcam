@@ -6804,7 +6804,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:431
 msgid ""
 "When the isolation geometry is generated,\n"
-"by checking this, the area of the object bellow\n"
+"by checking this, the area of the object below\n"
 "will be subtracted from the isolation geometry."
 msgstr ""
 
@@ -14198,7 +14198,7 @@ msgid "Violations: There are no violations for the current rule."
 msgstr ""
 
 #: flatcamTools/ToolShell.py:70 flatcamTools/ToolShell.py:72
-msgid "...proccessing..."
+msgid "...processing..."
 msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:37
@@ -14251,7 +14251,7 @@ msgstr ""
 #: flatcamTools/ToolSolderPaste.py:156
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:159
@@ -14452,7 +14452,7 @@ msgid ""
 msgstr ""
 
 #: flatcamTools/ToolSub.py:97
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr ""
 
 #: flatcamTools/ToolSub.py:99
