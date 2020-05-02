@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-05-02 16:46+0300\n"
-"PO-Revision-Date: 2020-05-02 16:48+0300\n"
+"PO-Revision-Date: 2020-05-02 21:19+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -155,7 +155,7 @@ msgstr "Oggetto vuoto dopo la modifica."
 
 #: FlatCAMApp.py:2266 FlatCAMApp.py:2287 FlatCAMApp.py:2309
 msgid "Editor exited. Editor content saved."
-msgstr ""
+msgstr "Edito chiuso. Contenuto salvato."
 
 #: FlatCAMApp.py:2313 FlatCAMApp.py:2336 FlatCAMApp.py:2354
 msgid "Select a Gerber, Geometry or Excellon Object to update."
@@ -167,7 +167,7 @@ msgstr "viene aggiornato, tornando all'App ..."
 
 #: FlatCAMApp.py:2323
 msgid "Editor exited. Editor content was not saved."
-msgstr ""
+msgstr "Editor chiuso. Contenuto non salvato."
 
 #: FlatCAMApp.py:2503 FlatCAMApp.py:2507
 msgid "Import FlatCAM Preferences"
@@ -191,10 +191,8 @@ msgid "Exported preferences to"
 msgstr "Preferenze esportate in"
 
 #: FlatCAMApp.py:2583 FlatCAMApp.py:2588
-#, fuzzy
-#| msgid "Saved to"
 msgid "Save to file"
-msgstr "Salvato in"
+msgstr "Salvato su file"
 
 #: FlatCAMApp.py:2601 FlatCAMApp.py:8841 FlatCAMApp.py:8889 FlatCAMApp.py:9014
 #: FlatCAMApp.py:9150 FlatCAMBookmark.py:308 FlatCAMDB.py:671 FlatCAMDB.py:2133
@@ -209,16 +207,12 @@ msgstr ""
 "Molto probabilmente un'altra app tiene il file aperto e non accessibile."
 
 #: FlatCAMApp.py:2612
-#, fuzzy
-#| msgid "Could not load defaults file."
 msgid "Could not load the file."
-msgstr "Impossibile caricare il file delle impostazioni predefinite."
+msgstr "Impossibile caricare il file."
 
 #: FlatCAMApp.py:2628
-#, fuzzy
-#| msgid "Exported Tools DB to"
 msgid "Exported file to"
-msgstr "DB utensili esportato in"
+msgstr "File esportato su"
 
 #: FlatCAMApp.py:2711
 msgid "Failed to open recent files file for writing."
@@ -266,6 +260,8 @@ msgid ""
 "Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
 "(displayed in Tcl Shell)."
 msgstr ""
+"Prova >help< seguito dal Run Code per una lista di comandi Tcl FlatCAM "
+"(visualizzati nella shell)."
 
 #: FlatCAMApp.py:2981 FlatCAMApp.py:2987 FlatCAMApp.py:2993 FlatCAMApp.py:2999
 #: FlatCAMApp.py:3005 FlatCAMApp.py:3011
@@ -528,10 +524,8 @@ msgid "Failed. Select a Geometry Object and try again."
 msgstr "Errore. Selezionare un oggetto Geometria e riprovare."
 
 #: FlatCAMApp.py:4108 FlatCAMApp.py:4146
-#, fuzzy
-#| msgid "Expected a Geometry, got"
 msgid "Expected a GeometryObject, got"
-msgstr "Era attesa una geometria, c'è"
+msgstr "Era atteso un oggetto geometria, ottenuto"
 
 #: FlatCAMApp.py:4123
 msgid "A Geometry object was converted to MultiGeo type."
@@ -635,10 +629,8 @@ msgid "Origin coordinates specified but incomplete."
 msgstr "Coordinate Origine non complete."
 
 #: FlatCAMApp.py:5275
-#, fuzzy
-#| msgid "Setting Origin..."
 msgid "Moving to Origin..."
-msgstr "Impostazione Origine..."
+msgstr "Spostamento sull'origine..."
 
 #: FlatCAMApp.py:5356
 msgid "Jump to ..."
@@ -676,10 +668,8 @@ msgid "No object selected."
 msgstr "Nessun oggetto selezionato."
 
 #: FlatCAMApp.py:5479
-#, fuzzy
-#| msgid "Bottom Left"
 msgid "Bottom-Left"
-msgstr "Basso Sinistra"
+msgstr "Basso-Sinistra"
 
 #: FlatCAMApp.py:5480 flatcamGUI/preferences/tools/Tools2CalPrefGroupUI.py:131
 #: flatcamTools/ToolCalibration.py:159
@@ -692,20 +682,16 @@ msgid "Bottom-Right"
 msgstr "Basso-Destra"
 
 #: FlatCAMApp.py:5482
-#, fuzzy
-#| msgid "Top Right"
 msgid "Top-Right"
-msgstr "Alto destra"
+msgstr "Alto-destra"
 
 #: FlatCAMApp.py:5483 flatcamGUI/ObjectUI.py:2626
 msgid "Center"
 msgstr "Centro"
 
 #: FlatCAMApp.py:5503
-#, fuzzy
-#| msgid "Rotate ..."
 msgid "Locate ..."
-msgstr "Ruota ..."
+msgstr "Individua ..."
 
 #: FlatCAMApp.py:5761 FlatCAMApp.py:5838
 msgid "No object is selected. Select an object and try again."
@@ -1099,13 +1085,11 @@ msgstr "Editor del codice"
 
 #: FlatCAMApp.py:8312
 msgid "Go to Line ..."
-msgstr ""
+msgstr "Vai alla Riga ..."
 
 #: FlatCAMApp.py:8313
-#, fuzzy
-#| msgid "Linear"
 msgid "Line:"
-msgstr "Lineare"
+msgstr "Riga:"
 
 #: FlatCAMApp.py:8342
 msgid "New TCL script file created in Code Editor."
@@ -1116,10 +1100,8 @@ msgid "Open TCL script"
 msgstr "Apri Script TCL"
 
 #: FlatCAMApp.py:8446
-#, fuzzy
-#| msgid "Executing FlatCAMScript file."
 msgid "Executing ScriptObject file."
-msgstr "Esecuzione file script FlatCAM."
+msgstr "Esecuzione file oggetto Script."
 
 #: FlatCAMApp.py:8454 FlatCAMApp.py:8457
 msgid "Run TCL script"
@@ -1216,10 +1198,8 @@ msgid "Importing SVG"
 msgstr "Importazione SVG"
 
 #: FlatCAMApp.py:9272 FlatCAMApp.py:9318
-#, fuzzy
-#| msgid "Imported"
 msgid "Import failed."
-msgstr "Importato"
+msgstr "Importazione fallita."
 
 #: FlatCAMApp.py:9279 FlatCAMApp.py:9325 FlatCAMApp.py:9389 FlatCAMApp.py:9456
 #: FlatCAMApp.py:9522 FlatCAMApp.py:9587 FlatCAMApp.py:9644
@@ -1248,10 +1228,8 @@ msgid "Opening Gerber"
 msgstr "Apertura Gerber"
 
 #: FlatCAMApp.py:9382
-#, fuzzy
-#| msgid " Open Gerber failed. Probable not a Gerber file."
 msgid "Open Gerber failed. Probable not a Gerber file."
-msgstr " Apertura Gerber fallita. Forse non è un file Gerber."
+msgstr "Apertura Gerber fallita. Forse non è un file Gerber."
 
 #: FlatCAMApp.py:9414 flatcamTools/ToolPcbWizard.py:424
 msgid "This is not Excellon file."
@@ -1488,14 +1466,8 @@ msgid "Newer Version Available"
 msgstr "E' disponibile una nuova versione"
 
 #: FlatCAMApp.py:10238
-#, fuzzy
-#| msgid ""
-#| "There is a newer version of FlatCAM available for download:\n"
-#| "\n"
 msgid "There is a newer version of FlatCAM available for download:"
-msgstr ""
-"E' disponibile al download una nuova versione di FlatCAM:\n"
-"\n"
+msgstr "E' disponibile una nuova versione di FlatCAM per il download:"
 
 #: FlatCAMApp.py:10242
 msgid "info"
@@ -1508,6 +1480,10 @@ msgid ""
 "tab.\n"
 "\n"
 msgstr ""
+"Inizializzazione grafica OpenGL non riuscita. HW o configurazione HW non "
+"supportati. Cambia il motore grafico in Legacy (2D) in Modifica -> "
+"Preferenze -> Generale.\n"
+"\n"
 
 #: FlatCAMApp.py:10349
 msgid "All plots disabled."
@@ -1567,29 +1543,27 @@ msgstr "Marrone"
 
 #: FlatCAMApp.py:10553 FlatCAMApp.py:10609 flatcamGUI/FlatCAMGUI.py:721
 msgid "White"
-msgstr ""
+msgstr "Bianco"
 
 #: FlatCAMApp.py:10555 flatcamGUI/FlatCAMGUI.py:724
 msgid "Black"
-msgstr ""
+msgstr "Nero"
 
 #: FlatCAMApp.py:10558 flatcamGUI/FlatCAMGUI.py:729
 msgid "Custom"
 msgstr "Personalizzato"
 
 #: FlatCAMApp.py:10568 flatcamGUI/FlatCAMGUI.py:737
-#, fuzzy
-#| msgid "Default Values"
 msgid "Default"
 msgstr "Valori di default"
 
 #: FlatCAMApp.py:10592 flatcamGUI/FlatCAMGUI.py:734
 msgid "Opacity"
-msgstr ""
+msgstr "Trasparenza"
 
 #: FlatCAMApp.py:10594
 msgid "Set alpha level ..."
-msgstr ""
+msgstr "Imposta livello alfa ..."
 
 #: FlatCAMApp.py:10594
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:131
@@ -1598,10 +1572,8 @@ msgstr ""
 #: flatcamTools/ToolExtractDrills.py:164 flatcamTools/ToolExtractDrills.py:285
 #: flatcamTools/ToolPunchGerber.py:192 flatcamTools/ToolPunchGerber.py:308
 #: flatcamTools/ToolTransform.py:357
-#, fuzzy
-#| msgid "Value X:"
 msgid "Value"
-msgstr "Valore X:"
+msgstr "Valore"
 
 #: FlatCAMApp.py:10648
 msgid "Saving FlatCAM Project"
@@ -2270,28 +2242,20 @@ msgid "Cancelled adding tool from DB."
 msgstr "Aggiunta utensile in DB annullata."
 
 #: FlatCAMDB.py:1018
-#, fuzzy
-#| msgid "GCode Parameters"
 msgid "Basic Geo Parameters"
-msgstr "Parametri GCode"
+msgstr "Parametri Geo Basic"
 
 #: FlatCAMDB.py:1030
-#, fuzzy
-#| msgid "Lines Grid Parameters"
 msgid "Advanced Geo Parameters"
-msgstr "Parametri griglia lineei"
+msgstr "Parametri Geo avanzati"
 
 #: FlatCAMDB.py:1042
-#, fuzzy
-#| msgid "Parameters"
 msgid "NCC Parameters"
-msgstr "Parametri"
+msgstr "Parametri NCC"
 
 #: FlatCAMDB.py:1054
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Paint Parameters"
-msgstr "Parametri Slot"
+msgstr "Parametri pittura"
 
 #: FlatCAMDB.py:1185 flatcamGUI/ObjectUI.py:967 flatcamGUI/ObjectUI.py:1769
 #: flatcamGUI/preferences/geometry/GeometryOptPrefGroupUI.py:185
@@ -2301,15 +2265,11 @@ msgid "Feedrate X-Y"
 msgstr "Avanzamento X-Y"
 
 #: FlatCAMDB.py:1187
-#, fuzzy
-#| msgid ""
-#| "FR. Feedrate\n"
-#| "The speed on XY plane used while cutting into material."
 msgid ""
 "Feedrate X-Y. Feedrate\n"
 "The speed on XY plane used while cutting into material."
 msgstr ""
-"FR. Feedrate\n"
+"Avanzamento X-Y. Feedrate\n"
 "Velocità usata sul piano XY durante il taglio nel materiale."
 
 #: FlatCAMDB.py:1199 flatcamGUI/ObjectUI.py:982 flatcamGUI/ObjectUI.py:1783
@@ -2321,16 +2281,12 @@ msgid "Feedrate Z"
 msgstr "Avanzamento Z"
 
 #: FlatCAMDB.py:1201
-#, fuzzy
-#| msgid ""
-#| "FR Z. Feedrate Z\n"
-#| "The speed on Z plane."
 msgid ""
 "Feedrate Z\n"
 "The speed on Z plane."
 msgstr ""
-"FR Z. Feedrate Z\n"
-"La velocità nell'asse Z."
+"Avanzamento Z. Feedrate Z\n"
+"La velocità sull'asse Z."
 
 #: FlatCAMDB.py:1399 flatcamGUI/ObjectUI.py:845
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:46
@@ -2356,10 +2312,8 @@ msgid "Clear"
 msgstr "Pulisci"
 
 #: FlatCAMDB.py:1409 flatcamTools/ToolNCC.py:351 flatcamTools/ToolNCC.py:1618
-#, fuzzy
-#| msgid "Isolation Type"
 msgid "Isolation"
-msgstr "Tipo isolamento"
+msgstr "Isolamento"
 
 #: FlatCAMDB.py:1417 flatcamGUI/ObjectUI.py:409 flatcamGUI/ObjectUI.py:867
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:62
@@ -2404,22 +2358,11 @@ msgstr "Convenzionale"
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:182
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:163
 #: flatcamTools/ToolNCC.py:382 flatcamTools/ToolPaint.py:329
-#, fuzzy
-#| msgid "Overlap Rate"
 msgid "Overlap"
-msgstr "Rapporto di sovrapposizione"
+msgstr "Sovrapposizione"
 
 #: FlatCAMDB.py:1439 flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:184
 #: flatcamTools/ToolNCC.py:384
-#, fuzzy
-#| msgid ""
-#| "How much (fraction) of the tool width to overlap each tool pass.\n"
-#| "Adjust the value starting with lower values\n"
-#| "and increasing it if areas that should be cleared are still \n"
-#| "not cleared.\n"
-#| "Lower values = faster processing, faster execution on CNC.\n"
-#| "Higher values = slow processing and slow execution on CNC\n"
-#| "due of too many paths."
 msgid ""
 "How much (percentage) of the tool width to overlap each tool pass.\n"
 "Adjust the value starting with lower values\n"
@@ -2476,12 +2419,6 @@ msgstr "Metodo"
 
 #: FlatCAMDB.py:1473 flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:217
 #: flatcamTools/ToolNCC.py:418
-#, fuzzy
-#| msgid ""
-#| "Algorithm for painting:\n"
-#| "- Standard: Fixed step inwards.\n"
-#| "- Seed-based: Outwards from seed.\n"
-#| "- Line-based: Parallel lines."
 msgid ""
 "Algorithm for copper clearing:\n"
 "- Standard: Fixed step inwards.\n"
@@ -2516,7 +2453,7 @@ msgstr "Standard"
 #: flatcamTools/ToolPaint.py:1843 tclCommands/TclCommandCopperClear.py:128
 #: tclCommands/TclCommandCopperClear.py:136 tclCommands/TclCommandPaint.py:127
 msgid "Seed"
-msgstr ""
+msgstr "Seme"
 
 #: FlatCAMDB.py:1481 FlatCAMDB.py:1596 flatcamEditors/FlatCAMGeoEditor.py:499
 #: flatcamEditors/FlatCAMGeoEditor.py:5156
@@ -2525,10 +2462,8 @@ msgstr ""
 #: flatcamTools/ToolNCC.py:431 flatcamTools/ToolPaint.py:390
 #: flatcamTools/ToolPaint.py:699 flatcamTools/ToolPaint.py:1857
 #: tclCommands/TclCommandCopperClear.py:130 tclCommands/TclCommandPaint.py:129
-#, fuzzy
-#| msgid "lines"
 msgid "Lines"
-msgstr "righe"
+msgstr "Righe"
 
 #: FlatCAMDB.py:1489 FlatCAMDB.py:1607
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:237
@@ -2591,15 +2526,6 @@ msgstr ""
 #: FlatCAMDB.py:1548 flatcamEditors/FlatCAMGeoEditor.py:453
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:165
 #: flatcamTools/ToolPaint.py:331
-#, fuzzy
-#| msgid ""
-#| "How much (fraction) of the tool width to overlap each tool pass.\n"
-#| "Adjust the value starting with lower values\n"
-#| "and increasing it if areas that should be painted are still \n"
-#| "not painted.\n"
-#| "Lower values = faster processing, faster execution on CNC.\n"
-#| "Higher values = slow processing and slow execution on CNC\n"
-#| "due of too many paths."
 msgid ""
 "How much (percentage) of the tool width to overlap each tool pass.\n"
 "Adjust the value starting with lower values\n"
@@ -2609,8 +2535,7 @@ msgid ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 msgstr ""
-"Quanta larghezza dell'utensiole (frazione) da sovrapporre ad ogni "
-"passaggio.\n"
+"Quanta larghezza dell'utensile (frazione) da sovrapporre ad ogni passaggio.\n"
 "Sistema il valore partendo da valori bassi\n"
 "ed aumentalo se aree da colorare non lo sono.\n"
 "Valori bassi = velocità di elaborazione, velocità di esecuzione su CNC.\n"
@@ -2642,42 +2567,41 @@ msgid ""
 "- Combo: In case of failure a new method will be picked from the above\n"
 "in the order specified."
 msgstr ""
+"Algoritmo per la pittura: \n"
+"- Standard: passo fisso verso l'interno.\n"
+"- A base di semi: verso l'esterno dal seme.\n"
+"- Basato su linee: linee parallele.\n"
+"- Linee laser: attivo solo per oggetti Gerber.\n"
+"Creerà linee che seguono le tracce.\n"
+"- Combo: in caso di guasto verrà scelto un nuovo metodo tra quelli sopra "
+"indicati\n"
+"nell'ordine specificato."
 
 #: FlatCAMDB.py:1596 FlatCAMDB.py:1598
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217
 #: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:392
 #: flatcamTools/ToolPaint.py:693 flatcamTools/ToolPaint.py:698
 #: flatcamTools/ToolPaint.py:1871 tclCommands/TclCommandPaint.py:131
-#, fuzzy
-#| msgid "lines"
 msgid "Laser_lines"
-msgstr "righe"
+msgstr "Laser_lines"
 
 #: FlatCAMDB.py:1596 flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217
 #: flatcamTools/ToolPaint.py:390 flatcamTools/ToolPaint.py:2022
 #: tclCommands/TclCommandPaint.py:133
-#, fuzzy
-#| msgid "Combine"
 msgid "Combo"
 msgstr "Combinata"
 
 #: FlatCAMDB.py:1641
-#, fuzzy
-#| msgid "Add Geometry Tool in DB"
 msgid "Add Tool in DB"
-msgstr "Aggiunti strumento geometria in DB"
+msgstr "Aggiunti utensile nel DB"
 
 #: FlatCAMDB.py:1675
-#, fuzzy
-#| msgid "Save"
 msgid "Save DB"
-msgstr "Salva"
+msgstr "Salva DB"
 
 #: FlatCAMDB.py:1677
-#, fuzzy
-#| msgid "Load the Tools Database information's from a custom text file."
 msgid "Save the Tools Database information's."
-msgstr "Carica il Databse strumenti da un file esterno."
+msgstr "Salva le informazioni del Databse utensili."
 
 #: FlatCAMProcess.py:172
 msgid "processes running."
@@ -2686,12 +2610,12 @@ msgstr "processi in esecuzione."
 #: FlatCAMTool.py:245 FlatCAMTool.py:252 flatcamGUI/ObjectUI.py:157
 #: flatcamGUI/ObjectUI.py:164
 msgid "Edited value is out of range"
-msgstr ""
+msgstr "Il valore modificato è fuori range"
 
 #: FlatCAMTool.py:247 FlatCAMTool.py:254 flatcamGUI/ObjectUI.py:159
 #: flatcamGUI/ObjectUI.py:166
 msgid "Edited value is within limits."
-msgstr ""
+msgstr "Il valore editato è entro i limiti."
 
 #: FlatCAMTranslation.py:104
 msgid "The application will restart."
@@ -2706,18 +2630,16 @@ msgid "Apply Language ..."
 msgstr "Applica lingua ..."
 
 #: assets/linux/flatcam-beta.desktop:3
-#, fuzzy
-#| msgid "FlatCAM Object"
 msgid "FlatCAM Beta"
-msgstr "Oggetto FlatCAM"
+msgstr "FlatCAM Beta"
 
 #: assets/linux/flatcam-beta.desktop:7
 msgid "./assets/icon.png"
-msgstr ""
+msgstr "./assets/icon.png"
 
 #: assets/linux/flatcam-beta.desktop:8
 msgid "G-Code from GERBERS"
-msgstr ""
+msgstr "G-Code da GERBER"
 
 #: camlib.py:597
 msgid "self.solid_geometry is neither BaseGeometry or list."
@@ -2812,18 +2734,12 @@ msgstr ""
 "ma ora c'è un solo valore, non due. "
 
 #: camlib.py:2682 camlib.py:3582 camlib.py:3967
-#, fuzzy
-#| msgid ""
-#| "The Toolchange X,Y field in Edit -> Preferences has to be in the format "
-#| "(x, y) \n"
-#| "but now there is only one value, not two."
 msgid ""
 "The End Move X,Y field in Edit -> Preferences has to be in the format (x, y) "
 "but now there is only one value, not two."
 msgstr ""
 "Il campo X,Y del cambio utensile in Edit -> Preferenze deve essere nel "
-"formato (x, y) \n"
-"ma ora c'è un solo valore, non due."
+"formato (x, y) ma ora c'è un solo valore, non due."
 
 #: camlib.py:2770
 msgid "Creating a list of points to drill..."
@@ -2943,10 +2859,8 @@ msgid "There is no tool data in the SolderPaste geometry."
 msgstr "Non ci sono dati utensili nella geometria SolderPaste."
 
 #: camlib.py:4318
-#, fuzzy
-#| msgid "Finished SolderPste G-Code generation"
 msgid "Finished SolderPaste G-Code generation"
-msgstr "Generazione G-Code SolderPaste G-Code terminata"
+msgstr "Generazione G-Code SolderPaste terminata"
 
 #: camlib.py:4318
 msgid "paths traced."
@@ -3583,13 +3497,6 @@ msgid "Buffer corner:"
 msgstr "Riempimento angolo:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:88
-#, fuzzy
-#| msgid ""
-#| "There are 3 types of corners:\n"
-#| " - 'Round': the corner is rounded for exterior buffer.\n"
-#| " - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
-#| " - 'Beveled:' the corner is a line that directly connects the features "
-#| "meeting in the corner"
 msgid ""
 "There are 3 types of corners:\n"
 " - 'Round': the corner is rounded for exterior buffer.\n"
@@ -3685,22 +3592,10 @@ msgid "Tool dia"
 msgstr "Diametro utensile"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:441
-#, fuzzy
-#| msgid ""
-#| "Diameter of the tool to\n"
-#| "be used in the operation."
 msgid "Diameter of the tool to be used in the operation."
-msgstr ""
-"Diametro dell'utensile da\n"
-"usare per questa operazione."
+msgstr "Diametro dell'utensile da usare per questa operazione."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:487
-#, fuzzy
-#| msgid ""
-#| "Algorithm for painting:\n"
-#| "- Standard: Fixed step inwards.\n"
-#| "- Seed-based: Outwards from seed.\n"
-#| "- Line-based: Parallel lines."
 msgid ""
 "Algorithm to paint the polygons:\n"
 "- Standard: Fixed step inwards.\n"
@@ -3737,10 +3632,8 @@ msgstr "Strumento disegno"
 #: flatcamEditors/FlatCAMGeoEditor.py:3080
 #: flatcamEditors/FlatCAMGeoEditor.py:4502
 #: flatcamEditors/FlatCAMGrbEditor.py:5767
-#, fuzzy
-#| msgid "Copy cancelled. No shape selected."
 msgid "Cancelled. No shape selected."
-msgstr "Copia cancellata. Nessuna forma selezionata."
+msgstr "Cancellato. Nessuna forma selezionata."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:596
 #: flatcamEditors/FlatCAMGeoEditor.py:3042
@@ -4379,10 +4272,8 @@ msgid "Done. Path completed."
 msgstr "Fatto. Percorso completato."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2657
-#, fuzzy
-#| msgid "MOVE: No shape selected. Select a shape to move"
 msgid "No shape selected. Select a shape to explode"
-msgstr "SPOSTA: nessuna forma selezionata. Seleziona una forma da spostare"
+msgstr "Nessuna forma selezionata. Seleziona una forma da esplodere"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2690
 msgid "Done. Polygons exploded into lines."
@@ -4501,13 +4392,11 @@ msgstr "Nome"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3587
 msgid "Ring"
-msgstr ""
+msgstr "Anello"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3589
-#, fuzzy
-#| msgid "Linear"
 msgid "Line"
-msgstr "Lineare"
+msgstr "Linea"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3591 flatcamGUI/FlatCAMGUI.py:2202
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:328
@@ -4517,22 +4406,16 @@ msgid "Polygon"
 msgstr "Poligono"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3593
-#, fuzzy
-#| msgid "Multi-Geo"
 msgid "Multi-Line"
-msgstr "Multi-Geo"
+msgstr "Multi-Linea"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3595
-#, fuzzy
-#| msgid "Multi-Color"
 msgid "Multi-Polygon"
-msgstr "Multi-Colore"
+msgstr "Multi-Poligono"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3602
-#, fuzzy
-#| msgid "Geo Type"
 msgid "Geo Elem"
-msgstr "Tipo Geom"
+msgstr "Elemento Geom"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4076
 msgid "Editing MultiGeo Geometry, tool"
@@ -4603,12 +4486,11 @@ msgid "Exterior buffer geometry created."
 msgstr "Geometria del buffer esterno creata."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:5098
-#, fuzzy, python-format
-#| msgid "Could not do Paint. Overlap value has to be less than 1.00 (100%%)."
+#, python-format
 msgid "Could not do Paint. Overlap value has to be less than 100%%."
 msgstr ""
 "Impossibile fare Paint. Il valore di sovrapposizione deve essere inferiore a "
-"1,00 (100%%)."
+"100%%."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:5105
 msgid "Nothing selected for painting."
@@ -4921,13 +4803,6 @@ msgid "Buffer corner"
 msgstr "Buffer angolo"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2625
-#, fuzzy
-#| msgid ""
-#| "There are 3 types of corners:\n"
-#| " - 'Round': the corner is rounded.\n"
-#| " - 'Square:' the corner is met in a sharp angle.\n"
-#| " - 'Beveled:' the corner is a line that directly connects the features "
-#| "meeting in the corner"
 msgid ""
 "There are 3 types of corners:\n"
 " - 'Round': the corner is rounded.\n"
@@ -5099,16 +4974,12 @@ msgid "Deleted aperture with code"
 msgstr "Apertura eliminata con codice"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3521
-#, fuzzy
-#| msgid "Expected a list of objects names separated by comma. Got"
 msgid "Dimensions need two float values separated by comma."
-msgstr "Previsto un elenco di nomi di oggetti separati da virgola. Rilevato"
+msgstr "Le dimensioni necessitano di valori float separati da una virgola."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3530
-#, fuzzy
-#| msgid "Dimensions"
 msgid "Dimensions edited."
-msgstr "Dimensione"
+msgstr "Dimensioni modificate."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4084
 msgid "Loading Gerber into Editor"
@@ -5417,16 +5288,12 @@ msgid "Save"
 msgstr "Salva"
 
 #: flatcamGUI/FlatCAMGUI.py:171
-#, fuzzy
-#| msgid "Save Project &As ...\tCtrl+S"
 msgid "&Save Project ...\tCtrl+S"
-msgstr "S&alva progetto con nome ...\tCtrl+S"
+msgstr "&Salva progetto con nome ...\tCtrl+S"
 
 #: flatcamGUI/FlatCAMGUI.py:176
-#, fuzzy
-#| msgid "Save Project &As ...\tCtrl+S"
 msgid "Save Project &As ...\tCtrl+Shift+S"
-msgstr "S&alva progetto con nome ...\tCtrl+S"
+msgstr "S&alva progetto con nome ...\tCtrl+Shift+S"
 
 #: flatcamGUI/FlatCAMGUI.py:191
 msgid "Scripting"
@@ -5443,10 +5310,8 @@ msgid "Open Script ..."
 msgstr "Apri Script ..."
 
 #: flatcamGUI/FlatCAMGUI.py:199
-#, fuzzy
-#| msgid "Open Script ..."
 msgid "Open Example ..."
-msgstr "Apri Script ..."
+msgstr "Apri esempio ..."
 
 #: flatcamGUI/FlatCAMGUI.py:201 flatcamGUI/FlatCAMGUI.py:907
 #: flatcamGUI/FlatCAMGUI.py:2611 flatcamGUI/FlatCAMGUI.py:4386
@@ -5665,10 +5530,8 @@ msgid "Se&t Origin\tO"
 msgstr "Impos&ta Origine\tO"
 
 #: flatcamGUI/FlatCAMGUI.py:402
-#, fuzzy
-#| msgid "Se&t Origin\tO"
 msgid "Move to Origin\tShift+O"
-msgstr "Impos&ta Origine\tO"
+msgstr "Sposta su Origine\tShift+O"
 
 #: flatcamGUI/FlatCAMGUI.py:405
 msgid "Jump to Location\tJ"
@@ -5676,7 +5539,7 @@ msgstr "Vai a locazione\tJ"
 
 #: flatcamGUI/FlatCAMGUI.py:407
 msgid "Locate in Object\tShift+J"
-msgstr ""
+msgstr "Trova nell'oggetto\tShift+J"
 
 #: flatcamGUI/FlatCAMGUI.py:412
 msgid "Toggle Units\tQ"
@@ -6093,10 +5956,8 @@ msgid "Set Origin"
 msgstr "Imposta origine"
 
 #: flatcamGUI/FlatCAMGUI.py:874
-#, fuzzy
-#| msgid "Set Origin"
 msgid "Move to Origin"
-msgstr "Imposta origine"
+msgstr "Sposta su origine"
 
 #: flatcamGUI/FlatCAMGUI.py:877 flatcamGUI/FlatCAMGUI.py:2583
 msgid "Jump to Location"
@@ -6104,10 +5965,8 @@ msgstr "Vai a posizione"
 
 #: flatcamGUI/FlatCAMGUI.py:879 flatcamGUI/FlatCAMGUI.py:1734
 #: flatcamGUI/FlatCAMGUI.py:2585
-#, fuzzy
-#| msgid "Document Object"
 msgid "Locate in Object"
-msgstr "Oggetto documento"
+msgstr "Trova nell'oggetto"
 
 #: flatcamGUI/FlatCAMGUI.py:885 flatcamGUI/FlatCAMGUI.py:2591
 msgid "&Replot"
@@ -6142,17 +6001,13 @@ msgstr "Strumento 2 facce"
 
 #: flatcamGUI/FlatCAMGUI.py:915 flatcamGUI/FlatCAMGUI.py:1740
 #: flatcamGUI/FlatCAMGUI.py:2619
-#, fuzzy
-#| msgid "Excellon Object Color"
 msgid "Align Objects Tool"
-msgstr "Colore oggetti Excellon"
+msgstr "Strumento allinea oggetti"
 
 #: flatcamGUI/FlatCAMGUI.py:917 flatcamGUI/FlatCAMGUI.py:1741
 #: flatcamGUI/FlatCAMGUI.py:2621 flatcamTools/ToolExtractDrills.py:393
-#, fuzzy
-#| msgid "Create Drills GCode"
 msgid "Extract Drills Tool"
-msgstr "Crea GCode fori"
+msgstr "Strumento estrai fori"
 
 #: flatcamGUI/FlatCAMGUI.py:920 flatcamGUI/ObjectUI.py:596
 #: flatcamTools/ToolCutOut.py:440
@@ -6224,17 +6079,13 @@ msgstr "Strumento Calibrazione"
 
 #: flatcamGUI/FlatCAMGUI.py:956 flatcamGUI/FlatCAMGUI.py:1741
 #: flatcamGUI/FlatCAMGUI.py:2660
-#, fuzzy
-#| msgid "Paint Area Tool"
 msgid "Punch Gerber Tool"
-msgstr "Strumento disegna area"
+msgstr "Strumento punzone gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:958 flatcamGUI/FlatCAMGUI.py:2662
 #: flatcamTools/ToolInvertGerber.py:31
-#, fuzzy
-#| msgid "Convert Any to Gerber"
 msgid "Invert Gerber Tool"
-msgstr "Converti tutto in Gerber"
+msgstr "Strumento inverti gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:964 flatcamGUI/FlatCAMGUI.py:990
 #: flatcamGUI/FlatCAMGUI.py:1042 flatcamGUI/FlatCAMGUI.py:2668
@@ -6616,8 +6467,6 @@ msgid "PDF Import Tool"
 msgstr "Strumento importazione PDF"
 
 #: flatcamGUI/FlatCAMGUI.py:1730
-#, fuzzy
-#| msgid "Save project"
 msgid "Save Project"
 msgstr "Salva progetto"
 
@@ -6731,6 +6580,8 @@ msgid ""
 "Paste Special. Will convert a Windows path style to the one required in Tcl "
 "Shell"
 msgstr ""
+"Incolla speciale. Converte uno stile di percorso Windows in quello richiesto "
+"in Tcl Shell"
 
 #: flatcamGUI/FlatCAMGUI.py:1757
 msgid "Open Online Manual"
@@ -6753,8 +6604,6 @@ msgid "Alternate: Delete Tool"
 msgstr "Alternativo: strumento elimina"
 
 #: flatcamGUI/FlatCAMGUI.py:1759
-#, fuzzy
-#| msgid "(left to Key_1)Toogle Notebook Area (Left Side)"
 msgid "(left to Key_1)Toggle Notebook Area (Left Side)"
 msgstr "(da sinistra a Key_1) (Dis)attiva area blocco note (lato sinistro)"
 
@@ -7078,10 +6927,6 @@ msgid "Exc Editor"
 msgstr "Editor Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:2311
-#, fuzzy
-#| msgid ""
-#| "Relative neasurement.\n"
-#| "Reference is last click position"
 msgid ""
 "Relative measurement.\n"
 "Reference is last click position"
@@ -7090,10 +6935,6 @@ msgstr ""
 "Il riferimento è l'ultima posizione cliccata"
 
 #: flatcamGUI/FlatCAMGUI.py:2317
-#, fuzzy
-#| msgid ""
-#| "Absolute neasurement.\n"
-#| "Reference is (X=0, Y= 0) position"
 msgid ""
 "Absolute measurement.\n"
 "Reference is (X=0, Y= 0) position"
@@ -7262,10 +7103,8 @@ msgstr ""
 "dal punto di posizione attuale del mouse."
 
 #: flatcamGUI/GUIElements.py:2573
-#, fuzzy
-#| msgid "Saved to"
 msgid "Save Log"
-msgstr "Salvato in"
+msgstr "Salva log"
 
 #: flatcamGUI/GUIElements.py:2592 flatcamTools/ToolShell.py:278
 msgid "Type >help< to get started"
@@ -7295,7 +7134,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:111
 msgid "Geometrical transformations of the current object."
-msgstr ""
+msgstr "Trasformazioni geometriche dell'oggetto corrente."
 
 #: flatcamGUI/ObjectUI.py:120
 msgid ""
@@ -7417,12 +7256,6 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:311
 #: flatcamGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:69
-#, fuzzy
-#| msgid ""
-#| "Choose what tool to use for Gerber isolation:\n"
-#| "'Circular' or 'V-shape'.\n"
-#| "When the 'V-shape' is selected then the tool\n"
-#| "diameter will depend on the chosen cut depth."
 msgid ""
 "Choose which tool to use for Gerber isolation:\n"
 "'Circular' or 'V-shape'.\n"
@@ -7524,8 +7357,6 @@ msgstr "Sovrapposizione passate"
 
 #: flatcamGUI/ObjectUI.py:397
 #: flatcamGUI/preferences/gerber/GerberOptPrefGroupUI.py:70
-#, fuzzy
-#| msgid "How much (fraction) of the tool width to overlap each tool pass."
 msgid "How much (percentage) of the tool width to overlap each tool pass."
 msgstr ""
 "Quanto (in frazione) della larghezza dell'utensile sarà sovrapposto ad ogni "
@@ -7574,11 +7405,6 @@ msgid "Except"
 msgstr "Eccetto"
 
 #: flatcamGUI/ObjectUI.py:437
-#, fuzzy
-#| msgid ""
-#| "When the isolation geometry is generated,\n"
-#| "by checking this, the area of the object bellow\n"
-#| "will be subtracted from the isolation geometry."
 msgid ""
 "When the isolation geometry is generated,\n"
 "by checking this, the area of the object below\n"
@@ -7983,20 +7809,19 @@ msgid ""
 "- Drilling -> will drill the drills/slots associated with this tool\n"
 "- Milling -> will mill the drills/slots"
 msgstr ""
+"Tipo di operazione:\n"
+"- Foratura -> eseguirà i fori/slot associati a questo strumento\n"
+"- Fresatura -> freserà i fori(slot"
 
 #: flatcamGUI/ObjectUI.py:853
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:54
-#, fuzzy
-#| msgid "Drills"
 msgid "Drilling"
-msgstr "Fori"
+msgstr "Foratura"
 
 #: flatcamGUI/ObjectUI.py:854
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:55
-#, fuzzy
-#| msgid "Milling Type"
 msgid "Milling"
-msgstr "Tipo di fresatura"
+msgstr "Fresatura"
 
 #: flatcamGUI/ObjectUI.py:869
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:64
@@ -8006,6 +7831,11 @@ msgid ""
 "- Slots -> will mill the slots associated with this tool\n"
 "- Both -> will mill both drills and mills or whatever is available"
 msgstr ""
+"Tipo di fresatura:\n"
+"- Fori -> eseguirà la fresatura dei fori associati a questo strumento\n"
+"- Slot -> eseguirà la fresatura degli slot associati a questo strumento\n"
+"- Entrambi -> eseguirà la fresatura di trapani e mulini o qualsiasi altra "
+"cosa sia disponibile"
 
 #: flatcamGUI/ObjectUI.py:878
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:73
@@ -8016,21 +7846,13 @@ msgstr "Entrambi"
 
 #: flatcamGUI/ObjectUI.py:886
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80
-#, fuzzy
-#| msgid "Tip Diameter"
 msgid "Milling Diameter"
-msgstr "Diametro punta"
+msgstr "Diametro fresa"
 
 #: flatcamGUI/ObjectUI.py:888
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:82
-#, fuzzy
-#| msgid ""
-#| "Diameter of the cutting tool\n"
-#| "when milling slots."
 msgid "The diameter of the tool who will do the milling"
-msgstr ""
-"Diametro dell'utensile da taglio\n"
-"che fresa gli slot."
+msgstr "Diametro dell'utensile che freserà"
 
 #: flatcamGUI/ObjectUI.py:902
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:95
@@ -8209,17 +8031,13 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1162 flatcamGUI/ObjectUI.py:1937
 #: flatcamTools/ToolNCC.py:505 flatcamTools/ToolPaint.py:436
-#, fuzzy
-#| msgid "GCode Parameters"
 msgid "Common Parameters"
-msgstr "Parametri GCode"
+msgstr "Parametri comuni"
 
 #: flatcamGUI/ObjectUI.py:1164 flatcamGUI/ObjectUI.py:1939
 #: flatcamTools/ToolNCC.py:507 flatcamTools/ToolPaint.py:438
-#, fuzzy
-#| msgid "Parameters used for this tool."
 msgid "Parameters that are common for all tools."
-msgstr "Parametri usati per questo strumento."
+msgstr "Parametri usati da tutti gli utensili."
 
 #: flatcamGUI/ObjectUI.py:1169 flatcamGUI/ObjectUI.py:1944
 msgid "Tool change Z"
@@ -8272,10 +8090,8 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1223 flatcamGUI/ObjectUI.py:2002
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:195
 #: flatcamGUI/preferences/geometry/GeometryOptPrefGroupUI.py:173
-#, fuzzy
-#| msgid "End move Z"
 msgid "End move X,Y"
-msgstr "Spostamento finale Z"
+msgstr "Spostamento finale X,Y"
 
 #: flatcamGUI/ObjectUI.py:1225 flatcamGUI/ObjectUI.py:2004
 #: flatcamGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:197
@@ -8285,6 +8101,9 @@ msgid ""
 "If no value is entered then there is no move\n"
 "on X,Y plane at the end of the job."
 msgstr ""
+"Posizione movimento finale X,Y. Nel formato (x, y).\n"
+"Se non viene inserito alcun valore, non sarà possibile spostare\n"
+"sul piano X,Y alla fine del lavoro."
 
 #: flatcamGUI/ObjectUI.py:1235 flatcamGUI/ObjectUI.py:1878
 #: flatcamGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:96
@@ -8315,54 +8134,37 @@ msgid "The feedrate used while the probe is probing."
 msgstr "La velocità usata durante l'avanzamento del tastatore."
 
 #: flatcamGUI/ObjectUI.py:1272
-#, fuzzy
-#| msgid "Preprocessor"
 msgid "Preprocessor E"
-msgstr "Preprocessore"
+msgstr "Preprocessore E"
 
 #: flatcamGUI/ObjectUI.py:1274
-#, fuzzy
-#| msgid ""
-#| "The preprocessor JSON file that dictates\n"
-#| "Gcode output."
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output for Excellon Objects."
 msgstr ""
 "File JSON del preprocessore che istruisce\n"
-"il GCode di uscita."
+"il GCode di uscita per oggetti Excellon."
 
 #: flatcamGUI/ObjectUI.py:1284
-#, fuzzy
-#| msgid "Preprocessor"
 msgid "Preprocessor G"
-msgstr "Preprocessore"
+msgstr "Preprocessore G"
 
 #: flatcamGUI/ObjectUI.py:1286
-#, fuzzy
-#| msgid ""
-#| "The preprocessor JSON file that dictates\n"
-#| "Gcode output."
 msgid ""
 "The preprocessor JSON file that dictates\n"
 "Gcode output for Geometry (Milling) Objects."
 msgstr ""
 "File JSON del preprocessore che istruisce\n"
-"il GCode di uscita."
+"il GCode di uscita da oggetti Geometria (fresatura)."
 
 #: flatcamGUI/ObjectUI.py:1310 flatcamGUI/ObjectUI.py:2028
-#, fuzzy
-#| msgid ""
-#| "Add at least one tool in the tool-table.\n"
-#| "Click the header to select all, or Ctrl + LMB\n"
-#| "for custom selection of tools."
 msgid ""
 "Add / Select at least one tool in the tool-table.\n"
 "Click the # header to select all, or Ctrl + LMB\n"
 "for custom selection of tools."
 msgstr ""
 "Aggiungi almeno un utensile alla tabella degli utensili.\n"
-"Fai clic sull'intestazione per selezionare tutto oppure Ctrl + LMB\n"
+"Fai clic su # per selezionare tutto, oppure Ctrl + click sinistro\n"
 "per la selezione personalizzata degli utensili."
 
 #: flatcamGUI/ObjectUI.py:1318 flatcamGUI/ObjectUI.py:2035
@@ -8374,12 +8176,12 @@ msgid ""
 "Generate the CNC Job.\n"
 "If milling then an additional Geometry object will be created"
 msgstr ""
+"Generare il lavoro CNC.\n"
+"Se si sta fresando, verrà creato un oggetto Geometry aggiuntivo"
 
 #: flatcamGUI/ObjectUI.py:1337
-#, fuzzy
-#| msgid "Solid Geometry"
 msgid "Milling Geometry"
-msgstr "Geometria solida"
+msgstr "Geometria fresatura"
 
 #: flatcamGUI/ObjectUI.py:1339
 msgid ""
@@ -8398,10 +8200,8 @@ msgid "Diameter of the cutting tool."
 msgstr "Diametri dell'utensile da taglio."
 
 #: flatcamGUI/ObjectUI.py:1357
-#, fuzzy
-#| msgid "Mill Drills Geo"
 msgid "Mill Drills"
-msgstr "Geometria fresatura fori"
+msgstr "Fresatura fori"
 
 #: flatcamGUI/ObjectUI.py:1359
 msgid ""
@@ -8412,10 +8212,8 @@ msgstr ""
 "per la fresatura di percorsi utensile FORI."
 
 #: flatcamGUI/ObjectUI.py:1377
-#, fuzzy
-#| msgid "Mill Slots Geo"
 msgid "Mill Slots"
-msgstr "Geometria fresatura slot"
+msgstr "Fresatura slot"
 
 #: flatcamGUI/ObjectUI.py:1379
 msgid ""
@@ -8528,21 +8326,6 @@ msgstr ""
 "punta di fresatura con una punta fine."
 
 #: flatcamGUI/ObjectUI.py:1531
-#, fuzzy
-#| msgid ""
-#| "The Tool Type (TT) can be:\n"
-#| "- Circular with 1 ... 4 teeth -> it is informative only. Being circular "
-#| "the cut width in material\n"
-#| "is exactly the tool diameter.\n"
-#| "- Ball -> informative only and make reference to the Ball type endmill.\n"
-#| "- V-Shape -> it will disable de Z-Cut parameter in the UI form and enable "
-#| "two additional UI form\n"
-#| "fields: V-Tip Dia and V-Tip Angle. Adjusting those two values will adjust "
-#| "the Z-Cut parameter such\n"
-#| "as the cut width into material will be equal with the value in the Tool "
-#| "Diameter column of this table.\n"
-#| "Choosing the V-Shape Tool Type automatically will select the Operation "
-#| "Type as Isolation."
 msgid ""
 "The Tool Type (TT) can be:\n"
 "- Circular with 1 ... 4 teeth -> it is informative only. Being circular the "
@@ -8619,10 +8402,8 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1602 flatcamTools/ToolNCC.py:300
 #: flatcamTools/ToolNCC.py:634 flatcamTools/ToolPaint.py:283
 #: flatcamTools/ToolPaint.py:679
-#, fuzzy
-#| msgid "Add from Tool DB"
 msgid "Add from DB"
-msgstr "Aggiungi dal DB utensili"
+msgstr "Aggiungi dal DB"
 
 #: flatcamGUI/ObjectUI.py:1604 flatcamTools/ToolNCC.py:302
 #: flatcamTools/ToolPaint.py:285
@@ -9529,10 +9310,8 @@ msgstr ""
 #: flatcamGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:55
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:117
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:123
-#, fuzzy
-#| msgid "New Tool Dia"
 msgid "New Dia"
-msgstr "Nuovo diametro utensile"
+msgstr "Nuovo diametro"
 
 #: flatcamGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:80
 msgid "Linear Drill Array"
@@ -10291,10 +10070,8 @@ msgstr ""
 "percorso di salvataggio sia percorso di apertura dei file."
 
 #: flatcamGUI/preferences/general/GeneralAPPSetGroupUI.py:396
-#, fuzzy
-#| msgid "Scale Tool"
 msgid "Enable ToolTips"
-msgstr "Strumento scala"
+msgstr "Abilita ToolTips"
 
 #: flatcamGUI/preferences/general/GeneralAPPSetGroupUI.py:398
 msgid ""
@@ -10350,19 +10127,14 @@ msgid "App Preferences"
 msgstr "Preferenze App"
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:40
-#, fuzzy
-#| msgid ""
-#| "The default value for FlatCAM units.\n"
-#| "Whatever is selected here is set every time\n"
-#| "FLatCAM is started."
 msgid ""
 "The default value for FlatCAM units.\n"
 "Whatever is selected here is set every time\n"
 "FlatCAM is started."
 msgstr ""
 "Il valore predefinito per le unità FlatCAM.\n"
-"Qualunque cosa sia qui selezionata verrà impostata ogni volta\n"
-"che FlatCAM viene avviato."
+"Qualunque cosa sia qui selezionata verrà impostata ad ogni\n"
+"avvio di FlatCAM."
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:44
 msgid "IN"
@@ -10584,14 +10356,6 @@ msgid "Geo Tolerance"
 msgstr "Tolleranza geometrie"
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:232
-#, fuzzy
-#| msgid ""
-#| "This value can counter the effect of the Circle Steps\n"
-#| "parameter. Default value is 0.01.\n"
-#| "A lower value will increase the detail both in image\n"
-#| "and in Gcode for the circles, with a higher cost in\n"
-#| "performance. Higher value will provide more\n"
-#| "performance at the expense of level of detail."
 msgid ""
 "This value can counter the effect of the Circle Steps\n"
 "parameter. Default value is 0.005.\n"
@@ -10601,7 +10365,7 @@ msgid ""
 "performance at the expense of level of detail."
 msgstr ""
 "Questo valore può contenere l'effetto dei passi nei Cerchi.\n"
-"Il valore predefinito è 0,01.\n"
+"Il valore predefinito è 0,005.\n"
 "Un valore più basso aumenterà i dettagli sia nell'immagine\n"
 "e nel Gcode per i cerchi ma con un costo maggiore in\n"
 "termini di prestazioni. Un valore più elevato fornirà più\n"
@@ -10639,7 +10403,7 @@ msgstr ""
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:280
 msgid "Enable Auto Save"
-msgstr ""
+msgstr "Abilita autosalvataggio"
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:282
 msgid ""
@@ -10647,12 +10411,13 @@ msgid ""
 "When enabled, the application will try to save a project\n"
 "at the set interval."
 msgstr ""
+"Attiva per abilitare il salvataggio automatico.\n"
+"Quanto attivo, l'applicazione tenterà di salvare il progetto\n"
+"ad intervalli regolari."
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:292
-#, fuzzy
-#| msgid "Interior"
 msgid "Interval"
-msgstr "Interno"
+msgstr "Intervallo"
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:294
 msgid ""
@@ -10661,6 +10426,10 @@ msgid ""
 "if the project was saved manually at least once.\n"
 "While active, some operations may block this feature."
 msgstr ""
+"Intervallo di tempo per il salvataggio automatico. In millisecondi.\n"
+"L'applicazione proverà a salvare periodicamente ma solo\n"
+"se il progetto è stato salvato manualmente almeno una volta.\n"
+"Quando attivo, alcune operazioni potrebbero bloccare questa funzione."
 
 #: flatcamGUI/preferences/general/GeneralAppPrefGroupUI.py:310
 msgid "Text to PDF parameters"
@@ -10713,16 +10482,12 @@ msgid "Theme"
 msgstr "Tema"
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:38
-#, fuzzy
-#| msgid ""
-#| "Select an style for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Select a theme for FlatCAM.\n"
 "It will theme the plot area."
 msgstr ""
-"Seleziona uno stile per FlatCAM.\n"
-"Sarà applicato al prossimo riavvio del programma."
+"Seleziona un tema per FlatCAM.\n"
+"Sarà applicato all'area di plot."
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:43
 msgid "Light"
@@ -10751,16 +10516,13 @@ msgid "Apply Theme"
 msgstr "Applica tema"
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:61
-#, fuzzy
-#| msgid ""
-#| "Select a theme for FlatCAM.\n"
-#| "The application will restart after change."
 msgid ""
 "Select a theme for FlatCAM.\n"
 "It will theme the plot area.\n"
 "The application will restart after change."
 msgstr ""
 "Seleziona un tema per FlatCAM.\n"
+"Il tema sarà applicato all'area di plot.\n"
 "Il programma verrà riavviato dopo la modifica."
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:73
@@ -10922,10 +10684,8 @@ msgstr ""
 "nel caso gli elementi siano disabilitati."
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:370
-#, fuzzy
-#| msgid "Project loaded from"
 msgid "Project AutoHide"
-msgstr "Progetto caricato da"
+msgstr "Nascondi automaticamente progetto"
 
 #: flatcamGUI/preferences/general/GeneralGUIPrefGroupUI.py:372
 msgid ""
@@ -11030,8 +10790,6 @@ msgstr ""
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:41
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:48
 #: flatcamGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:42
-#, fuzzy
-#| msgid "Tool Dia"
 msgid "Tools Dia"
 msgstr "Diametro utensile"
 
@@ -11045,6 +10803,9 @@ msgid ""
 "The value of the diameter has to use the dot decimals separator.\n"
 "Valid values: 0.3, 1.0"
 msgstr ""
+"Diametri degli utensili, separati da virgola.\n"
+"Il valore del diametro deve utilizzare il punto come separatore decimale.\n"
+"Valori validi: 0.3, 1.0"
 
 #: flatcamGUI/preferences/geometry/GeometryGenPrefGroupUI.py:80
 msgid "Geometry Object Color"
@@ -11711,16 +11472,14 @@ msgstr ""
 "- basso-destra -> l'utente allineerà il PCB orizzontalmente"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Excellon Options"
 msgid "Extract Drills Options"
-msgstr "Opzioni Excellon"
+msgstr "Estrai opzioni fori"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:42
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:42
 #: flatcamTools/ToolExtractDrills.py:68 flatcamTools/ToolPunchGerber.py:75
 msgid "Processed Pads Type"
-msgstr ""
+msgstr "Tipo pad processati"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:44
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:44
@@ -11730,14 +11489,15 @@ msgid ""
 "If the PCB has many SMD pads with rectangular pads,\n"
 "disable the Rectangular aperture."
 msgstr ""
+"Il tipo di forma dei pad da elaborare.\n"
+"Se il PCB ha molti pad SMD con pad rettangolari,\n"
+"disabilita l'apertura rettangolare."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:54
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:54
 #: flatcamTools/ToolExtractDrills.py:80 flatcamTools/ToolPunchGerber.py:91
-#, fuzzy
-#| msgid "Circular Pad Array"
 msgid "Process Circular Pads."
-msgstr "Matrice circolare di pad"
+msgstr "Elabora pad circolarei."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:60
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:162
@@ -11746,27 +11506,25 @@ msgstr "Matrice circolare di pad"
 #: flatcamTools/ToolExtractDrills.py:86 flatcamTools/ToolExtractDrills.py:214
 #: flatcamTools/ToolPunchGerber.py:97 flatcamTools/ToolPunchGerber.py:242
 msgid "Oblong"
-msgstr ""
+msgstr "Oblungo"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:62
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:62
 #: flatcamTools/ToolExtractDrills.py:88 flatcamTools/ToolPunchGerber.py:99
 msgid "Process Oblong Pads."
-msgstr ""
+msgstr "Elabora pad oblunghi."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:70
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:70
 #: flatcamTools/ToolExtractDrills.py:96 flatcamTools/ToolPunchGerber.py:107
 msgid "Process Square Pads."
-msgstr ""
+msgstr "Elabora pad quadrati."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:78
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:78
 #: flatcamTools/ToolExtractDrills.py:104 flatcamTools/ToolPunchGerber.py:115
-#, fuzzy
-#| msgid "Rectangular"
 msgid "Process Rectangular Pads."
-msgstr "Rettangolare"
+msgstr "Elabora pad rettangolari."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:84
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:201
@@ -11782,7 +11540,7 @@ msgstr "Altri"
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:86
 #: flatcamTools/ToolExtractDrills.py:112 flatcamTools/ToolPunchGerber.py:123
 msgid "Process pads not in the categories above."
-msgstr ""
+msgstr "Elabora pad non appartenenti alle categoria sopra."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:99
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:123
@@ -11790,10 +11548,8 @@ msgstr ""
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:125
 #: flatcamTools/ToolExtractDrills.py:139 flatcamTools/ToolExtractDrills.py:156
 #: flatcamTools/ToolPunchGerber.py:150 flatcamTools/ToolPunchGerber.py:184
-#, fuzzy
-#| msgid "Tip Diameter"
 msgid "Fixed Diameter"
-msgstr "Diametro punta"
+msgstr "Diametro fisso"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:100
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:140
@@ -11801,18 +11557,14 @@ msgstr "Diametro punta"
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:142
 #: flatcamTools/ToolExtractDrills.py:140 flatcamTools/ToolExtractDrills.py:192
 #: flatcamTools/ToolPunchGerber.py:151 flatcamTools/ToolPunchGerber.py:214
-#, fuzzy
-#| msgid "Minimum Annular Ring"
 msgid "Fixed Annular Ring"
-msgstr "Anello minimo"
+msgstr "Anello fisso"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:101
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:102
 #: flatcamTools/ToolExtractDrills.py:141 flatcamTools/ToolPunchGerber.py:152
-#, fuzzy
-#| msgid "Properties Tool"
 msgid "Proportional"
-msgstr "Strumento proprietà"
+msgstr "Proporzionale"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:107
 #: flatcamTools/ToolExtractDrills.py:130
@@ -11822,14 +11574,17 @@ msgid ""
 "- Fixed Annular Ring -> all holes will have a set annular ring\n"
 "- Proportional -> each hole size will be a fraction of the pad size"
 msgstr ""
+"Il metodo per l'elaborazione dei pad. Può essere:\n"
+"- Diametro fisso -> tutti i fori avranno una dimensione impostata\n"
+"- Anello fisso -> tutti i fori avranno un anello anulare impostato\n"
+"- Proporzionale -> ogni dimensione del foro sarà una frazione della "
+"dimensione del pad"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:133
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:135
 #: flatcamTools/ToolExtractDrills.py:166 flatcamTools/ToolPunchGerber.py:194
-#, fuzzy
-#| msgid "with diameter"
 msgid "Fixed hole diameter."
-msgstr "con diametro"
+msgstr "Diametro foro fisso."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:142
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:144
@@ -11839,44 +11594,45 @@ msgid ""
 "The copper sliver between the hole exterior\n"
 "and the margin of the copper pad."
 msgstr ""
+"La dimensione dell'anello.\n"
+"Il nastro di rame tra l'esterno del foro\n"
+"e il margine del pad di rame."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:151
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:153
 #: flatcamTools/ToolExtractDrills.py:203 flatcamTools/ToolPunchGerber.py:231
 msgid "The size of annular ring for circular pads."
-msgstr ""
+msgstr "La dimensione dell'anello per pad circolari."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:164
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:166
 #: flatcamTools/ToolExtractDrills.py:216 flatcamTools/ToolPunchGerber.py:244
 msgid "The size of annular ring for oblong pads."
-msgstr ""
+msgstr "La dimensione dell'anello per pad oblunghi."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:177
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:179
 #: flatcamTools/ToolExtractDrills.py:229 flatcamTools/ToolPunchGerber.py:257
 msgid "The size of annular ring for square pads."
-msgstr ""
+msgstr "La dimensione dell'anello per pad quadrati."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:190
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:192
 #: flatcamTools/ToolExtractDrills.py:242 flatcamTools/ToolPunchGerber.py:270
 msgid "The size of annular ring for rectangular pads."
-msgstr ""
+msgstr "La dimensione dell'anello per pad rettangolari."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:203
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:205
 #: flatcamTools/ToolExtractDrills.py:255 flatcamTools/ToolPunchGerber.py:283
 msgid "The size of annular ring for other pads."
-msgstr ""
+msgstr "La dimensione dell'anello per gli altri pad."
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:213
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:215
 #: flatcamTools/ToolExtractDrills.py:276 flatcamTools/ToolPunchGerber.py:299
-#, fuzzy
-#| msgid "Tool Diameter"
 msgid "Proportional Diameter"
-msgstr "Diametro utensile"
+msgstr "Diametro proporzionale"
 
 #: flatcamGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:222
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:224
@@ -11890,6 +11646,8 @@ msgid ""
 "Proportional Diameter.\n"
 "The hole diameter will be a fraction of the pad size."
 msgstr ""
+"Diametro proporzionale.\n"
+"Il diametro del foro sarà una frazione della dimensione del pad."
 
 #: flatcamGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:27
 msgid "Fiducials Tool Options"
@@ -11994,36 +11752,30 @@ msgid "Line thickness"
 msgstr "Spessore linea"
 
 #: flatcamGUI/preferences/tools/Tools2InvertPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Gerber Options"
 msgid "Invert Gerber Tool Options"
-msgstr "Opzioni gerber"
+msgstr "Opzioni strumento inversione gerber"
 
 #: flatcamGUI/preferences/tools/Tools2InvertPrefGroupUI.py:33
 msgid ""
 "A tool to invert Gerber geometry from positive to negative\n"
 "and in revers."
 msgstr ""
+"Strumento per invertire geometrie gerber da positive a negative\n"
+"e viceversa."
 
 #: flatcamGUI/preferences/tools/Tools2InvertPrefGroupUI.py:47
 #: flatcamTools/ToolInvertGerber.py:90
-#, fuzzy
-#| msgid ""
-#| "Distance by which to avoid\n"
-#| "the edges of the polygon to\n"
-#| "be painted."
 msgid ""
 "Distance by which to avoid\n"
 "the edges of the Gerber object."
 msgstr ""
 "Distanza alla quale evitare\n"
-"i bordi dei poligoni da\n"
-"disegnare."
+"i bordi degli oggetti gerber."
 
 #: flatcamGUI/preferences/tools/Tools2InvertPrefGroupUI.py:58
 #: flatcamTools/ToolInvertGerber.py:101
 msgid "Lines Join Style"
-msgstr ""
+msgstr "Stile unione linee"
 
 #: flatcamGUI/preferences/tools/Tools2InvertPrefGroupUI.py:60
 #: flatcamTools/ToolInvertGerber.py:103
@@ -12034,6 +11786,11 @@ msgid ""
 "- square -> the lines meet in 90 degrees angle\n"
 "- bevel -> the lines are joined by a third line"
 msgstr ""
+"Il modo in cui le linee nel contorno dell'oggetto verranno unite.\n"
+"Può essere:\n"
+"- arrotondato -> viene aggiunto un arco tra due linee di giunzione\n"
+"- quadrato -> le linee si incontrano con un angolo di 90 gradi\n"
+"- smussato -> le linee sono unite da una terza linea"
 
 #: flatcamGUI/preferences/tools/Tools2OptimalPrefGroupUI.py:27
 msgid "Optimal Tool Options"
@@ -12058,10 +11815,8 @@ msgstr ""
 "Numero di decimali per le distanze e le coordinate in questo strumento."
 
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Gerber Options"
 msgid "Punch Gerber Options"
-msgstr "Opzioni gerber"
+msgstr "Opzioni punzone gerber"
 
 #: flatcamGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:108
 #: flatcamTools/ToolPunchGerber.py:141
@@ -12075,6 +11830,14 @@ msgid ""
 "- Proportional -> will make a Gerber punch hole having the diameter a "
 "percentage of the pad diameter."
 msgstr ""
+"La fonte del foro di punzonatura può essere:\n"
+"- Oggetto Excellon-> il centro dei fori dell'oggetto Excellon fungerà da "
+"riferimento.\n"
+"- Diametro fisso -> proverà a utilizzare il centro dei pad come riferimento "
+"aggiungendo fori a diametro fisso.\n"
+"- Fisso anello anulare -> proverà a mantenere un anello impostato.\n"
+"- Proporzionale -> eseguirà un foro di punzonatura Gerber avente il diametro "
+"pari ad una percentuale del diametro del pad."
 
 #: flatcamGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:27
 msgid "QRCode Tool Options"
@@ -12469,10 +12232,8 @@ msgstr "Diametro per i fori di allineamento."
 
 #: flatcamGUI/preferences/tools/Tools2sidedPrefGroupUI.py:56
 #: flatcamTools/ToolDblSided.py:377
-#, fuzzy
-#| msgid "Align Right"
 msgid "Align Axis"
-msgstr "Allinea a destra"
+msgstr "Allinea all'asse"
 
 #: flatcamGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58
 #: flatcamGUI/preferences/tools/Tools2sidedPrefGroupUI.py:71
@@ -12569,18 +12330,13 @@ msgstr "Calcolatore Galvanotecnica"
 
 #: flatcamGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:89
 #: flatcamTools/ToolCalculators.py:158
-#, fuzzy
-#| msgid ""
-#| "This calculator is useful for those who plate the via/pad/drill holes,\n"
-#| "using a method like grahite ink or calcium hypophosphite ink or palladium "
-#| "chloride."
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
 "using a method like graphite ink or calcium hypophosphite ink or palladium "
 "chloride."
 msgstr ""
-"Questo calcolatore è utile per coloro che placcano i fori/via/pad,\n"
-"usando un metodo come l'inchiostro a base di grafite o di ipofosfito di "
+"Questo calcolatore è utile per chi metallizza i fori di via/pad,\n"
+"usando un metodo come inchiostro di grafite o inchiostro di ipofosfito di "
 "calcio o cloruro di palladio."
 
 #: flatcamGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:100
@@ -13005,7 +12761,7 @@ msgstr "Opzioni strumento NCC"
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:49
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:57
 msgid "Comma separated values"
-msgstr ""
+msgstr "Valori separati da virgola"
 
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:55
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:63
@@ -13063,15 +12819,6 @@ msgstr "Ordine utensili"
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:143
 #: flatcamTools/ToolNCC.py:175 flatcamTools/ToolNCC.py:185
 #: flatcamTools/ToolPaint.py:159 flatcamTools/ToolPaint.py:169
-#, fuzzy
-#| msgid ""
-#| "This set the way that the tools in the tools table are used.\n"
-#| "'No' --> means that the used order is the one in the tool table\n"
-#| "'Forward' --> means that the tools will be ordered from small to big\n"
-#| "'Reverse' --> menas that the tools will ordered from big to small\n"
-#| "\n"
-#| "WARNING: using rest machining will automatically set the order\n"
-#| "in reverse and disable this control."
 msgid ""
 "This set the way that the tools in the tools table are used.\n"
 "'No' --> means that the used order is the one in the tool table\n"
@@ -13150,44 +12897,32 @@ msgstr ""
 
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:313
 #: flatcamTools/ToolNCC.py:541
-#, fuzzy
-#| msgid ""
-#| "- 'Itself' - the non copper clearing extent is based on the object that "
-#| "is copper cleared.\n"
-#| "- 'Area Selection' - left mouse click to start selection of the area to "
-#| "be painted.\n"
-#| "- 'Reference Object' - will do non copper clearing within the area "
-#| "specified by another object."
 msgid ""
 "Selection of area to be processed.\n"
 "- 'Itself' - the processing extent is based on the object that is "
 "processed.\n"
-"- 'Area Selection' - left mouse click to start selection of the area to be "
+" - 'Area Selection' - left mouse click to start selection of the area to be "
 "processed.\n"
 "- 'Reference Object' - will process the area specified by another object."
 msgstr ""
-"- 'Stesso': l'estensione di eliminazione del rame si basa sull'oggetto dal "
-"quale viene eliminato il rame.\n"
-"  - 'Selezione area' - fare clic con il pulsante sinistro del mouse per "
+"Selezione area da processare.\n"
+"- 'Stesso': il processo avverrà basandosi sull'oggetto processato.\n"
+"- 'Selezione area' - fare clic con il pulsante sinistro del mouse per "
 "iniziare a selezionare l'area.\n"
-"- 'Oggetto di riferimento' - eseguirà la pulizia dal rame nell'area "
-"specificata da un altro oggetto."
+"- 'Oggetto di riferimento' - processerà l'area specificata da un altro "
+"oggetto."
 
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:286
 #: flatcamTools/ToolNCC.py:578 flatcamTools/ToolPaint.py:522
-#, fuzzy
-#| msgid "V-Shape"
 msgid "Shape"
-msgstr "Punta a V"
+msgstr "Forma"
 
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:324
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:288
 #: flatcamTools/ToolNCC.py:580 flatcamTools/ToolPaint.py:524
-#, fuzzy
-#| msgid "Select the key used for multiple selection."
 msgid "The kind of selection shape used for area selection."
-msgstr "Imposta il tasto per le selezioni multiple."
+msgstr "Il tipo di forma di selezione utilizzata per la selezione dell'area."
 
 #: flatcamGUI/preferences/tools/ToolsNCCPrefGroupUI.py:339
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
@@ -13242,18 +12977,6 @@ msgstr ""
 
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:260
 #: flatcamTools/ToolPaint.py:458
-#, fuzzy
-#| msgid ""
-#| "How to select Polygons to be painted.\n"
-#| "- 'Polygon Selection' - left mouse click to add/remove polygons to be "
-#| "painted.\n"
-#| "- 'Area Selection' - left mouse click to start selection of the area to "
-#| "be painted.\n"
-#| "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple "
-#| "areas.\n"
-#| "- 'All Polygons' - the Paint will start after click.\n"
-#| "- 'Reference Object' - will do non copper clearing within the area\n"
-#| "specified by another object."
 msgid ""
 "Selection of area to be processed.\n"
 "- 'Polygon Selection' - left mouse click to add/remove polygons to be "
@@ -13265,18 +12988,17 @@ msgid ""
 "- 'All Polygons' - the process will start after click.\n"
 "- 'Reference Object' - will process the area specified by another object."
 msgstr ""
-"Come selezionare i poligoni da dipingere.\n"
+"Come selezionare i poligoni da processare.\n"
 "- 'Selezione poligoni': fare clic con il pulsante sinistro del mouse per "
 "aggiungere/rimuovere\n"
-"poligoni da dipingere.\n"
+"poligoni da processare.\n"
 "- 'Selezione area': fare clic con il pulsante sinistro del mouse per "
 "iniziare la selezione dell'area da\n"
-"dipingere. Tenendo premuto un tasto modificatore (CTRL o MAIUSC) sarà "
+"processare. Tenendo premuto un tasto modificatore (CTRL o SHIFT) sarà "
 "possibile aggiungere più aree.\n"
 "- 'Tutti i poligoni': la selezione inizierà dopo il click.\n"
-"- 'Oggetto di riferimento': eseguirà la rimozione di rame all'interno "
-"dell'area\n"
-"specificata da un altro oggetto."
+"- 'Oggetto di riferimento': eseguirà il processo dell'area specificata da un "
+"altro oggetto."
 
 #: flatcamGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
 #: flatcamTools/ToolPaint.py:486 flatcamTools/ToolPaint.py:942
@@ -13751,12 +13473,6 @@ msgstr ""
 
 #: flatcamGUI/preferences/tools/ToolsTransformPrefGroupUI.py:222
 #: flatcamTools/ToolTransform.py:359
-#, fuzzy
-#| msgid ""
-#| "A positive value will create the effect of dilation,\n"
-#| "while a negative value will create the effect of erosion.\n"
-#| "Each geometry element of the object will be increased\n"
-#| "or decreased with the 'distance'."
 msgid ""
 "A positive value will create the effect of dilation,\n"
 "while a negative value will create the effect of erosion.\n"
@@ -13767,7 +13483,7 @@ msgstr ""
 "Un valore positivo creerà l'effetto della dilatazione,\n"
 "mentre un valore negativo creerà l'effetto di restringimento.\n"
 "Ogni elemento della geometria dell'oggetto verrà aumentato\n"
-"o diminuito con la 'distanza'."
+"o diminuito in base al 'Valore'."
 
 #: flatcamGUI/preferences/tools/ToolsTransformPrefGroupUI.py:241
 #: flatcamTools/ToolTransform.py:385
@@ -14013,16 +13729,12 @@ msgstr "Editor Documenti"
 #: flatcamObjects/FlatCAMGeometry.py:306 flatcamObjects/FlatCAMGeometry.py:767
 #: flatcamTools/ToolNCC.py:811 flatcamTools/ToolNCC.py:1191
 #: flatcamTools/ToolPaint.py:779 flatcamTools/ToolPaint.py:1166
-#, fuzzy
-#| msgid "Rules Tool"
 msgid "Multiple Tools"
-msgstr "Strumento Righello"
+msgstr "Strumenti Multipli"
 
 #: flatcamObjects/FlatCAMExcellon.py:726
-#, fuzzy
-#| msgid "Tool Selection"
 msgid "No Tool Selected"
-msgstr "Selezione utensile"
+msgstr "Nessun utensile selezionato"
 
 #: flatcamObjects/FlatCAMExcellon.py:1076
 #: flatcamObjects/FlatCAMExcellon.py:1168
@@ -14063,12 +13775,12 @@ msgstr "L'utensile per lo SLOT è più grande del foro. Operazione annullata."
 #: flatcamObjects/FlatCAMExcellon.py:1281
 #: flatcamObjects/FlatCAMGeometry.py:1543
 msgid "Focus Z"
-msgstr ""
+msgstr "Z a Fuoco"
 
 #: flatcamObjects/FlatCAMExcellon.py:1300
 #: flatcamObjects/FlatCAMGeometry.py:1562
 msgid "Laser Power"
-msgstr ""
+msgstr "Potenza Laser"
 
 #: flatcamObjects/FlatCAMExcellon.py:1430
 #: flatcamObjects/FlatCAMGeometry.py:1999
@@ -14079,10 +13791,8 @@ msgstr "Generazione codice CNC"
 
 #: flatcamObjects/FlatCAMExcellon.py:1620 flatcamTools/ToolNCC.py:918
 #: flatcamTools/ToolPaint.py:844
-#, fuzzy
-#| msgid "Apply parameters to all tools"
 msgid "Current Tool parameters were applied to all tools."
-msgstr "Applica parametri a tutti gli utensili"
+msgstr "Parametri attuali applicati a tutti gli utensili."
 
 #: flatcamObjects/FlatCAMGeometry.py:119 flatcamObjects/FlatCAMGeometry.py:1207
 #: flatcamObjects/FlatCAMGeometry.py:1208
@@ -14141,6 +13851,13 @@ msgid ""
 "- Tool Dia -> 'Dia' column found in the Tool Table\n"
 "NB: a value of zero means that Tool Dia = 'V-tip Dia'"
 msgstr ""
+"Disabilitato perché lo strumento è a forma di V.\n"
+"Per gli strumenti a V la profondità di taglio è\n"
+"calcolato da altri parametri come:\n"
+"- 'Angolo V' -> angolo sulla punta dell'utensile\n"
+"- 'V Dia' -> diametro alla punta dell'utensile\n"
+"- Strumento Dia -> colonna 'Dia' trovato nella tabella degli utensili\n"
+"NB: un valore zero significa che Tool Dia = 'V Dia'"
 
 #: flatcamObjects/FlatCAMGeometry.py:1615
 msgid "This Geometry can't be processed because it is"
@@ -14239,10 +13956,8 @@ msgid "Done"
 msgstr "Fatto"
 
 #: flatcamObjects/FlatCAMGerber.py:529 flatcamObjects/FlatCAMGerber.py:555
-#, fuzzy
-#| msgid "Scaling could not be executed."
 msgid "Operation could not be done."
-msgstr "La riscalatura non può essere eseguita."
+msgstr "L'operazione non può essere eseguita."
 
 #: flatcamObjects/FlatCAMGerber.py:572
 msgid "Isolating..."
@@ -14478,74 +14193,52 @@ msgid "HPGL2 Parser ERROR"
 msgstr "ERRORE analisi HPGL2"
 
 #: flatcamTools/ToolAlignObjects.py:32
-#, fuzzy
-#| msgid "Objects"
 msgid "Align Objects"
-msgstr "Oggetti"
+msgstr "Allinea oggetti"
 
 #: flatcamTools/ToolAlignObjects.py:61
-#, fuzzy
-#| msgid "Object"
 msgid "MOVING object"
-msgstr "Oggetto"
+msgstr "SPOSTAMENTO oggetto"
 
 #: flatcamTools/ToolAlignObjects.py:65
-#, fuzzy
-#| msgid ""
-#| "Specify the type of object to be panelized\n"
-#| "It can be of type: Gerber, Excellon or Geometry.\n"
-#| "The selection here decide the type of objects that will be\n"
-#| "in the Object combobox."
 msgid ""
 "Specify the type of object to be aligned.\n"
 "It can be of type: Gerber or Excellon.\n"
 "The selection here decide the type of objects that will be\n"
 "in the Object combobox."
 msgstr ""
-"Specificare il tipo di oggetto da pannellare.\n"
-"Può essere di tipo: Gerber, Excellon o Geometry.\n"
+"Specificare il tipo di oggetto da allineare.\n"
+"Può essere di tipo: Gerber o Excellon.\n"
 "La selezione decide il tipo di oggetti che saranno\n"
 "nella combobox Oggetto."
 
 #: flatcamTools/ToolAlignObjects.py:86
-#, fuzzy
-#| msgid "Object to be painted."
 msgid "Object to be aligned."
-msgstr "Oggetto da dipingere."
+msgstr "Oggetto da allineare."
 
 #: flatcamTools/ToolAlignObjects.py:98
 msgid "TARGET object"
-msgstr ""
+msgstr "Oggetto DESTINAZIONE"
 
 #: flatcamTools/ToolAlignObjects.py:100
-#, fuzzy
-#| msgid ""
-#| "Specify the type of object to be panelized\n"
-#| "It can be of type: Gerber, Excellon or Geometry.\n"
-#| "The selection here decide the type of objects that will be\n"
-#| "in the Object combobox."
 msgid ""
 "Specify the type of object to be aligned to.\n"
 "It can be of type: Gerber or Excellon.\n"
 "The selection here decide the type of objects that will be\n"
 "in the Object combobox."
 msgstr ""
-"Specificare il tipo di oggetto da pannellare.\n"
-"Può essere di tipo: Gerber, Excellon o Geometry.\n"
+"Specificare il tipo di oggetto da allineare.\n"
+"Può essere di tipo: Gerber o Excellon.\n"
 "La selezione decide il tipo di oggetti che saranno\n"
 "nella combobox Oggetto."
 
 #: flatcamTools/ToolAlignObjects.py:122
-#, fuzzy
-#| msgid "Object to be painted."
 msgid "Object to be aligned to. Aligner."
-msgstr "Oggetto da dipingere."
+msgstr "Oggetto da allineare. Allineatore."
 
 #: flatcamTools/ToolAlignObjects.py:135
-#, fuzzy
-#| msgid "Alignment"
 msgid "Alignment Type"
-msgstr "Allineamento"
+msgstr "Tipo allineamento"
 
 #: flatcamTools/ToolAlignObjects.py:137
 msgid ""
@@ -14555,24 +14248,23 @@ msgid ""
 "- Dual Point -> it require two points of sync, the action will be "
 "translation followed by rotation"
 msgstr ""
+"Il tipo di allineamento può essere:\n"
+"- Punto singolo -> richiede un solo punto di sincronizzazione, l'azione sarà "
+"una traslazione\n"
+"- Punto doppio -> richiede due punti di sincronizzazione, l'azione sarà la "
+"traslazione seguita da rotazione"
 
 #: flatcamTools/ToolAlignObjects.py:143
-#, fuzzy
-#| msgid "Single"
 msgid "Single Point"
-msgstr "Singolo"
+msgstr "Punto singolo"
 
 #: flatcamTools/ToolAlignObjects.py:144
-#, fuzzy
-#| msgid "Half Point"
 msgid "Dual Point"
-msgstr "Punto di mezzo"
+msgstr "Doppio punto"
 
 #: flatcamTools/ToolAlignObjects.py:159
-#, fuzzy
-#| msgid "Align Left"
 msgid "Align Object"
-msgstr "Allinea a sinistra"
+msgstr "Allinea oggetto"
 
 #: flatcamTools/ToolAlignObjects.py:161
 msgid ""
@@ -14580,6 +14272,9 @@ msgid ""
 "If only one point is used then it assumes translation.\n"
 "If tho points are used it assume translation and rotation."
 msgstr ""
+"Allinea l'oggetto specificato all'oggetto allineatore.\n"
+"Se viene utilizzato solo un punto, assume la traslazione.\n"
+"Se si utilizzano i punti, si assume la traslazione e rotazione."
 
 #: flatcamTools/ToolAlignObjects.py:176 flatcamTools/ToolCalculators.py:246
 #: flatcamTools/ToolCalibration.py:683 flatcamTools/ToolCopperThieving.py:484
@@ -14608,49 +14303,37 @@ msgid "Will reset the tool parameters."
 msgstr "Azzererà i parametri dello strumento."
 
 #: flatcamTools/ToolAlignObjects.py:244
-#, fuzzy
-#| msgid "Poligonize Tool"
 msgid "Align Tool"
-msgstr "Strumento Poligonizza"
+msgstr "Strumento allineamento"
 
 #: flatcamTools/ToolAlignObjects.py:289
-#, fuzzy
-#| msgid "There is no FlatCAM object selected..."
 msgid "There is no aligned FlatCAM object selected..."
-msgstr "Non si sono oggetti FlatCAM selezionati..."
+msgstr "Non si sono oggetti FlatCAM allineati..."
 
 #: flatcamTools/ToolAlignObjects.py:299
-#, fuzzy
-#| msgid "There is no FlatCAM object selected..."
 msgid "There is no aligner FlatCAM object selected..."
-msgstr "Non si sono oggetti FlatCAM selezionati..."
+msgstr "Non si sono oggetti FlatCAM allineatori selezionati..."
 
 #: flatcamTools/ToolAlignObjects.py:325 flatcamTools/ToolAlignObjects.py:385
-#, fuzzy
-#| msgid "First object point"
 msgid "First Point"
-msgstr "Primo punto oggetto"
+msgstr "Primo punto"
 
 #: flatcamTools/ToolAlignObjects.py:325 flatcamTools/ToolAlignObjects.py:400
-#, fuzzy
-#| msgid "Click on target point."
 msgid "Click on the START point."
-msgstr "Fai clic sul punto target."
+msgstr "Fai clic sul punto di PARTENZA."
 
 #: flatcamTools/ToolAlignObjects.py:380 flatcamTools/ToolCalibration.py:920
 msgid "Cancelled by user request."
 msgstr "Annullato su richiesta dell'utente."
 
 #: flatcamTools/ToolAlignObjects.py:385 flatcamTools/ToolAlignObjects.py:407
-#, fuzzy
-#| msgid "Click on target point."
 msgid "Click on the DESTINATION point."
-msgstr "Fai clic sul punto target."
+msgstr "Fai clic sul punto di DESTINAZIONE."
 
 #: flatcamTools/ToolAlignObjects.py:385 flatcamTools/ToolAlignObjects.py:400
 #: flatcamTools/ToolAlignObjects.py:407
 msgid "Or right click to cancel."
-msgstr ""
+msgstr "O click destro per annullare."
 
 #: flatcamTools/ToolAlignObjects.py:400 flatcamTools/ToolAlignObjects.py:407
 #: flatcamTools/ToolFiducials.py:111
@@ -15322,10 +15005,8 @@ msgid "Cutout PCB"
 msgstr "Taglia PCB"
 
 #: flatcamTools/ToolCutOut.py:69 flatcamTools/ToolPanelize.py:54
-#, fuzzy
-#| msgid "Move Objects"
 msgid "Source Object"
-msgstr "Sposta oggetti"
+msgstr "Oggetto sorgente"
 
 #: flatcamTools/ToolCutOut.py:70
 msgid "Object to be cutout"
@@ -15333,7 +15014,7 @@ msgstr "Oggetto da tagliare"
 
 #: flatcamTools/ToolCutOut.py:75
 msgid "Kind"
-msgstr ""
+msgstr "Tipo"
 
 #: flatcamTools/ToolCutOut.py:97
 msgid ""
@@ -15348,10 +15029,8 @@ msgstr ""
 "di oggetti che popoleranno la casella combinata 'Oggetto'."
 
 #: flatcamTools/ToolCutOut.py:121
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Tool Parameters"
-msgstr "Parametri Slot"
+msgstr "Parametri Utensile"
 
 #: flatcamTools/ToolCutOut.py:238
 msgid "A. Automatic Bridge Gaps"
@@ -15521,7 +15200,7 @@ msgstr "Oggetto non trovato"
 
 #: flatcamTools/ToolCutOut.py:868
 msgid "Rectangular cutout with negative margin is not possible."
-msgstr ""
+msgstr "Ritaglio rettangolare con margine negativo non possibile."
 
 #: flatcamTools/ToolCutOut.py:904
 msgid ""
@@ -15575,16 +15254,12 @@ msgid "2-Sided PCB"
 msgstr "PCB doppia faccia"
 
 #: flatcamTools/ToolDblSided.py:52
-#, fuzzy
-#| msgid "Operation"
 msgid "Mirror Operation"
-msgstr "Operazione"
+msgstr "Operazione Specchio"
 
 #: flatcamTools/ToolDblSided.py:53
-#, fuzzy
-#| msgid "Excellon Object to be mirrored."
 msgid "Objects to be mirrored"
-msgstr "Oggetto Excellon da specchiare."
+msgstr "Oggetto da specchiare"
 
 #: flatcamTools/ToolDblSided.py:65
 msgid "Gerber to be mirrored"
@@ -15610,16 +15285,12 @@ msgid "Geometry Obj to be mirrored."
 msgstr "Oggetto Geometria da specchiare."
 
 #: flatcamTools/ToolDblSided.py:158
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Mirror Parameters"
-msgstr "Parametri Slot"
+msgstr "Parametri specchio"
 
 #: flatcamTools/ToolDblSided.py:159
-#, fuzzy
-#| msgid "Perform the offset operation."
 msgid "Parameters for the mirror operation"
-msgstr "Esegui l'operazione offset."
+msgstr "Parametri per l'operazione specchio"
 
 #: flatcamTools/ToolDblSided.py:164
 msgid "Mirror Axis"
@@ -15633,22 +15304,18 @@ msgid ""
 "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
 "bounding box of another object selected below"
 msgstr ""
+"Coordinate utilizzate come riferimento per l'operazione specchio.\n"
+"Può essere:\n"
+"- Punto -> un insieme di coordinate (x,y) attorno alle quali l'oggetto viene "
+"specchiato\n"
+"- Riquadro -> un insieme di coordinate (x,y) ottenute dal centro della\n"
+"riquadro di selezione di un altro oggetto selezionato sotto"
 
 #: flatcamTools/ToolDblSided.py:189
-#, fuzzy
-#| msgid "Points coordinates"
 msgid "Point coordinates"
-msgstr "Coordinate punti"
+msgstr "Coordinate punto"
 
 #: flatcamTools/ToolDblSided.py:194
-#, fuzzy
-#| msgid ""
-#| "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
-#| "axis \n"
-#| " selected in 'MIRROR AXIS' pass.\n"
-#| "The (x, y) coordinates are captured by pressing SHIFT key\n"
-#| "and left mouse button click on canvas or you can enter the coords "
-#| "manually."
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
 "axis\n"
@@ -15659,10 +15326,9 @@ msgid ""
 msgstr ""
 "Aggiungi le coordinate nel formato <b>(x, y)</b> attraverso le quali passa "
 "l'asse di\n"
-" mirroring selezionato nel passaggio \"ASSE SPECCHIO\".\n"
+" mirroring in \"ASSE SPECCHIO\".\n"
 "Le coordinate (x, y) vengono acquisite premendo il tasto SHIFT\n"
-"e fai clic con il pulsante sinistro del mouse oppure inserisci manualmente "
-"le coordinate."
+"e con il clic sinistro del mouse oppure inserite manualmente."
 
 #: flatcamTools/ToolDblSided.py:218
 msgid ""
@@ -15670,20 +15336,21 @@ msgid ""
 "The coordinates of the center of the bounding box are used\n"
 "as reference for mirror operation."
 msgstr ""
+"Può essere di tipo: Gerber o Excellon o Geometry.\n"
+"Le coordinate del centro del rettangolo di selezione vengono usate\n"
+"come riferimento per l'operazione di specchio."
 
 #: flatcamTools/ToolDblSided.py:252
-#, fuzzy
-#| msgid "Calculate Bounds Values"
 msgid "Bounds Values"
-msgstr "Calcola i valori dei limiti"
+msgstr "Valori limite"
 
 #: flatcamTools/ToolDblSided.py:254
-#, fuzzy
-#| msgid "Excellon objects for which to check rules."
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
-msgstr "Oggetto Excellon al quale controllare le regole."
+msgstr ""
+"Seleziona dal disegno l'oggetto(i)\n"
+"per i quali calcolare i valori limite."
 
 #: flatcamTools/ToolDblSided.py:264
 msgid "X min"
@@ -15710,10 +15377,8 @@ msgid "Y max"
 msgstr "Y max"
 
 #: flatcamTools/ToolDblSided.py:317
-#, fuzzy
-#| msgid "Points coordinates"
 msgid "Center point coordinates"
-msgstr "Coordinate punti"
+msgstr "Coordinate punto centrale"
 
 #: flatcamTools/ToolDblSided.py:319
 msgid "Centroid"
@@ -15742,10 +15407,8 @@ msgstr ""
 "La forma dell'inviluppo è parallela all'asse X, Y."
 
 #: flatcamTools/ToolDblSided.py:352
-#, fuzzy
-#| msgid "Alignment"
 msgid "PCB Alignment"
-msgstr "Allineamento"
+msgstr "Allineamento PCB"
 
 #: flatcamTools/ToolDblSided.py:354 flatcamTools/ToolDblSided.py:456
 msgid ""
@@ -15758,8 +15421,6 @@ msgstr ""
 "relativa immagine speculare."
 
 #: flatcamTools/ToolDblSided.py:361
-#, fuzzy
-#| msgid "Tip Diameter"
 msgid "Drill Diameter"
 msgstr "Diametro punta"
 
@@ -15769,21 +15430,16 @@ msgid ""
 "from the first alignment drill, by doing mirror.\n"
 "It can be modified in the Mirror Parameters -> Reference section"
 msgstr ""
+"Il punto di riferimento utilizzato per creare il secondo foro di "
+"allineamento\n"
+"dal primo foro, facendone la copia speculare.\n"
+"Può essere modificato nella sezione Parametri specchio -> Riferimento"
 
 #: flatcamTools/ToolDblSided.py:410
 msgid "Alignment Drill Coordinates"
 msgstr "Coordinate fori di allineamento"
 
 #: flatcamTools/ToolDblSided.py:412
-#, fuzzy
-#| msgid ""
-#| "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. "
-#| "For each set of (x, y) coordinates\n"
-#| "entered here, a pair of drills will be created:\n"
-#| "\n"
-#| "- one drill at the coordinates from the field\n"
-#| "- one drill in mirror position over the axis selected above in the "
-#| "'Mirror Axis'."
 msgid ""
 "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
 "each set of (x, y) coordinates\n"
@@ -15795,31 +15451,17 @@ msgid ""
 msgstr ""
 "Fori di allineamento (x1, y1), (x2, y2), ... su un lato dell'asse dello "
 "specchio. Per ogni set di coordinate (x, y)\n"
-"qui inserito, verrà creata una coppia di fori:\n"
+"qui inserite, verrà creata una coppia di fori:\n"
 "\n"
 "- un foro alle coordinate dal campo\n"
 "- un foro in posizione speculare sull'asse selezionato sopra in 'asse "
 "specchio'."
 
 #: flatcamTools/ToolDblSided.py:420
-#, fuzzy
-#| msgid "Points coordinates"
 msgid "Drill coordinates"
-msgstr "Coordinate punti"
+msgstr "Coordinate fori"
 
 #: flatcamTools/ToolDblSided.py:427
-#, fuzzy
-#| msgid ""
-#| "Add alignment drill holes coords in the format: (x1, y1), (x2, y2), ... \n"
-#| "on one side of the mirror axis.\n"
-#| "\n"
-#| "The coordinates set can be obtained:\n"
-#| "- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
-#| "- press SHIFT key and left mouse clicking on canvas. Then Ctrl+V in the "
-#| "field.\n"
-#| "- press SHIFT key and left mouse clicking on canvas. Then RMB click in "
-#| "the field and click Paste.\n"
-#| "- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
 msgid ""
 "Add alignment drill holes coordinates in the format: (x1, y1), (x2, "
 "y2), ... \n"
@@ -15841,22 +15483,18 @@ msgstr ""
 "- premi il tasto SHIFT e fai clic con il tasto sinistro del mouse. Quindi "
 "fai clic su Aggiungi.\n"
 "- premi il tasto SHIFT e fai clic con il tasto sinistro del mouse. Quindi "
-"Ctrl + V nel campo.\n"
+"Ctrl+V nel campo.\n"
 "- premi il tasto SHIFT e fai clic con il tasto sinistro del mouse. Quindi "
-"col pulsante testro nel campo e fai clic su Incolla.\n"
+"col pulsante destro nel campo e fai clic su Incolla.\n"
 "- inserendo manualmente le coordinate nel formato: (x1, y1), (x2, y2), ..."
 
 #: flatcamTools/ToolDblSided.py:442
-#, fuzzy
-#| msgid "Delete"
 msgid "Delete Last"
-msgstr "Cancella"
+msgstr "Cancella ultimo"
 
 #: flatcamTools/ToolDblSided.py:444
-#, fuzzy
-#| msgid "Delete a aperture in the aperture list"
 msgid "Delete the last coordinates tuple in the list."
-msgstr "Cancella una apertura dalla lista aperture"
+msgstr "Cancella l'ultima tupla di coordinate dalla lista."
 
 #: flatcamTools/ToolDblSided.py:454
 msgid "Create Excellon Object"
@@ -15939,16 +15577,16 @@ msgid "INCH (in)"
 msgstr "POLLICI (in)"
 
 #: flatcamTools/ToolDistance.py:64
-#, fuzzy
-#| msgid "Snap to corner"
 msgid "Snap to center"
-msgstr "Aggancia all'angolo"
+msgstr "Aggancia al centro"
 
 #: flatcamTools/ToolDistance.py:66
 msgid ""
 "Mouse cursor will snap to the center of the pad/drill\n"
 "when it is hovering over the geometry of the pad/drill."
 msgstr ""
+"Il cursore del mouse si posizionerà al centro del pad/foro\n"
+"quando passa sopra la geometria del pad/foro."
 
 #: flatcamTools/ToolDistance.py:76
 msgid "Start Coords"
@@ -16011,14 +15649,12 @@ msgid "MEASURING: Click on the Start point ..."
 msgstr "MISURA: clicca sul punto di origine ..."
 
 #: flatcamTools/ToolDistance.py:387
-#, fuzzy
-#| msgid "Distance Tool exit..."
 msgid "Distance Tool finished."
-msgstr "Uscita dallo strumento Distanza..."
+msgstr "Strumento Distanza completato."
 
 #: flatcamTools/ToolDistance.py:455
 msgid "Pads overlapped. Aborting."
-msgstr ""
+msgstr "Pad sovrapposti. Annullo."
 
 #: flatcamTools/ToolDistance.py:485
 msgid "MEASURING: Click on the Destination point ..."
@@ -16096,27 +15732,21 @@ msgid "Jumped to the half point between the two selected objects"
 msgstr "Salto a metà punto tra i due oggetti selezionati eseguito"
 
 #: flatcamTools/ToolExtractDrills.py:29 flatcamTools/ToolExtractDrills.py:295
-#, fuzzy
-#| msgid "Total Drills"
 msgid "Extract Drills"
-msgstr "Fori totali"
+msgstr "Estrai fori"
 
 #: flatcamTools/ToolExtractDrills.py:62
-#, fuzzy
-#| msgid "Gerber objects for which to check rules."
 msgid "Gerber from which to extract drill holes"
-msgstr "Oggetti Gerber sui quali verificare le regole."
+msgstr "Gerber dal quale estrarre i fori"
 
 #: flatcamTools/ToolExtractDrills.py:297
 msgid "Extract drills from a given Gerber file."
-msgstr ""
+msgstr "Estrae i fori da un dato file gerber."
 
 #: flatcamTools/ToolExtractDrills.py:478 flatcamTools/ToolExtractDrills.py:563
 #: flatcamTools/ToolExtractDrills.py:648
-#, fuzzy
-#| msgid "NCC Tool started. Reading parameters."
 msgid "No drills extracted. Try different parameters."
-msgstr "Strumento NCC avviato. Lettura parametri."
+msgstr "Nessun foro estratto. Prova con altri parametri."
 
 #: flatcamTools/ToolFiducials.py:56
 msgid "Fiducials Coordinates"
@@ -16243,20 +15873,14 @@ msgid "Box Object"
 msgstr "Oggetto box"
 
 #: flatcamTools/ToolFilm.py:131
-#, fuzzy
-#| msgid ""
-#| "The actual object that is used a container for the\n"
-#| " selected object for which we create the film.\n"
-#| "Usually it is the PCB outline but it can be also the\n"
-#| "same object for which the film is created."
 msgid ""
 "The actual object that is used as container for the\n"
 " selected object for which we create the film.\n"
 "Usually it is the PCB outline but it can be also the\n"
 "same object for which the film is created."
 msgstr ""
-"L'oggetto attualmente usato per un oggetto\n"
-"  contenitore selezionato per il quale creiamo il film.\n"
+"L'oggetto attualmente usato come oggetto\n"
+"contenitore per il quale creiamo il film.\n"
 "Di solito è il contorno del PCB ma può anche essere\n"
 "l'oggetto stesso per cui è stato creato il film."
 
@@ -16527,22 +16151,16 @@ msgid "Importing Image"
 msgstr "Importo immagine"
 
 #: flatcamTools/ToolInvertGerber.py:74
-#, fuzzy
-#| msgid "Gerber Object to which the QRCode will be added."
 msgid "Gerber object that will be inverted."
-msgstr "Oggetto Gerber a cui verrà aggiunto il QRCode."
+msgstr "Oggetto Gerber da invertire."
 
 #: flatcamTools/ToolInvertGerber.py:83
-#, fuzzy
-#| msgid "Parameters used for this tool."
 msgid "Parameters for this tool"
-msgstr "Parametri usati per questo strumento."
+msgstr "Parametri per questo utensile"
 
 #: flatcamTools/ToolInvertGerber.py:123
-#, fuzzy
-#| msgid "Convert Any to Gerber"
 msgid "Invert Gerber"
-msgstr "Converti tutto in Gerber"
+msgstr "Inverti Gerber"
 
 #: flatcamTools/ToolInvertGerber.py:125
 msgid ""
@@ -16550,22 +16168,21 @@ msgid ""
 "will be empty of copper and previous empty area will be\n"
 "filled with copper."
 msgstr ""
+"Inverte l'oggetto Gerber: aree che hanno rame\n"
+"saranno vuote e le precedenti aree vuote saranno\n"
+"riempite di rame."
 
 #: flatcamTools/ToolInvertGerber.py:184
-#, fuzzy
-#| msgid "Text Tool"
 msgid "Invert Tool"
-msgstr "Utensile testo"
+msgstr "Strumento Inverti"
 
 #: flatcamTools/ToolMove.py:102
 msgid "MOVE: Click on the Start point ..."
 msgstr "SPOSTA: clicca sul punto di partenza ..."
 
 #: flatcamTools/ToolMove.py:113
-#, fuzzy
-#| msgid "MOVE action cancelled. No object(s) to move."
 msgid "Cancelled. No object(s) to move."
-msgstr "SPOSTA: azione annullata. Nessun oggetto da spostare."
+msgstr "Cancellato. Nessun oggetto da spostare."
 
 #: flatcamTools/ToolMove.py:140
 msgid "MOVE: Click on the Destination point ..."
@@ -16637,24 +16254,6 @@ msgstr ""
 "è l'altezza del taglio nel materiale."
 
 #: flatcamTools/ToolNCC.py:150
-#, fuzzy
-#| msgid ""
-#| "The Tool Type (TT) can be:\n"
-#| "- Circular with 1 ... 4 teeth -> it is informative only. Being circular,\n"
-#| "the cut width in material is exactly the tool diameter.\n"
-#| "- Ball -> informative only and make reference to the Ball type endmill.\n"
-#| "- V-Shape -> it will disable de Z-Cut parameter in the resulting geometry "
-#| "UI form\n"
-#| "and enable two additional UI form fields in the resulting geometry: V-Tip "
-#| "Dia and\n"
-#| "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter "
-#| "such\n"
-#| "as the cut width into material will be equal with the value in the Tool "
-#| "Diameter\n"
-#| "column of this table.\n"
-#| "Choosing the 'V-Shape' Tool Type automatically will select the Operation "
-#| "Type\n"
-#| "in the resulting geometry as Isolation."
 msgid ""
 "The Tool Type (TT) can be:\n"
 "- Circular with 1 ... 4 teeth -> it is informative only. Being circular,\n"
@@ -16729,11 +16328,8 @@ msgstr "Inserisci un diametro utensile da aggiungere, in formato Float."
 #: flatcamTools/ToolNCC.py:1451 flatcamTools/ToolNCC.py:4008
 #: flatcamTools/ToolPaint.py:1203 flatcamTools/ToolPaint.py:3598
 #: flatcamTools/ToolSolderPaste.py:917
-#, fuzzy
-#| msgid "Adding tool cancelled. Tool already in Tool Table."
 msgid "Cancelled. Tool already in Tool Table."
-msgstr ""
-"Aggiunta utensile annullata. Strumento già nella tabella degli strumenti."
+msgstr "Annullato. Utensile già nella tabella utensili."
 
 #: flatcamTools/ToolNCC.py:1458 flatcamTools/ToolNCC.py:4025
 #: flatcamTools/ToolPaint.py:1208 flatcamTools/ToolPaint.py:3615
@@ -16746,12 +16342,8 @@ msgstr "Utensile dalla tabella modificato."
 
 #: flatcamTools/ToolNCC.py:1514 flatcamTools/ToolPaint.py:1264
 #: flatcamTools/ToolSolderPaste.py:978
-#, fuzzy
-#| msgid "Edit cancelled. New diameter value is already in the Tool Table."
 msgid "Cancelled. New diameter value is already in the Tool Table."
-msgstr ""
-"Modifica cancellata. Il valore del nuovo diametro è già presente nella "
-"tabella."
+msgstr "Cancellato. Il valore del nuovo diametro è già presente nella tabella."
 
 #: flatcamTools/ToolNCC.py:1566 flatcamTools/ToolPaint.py:1362
 msgid "Delete failed. Select a tool to delete."
@@ -16801,6 +16393,8 @@ msgstr "Impossibile ottenere l'estensione dell'area da cui eliminare il rame."
 msgid ""
 "Isolation geometry is broken. Margin is less than isolation tool diameter."
 msgstr ""
+"La geometria dell'isolamento è rotta. Il margine è inferiore al diametro "
+"dell'utensile di isolamento."
 
 #: flatcamTools/ToolNCC.py:2179 flatcamTools/ToolNCC.py:3231
 #: flatcamTools/ToolNCC.py:3612
@@ -16826,6 +16420,7 @@ msgstr ""
 #: flatcamTools/ToolNCC.py:2307 flatcamTools/ToolNCC.py:2587
 msgid "NCC Tool failed creating bounding box."
 msgstr ""
+"Lo strumento NCC non è riuscito a creare il rettangolo di contenimento."
 
 #: flatcamTools/ToolNCC.py:2321 flatcamTools/ToolNCC.py:2604
 #: flatcamTools/ToolNCC.py:3251 flatcamTools/ToolNCC.py:3637
@@ -17088,24 +16683,6 @@ msgstr ""
 "questa funzione non sarà in grado di creare la geometria della pittura."
 
 #: flatcamTools/ToolPaint.py:146
-#, fuzzy
-#| msgid ""
-#| "The Tool Type (TT) can be:\n"
-#| "- Circular with 1 ... 4 teeth -> it is informative only. Being circular,\n"
-#| "the cut width in material is exactly the tool diameter.\n"
-#| "- Ball -> informative only and make reference to the Ball type endmill.\n"
-#| "- V-Shape -> it will disable de Z-Cut parameter in the resulting geometry "
-#| "UI form\n"
-#| "and enable two additional UI form fields in the resulting geometry: V-Tip "
-#| "Dia and\n"
-#| "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter "
-#| "such\n"
-#| "as the cut width into material will be equal with the value in the Tool "
-#| "Diameter\n"
-#| "column of this table.\n"
-#| "Choosing the 'V-Shape' Tool Type automatically will select the Operation "
-#| "Type\n"
-#| "in the resulting geometry as Isolation."
 msgid ""
 "The Tool Type (TT) can be:\n"
 "- Circular -> it is informative only. Being circular,\n"
@@ -17138,8 +16715,8 @@ msgstr ""
 "poiché la larghezza del taglio nel materiale sarà uguale al valore nella "
 "colonna Diametro utensile\n"
 "di questa tabella.\n"
-"Scegliendo il tipo di strumento \"a V\" si selezionerà automaticamente il "
-"tipo di operazione\n"
+"Scegliendo il tipo di strumento 'a V' si selezionerà automaticamente il tipo "
+"di operazione\n"
 "nella geometria risultante come isolamento."
 
 #: flatcamTools/ToolPaint.py:498
@@ -17199,22 +16776,16 @@ msgstr ""
 "tasto destro per iniziare a dipingere."
 
 #: flatcamTools/ToolPaint.py:2024
-#, fuzzy
-#| msgid "Painting polygons..."
 msgid "Painting polygon with method: lines."
-msgstr "Pittura poligoni..."
+msgstr "Pittura poligoni con modalità linee."
 
 #: flatcamTools/ToolPaint.py:2036
-#, fuzzy
-#| msgid "Normal painting polygon task started."
 msgid "Failed. Painting polygon with method: seed."
-msgstr "Attività di poligono di pittura normale avviata."
+msgstr "Pittura poligoni con modalità semi."
 
 #: flatcamTools/ToolPaint.py:2047
-#, fuzzy
-#| msgid "Normal painting polygon task started."
 msgid "Failed. Painting polygon with method: standard."
-msgstr "Attività di poligono di pittura normale avviata."
+msgstr "Pittura poligoni con modalità standard."
 
 #: flatcamTools/ToolPaint.py:2063
 msgid "Geometry could not be painted completely"
@@ -17263,7 +16834,7 @@ msgstr "avviata"
 #: flatcamTools/ToolPaint.py:2687 flatcamTools/ToolPaint.py:2995
 #: flatcamTools/ToolPaint.py:3174
 msgid "Margin parameter too big. Tool is not used"
-msgstr ""
+msgstr "Parametro di margine troppo grande. Utensile non usato"
 
 #: flatcamTools/ToolPaint.py:2239 flatcamTools/ToolPaint.py:2566
 #: flatcamTools/ToolPaint.py:2744 flatcamTools/ToolPaint.py:3058
@@ -17290,10 +16861,8 @@ msgstr ""
 "Modifica i parametri di pittura e riprova."
 
 #: flatcamTools/ToolPaint.py:2319
-#, fuzzy
-#| msgid "Paint Single Done."
 msgid "Paint Single failed."
-msgstr "Pittura, fatto."
+msgstr "Pittura singola fallita."
 
 #: flatcamTools/ToolPaint.py:2325
 msgid "Paint Single Done."
@@ -17306,10 +16875,8 @@ msgstr "Pittura poligoni avviata ..."
 
 #: flatcamTools/ToolPaint.py:2406 flatcamTools/ToolPaint.py:2409
 #: flatcamTools/ToolPaint.py:2417
-#, fuzzy
-#| msgid "Normal painting polygon task started."
 msgid "Paint all polygons task started."
-msgstr "Attività di poligono di pittura normale avviata."
+msgstr "Attività di pittura poligoni avviata."
 
 #: flatcamTools/ToolPaint.py:2448 flatcamTools/ToolPaint.py:2946
 msgid "Painting polygons..."
@@ -17324,39 +16891,29 @@ msgid "Paint All with Rest-Machining done."
 msgstr "Dipingi tutto con Lavorazione a ripresa."
 
 #: flatcamTools/ToolPaint.py:2829
-#, fuzzy
-#| msgid "Paint All Done."
 msgid "Paint All failed."
-msgstr "Verniciatura effettuata."
+msgstr "Vernicia tutti fallita."
 
 #: flatcamTools/ToolPaint.py:2835
-#, fuzzy
-#| msgid "Paint All Done."
 msgid "Paint Poly All Done."
-msgstr "Verniciatura effettuata."
+msgstr "Verniciatura di tutti i poligoni effettuata."
 
 #: flatcamTools/ToolPaint.py:2905 flatcamTools/ToolPaint.py:2908
 #: flatcamTools/ToolPaint.py:2914
-#, fuzzy
-#| msgid "Normal painting area task started."
 msgid "Painting area task started."
-msgstr "Attività dell'attività di pittura normale avviata."
+msgstr "Attività di pittura area avviata."
 
 #: flatcamTools/ToolPaint.py:3128
 msgid "Paint Area Done."
 msgstr "Pittura area completata."
 
 #: flatcamTools/ToolPaint.py:3326
-#, fuzzy
-#| msgid "Paint Area Done."
 msgid "Paint Area failed."
-msgstr "Pittura area completata."
+msgstr "Pittura area fallita."
 
 #: flatcamTools/ToolPaint.py:3332
-#, fuzzy
-#| msgid "Paint Area Done."
 msgid "Paint Poly Area Done."
-msgstr "Pittura area completata."
+msgstr "Pittura area poligono completata."
 
 #: flatcamTools/ToolPanelize.py:34
 msgid "Panelize PCB"
@@ -17423,16 +16980,12 @@ msgstr ""
 "nella casella combobox Oggetto."
 
 #: flatcamTools/ToolPanelize.py:141
-#, fuzzy
-#| msgid ""
-#| "The actual object that is used a container for the\n"
-#| " selected object that is to be panelized."
 msgid ""
 "The actual object that is used as container for the\n"
 " selected object that is to be panelized."
 msgstr ""
-"L'oggetto reale utilizzato come contenitore per\n"
-" oggetto selezionato da pannellare."
+"Oggetto utilizzato come contenitore per\n"
+"l'oggetto selezionato da pannellizzare."
 
 #: flatcamTools/ToolPanelize.py:147
 msgid "Panel Data"
@@ -17678,8 +17231,6 @@ msgid "Excellon merging is in progress. Please wait..."
 msgstr "Unione Excellon in corso. Attendere..."
 
 #: flatcamTools/ToolPcbWizard.py:469
-#, fuzzy
-#| msgid "The imported Excellon file is None."
 msgid "The imported Excellon file is empty."
 msgstr "Il file Excellon importato è vuoto."
 
@@ -17799,67 +17350,52 @@ msgid "Copper Area"
 msgstr "Area rame"
 
 #: flatcamTools/ToolPunchGerber.py:30 flatcamTools/ToolPunchGerber.py:323
-#, fuzzy
-#| msgid "Open Gerber"
 msgid "Punch Gerber"
-msgstr "Apri Gerber"
+msgstr "Punzona Gerber"
 
 #: flatcamTools/ToolPunchGerber.py:65
-#, fuzzy
-#| msgid "Gerber objects for which to check rules."
 msgid "Gerber into which to punch holes"
-msgstr "Oggetti Gerber sui quali verificare le regole."
+msgstr "Gerber nel quale applicare i punzoni"
 
 #: flatcamTools/ToolPunchGerber.py:85
 msgid "ALL"
-msgstr ""
+msgstr "TUTTO"
 
 #: flatcamTools/ToolPunchGerber.py:166
-#, fuzzy
-#| msgid ""
-#| "Remove the geometry of Excellon from the Film to create the holes in pads."
 msgid ""
 "Remove the geometry of Excellon from the Gerber to create the holes in pads."
-msgstr "Rimuovi la geometria Excellon dal Film per creare i fori nei pad."
+msgstr "Rimuovi la geometria Excellon dal Gerber per creare i fori nei pad."
 
 #: flatcamTools/ToolPunchGerber.py:325
 msgid ""
 "Create a Gerber object from the selected object, within\n"
 "the specified box."
 msgstr ""
+"Crea un oggetto gerber dall'oggetto selezionato, dento\n"
+"il box specificato."
 
 #: flatcamTools/ToolPunchGerber.py:425
-#, fuzzy
-#| msgid "Paint Tool"
 msgid "Punch Tool"
-msgstr "Strumento disegno"
+msgstr "Strumento punzone"
 
 #: flatcamTools/ToolPunchGerber.py:599
 msgid "The value of the fixed diameter is 0.0. Aborting."
-msgstr ""
+msgstr "Il valore di diametro fisso è 0.0. Annullamento."
 
 #: flatcamTools/ToolPunchGerber.py:607 flatcamTools/ToolPunchGerber.py:619
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the punch hole sizeis bigger "
-#| "than some of the apertures in the Gerber object."
 msgid ""
 "Could not generate punched hole Gerber because the punch hole size is bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
-"Impossibile generare il film del foro punzonato perché la dimensione del "
-"foro del punzone è maggiore di alcune delle aperture nell'oggetto Gerber."
+"Impossibile generare fori punzonati nel Gerber perché la dimensione del foro "
+"del punzone è maggiore di alcune delle aperture nell'oggetto Gerber."
 
 #: flatcamTools/ToolPunchGerber.py:656
-#, fuzzy
-#| msgid ""
-#| "Could not generate punched hole film because the newly created object "
-#| "geometry is the same as the one in the source object geometry..."
 msgid ""
 "Could not generate punched hole Gerber because the newly created object "
 "geometry is the same as the one in the source object geometry..."
 msgstr ""
-"Impossibile generare il film del foro punzonato perché la geometria "
+"Impossibile generare fori punzonati nel Gerber perché la geometria "
 "dell'oggetto appena creata è uguale a quella nella geometria dell'oggetto "
 "sorgente ..."
 
@@ -18165,8 +17701,6 @@ msgid "Violations: There are no violations for the current rule."
 msgstr "Violazioni: non ci sono violazioni per la regola attuale."
 
 #: flatcamTools/ToolShell.py:74 flatcamTools/ToolShell.py:76
-#, fuzzy
-#| msgid "...proccessing..."
 msgid "...processing..."
 msgstr "...elaborazione..."
 
@@ -18229,16 +17763,12 @@ msgid "STEP 1"
 msgstr "PASSO 1"
 
 #: flatcamTools/ToolSolderPaste.py:157
-#, fuzzy
-#| msgid ""
-#| "First step is to select a number of nozzle tools for usage\n"
-#| "and then optionally modify the GCode parameters bellow."
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
 "and then optionally modify the GCode parameters below."
 msgstr ""
 "Il primo passo è selezionare un numero di strumenti ugello da usare\n"
-"e quindi facoltativamente modificare i seguenti parametri GCode."
+"e quindi (facoltativo) modificare i parametri GCode qui sotto."
 
 #: flatcamTools/ToolSolderPaste.py:160
 msgid ""
@@ -18477,8 +18007,6 @@ msgstr ""
 "dall'oggetto Gerber di destinazione."
 
 #: flatcamTools/ToolSub.py:100
-#, fuzzy
-#| msgid "Substract Gerber"
 msgid "Subtract Gerber"
 msgstr "Sottrai Gerber"
 
@@ -18648,40 +18176,28 @@ msgid "Ref. Point"
 msgstr "Punto di riferimento"
 
 #: flatcamTools/ToolTransform.py:348
-#, fuzzy
-#| msgid ""
-#| "Create the buffer effect on each geometry,\n"
-#| "element from the selected object."
 msgid ""
 "Create the buffer effect on each geometry,\n"
 "element from the selected object, using the distance."
 msgstr ""
 "Crea l'effetto buffer su ogni geometria,\n"
-"elemento dall'oggetto selezionato."
+"elemento dall'oggetto selezionato, usando la distanza."
 
 #: flatcamTools/ToolTransform.py:374
-#, fuzzy
-#| msgid ""
-#| "Create the buffer effect on each geometry,\n"
-#| "element from the selected object."
 msgid ""
 "Create the buffer effect on each geometry,\n"
 "element from the selected object, using the factor."
 msgstr ""
 "Crea l'effetto buffer su ogni geometria,\n"
-"elemento dall'oggetto selezionato."
+"elemento dall'oggetto selezionato, usando il fattore."
 
 #: flatcamTools/ToolTransform.py:479
-#, fuzzy
-#| msgid "Buffer"
 msgid "Buffer D"
-msgstr "Buffer"
+msgstr "Buffer D"
 
 #: flatcamTools/ToolTransform.py:480
-#, fuzzy
-#| msgid "Buffer"
 msgid "Buffer F"
-msgstr "Buffer"
+msgstr "Buffer F"
 
 #: flatcamTools/ToolTransform.py:557
 msgid "Rotate transformation can not be done for a value of 0."
@@ -18795,10 +18311,8 @@ msgid "Buffer done"
 msgstr "Bugger applicato"
 
 #: tclCommands/TclCommandBbox.py:75 tclCommands/TclCommandNregions.py:74
-#, fuzzy
-#| msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
 msgid "Expected GerberObject or GeometryObject, got"
-msgstr "Previsto FlatCAMGerber o FlatCAMGeometry, rilevato"
+msgstr "Mi aspettavo un FlatCAMGerber o FlatCAMGeometry, rilevato"
 
 #: tclCommands/TclCommandBounds.py:67 tclCommands/TclCommandBounds.py:71
 msgid "Expected a list of objects names separated by comma. Got"
@@ -18814,40 +18328,30 @@ msgid "Could not retrieve box object"
 msgstr "Non posso recuperare l'oggetto box"
 
 #: tclCommands/TclCommandCopperClear.py:299
-#, fuzzy
-#| msgid "Expected -box <value>."
 msgid "Expected either -box <value> or -all."
-msgstr "Era atteso -box <value>."
+msgstr "Mi aspettavo -box <value> o -all."
 
 #: tclCommands/TclCommandGeoCutout.py:147
-#, fuzzy
-#| msgid "Number of gaps value is missing. Add it and retry."
 msgid ""
 "The name of the object for which cutout is done is missing. Add it and retry."
-msgstr "Manca il numero dei testimoni. Aggiungilo e riprova."
+msgstr ""
+"Manca il nome dell'oggetto con il quale fare il ritaglio. Aggiungilo e "
+"riprova."
 
 #: tclCommands/TclCommandGeoCutout.py:189
-#, fuzzy
-#| msgid ""
-#| "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-#| "Fill in a correct value and retry. "
 msgid "Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8."
 msgstr ""
-"Il valore dei testimoni può essere solo uno dei seguenti: 'Nessuno', 'SD', "
-"'SS', '2SD', '2SS', 4 o 8. Inserire un valore corretto e riprovare. "
+"Il valore dei testimoni può essere solo uno dei seguenti: 'SD', 'SS', '2SD', "
+"'2SS', 4 o 8."
 
 #: tclCommands/TclCommandGeoCutout.py:301
 #: tclCommands/TclCommandGeoCutout.py:359
-#, fuzzy
-#| msgid "Any form CutOut operation finished."
 msgid "Any-form Cutout operation finished."
-msgstr "Tutti i task di CutOut terminati."
+msgstr "Operazione di CutOut terminata."
 
 #: tclCommands/TclCommandGeoCutout.py:365
-#, fuzzy
-#| msgid "The reference object type is not supported."
 msgid "Cancelled. Object type is not supported."
-msgstr "Il tipo di oggetto di riferimento non è supportato."
+msgstr "Annullato. Il tipo di oggetto non è supportato."
 
 #: tclCommands/TclCommandHelp.py:75
 msgid "Available commands:"
@@ -18859,7 +18363,7 @@ msgstr "Scrivi help <nome_comando> per l'utilizzo."
 
 #: tclCommands/TclCommandHelp.py:115
 msgid "Example: help open_gerber"
-msgstr ""
+msgstr "Esempio: help open_gerber"
 
 #: tclCommands/TclCommandPaint.py:244
 msgid "Expected -x <value> and -y <value>."
@@ -18870,25 +18374,20 @@ msgid "Expected -box <value>."
 msgstr "Era atteso -box <value>."
 
 #: tclCommands/TclCommandPaint.py:286
-#, fuzzy
-#| msgid ""
-#| "There was none of the following args: 'ref', 'single', 'all'.\n"
-#| "Paint failed."
 msgid ""
 "None of the following args: 'box', 'single', 'all' were used.\n"
 "Paint failed."
 msgstr ""
-"Non c'era nessuno dei seguenti argomenti: 'ref', 'singolo', 'tutti'.\n"
+"Non c'era nessuno dei seguenti argomenti: 'box', 'singolo', 'tutti'.\n"
 "Pittura fallita."
 
 #: tclCommands/TclCommandScale.py:106
-#, fuzzy
-#| msgid ""
-#| "Expected -origin <origin> or -origin <min_bounds> or -origin <center>."
 msgid ""
 "Expected -origin <origin> or -origin <min_bounds> or -origin <center> or - "
 "origin 3.0,4.2."
-msgstr "Era atteso -origin <origin> o -origin <min_bounds> o -origin <center>."
+msgstr ""
+"Era atteso -origin <origin> o -origin <min_bounds> o -origin <center> o -"
+"origin 3.0,4.2."
 
 #: tclCommands/TclCommandScale.py:119
 msgid "Expected -x <value> -y <value>."
@@ -19163,7 +18662,7 @@ msgstr "Nessun nome di geometria negli argomenti. Fornisci un nome e riprova."
 #~ msgid ""
 #~ "- 'Itself' -  the non copper clearing extent\n"
 #~ "is based on the object that is copper cleared.\n"
-#~ "- 'Area Selection' - left mouse click to start selection of the area to "
+#~ " - 'Area Selection' - left mouse click to start selection of the area to "
 #~ "be painted.\n"
 #~ "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple "
 #~ "areas.\n"
