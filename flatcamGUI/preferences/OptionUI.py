@@ -1,3 +1,5 @@
+from typing import Union
+
 from PyQt5 import QtWidgets
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry
 
@@ -104,7 +106,7 @@ class ColorOptionUI(BasicOptionUI):
 
 
 class HeadingOptionUI(OptionUI):
-    def __init__(self, label_text: str, label_tooltip: str):
+    def __init__(self, label_text: str, label_tooltip: Union[str, None]):
         super().__init__(option="__heading")
         self.label_text = label_text
         self.label_tooltip = label_tooltip

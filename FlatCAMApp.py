@@ -563,8 +563,8 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
             # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+            idx = self.ui.general_defaults_form.general_gui_group.layout_field.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_group.layout_field.setCurrentIndex(idx)
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False

@@ -621,10 +621,11 @@ class PreferencesUIManager:
         :return: None
         """
         for option in self.get_form_fields():
-            try:
-                self.defaults[option] = self.get_form_field(option=option).get_value()
-            except Exception as e:
-                log.debug("App.defaults_read_form() --> %s" % str(e))
+            if option in self.defaults:
+                try:
+                    self.defaults[option] = self.get_form_field(option=option).get_value()
+                except Exception as e:
+                    log.debug("App.defaults_read_form() --> %s" % str(e))
 
     def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """
