@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
 - some string corrections
 - updated the Italian translation done by user @pcb-hobbyst
+- RELEASE 8.992
 
 01.05.2020
 
