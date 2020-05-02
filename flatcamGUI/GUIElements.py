@@ -707,6 +707,45 @@ class FCColorEntry(QtWidgets.QFrame):
         return value[7:9]
 
 
+class FCSliderWithSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=100, step=1, **kwargs):
+        super().__init__(**kwargs)
+
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setSingleStep(step)
+
+        self.spinner = FCSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_step(step)
+        self.spinner.setMinimumWidth(70)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(self.spinner)
+        self.setLayout(self.layout)
+
+        self.slider.valueChanged.connect(self._on_slider)
+        self.spinner.valueChanged.connect(self._on_spinner)
+
+    def get_value(self) -> int:
+        return self.spinner.get_value()
+
+    def set_value(self, value: int):
+        self.spinner.set_value(value)
+
+    def _on_spinner(self):
+        spinner_value = self.spinner.value()
+        self.slider.setValue(spinner_value)
+
+    def _on_slider(self):
+        slider_value = self.slider.value()
+        self.spinner.set_value(slider_value)
+
 
 
 

@@ -1,7 +1,8 @@
 from typing import Union
 
 from PyQt5 import QtWidgets
-from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry
+from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
+    FCSliderWithSpinner
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -103,6 +104,18 @@ class ComboboxOptionUI(BasicOptionUI):
 class ColorOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCColorEntry()
+        return entry
+
+
+class SliderWithSpinnerOptionUI(BasicOptionUI):
+    def __init__(self, option: str, label_text: str, label_tooltip: str, min=0, max=100, step=1):
+        self.min = min
+        self.max = max
+        self.step = step
+        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+
+    def build_entry_widget(self) -> QtWidgets.QWidget:
+        entry = FCSliderWithSpinner(min=self.min, max=self.max, step=self.step)
         return entry
 
 

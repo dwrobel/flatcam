@@ -10,7 +10,8 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 from flatcamGUI.preferences.OptionUI import OptionUI, CheckboxOptionUI, RadioSetOptionUI, \
-    SeparatorOptionUI, HeadingOptionUI, ComboboxOptionUI, ColorOptionUI, FullWidthButtonOptionUI
+    SeparatorOptionUI, HeadingOptionUI, ComboboxOptionUI, ColorOptionUI, FullWidthButtonOptionUI, \
+    SliderWithSpinnerOptionUI
 
 
 class GeneralGUIPrefGroupUI(OptionsGroupUI2):
@@ -39,6 +40,16 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
         else:
             self.hdpi_field.set_value(False)
         self.hdpi_field.stateChanged.connect(self.handle_hdpi)
+
+        self.sel_line_field = self.option_dict()["global_sel_line"].get_field()
+        self.sel_fill_field = self.option_dict()["global_sel_fill"].get_field()
+        self.sel_alpha_field = self.option_dict()["_global_sel_alpha"].get_field()
+        self.sel_alpha_field.spinner.valueChanged.connect(self.on_sel_alpha_change)
+
+        self.alt_sel_line_field = self.option_dict()["global_alt_sel_line"].get_field()
+        self.alt_sel_fill_field = self.option_dict()["global_alt_sel_fill"].get_field()
+        self.alt_sel_alpha_field = self.option_dict()["_global_alt_sel_alpha"].get_field()
+        self.alt_sel_alpha_field.spinner.valueChanged.connect(self.on_alt_sel_alpha_change)
 
 
     def build_options(self) -> [OptionUI]:
@@ -117,7 +128,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                               "First 6 digits are the color and the last 2\n"
                               "digits are for alpha (transparency) level."
             ),
-            # FIXME: opacity slider?
+            SliderWithSpinnerOptionUI(
+                option="_global_sel_alpha",
+                label_text="Alpha",
+                label_tooltip="Set the fill transparency for the 'left to right' selection box.",
+                min=0, max=255, step=1
+            ),
             SeparatorOptionUI(),
 
             HeadingOptionUI(label_text="Right-Left Selection Color", label_tooltip=None),
@@ -134,7 +150,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                               "First 6 digits are the color and the last 2\n"
                               "digits are for alpha (transparency) level."
             ),
-            # FIXME: opacity slider?
+            SliderWithSpinnerOptionUI(
+                option="_global_alt_sel_alpha",
+                label_text="Alpha",
+                label_tooltip="Set the fill transparency for the 'right to left' selection box.",
+                min=0, max=255, step=1
+            ),
             SeparatorOptionUI(),
 
             HeadingOptionUI(label_text='Editor Color', label_tooltip=None),
@@ -170,6 +191,35 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                               "to show whenever a new object is created."
             ),
         ]
+
+    def on_sel_alpha_change(self):
+        alpha = self.sel_alpha_field.get_value()
+        fill = self._modify_color_alpha(color=self.sel_fill_field.get_value(), alpha=alpha)
+        self.sel_fill_field.set_value(fill)
+        line = self._modify_color_alpha(color=self.sel_line_field.get_value(), alpha=alpha)
+        self.sel_line_field.set_value(line)
+
+    def on_alt_sel_alpha_change(self):
+        alpha = self.alt_sel_alpha_field.get_value()
+        fill = self._modify_color_alpha(color=self.alt_sel_fill_field.get_value(), alpha=alpha)
+        self.alt_sel_fill_field.set_value(fill)
+        line = self._modify_color_alpha(color=self.alt_sel_line_field.get_value(), alpha=alpha)
+        self.alt_sel_line_field.set_value(line)
+
+
+
+    def _modify_color_alpha(self, color: str, alpha: int):
+        color_without_alpha = color[:7]
+        if alpha > 255:
+            return color_without_alpha + "FF"
+        elif alpha < 0:
+            return color_without_alpha + "00"
+        else:
+            hexalpha = hex(alpha)[2:]
+            if len(hexalpha) == 1:
+                hexalpha = "0" + hexalpha
+            return color_without_alpha + hexalpha
+
 
     def on_theme_change(self):
         # FIXME: this should be moved out to a view model
