@@ -23,8 +23,8 @@ else:
 
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
-        super(GeneralAppPrefGroupUI, self).__init__(self, parent=parent)
+    def __init__(self, decimals=4, **kwargs):
+        super().__init__(**kwargs)
 
         self.setTitle(_("App Preferences"))
         self.decimals = decimals

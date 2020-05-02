@@ -2,11 +2,14 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings, Qt
 
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI, OptionsGroupUI2
 
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+from flatcamGUI.preferences.OptionUI import OptionUI, BasicOptionUI, CheckboxOptionUI, RadioSetOptionUI, \
+    SeparatorOptionUI, HeadingOptionUI, ComboboxOptionUI, ColorOptionUI, FullWidthButtonOptionUI
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -19,9 +22,150 @@ else:
     machinist_setting = 0
 
 
+class GeneralGUIPrefGroupUI2(OptionsGroupUI2):
+
+    def __init__(self, decimals=4, **kwargs):
+        super().__init__(**kwargs)
+        self.decimals = decimals
+        self.setTitle(str(_("GUI Preferences 2")))
+
+    def build_options(self) -> [OptionUI]:
+        return [
+            RadioSetOptionUI(
+                option="global_theme",
+                label_text="Theme",
+                label_tooltip="Select a theme for FlatCAM.\nIt will theme the plot area.",
+                choices=[
+                    {"label": _("Light"), "value": "white"},
+                    {"label": _("Dark"), "value": "black"}
+                ],
+                orientation='vertical'
+            ),
+            CheckboxOptionUI(
+                option="global_gray_icons",
+                label_text="Use Gray Icons",
+                label_tooltip="Check this box to use a set of icons with\na lighter (gray) color. To be used when a\nfull dark theme is applied."
+            ),
+            FullWidthButtonOptionUI(
+                option="__button_apply_theme",
+                label_text="Apply Theme",
+                label_tooltip="Select a theme for FlatCAM.\n"
+                              "It will theme the plot area.\n"
+                              "The application will restart after change."
+            ),
+            SeparatorOptionUI(),
+
+
+            ComboboxOptionUI(
+                # FIXME!
+                option="layout",
+                label_text="Layout",
+                label_tooltip="Select an layout for FlatCAM.\nIt is applied immediately.",
+                choices=[
+                    "standard",
+                    "compact",
+                    "minimal"
+                ]
+            ),
+            ComboboxOptionUI(
+                #FIXME!
+                option="style",
+                label_text="Style",
+                label_tooltip="Select an style for FlatCAM.\nIt will be applied at the next app start.",
+                choices=QtWidgets.QStyleFactory.keys()
+            ),
+            CheckboxOptionUI(
+                # FIXME
+                option="hdpi",
+                label_text='Activate HDPI Support',
+                label_tooltip="Enable High DPI support for FlatCAM.\nIt will be applied at the next app start.",
+            ),
+            CheckboxOptionUI(
+                option="global_hover",
+                label_text='Display Hover Shape',
+                label_tooltip="Enable display of a hover shape for FlatCAM objects.\nIt is displayed whenever the mouse cursor is hovering\nover any kind of not-selected object.",
+            ),
+            CheckboxOptionUI(
+                option="global_selection_shape",
+                label_text='Display Selection Shape',
+                label_tooltip="Enable the display of a selection shape for FlatCAM objects.\n"
+                  "It is displayed whenever the mouse selects an object\n"
+                  "either by clicking or dragging mouse from left to right or\n"
+                  "right to left."
+            ),
+            SeparatorOptionUI(),
+
+            HeadingOptionUI(label_text="Left-Right Selection Color", label_tooltip=None),
+            ColorOptionUI(
+                option="global_sel_line",
+                label_text="Outline",
+                label_tooltip="Set the line color for the 'left to right' selection box."
+            ),
+            ColorOptionUI(
+                option="global_sel_fill",
+                label_text="Fill",
+                label_tooltip="Set the fill color for the selection box\n"
+                              "in case that the selection is done from left to right.\n"
+                              "First 6 digits are the color and the last 2\n"
+                              "digits are for alpha (transparency) level."
+            ),
+
+            HeadingOptionUI(label_text="Right-Left Selection Color", label_tooltip=None),
+            ColorOptionUI(
+                option="global_alt_sel_line",
+                label_text="Outline",
+                label_tooltip="Set the line color for the 'right to left' selection box."
+            ),
+            ColorOptionUI(
+                option="global_alt_sel_fill",
+                label_text="Fill",
+                label_tooltip="Set the fill color for the selection box\n"
+                              "in case that the selection is done from right to left.\n"
+                              "First 6 digits are the color and the last 2\n"
+                              "digits are for alpha (transparency) level."
+            ),
+            # FIXME: opacity slider?
+            SeparatorOptionUI(),
+
+            HeadingOptionUI(label_text='Editor Color', label_tooltip=None),
+            ColorOptionUI(
+                option="global_draw_color",
+                label_text="Drawing",
+                label_tooltip="Set the color for the shape."
+            ),
+            ColorOptionUI(
+                option="global_sel_draw_color",
+                label_text="Selection",
+                label_tooltip="Set the color of the shape when selected."
+            ),
+            SeparatorOptionUI(),
+
+            HeadingOptionUI(label_text='Project Items Color', label_tooltip=None),
+            ColorOptionUI(
+                option="global_proj_item_color",
+                label_text="Enabled",
+                label_tooltip="Set the color of the items in Project Tab Tree."
+            ),
+            ColorOptionUI(
+                option="global_proj_item_dis_color",
+                label_text="Disabled",
+                label_tooltip="Set the color of the items in Project Tab Tree,\n"
+                              "for the case when the items are disabled."
+            ),
+            CheckboxOptionUI(
+                option="global_project_autohide",
+                label_text="Project AutoHide",
+                label_tooltip="Check this box if you want the project/selected/tool tab area to\n"
+                              "hide automatically when there are no objects loaded and\n"
+                              "to show whenever a new object is created."
+            ),
+        ]
+
+
 class GeneralGUIPrefGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
-        super(GeneralGUIPrefGroupUI, self).__init__(self, parent=parent)
+    def __init__(self, decimals=4, **kwargs):
+        # region Description
+        super().__init__(**kwargs)
 
         self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
@@ -151,10 +295,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sel_lr_label = QtWidgets.QLabel('<b>%s</b>' % _('Left-Right Selection Color'))
         grid0.addWidget(self.sel_lr_label, 15, 0, 1, 2)
 
+
         self.sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
         self.sl_color_label.setToolTip(
             _("Set the line color for the 'left to right' selection box.")
         )
+
         self.sl_color_entry = FCEntry()
         self.sl_color_button = QtWidgets.QPushButton()
         self.sl_color_button.setFixedSize(15, 15)
@@ -211,6 +357,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 19, 0, 1, 2)
+
 
         # Plot Selection (left - right) Color
         self.sel_rl_label = QtWidgets.QLabel('<b>%s</b>' % _('Right-Left Selection Color'))
@@ -279,6 +426,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 24, 0, 1, 2)
 
+
         # ------------------------------------------------------------------
         # ----------------------- Editor Color -----------------------------
         # ------------------------------------------------------------------
@@ -324,7 +472,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 28, 0, 1, 2)
-
+        # endregion
         # ------------------------------------------------------------------
         # ----------------------- Project Settings -----------------------------
         # ------------------------------------------------------------------

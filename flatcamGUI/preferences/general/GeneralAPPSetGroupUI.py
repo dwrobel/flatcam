@@ -22,8 +22,8 @@ else:
 
 
 class GeneralAPPSetGroupUI(OptionsGroupUI):
-    def __init__(self, decimals=4, parent=None):
-        super(GeneralAPPSetGroupUI, self).__init__(self, parent=parent)
+    def __init__(self, decimals=4, **kwargs):
+        super().__init__(**kwargs)
 
         self.setTitle(str(_("App Settings")))
         self.decimals = decimals

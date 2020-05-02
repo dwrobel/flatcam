@@ -10,6 +10,8 @@ import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
 
+from flatcamGUI.preferences.OptionUI import OptionUI
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -73,24 +75,6 @@ class PreferencesUIManager:
             "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
             "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
             "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
-
-            # General GUI Preferences
-            "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
-            "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
-            "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
-            "global_hover": self.ui.general_defaults_form.general_gui_group.hover_cb,
-            "global_selection_shape": self.ui.general_defaults_form.general_gui_group.selection_cb,
-
-            "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
-            "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
-            "global_alt_sel_fill": self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry,
-            "global_alt_sel_line": self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry,
-            "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
-            "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
-
-            "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
-            "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
-            "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
             # General GUI Settings
             "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
@@ -605,13 +589,30 @@ class PreferencesUIManager:
             "util": ui.fa_scroll_area
         }
 
+        self.sections = [
+            # FIXME!
+            ui.general_defaults_form
+        ]
+
     def get_form_fields(self) -> Dict[str, Any]:
-        return self.defaults_form_fields
+        result = {}
+        result.update(self.defaults_form_fields)
+        result.update(self._option_field_dict())
+        return result
 
     def get_form_field(self, option: str) -> Any:
         return self.get_form_fields()[option]
 
+    def option_dict(self) -> Dict[str, OptionUI]:
+        result = {}
+        for section in self.sections:
+            sectionoptions = section.option_dict()
+            result.update(sectionoptions)
+        return result
 
+    def _option_field_dict(self):
+        result = {k: v.get_field() for k, v in self.option_dict().items()}
+        return result
 
     def defaults_read_form(self):
         """
@@ -771,65 +772,6 @@ class PreferencesUIManager:
         self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
-
-        # Init Left-Right Selection colors
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_line'])[:7])
-
-        # Init Right-Left Selection colors
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
-            self.defaults['global_alt_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
-            self.defaults['global_alt_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_line'])[:7])
-
-        # Init Draw color and Selection Draw Color
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
-            self.defaults['global_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_draw_color'])[:7])
-
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
-            self.defaults['global_sel_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_draw_color'])[:7])
-
-        # Init Project Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
-            self.defaults['global_proj_item_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
-
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
-            self.defaults['global_proj_item_dis_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
 
         # Init Project Disabled Items color
         self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(

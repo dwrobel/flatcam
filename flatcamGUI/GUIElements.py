@@ -655,6 +655,61 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCColorEntry(QtWidgets.QWidget):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.entry = FCEntry()
+
+        self.button = QtWidgets.QPushButton()
+        self.button.setFixedSize(15, 15)
+        self.button.setStyleSheet("border-color: dimgray;")
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.addWidget(self.entry)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
+        self.entry.editingFinished.connect(self._sync_button_color)
+        self.button.clicked.connect(self._on_button_clicked)
+
+    def get_value(self) -> str:
+        return self.entry.get_value()
+
+    def set_value(self, value: str):
+        self.entry.set_value(value)
+        self._sync_button_color()
+
+    def _sync_button_color(self):
+        value = self.get_value()
+        self.button.setStyleSheet("background-color:%s;" % self._extract_color(value))
+
+    def _on_button_clicked(self):
+        value = self.entry.get_value()
+        current_color = QtGui.QColor(self._extract_color(value))
+
+        color_dialog = QtWidgets.QColorDialog()
+        selected_color = color_dialog.getColor(initial=current_color, options=QtWidgets.QColorDialog.ShowAlphaChannel)
+
+        if selected_color.isValid() is False:
+            return
+
+        new_value = str(selected_color.name()) + self._extract_alpha(value)
+        self.set_value(new_value)
+
+    def _extract_color(self, value: str) -> str:
+        return value[:7]
+
+    def _extract_alpha(self, value: str) -> str:
+        return value[7:9]
+
+
+
+
+
+
 class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()

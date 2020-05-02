@@ -1,5 +1,8 @@
+from typing import Dict
+
 from PyQt5 import QtWidgets
 
+from flatcamGUI.preferences.OptionUI import OptionUI
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 
@@ -20,3 +23,10 @@ class PreferencesSectionUI(QtWidgets.QWidget):
 
     def build_groups(self) -> [OptionsGroupUI]:
         return []
+
+    def option_dict(self) -> Dict[str, OptionUI]:
+        result = {}
+        for group in self.groups:
+            groupoptions = group.option_dict()
+            result.update(groupoptions)
+        return result
