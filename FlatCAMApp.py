@@ -6940,7 +6940,6 @@ class App(QtCore.QObject):
                 else:
 
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
-
                     if key_modifier == QtCore.Qt.ShiftModifier:
                         mod_key = 'Shift'
                     elif key_modifier == QtCore.Qt.ControlModifier:
@@ -6949,20 +6948,19 @@ class App(QtCore.QObject):
                         mod_key = None
 
                     try:
-                        if mod_key == self.defaults["global_mselect_key"]:
+                        if self.command_active is None:
                             # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
                             # deselect, and if it's not selected then it will be selected
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
-                            if self.command_active is None:
+                            if mod_key == self.defaults["global_mselect_key"]:
                                 self.select_objects(key='multisel')
-                                self.delete_hover_shape()
-                        else:
-                            # If there is no active command (self.command_active is None) then we check if we clicked
-                            # on a object by checking the bounding limits against mouse click position
-                            if self.command_active is None:
+                            else:
+                                # If there is no active command (self.command_active is None) then we check if
+                                # we clicked on a object by checking the bounding limits against mouse click position
                                 self.select_objects()
-                                self.delete_hover_shape()
+
+                            self.delete_hover_shape()
                     except Exception as e:
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
                         return
@@ -8158,7 +8156,6 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # ### The following section has the functions that are displayed and call the Editor tab CNCJob Tab #############
     # ###############################################################################################################
-
     def init_code_editor(self, name):
 
         self.text_editor_tab = TextEditor(app=self, plain_text=True)
@@ -10819,21 +10816,6 @@ class App(QtCore.QObject):
             # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
             # QtWidgets.qApp.sendEvent(self.shell._edit, f)
-
-    def on_toggle_shell_from_settings(self, state):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.defaults.report_usage("on_toggle_shell_from_settings()")
-
-        if state is True:
-            if not self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.show()
-        else:
-            if self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.hide()
 
     def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """

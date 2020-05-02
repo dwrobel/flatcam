@@ -421,8 +421,7 @@ class PcbWizard(FlatCAMTool):
                 ret = excellon_obj.parse_file(file_obj=excellon_fileobj)
                 if ret == "fail":
                     app_obj.log.debug("Excellon parsing failed.")
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _("This is not Excellon file."))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' % _("This is not Excellon file."))
                     return "fail"
             except IOError:
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Cannot parse file"), self.outname))
@@ -443,8 +442,7 @@ class PcbWizard(FlatCAMTool):
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                (_("No geometry found in file"), name))
+            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), name))
             return "fail"
 
         if excellon_fileobj is not None and excellon_fileobj != '':
@@ -463,12 +461,9 @@ class PcbWizard(FlatCAMTool):
                     self.app.file_opened.emit("excellon", name)
 
                     # GUI feedback
-                    self.app.inform.emit('[success] %s: %s' %
-                                         (_("Imported"), name))
+                    self.app.inform.emit('[success] %s: %s' % (_("Imported"), name))
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _('Excellon merging is in progress. Please wait...'))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _('Excellon merging is in progress. Please wait...'))
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('The imported Excellon file is None.'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _('The imported Excellon file is empty.'))

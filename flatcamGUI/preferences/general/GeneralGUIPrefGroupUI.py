@@ -779,7 +779,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.connect_toolbar_signals()
 
         self.app.ui.grid_snap_btn.setChecked(True)
-        self.app.on_grid_snap_triggered(state=True)
+        self.app.ui.on_grid_snap_triggered(state=True)
 
         self.app.ui.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
         self.app.ui.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))
