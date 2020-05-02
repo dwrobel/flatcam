@@ -9707,7 +9707,7 @@ msgstr ""
 msgid ""
 "Selection of area to be processed.\n"
 "- 'Itself' - the processing extent is based on the object that is processed.\n"
-" - 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
+"- 'Area Selection' - left mouse click to start selection of the area to be processed.\n"
 "- 'Reference Object' - will process the area specified by another object."
 msgstr ""
 

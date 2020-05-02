@@ -1039,6 +1039,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+
             "tools_nccoperation": self.app.defaults["tools_nccoperation"],
             "tools_nccmargin": self.app.defaults["tools_nccmargin"],
             "tools_nccmethod": self.app.defaults["tools_nccmethod"],

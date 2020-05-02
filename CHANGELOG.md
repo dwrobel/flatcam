@@ -9,6 +9,10 @@ CHANGELOG for FlatCAM beta
 
 2.05.2020
 
+- working on a new feature: adding interdiction area for Gcode generation. They will be added in the Geometry Object
+
+2.05.2020
+
 - changed the icons for the grid snap in the status bar
 - moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
 - fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
@@ -18,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
 - some string corrections
 - updated the Italian translation done by user @pcb-hobbyst
+- RELEASE 8.992
 
 01.05.2020
 

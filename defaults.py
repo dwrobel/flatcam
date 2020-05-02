@@ -341,6 +341,10 @@ class FlatCAMDefaults:
         "geometry_feedrate_probe": 75,
         "geometry_segx": 0.0,
         "geometry_segy": 0.0,
+        "geometry_area_exclusion": False,
+        "geometry_area_shape": "polygon",
+        "geometry_area_strategy": "over",
+        "geometry_area_overz": 1.0,
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
