@@ -13,12 +13,12 @@ from flatcamGUI.preferences.OptionUI import OptionUI, CheckboxOptionUI, RadioSet
     SeparatorOptionUI, HeadingOptionUI, ComboboxOptionUI, ColorOptionUI, FullWidthButtonOptionUI
 
 
-class GeneralGUIPrefGroupUI2(OptionsGroupUI2):
+class GeneralGUIPrefGroupUI(OptionsGroupUI2):
 
     def __init__(self, decimals=4, **kwargs):
         super().__init__(**kwargs)
         self.decimals = decimals
-        self.setTitle(str(_("GUI Preferences 2")))
+        self.setTitle(str(_("GUI Preferences")))
 
         self.layout_field = self.option_dict()["layout"].get_field()
         self.layout_field.activated.connect(self.on_layout)
@@ -117,6 +117,8 @@ class GeneralGUIPrefGroupUI2(OptionsGroupUI2):
                               "First 6 digits are the color and the last 2\n"
                               "digits are for alpha (transparency) level."
             ),
+            # FIXME: opacity slider?
+            SeparatorOptionUI(),
 
             HeadingOptionUI(label_text="Right-Left Selection Color", label_tooltip=None),
             ColorOptionUI(

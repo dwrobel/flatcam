@@ -655,7 +655,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCColorEntry(QtWidgets.QWidget):
+class FCColorEntry(QtWidgets.QFrame):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -668,6 +668,7 @@ class FCColorEntry(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.entry)
         self.layout.addWidget(self.button)
         self.setLayout(self.layout)

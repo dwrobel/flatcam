@@ -102,7 +102,8 @@ class ComboboxOptionUI(BasicOptionUI):
 
 class ColorOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
-        return FCColorEntry()
+        entry = FCColorEntry()
+        return entry
 
 
 class HeadingOptionUI(OptionUI):
