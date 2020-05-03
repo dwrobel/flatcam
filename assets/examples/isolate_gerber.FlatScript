@@ -1,12 +1,12 @@
 # #####################################################################################
 # DESCRIPTION:
-# Will open a Gerber (and Excellon) file in FlatCAM
+# Will isolate copper features in a Gerber file by creating surrounding paths around
 # #####################################################################################
 
-puts "**************** RUNNING an EXAMPLE SCRIPT = Open a file *******************"
+puts "**************** RUNNING an EXAMPLE SCRIPT = Isolate a Gerber file *******************"
 
 # ----------- START: This is needed only for the examples ----------------
-# first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable 
+# first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable
 set ROOT_FOLDER  [get_sys root_folder_path]
 
 # calculate the resources path for the examples we need to run and store it inside the PATH varaible
@@ -16,11 +16,11 @@ set PATH ${ROOT_FOLDER}/assets/examples/files
 # set the working path to the path that holds the files we are going to work with
 set_path $PATH
 
-# load the GERBER file and rename it to a known name so we can use it further
-open_gerber test.gbr -outname gerber_obj
+# load the GERBER file
+open_gerber test.gbr -outname gerber_file
 
-# load the Excellon file and rename it to a known name so we can use it further
-open_excellon test.txt -outname excellon_obj
+# isolate the Gerber file
+isolate gerber_file -dia 0.1 -passes 2 -overlap 90 -combine True -outname iso_geo
 
-# plot them all so we can see them on canvas
-plot_all 
+# plot the objects so we can see them; not required for the script but in this script we want to see the results
+plot_all

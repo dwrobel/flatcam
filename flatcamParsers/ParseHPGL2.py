@@ -73,6 +73,10 @@ class HPGL2:
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],
             "endxy": self.app.defaults["geometry_endxy"],
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": self.app.defaults["geometry_area_overz"],
 
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],

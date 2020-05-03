@@ -6,7 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-05-02 23:49+0300\n"
+<<<<<<< HEAD
+"PO-Revision-Date: 2020-05-03 12:06+0200\n"
+=======
 "PO-Revision-Date: 2020-05-02 23:50+0300\n"
+>>>>>>> remotes/jpcgt/flatcam/Beta
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -14,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -3584,7 +3588,7 @@ msgstr "Utensile testo"
 #: flatcamTools/ToolNCC.py:331 flatcamTools/ToolNCC.py:797
 #: flatcamTools/ToolPaint.py:314 flatcamTools/ToolPaint.py:767
 msgid "Tool"
-msgstr "Utensile"
+msgstr "Strumenti"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:439 flatcamGUI/ObjectUI.py:364
 #: flatcamGUI/preferences/gerber/GerberOptPrefGroupUI.py:43
@@ -6064,7 +6068,7 @@ msgstr "Strumento QRCode"
 #: flatcamGUI/FlatCAMGUI.py:949 flatcamGUI/FlatCAMGUI.py:2653
 #: flatcamTools/ToolCopperThieving.py:39 flatcamTools/ToolCopperThieving.py:568
 msgid "Copper Thieving Tool"
-msgstr "Strumento rimozione rame"
+msgstr "Strumento deposito rame"
 
 #: flatcamGUI/FlatCAMGUI.py:952 flatcamGUI/FlatCAMGUI.py:1741
 #: flatcamGUI/FlatCAMGUI.py:2656 flatcamTools/ToolFiducials.py:33
@@ -11136,14 +11140,14 @@ msgstr "Combina Passi"
 
 #: flatcamGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:27
 msgid "Copper Thieving Tool Options"
-msgstr "Opzioni dello strumento rimozione rame"
+msgstr "Opzioni dello strumento deposito rame"
 
 #: flatcamGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:39
 msgid ""
 "A tool to generate a Copper Thieving that can be added\n"
 "to a selected Gerber file."
 msgstr ""
-"Uno strumento per generare una rimozione di rame che può essere aggiunto\n"
+"Uno strumento per generare un deposito di rame che può essere aggiunto\n"
 "in un file Gerber selezionato."
 
 #: flatcamGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:47
@@ -11162,7 +11166,7 @@ msgid ""
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr ""
-"Imposta la distanza tra componenti di rame\n"
+"Imposta la distanza tra componenti del deposito di rame\n"
 "(i poligoni possono essere divisi in sottopoligoni)\n"
 "e le tracce di rame nel file Gerber."
 
@@ -11203,8 +11207,8 @@ msgid ""
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- 'Stesso': l'estensione delle aree di rame si basa sull'estensione "
-"dell'oggetto.\n"
+"- 'Stesso': l'estensione delle aree di deposito di rame si basa "
+"sull'estensione dell'oggetto.\n"
 "- 'Selezione area': fare clic con il pulsante sinistro del mouse per avviare "
 "la selezione dell'area da riempire.\n"
 "- 'Oggetto di riferimento': eseguirà il deposito di rame nell'area "
@@ -11268,7 +11272,7 @@ msgid ""
 "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
 "- 'Lines Grid' - the empty area will be filled with a pattern of lines."
 msgstr ""
-"- 'Solido': il rame sarà un poligono solido.\n"
+"- 'Solido': il deposito di rame sarà un poligono solido.\n"
 "- 'Dots Grid': l'area vuota verrà riempita con uno schema di punti.\n"
 "- 'Squares Grid': l'area vuota verrà riempita con uno schema di quadrati.\n"
 "- 'Griglia di linee': l'area vuota verrà riempita con un motivo di linee."
@@ -11372,7 +11376,7 @@ msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
 msgstr ""
-"La distanza tra i possibili elementi di rame\n"
+"La distanza tra i possibili elementi del deposito di rame\n"
 "e/o barra del \"rapinatore\" e le aperture effettive nella maschera."
 
 #: flatcamGUI/preferences/tools/Tools2CalPrefGroupUI.py:27
@@ -14737,7 +14741,7 @@ msgid ""
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr ""
-"Questo imposta la distanza tra i componenti del ladro di rame\n"
+"Questo imposta la distanza tra i componenti del deposito di rame\n"
 "(il riempimento poligonale può essere suddiviso in più poligoni)\n"
 "e le tracce di rame nel file Gerber."
 
@@ -14749,7 +14753,7 @@ msgid ""
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- 'Stesso': l'estensione del furto di rame si basa sull'estensione "
+"- 'Stesso': l'estensione del deposito di rame si basa sull'estensione "
 "dell'oggetto.\n"
 "- 'Selezione area': fare clic con il pulsante sinistro del mouse per avviare "
 "la selezione dell'area da riempire.\n"
@@ -14766,7 +14770,8 @@ msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
-"Il tipo di oggetto FlatCAM da utilizzare come riferimento ladro di rame.\n"
+"Il tipo di oggetto FlatCAM da utilizzare come deposito di rame di "
+"riferimento.\n"
 "Può essere Gerber, Excellon o Geometry."
 
 #: flatcamTools/ToolCopperThieving.py:149 flatcamTools/ToolNCC.py:562
@@ -14781,7 +14786,7 @@ msgstr "Oggetto FlatCAM da usare come riferimento rimozione rame."
 
 #: flatcamTools/ToolCopperThieving.py:327
 msgid "Insert Copper thieving"
-msgstr "Inserire il ladro di rame"
+msgstr "Inserire il deposito di rame"
 
 #: flatcamTools/ToolCopperThieving.py:329
 msgid ""
@@ -14862,7 +14867,7 @@ msgid ""
 "the robber bar if those were generated."
 msgstr ""
 "Aggiungerà alla geometria gerber soldermask\n"
-"le geometrie del ladro di rame e/o\n"
+"le geometrie del deposito di rame e/o\n"
 "la barra dei ladri se sono stati generati."
 
 #: flatcamTools/ToolCopperThieving.py:625
@@ -14905,7 +14910,7 @@ msgstr "Aggiungi file sorgente"
 #: flatcamTools/ToolCopperThieving.py:732
 #: flatcamTools/ToolCopperThieving.py:1314
 msgid "Copper Thieving Tool done."
-msgstr "Strumento ladro di rame fatto."
+msgstr "Strumento deposito di rame fatto."
 
 #: flatcamTools/ToolCopperThieving.py:759
 #: flatcamTools/ToolCopperThieving.py:792 flatcamTools/ToolCutOut.py:515
@@ -14939,21 +14944,21 @@ msgstr ""
 #: flatcamTools/ToolCopperThieving.py:946
 #: flatcamTools/ToolCopperThieving.py:1007
 msgid "Thieving"
-msgstr "Ladro"
+msgstr "Deposito"
 
 #: flatcamTools/ToolCopperThieving.py:953
 msgid "Copper Thieving Tool started. Reading parameters."
-msgstr "Strumento ladro di rame avviato. Lettura dei parametri."
+msgstr "Strumento deposito di rame avviato. Lettura dei parametri."
 
 #: flatcamTools/ToolCopperThieving.py:978
 msgid "Copper Thieving Tool. Preparing isolation polygons."
 msgstr ""
-"Strumento di ladro di rame avviato. Preparazione poligoni di isolamento."
+"Strumento deposito di rame avviato. Preparazione poligoni di isolamento."
 
 #: flatcamTools/ToolCopperThieving.py:1023
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
 msgstr ""
-"Strumento di ladro di rame avviato. Preparazione aree da riempire di rame."
+"Strumento deposito di rame avviato. Preparazione aree da riempire di rame."
 
 #: flatcamTools/ToolCopperThieving.py:1034 flatcamTools/ToolOptimal.py:349
 #: flatcamTools/ToolPanelize.py:799 flatcamTools/ToolRulesCheck.py:1127
@@ -14977,7 +14982,7 @@ msgstr "Il tipo di oggetto di riferimento non è supportato."
 
 #: flatcamTools/ToolCopperThieving.py:1109
 msgid "Copper Thieving Tool. Appending new geometry and buffering."
-msgstr "Strumento di ladro di rame. Aggiunta di nuova geometria e buffering."
+msgstr "Strumento deposito di rame. Aggiunta di nuova geometria e buffering."
 
 #: flatcamTools/ToolCopperThieving.py:1125
 msgid "Create geometry"
@@ -14998,7 +15003,7 @@ msgstr "Generazione maschera Placatura eseguita."
 
 #: flatcamTools/ToolCopperThieving.py:1549
 msgid "Copper Thieving Tool exit."
-msgstr "Chiudi strumento ladro di rame."
+msgstr "Chiudi strumento deposito di rame."
 
 #: flatcamTools/ToolCutOut.py:41
 msgid "Cutout PCB"

@@ -4146,6 +4146,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key_J:
                     self.app.on_jump_to()
+        elif self.app.call_source == 'geometry':
+            if modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            # NO MODIFIER
+            elif modifiers == QtCore.Qt.NoModifier:
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    sel_obj = self.app.collection.get_active()
+                    assert sel_obj.kind == 'geometry', "Expected a Geometry Object, got %s" % type(sel_obj)
+
+                    sel_obj.area_disconnect()
+                    return
+
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.ui.grid_snap_btn.trigger()
+                    return
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
 
     def createPopupMenu(self):
         menu = super().createPopupMenu()

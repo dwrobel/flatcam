@@ -7,6 +7,18 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.05.2020
+
+- small changes to allow making the x86 installer that is made from a Python 3.5 run FlatCAM beta 
+- fixed multiple parameter 'outname' in the Tcl commands OpenGerber and OpenGcode 
+- added more examples in the scripts Examples: isolate and cutout examples
+- updated the Italian translation
+- updated the translation files
+
+2.05.2020
+
+- working on a new feature: adding interdiction area for Gcode generation. They will be added in the Geometry Object
+
 2.05.2020
 
 - changed the icons for the grid snap in the status bar
