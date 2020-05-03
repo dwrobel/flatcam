@@ -34,7 +34,7 @@ class TclCommandJoinExcellon(TclCommand):
     help = {
         'main': "Runs a merge operation (join) on the Excellon objects.\n"
                 "The names of the Excellon objects to be merged will be entered after the outname,\n"
-                "separated by spaces. See the example bellow.\n"
+                "separated by spaces. See the example below.\n"
                 "WARNING: if the name of an Excellon objects has spaces, enclose the name with quotes.",
         'args': collections.OrderedDict([
             ('outname', 'Name of the new Excellon Object made by joining of other Excellon objects. Required'),

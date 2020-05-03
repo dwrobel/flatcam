@@ -34,7 +34,7 @@ class TclCommandJoinGeometry(TclCommand):
     help = {
         'main': "Runs a merge operation (join) on the Geometry objects.\n"
                 "The names of the Geometry objects to be merged will be entered after the outname,\n"
-                "separated by spaces. See the example bellow.\n"
+                "separated by spaces. See the example below.\n"
                 "WARNING: if the name of an Geometry objects has spaces, enclose the name with quotes.",
         'args': collections.OrderedDict([
             ('outname', 'Name of the new Geometry Object made by joining of other Geometry objects. Required'),

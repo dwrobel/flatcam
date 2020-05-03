@@ -374,9 +374,24 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.splash_cb.stateChanged.connect(self.on_splash_changed)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.shell_startup_cb.clicked.connect(self.app.on_toggle_shell_from_settings)
+        self.shell_startup_cb.clicked.connect(self.on_toggle_shell_from_settings)
 
         self.language_apply_btn.clicked.connect(lambda: fcTranslate.on_language_apply_click(app=self.app, restart=True))
+
+    def on_toggle_shell_from_settings(self, state):
+        """
+        Toggle shell: if is visible close it, if it is closed then open it
+        :return: None
+        """
+
+        self.app.defaults.report_usage("on_toggle_shell_from_settings()")
+
+        if state is True:
+            if not self.app.ui.shell_dock.isVisible():
+                self.app.ui.shell_dock.show()
+        else:
+            if self.app.ui.shell_dock.isVisible():
+                self.app.ui.shell_dock.hide()
 
     @staticmethod
     def on_splash_changed(state):

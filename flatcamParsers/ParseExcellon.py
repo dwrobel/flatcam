@@ -426,7 +426,7 @@ class Excellon(Geometry):
                                     # it's possible that tool definition has only tool number and no diameter info
                                     # (those could be in another file like PCB Wizard do)
                                     # then match.group(2) = None and float(None) will create the exception
-                                    # the bellow construction is so each tool will have a slightly different diameter
+                                    # the below construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
                                     self.app.inform.emit('[WARNING] %s%s %s' %

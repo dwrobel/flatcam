@@ -2366,7 +2366,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-
         self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
         self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
         self.excellon_defaults_form = ExcellonPreferencesUI(decimals=self.decimals)
@@ -2381,7 +2380,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ################## RESTORE THE TOOLBAR STATE from file #################
         # ########################################################################
-
         flat_settings = QSettings("Open Source", "FlatCAM")
         if flat_settings.contains("saved_gui_state"):
             saved_gui_state = flat_settings.value('saved_gui_state')
@@ -2439,14 +2437,41 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             del qsettings
 
         self.lock_toolbar(lock=lock_state)
+        self.on_grid_snap_triggered(state=True)
+
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
         self.clear_btn.clicked.connect(self.on_gui_clear)
+        self.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
+        self.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    def on_grid_snap_triggered(self, state):
+        """
+
+        :param state:   A parameter with the state of the grid, boolean
+
+        :return:
+        """
+        if state:
+            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_filled_16.png'))
+        else:
+            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
+
+        self.snap_infobar_label.clicked_state = state
+
+    def on_grid_icon_snap_clicked(self):
+        """
+        Slot called by clicking a GUI element, in this case a FCLabel
+
+        :return:
+        """
+        if isinstance(self.sender(), FCLabel):
+            self.grid_snap_btn.trigger()
 
     def eventFilter(self, obj, event):
         """
@@ -3207,7 +3232,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         else:
                             self.app.collection.set_active(names_list[active_index-1])
 
-                # Select the object in the Tree bellow the current one
+                # Select the object in the Tree below the current one
                 if key == QtCore.Qt.Key_Down:
                     # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
                     focused_wdg = QtWidgets.QApplication.focusWidget()
@@ -3811,10 +3836,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.select_tool('track')
                         return
 
-                    # Zoom Fit
+                    # Zoom fit
                     if key == QtCore.Qt.Key_V or key == 'V':
                         self.app.grb_editor.launched_from_shortcuts = True
-                        self.app.on_zoom_fit(None)
+                        self.app.grb_editor.on_zoom_fit()
                         return
 
                 # Show Shortcut list

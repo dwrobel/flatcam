@@ -12,6 +12,8 @@ from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Pol
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
+from vispy.geometry import Rect
+
 import threading
 import time
 from copy import copy, deepcopy
@@ -3701,7 +3703,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.on_grid_snap_triggered(state=True)
+            self.app.ui.on_grid_snap_triggered(state=True)
 
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(False)
@@ -3721,6 +3723,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.deactivate_grb_editor() --> %s" % str(e))
 
+        self.clear()
+
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
@@ -3729,7 +3733,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.popmenu_save.setVisible(False)
 
         self.disconnect_canvas_event_handlers()
-        self.clear()
         self.app.ui.grb_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -3937,8 +3940,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             pass
 
     def clear(self):
+        self.thread.quit()
+
         self.active_tool = None
         self.selected = []
+        self.storage_dict.clear()
+        self.results.clear()
 
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
@@ -3968,7 +3975,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         file_units = self.gerber_obj.units if self.gerber_obj.units else 'IN'
         app_units = self.app.defaults['units']
-        self.conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
+        # self.conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
+
+        if file_units == app_units:
+            self.conversion_factor = 1
+        else:
+            if file_units == 'IN':
+                self.conversion_factor = 25.4
+            else:
+                self.conversion_factor = 0.0393700787401575
+
 
         # Hide original geometry
         orig_grb_obj.visible = False
@@ -4228,8 +4244,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         else:
             new_grb_name = self.edited_obj_name + "_edit"
 
-        self.app.worker_task.emit({'fcn': self.new_edited_gerber,
-                                   'params': [new_grb_name, self.storage_dict]})
+        self.app.worker_task.emit({'fcn': self.new_edited_gerber, 'params': [new_grb_name, self.storage_dict]})
 
     @staticmethod
     def update_options(obj):
@@ -4926,6 +4941,39 @@ class FlatCAMGrbEditor(QtCore.QObject):
     #     # - perhaps is a bug in VisPy implementation
     #     self.app.app_cursor.enabled = False
     #     self.app.app_cursor.enabled = True
+
+    def on_zoom_fit(self):
+        """
+        Callback for zoom-fit request in Gerber Editor
+
+        :return:        None
+        """
+        log.debug("FlatCAMGrbEditor.on_zoom_fit()")
+
+        # calculate all the geometry in the edited Gerber object
+        edit_geo = []
+        for ap_code in self.storage_dict:
+            for geo_el in self.storage_dict[ap_code]['geometry']:
+                actual_geo = geo_el.geo
+                if 'solid' in actual_geo:
+                    edit_geo.append(actual_geo['solid'])
+
+        all_geo = cascaded_union(edit_geo)
+
+        # calculate the bounds values for the edited Gerber object
+        xmin, ymin, xmax, ymax = all_geo.bounds
+
+        if self.app.is_legacy is False:
+            new_rect = Rect(xmin, ymin, xmax, ymax)
+            self.app.plotcanvas.fit_view(rect=new_rect)
+        else:
+            width = xmax - xmin
+            height = ymax - ymin
+            xmin -= 0.05 * width
+            xmax += 0.05 * width
+            ymin -= 0.05 * height
+            ymax += 0.05 * height
+            self.app.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def get_selected(self):
         """

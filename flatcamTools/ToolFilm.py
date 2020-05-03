@@ -128,7 +128,7 @@ class Film(FlatCAMTool):
 
         self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.tf_box_combo_label.setToolTip(
-            _("The actual object that is used a container for the\n "
+            _("The actual object that is used as container for the\n "
               "selected object for which we create the film.\n"
               "Usually it is the PCB outline but it can be also the\n"
               "same object for which the film is created.")

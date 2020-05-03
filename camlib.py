@@ -3472,8 +3472,7 @@ class CNCjob(Geometry):
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
-                        self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                             _('The loaded Excellon file has no drills'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
                         return 'fail'
                 self.z_cut = deepcopy(old_zcut)
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
@@ -3499,14 +3498,12 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
-    def generate_from_multitool_geometry(
-            self, geometry, append=True,
-            tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
-            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
-            multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
-            startz=None, endz=2.0, endxy='', pp_geometry_name=None, tool_no=1):
+    def generate_from_multitool_geometry(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=1.0,
+                                         z_move=2.0, feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+                                         spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+                                         multidepth=False, depthpercut=None, toolchange=False, toolchangez=1.0,
+                                         toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
+                                         startz=None, endz=2.0, endxy='', pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
 
@@ -5025,8 +5022,7 @@ class CNCjob(Geometry):
 
         return path
 
-    def linear2gcode(self, linear, tolerance=0, down=True, up=True,
-                     z_cut=None, z_move=None, zdownrate=None,
+    def linear2gcode(self, linear, tolerance=0, down=True, up=True, z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
 
@@ -5119,8 +5115,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 

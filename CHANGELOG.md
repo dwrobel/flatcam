@@ -7,6 +7,27 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.05.2020
+
+- changed the icons for the grid snap in the status bar
+- moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
+- fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
+- fixed bug in Gerber Editor in which the QThread that is started on object edit was not stopped at clean up stage
+- fixed bug in Gerber Editor that kept all the apertures (including the geometry) of a previously edited object that was not saved after edit
+- modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
+- modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
+- some string corrections
+- updated the Italian translation done by user @pcb-hobbyst
+- RELEASE 8.992
+
+01.05.2020
+
+- added some ToolTips (strings needed to be translated too) for the Cut Z entry in Geometry Object UI that explain why is sometime disabled and reason for it's value (sometime is zero)
+- solve parenting issues when trying to load a FlatScript from Menu -> File -> Scripting
+- added a first new example script and added some files to work with
+- added a new parameter that will store the home folder of the FlatCAM installation so we can access the example folder
+- added in Gerber editor a method for zoom fit that takes into consideration the current geometry of the edited object
+
 30.04.2020 
 
 - made some corrections - due of recent refactoring PyCharm reported errors all over (not correct but it made programming difficult)

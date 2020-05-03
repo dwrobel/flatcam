@@ -163,7 +163,7 @@ class App(QtCore.QObject):
     # ################################### Version and VERSION DATE ##################################################
     # ###############################################################################################################
     version = 8.992
-    version_date = "2020/05/01"
+    version_date = "2020/05/03"
     beta = True
     engine = '3D'
 
@@ -432,6 +432,9 @@ class App(QtCore.QObject):
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
         self.defaults = FlatCAMDefaults()
+
+        self.defaults["root_folder_path"] = self.app_home
+
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
             self.defaults.load(filename=current_defaults_path)
@@ -503,7 +506,6 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
-        self.on_grid_snap_triggered(state=True)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -1070,9 +1072,6 @@ class App(QtCore.QObject):
 
         # signal emitted when a tab is closed in the Plot Area
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
-
-        self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
-        self.ui.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # signal to close the application
         self.close_app_signal.connect(self.kill_app)
@@ -2908,45 +2907,37 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
-    def new_script_object(self, name=None, text=None):
+    def new_script_object(self):
         """
         Creates a new, blank TCL Script object.
-        :param name: a name for the new object
-        :param text: pass a source file to the newly created script to be loaded in it
+
         :return: None
         """
         self.defaults.report_usage("new_script_object()")
 
-        if text is not None:
-            new_source_file = text
-        else:
-            # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-            #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
-            #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-            #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
-            #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-            #                 "ListSys, MillDrills,\n" \
-            #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-            #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
-            #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
-            #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
-            #                 "# SubtractRectangle, Version, WriteGCode\n"
+        # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
+        #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
+        #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
+        #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
+        #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
+        #                 "ListSys, MillDrills,\n" \
+        #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
+        #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
+        #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
+        #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
+        #                 "# SubtractRectangle, Version, WriteGCode\n"
 
-            new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
-                              '# %s:\n' % _('TCL Tutorial is here') + \
-                              '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
-                              '# %s:\n' % _("FlatCAM commands list")
-            new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
-                                              "(displayed in Tcl Shell).")
+        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
+                          '# %s:\n' % _('TCL Tutorial is here') + \
+                          '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
+                          '# %s:\n' % _("FlatCAM commands list")
+        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
+                                          "(displayed in Tcl Shell).")
 
         def initialize(obj, app):
             obj.source_file = deepcopy(new_source_file)
 
-        if name is None:
-            outname = 'new_script'
-        else:
-            outname = name
-
+        outname = 'new_script'
         self.new_object('script', outname, initialize, plot=False)
 
     def new_document_object(self):
@@ -3268,7 +3259,7 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Alex Lazar"), 6, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "David Robertson"), 6, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 7, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Evans"), 8, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Victor Benso"), 9, 0)
@@ -3300,6 +3291,7 @@ class App(QtCore.QObject):
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 63, 0)
 
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Alex Lazar"), 64, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 65, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 67, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 69, 0)
@@ -3336,27 +3328,43 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Corrections")), 0, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
+
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "BR - Portuguese"), 1, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"), 1, 3)
+
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, Detlef Eckardt"), 3, 2)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 3)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 5, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 5, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 3)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 6, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 6, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 6, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 6, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Golfetto Massimiliano"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "pcb@golfetto.eu"), 4, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 5, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 5, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, Detlef Eckardt"), 5, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 6, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 6, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 6, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 7, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 7, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 7, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 8, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 8, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 8, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 8, 3)
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
 
@@ -4120,9 +4128,11 @@ class App(QtCore.QObject):
         obj.multigeo = True
         for tooluid, dict_value in obj.tools.items():
             dict_value['solid_geometry'] = deepcopy(obj.solid_geometry)
+
         if not isinstance(obj.solid_geometry, list):
             obj.solid_geometry = [obj.solid_geometry]
-        obj.solid_geometry[:] = []
+
+        # obj.solid_geometry[:] = []
         obj.plot()
 
         self.should_we_save = True
@@ -4639,7 +4649,7 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
-        self.on_grid_snap_triggered(state=True)
+        self.ui.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -5033,7 +5043,7 @@ class App(QtCore.QObject):
                 self.paste_tool.on_add_tool_by_key()
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
-    # See description bellow.
+    # See description below.
     def on_delete_keypress(self):
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
@@ -6949,7 +6959,6 @@ class App(QtCore.QObject):
                 else:
 
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
-
                     if key_modifier == QtCore.Qt.ShiftModifier:
                         mod_key = 'Shift'
                     elif key_modifier == QtCore.Qt.ControlModifier:
@@ -6958,20 +6967,19 @@ class App(QtCore.QObject):
                         mod_key = None
 
                     try:
-                        if mod_key == self.defaults["global_mselect_key"]:
+                        if self.command_active is None:
                             # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
                             # deselect, and if it's not selected then it will be selected
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
-                            if self.command_active is None:
+                            if mod_key == self.defaults["global_mselect_key"]:
                                 self.select_objects(key='multisel')
-                                self.delete_hover_shape()
-                        else:
-                            # If there is no active command (self.command_active is None) then we check if we clicked
-                            # on a object by checking the bounding limits against mouse click position
-                            if self.command_active is None:
+                            else:
+                                # If there is no active command (self.command_active is None) then we check if
+                                # we clicked on a object by checking the bounding limits against mouse click position
                                 self.select_objects()
-                                self.delete_hover_shape()
+
+                            self.delete_hover_shape()
                     except Exception as e:
                         log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
                         return
@@ -8167,7 +8175,6 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # ### The following section has the functions that are displayed and call the Editor tab CNCJob Tab #############
     # ###############################################################################################################
-
     def init_code_editor(self, name):
 
         self.text_editor_tab = TextEditor(app=self, plain_text=True)
@@ -8339,14 +8346,14 @@ class App(QtCore.QObject):
             # set cursor of the code editor with the cursor at the searcehd line
             self.ui.plot_tab_area.currentWidget().code_editor.setTextCursor(cursor)
 
-    def on_filenewscript(self, silent=False, name=None, text=None):
+    def on_filenewscript(self, silent=False):
         """
         Will create a new script file and open it in the Code Editor
 
-        :param silent: if True will not display status messages
-        :param name: if specified will be the name of the new script
-        :param text: pass a source file to the newly created script to be loaded in it
-        :return: None
+        :param silent:  if True will not display status messages
+        :param name:    if specified will be the name of the new script
+        :param text:    pass a source file to the newly created script to be loaded in it
+        :return:        None
         """
         if silent is False:
             self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
@@ -8355,10 +8362,7 @@ class App(QtCore.QObject):
         self.ui.position_label.setText("")
         self.ui.rel_position_label.setText("")
 
-        if name is not None:
-            self.new_script_object(name=name, text=text)
-        else:
-            self.new_script_object(text=text)
+        self.new_script_object()
 
         # script_text = script_obj.source_file
         #
@@ -8372,9 +8376,9 @@ class App(QtCore.QObject):
         """
         Will open a Tcl script file into the Code Editor
 
-        :param silent: if True will not display status messages
-        :param name: name of a Tcl script file to open
-        :return:
+        :param silent:  if True will not display status messages
+        :param name:    name of a Tcl script file to open
+        :return:        None
         """
 
         self.defaults.report_usage("on_fileopenscript")
@@ -9609,27 +9613,46 @@ class App(QtCore.QObject):
         :param silent:      If True there will be no messages printed to StatusBar
         :return:            None
         """
+
+        def obj_init(script_obj, app_obj):
+
+            assert isinstance(script_obj, ScriptObject), \
+                "Expected to initialize a ScriptObject but got %s" % type(script_obj)
+
+            if silent is False:
+                app_obj.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
+
+            try:
+                script_obj.parse_file(filename)
+            except IOError:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
+                return "fail"
+            except ParseError as err:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' % (_("Failed to parse file"), filename, str(err)))
+                app_obj.log.error(str(err))
+                return "fail"
+            except Exception as e:
+                log.debug("App.open_script() -> %s" % str(e))
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
+                msg += traceback.format_exc()
+                app_obj.inform.emit(msg)
+                return "fail"
+
         App.log.debug("open_script()")
 
         with self.proc_container.new(_("Opening TCL Script...")):
 
-            try:
-                with open(filename, "r") as opened_script:
-                    script_content = opened_script.readlines()
-                    script_content = ''.join(script_content)
-
-                    if silent is False:
-                        self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
-            except Exception as e:
-                log.debug("App.open_script() -> %s" % str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to open TCL Script."))
-                return
-
             # Object name
             script_name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            # New object creation and file processing
-            self.on_filenewscript(name=script_name, text=script_content)
+            # Object creation
+            ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+            if ret_val == 'fail':
+                filename = self.defaults['global_tcl_path'] + '/' + script_name
+                ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+                if ret_val == 'fail':
+                    self.inform.emit('[ERROR_NOTCL]%s' % _('Failed to open TCL Script.'))
+                    return 'fail'
 
             # Register recent file
             self.file_opened.emit("script", filename)
@@ -10611,29 +10634,6 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
 
-    def on_grid_snap_triggered(self, state):
-        """
-
-        :param state:   A parameter with the state of the grid, boolean
-
-        :return:
-        """
-        if state:
-            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
-        else:
-            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
-
-        self.ui.snap_infobar_label.clicked_state = state
-
-    def on_grid_icon_snap_clicked(self):
-        """
-        Slot called by clicking a GUI element, in this case a FCLabel
-
-        :return:
-        """
-        if isinstance(self.sender(), FCLabel):
-            self.ui.grid_snap_btn.trigger()
-
     def generate_cnc_job(self, objects):
         """
         Slot that will be called by clicking an entry in the contextual menu generated in the Project Tab tree
@@ -10835,21 +10835,6 @@ class App(QtCore.QObject):
             # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
             # QtWidgets.qApp.sendEvent(self.shell._edit, f)
-
-    def on_toggle_shell_from_settings(self, state):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.defaults.report_usage("on_toggle_shell_from_settings()")
-
-        if state is True:
-            if not self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.show()
-        else:
-            if self.ui.shell_dock.isVisible():
-                self.ui.shell_dock.hide()
 
     def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """

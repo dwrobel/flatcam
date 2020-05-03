@@ -6789,7 +6789,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:436
 msgid ""
 "When the isolation geometry is generated,\n"
-"by checking this, the area of the object bellow\n"
+"by checking this, the area of the object below\n"
 "will be subtracted from the isolation geometry."
 msgstr ""
 
@@ -13014,7 +13014,7 @@ msgstr ""
 
 #: flatcamTools/ToolFilm.py:131
 msgid ""
-"The actual object that is used a container for the\n"
+"The actual object that is used as container for the\n"
 " selected object for which we create the film.\n"
 "Usually it is the PCB outline but it can be also the\n"
 "same object for which the film is created."
@@ -14116,7 +14116,7 @@ msgid "Excellon merging is in progress. Please wait..."
 msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:474
-msgid "The imported Excellon file is None."
+msgid "The imported Excellon file is empty."
 msgstr ""
 
 #: flatcamTools/ToolProperties.py:131
@@ -14604,7 +14604,7 @@ msgstr ""
 #: flatcamTools/ToolSolderPaste.py:158
 msgid ""
 "First step is to select a number of nozzle tools for usage\n"
-"and then optionally modify the GCode parameters bellow."
+"and then optionally modify the GCode parameters below."
 msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:161
@@ -14800,7 +14800,7 @@ msgid ""
 msgstr ""
 
 #: flatcamTools/ToolSub.py:100
-msgid "Substract Gerber"
+msgid "Subtract Gerber"
 msgstr ""
 
 #: flatcamTools/ToolSub.py:102

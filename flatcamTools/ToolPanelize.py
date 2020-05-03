@@ -14,6 +14,8 @@ from copy import deepcopy
 import numpy as np
 
 import shapely.affinity as affinity
+from shapely.ops import unary_union
+from shapely.geometry import LineString
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -136,7 +138,7 @@ class Panelize(FlatCAMTool):
         self.box_combo.is_last = True
 
         self.box_combo.setToolTip(
-            _("The actual object that is used a container for the\n "
+            _("The actual object that is used as container for the\n "
               "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo)
@@ -402,19 +404,18 @@ class Panelize(FlatCAMTool):
     def on_panelize(self):
         name = self.object_combo.currentText()
 
-        # Get source object.
+        # Get source object to be panelized.
         try:
-            panel_obj = self.app.collection.get_by_name(str(name))
+            panel_source_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
-        if panel_obj is None:
+        if panel_source_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Object not found"), panel_obj))
-            return "Object not found: %s" % panel_obj
+                                 (_("Object not found"), panel_source_obj))
+            return "Object not found: %s" % panel_source_obj
 
         boxname = self.box_combo.currentText()
 
@@ -422,17 +423,15 @@ class Panelize(FlatCAMTool):
             box = self.app.collection.get_by_name(boxname)
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), boxname))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), boxname))
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit('[WARNING_NOTCL]%s: %s' %
-                                 (_("No object Box. Using instead"), panel_obj))
+            self.app.inform.emit('[WARNING_NOTCL]%s: %s' % (_("No object Box. Using instead"), panel_source_obj))
             self.reference_radio.set_value('bbox')
 
         if self.reference_radio.get_value() == 'bbox':
-            box = panel_obj
+            box = panel_source_obj
 
         self.outname = name + '_panelized'
 
@@ -478,20 +477,20 @@ class Panelize(FlatCAMTool):
                     rows -= 1
                     panel_lengthy = ((ymax - ymin) * rows) + (spacing_rows * (rows - 1))
 
-        if panel_obj.kind == 'excellon' or panel_obj.kind == 'geometry':
+        if panel_source_obj.kind == 'excellon' or panel_source_obj.kind == 'geometry':
             # make a copy of the panelized Excellon or Geometry tools
             copied_tools = {}
-            for tt, tt_val in list(panel_obj.tools.items()):
+            for tt, tt_val in list(panel_source_obj.tools.items()):
                 copied_tools[tt] = deepcopy(tt_val)
 
-        if panel_obj.kind == 'gerber':
+        if panel_source_obj.kind == 'gerber':
             # make a copy of the panelized Gerber apertures
             copied_apertures = {}
-            for tt, tt_val in list(panel_obj.apertures.items()):
+            for tt, tt_val in list(panel_source_obj.apertures.items()):
                 copied_apertures[tt] = deepcopy(tt_val)
 
-        def panelize_2():
-            if panel_obj is not None:
+        def panelize_worker():
+            if panel_source_obj is not None:
                 self.app.inform.emit(_("Generating panel ... "))
 
                 def job_init_excellon(obj_fin, app_obj):
@@ -501,15 +500,15 @@ class Panelize(FlatCAMTool):
                     obj_fin.slots = []
                     obj_fin.solid_geometry = []
 
-                    for option in panel_obj.options:
+                    for option in panel_source_obj.options:
                         if option != 'name':
                             try:
-                                obj_fin.options[option] = panel_obj.options[option]
+                                obj_fin.options[option] = panel_source_obj.options[option]
                             except KeyError:
                                 log.warning("Failed to copy option. %s" % str(option))
 
-                    geo_len_drills = len(panel_obj.drills) if panel_obj.drills else 0
-                    geo_len_slots = len(panel_obj.slots) if panel_obj.slots else 0
+                    geo_len_drills = len(panel_source_obj.drills) if panel_source_obj.drills else 0
+                    geo_len_slots = len(panel_source_obj.slots) if panel_source_obj.slots else 0
 
                     element = 0
                     for row in range(rows):
@@ -518,9 +517,9 @@ class Panelize(FlatCAMTool):
                             element += 1
                             old_disp_number = 0
 
-                            if panel_obj.drills:
+                            if panel_source_obj.drills:
                                 drill_nr = 0
-                                for tool_dict in panel_obj.drills:
+                                for tool_dict in panel_source_obj.drills:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
@@ -543,9 +542,9 @@ class Panelize(FlatCAMTool):
                                                                                   disp_number))
                                         old_disp_number = disp_number
 
-                            if panel_obj.slots:
+                            if panel_source_obj.slots:
                                 slot_nr = 0
-                                for tool_dict in panel_obj.slots:
+                                for tool_dict in panel_source_obj.slots:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
@@ -574,8 +573,8 @@ class Panelize(FlatCAMTool):
                         currenty += lenghty
 
                     obj_fin.create_geometry()
-                    obj_fin.zeros = panel_obj.zeros
-                    obj_fin.units = panel_obj.units
+                    obj_fin.zeros = panel_source_obj.zeros
+                    obj_fin.units = panel_source_obj.units
                     self.app.proc_container.update_view_text('')
 
                 def job_init_geometry(obj_fin, app_obj):
@@ -598,36 +597,36 @@ class Panelize(FlatCAMTool):
                     obj_fin.solid_geometry = []
 
                     # create the initial structure on which to create the panel
-                    if panel_obj.kind == 'geometry':
-                        obj_fin.multigeo = panel_obj.multigeo
+                    if panel_source_obj.kind == 'geometry':
+                        obj_fin.multigeo = panel_source_obj.multigeo
                         obj_fin.tools = copied_tools
-                        if panel_obj.multigeo is True:
-                            for tool in panel_obj.tools:
+                        if panel_source_obj.multigeo is True:
+                            for tool in panel_source_obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
-                    elif panel_obj.kind == 'gerber':
+                    elif panel_source_obj.kind == 'gerber':
                         obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
                             obj_fin.apertures[ap]['geometry'] = []
 
                     # find the number of polygons in the source solid_geometry
                     geo_len = 0
-                    if panel_obj.kind == 'geometry':
-                        if panel_obj.multigeo is True:
-                            for tool in panel_obj.tools:
+                    if panel_source_obj.kind == 'geometry':
+                        if panel_source_obj.multigeo is True:
+                            for tool in panel_source_obj.tools:
                                 try:
-                                    geo_len += len(panel_obj.tools[tool]['solid_geometry'])
+                                    geo_len += len(panel_source_obj.tools[tool]['solid_geometry'])
                                 except TypeError:
                                     geo_len += 1
                         else:
                             try:
-                                geo_len = len(panel_obj.solid_geometry)
+                                geo_len = len(panel_source_obj.solid_geometry)
                             except TypeError:
                                 geo_len = 1
-                    elif panel_obj.kind == 'gerber':
-                        for ap in panel_obj.apertures:
-                            if 'geometry' in panel_obj.apertures[ap]:
+                    elif panel_source_obj.kind == 'gerber':
+                        for ap in panel_source_obj.apertures:
+                            if 'geometry' in panel_source_obj.apertures[ap]:
                                 try:
-                                    geo_len += len(panel_obj.apertures[ap]['geometry'])
+                                    geo_len += len(panel_source_obj.apertures[ap]['geometry'])
                                 except TypeError:
                                     geo_len += 1
 
@@ -639,29 +638,23 @@ class Panelize(FlatCAMTool):
                             element += 1
                             old_disp_number = 0
 
-                            if panel_obj.kind == 'geometry':
-                                if panel_obj.multigeo is True:
-                                    for tool in panel_obj.tools:
+                            # Will panelize a Geometry Object
+                            if panel_source_obj.kind == 'geometry':
+                                if panel_source_obj.multigeo is True:
+                                    for tool in panel_source_obj.tools:
                                         if self.app.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
 
-                                        # geo = translate_recursion(panel_obj.tools[tool]['solid_geometry'])
-                                        # if isinstance(geo, list):
-                                        #     obj_fin.tools[tool]['solid_geometry'] += geo
-                                        # else:
-                                        #     obj_fin.tools[tool]['solid_geometry'].append(geo)
-
                                         # calculate the number of polygons
-                                        geo_len = len(panel_obj.tools[tool]['solid_geometry'])
+                                        geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
                                         pol_nr = 0
-                                        for geo_el in panel_obj.tools[tool]['solid_geometry']:
+                                        for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
                                             trans_geo = translate_recursion(geo_el)
                                             obj_fin.tools[tool]['solid_geometry'].append(trans_geo)
 
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
                                             if old_disp_number < disp_number <= 100:
                                                 self.app.proc_container.update_view_text(' %s: %d %d%%' %
                                                                                          (_("Copy"),
@@ -669,23 +662,18 @@ class Panelize(FlatCAMTool):
                                                                                           disp_number))
                                                 old_disp_number = disp_number
                                 else:
-                                    # geo = translate_recursion(panel_obj.solid_geometry)
-                                    # if isinstance(geo, list):
-                                    #     obj_fin.solid_geometry += geo
-                                    # else:
-                                    #     obj_fin.solid_geometry.append(geo)
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
 
                                     try:
                                         # calculate the number of polygons
-                                        geo_len = len(panel_obj.solid_geometry)
+                                        geo_len = len(panel_source_obj.solid_geometry)
                                     except TypeError:
                                         geo_len = 1
                                     pol_nr = 0
                                     try:
-                                        for geo_el in panel_obj.solid_geometry:
+                                        for geo_el in panel_source_obj.solid_geometry:
                                             if self.app.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
@@ -702,21 +690,18 @@ class Panelize(FlatCAMTool):
                                                                                           int(element),
                                                                                           disp_number))
                                                 old_disp_number = disp_number
+
                                     except TypeError:
-                                        trans_geo = translate_recursion(panel_obj.solid_geometry)
+                                        trans_geo = translate_recursion(panel_source_obj.solid_geometry)
                                         obj_fin.solid_geometry.append(trans_geo)
+                            # Will panelize a Gerber Object
                             else:
-                                # geo = translate_recursion(panel_obj.solid_geometry)
-                                # if isinstance(geo, list):
-                                #     obj_fin.solid_geometry += geo
-                                # else:
-                                #     obj_fin.solid_geometry.append(geo)
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
                                     raise grace
 
                                 try:
-                                    for geo_el in panel_obj.solid_geometry:
+                                    for geo_el in panel_source_obj.solid_geometry:
                                         if self.app.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
@@ -724,21 +709,21 @@ class Panelize(FlatCAMTool):
                                         trans_geo = translate_recursion(geo_el)
                                         obj_fin.solid_geometry.append(trans_geo)
                                 except TypeError:
-                                    trans_geo = translate_recursion(panel_obj.solid_geometry)
+                                    trans_geo = translate_recursion(panel_source_obj.solid_geometry)
                                     obj_fin.solid_geometry.append(trans_geo)
 
-                                for apid in panel_obj.apertures:
+                                for apid in panel_source_obj.apertures:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
-                                    if 'geometry' in panel_obj.apertures[apid]:
+                                    if 'geometry' in panel_source_obj.apertures[apid]:
                                         try:
                                             # calculate the number of polygons
-                                            geo_len = len(panel_obj.apertures[apid]['geometry'])
+                                            geo_len = len(panel_source_obj.apertures[apid]['geometry'])
                                         except TypeError:
                                             geo_len = 1
                                         pol_nr = 0
-                                        for el in panel_obj.apertures[apid]['geometry']:
+                                        for el in panel_source_obj.apertures[apid]['geometry']:
                                             if self.app.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
@@ -771,20 +756,34 @@ class Panelize(FlatCAMTool):
                             currentx += lenghtx
                         currenty += lenghty
 
+                    print("before", obj_fin.tools)
+                    if panel_source_obj.kind == 'geometry' and panel_source_obj.multigeo is True:
+                        # I'm going to do this only here as a fix for panelizing cutouts
+                        # I'm going to separate linestrings out of the solid geometry from other
+                        # possible type of elements and apply unary_union on them to fuse them
+                        for tool in obj_fin.tools:
+                            lines = []
+                            other_geo = []
+                            for geo in obj_fin.tools[tool]['solid_geometry']:
+                                if isinstance(geo, LineString):
+                                    lines.append(geo)
+                                else:
+                                    other_geo.append(geo)
+                            fused_lines = list(unary_union(lines))
+                            obj_fin.tools[tool]['solid_geometry'] = fused_lines + other_geo
+                    print("after", obj_fin.tools)
+
                     if panel_type == 'gerber':
                         self.app.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
                         obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
-
-                    # app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
-                    #                   len(obj_fin.solid_geometry))
 
                     # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
                     # app_obj.log.debug("Finished creating a cascaded union for the panel.")
                     self.app.proc_container.update_view_text('')
 
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
-                if panel_obj.kind == 'excellon':
+                if panel_source_obj.kind == 'excellon':
                     self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
                     self.app.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
@@ -801,7 +800,7 @@ class Panelize(FlatCAMTool):
 
         def job_thread(app_obj):
             try:
-                panelize_2()
+                panelize_worker()
                 self.app.inform.emit('[success] %s' % _("Panel created successfully."))
             except Exception as ee:
                 proc.done()
