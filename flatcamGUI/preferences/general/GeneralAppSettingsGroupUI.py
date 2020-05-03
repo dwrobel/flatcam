@@ -3,7 +3,7 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import OptionalInputSection
 from flatcamGUI.preferences import settings
 from flatcamGUI.preferences.OptionUI import *
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI, OptionsGroupUI2
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -159,7 +159,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
 
             HeadingOptionUI(label_text="Font Size", label_tooltip=None),
             SpinnerOptionUI(
-                option="notebook_font_size", #FIXME qsettings
+                option="notebook_font_size",
                 label_text="Notebook",
                 label_tooltip="This sets the font size for the elements found in the Notebook.\n"
                               "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -167,13 +167,13 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
                 min_value=8, max_value=40, step=1
             ),
             SpinnerOptionUI(
-                option="axis_font_size", #FIXME qsettings
+                option="axis_font_size",
                 label_text="Axis",
                 label_tooltip="This sets the font size for canvas axis.",
                 min_value=8, max_value=40, step=1
             ),
             SpinnerOptionUI(
-                option="textbox_font_size", #FIXME qsettings,
+                option="textbox_font_size",
                 label_text="Textbox",
                 label_tooltip="This sets the font size for the Textbox GUI\n"
                               "elements that are used in FlatCAM.",
