@@ -2119,7 +2119,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
             if self.app.plotcanvas.big_cursor is True:
-                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1, line_width=2)
+                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
             else:
                 self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
