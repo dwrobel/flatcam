@@ -12,8 +12,10 @@ from abc import ABCMeta, abstractmethod
 import math
 
 # module-root dictionary of preprocessors
-import FlatCAMApp
 
+import logging
+
+log = logging.getLogger('base')
 preprocessors = {}
 
 
@@ -23,7 +25,7 @@ class ABCPostProcRegister(ABCMeta):
         newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:
             if newclass.__name__ in preprocessors:
-                FlatCAMApp.App.log.warning('Preprocessor %s has been overriden' % newclass.__name__)
+                log.warning('Preprocessor %s has been overriden' % newclass.__name__)
             preprocessors[newclass.__name__] = newclass()  # here is your register function
         return newclass
 

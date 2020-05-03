@@ -20,6 +20,8 @@ class TclCommandClearShell(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['clear']
 
+    description = '%s %s' % ("--", "Clear the text in the Tcl Shell.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
 
@@ -35,10 +37,10 @@ class TclCommandClearShell(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Clear the text in the Tcl Shell browser.",
+        'main': "Clear the text in the Tcl Shell.",
         'args': collections.OrderedDict([
         ]),
-        'examples': []
+        'examples': ['clear']
     }
 
     def execute(self, args, unnamed_args):

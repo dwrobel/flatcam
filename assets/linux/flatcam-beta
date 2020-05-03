@@ -1,0 +1,5 @@
+#!/bin/bash
+
+script_path=$(readlink -f $0)
+python_script_path=$(dirname $script_path)/../../
+python3 $python_script_path/FlatCAM.py $*

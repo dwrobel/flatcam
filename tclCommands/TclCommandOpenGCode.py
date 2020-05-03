@@ -12,6 +12,8 @@ class TclCommandOpenGCode(TclCommandSignaled):
     # backward compatibility (add_poly, add_polygon)
     aliases = ['open_gcode']
 
+    description = '%s %s' % ("--", "Opens an GCode file, parse it and create a GCode object from it.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -29,12 +31,14 @@ class TclCommandOpenGCode(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens a G-Code file.",
+        'main': "Opens an GCode file, parse it and create a GCode object from it.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
             ('outname', 'Name of the resulting CNCJob object.')
         ]),
-        'examples': []
+        'examples': ['open_gcode D:\\my_gcode_file.NC',
+                     'open_gcode "D:\\my_gcode_file with spaces in the name.TXT"']
     }
 
     def execute(self, args, unnamed_args):
@@ -47,7 +51,10 @@ class TclCommandOpenGCode(TclCommandSignaled):
         :return: None or exception
         """
         args['plot'] = False
+        args['from_tcl'] = True
         filename = args["filename"]
-        # filename = filename.replace(' ', '')
+        # if ' ' in filename:
+        #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
+        #            "Please enclose the path within quotes."
 
         self.app.open_gcode(filename, **args)

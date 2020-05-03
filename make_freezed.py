@@ -58,7 +58,11 @@ if platform.architecture()[0] == '64bit':
 
 include_files.append(("locale", "lib/locale"))
 include_files.append(("preprocessors", "lib/preprocessors"))
-include_files.append(("share", "lib/share"))
+# include_files.append(("assets", "lib/assets"))
+include_files.append(("assets/examples", "lib/assets/examples"))
+include_files.append(("assets/linux", "lib/assets/linux"))
+include_files.append(("assets/resources", "lib/assets/resources"))
+# include_files.append(("share", "lib/share"))
 include_files.append(("flatcamGUI/VisPyData", "lib/vispy"))
 include_files.append(("config", "lib/config"))
 
@@ -104,13 +108,13 @@ def getTargetName():
         return "FlatCAM.dmg"
 
 
-exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targetName=getTargetName())
+exe = Executable("FlatCAM.py", icon='assets/resources/flatcam_icon48.ico', base=base, targetName=getTargetName())
 
 setup(
     name="FlatCAM",
-    author="Juan Pablo Caram",
+    author="Community effort",
     version="8.9",
-    description="FlatCAM: 2D Computer Aided PCB Manufacturing",
+    description="FlatCAM Evo: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
     executables=[exe]
 )

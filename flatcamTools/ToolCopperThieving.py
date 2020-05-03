@@ -7,10 +7,9 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
+from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base
 from shapely.ops import cascaded_union, unary_union
@@ -66,10 +65,11 @@ class ToolCopperThieving(FlatCAMTool):
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
 
-        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = 'Gerber'
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
@@ -99,7 +99,7 @@ class ToolCopperThieving(FlatCAMTool):
               "(the polygon fill may be split in multiple polygons)\n"
               "and the copper traces in the Gerber file.")
         )
-        self.clearance_entry = FCDoubleSpinner()
+        self.clearance_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_entry.set_range(0.00001, 9999.9999)
         self.clearance_entry.set_precision(self.decimals)
         self.clearance_entry.setSingleStep(0.1)
@@ -112,7 +112,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
-        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin_entry.set_range(0.0, 9999.9999)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
@@ -135,35 +135,36 @@ class ToolCopperThieving(FlatCAMTool):
         grid_lay.addWidget(self.reference_label, 3, 0)
         grid_lay.addWidget(self.reference_radio, 3, 1)
 
-        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.box_combo_type_label.setToolTip(
+        self.ref_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.ref_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as copper thieving reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
-        self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Reference Gerber"))
-        self.box_combo_type.addItem(_("Reference Excellon"))
-        self.box_combo_type.addItem(_("Reference Geometry"))
+        self.ref_combo_type = FCComboBox()
+        self.ref_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        grid_lay.addWidget(self.box_combo_type_label, 4, 0)
-        grid_lay.addWidget(self.box_combo_type, 4, 1)
+        grid_lay.addWidget(self.ref_combo_type_label, 4, 0)
+        grid_lay.addWidget(self.ref_combo_type, 4, 1)
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.box_combo_label.setToolTip(
+        self.ref_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.ref_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
-        self.box_combo = QtWidgets.QComboBox()
-        self.box_combo.setModel(self.app.collection)
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
+        self.ref_combo = FCComboBox()
+        self.ref_combo.setModel(self.app.collection)
+        self.ref_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ref_combo.is_last = True
+        self.ref_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.ref_combo_type.get_value()]
 
-        grid_lay.addWidget(self.box_combo_label, 5, 0)
-        grid_lay.addWidget(self.box_combo, 5, 1)
+        grid_lay.addWidget(self.ref_combo_label, 5, 0)
+        grid_lay.addWidget(self.ref_combo, 5, 1)
 
-        self.box_combo.hide()
-        self.box_combo_label.hide()
-        self.box_combo_type.hide()
-        self.box_combo_type_label.hide()
+        self.ref_combo.hide()
+        self.ref_combo_label.hide()
+        self.ref_combo_type.hide()
+        self.ref_combo_type_label.hide()
 
         # Bounding Box Type #
         self.bbox_type_radio = RadioSet([
@@ -221,7 +222,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.dotdia_label.setToolTip(
             _("Dot diameter in Dots Grid.")
         )
-        self.dot_dia_entry = FCDoubleSpinner()
+        self.dot_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dot_dia_entry.set_range(0.0, 9999.9999)
         self.dot_dia_entry.set_precision(self.decimals)
         self.dot_dia_entry.setSingleStep(0.1)
@@ -234,7 +235,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.dotspacing_label.setToolTip(
             _("Distance between each two dots in Dots Grid.")
         )
-        self.dot_spacing_entry = FCDoubleSpinner()
+        self.dot_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dot_spacing_entry.set_range(0.0, 9999.9999)
         self.dot_spacing_entry.set_precision(self.decimals)
         self.dot_spacing_entry.setSingleStep(0.1)
@@ -261,7 +262,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.square_size_label.setToolTip(
             _("Square side size in Squares Grid.")
         )
-        self.square_size_entry = FCDoubleSpinner()
+        self.square_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_size_entry.set_range(0.0, 9999.9999)
         self.square_size_entry.set_precision(self.decimals)
         self.square_size_entry.setSingleStep(0.1)
@@ -274,7 +275,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.squares_spacing_label.setToolTip(
             _("Distance between each two squares in Squares Grid.")
         )
-        self.squares_spacing_entry = FCDoubleSpinner()
+        self.squares_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.squares_spacing_entry.set_range(0.0, 9999.9999)
         self.squares_spacing_entry.set_precision(self.decimals)
         self.squares_spacing_entry.setSingleStep(0.1)
@@ -301,7 +302,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.line_size_label.setToolTip(
             _("Line thickness size in Lines Grid.")
         )
-        self.line_size_entry = FCDoubleSpinner()
+        self.line_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.line_size_entry.set_range(0.0, 9999.9999)
         self.line_size_entry.set_precision(self.decimals)
         self.line_size_entry.setSingleStep(0.1)
@@ -314,7 +315,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.lines_spacing_label.setToolTip(
             _("Distance between each two lines in Lines Grid.")
         )
-        self.lines_spacing_entry = FCDoubleSpinner()
+        self.lines_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.lines_spacing_entry.set_range(0.0, 9999.9999)
         self.lines_spacing_entry.set_precision(self.decimals)
         self.lines_spacing_entry.setSingleStep(0.1)
@@ -362,7 +363,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_margin_label.setToolTip(
             _("Bounding box margin for robber bar.")
         )
-        self.rb_margin_entry = FCDoubleSpinner()
+        self.rb_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
         self.rb_margin_entry.set_precision(self.decimals)
         self.rb_margin_entry.setSingleStep(0.1)
@@ -375,7 +376,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_thickness_label.setToolTip(
             _("The robber bar thickness.")
         )
-        self.rb_thickness_entry = FCDoubleSpinner()
+        self.rb_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rb_thickness_entry.set_range(0.0000, 9999.9999)
         self.rb_thickness_entry.set_precision(self.decimals)
         self.rb_thickness_entry.setSingleStep(0.1)
@@ -417,10 +418,11 @@ class ToolCopperThieving(FlatCAMTool):
               "the pattern plating mask.")
         )
 
-        self.sm_object_combo = QtWidgets.QComboBox()
+        self.sm_object_combo = FCComboBox()
         self.sm_object_combo.setModel(self.app.collection)
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.setCurrentIndex(1)
+        self.sm_object_combo.is_last = True
+        self.sm_object_combo.obj_type = 'Gerber'
 
         grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
         grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)
@@ -431,7 +433,7 @@ class ToolCopperThieving(FlatCAMTool):
             _("The distance between the possible copper thieving elements\n"
               "and/or robber bar and the actual openings in the mask.")
         )
-        self.clearance_ppm_entry = FCDoubleSpinner()
+        self.clearance_ppm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_ppm_entry.set_range(-9999.9999, 9999.9999)
         self.clearance_ppm_entry.set_precision(self.decimals)
         self.clearance_ppm_entry.setSingleStep(0.1)
@@ -494,11 +496,11 @@ class ToolCopperThieving(FlatCAMTool):
         # Objects involved in Copper thieving
         self.grb_object = None
         self.ref_obj = None
-        self.sel_rect = list()
+        self.sel_rect = []
         self.sm_object = None
 
         # store the flattened geometry here:
-        self.flat_geometry = list()
+        self.flat_geometry = []
 
         # Events ID
         self.mr = None
@@ -517,7 +519,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.geo_steps_per_circle = 128
 
         # Thieving geometry storage
-        self.new_solid_geometry = list()
+        self.new_solid_geometry = []
 
         # Robber bar geometry storage
         self.robber_geo = None
@@ -526,7 +528,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_thickness = None
 
         # SIGNALS
-        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
@@ -538,7 +540,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCopperThieving()")
+        self.app.defaults.report_usage("ToolCopperThieving()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -566,7 +568,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+F', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
@@ -594,22 +596,25 @@ class ToolCopperThieving(FlatCAMTool):
         self.robber_line = None
         self.new_solid_geometry = None
 
-    def on_combo_box_type(self):
-        obj_type = self.box_combo_type.currentIndex()
-        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(0)
+    def on_ref_combo_type_change(self):
+        obj_type = self.ref_combo_type.currentIndex()
+        self.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ref_combo.setCurrentIndex(0)
+        self.ref_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.ref_combo_type.get_value()]
 
     def on_toggle_reference(self):
         if self.reference_radio.get_value() == "itself" or self.reference_radio.get_value() == "area":
-            self.box_combo.hide()
-            self.box_combo_label.hide()
-            self.box_combo_type.hide()
-            self.box_combo_type_label.hide()
+            self.ref_combo.hide()
+            self.ref_combo_label.hide()
+            self.ref_combo_type.hide()
+            self.ref_combo_type_label.hide()
         else:
-            self.box_combo.show()
-            self.box_combo_label.show()
-            self.box_combo_type.show()
-            self.box_combo_type_label.show()
+            self.ref_combo.show()
+            self.ref_combo_label.show()
+            self.ref_combo_type.show()
+            self.ref_combo_type_label.show()
 
         if self.reference_radio.get_value() == "itself":
             self.bbox_type_label.show()
@@ -681,7 +686,7 @@ class ToolCopperThieving(FlatCAMTool):
                 break
 
         if aperture_found:
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.robber_geo
             geo_elem['follow'] = self.robber_line
             self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
@@ -692,19 +697,19 @@ class ToolCopperThieving(FlatCAMTool):
             else:
                 new_apid = '10'
 
-            self.grb_object.apertures[new_apid] = dict()
+            self.grb_object.apertures[new_apid] = {}
             self.grb_object.apertures[new_apid]['type'] = 'C'
             self.grb_object.apertures[new_apid]['size'] = self.rb_thickness
-            self.grb_object.apertures[new_apid]['geometry'] = list()
+            self.grb_object.apertures[new_apid]['geometry'] = []
 
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.robber_geo
             geo_elem['follow'] = self.robber_line
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         geo_obj = self.grb_object.solid_geometry
         if isinstance(geo_obj, MultiPolygon):
-            s_list = list()
+            s_list = []
             for pol in geo_obj.geoms:
                 s_list.append(pol)
             s_list.append(self.robber_geo)
@@ -778,7 +783,7 @@ class ToolCopperThieving(FlatCAMTool):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
 
         elif reference_method == 'box':
-            bound_obj_name = self.box_combo.currentText()
+            bound_obj_name = self.ref_combo.currentText()
 
             # Get reference object.
             try:
@@ -902,6 +907,7 @@ class ToolCopperThieving(FlatCAMTool):
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                          symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
                                          size=self.app.defaults["global_cursor_size"])
 
         # update the positions on status bar
@@ -910,10 +916,10 @@ class ToolCopperThieving(FlatCAMTool):
         if self.cursor_pos is None:
             self.cursor_pos = (0, 0)
 
-        dx = curr_pos[0] - float(self.cursor_pos[0])
-        dy = curr_pos[1] - float(self.cursor_pos[1])
+        self.app.dx = curr_pos[0] - float(self.cursor_pos[0])
+        self.app.dy = curr_pos[1] - float(self.cursor_pos[1])
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         # draw the utility geometry
         if self.first_click:
@@ -987,7 +993,7 @@ class ToolCopperThieving(FlatCAMTool):
                 for pol in app_obj.grb_object.solid_geometry:
                     if app_obj.app.abort_flag:
                         # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                        raise grace
 
                     clearance_geometry.append(
                         pol.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
@@ -1066,7 +1072,7 @@ class ToolCopperThieving(FlatCAMTool):
                     for poly in working_obj:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
                 except TypeError:
                     geo_buff_list.append(working_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
@@ -1075,7 +1081,7 @@ class ToolCopperThieving(FlatCAMTool):
             else:   # ref_selected == 'box'
                 geo_n = working_obj.solid_geometry
 
-                if isinstance(working_obj, FlatCAMGeometry):
+                if working_obj.kind == 'geometry':
                     try:
                         __ = iter(geo_n)
                     except Exception as e:
@@ -1086,11 +1092,11 @@ class ToolCopperThieving(FlatCAMTool):
                     for poly in geo_n:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
 
                     bounding_box = cascaded_union(geo_buff_list)
-                elif isinstance(working_obj, FlatCAMGerber):
+                elif working_obj.kind == 'gerber':
                     geo_n = cascaded_union(geo_n).convex_hull
                     bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                     bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
@@ -1126,7 +1132,7 @@ class ToolCopperThieving(FlatCAMTool):
 
             if fill_type == 'dot' or fill_type == 'square':
                 # build the MultiPolygon of dots/squares that will fill the entire bounding box
-                thieving_list = list()
+                thieving_list = []
 
                 if fill_type == 'dot':
                     radius = dot_dia / 2.0
@@ -1168,7 +1174,7 @@ class ToolCopperThieving(FlatCAMTool):
                 except TypeError:
                     thieving_box_geo = [thieving_box_geo]
 
-                thieving_geo = list()
+                thieving_geo = []
                 for dot_geo in thieving_box_geo:
                     for geo_t in app_obj.new_solid_geometry:
                         if dot_geo.within(geo_t):
@@ -1185,7 +1191,7 @@ class ToolCopperThieving(FlatCAMTool):
                     for pol in app_obj.grb_object.solid_geometry:
                         if app_obj.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         outline_geometry.append(
                             pol.buffer(c_val+half_thick_line, int(int(app_obj.geo_steps_per_circle) / 4))
@@ -1211,7 +1217,7 @@ class ToolCopperThieving(FlatCAMTool):
                 app_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
                 outline_geometry = unary_union(outline_geometry)
 
-                outline_line = list()
+                outline_line = []
                 try:
                     for geo_o in outline_geometry:
                         outline_line.append(
@@ -1237,7 +1243,7 @@ class ToolCopperThieving(FlatCAMTool):
                 )
 
                 bx0, by0, bx1, by1 = box_outline_geo.bounds
-                thieving_lines_geo = list()
+                thieving_lines_geo = []
                 new_x = bx0
                 new_y = by0
                 while new_x <= x1 - half_thick_line:
@@ -1257,7 +1263,7 @@ class ToolCopperThieving(FlatCAMTool):
                     new_y += line_size + line_spacing
 
                 # merge everything together
-                diff_lines_geo = list()
+                diff_lines_geo = []
                 for line_poly in thieving_lines_geo:
                     rest_line = line_poly.difference(clearance_geometry)
                     diff_lines_geo.append(rest_line)
@@ -1270,8 +1276,8 @@ class ToolCopperThieving(FlatCAMTool):
                 geo_list = list(app_obj.grb_object.solid_geometry.geoms)
 
             if '0' not in app_obj.grb_object.apertures:
-                app_obj.grb_object.apertures['0'] = dict()
-                app_obj.grb_object.apertures['0']['geometry'] = list()
+                app_obj.grb_object.apertures['0'] = {}
+                app_obj.grb_object.apertures['0']['geometry'] = []
                 app_obj.grb_object.apertures['0']['type'] = 'REG'
                 app_obj.grb_object.apertures['0']['size'] = 0.0
 
@@ -1281,7 +1287,7 @@ class ToolCopperThieving(FlatCAMTool):
                     geo_list.append(poly)
 
                     # append into the '0' aperture
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = poly
                     geo_elem['follow'] = poly.exterior
                     app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1290,7 +1296,7 @@ class ToolCopperThieving(FlatCAMTool):
                 geo_list.append(app_obj.new_solid_geometry)
 
                 # append into the '0' aperture
-                geo_elem = dict()
+                geo_elem = {}
                 geo_elem['solid'] = app_obj.new_solid_geometry
                 geo_elem['follow'] = app_obj.new_solid_geometry.exterior
                 app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1349,7 +1355,7 @@ class ToolCopperThieving(FlatCAMTool):
 
         # if the clearance is negative apply it to the original soldermask too
         if ppm_clearance < 0:
-            temp_geo_list = list()
+            temp_geo_list = []
             for geo in geo_list:
                 temp_geo_list.append(geo.buffer(ppm_clearance))
             geo_list = temp_geo_list
@@ -1371,11 +1377,11 @@ class ToolCopperThieving(FlatCAMTool):
 
         def obj_init(grb_obj, app_obj):
             grb_obj.multitool = False
-            grb_obj.source_file = list()
+            grb_obj.source_file = []
             grb_obj.multigeo = False
             grb_obj.follow = False
-            grb_obj.apertures = dict()
-            grb_obj.solid_geometry = list()
+            grb_obj.apertures = {}
+            grb_obj.solid_geometry = []
 
             # try:
             #     grb_obj.options['xmin'] = 0
@@ -1388,8 +1394,8 @@ class ToolCopperThieving(FlatCAMTool):
             # if we have copper thieving geometry, add it
             if thieving_solid_geo:
                 if '0' not in grb_obj.apertures:
-                    grb_obj.apertures['0'] = dict()
-                    grb_obj.apertures['0']['geometry'] = list()
+                    grb_obj.apertures['0'] = {}
+                    grb_obj.apertures['0']['geometry'] = []
                     grb_obj.apertures['0']['type'] = 'REG'
                     grb_obj.apertures['0']['size'] = 0.0
 
@@ -1401,7 +1407,7 @@ class ToolCopperThieving(FlatCAMTool):
                         geo_list.append(poly_b)
 
                         # append into the '0' aperture
-                        geo_elem = dict()
+                        geo_elem = {}
                         geo_elem['solid'] = poly_b
                         geo_elem['follow'] = poly_b.exterior
                         grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1410,7 +1416,7 @@ class ToolCopperThieving(FlatCAMTool):
                     geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
                     # append into the '0' aperture
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = thieving_solid_geo.buffer(ppm_clearance)
                     geo_elem['follow'] = thieving_solid_geo.buffer(ppm_clearance).exterior
                     grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
@@ -1424,7 +1430,7 @@ class ToolCopperThieving(FlatCAMTool):
                         break
 
                 if aperture_found:
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = robber_solid_geo
                     geo_elem['follow'] = robber_line
                     grb_obj.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
@@ -1436,12 +1442,12 @@ class ToolCopperThieving(FlatCAMTool):
                     else:
                         new_apid = '10'
 
-                    grb_obj.apertures[new_apid] = dict()
+                    grb_obj.apertures[new_apid] = {}
                     grb_obj.apertures[new_apid]['type'] = 'C'
                     grb_obj.apertures[new_apid]['size'] = rb_thickness + ppm_clearance
-                    grb_obj.apertures[new_apid]['geometry'] = list()
+                    grb_obj.apertures[new_apid]['geometry'] = []
 
-                    geo_elem = dict()
+                    geo_elem = {}
                     geo_elem['solid'] = robber_solid_geo.buffer(ppm_clearance)
                     geo_elem['follow'] = Polygon(robber_line).buffer(ppm_clearance / 2.0).exterior
                     grb_obj.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
@@ -1509,7 +1515,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.grb_object = None
         self.sm_object = None
         self.ref_obj = None
-        self.sel_rect = list()
+        self.sel_rect = []
 
         # Events ID
         self.mr = None

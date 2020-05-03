@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox
 from copy import deepcopy
 
 from FlatCAMPool import *
@@ -69,10 +69,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
 
         # Copper Top object
-        self.copper_t_object = QtWidgets.QComboBox()
+        self.copper_t_object = FCComboBox()
         self.copper_t_object.setModel(self.app.collection)
         self.copper_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_t_object.setCurrentIndex(1)
+        self.copper_t_object.is_last = True
+        self.copper_t_object.obj_type = "Gerber"
 
         self.copper_t_object_lbl = QtWidgets.QLabel('%s:' % _("Top"))
         self.copper_t_object_lbl.setToolTip(
@@ -86,10 +87,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
 
         # Copper Bottom object
-        self.copper_b_object = QtWidgets.QComboBox()
+        self.copper_b_object = FCComboBox()
         self.copper_b_object.setModel(self.app.collection)
         self.copper_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_b_object.setCurrentIndex(1)
+        self.copper_b_object.is_last = True
+        self.copper_b_object.obj_type = "Gerber"
 
         self.copper_b_object_lbl = QtWidgets.QLabel('%s:' % _("Bottom"))
         self.copper_b_object_lbl.setToolTip(
@@ -103,10 +105,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
 
         # SolderMask Top object
-        self.sm_t_object = QtWidgets.QComboBox()
+        self.sm_t_object = FCComboBox()
         self.sm_t_object.setModel(self.app.collection)
         self.sm_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_t_object.setCurrentIndex(1)
+        self.sm_t_object.is_last = True
+        self.sm_t_object.obj_type = "Gerber"
 
         self.sm_t_object_lbl = QtWidgets.QLabel('%s:' % _("SM Top"))
         self.sm_t_object_lbl.setToolTip(
@@ -120,10 +123,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
 
         # SolderMask Bottom object
-        self.sm_b_object = QtWidgets.QComboBox()
+        self.sm_b_object = FCComboBox()
         self.sm_b_object.setModel(self.app.collection)
         self.sm_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_b_object.setCurrentIndex(1)
+        self.sm_b_object.is_last = True
+        self.sm_b_object.obj_type = "Gerber"
 
         self.sm_b_object_lbl = QtWidgets.QLabel('%s:' % _("SM Bottom"))
         self.sm_b_object_lbl.setToolTip(
@@ -137,10 +141,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
 
         # SilkScreen Top object
-        self.ss_t_object = QtWidgets.QComboBox()
+        self.ss_t_object = FCComboBox()
         self.ss_t_object.setModel(self.app.collection)
         self.ss_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ss_t_object.setCurrentIndex(1)
+        self.ss_t_object.is_last = True
+        self.ss_t_object.obj_type = "Gerber"
 
         self.ss_t_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Top"))
         self.ss_t_object_lbl.setToolTip(
@@ -154,10 +159,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
 
         # SilkScreen Bottom object
-        self.ss_b_object = QtWidgets.QComboBox()
+        self.ss_b_object = FCComboBox()
         self.ss_b_object.setModel(self.app.collection)
         self.ss_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ss_b_object.setCurrentIndex(1)
+        self.ss_b_object.is_last = True
+        self.ss_b_object.obj_type = "Gerber"
 
         self.ss_b_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Bottom"))
         self.ss_b_object_lbl.setToolTip(
@@ -171,10 +177,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
 
         # Outline object
-        self.outline_object = QtWidgets.QComboBox()
+        self.outline_object = FCComboBox()
         self.outline_object.setModel(self.app.collection)
         self.outline_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.outline_object.setCurrentIndex(1)
+        self.outline_object.is_last = True
+        self.outline_object.obj_type = "Gerber"
 
         self.outline_object_lbl = QtWidgets.QLabel('%s:' % _("Outline"))
         self.outline_object_lbl.setToolTip(
@@ -197,10 +204,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
 
         # Excellon 1 object
-        self.e1_object = QtWidgets.QComboBox()
+        self.e1_object = FCComboBox()
         self.e1_object.setModel(self.app.collection)
         self.e1_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.e1_object.setCurrentIndex(1)
+        self.e1_object.is_last = True
+        self.e1_object.obj_type = "Excellon"
 
         self.e1_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 1"))
         self.e1_object_lbl.setToolTip(
@@ -215,10 +223,11 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout.addWidget(self.e1_cb, 10, 2)
 
         # Excellon 2 object
-        self.e2_object = QtWidgets.QComboBox()
+        self.e2_object = FCComboBox()
         self.e2_object.setModel(self.app.collection)
         self.e2_object.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.e2_object.setCurrentIndex(1)
+        self.e2_object.is_last = True
+        self.e2_object.obj_type = "Excellon"
 
         self.e2_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 2"))
         self.e2_object_lbl.setToolTip(
@@ -260,7 +269,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.trace_size_cb)
 
         # Trace size value
-        self.trace_size_entry = FCDoubleSpinner()
+        self.trace_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.trace_size_entry.set_range(0.00001, 999.99999)
         self.trace_size_entry.set_precision(self.decimals)
         self.trace_size_entry.setSingleStep(0.1)
@@ -282,7 +291,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2copper_cb)
 
         # Copper2copper clearance value
-        self.clearance_copper2copper_entry = FCDoubleSpinner()
+        self.clearance_copper2copper_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_copper2copper_entry.set_range(0.00001, 999.99999)
         self.clearance_copper2copper_entry.set_precision(self.decimals)
         self.clearance_copper2copper_entry.setSingleStep(0.1)
@@ -305,7 +314,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2ol_cb)
 
         # Copper2outline clearance value
-        self.clearance_copper2ol_entry = FCDoubleSpinner()
+        self.clearance_copper2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_copper2ol_entry.set_range(0.00001, 999.99999)
         self.clearance_copper2ol_entry.set_precision(self.decimals)
         self.clearance_copper2ol_entry.setSingleStep(0.1)
@@ -328,7 +337,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2silk_cb)
 
         # Copper2silkscreen clearance value
-        self.clearance_silk2silk_entry = FCDoubleSpinner()
+        self.clearance_silk2silk_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2silk_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2silk_entry.set_precision(self.decimals)
         self.clearance_silk2silk_entry.setSingleStep(0.1)
@@ -351,7 +360,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2sm_cb)
 
         # Silkscreen2soldermask clearance value
-        self.clearance_silk2sm_entry = FCDoubleSpinner()
+        self.clearance_silk2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2sm_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2sm_entry.set_precision(self.decimals)
         self.clearance_silk2sm_entry.setSingleStep(0.1)
@@ -374,7 +383,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2ol_cb)
 
         # Silk2outline clearance value
-        self.clearance_silk2ol_entry = FCDoubleSpinner()
+        self.clearance_silk2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2ol_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2ol_entry.set_precision(self.decimals)
         self.clearance_silk2ol_entry.setSingleStep(0.1)
@@ -397,7 +406,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_sm2sm_cb)
 
         # Soldermask2soldermask clearance value
-        self.clearance_sm2sm_entry = FCDoubleSpinner()
+        self.clearance_sm2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_sm2sm_entry.set_range(0.00001, 999.99999)
         self.clearance_sm2sm_entry.set_precision(self.decimals)
         self.clearance_sm2sm_entry.setSingleStep(0.1)
@@ -420,7 +429,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.ring_integrity_cb)
 
         # Ring integrity value
-        self.ring_integrity_entry = FCDoubleSpinner()
+        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ring_integrity_entry.set_range(0.00001, 999.99999)
         self.ring_integrity_entry.set_precision(self.decimals)
         self.ring_integrity_entry.setSingleStep(0.1)
@@ -445,7 +454,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_d2d_cb)
 
         # Hole2Hole clearance value
-        self.clearance_d2d_entry = FCDoubleSpinner()
+        self.clearance_d2d_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_d2d_entry.set_range(0.00001, 999.99999)
         self.clearance_d2d_entry.set_precision(self.decimals)
         self.clearance_d2d_entry.setSingleStep(0.1)
@@ -468,7 +477,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.drill_size_cb)
 
         # Drile holes value
-        self.drill_size_entry = FCDoubleSpinner()
+        self.drill_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_size_entry.set_range(0.00001, 999.99999)
         self.drill_size_entry.set_precision(self.decimals)
         self.drill_size_entry.setSingleStep(0.1)
@@ -580,7 +589,7 @@ class RulesCheck(FlatCAMTool):
                 cb.setChecked(False)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolRulesCheck()")
+        self.app.defaults.report_usage("ToolRulesCheck()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -607,7 +616,7 @@ class RulesCheck(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Rules Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+R', **kwargs)
 
     def set_tool_ui(self):
 
@@ -655,8 +664,8 @@ class RulesCheck(FlatCAMTool):
 
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
@@ -667,8 +676,8 @@ class RulesCheck(FlatCAMTool):
 
         obj_violations['name'] = gerber_obj['name']
 
-        solid_geo = list()
-        clear_geo = list()
+        solid_geo = []
+        clear_geo = []
         for apid in gerber_obj['apertures']:
             if 'geometry' in gerber_obj['apertures'][apid]:
                 geometry = gerber_obj['apertures'][apid]['geometry']
@@ -679,7 +688,7 @@ class RulesCheck(FlatCAMTool):
                         clear_geo.append(geo_el['clear'])
 
         if clear_geo:
-            total_geo = list()
+            total_geo = []
             for geo_c in clear_geo:
                 for geo_s in solid_geo:
                     if geo_c.within(geo_s):
@@ -696,7 +705,7 @@ class RulesCheck(FlatCAMTool):
             iterations = (iterations * (iterations - 1)) / 2
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         idx = 1
         for geo in total_geo:
             for s_geo in total_geo[idx:]:
@@ -729,8 +738,8 @@ class RulesCheck(FlatCAMTool):
         log.debug("RulesCheck.check_gerber_clearance()")
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
@@ -739,7 +748,7 @@ class RulesCheck(FlatCAMTool):
         if len(gerber_list) == 2:
             gerber_1 = gerber_list[0]
             # added it so I won't have errors of using before declaring
-            gerber_2 = dict()
+            gerber_2 = {}
 
             gerber_3 = gerber_list[1]
         elif len(gerber_list) == 3:
@@ -749,7 +758,7 @@ class RulesCheck(FlatCAMTool):
         else:
             return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
 
-        total_geo_grb_1 = list()
+        total_geo_grb_1 = []
         for apid in gerber_1['apertures']:
             if 'geometry' in gerber_1['apertures'][apid]:
                 geometry = gerber_1['apertures'][apid]['geometry']
@@ -766,7 +775,7 @@ class RulesCheck(FlatCAMTool):
                         if 'solid' in geo_el and geo_el['solid'] is not None:
                             total_geo_grb_1.append(geo_el['solid'])
 
-        total_geo_grb_3 = list()
+        total_geo_grb_3 = []
         for apid in gerber_3['apertures']:
             if 'geometry' in gerber_3['apertures'][apid]:
                 geometry = gerber_3['apertures'][apid]['geometry']
@@ -795,7 +804,7 @@ class RulesCheck(FlatCAMTool):
         iterations = len_1 * len_3
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         for geo in total_geo_grb_1:
             for s_geo in total_geo_grb_3:
                 # minimize the number of distances by not taking into considerations those that are too small
@@ -817,7 +826,7 @@ class RulesCheck(FlatCAMTool):
             for location in min_dict[dist]:
                 points_list.add(location)
 
-        name_list = list()
+        name_list = []
         if gerber_1:
             name_list.append(gerber_1['name'])
         if gerber_2:
@@ -837,8 +846,8 @@ class RulesCheck(FlatCAMTool):
 
         rule = _("Hole Size")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'dia': list()
@@ -863,14 +872,14 @@ class RulesCheck(FlatCAMTool):
         log.debug("RulesCheck.check_holes_clearance()")
         rule = _("Hole to Hole Clearance")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
         })
 
-        total_geo = list()
+        total_geo = []
         for elem in elements:
             for tool in elem['tools']:
                 if 'solid_geometry' in elem['tools'][tool]:
@@ -878,7 +887,7 @@ class RulesCheck(FlatCAMTool):
                     for geo in geometry:
                         total_geo.append(geo)
 
-        min_dict = dict()
+        min_dict = {}
         idx = 1
         for geo in total_geo:
             for s_geo in total_geo[idx:]:
@@ -903,7 +912,7 @@ class RulesCheck(FlatCAMTool):
                 for location in min_dict[dist]:
                     points_list.add(location)
 
-        name_list = list()
+        name_list = []
         for elem in elements:
             name_list.append(elem['name'])
 
@@ -919,8 +928,8 @@ class RulesCheck(FlatCAMTool):
 
         rule = _("Trace Size")
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'size': list(),
@@ -957,18 +966,18 @@ class RulesCheck(FlatCAMTool):
     def check_gerber_annular_ring(obj_list, size, rule):
         rule_title = rule
 
-        violations = list()
-        obj_violations = dict()
+        violations = []
+        obj_violations = {}
         obj_violations.update({
             'name': '',
             'points': list()
         })
 
         # added it so I won't have errors of using before declaring
-        gerber_obj = dict()
-        gerber_extra_obj = dict()
-        exc_obj = dict()
-        exc_extra_obj = dict()
+        gerber_obj = {}
+        gerber_extra_obj = {}
+        exc_obj = {}
+        exc_extra_obj = {}
 
         if len(obj_list) == 2:
             gerber_obj = obj_list[0]
@@ -997,7 +1006,7 @@ class RulesCheck(FlatCAMTool):
         else:
             return 'Fail. Not enough objects to check Minimum Annular Ring'
 
-        total_geo_grb = list()
+        total_geo_grb = []
         for apid in gerber_obj['apertures']:
             if 'geometry' in gerber_obj['apertures'][apid]:
                 geometry = gerber_obj['apertures'][apid]['geometry']
@@ -1017,7 +1026,7 @@ class RulesCheck(FlatCAMTool):
         total_geo_grb = MultiPolygon(total_geo_grb)
         total_geo_grb = total_geo_grb.buffer(0)
 
-        total_geo_exc = list()
+        total_geo_exc = []
         for tool in exc_obj['tools']:
             if 'solid_geometry' in exc_obj['tools'][tool]:
                 geometry = exc_obj['tools'][tool]['solid_geometry']
@@ -1047,7 +1056,7 @@ class RulesCheck(FlatCAMTool):
         iterations = len_1 * len_2
         log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
 
-        min_dict = dict()
+        min_dict = {}
         dist = None
         for geo in total_geo_grb:
             for s_geo in total_geo_exc:
@@ -1075,12 +1084,12 @@ class RulesCheck(FlatCAMTool):
                     else:
                         min_dict[dist] = [s_geo.representative_point()]
 
-        points_list = list()
+        points_list = []
         for dist in min_dict.keys():
             for location in min_dict[dist]:
                 points_list.append(location)
 
-        name_list = list()
+        name_list = []
         try:
             if gerber_obj:
                 name_list.append(gerber_obj['name'])
@@ -1110,7 +1119,7 @@ class RulesCheck(FlatCAMTool):
         return rule_title, violations
 
     def execute(self):
-        self.results = list()
+        self.results = []
 
         log.debug("RuleCheck() executing")
 
@@ -1119,17 +1128,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Trace Size
             if self.trace_size_cb.get_value():
-                copper_list = list()
+                copper_list = []
                 copper_name_1 = self.copper_t_object.currentText()
-                if copper_name_1 is not '' and self.copper_t_cb.get_value():
-                    elem_dict = dict()
+                if copper_name_1 != '' and self.copper_t_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_1)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_1).apertures)
                     copper_list.append(elem_dict)
 
                 copper_name_2 = self.copper_b_object.currentText()
-                if copper_name_2 is not '' and self.copper_b_cb.get_value():
-                    elem_dict = dict()
+                if copper_name_2 !='' and self.copper_b_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_2)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_2).apertures)
                     copper_list.append(elem_dict)
@@ -1151,9 +1160,9 @@ class RulesCheck(FlatCAMTool):
 
                 if self.copper_t_cb.get_value():
                     copper_t_obj = self.copper_t_object.currentText()
-                    copper_t_dict = dict()
+                    copper_t_dict = {}
 
-                    if copper_t_obj is not '':
+                    if copper_t_obj != '':
                         copper_t_dict['name'] = deepcopy(copper_t_obj)
                         copper_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_t_obj).apertures)
 
@@ -1163,8 +1172,8 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Copper to Copper clearance"))))
                 if self.copper_b_cb.get_value():
                     copper_b_obj = self.copper_b_object.currentText()
-                    copper_b_dict = dict()
-                    if copper_b_obj is not '':
+                    copper_b_dict = {}
+                    if copper_b_obj != '':
                         copper_b_dict['name'] = deepcopy(copper_b_obj)
                         copper_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_b_obj).apertures)
 
@@ -1181,22 +1190,22 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Copper to Outline Clearance
             if self.clearance_copper2ol_cb.get_value() and self.out_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                outline_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                outline_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
-                if copper_top is not '' and self.copper_t_cb.get_value():
+                if copper_top != '' and self.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
 
                 copper_bottom = self.copper_b_object.currentText()
-                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                if copper_bottom != '' and self.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
                 copper_outline = self.outline_object.currentText()
-                if copper_outline is not '' and self.out_cb.get_value():
+                if copper_outline != '' and self.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
                     outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
 
@@ -1235,7 +1244,7 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Silk Clearance
             if self.clearance_silk2silk_cb.get_value():
-                silk_dict = dict()
+                silk_dict = {}
 
                 try:
                     silk_silk_clearance = float(self.clearance_silk2silk_entry.get_value())
@@ -1248,7 +1257,7 @@ class RulesCheck(FlatCAMTool):
 
                 if self.ss_t_cb.get_value():
                     silk_obj = self.ss_t_object.currentText()
-                    if silk_obj is not '':
+                    if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
                         silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
 
@@ -1258,7 +1267,7 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Silk to Silk clearance"))))
                 if self.ss_b_cb.get_value():
                     silk_obj = self.ss_b_object.currentText()
-                    if silk_obj is not '':
+                    if silk_obj != '':
                         silk_dict['name'] = deepcopy(silk_obj)
                         silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
 
@@ -1275,10 +1284,10 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Solder Mask Clearance
             if self.clearance_silk2sm_cb.get_value():
-                silk_t_dict = dict()
-                sm_t_dict = dict()
-                silk_b_dict = dict()
-                sm_b_dict = dict()
+                silk_t_dict = {}
+                sm_t_dict = {}
+                silk_b_dict = {}
+                sm_b_dict = {}
 
                 top_ss = False
                 bottom_ss = False
@@ -1286,25 +1295,25 @@ class RulesCheck(FlatCAMTool):
                 bottom_sm = False
 
                 silk_top = self.ss_t_object.currentText()
-                if silk_top is not '' and self.ss_t_cb.get_value():
+                if silk_top != '' and self.ss_t_cb.get_value():
                     silk_t_dict['name'] = deepcopy(silk_top)
                     silk_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
                     top_ss = True
 
                 silk_bottom = self.ss_b_object.currentText()
-                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                if silk_bottom != '' and self.ss_b_cb.get_value():
                     silk_b_dict['name'] = deepcopy(silk_bottom)
                     silk_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
                     bottom_ss = True
 
                 sm_top = self.sm_t_object.currentText()
-                if sm_top is not '' and self.sm_t_cb.get_value():
+                if sm_top != '' and self.sm_t_cb.get_value():
                     sm_t_dict['name'] = deepcopy(sm_top)
                     sm_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_top).apertures)
                     top_sm = True
 
                 sm_bottom = self.sm_b_object.currentText()
-                if sm_bottom is not '' and self.sm_b_cb.get_value():
+                if sm_bottom != '' and self.sm_b_cb.get_value():
                     sm_b_dict['name'] = deepcopy(sm_bottom)
                     sm_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_bottom).apertures)
                     bottom_sm = True
@@ -1344,22 +1353,22 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Silk to Outline Clearance
             if self.clearance_silk2ol_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                outline_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                outline_dict = {}
 
                 silk_top = self.ss_t_object.currentText()
-                if silk_top is not '' and self.ss_t_cb.get_value():
+                if silk_top != '' and self.ss_t_cb.get_value():
                     top_dict['name'] = deepcopy(silk_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
 
                 silk_bottom = self.ss_b_object.currentText()
-                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                if silk_bottom !=  '' and self.ss_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(silk_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
 
                 copper_outline = self.outline_object.currentText()
-                if copper_outline is not '' and self.out_cb.get_value():
+                if copper_outline !=  '' and self.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
                     outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
 
@@ -1399,7 +1408,7 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Minimum Solder Mask Sliver
             if self.clearance_silk2silk_cb.get_value():
-                sm_dict = dict()
+                sm_dict = {}
 
                 try:
                     sm_sm_clearance = float(self.clearance_sm2sm_entry.get_value())
@@ -1412,7 +1421,7 @@ class RulesCheck(FlatCAMTool):
 
                 if self.sm_t_cb.get_value():
                     solder_obj = self.sm_t_object.currentText()
-                    if solder_obj is not '':
+                    if solder_obj !=  '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1422,7 +1431,7 @@ class RulesCheck(FlatCAMTool):
                                                                         _("TOP -> Minimum Solder Mask Sliver"))))
                 if self.sm_b_cb.get_value():
                     solder_obj = self.sm_b_object.currentText()
-                    if solder_obj is not '':
+                    if solder_obj !=  '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1439,29 +1448,29 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Minimum Annular Ring
             if self.ring_integrity_cb.get_value():
-                top_dict = dict()
-                bottom_dict = dict()
-                exc_1_dict = dict()
-                exc_2_dict = dict()
+                top_dict = {}
+                bottom_dict = {}
+                exc_1_dict = {}
+                exc_2_dict = {}
 
                 copper_top = self.copper_t_object.currentText()
-                if copper_top is not '' and self.copper_t_cb.get_value():
+                if copper_top != '' and self.copper_t_cb.get_value():
                     top_dict['name'] = deepcopy(copper_top)
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
 
                 copper_bottom = self.copper_b_object.currentText()
-                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                if copper_bottom != '' and self.copper_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
                 excellon_1 = self.e1_object.currentText()
-                if excellon_1 is not '' and self.e1_cb.get_value():
+                if excellon_1 != '' and self.e1_cb.get_value():
                     exc_1_dict['name'] = deepcopy(excellon_1)
                     exc_1_dict['tools'] = deepcopy(
                         self.app.collection.get_by_name(excellon_1).tools)
 
                 excellon_2 = self.e2_object.currentText()
-                if excellon_2 is not '' and self.e2_cb.get_value():
+                if excellon_2 != '' and self.e2_cb.get_value():
                     exc_2_dict['name'] = deepcopy(excellon_2)
                     exc_2_dict['tools'] = deepcopy(
                         self.app.collection.get_by_name(excellon_2).tools)
@@ -1504,17 +1513,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Hole to Hole Clearance
             if self.clearance_d2d_cb.get_value():
-                exc_list = list()
+                exc_list = []
                 exc_name_1 = self.e1_object.currentText()
-                if exc_name_1 is not '' and self.e1_cb.get_value():
-                    elem_dict = dict()
+                if exc_name_1 != '' and self.e1_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
-                if exc_name_2 is not '' and self.e2_cb.get_value():
-                    elem_dict = dict()
+                if exc_name_2 != '' and self.e2_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
                     exc_list.append(elem_dict)
@@ -1524,17 +1533,17 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Holes Size
             if self.drill_size_cb.get_value():
-                exc_list = list()
+                exc_list = []
                 exc_name_1 = self.e1_object.currentText()
-                if exc_name_1 is not '' and self.e1_cb.get_value():
-                    elem_dict = dict()
+                if exc_name_1 != '' and self.e1_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_1)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
                     exc_list.append(elem_dict)
 
                 exc_name_2 = self.e2_object.currentText()
-                if exc_name_2 is not '' and self.e2_cb.get_value():
-                    elem_dict = dict()
+                if exc_name_2 != '' and self.e2_cb.get_value():
+                    elem_dict = {}
                     elem_dict['name'] = deepcopy(exc_name_2)
                     elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
                     exc_list.append(elem_dict)
@@ -1542,7 +1551,7 @@ class RulesCheck(FlatCAMTool):
                 drill_size = float(self.drill_size_entry.get_value())
                 self.results.append(self.pool.apply_async(self.check_holes_size, args=(exc_list, drill_size)))
 
-            output = list()
+            output = []
             for p in self.results:
                 output.append(p.get())
 

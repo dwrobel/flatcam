@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog
 from flatcamParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -69,12 +69,13 @@ class QRCode(FlatCAMTool):
         i_grid_lay.setColumnStretch(0, 0)
         i_grid_lay.setColumnStretch(1, 1)
 
-        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo = FCComboBox()
         self.grb_object_combo.setModel(self.app.collection)
         self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Object"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )
@@ -101,7 +102,7 @@ class QRCode(FlatCAMTool):
             _("QRCode version can have values from 1 (21x21 boxes)\n"
               "to 40 (177x177 boxes).")
         )
-        self.version_entry = FCSpinner()
+        self.version_entry = FCSpinner(callback=self.confirmation_message_int)
         self.version_entry.set_range(1, 40)
         self.version_entry.setWrapping(True)
 
@@ -137,7 +138,7 @@ class QRCode(FlatCAMTool):
             _("Box size control the overall size of the QRcode\n"
               "by adjusting the size of each box in the code.")
         )
-        self.bsize_entry = FCSpinner()
+        self.bsize_entry = FCSpinner(callback=self.confirmation_message_int)
         self.bsize_entry.set_range(1, 9999)
         self.bsize_entry.setWrapping(True)
 
@@ -150,10 +151,9 @@ class QRCode(FlatCAMTool):
             _("Size of the QRCode border. How many boxes thick is the border.\n"
               "Default value is 4. The width of the clearance around the QRCode.")
         )
-        self.border_size_entry = FCSpinner()
+        self.border_size_entry = FCSpinner(callback=self.confirmation_message_int)
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
-        self.border_size_entry.set_value(4)
 
         grid_lay.addWidget(self.border_size_label, 4, 0)
         grid_lay.addWidget(self.border_size_entry, 4, 1)
@@ -354,7 +354,7 @@ class QRCode(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
-        self.app.report_usage("QRCode()")
+        self.app.defaults.report_usage("QRCode()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -382,10 +382,12 @@ class QRCode(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("QRCode Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Q', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
+        self.border_size_entry.set_value(4)
+
         self.version_entry.set_value(int(self.app.defaults["tools_qrcode_version"]))
         self.error_radio.set_value(self.app.defaults["tools_qrcode_error"])
         self.bsize_entry.set_value(int(self.app.defaults["tools_qrcode_box_size"]))
@@ -495,7 +497,7 @@ class QRCode(FlatCAMTool):
             mask_geo = box(a, b, c, d).buffer(buff_val, join_style=2)
 
         # update the solid geometry with the cutout (if it is the case)
-        new_solid_geometry = list()
+        new_solid_geometry = []
         offset_mask_geo = translate(mask_geo, xoff=pos[0], yoff=pos[1])
         for poly in geo_list:
             if poly.contains(offset_mask_geo):
@@ -522,7 +524,7 @@ class QRCode(FlatCAMTool):
 
         box_size = float(self.bsize_entry.get_value()) / 10.0
 
-        sort_apid = list()
+        sort_apid = []
         new_apid = '10'
         if self.grb_object.apertures:
             for k, v in list(self.grb_object.apertures.items()):
@@ -536,8 +538,8 @@ class QRCode(FlatCAMTool):
 
         # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.apertures:
-            self.grb_object.apertures[new_apid] = dict()
-            self.grb_object.apertures[new_apid]['geometry'] = list()
+            self.grb_object.apertures[new_apid] = {}
+            self.grb_object.apertures[new_apid]['geometry'] = []
             self.grb_object.apertures[new_apid]['type'] = 'R'
             # TODO: HACK
             # I've artificially added 1% to the height and width because otherwise after loading the
@@ -548,14 +550,14 @@ class QRCode(FlatCAMTool):
             self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
         if '0' not in self.grb_object.apertures:
-            self.grb_object.apertures['0'] = dict()
-            self.grb_object.apertures['0']['geometry'] = list()
+            self.grb_object.apertures['0'] = {}
+            self.grb_object.apertures['0']['geometry'] = []
             self.grb_object.apertures['0']['type'] = 'REG'
             self.grb_object.apertures['0']['size'] = 0.0
 
         # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
         # make sure that I place a cutout there
-        zero_elem = dict()
+        zero_elem = {}
         zero_elem['clear'] = offset_mask_geo
         self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
 
@@ -570,12 +572,12 @@ class QRCode(FlatCAMTool):
 
         try:
             for geo in self.qrcode_geometry:
-                geo_elem = dict()
+                geo_elem = {}
                 geo_elem['solid'] = translate(geo, xoff=pos[0], yoff=pos[1])
                 geo_elem['follow'] = translate(geo.centroid, xoff=pos[0], yoff=pos[1])
                 self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
-            geo_elem = dict()
+            geo_elem = {}
             geo_elem['solid'] = self.qrcode_geometry
             self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
@@ -591,7 +593,7 @@ class QRCode(FlatCAMTool):
         # face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
         outline = '#0000FFAF'
 
-        offset_geo = list()
+        offset_geo = []
 
         # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
         # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...
@@ -776,17 +778,17 @@ class QRCode(FlatCAMTool):
 
         _filter = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG"),
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_png',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Export PNG cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
             return
         else:
             self.app.worker_task.emit({'fcn': job_thread_qr_png, 'params': [self.app, filename]})
@@ -823,17 +825,17 @@ class QRCode(FlatCAMTool):
 
         _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Export SVG cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
             return
         else:
             self.app.worker_task.emit({'fcn': job_thread_qr_svg, 'params': [self.app, filename]})

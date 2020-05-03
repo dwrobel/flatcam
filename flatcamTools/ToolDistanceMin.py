@@ -11,7 +11,8 @@ from flatcamGUI.VisPyVisuals import *
 from flatcamGUI.GUIElements import FCEntry
 
 from shapely.ops import nearest_points
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPolygon
+from shapely.ops import cascaded_union
 
 import math
 import logging
@@ -127,15 +128,6 @@ class DistanceMin(FlatCAMTool):
         form_layout.addRow(self.total_distance_label, self.total_distance_entry)
         form_layout.addRow(self.half_point_label, self.half_point_entry)
 
-        # initial view of the layout
-        self.start_entry.set_value('(0, 0)')
-        self.stop_entry.set_value('(0, 0)')
-        self.distance_x_entry.set_value('0.0')
-        self.distance_y_entry.set_value('0.0')
-        self.angle_entry.set_value('0.0')
-        self.total_distance_entry.set_value('0.0')
-        self.half_point_entry.set_value('(0, 0)')
-
         self.layout.addStretch()
 
         self.h_point = (0, 0)
@@ -144,7 +136,7 @@ class DistanceMin(FlatCAMTool):
         self.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolDistanceMin()")
+        self.app.defaults.report_usage("ToolDistanceMin()")
 
         if self.app.tool_tab_locked is True:
             return
@@ -163,7 +155,7 @@ class DistanceMin(FlatCAMTool):
                              _("Select two objects and no more, to measure the distance between them ..."))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='SHIFT+M', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the GUI
@@ -205,6 +197,17 @@ class DistanceMin(FlatCAMTool):
                                      str(len(selected_objs))))
                 return
             else:
+                if isinstance(selected_objs[0].solid_geometry, list):
+                    try:
+                        selected_objs[0].solid_geometry = MultiPolygon(selected_objs[0].solid_geometry)
+                    except Exception:
+                        selected_objs[0].solid_geometry = cascaded_union(selected_objs[0].solid_geometry)
+
+                    try:
+                        selected_objs[1].solid_geometry = MultiPolygon(selected_objs[1].solid_geometry)
+                    except Exception:
+                        selected_objs[1].solid_geometry = cascaded_union(selected_objs[1].solid_geometry)
+
                 first_pos, last_pos = nearest_points(selected_objs[0].solid_geometry, selected_objs[1].solid_geometry)
 
         elif self.app.call_source == 'geo_editor':
@@ -278,7 +281,7 @@ class DistanceMin(FlatCAMTool):
             )
 
         if d != 0:
-            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | (tx3} = {d_z}".format(
+            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
                 tx1=_("MEASURING"),
                 tx2=_("Result"),
                 tx3=_("Distance"),

@@ -8,7 +8,7 @@
 from PyQt5 import QtCore
 
 import logging
-from flatcamGUI.VisPyCanvas import VisPyCanvas, time, Color
+from flatcamGUI.VisPyCanvas import VisPyCanvas, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
 
@@ -33,8 +33,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :rtype: PlotCanvas
         """
 
-        super(PlotCanvas, self).__init__()
+        # super(PlotCanvas, self).__init__()
+        # QtCore.QObject.__init__(self)
         # VisPyCanvas.__init__(self)
+        super().__init__()
 
         # VisPyCanvas does not allow new attributes. Override.
         self.unfreeze()
@@ -60,7 +62,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
         self.workspace_line = None
 
-        self.pagesize_dict = dict()
+        self.pagesize_dict = {}
         self.pagesize_dict.update(
             {
                 'A0': (841, 1189),
@@ -133,15 +135,16 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
 
         self.line_parent = None
-        self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
+        if self.fcapp.defaults["global_cursor_color_enabled"]:
+            c_color = Color(self.fcapp.defaults["global_cursor_color"]).rgba
+        else:
+            c_color = self.line_color
+
+        self.cursor_v_line = InfiniteLine(pos=None, color=c_color, vertical=True,
                                           parent=self.line_parent)
 
-        self.cursor_h_line = InfiniteLine(pos=None, color=self.line_color, vertical=False,
+        self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
-
-        # if self.app.defaults['global_workspace'] is True:
-        #     if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-        #         self.wkspace_t = Line(pos=)
 
         self.shape_collections = []
 
@@ -157,6 +160,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
         self.fit_view()
+
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     def draw_workspace(self, workspace_size):
@@ -240,7 +244,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         """
         if big is True:
             self.big_cursor = True
-            self.c = CursorBig()
+            self.c = CursorBig(app=self.fcapp)
 
             # in case there are multiple new_cursor calls, best to disconnect first the signals
             try:
@@ -270,10 +274,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.cursor_v_line.parent = None
 
     def on_mouse_position(self, pos):
-        # self.line_color = color
 
-        self.cursor_h_line.set_data(pos=pos[1], color=self.line_color)
-        self.cursor_v_line.set_data(pos=pos[0], color=self.line_color)
+        if self.fcapp.defaults['global_cursor_color_enabled']:
+            color = Color(self.fcapp.defaults['global_cursor_color']).rgba
+        else:
+            color = self.line_color
+
+        self.cursor_h_line.set_data(pos=pos[1], color=color)
+        self.cursor_v_line.set_data(pos=pos[0], color=color)
         self.view.scene.update()
 
     def on_mouse_scroll(self, event):
@@ -310,6 +318,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             # Update cursor
             self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                            symbol='++', edge_color=self.fcapp.cursor_color_3D,
+                                           edge_width=self.fcapp.defaults["global_cursor_width"],
                                            size=self.fcapp.defaults["global_cursor_size"])
 
     def new_text_group(self, collection=None):
@@ -401,9 +410,9 @@ class CursorBig(QtCore.QObject):
     mouse_state_updated = QtCore.pyqtSignal(bool)
     mouse_position_updated = QtCore.pyqtSignal(list)
 
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
-
+        self.app = app
         self._enabled = None
 
     @property

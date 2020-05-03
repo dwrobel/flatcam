@@ -7,7 +7,6 @@
 # ############################################################
 
 from camlib import arc, three_point_circle
-import FlatCAMApp
 
 import numpy as np
 import re
@@ -19,6 +18,7 @@ import sys
 from shapely.ops import unary_union
 from shapely.geometry import LineString, Point
 
+from FlatCAMCommon import GracefulException as grace
 import FlatCAMTranslation as fcTranslate
 import gettext
 import builtins
@@ -49,9 +49,9 @@ class HPGL2:
         self.units = 'MM'
 
         # storage for the tools
-        self.tools = dict()
+        self.tools = {}
 
-        self.default_data = dict()
+        self.default_data = {}
         self.default_data.update({
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
@@ -72,6 +72,12 @@ class HPGL2:
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],
+            "endxy": self.app.defaults["geometry_endxy"],
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": self.app.defaults["geometry_area_overz"],
+
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
@@ -151,7 +157,7 @@ class HPGL2:
         """
 
         # Coordinates of the current path, each is [x, y]
-        path = list()
+        path = []
 
         geo_buffer = []
 
@@ -178,7 +184,7 @@ class HPGL2:
             for gline in glines:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 line_num += 1
                 self.source_file += gline + '\n'
@@ -207,7 +213,7 @@ class HPGL2:
                     match = self.sp_re.search(gline)
                     if match:
                         tool = match.group(1)
-                        # self.tools[tool] = dict()
+                        # self.tools[tool] = {}
                         self.tools.update({
                             tool: {
                                 'tooldia': float('%.*f' %
@@ -302,7 +308,7 @@ class HPGL2:
                                                  (_("Coordinates missing, line ignored"), str(gline)))
 
                         if current_x is not None and current_y is not None:
-                            radius = match.group(1)
+                            radius = float(match.group(1))
                             geo = Point((current_x, current_y)).buffer(radius, int(self.steps_per_circle))
                             geo_line = geo.exterior
                             self.tools[current_tool]['solid_geometry'].append(geo_line)

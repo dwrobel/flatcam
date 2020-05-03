@@ -24,7 +24,8 @@ black = Color("#000000")
 class VisPyCanvas(scene.SceneCanvas):
 
     def __init__(self, config=None):
-        scene.SceneCanvas.__init__(self, keys=None, config=config)
+        # scene.SceneCanvas.__init__(self, keys=None, config=config)
+        super().__init__(config=config, keys=None)
 
         self.unfreeze()
 

@@ -29,6 +29,7 @@ languages_dict = {
     'en': 'English',
     'es': 'Spanish',
     'fr': 'French',
+    'hu': 'Hungarian',
     'it': 'Italian',
     'ro': 'Romanian',
     'ru': 'Russian',
@@ -87,9 +88,9 @@ def on_language_apply_click(app, restart=False):
         theme = 'white'
 
     if theme == 'white':
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
     else:
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
 
     # do nothing if trying to apply the language that is the current language (already applied).
     settings = QSettings("Open Source", "FlatCAM")
@@ -179,9 +180,22 @@ def restart_program(app, ask=None):
         theme = 'white'
 
     if theme == 'white':
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
     else:
-        resource_loc = 'share'
+        resource_loc = 'assets/resources'
+
+    # try to quit the Socket opened by ArgsThread class
+    try:
+        app.new_launch.thread_exit = True
+        app.new_launch.listener.close()
+    except Exception as err:
+        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
+
+    # try to quit the QThread that run ArgsThread class
+    try:
+        app.th.quit()
+    except Exception as err:
+        log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()
@@ -200,6 +214,6 @@ def restart_program(app, ask=None):
         if response == bt_yes:
             app.on_file_saveprojectas(use_thread=True, quit_action=True)
 
-    app.save_defaults()
+    app.preferencesUiManager.save_defaults()
     python = sys.executable
     os.execl(python, python, *sys.argv)

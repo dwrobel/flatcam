@@ -1,6 +1,5 @@
 import collections
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
 
 from shapely.geometry import Point
 import shapely.affinity as affinity
@@ -14,6 +13,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for
     # backward compatibility (add_poly, add_polygon)
     aliases = ['aligndrill']
+
+    description = '%s %s' % ("--", "Create an Excellon object with drills for alignment.")
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -41,7 +42,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create excellon with drills for aligment.",
+        'main': "Create an Excellon object with drills for alignment.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
             ('dia', 'Tool diameter'),
@@ -87,9 +88,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         if obj is None:
             return "Object not found: %s" % name
 
-        if not isinstance(obj, FlatCAMGeometry) and \
-                not isinstance(obj, FlatCAMGerber) and \
-                not isinstance(obj, FlatCAMExcellon):
+        if obj.kind != "geometry" and obj.kind != 'gerber' and obj.kind != 'excellon':
             return "ERROR: Only Gerber, Geometry and Excellon objects can be used."
 
         # Axis

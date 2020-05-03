@@ -90,7 +90,7 @@ class PcbWizard(FlatCAMTool):
         self.layout.addLayout(form_layout1)
 
         # Integral part of the coordinates
-        self.int_entry = FCSpinner()
+        self.int_entry = FCSpinner(callback=self.confirmation_message_int)
         self.int_entry.set_range(1, 10)
         self.int_label = QtWidgets.QLabel('%s:' % _("Int. digits"))
         self.int_label.setToolTip(
@@ -99,7 +99,7 @@ class PcbWizard(FlatCAMTool):
         form_layout1.addRow(self.int_label, self.int_entry)
 
         # Fractional part of the coordinates
-        self.frac_entry = FCSpinner()
+        self.frac_entry = FCSpinner(callback=self.confirmation_message_int)
         self.frac_entry.set_range(1, 10)
         self.frac_label = QtWidgets.QLabel('%s:' % _("Frac. digits"))
         self.frac_label.setToolTip(
@@ -170,7 +170,7 @@ class PcbWizard(FlatCAMTool):
         self.tools_from_inf = {}
 
     def run(self, toggle=False):
-        self.app.report_usage("PcbWizard Tool()")
+        self.app.defaults.report_usage("PcbWizard Tool()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -298,7 +298,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_excellon, 'params': [filename]})
 
@@ -321,7 +321,7 @@ class PcbWizard(FlatCAMTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.load_inf, 'params': [filename]})
 
@@ -417,20 +417,15 @@ class PcbWizard(FlatCAMTool):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
-            # self.progress.emit(20)
-
             try:
                 ret = excellon_obj.parse_file(file_obj=excellon_fileobj)
                 if ret == "fail":
                     app_obj.log.debug("Excellon parsing failed.")
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _("This is not Excellon file."))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' % _("This is not Excellon file."))
                     return "fail"
             except IOError:
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
-                        _("Cannot parse file"), self.outname))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Cannot parse file"), self.outname))
                 app_obj.log.debug("Could not import Excellon object.")
-                app_obj.progress.emit(0)
                 return "fail"
             except Exception as e:
                 app_obj.log.debug("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
@@ -443,12 +438,11 @@ class PcbWizard(FlatCAMTool):
             if ret == 'fail':
                 app_obj.log.debug("Could not create geometry for Excellon object.")
                 return "fail"
-            app_obj.progress.emit(100)
+
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                (_("No geometry found in file"), name))
+            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("No geometry found in file"), name))
             return "fail"
 
         if excellon_fileobj is not None and excellon_fileobj != '':
@@ -467,12 +461,9 @@ class PcbWizard(FlatCAMTool):
                     self.app.file_opened.emit("excellon", name)
 
                     # GUI feedback
-                    self.app.inform.emit('[success] %s: %s' %
-                                         (_("Imported"), name))
+                    self.app.inform.emit('[success] %s: %s' % (_("Imported"), name))
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _('Excellon merging is in progress. Please wait...'))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _('Excellon merging is in progress. Please wait...'))
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('The imported Excellon file is None.'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _('The imported Excellon file is empty.'))

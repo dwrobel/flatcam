@@ -5,8 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from flatcamGUI.GUIElements import *
-from PyQt5 import QtPrintSupport
+from flatcamGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber
+from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch, mm
+
+# from io import StringIO
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -19,10 +25,12 @@ if '_' not in builtins.__dict__:
 
 class TextEditor(QtWidgets.QWidget):
 
-    def __init__(self, app, text=None, plain_text=None):
-        super().__init__()
+    def __init__(self, app, text=None, plain_text=None, parent=None):
+        super().__init__(parent=parent)
 
         self.app = app
+        self.plain_text = plain_text
+
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
             QtWidgets.QSizePolicy.MinimumExpanding
@@ -39,7 +47,7 @@ class TextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
-        if plain_text:
+        if self.plain_text:
             self.editor_class = FCTextAreaLineNumber()
             self.code_editor = self.editor_class.edit
 
@@ -144,14 +152,14 @@ class TextEditor(QtWidgets.QWidget):
         self.code_edited = ''
 
     def handlePrint(self):
-        self.app.report_usage("handlePrint()")
+        self.app.defaults.report_usage("handlePrint()")
 
         dialog = QtPrintSupport.QPrintDialog()
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
-        self.app.report_usage("handlePreview()")
+        self.app.defaults.report_usage("handlePreview()")
 
         dialog = QtPrintSupport.QPrintPreviewDialog()
         dialog.paintRequested.connect(self.code_editor.print_)
@@ -164,7 +172,7 @@ class TextEditor(QtWidgets.QWidget):
         pass
 
     def handleOpen(self, filt=None):
-        self.app.report_usage("handleOpen()")
+        self.app.defaults.report_usage("handleOpen()")
 
         if filt:
             _filter_ = filt
@@ -184,13 +192,13 @@ class TextEditor(QtWidgets.QWidget):
                 file.close()
 
     def handleSaveGCode(self, name=None, filt=None, callback=None):
-        self.app.report_usage("handleSaveGCode()")
+        self.app.defaults.report_usage("handleSaveGCode()")
 
         if filt:
             _filter_ = filt
         else:
             _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                       "All Files (*.*)"
+                       "PDF Files (*.pdf);;All Files (*.*)"
 
         if name:
             obj_name = name
@@ -200,50 +208,57 @@ class TextEditor(QtWidgets.QWidget):
             except AttributeError:
                 obj_name = 'file'
                 if filt is None:
-                    _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
+                    _filter_ = "FlatConfig Files (*.FlatConfig);;PDF Files (*.pdf);;All Files (*.*)"
 
         try:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(
+            filename = str(FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Code ..."),
                 directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
                 filter=_filter_
             )[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Code ..."), filter=_filter_)[0])
+            filename = str(FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), filter=_filter_)[0])
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Code cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             try:
                 my_gcode = self.code_editor.toPlainText()
                 if filename.rpartition('.')[2].lower() == 'pdf':
-                    from reportlab.platypus import SimpleDocTemplate, Paragraph
-                    from reportlab.lib.styles import getSampleStyleSheet
-                    from reportlab.lib.units import inch
+                    page_size = (
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] * mm,
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] * mm
+                    )
 
-                    if self.app.defaults['units'].upper() == 'MM':
-                        dims = self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']]
-                    else:
-                        dims = (
-                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] / 25.4,
-                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] / 25.4
-                        )
+                    # add new line after each line
+                    lined_gcode = my_gcode.replace("\n", "<br />")
 
                     styles = getSampleStyleSheet()
                     styleN = styles['Normal']
-                    styleH = styles['Heading1']
+                    # styleH = styles['Heading1']
                     story = []
+
+                    if self.app.defaults['units'].lower() == 'mm':
+                        bmargin = self.app.defaults['global_tpdf_bmargin'] * mm
+                        tmargin = self.app.defaults['global_tpdf_tmargin'] * mm
+                        rmargin = self.app.defaults['global_tpdf_rmargin'] * mm
+                        lmargin = self.app.defaults['global_tpdf_lmargin'] * mm
+                    else:
+                        bmargin = self.app.defaults['global_tpdf_bmargin'] * inch
+                        tmargin = self.app.defaults['global_tpdf_tmargin'] * inch
+                        rmargin = self.app.defaults['global_tpdf_rmargin'] * inch
+                        lmargin = self.app.defaults['global_tpdf_lmargin'] * inch
 
                     doc = SimpleDocTemplate(
                         filename,
-                        pagesize=dims,
-                        bottomMargin=0.4 * 72,
-                        topMargin=0.6 * 72,
-                        rightMargin=0.8 * 72,
-                        leftMargin=0.8 * 72)
+                        pagesize=page_size,
+                        bottomMargin=bmargin,
+                        topMargin=tmargin,
+                        rightMargin=rmargin,
+                        leftMargin=lmargin)
 
-                    P = Paragraph(my_gcode, styleN)
+                    P = Paragraph(lined_gcode, styleN)
                     story.append(P)
 
                     doc.build(
@@ -272,7 +287,7 @@ class TextEditor(QtWidgets.QWidget):
             callback()
 
     def handleFindGCode(self):
-        self.app.report_usage("handleFindGCode()")
+        self.app.defaults.report_usage("handleFindGCode()")
 
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.entryFind.get_value()
@@ -283,7 +298,7 @@ class TextEditor(QtWidgets.QWidget):
             r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
-        self.app.report_usage("handleReplaceGCode()")
+        self.app.defaults.report_usage("handleReplaceGCode()")
 
         old = self.entryFind.get_value()
         new = self.entryReplace.get_value()
@@ -300,7 +315,7 @@ class TextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

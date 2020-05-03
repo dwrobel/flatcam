@@ -76,7 +76,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for travelling between the points.")
         )
 
-        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.travelz_entry.set_range(-9999.9999, 9999.9999)
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
@@ -90,7 +90,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for checking the point.")
         )
 
-        self.verz_entry = FCDoubleSpinner()
+        self.verz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.verz_entry.set_range(-9999.9999, 9999.9999)
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
@@ -113,7 +113,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for mounting the verification probe.")
         )
 
-        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_range(0.0000, 9999.9999)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
@@ -195,7 +195,6 @@ class ToolCalibration(FlatCAMTool):
         self.obj_type_combo = FCComboBox()
         self.obj_type_combo.addItem(_("Gerber"))
         self.obj_type_combo.addItem(_("Excellon"))
-        self.obj_type_combo.setCurrentIndex(1)
 
         self.obj_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.obj_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
@@ -206,7 +205,7 @@ class ToolCalibration(FlatCAMTool):
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        self.object_combo.is_last = True
 
         self.object_label = QtWidgets.QLabel("%s:" % _("Source object selection"))
         self.object_label.setToolTip(
@@ -263,8 +262,6 @@ class ToolCalibration(FlatCAMTool):
         self.bottom_left_coordy_found = EvalEntry()
         self.points_table.setCellWidget(row, 3, self.bottom_left_coordy_found)
 
-        self.bottom_left_coordx_found.set_value(_("Origin"))
-        self.bottom_left_coordy_found.set_value(_("Origin"))
         self.bottom_left_coordx_found.setDisabled(True)
         self.bottom_left_coordy_found.setDisabled(True)
         row += 1
@@ -471,7 +468,7 @@ class ToolCalibration(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
-        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.scalex_entry.set_range(0, 9999.9999)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
@@ -483,7 +480,7 @@ class ToolCalibration(FlatCAMTool):
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
-        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.scaley_entry.set_range(0, 9999.9999)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
@@ -508,7 +505,7 @@ class ToolCalibration(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.skewx_entry.set_range(-360, 360)
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
@@ -521,7 +518,7 @@ class ToolCalibration(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.skewy_entry.set_range(-360, 360)
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
@@ -552,7 +549,7 @@ class ToolCalibration(FlatCAMTool):
         # self.fin_scalex_label.setToolTip(
         #     _("Final factor for Scale action over X axis.")
         # )
-        # self.fin_scalex_entry = FCDoubleSpinner()
+        # self.fin_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_scalex_entry.set_range(0, 9999.9999)
         # self.fin_scalex_entry.set_precision(self.decimals)
         # self.fin_scalex_entry.setSingleStep(0.1)
@@ -564,7 +561,7 @@ class ToolCalibration(FlatCAMTool):
         # self.fin_scaley_label.setToolTip(
         #     _("Final factor for Scale action over Y axis.")
         # )
-        # self.fin_scaley_entry = FCDoubleSpinner()
+        # self.fin_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_scaley_entry.set_range(0, 9999.9999)
         # self.fin_scaley_entry.set_precision(self.decimals)
         # self.fin_scaley_entry.setSingleStep(0.1)
@@ -577,7 +574,7 @@ class ToolCalibration(FlatCAMTool):
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
         # )
-        # self.fin_skewx_entry = FCDoubleSpinner()
+        # self.fin_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_skewx_entry.set_range(-360, 360)
         # self.fin_skewx_entry.set_precision(self.decimals)
         # self.fin_skewx_entry.setSingleStep(0.1)
@@ -590,7 +587,7 @@ class ToolCalibration(FlatCAMTool):
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
         # )
-        # self.fin_skewy_entry = FCDoubleSpinner()
+        # self.fin_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_skewy_entry.set_range(-360, 360)
         # self.fin_skewy_entry.set_precision(self.decimals)
         # self.fin_skewy_entry.setSingleStep(0.1)
@@ -630,18 +627,15 @@ class ToolCalibration(FlatCAMTool):
         )
         grid_lay.addWidget(step_5, 45, 0, 1, 3)
 
-        self.adj_object_type_combo = QtWidgets.QComboBox()
+        self.adj_object_type_combo = FCComboBox()
         self.adj_object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
-        self.adj_object_type_combo.setCurrentIndex(0)
 
         self.adj_object_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.adj_object_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
-        self.adj_object_type_label.setToolTip(
-            _("Type of the FlatCAM Object to be adjusted.")
-        )
+        self.adj_object_type_label.setToolTip(_("Type of the FlatCAM Object to be adjusted."))
 
         grid_lay.addWidget(self.adj_object_type_label, 46, 0, 1, 3)
         grid_lay.addWidget(self.adj_object_type_combo, 47, 0, 1, 3)
@@ -649,7 +643,10 @@ class ToolCalibration(FlatCAMTool):
         self.adj_object_combo = FCComboBox()
         self.adj_object_combo.setModel(self.app.collection)
         self.adj_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.adj_object_combo.setCurrentIndex(0)
+        self.adj_object_combo.is_last = True
+        self.adj_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.adj_object_type_combo.get_value()]
 
         self.adj_object_label = QtWidgets.QLabel("%s:" % _("Adjusted object selection"))
         self.adj_object_label.setToolTip(
@@ -734,7 +731,7 @@ class ToolCalibration(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCalibration()")
+        self.app.defaults.report_usage("ToolCalibration()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -762,13 +759,16 @@ class ToolCalibration(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Calibration Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+E', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
         if self.local_connected is True:
             self.disconnect_cal_events()
+
+        self.bottom_left_coordx_found.set_value(_("Origin"))
+        self.bottom_left_coordy_found.set_value(_("Origin"))
 
         self.reset_calibration_points()
 
@@ -786,6 +786,14 @@ class ToolCalibration(FlatCAMTool):
         self.skewx_entry.set_value(0.0)
         self.skewy_entry.set_value(0.0)
 
+        # default object selection is Excellon = index_1
+        self.obj_type_combo.setCurrentIndex(1)
+        self.on_obj_type_combo()
+
+        self.adj_object_type_combo.setCurrentIndex(0)
+        self.on_adj_obj_type_combo()
+        # self.adj_object_combo.setCurrentIndex(0)
+
         # calibrated object
         self.cal_object = None
 
@@ -794,12 +802,18 @@ class ToolCalibration(FlatCAMTool):
     def on_obj_type_combo(self):
         obj_type = self.obj_type_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(0)
+        # self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon"
+        }[self.obj_type_combo.get_value()]
 
     def on_adj_obj_type_combo(self):
         obj_type = self.adj_object_type_combo.currentIndex()
         self.adj_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.adj_object_combo.setCurrentIndex(0)
+        # self.adj_object_combo.setCurrentIndex(0)
+        self.adj_object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.adj_object_type_combo.get_value()]
 
     def on_cal_source_radio(self, val):
         if val == 'object':
@@ -925,7 +939,7 @@ class ToolCalibration(FlatCAMTool):
             self.disconnect_cal_events()
 
     def reset_calibration_points(self):
-        self.click_points = list()
+        self.click_points = []
 
         self.bottom_left_coordx_tgt.set_value('')
         self.bottom_left_coordy_tgt.set_value('')
@@ -1275,7 +1289,7 @@ class ToolCalibration(FlatCAMTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                log.debug("App.on_copy_object() --> %s" % str(ee))
+                log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -1301,7 +1315,7 @@ class ToolCalibration(FlatCAMTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as err:
-                log.debug("App.on_copy_object() --> %s" % str(err))
+                log.debug("ToolCalibration.new_calibrated_object.initialize_gerber() --> %s" % str(err))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))

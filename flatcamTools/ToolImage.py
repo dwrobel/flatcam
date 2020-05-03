@@ -46,8 +46,7 @@ class ToolImage(FlatCAMTool):
 
         # Type of object to create for the image
         self.tf_type_obj_combo = FCComboBox()
-        self.tf_type_obj_combo.addItem("Gerber")
-        self.tf_type_obj_combo.addItem("Geometry")
+        self.tf_type_obj_combo.addItems([_("Gerber"), _("Geometry")])
 
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
@@ -61,7 +60,7 @@ class ToolImage(FlatCAMTool):
         ti_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
 
         # DPI value of the imported image
-        self.dpi_entry = FCSpinner()
+        self.dpi_entry = FCSpinner(callback=self.confirmation_message_int)
         self.dpi_entry.set_range(0, 99999)
         self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(_("Specify a DPI value for the image.") )
@@ -87,7 +86,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.image_type_label, self.image_type)
 
         # Mask value of the imported image when image monochrome
-        self.mask_bw_entry = FCSpinner()
+        self.mask_bw_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_bw_entry.set_range(0, 255)
 
         self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
@@ -102,7 +101,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_bw_label, self.mask_bw_entry)
 
         # Mask value of the imported image for RED color when image color
-        self.mask_r_entry = FCSpinner()
+        self.mask_r_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_r_entry.set_range(0, 255)
 
         self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
@@ -115,7 +114,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_r_label, self.mask_r_entry)
 
         # Mask value of the imported image for GREEN color when image color
-        self.mask_g_entry = FCSpinner()
+        self.mask_g_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_g_entry.set_range(0, 255)
 
         self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
@@ -128,7 +127,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_g_label, self.mask_g_entry)
 
         # Mask value of the imported image for BLUE color when image color
-        self.mask_b_entry = FCSpinner()
+        self.mask_b_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_b_entry.set_range(0, 255)
 
         self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))
@@ -156,7 +155,7 @@ class ToolImage(FlatCAMTool):
         self.image_type.activated_custom.connect(self.on_image_type)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolImage()")
+        self.app.defaults.report_usage("ToolImage()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -223,7 +222,7 @@ class ToolImage(FlatCAMTool):
         :type type_of_obj: str
         :return: None
         """
-        mask = list()
+        mask = []
         self.app.log.debug("on_file_importimage()")
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
@@ -238,19 +237,19 @@ class ToolImage(FlatCAMTool):
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
 
         filename = str(filename)
-        type_obj = self.tf_type_obj_combo.get_value().lower()
+        type_obj = self.tf_type_obj_combo.get_value()
         dpi = self.dpi_entry.get_value()
         mode = self.image_type.get_value()
         mask = [self.mask_bw_entry.get_value(), self.mask_r_entry.get_value(), self.mask_g_entry.get_value(),
                 self.mask_b_entry.get_value()]
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.import_image,
                                        'params': [filename, type_obj, dpi, mode, mask]})
 
-    def import_image(self, filename, o_type='gerber', dpi=96, mode='black', mask=None, outname=None):
+    def import_image(self, filename, o_type=_("Gerber"), dpi=96, mode='black', mask=None, outname=None):
         """
         Adds a new Geometry Object to the projects and populates
         it with shapes extracted from the SVG file.
@@ -264,15 +263,15 @@ class ToolImage(FlatCAMTool):
         :return:
         """
 
-        self.app.report_usage("import_image()")
+        self.app.defaults.report_usage("import_image()")
 
         if mask is None:
             mask = [250, 250, 250, 250]
 
-        if o_type is None or o_type == "geometry":
+        if o_type is None or o_type == _("Geometry"):
             obj_type = "geometry"
-        elif o_type == "gerber":
-            obj_type = o_type
+        elif o_type == _("Gerber"):
+            obj_type = "gerber"
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Not supported type is picked as parameter. "

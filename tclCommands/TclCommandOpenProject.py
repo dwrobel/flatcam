@@ -11,6 +11,8 @@ class TclCommandOpenProject(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['open_project']
 
+    description = '%s %s' % ("--", "Opens an FlatCAm project file, parse it and recreate all the objects.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -28,11 +30,13 @@ class TclCommandOpenProject(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens a FlatCAM project.",
+        'main': "Opens an FlatCAm project file, parse it and recreate all the objects.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
+            ('filename', 'Absolute path to file to open. Required.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
-        'examples': []
+        'examples': ['open_project D:\\my_project_file.FlatPrj',
+                     'open_project "D:\\my_project_file with spaces in the name.FlatPrj"']
     }
 
     def execute(self, args, unnamed_args):
@@ -45,6 +49,8 @@ class TclCommandOpenProject(TclCommandSignaled):
         :return: None or exception
         """
         filename = args['filename']
-        filename = filename.replace(' ', '')
+        # if ' ' in filename:
+        #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
+        #            "Please enclose the path within quotes."
 
-        self.app.open_project(filename, cli=True, plot=False)
+        self.app.open_project(filename, cli=True, plot=False, from_tcl=True)

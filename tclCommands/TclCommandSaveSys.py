@@ -16,6 +16,8 @@ class TclCommandSaveSys(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['save_sys', 'save']
 
+    description = '%s %s' % ("--", "Saves the FlatCAM system parameters to defaults file.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -33,9 +35,9 @@ class TclCommandSaveSys(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Saves the FlatCAM system paramaters to defaults file.",
+        'main': "Saves the FlatCAM system parameters to defaults file.",
         'args': collections.OrderedDict([]),
-        'examples': []
+        'examples': ['save_sys']
     }
 
     def execute(self, args, unnamed_args):
@@ -48,4 +50,4 @@ class TclCommandSaveSys(TclCommandSignaled):
         :return: None or exception
         """
 
-        self.app.save_defaults(args)
+        self.app.preferencesUiManager.save_defaults(args)

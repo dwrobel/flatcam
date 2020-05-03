@@ -9,13 +9,18 @@ from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.VisPyVisuals import *
-from flatcamGUI.GUIElements import FCEntry
+from flatcamGUI.GUIElements import FCEntry, FCButton, FCCheckBox
+
+from shapely.geometry import Point, MultiLineString, Polygon
+
+import FlatCAMTranslation as fcTranslate
+from camlib import FlatCAMRTreeStorage
+from flatcamEditors.FlatCAMGeoEditor import DrawToolShape
 
 from copy import copy
 import math
 import logging
 import gettext
-import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -43,81 +48,100 @@ class Distance(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
 
         self.units_label = QtWidgets.QLabel('%s:' % _("Units"))
         self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
         self.units_value.setDisabled(True)
 
+        grid0.addWidget(self.units_label, 0, 0)
+        grid0.addWidget(self.units_value, 0, 1)
+
+        self.snap_center_cb = FCCheckBox(_("Snap to center"))
+        self.snap_center_cb.setToolTip(
+            _("Mouse cursor will snap to the center of the pad/drill\n"
+              "when it is hovering over the geometry of the pad/drill.")
+        )
+        grid0.addWidget(self.snap_center_cb, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
         self.start_label = QtWidgets.QLabel("%s:" % _('Start Coords'))
         self.start_label.setToolTip(_("This is measuring Start point coordinates."))
-
-        self.stop_label = QtWidgets.QLabel("%s:" % _('Stop Coords'))
-        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
-
-        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
-        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
-
-        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
-        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
-
-        self.angle_label = QtWidgets.QLabel('%s:' % _("Angle"))
-        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
-
-        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
-        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.start_entry = FCEntry()
         self.start_entry.setReadOnly(True)
         self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
 
+        grid0.addWidget(self.start_label, 3, 0)
+        grid0.addWidget(self.start_entry, 3, 1)
+
+        self.stop_label = QtWidgets.QLabel("%s:" % _('Stop Coords'))
+        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
+
         self.stop_entry = FCEntry()
         self.stop_entry.setReadOnly(True)
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
+
+        grid0.addWidget(self.stop_label, 4, 0)
+        grid0.addWidget(self.stop_entry, 4, 1)
+
+        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
+        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
         self.distance_x_entry = FCEntry()
         self.distance_x_entry.setReadOnly(True)
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
+        grid0.addWidget(self.distance_x_label, 5, 0)
+        grid0.addWidget(self.distance_x_entry, 5, 1)
+
+        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
+        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
+
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setReadOnly(True)
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
+
+        grid0.addWidget(self.distance_y_label, 6, 0)
+        grid0.addWidget(self.distance_y_entry, 6, 1)
+
+        self.angle_label = QtWidgets.QLabel('%s:' % _("Angle"))
+        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
 
         self.angle_entry = FCEntry()
         self.angle_entry.setReadOnly(True)
         self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
+        grid0.addWidget(self.angle_label, 7, 0)
+        grid0.addWidget(self.angle_entry, 7, 1)
+
+        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
+
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setReadOnly(True)
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
-        self.measure_btn = QtWidgets.QPushButton(_("Measure"))
+        grid0.addWidget(self.total_distance_label, 8, 0)
+        grid0.addWidget(self.total_distance_entry, 8, 1)
+
+        self.measure_btn = FCButton(_("Measure"))
         # self.measure_btn.setFixedWidth(70)
         self.layout.addWidget(self.measure_btn)
-
-        form_layout.addRow(self.units_label, self.units_value)
-        form_layout.addRow(self.start_label, self.start_entry)
-        form_layout.addRow(self.stop_label, self.stop_entry)
-        form_layout.addRow(self.distance_x_label, self.distance_x_entry)
-        form_layout.addRow(self.distance_y_label, self.distance_y_entry)
-        form_layout.addRow(self.angle_label, self.angle_entry)
-        form_layout.addRow(self.total_distance_label, self.total_distance_entry)
-
-        # initial view of the layout
-        self.start_entry.set_value('(0, 0)')
-        self.stop_entry.set_value('(0, 0)')
-        self.distance_x_entry.set_value('0.0')
-        self.distance_y_entry.set_value('0.0')
-        self.angle_entry.set_value('0.0')
-        self.total_distance_entry.set_value('0.0')
 
         self.layout.addStretch()
 
@@ -137,6 +161,15 @@ class Distance(FlatCAMTool):
         self.mm = None
         self.mr = None
 
+        # monitor if the tool was used
+        self.tool_done = False
+
+        # store the grid status here
+        self.grid_status_memory = False
+
+        # store here if the snap button was clicked
+        self.snap_toggled = None
+
         # VisPy visuals
         if self.app.is_legacy is False:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
@@ -147,12 +180,14 @@ class Distance(FlatCAMTool):
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolDistance()")
+        self.app.defaults.report_usage("ToolDistance()")
 
         self.points[:] = []
 
         self.rel_point1 = None
         self.rel_point2 = None
+
+        self.tool_done = False
 
         if self.app.tool_tab_locked is True:
             return
@@ -171,13 +206,13 @@ class Distance(FlatCAMTool):
             self.deactivate_measure_tool()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the GUI
         self.app.ui.tool_scroll_area.takeWidget()
 
-        # Put ourself in the GUI
+        # Put ourselves in the GUI
         self.app.ui.tool_scroll_area.setWidget(self)
 
         # Switch notebook to tool page
@@ -195,16 +230,46 @@ class Distance(FlatCAMTool):
         self.angle_entry.set_value('0.0')
         self.total_distance_entry.set_value('0.0')
 
+        self.snap_center_cb.set_value(self.app.defaults['tools_dist_snap_center'])
+
+        # snap center works only for Gerber and Execellon Editor's
+        if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
+            self.snap_center_cb.show()
+            snap_center = self.app.defaults['tools_dist_snap_center']
+            self.on_snap_toggled(snap_center)
+
+            self.snap_center_cb.toggled.connect(self.on_snap_toggled)
+        else:
+            self.snap_center_cb.hide()
+            try:
+                self.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
+            except (TypeError, AttributeError):
+                pass
+
         # this is a hack; seems that triggering the grid will make the visuals better
         # trigger it twice to return to the original state
         self.app.ui.grid_snap_btn.trigger()
         self.app.ui.grid_snap_btn.trigger()
 
+        if self.app.ui.grid_snap_btn.isChecked():
+            self.grid_status_memory = True
+
         log.debug("Distance Tool --> tool initialized")
+
+    def on_snap_toggled(self, state):
+        self.app.defaults['tools_dist_snap_center'] = state
+        if state:
+            # disengage the grid snapping since it will be hard to find the drills or pads on grid
+            if self.app.ui.grid_snap_btn.isChecked():
+                self.app.ui.grid_snap_btn.trigger()
 
     def activate_measure_tool(self):
         # ENABLE the Measuring TOOL
         self.active = True
+
+        # disable the measuring button
+        self.measure_btn.setDisabled(True)
+        self.measure_btn.setText('%s...' % _("Working"))
 
         self.clicked_meas = 0
         self.original_call_source = copy(self.app.call_source)
@@ -267,6 +332,10 @@ class Distance(FlatCAMTool):
         self.active = False
         self.points = []
 
+        # disable the measuring button
+        self.measure_btn.setDisabled(False)
+        self.measure_btn.setText(_("Measure"))
+
         self.app.call_source = copy(self.original_call_source)
         if self.original_call_source == 'app':
             self.app.mm = self.canvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
@@ -307,7 +376,15 @@ class Distance(FlatCAMTool):
         # delete the measuring line
         self.delete_shape()
 
+        # restore the grid status
+        if (self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is False) or \
+                (not self.app.ui.grid_snap_btn.isChecked() and self.grid_status_memory is True):
+            self.app.ui.grid_snap_btn.trigger()
+
         log.debug("Distance Tool --> exit tool")
+
+        if self.tool_done is False:
+            self.app.inform.emit('%s' % _("Distance Tool finished."))
 
     def on_mouse_click_release(self, event):
         # mouse click releases will be accepted only if the left button is clicked
@@ -323,11 +400,71 @@ class Distance(FlatCAMTool):
 
             pos_canvas = self.canvas.translate_coords(event_pos)
 
-            # if GRID is active we need to get the snapped positions
-            if self.app.grid_status() == True:
-                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            if self.snap_center_cb.get_value() is False:
+                # if GRID is active we need to get the snapped positions
+                if self.app.grid_status():
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = pos_canvas[0], pos_canvas[1]
             else:
-                pos = pos_canvas[0], pos_canvas[1]
+                pos = (pos_canvas[0], pos_canvas[1])
+                current_pt = Point(pos)
+                shapes_storage = self.make_storage()
+
+                if self.original_call_source == 'exc_editor':
+                    for storage in self.app.exc_editor.storage_dict:
+                        __, st_closest_shape = self.app.exc_editor.storage_dict[storage].nearest(pos)
+                        shapes_storage.insert(st_closest_shape)
+
+                    __, closest_shape = shapes_storage.nearest(pos)
+
+                    # if it's a drill
+                    if isinstance(closest_shape.geo, MultiLineString):
+                        radius = closest_shape.geo[0].length / 2.0
+                        center_pt = closest_shape.geo.centroid
+
+                        geo_buffered = center_pt.buffer(radius)
+
+                        if current_pt.within(geo_buffered):
+                            pos = (center_pt.x, center_pt.y)
+
+                    # if it's a slot
+                    elif isinstance(closest_shape.geo, Polygon):
+                        geo_buffered = closest_shape.geo.buffer(0)
+                        center_pt = geo_buffered.centroid
+
+                        if current_pt.within(geo_buffered):
+                            pos = (center_pt.x, center_pt.y)
+
+                elif self.original_call_source == 'grb_editor':
+                    clicked_pads = []
+                    for storage in self.app.grb_editor.storage_dict:
+                        try:
+                            for shape_stored in self.app.grb_editor.storage_dict[storage]['geometry']:
+                                if 'solid' in shape_stored.geo:
+                                    geometric_data = shape_stored.geo['solid']
+                                    if Point(current_pt).within(geometric_data):
+                                        if isinstance(shape_stored.geo['follow'], Point):
+                                            clicked_pads.append(shape_stored.geo['follow'])
+                        except KeyError:
+                            pass
+
+                    if len(clicked_pads) > 1:
+                        self.tool_done = True
+                        self.deactivate_measure_tool()
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Pads overlapped. Aborting."))
+                        return
+
+                    pos = (clicked_pads[0].x, clicked_pads[0].y)
+
+                self.app.on_jump_to(custom_location=pos, fit_center=False)
+                # Update cursor
+                self.app.app_cursor.enabled = True
+                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='#000000',
+                                             edge_width=self.app.defaults["global_cursor_width"],
+                                             size=self.app.defaults["global_cursor_size"])
+
             self.points.append(pos)
 
             # Reset here the relative coordinates so there is a new reference on the click position
@@ -340,40 +477,46 @@ class Distance(FlatCAMTool):
                 self.rel_point2 = copy(self.rel_point1)
                 self.rel_point1 = pos
 
-            if len(self.points) == 1:
-                self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
-                self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
-            elif len(self.points) == 2:
-                dx = self.points[1][0] - self.points[0][0]
-                dy = self.points[1][1] - self.points[0][1]
-                d = math.sqrt(dx ** 2 + dy ** 2)
-                self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
+            self.calculate_distance(pos=pos)
 
-                self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | (tx3} = {d_z}".format(
-                    tx1=_("MEASURING"),
-                    tx2=_("Result"),
-                    tx3=_("Distance"),
-                    d_x='%*f' % (self.decimals, abs(dx)),
-                    d_y='%*f' % (self.decimals, abs(dy)),
-                    d_z='%*f' % (self.decimals, abs(d)))
-                )
+    def calculate_distance(self, pos):
+        if len(self.points) == 1:
+            self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
+            self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
+        elif len(self.points) == 2:
+            # self.app.app_cursor.enabled = False
+            dx = self.points[1][0] - self.points[0][0]
+            dy = self.points[1][1] - self.points[0][1]
+            d = math.sqrt(dx ** 2 + dy ** 2)
+            self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
 
-                self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
-                self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
+                tx1=_("MEASURING"),
+                tx2=_("Result"),
+                tx3=_("Distance"),
+                d_x='%*f' % (self.decimals, abs(dx)),
+                d_y='%*f' % (self.decimals, abs(dy)),
+                d_z='%*f' % (self.decimals, abs(d)))
+            )
 
+            self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
+            self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+
+            if dx != 0.0:
                 try:
                     angle = math.degrees(math.atan(dy / dx))
                     self.angle_entry.set_value('%.*f' % (self.decimals, angle))
-                except Exception as e:
+                except Exception:
                     pass
 
-                self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
-                self.app.ui.rel_position_label.setText(
-                    "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-                        '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-                    )
+            self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
                 )
-                self.deactivate_measure_tool()
+            )
+            self.tool_done = True
+            self.deactivate_measure_tool()
 
     def on_mouse_move_meas(self, event):
         try:  # May fail in case mouse not within axes
@@ -390,12 +533,13 @@ class Distance(FlatCAMTool):
 
             pos_canvas = self.app.plotcanvas.translate_coords((x, y))
 
-            if self.app.grid_status() == True:
+            if self.app.grid_status():
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color=self.app.cursor_color_3D,
+                                             edge_width=self.app.defaults["global_cursor_width"],
                                              size=self.app.defaults["global_cursor_size"])
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
@@ -423,11 +567,13 @@ class Distance(FlatCAMTool):
             if len(self.points) == 1:
                 self.utility_geometry(pos=pos)
                 # and display the temporary angle
-                try:
-                    angle = math.degrees(math.atan(dy / dx))
-                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
-                except Exception as e:
-                    pass
+                if dx != 0.0:
+                    try:
+                        angle = math.degrees(math.atan(dy / dx))
+                        self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+                    except Exception as e:
+                        log.debug("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
+                        pass
 
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
@@ -452,7 +598,7 @@ class Distance(FlatCAMTool):
         else:
             color = '#FFFFFFFF'
 
-        self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None)
+        self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None, linewidth=2)
 
         if self.app.is_legacy is True:
             self.sel_shapes.redraw()
@@ -461,7 +607,15 @@ class Distance(FlatCAMTool):
         self.sel_shapes.clear()
         self.sel_shapes.redraw()
 
-    def set_meas_units(self, units):
-        self.meas.units_label.setText("[" + self.app.options["units"].lower() + "]")
+    @staticmethod
+    def make_storage():
+        # ## Shape storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = DrawToolShape.get_pts
+
+        return storage
+
+    # def set_meas_units(self, units):
+    #     self.meas.units_label.setText("[" + self.app.options["units"].lower() + "]")
 
 # end of file

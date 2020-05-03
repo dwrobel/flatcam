@@ -1,7 +1,10 @@
 # This file contains python only requirements to be installed with pip
 # Python packages that cannot be installed with pip (e.g. PyQt5, GDAL) are not included.
+# For Windows GDAL wheel can be found here: https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal
 # Usage: pip3 install -r requirements.txt
-numpy >=1.16
+
+pyqt5>=5.12.1
+numpy>=1.16
 matplotlib>=3.1
 cycler>=0.10
 python-dateutil>=2.1
@@ -12,10 +15,10 @@ dill
 rtree
 pyopengl
 vispy
-ortools
-svg.path
+ortools>=7.0
+svg.path>=4.0
 simplejson
-shapely>=1.3
+shapely>=1.7.0
 freetype-py
 fontTools
 rasterio
@@ -24,3 +27,4 @@ ezdxf
 qrcode>=6.1
 reportlab>=3.5
 svglib
+gdal

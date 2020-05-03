@@ -26,16 +26,18 @@ from lxml import etree as ET
 from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, polygonize
+from shapely.ops import cascaded_union, unary_union, substring
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
 
-# needed for legacy mode
+# ---------------------------------------
+# NEEDED for Legacy mode
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
+# ---------------------------------------
 
 import collections
 from collections import Iterable
@@ -43,6 +45,8 @@ from collections import Iterable
 import rasterio
 from rasterio.features import shapes
 import ezdxf
+
+from FlatCAMCommon import GracefulException as grace
 
 # TODO: Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
@@ -56,7 +60,7 @@ if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import routing_enums_pb2
 
 import logging
-import FlatCAMApp
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -458,14 +462,17 @@ class Geometry(object):
     """
 
     defaults = {
-        "units": 'in',
-        "geo_steps_per_circle": 64
+        "units": 'mm',
+        # "geo_steps_per_circle": 128
     }
 
     def __init__(self, geo_steps_per_circle=None):
         # Units (in or mm)
         self.units = self.app.defaults["units"]
         self.decimals = self.app.decimals
+
+        self.drawing_tolerance = 0.0
+        self.tools = None
 
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
@@ -528,13 +535,13 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Point(origin).buffer(
-                radius, int(int(self.geo_steps_per_circle) / 4)))
+            self.solid_geometry.append(Point(origin).buffer(radius, int(self.geo_steps_per_circle)))
             return
 
         try:
-            self.solid_geometry = self.solid_geometry.union(Point(origin).buffer(
-                radius, int(int(self.geo_steps_per_circle) / 4)))
+            self.solid_geometry = self.solid_geometry.union(
+                Point(origin).buffer(radius, int(self.geo_steps_per_circle))
+            )
         except Exception as e:
             log.error("Failed to run union on polygons. %s" % str(e))
             return
@@ -614,10 +621,12 @@ class Geometry(object):
                 log.warning("Not implemented.")
         self.solid_geometry = cascaded_union(diffs)
 
-    def bounds(self):
+    def bounds(self, flatten=False):
         """
         Returns coordinates of rectangular bounds
         of geometry: (xmin, ymin, xmax, ymax).
+        :param flatten: will flatten the solid_geometry if True
+        :return:
         """
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
@@ -630,26 +639,26 @@ class Geometry(object):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = np.Inf
-                miny = np.Inf
-                maxx = -np.Inf
-                maxy = -np.Inf
+                gminx = np.Inf
+                gminy = np.Inf
+                gmaxx = -np.Inf
+                gmaxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
                         for key in k:
                             minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
-                            minx = min(minx, minx_)
-                            miny = min(miny, miny_)
-                            maxx = max(maxx, maxx_)
-                            maxy = max(maxy, maxy_)
+                            gminx = min(gminx, minx_)
+                            gminy = min(gminy, miny_)
+                            gmaxx = max(gmaxx, maxx_)
+                            gmaxy = max(gmaxy, maxy_)
                     else:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                        minx = min(minx, minx_)
-                        miny = min(miny, miny_)
-                        maxx = max(maxx, maxx_)
-                        maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
+                        gminx = min(gminx, minx_)
+                        gminy = min(gminy, miny_)
+                        gmaxx = max(gmaxx, maxx_)
+                        gmaxy = max(gmaxy, maxy_)
+                return gminx, gminy, gmaxx, gmaxy
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
@@ -661,14 +670,24 @@ class Geometry(object):
             maxy_list = []
 
             for tool in self.tools:
-                minx, miny, maxx, maxy = bounds_rec(self.tools[tool]['solid_geometry'])
+                working_geo = self.tools[tool]['solid_geometry']
+
+                if flatten:
+                    self.flatten(geometry=working_geo, reset=True)
+                    working_geo = self.flat_geometry
+
+                minx, miny, maxx, maxy = bounds_rec(working_geo)
                 minx_list.append(minx)
                 miny_list.append(miny)
                 maxx_list.append(maxx)
                 maxy_list.append(maxy)
 
-            return(min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
+            return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
         else:
+            if flatten:
+                self.flatten(reset=True)
+                self.solid_geometry = self.flat_geometry
+
             bounds_coords = bounds_rec(self.solid_geometry)
             return bounds_coords
 
@@ -695,7 +714,6 @@ class Geometry(object):
         #         return 0, 0, 0, 0
         #
         #     if type(self.solid_geometry) is list:
-        #         # TODO: This can be done faster. See comment from Shapely mailing lists.
         #         if len(self.solid_geometry) == 0:
         #             log.debug('solid_geometry is empty []')
         #             return 0, 0, 0, 0
@@ -711,7 +729,6 @@ class Geometry(object):
         #     return 0, 0, 0, 0
         #
         # if type(self.solid_geometry) is list:
-        #     # TODO: This can be done faster. See comment from Shapely mailing lists.
         #     if len(self.solid_geometry) == 0:
         #         log.debug('solid_geometry is empty []')
         #         return 0, 0, 0, 0
@@ -915,9 +932,9 @@ class Geometry(object):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
-        geo_iso = list()
+        geo_iso = []
 
         if follow:
             return geometry
@@ -939,16 +956,16 @@ class Geometry(object):
             for pol in working_geo:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
                 if offset == 0:
                     geo_iso.append(pol)
                 else:
                     corner_type = 1 if corner is None else corner
-                    geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner_type))
+                    geo_iso.append(pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
                 pol_nr += 1
                 disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                if  old_disp_number < disp_number <= 100:
+                if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %s %d: %d%%' %
                                                              (_("Pass"), int(passes + 1), int(disp_number)))
                     old_disp_number = disp_number
@@ -959,8 +976,7 @@ class Geometry(object):
                 geo_iso.append(working_geo)
             else:
                 corner_type = 1 if corner is None else corner
-                geo_iso.append(working_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                  join_style=corner_type))
+                geo_iso.append(working_geo.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
 
         self.app.proc_container.update_view_text(' %s' % _("Buffering"))
         geo_iso = unary_union(geo_iso)
@@ -980,8 +996,8 @@ class Geometry(object):
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
             return "fail"
 
-    def flatten_list(self, list):
-        for item in list:
+    def flatten_list(self, obj_list):
+        for item in obj_list:
             if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
                 yield from self.flatten_list(item)
             else:
@@ -991,13 +1007,13 @@ class Geometry(object):
         """
         Imports shapes from an SVG file into the object's geometry.
 
-        :param filename: Path to the SVG file.
-        :type filename: str
+        :param filename:    Path to the SVG file.
+        :type filename:     str
         :param object_type: parameter passed further along
-        :param flip: Flip the vertically.
-        :type flip: bool
-        :param units: FlatCAM units
-        :return: None
+        :param flip:        Flip the vertically.
+        :type flip:         bool
+        :param units:       FlatCAM units
+        :return:            None
         """
 
         log.debug("camlib.Geometry.import_svg()")
@@ -1017,7 +1033,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = list()
+            self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
             if type(geos) is list:
@@ -1032,7 +1048,7 @@ class Geometry(object):
 
         geos_text = getsvgtext(svg_root, object_type, units=units)
         if geos_text is not None:
-            geos_text_f = list()
+            geos_text_f = []
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:
@@ -1046,10 +1062,10 @@ class Geometry(object):
         """
         Imports shapes from an DXF file into the object's geometry.
 
-        :param filename: Path to the DXF file.
-        :type filename: str
-        :param units: Application units
-        :type flip: str
+        :param filename:    Path to the DXF file.
+        :type filename:     str
+        :param object_type:
+        :param units:       Application units
         :return: None
         """
 
@@ -1101,8 +1117,8 @@ class Geometry(object):
 
         scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
 
-        geos = list()
-        unscaled_geos = list()
+        geos = []
+        unscaled_geos = []
 
         with rasterio.open(filename) as src:
             # if filename.lower().rpartition('.')[-1] == 'bmp':
@@ -1149,7 +1165,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = list()
+            self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
             # self.solid_geometry.append(cascaded_union(geos))
@@ -1188,7 +1204,6 @@ class Geometry(object):
         if boundary is None:
             boundary = self.solid_geometry.envelope
         return boundary.difference(self.solid_geometry)
-        
 
     def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
                       prog_plot=False):
@@ -1199,15 +1214,15 @@ class Geometry(object):
         This algorithm shrinks the edges of the polygon and takes
         the resulting edges as toolpaths.
 
-        :param polygon: Polygon to clear.
-        :param tooldia: Diameter of the tool.
-        :param steps_per_circle: number of linear segments to be used to approximate a circle
-        :param overlap: Overlap of toolpasses.
-        :param connect: Draw lines between disjoint segments to
-                        minimize tool lifts.
-        :param contour: Paint around the edges. Inconsequential in
-                        this painting method.
-        :param prog_plot: boolean; if Ture use the progressive plotting
+        :param polygon:             Polygon to clear.
+        :param tooldia:             Diameter of the tool.
+        :param steps_per_circle:    number of linear segments to be used to approximate a circle
+        :param overlap:             Overlap of toolpasses.
+        :param connect:             Draw lines between disjoint segments to
+                                    minimize tool lifts.
+        :param contour:             Paint around the edges. Inconsequential in
+                                    this painting method.
+        :param prog_plot:           boolean; if Ture use the progressive plotting
         :return:
         """
 
@@ -1225,7 +1240,7 @@ class Geometry(object):
 
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
-        current = polygon.buffer((-tooldia / 1.999999), int(int(steps_per_circle) / 4))
+        current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle))
         if current.area == 0:
             # Otherwise, trying to to insert current.exterior == None
             # into the FlatCAMStorage will fail.
@@ -1248,13 +1263,13 @@ class Geometry(object):
         while True:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
             # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
+            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
             if current.area > 0:
 
                 # current can be a MultiPolygon
@@ -1326,7 +1341,7 @@ class Geometry(object):
         geoms.get_points = get_pts
 
         # Path margin
-        path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))
+        path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
 
         if path_margin.is_empty or path_margin is None:
             return
@@ -1340,12 +1355,12 @@ class Geometry(object):
         while True:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
-            path = Point(seedpoint).buffer(radius, int(steps_per_circle / 4)).exterior
+            path = Point(seedpoint).buffer(radius, int(steps_per_circle)).exterior
             path = path.intersection(path_margin)
 
             # Touches polygon?
@@ -1372,11 +1387,12 @@ class Geometry(object):
 
         # Clean inside edges (contours) of the original polygon
         if contour:
-            outer_edges = [x.exterior for x in autolist(
-                polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4)))]
+            outer_edges = [
+                x.exterior for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
+            ]
             inner_edges = []
             # Over resulting polygons
-            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))):
+            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))):
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
@@ -1441,41 +1457,85 @@ class Geometry(object):
 
         try:
             margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
-        except Exception as e:
+        except Exception:
             log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
             return None
 
-        # First line
-        try:
-            y = top - tooldia / 1.99999999
-            while y > bot + tooldia / 1.999999999:
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+        # decide the direction of the lines
+        if abs(left - right) >= abs(top - bot):
+            # First line
+            try:
+                y = top - tooldia / 1.99999999
+                while y > bot + tooldia / 1.999999999:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise grace
 
-                # provide the app with a way to process the GUI events when in a blocking loop
-                QtWidgets.QApplication.processEvents()
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
 
+                    line = LineString([(left, y), (right, y)])
+                    line = line.intersection(margin_poly)
+                    lines_trimmed.append(line)
+                    y -= tooldia * (1 - overlap)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+                        self.temp_shapes.redraw()
+
+                # Last line
+                y = bot + tooldia / 2
                 line = LineString([(left, y), (right, y)])
                 line = line.intersection(margin_poly)
-                lines_trimmed.append(line)
-                y -= tooldia * (1 - overlap)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
-                    self.temp_shapes.redraw()
 
-            # Last line
-            y = bot + tooldia / 2
-            line = LineString([(left, y), (right, y)])
-            line = line.intersection(margin_poly)
+                try:
+                    for ll in line:
+                        lines_trimmed.append(ll)
+                        if prog_plot:
+                            self.plot_temp_shapes(ll)
+                except TypeError:
+                    lines_trimmed.append(line)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+            except Exception as e:
+                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                return None
+        else:
+            # First line
+            try:
+                x = left + tooldia / 1.99999999
+                while x < right - tooldia / 1.999999999:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise grace
 
-            for ll in line:
-                lines_trimmed.append(ll)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
-        except Exception as e:
-            log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
-            return None
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
+                    line = LineString([(x, top), (x, bot)])
+                    line = line.intersection(margin_poly)
+                    lines_trimmed.append(line)
+                    x += tooldia * (1 - overlap)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+                        self.temp_shapes.redraw()
+
+                # Last line
+                x = right + tooldia / 2
+                line = LineString([(x, top), (x, bot)])
+                line = line.intersection(margin_poly)
+
+                try:
+                    for ll in line:
+                        lines_trimmed.append(ll)
+                        if prog_plot:
+                            self.plot_temp_shapes(ll)
+                except TypeError:
+                    lines_trimmed.append(line)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+            except Exception as e:
+                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                return None
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1489,6 +1549,156 @@ class Geometry(object):
                     geoms.insert(line)
                 else:
                     log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
+        except TypeError:
+            # in case lines_trimmed are not iterable (Linestring, LinearRing)
+            geoms.insert(lines_trimmed)
+
+        # Add margin (contour) to storage
+        if contour:
+            try:
+                for poly in margin_poly:
+                    if isinstance(poly, Polygon) and not poly.is_empty:
+                        geoms.insert(poly.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(poly.exterior)
+                        for ints in poly.interiors:
+                            geoms.insert(ints)
+                            if prog_plot:
+                                self.plot_temp_shapes(ints)
+            except TypeError:
+                if isinstance(margin_poly, Polygon) and not margin_poly.is_empty:
+                    marg_ext = margin_poly.exterior
+                    geoms.insert(marg_ext)
+                    if prog_plot:
+                        self.plot_temp_shapes(margin_poly.exterior)
+                    for ints in margin_poly.interiors:
+                        geoms.insert(ints)
+                        if prog_plot:
+                            self.plot_temp_shapes(ints)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
+
+        # Optimization: Reduce lifts
+        if connect:
+            # log.debug("Reducing tool lifts...")
+            geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
+
+        return geoms
+
+    def fill_with_lines(self, line, aperture_size, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                        prog_plot=False):
+        """
+        Creates geometry of lines inside a polygon for a tool to cover
+        the whole area.
+
+        This algorithm draws parallel lines inside the polygon.
+
+        :param line:                The target line that create painted polygon.
+        :param aperture_size:       the size of the aperture that is used to draw the 'line' as a polygon
+        :type line:                 shapely.geometry.LineString or shapely.geometry.MultiLineString
+        :param tooldia:             Tool diameter.
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param overlap:             Tool path overlap percentage.
+        :param connect:             Connect lines to avoid tool lifts.
+        :param contour:             Paint around the edges.
+        :param prog_plot:           boolean; if to use the progressive plotting
+        :return:
+        """
+
+        # log.debug("camlib.fill_with_lines()")
+        if not isinstance(line, LineString) and not isinstance(line, MultiLineString):
+            log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
+            return None
+
+        # ## The toolpaths
+        # Index first and last points in paths
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        geoms = FlatCAMRTreeStorage()
+        geoms.get_points = get_pts
+
+        lines_trimmed = []
+
+        polygon = line.buffer(aperture_size / 2.0, int(steps_per_circle))
+
+        try:
+            margin_poly = polygon.buffer(-tooldia / 2.0, int(steps_per_circle))
+        except Exception:
+            log.debug("camlib.Geometry.fill_with_lines() --> Could not buffer the Polygon, tool diameter too high")
+            return None
+
+        # First line
+        try:
+            delta = 0
+            while delta < aperture_size / 2:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
+                new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+                new_line = new_line.intersection(margin_poly)
+                lines_trimmed.append(new_line)
+
+                new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+                new_line = new_line.intersection(margin_poly)
+                lines_trimmed.append(new_line)
+
+                delta += tooldia * (1 - overlap)
+                if prog_plot:
+                    self.plot_temp_shapes(new_line)
+                    self.temp_shapes.redraw()
+
+            # Last line
+            delta = (aperture_size / 2) - (tooldia / 2.00000001)
+
+            new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+            new_line = new_line.intersection(margin_poly)
+        except Exception as e:
+            log.debug('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
+            return None
+
+        try:
+            for ll in new_line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(ll)
+        except TypeError:
+            lines_trimmed.append(new_line)
+            if prog_plot:
+                self.plot_temp_shapes(new_line)
+
+        new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+        new_line = new_line.intersection(margin_poly)
+
+        try:
+            for ll in new_line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(ll)
+        except TypeError:
+            lines_trimmed.append(new_line)
+            if prog_plot:
+                self.plot_temp_shapes(new_line)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
+
+        lines_trimmed = unary_union(lines_trimmed)
+
+        # Add lines to storage
+        try:
+            for line in lines_trimmed:
+                if isinstance(line, LineString) or isinstance(line, LinearRing):
+                    geoms.insert(line)
+                else:
+                    log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_trimmed)
@@ -1585,14 +1795,14 @@ class Geometry(object):
         # storage.get_points = get_pts
         #
         # for shape in geolist:
-        #     if shape is not None:  # TODO: This shouldn't have happened.
+        #     if shape is not None:
         #         # Make LlinearRings into linestrings otherwise
         #         # When chaining the coordinates path is messed up.
         #         storage.insert(LineString(shape))
         #         #storage.insert(shape)
 
         # ## Iterate over geometry paths getting the nearest each time.
-        #optimized_paths = []
+        # optimized_paths = []
         optimized_paths = FlatCAMRTreeStorage()
         optimized_paths.get_points = get_pts
         path_count = 0
@@ -1626,7 +1836,7 @@ class Geometry(object):
                 # Straight line from current_pt to pt.
                 # Is the toolpath inside the geometry?
                 walk_path = LineString([current_pt, pt])
-                walk_cut = walk_path.buffer(tooldia / 2, int(steps_per_circle / 4))
+                walk_cut = walk_path.buffer(tooldia / 2, int(steps_per_circle))
 
                 if walk_cut.within(boundary) and walk_path.length < max_walk:
                     # log.debug("Walk to path #%d is inside. Joining." % path_count)
@@ -1662,12 +1872,13 @@ class Geometry(object):
     def path_connect(storage, origin=(0, 0)):
         """
         Simplifies paths in the FlatCAMRTreeStorage storage by
-        connecting paths that touch on their enpoints.
+        connecting paths that touch on their endpoints.
 
-        :param storage: Storage containing the initial paths.
-        :rtype storage: FlatCAMRTreeStorage
-        :return: Simplified storage.
-        :rtype: FlatCAMRTreeStorage
+        :param storage:     Storage containing the initial paths.
+        :rtype storage:     FlatCAMRTreeStorage
+        :param origin:      tuple; point from which to calculate the nearest point
+        :return:            Simplified storage.
+        :rtype:             FlatCAMRTreeStorage
         """
 
         log.debug("path_connect()")
@@ -1680,7 +1891,7 @@ class Geometry(object):
         # storage.get_points = get_pts
         #
         # for shape in pathlist:
-        #     if shape is not None:  # TODO: This shouldn't have happened.
+        #     if shape is not None:
         #         storage.insert(shape)
 
         path_count = 0
@@ -1905,11 +2116,11 @@ class Geometry(object):
         Mirrors the object around a specified axis passign through
         the given point.
 
-        :param axis: "X" or "Y" indicates around which axis to mirror.
-        :type axis: str
-        :param point: [x, y] point belonging to the mirror axis.
-        :type point: list
-        :return: None
+        :param axis:    "X" or "Y" indicates around which axis to mirror.
+        :type axis:     str
+        :param point:   [x, y] point belonging to the mirror axis.
+        :type point:    list
+        :return:        None
         """
         log.debug("camlib.Geometry.mirror()")
 
@@ -1940,8 +2151,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -1952,19 +2162,16 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.solid_geometry = mirror_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was mirrored'))
+            self.app.inform.emit('[success] %s...' % _('Object was mirrored'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to mirror. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to mirror. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -1972,29 +2179,28 @@ class Geometry(object):
         """
         Rotate an object by an angle (in degrees) around the provided coordinates.
 
-        Parameters
-        ----------
+        :param angle:
         The angle of rotation are specified in degrees (default). Positive angles are
         counter-clockwise and negative are clockwise rotations.
 
+        :param point:
         The point of origin can be a keyword 'center' for the bounding box
         center (default), 'centroid' for the geometry's centroid, a Point object
         or a coordinate tuple (x0, y0).
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.Geometry.rotate()")
 
         px, py = point
 
         def rotate_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
                 for g in obj:
                     new_obj.append(rotate_geom(g))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     self.el_count += 1
                     disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
@@ -2012,8 +2218,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2024,19 +2229,16 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.solid_geometry = rotate_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was rotated'))
+            self.app.inform.emit('[success] %s...' % _('Object was rotated'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to rotate. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to rotate. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2044,28 +2246,29 @@ class Geometry(object):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.
 
-        Parameters
-        ----------
+        :param angle_x:
+        :param angle_y:
         angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
+
+        :param point:   Origin point for Skew
         point: tuple of coordinates (x,y)
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.Geometry.skew()")
 
         px, py = point
 
         def skew_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
                 for g in obj:
                     new_obj.append(skew_geom(g))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     self.el_count += 1
                     disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
@@ -2083,8 +2286,7 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for g in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len = len(self.tools[tool]['solid_geometry'])
                     except TypeError:
                         self.geo_len = 1
                     self.old_disp_number = 0
@@ -2095,19 +2297,16 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.solid_geometry = skew_geom(self.solid_geometry)
-            self.app.inform.emit('[success] %s...' %
-                                 _('Object was skewed'))
+            self.app.inform.emit('[success] %s...' % _('Object was skewed'))
         except AttributeError:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to skew. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to skew. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2117,6 +2316,77 @@ class Geometry(object):
         # else:
         #     self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
         #                                         origin=(px, py))
+
+    def buffer(self, distance, join, factor):
+        """
+
+        :param distance:    if 'factor' is True then distance is the factor
+        :param join:        The kind of join used by the shapely buffer method: round, square or bevel
+        :param factor:      True or False (None)
+        :return:
+        """
+
+        log.debug("camlib.Geometry.buffer()")
+
+        if distance == 0:
+            return
+
+        def buffer_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(buffer_geom(g))
+                return new_obj
+            else:
+                try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
+                    if factor is None:
+                        return obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                    else:
+                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
+                except AttributeError:
+                    return obj
+
+        try:
+            if self.multigeo is True:
+                for tool in self.tools:
+                    # variables to display the percentage of work done
+                    self.geo_len = 0
+                    try:
+                        self.geo_len += len(self.tools[tool]['solid_geometry'])
+                    except TypeError:
+                        self.geo_len += 1
+                    self.old_disp_number = 0
+                    self.el_count = 0
+
+                    res = buffer_geom(self.tools[tool]['solid_geometry'])
+                    try:
+                        __ = iter(res)
+                        self.tools[tool]['solid_geometry'] = res
+                    except TypeError:
+                        self.tools[tool]['solid_geometry'] = [res]
+
+            # variables to display the percentage of work done
+            self.geo_len = 0
+            try:
+                self.geo_len = len(self.solid_geometry)
+            except TypeError:
+                self.geo_len = 1
+            self.old_disp_number = 0
+            self.el_count = 0
+
+            self.solid_geometry = buffer_geom(self.solid_geometry)
+
+            self.app.inform.emit('[success] %s...' % _('Object was buffered'))
+        except AttributeError:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to buffer. No object selected"))
+
+        self.app.proc_container.new_text = ''
 
 
 class AttrDict(dict):
@@ -2144,8 +2414,8 @@ class CNCjob(Geometry):
 
     defaults = {
         "global_zdownrate": None,
-        "pp_geometry_name":'default',
-        "pp_excellon_name":'default',
+        "pp_geometry_name": 'default',
+        "pp_excellon_name": 'default',
         "excellon_optimization_type": "B",
     }
 
@@ -2160,10 +2430,10 @@ class CNCjob(Geometry):
                  z_cut=-0.002, z_move=0.1,
                  feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
-                 depthpercut=0.1,z_pdepth=-0.02,
+                 depthpercut=0.1, z_pdepth=-0.02,
                  spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
-                 endz=2.0,
+                 endz=2.0, endxy='',
                  segx=None,
                  segy=None,
                  steps_per_circle=None):
@@ -2176,13 +2446,9 @@ class CNCjob(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
         self.kind = kind
-        self.origin_kind = None
-
         self.units = units
 
         self.z_cut = z_cut
-        self.tool_offset = dict()
-
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -2190,14 +2456,26 @@ class CNCjob(Geometry):
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
+        self.toolchange = False
         self.z_toolchange = toolchangez
         self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
 
         self.toolC = tooldia
 
+        self.startz = None
         self.z_end = endz
+        self.xy_end = endxy
+
+        self.multidepth = False
         self.z_depthpercut = depthpercut
+
+        self.extracut_length = None
+
+        self.excellon_optimization_type = 'B'
+
+        # if set True then the GCode generation will use UI; used in Excellon GVode for now
+        self.use_ui = False
 
         self.unitcode = {"IN": "G20", "MM": "G21"}
 
@@ -2251,6 +2529,7 @@ class CNCjob(Geometry):
 
         # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
         self.exc_drills = None
+        # store here the Excellon source object tools to be accessible locally
         self.exc_tools = None
 
         # search for toolchange parameters in the Toolchange Custom Code
@@ -2346,11 +2625,7 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(
-            self, exobj, tools="all", drillz = 3.0,
-            toolchange=False, toolchangez=0.1, toolchangexy='',
-            endz=2.0, startz=None,
-            excellon_optimization_type='B'):
+    def generate_from_excellon_by_tool(self, exobj, tools="all", use_ui=False):
         """
         Creates gcode for this object from an Excellon object
         for the specified tools.
@@ -2359,21 +2634,7 @@ class CNCjob(Geometry):
         :type exobj: Excellon
         :param tools: Comma separated tool names
         :type: tools: str
-        :param drillz: drill Z depth
-        :type drillz: float
-        :param toolchange: Use tool change sequence between tools.
-        :type toolchange: bool
-        :param toolchangez: Height at which to perform the tool change.
-        :type toolchangez: float
-        :param toolchangexy: Toolchange X,Y position
-        :type toolchangexy: String containing 2 floats separated by comma
-        :param startz: Z position just before starting the job
-        :type startz: float
-        :param endz: final Z position to move to at the end of the CNC job
-        :type endz: float
-        :param excellon_optimization_type: Single character that defines which drill re-ordering optimisation algorithm
-        is to be used: 'M' for meta-heuristic and 'B' for basic
-        :type excellon_optimization_type: string
+        :param use_ui: Bool, if True the method will use parameters set in UI
         :return: None
         :rtype: None
         """
@@ -2382,32 +2643,32 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        self.z_cut = deepcopy(drillz)
-        old_zcut = deepcopy(drillz)
+        # the Excellon GCode preprocessor will use this info in the start_code() method
+        self.use_ui = True if use_ui else False
+
+        old_zcut = deepcopy(self.z_cut)
 
         if self.machinist_setting == 0:
-            if drillz > 0:
+            if self.z_cut > 0:
                 self.app.inform.emit('[WARNING] %s' %
                                      _("The Cut Z parameter has positive value. "
                                        "It is the depth value to drill into material.\n"
                                        "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                        "therefore the app will convert the value to negative. "
                                        "Check the resulting CNC code (Gcode etc)."))
-                self.z_cut = -drillz
-            elif drillz == 0:
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
                 self.app.inform.emit('[WARNING] %s: %s' %
                                      (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
                                       exobj.options['name']))
                 return 'fail'
 
-        self.z_toolchange = toolchangez
-
         try:
-            if toolchangexy == '':
+            if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.xy_toolchange) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",") if self.xy_toolchange != '']
+                if self.xy_toolchange and len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
@@ -2416,8 +2677,11 @@ class CNCjob(Geometry):
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
-        self.startz = startz
-        self.z_end = endz
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        if self.xy_end and len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
 
         self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
@@ -2433,7 +2697,7 @@ class CNCjob(Geometry):
         sort = []
         for k, v in list(exobj.tools.items()):
             sort.append((k, v.get('C')))
-        sorted_tools = sorted(sort,key=lambda t1: t1[1])
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]   # we get a array of ordered tools
@@ -2446,12 +2710,22 @@ class CNCjob(Geometry):
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
             log.debug("Tools selected and sorted are: %s" % str(tools))
 
+        # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+        # running this method from a Tcl Command
+        build_tools_in_use_list = False
+        if 'Tools_in_use' not in self.options:
+            self.options['Tools_in_use'] = []
+
+        # if the list is empty (either we just added the key or it was already there but empty) signal to build it
+        if not self.options['Tools_in_use']:
+            build_tools_in_use_list = True
+
         # fill the data into the self.exc_cnc_tools dictionary
         for it in sorted_tools:
             for to_ol in tools:
                 if to_ol == it[0]:
                     drill_no = 0
-                    sol_geo = list()
+                    sol_geo = []
                     for dr in exobj.drills:
                         if dr['tool'] == it[0]:
                             drill_no += 1
@@ -2466,31 +2740,41 @@ class CNCjob(Geometry):
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
 
-                    try:
-                        z_off = float(self.tool_offset[it[1]]) * (-1)
-                    except KeyError:
+                    if self.use_ui:
+                        try:
+                            z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
+                        except KeyError:
+                            z_off = 0
+                    else:
                         z_off = 0
 
-                    default_data = dict()
+                    default_data = {}
                     for k, v in list(self.options.items()):
                         default_data[k] = deepcopy(v)
 
-                    self.exc_cnc_tools[it[1]] = dict()
+                    self.exc_cnc_tools[it[1]] = {}
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
                     self.exc_cnc_tools[it[1]]['offset_z'] = z_off
                     self.exc_cnc_tools[it[1]]['data'] = default_data
-
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
+                    # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+                    # running this method from a Tcl Command
+                    if build_tools_in_use_list is True:
+                        self.options['Tools_in_use'].append(
+                            [it[0], it[1], drill_no, slot_no]
+                        )
+
         self.app.inform.emit(_("Creating a list of points to drill..."))
+
         # Points (Group by tool)
-        points = dict()
+        points = {}
         for drill in exobj.drills:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if drill['tool'] in tools:
                 try:
@@ -2500,16 +2784,17 @@ class CNCjob(Geometry):
 
         # log.debug("Found %d drills." % len(points))
 
-        self.gcode = list()
+        self.gcode = []
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
         self.f_retract = self.app.defaults["excellon_f_retract"]
 
         # Initialization
         gcode = self.doformat(p.start_code)
-        gcode += self.doformat(p.feedrate_code)
+        if use_ui is False:
+            gcode += self.doformat(p.z_feedrate_code)
 
-        if toolchange is False:
+        if self.toolchange is False:
             if self.xy_toolchange is not None:
                 gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
                 gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
@@ -2521,23 +2806,25 @@ class CNCjob(Geometry):
         class CreateDistanceCallback(object):
             """Create callback to calculate distances between points."""
 
-            def __init__(self):
+            def __init__(self, tool):
                 """Initialize distance array."""
-                locations = create_data_array()
-                size = len(locations)
+                locs = create_data_array(tool)
                 self.matrix = {}
 
-                for from_node in range(size):
-                    self.matrix[from_node] = {}
-                    for to_node in range(size):
-                        if from_node == to_node:
-                            self.matrix[from_node][to_node] = 0
-                        else:
-                            x1 = locations[from_node][0]
-                            y1 = locations[from_node][1]
-                            x2 = locations[to_node][0]
-                            y2 = locations[to_node][1]
-                            self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
+                if locs:
+                    size = len(locs)
+
+                    for from_node in range(size):
+                        self.matrix[from_node] = {}
+                        for to_node in range(size):
+                            if from_node == to_node:
+                                self.matrix[from_node][to_node] = 0
+                            else:
+                                x1 = locs[from_node][0]
+                                y1 = locs[from_node][1]
+                                x2 = locs[to_node][0]
+                                y2 = locs[to_node][1]
+                                self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
 
             # def Distance(self, from_node, to_node):
             #     return int(self.matrix[from_node][to_node])
@@ -2548,11 +2835,15 @@ class CNCjob(Geometry):
                 return self.matrix[from_node][to_node]
 
         # Create the data.
-        def create_data_array():
-            locations = []
-            for point in points[tool]:
-                locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-            return locations
+        def create_data_array(tool):
+            loc_list = []
+
+            if tool not in points:
+                return None
+
+            for pt in points[tool]:
+                loc_list.append((pt.coords.xy[0][0], pt.coords.xy[1][0]))
+            return loc_list
 
         if self.xy_toolchange is not None:
             self.oldx = self.xy_toolchange[0]
@@ -2570,25 +2861,66 @@ class CNCjob(Geometry):
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
-            used_excellon_optimization_type = excellon_optimization_type
+            used_excellon_optimization_type = self.excellon_optimization_type
             if used_excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
                 if exobj.drills:
                     for tool in tools:
-                        self.tool=tool
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        self.tool = tool
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                        if self.use_ui:
+                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            gcode += self.doformat(p.z_feedrate_code)
+
+                            self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                            if self.machinist_setting == 0:
+                                if self.z_cut > 0:
+                                    self.app.inform.emit('[WARNING] %s' %
+                                                         _("The Cut Z parameter has positive value. "
+                                                           "It is the depth value to drill into material.\n"
+                                                           "The Cut Z parameter needs to have a negative value, "
+                                                           "assuming it is a typo "
+                                                           "therefore the app will convert the value to negative. "
+                                                           "Check the resulting CNC code (Gcode etc)."))
+                                    self.z_cut = -self.z_cut
+                                elif self.z_cut == 0:
+                                    self.app.inform.emit('[WARNING] %s: %s' %
+                                                         (_(
+                                                             "The Cut Z parameter is zero. There will be no cut, "
+                                                             "skipping file"),
+                                                          exobj.options['name']))
+                                    return 'fail'
+
+                            old_zcut = deepcopy(self.z_cut)
+
+                            self.z_move = exobj.tools[tool]['data']['travelz']
+                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                            self.dwell = exobj.tools[tool]['data']['dwell']
+                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                            self.multidepth = exobj.tools[tool]['data']['multidepth']
+                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                        else:
+                            old_zcut = deepcopy(self.z_cut)
 
                         # ###############################################
                         # ############ Create the data. #################
                         # ###############################################
 
                         node_list = []
-                        locations = create_data_array()
+                        locations = create_data_array(tool=tool)
+
+                        # if there are no locations then go to the next tool
+                        if not locations:
+                            continue
+
                         tsp_size = len(locations)
                         num_routes = 1  # The number of routes, which is 1 in the TSP.
                         # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
@@ -2610,7 +2942,12 @@ class CNCjob(Geometry):
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback()
+                            dist_between_locations = CreateDistanceCallback(tool=tool)
+
+                            # if there are no distances then go to the next tool
+                            if not dist_between_locations:
+                                continue
+
                             dist_callback = dist_between_locations.Distance
                             transit_callback_index = routing.RegisterTransitCallback(dist_callback)
                             routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -2631,7 +2968,7 @@ class CNCjob(Geometry):
                                 while not routing.IsEnd(node):
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     node_list.append(node)
                                     node = assignment.Value(routing.NextVar(node))
@@ -2645,10 +2982,10 @@ class CNCjob(Geometry):
                         if tool in points:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # Tool change sequence (optional)
-                            if toolchange:
+                            if self.toolchange:
                                 gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start
                                 if self.dwell is True:
@@ -2666,10 +3003,12 @@ class CNCjob(Geometry):
                                                str(self.units))
                             )
 
-                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
-                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -2687,24 +3026,49 @@ class CNCjob(Geometry):
                                 for k in node_list:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                        doc = deepcopy(self.z_cut)
+                                        self.z_cut = 0.0
 
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
+                                        while abs(self.z_cut) < abs(doc):
+
+                                            self.z_cut -= self.z_depthpercut
+                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                                self.z_cut = doc
+                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            if self.f_retract is False:
+                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                                measured_up_to_zero_distance += abs(self.z_cut)
+                                                measured_lift_distance += abs(self.z_move)
+                                            else:
+                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
@@ -2734,15 +3098,59 @@ class CNCjob(Geometry):
                     for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
-                        self.tool=tool
+                        self.tool = tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        # ############################################# ##
+                        if self.use_ui:
+                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            gcode += self.doformat(p.z_feedrate_code)
+                            self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                            if self.machinist_setting == 0:
+                                if self.z_cut > 0:
+                                    self.app.inform.emit('[WARNING] %s' %
+                                                         _("The Cut Z parameter has positive value. "
+                                                           "It is the depth value to drill into material.\n"
+                                                           "The Cut Z parameter needs to have a negative value, "
+                                                           "assuming it is a typo "
+                                                           "therefore the app will convert the value to negative. "
+                                                           "Check the resulting CNC code (Gcode etc)."))
+                                    self.z_cut = -self.z_cut
+                                elif self.z_cut == 0:
+                                    self.app.inform.emit('[WARNING] %s: %s' %
+                                                         (_(
+                                                             "The Cut Z parameter is zero. There will be no cut, "
+                                                             "skipping file"),
+                                                          exobj.options['name']))
+                                    return 'fail'
+
+                            old_zcut = deepcopy(self.z_cut)
+
+                            self.z_move = exobj.tools[tool]['data']['travelz']
+
+                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                            self.dwell = exobj.tools[tool]['data']['dwell']
+                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                            self.multidepth = exobj.tools[tool]['data']['multidepth']
+                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                        else:
+                            old_zcut = deepcopy(self.z_cut)
+
+                        # ###############################################
+                        # ############ Create the data. #################
+                        # ###############################################
+
                         node_list = []
-                        locations = create_data_array()
+                        locations = create_data_array(tool=tool)
+
+                        # if there are no locations then go to the next tool
+                        if not locations:
+                            continue
+
                         tsp_size = len(locations)
                         num_routes = 1  # The number of routes, which is 1 in the TSP.
 
@@ -2757,7 +3165,12 @@ class CNCjob(Geometry):
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
-                            dist_between_locations = CreateDistanceCallback()
+                            dist_between_locations = CreateDistanceCallback(tool=tool)
+
+                            # if there are no distances then go to the next tool
+                            if not dist_between_locations:
+                                continue
+
                             dist_callback = dist_between_locations.Distance
                             transit_callback_index = routing.RegisterTransitCallback(dist_callback)
                             routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -2788,11 +3201,11 @@ class CNCjob(Geometry):
                         if tool in points:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             # Tool change sequence (optional)
-                            if toolchange:
-                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                            if self.toolchange:
+                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start)
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -2809,10 +3222,12 @@ class CNCjob(Geometry):
                                                str(self.units))
                             )
 
-                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
-                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -2822,7 +3237,6 @@ class CNCjob(Geometry):
                                 # Drillling! for Absolute coordinates type G90
                                 # variables to display the percentage of work done
                                 geo_len = len(node_list)
-                                disp_number = 0
                                 old_disp_number = 0
                                 log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
@@ -2830,24 +3244,49 @@ class CNCjob(Geometry):
                                 for k in node_list:
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
-                                        raise FlatCAMApp.GracefulException
+                                        raise grace
 
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                        doc = deepcopy(self.z_cut)
+                                        self.z_cut = 0.0
 
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
+                                        while abs(self.z_cut) < abs(doc):
+
+                                            self.z_cut -= self.z_depthpercut
+                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                                self.z_cut = doc
+                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            if self.f_retract is False:
+                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                                measured_up_to_zero_distance += abs(self.z_cut)
+                                                measured_lift_distance += abs(self.z_move)
+                                            else:
+                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
@@ -2879,21 +3318,57 @@ class CNCjob(Geometry):
             for tool in tools:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 if exobj.drills:
                     self.tool = tool
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
                     self.tooldia = exobj.tools[tool]["C"]
 
+                    if self.use_ui:
+                        self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                        self.feedrate = exobj.tools[tool]['data']['feedrate']
+                        gcode += self.doformat(p.z_feedrate_code)
+
+                        self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                        if self.machinist_setting == 0:
+                            if self.z_cut > 0:
+                                self.app.inform.emit('[WARNING] %s' %
+                                                     _("The Cut Z parameter has positive value. "
+                                                       "It is the depth value to drill into material.\n"
+                                                       "The Cut Z parameter needs to have a negative value, "
+                                                       "assuming it is a typo "
+                                                       "therefore the app will convert the value to negative. "
+                                                       "Check the resulting CNC code (Gcode etc)."))
+                                self.z_cut = -self.z_cut
+                            elif self.z_cut == 0:
+                                self.app.inform.emit('[WARNING] %s: %s' %
+                                                     (_(
+                                                         "The Cut Z parameter is zero. There will be no cut, "
+                                                         "skipping file"),
+                                                      exobj.options['name']))
+                                return 'fail'
+
+                        old_zcut = deepcopy(self.z_cut)
+
+                        self.z_move = exobj.tools[tool]['data']['travelz']
+                        self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                        self.dwell = exobj.tools[tool]['data']['dwell']
+                        self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                        self.multidepth = exobj.tools[tool]['data']['multidepth']
+                        self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                    else:
+                        old_zcut = deepcopy(self.z_cut)
+
                     # Only if tool has points.
                     if tool in points:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # Tool change sequence (optional)
-                        if toolchange:
+                        if self.toolchange:
                             gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
@@ -2911,10 +3386,12 @@ class CNCjob(Geometry):
                                            str(self.units))
                         )
 
-                        # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # APPLY Offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         try:
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                         except KeyError:
                             z_offset = 0
                         self.z_cut = z_offset + old_zcut
@@ -2929,7 +3406,6 @@ class CNCjob(Geometry):
                             node_list = self.optimized_travelling_salesman(altPoints)
                             # variables to display the percentage of work done
                             geo_len = len(node_list)
-                            disp_number = 0
                             old_disp_number = 0
                             log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
@@ -2937,24 +3413,52 @@ class CNCjob(Geometry):
                             for point in node_list:
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                                    raise grace
 
-                                gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                                gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+                                locx = point[0]
+                                locy = point[1]
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
+                                if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                    doc = deepcopy(self.z_cut)
+                                    self.z_cut = 0.0
+
+                                    while abs(self.z_cut) < abs(doc):
+
+                                        self.z_cut -= self.z_depthpercut
+                                        if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                            self.z_cut = doc
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                 else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                                measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                                self.oldx = point[0]
-                                self.oldy = point[1]
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
 
                                 loc_nr += 1
                                 disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
@@ -2963,13 +3467,12 @@ class CNCjob(Geometry):
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('G91 coordinates not implemented'))
+                            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                             return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
-                        self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                             _('The loaded Excellon file has no drills'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
                         return 'fail'
                 self.z_cut = deepcopy(old_zcut)
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
@@ -2995,14 +3498,12 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
-    def generate_from_multitool_geometry(
-            self, geometry, append=True,
-            tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
-            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
-            multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
-            startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
+    def generate_from_multitool_geometry(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=1.0,
+                                         z_move=2.0, feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+                                         spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+                                         multidepth=False, depthpercut=None, toolchange=False, toolchangez=1.0,
+                                         toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
+                                         startz=None, endz=2.0, endxy='', pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
 
@@ -3021,7 +3522,9 @@ class CNCjob(Geometry):
         :param feedrate_z:
         :param feedrate_rapid:
         :param spindlespeed:
-        :param spindledir:
+        :param spindledir:          Direction of rotation for the spindle. If using GRBL laser mode will
+        adjust the laser mode
+
         :param dwell:
         :param dwelltime:
         :param multidepth:          If True, use multiple passes to reach the desired depth.
@@ -3034,6 +3537,7 @@ class CNCjob(Geometry):
         :param extracut_length:     Extra cut legth at the end of the path
         :param startz:
         :param endz:
+        :param endxy:
         :param pp_geometry_name:
         :param tool_no:
         :return:                    GCode - string
@@ -3073,6 +3577,12 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else None
         self.z_end = float(endz) if endz is not None else None
 
+        self.xy_end = [float(eval(a)) for a in endxy.split(",") if endxy != '']
+        if self.xy_end and len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
+
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
@@ -3099,10 +3609,13 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                   "other parameters."))
-            return 'fail'
+            if 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                       "other parameters."))
+                return 'fail'
+            else:
+                self.z_cut = 0
 
         if self.machinist_setting == 0:
             if self.z_cut > 0:
@@ -3113,7 +3626,7 @@ class CNCjob(Geometry):
                                        "therefore the app will convert the value to negative."
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_cut = -self.z_cut
-            elif self.z_cut == 0:
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
                 self.app.inform.emit('[WARNING] %s: %s' %
                                      (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
                                       self.options['name']))
@@ -3154,13 +3667,13 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for shape in flat_geometry:
+        for geo_shape in flat_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
-            if shape is not None:  # TODO: This shouldn't have happened.
-                storage.insert(shape)
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         # self.input_geometry_bounds = geometry.bounds()
 
@@ -3213,7 +3726,7 @@ class CNCjob(Geometry):
 
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
-        self.app.inform.emit(_("Starting G-Code..."))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         path_count = 0
         current_pt = (0, 0)
@@ -3226,9 +3739,9 @@ class CNCjob(Geometry):
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
-        self.app.inform.emit( '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                             str(current_tooldia),
-                                             str(self.units)))
+        self.app.inform.emit('%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                            str(current_tooldia),
+                                            str(self.units)))
 
         pt, geo = storage.nearest(current_pt)
 
@@ -3236,7 +3749,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -3295,23 +3808,18 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit('%s... %s %s.' %
-                             (_("Finished G-Code generation"),
-                              str(path_count),
-                              _("paths traced")
-                              )
-                             )
+        self.app.inform.emit(
+            '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
+        )
         return self.gcode
 
     def generate_from_geometry_2(
-            self, geometry, append=True,
-            tooldia=None, offset=0.0, tolerance=0,
-            z_cut=1.0, z_move=2.0,
-            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None, z_move=None,
+            feedrate=None, feedrate_z=None, feedrate_rapid=None,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=None,
             multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-            extracut=False, extracut_length=0.1, startz=None, endz=2.0,
+            toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0",
+            extracut=False, extracut_length=None, startz=None, endz=None, endxy='',
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3323,21 +3831,37 @@ class CNCjob(Geometry):
         :param geometry:
         :param append:
         :param tooldia:
+        :param offset:
         :param tolerance:
-        :param multidepth: If True, use multiple passes to reach
-           the desired depth.
-        :param depthpercut: Maximum depth in each pass.
-        :param extracut: Adds (or not) an extra cut at the end of each path
-            overlapping the first point in path to ensure complete copper removal
-        :param extracut_length: The extra cut length
-        :return: None
+        :param z_cut:
+        :param z_move:
+        :param feedrate:
+        :param feedrate_z:
+        :param feedrate_rapid:
+        :param spindlespeed:
+        :param spindledir:
+        :param dwell:
+        :param dwelltime:
+        :param multidepth:          If True, use multiple passes to reach the desired depth.
+        :param depthpercut:         Maximum depth in each pass.
+        :param toolchange:
+        :param toolchangez:
+        :param toolchangexy:
+        :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the first point in
+                                    path to ensure complete copper removal
+        :param extracut_length:     The extra cut length
+        :param startz:
+        :param endz:
+        :param endxy:
+        :param pp_geometry_name:
+        :param tool_no:
+        :return:                    None
         """
 
         if not isinstance(geometry, Geometry):
-            self.app.inform.emit('[ERROR] %s: %s' %
-                                 (_("Expected a Geometry, got"), type(geometry)))
+            self.app.inform.emit('[ERROR] %s: %s' % (_("Expected a Geometry, got"), type(geometry)))
             return 'fail'
-        log.debug("Generate_from_geometry_2()")
+        log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
@@ -3345,7 +3869,7 @@ class CNCjob(Geometry):
                 '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
             )
 
-        temp_solid_geometry = list()
+        temp_solid_geometry = []
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -3381,14 +3905,15 @@ class CNCjob(Geometry):
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _(
-                        "The Tool Offset value is too negative to use "
-                        "for the current_geometry.\n"
-                        "Raise the value (in module) and try again."))
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' %
+                        _("The Tool Offset value is too negative to use for the current_geometry.\n"
+                          "Raise the value (in module) and try again.")
+                    )
                     return 'fail'
                 # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
                 # to continue
-                elif  -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
+                elif -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
                     offset_for_use = offset - 0.0000000001
 
             for it in geometry.solid_geometry:
@@ -3405,28 +3930,49 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
+        default_dia = 0.01
+        if isinstance(self.app.defaults["geometry_cnctooldia"], float):
+            default_dia = self.app.defaults["geometry_cnctooldia"]
+        else:
+            try:
+                tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                tools_diameters = [eval(a) for a in tools_string if a != '']
+                default_dia = tools_diameters[0] if tools_diameters else 0.0
+            except Exception as e:
+                self.app.log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+
         try:
-            self.tooldia = float(tooldia) if tooldia else None
+            self.tooldia = float(tooldia) if tooldia else default_dia
         except ValueError:
-            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else default_dia
 
-        self.z_cut = float(z_cut) if z_cut is not None else None
-        self.z_move = float(z_move) if z_move is not None else None
+        self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
+        self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
 
-        self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
-        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+        self.feedrate = float(feedrate) if feedrate is not None else self.app.defaults["geometry_feedrate"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid is not None else \
+            self.app.defaults["geometry_feedrate_rapid"]
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 and spindlespeed is not None else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime else None
+        self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else None
-        self.z_end = float(endz) if endz is not None else None
-        self.z_depthpercut = float(depthpercut) if depthpercut else None
+        self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
+        self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
+        self.xy_end = endxy if endxy != '' else self.app.defaults["geometry_endxy"]
+        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        if self.xy_end and len(self.xy_end) < 2:
+            self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
+                                                   "in the format (x, y) but now there is only one value, not two."))
+            return 'fail'
+
+        self.z_depthpercut = float(depthpercut) if depthpercut is not None and depthpercut != 0 else abs(self.z_cut)
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
+        self.extracut_length = float(extracut_length) if extracut_length is not None else \
+            self.app.defaults["geometry_extracut_length"]
 
         try:
             if toolchangexy == '':
@@ -3434,9 +3980,11 @@ class CNCjob(Geometry):
             else:
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit('[ERROR] %s' %
-                                         _("The Toolchange X,Y field in Edit -> Preferences has to be "
-                                           "in the format (x, y) \nbut now there is only one value, not two. "))
+                    self.app.inform.emit(
+                        '[ERROR] %s' %
+                        _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y) \n"
+                          "but now there is only one value, not two. ")
+                    )
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
@@ -3447,10 +3995,14 @@ class CNCjob(Geometry):
 
         if self.machinist_setting == 0:
             if self.z_cut is None:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                       "other parameters."))
-                return 'fail'
+                if 'laser' not in self.pp_geometry_name:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                               "other parameters.")
+                    )
+                    return 'fail'
+                else:
+                    self.z_cut = 0.0
 
             if self.z_cut > 0:
                 self.app.inform.emit('[WARNING] %s' %
@@ -3460,15 +4012,15 @@ class CNCjob(Geometry):
                                        "therefore the app will convert the value to negative."
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_cut = -self.z_cut
-            elif self.z_cut == 0:
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                      geometry.options['name']))
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit(
+                    '[WARNING] %s: %s' % (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                          geometry.options['name'])
+                )
                 return 'fail'
 
             if self.z_move is None:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Travel Z parameter is None or zero."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
                 return 'fail'
 
             if self.z_move < 0:
@@ -3480,13 +4032,17 @@ class CNCjob(Geometry):
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_move = -self.z_move
             elif self.z_move == 0:
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("The Z Travel parameter is zero. "
-                                       "This is dangerous, skipping file"), self.options['name']))
+                self.app.inform.emit(
+                    '[WARNING] %s: %s' % (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                          self.options['name'])
+                )
                 return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
-        if abs(self.z_cut) < self.z_depthpercut:
+        try:
+            if abs(self.z_cut) < self.z_depthpercut:
+                self.z_depthpercut = abs(self.z_cut)
+        except TypeError:
             self.z_depthpercut = abs(self.z_cut)
 
         # ## Index first and last points in paths
@@ -3502,13 +4058,13 @@ class CNCjob(Geometry):
         log.debug("Indexing geometry before generating G-Code...")
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
-        for shape in flat_geometry:
+        for geo_shape in flat_geometry:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
-            if shape is not None:  # TODO: This shouldn't have happened.
-                storage.insert(shape)
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         if not append:
             self.gcode = ""
@@ -3532,8 +4088,8 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
 
         if toolchange is False:
-            self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
-            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
+            self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=self.oldx, y=self.oldy)
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
@@ -3562,7 +4118,7 @@ class CNCjob(Geometry):
 
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
-        self.app.inform.emit(_("Starting G-Code..."))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
@@ -3573,9 +4129,7 @@ class CNCjob(Geometry):
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
         self.app.inform.emit(
-            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                           str(current_tooldia),
-                           str(self.units))
+            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"), str(current_tooldia), str(self.units))
         )
 
         path_count = 0
@@ -3585,7 +4139,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -3601,7 +4155,7 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, self.extracut_length, tolerance,
                                                                 old_point=current_pt)
 
                 # --------- Multi-pass ---------
@@ -3616,14 +4170,14 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, self.extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the travel distance
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
-                pt, geo = storage.nearest(current_pt) # Next
+                pt, geo = storage.nearest(current_pt)  # Next
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
@@ -3674,7 +4228,6 @@ class CNCjob(Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("There is no tool data in the SolderPaste geometry."))
 
-
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
 
@@ -3709,9 +4262,13 @@ class CNCjob(Geometry):
 
         # Store the geometry
         log.debug("Indexing geometry before generating G-Code...")
-        for shape in flat_geometry:
-            if shape is not None:
-                storage.insert(shape)
+        for geo_shape in flat_geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            if geo_shape is not None:
+                storage.insert(geo_shape)
 
         # Initial G-Code
         self.gcode = self.doformat(p.start_code)
@@ -3725,7 +4282,6 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
         old_disp_number = 0
 
         pt, geo = storage.nearest(current_pt)
@@ -3734,7 +4290,7 @@ class CNCjob(Geometry):
             while True:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 path_count += 1
 
@@ -3758,13 +4314,9 @@ class CNCjob(Geometry):
             pass
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
-        self.app.inform.emit('%s... %s %s' %
-                             (_("Finished SolderPste G-Code generation"),
-                              str(path_count),
-                              _("paths traced.")
-                              )
-                             )
-
+        self.app.inform.emit(
+            '%s... %s %s' % (_("Finished SolderPaste G-Code generation"), str(path_count), _("paths traced."))
+        )
 
         # Finish
         self.gcode += self.doformat(p.lift_code)
@@ -3793,7 +4345,7 @@ class CNCjob(Geometry):
             # Move down to cutting depth
             gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.spindle_fwd_code)  # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
             gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.lift_z_dispense_code)
@@ -3816,7 +4368,7 @@ class CNCjob(Geometry):
                 prev_y = next_y
 
             # Up to travelling height.
-            gcode += self.doformat(p.spindle_off_code) # Stop dispensing
+            gcode += self.doformat(p.spindle_off_code)  # Stop dispensing
             gcode += self.doformat(p.spindle_rev_code)
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.spindle_off_code)
@@ -3828,7 +4380,7 @@ class CNCjob(Geometry):
 
             gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.spindle_fwd_code)  # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
             gcode += self.doformat(p.lift_z_dispense_code)
 
@@ -3843,7 +4395,6 @@ class CNCjob(Geometry):
 
     def create_gcode_single_pass(self, geometry, extracut, extracut_length, tolerance, old_point=(0, 0)):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
-        gcode_single_pass = ''
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
@@ -3956,18 +4507,25 @@ class CNCjob(Geometry):
                 else:
                     command['Z'] = 0
 
-        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name or \
-                (self.pp_solderpaste_name is not None and 'Paste' in self.pp_solderpaste_name):
+        elif 'laser' in self.pp_excellon_name.lower() or 'laser' in self.pp_geometry_name.lower() or \
+                (self.pp_solderpaste_name is not None and 'paste' in self.pp_solderpaste_name.lower()):
             match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
             if match_lsr:
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
                 command['Y'] = float(match_lsr.group(2).replace(" ", ""))
 
-            match_lsr_pos = re.search(r"^(M0[3|5])", gline)
+            match_lsr_pos = re.search(r"^(M0?[3-5])", gline)
             if match_lsr_pos:
-                if 'M05' in match_lsr_pos.group(1):
+                if 'M05' in match_lsr_pos.group(1) or 'M5' in match_lsr_pos.group(1):
                     # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,
                     # therefore the move is of kind T (travel)
+                    command['Z'] = 1
+                else:
+                    command['Z'] = 0
+
+            match_lsr_pos_2 = re.search(r"^(M10[6|7])", gline)
+            if match_lsr_pos_2:
+                if 'M107' in match_lsr_pos_2.group(1):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
@@ -4078,7 +4636,7 @@ class CNCjob(Geometry):
                                 kind = ['C', 'F']
                                 geometry.append(
                                     {
-                                        "geom": Point(current_drill_point_coords).buffer(dia/2).exterior,
+                                        "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
                                         "kind": kind
                                     }
                                 )
@@ -4115,7 +4673,7 @@ class CNCjob(Geometry):
                     radius = np.sqrt(gobj['I']**2 + gobj['J']**2)
                     start = np.arctan2(-gobj['J'], -gobj['I'])
                     stop = np.arctan2(-center[1] + y, -center[0] + x)
-                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
+                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle))
 
                 current['X'] = x
                 current['Y'] = y
@@ -4175,8 +4733,7 @@ class CNCjob(Geometry):
     #     return fig
 
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
-              color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
+              color=None, alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
         """
         Plots the G-code job onto the given axes.
 
@@ -4192,6 +4749,12 @@ class CNCjob(Geometry):
         :return: None
         """
         # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if color is None:
+            color = {
+                "T": [self.app.defaults["cncjob_travel_fill"], self.app.defaults["cncjob_travel_line"]],
+                "C": [self.app.defaults["cncjob_plot_fill"], self.app.defaults["cncjob_plot_line"]]
+            }
 
         gcode_parsed = gcode_parsed if gcode_parsed else self.gcode_parsed
         path_num = 0
@@ -4241,6 +4804,9 @@ class CNCjob(Geometry):
                             # if the geos are travel lines it will enter into Exception
                             poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
                             poly = poly.simplify(tool_tolerance)
+                        except Exception:
+                            # deal here with unexpected plot errors due of LineStrings not valid
+                            continue
                     else:
                         # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
@@ -4259,8 +4825,7 @@ class CNCjob(Geometry):
                                           visible=visible, layer=1)
             else:
                 # For Incremental coordinates type G91
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
                         current_position = geo['geom'].coords[0]
@@ -4383,11 +4948,12 @@ class CNCjob(Geometry):
                 #         if geo['kind'][0] == 'C':
                 #             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                 #                           visible=visible, layer=1)
+
             try:
                 obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=self.app.defaults["cncjob_annotation_fontcolor"])
-            except Exception as e:
+            except Exception:
                 pass
 
     def create_geometry(self):
@@ -4456,22 +5022,28 @@ class CNCjob(Geometry):
 
         return path
 
-    def linear2gcode(self, linear, tolerance=0, down=True, up=True,
-                     z_cut=None, z_move=None, zdownrate=None,
+    def linear2gcode(self, linear, tolerance=0, down=True, up=True, z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
+
         Generates G-code to cut along the linear feature.
 
-        :param linear: The path to cut along.
-        :type: Shapely.LinearRing or Shapely.Linear String
-        :param tolerance: All points in the simplified object will be within the
-            tolerance distance of the original geometry.
-        :type tolerance: float
-        :param feedrate: speed for cut on X - Y plane
-        :param feedrate_z: speed for cut on Z plane
-        :param feedrate_rapid: speed to move between cuts; usually is G0 but some CNC require to specify it
-        :return: G-code to cut along the linear feature.
-        :rtype: str
+        :param linear:          The path to cut along.
+        :type:                  Shapely.LinearRing or Shapely.Linear String
+        :param tolerance:       All points in the simplified object will be within the
+                                tolerance distance of the original geometry.
+        :type tolerance:        float
+        :param down:
+        :param up:
+        :param z_cut:
+        :param z_move:
+        :param zdownrate:
+        :param feedrate:        speed for cut on X - Y plane
+        :param feedrate_z:      speed for cut on Z plane
+        :param feedrate_rapid:  speed to move between cuts; usually is G0 but some CNC require to specify it
+        :param cont:
+        :param old_point:
+        :return:                G-code to cut along the linear feature.
         """
 
         if z_cut is None:
@@ -4533,7 +5105,7 @@ class CNCjob(Geometry):
         for pt in path[1:]:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -4543,8 +5115,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 
@@ -4558,22 +5129,30 @@ class CNCjob(Geometry):
         return gcode
 
     def linear2gcode_extra(self, linear, extracut_length, tolerance=0, down=True, up=True,
-                     z_cut=None, z_move=None, zdownrate=None,
-                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
+                           z_cut=None, z_move=None, zdownrate=None,
+                           feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
+
         Generates G-code to cut along the linear feature.
 
-        :param linear: The path to cut along.
-        :param extracut_length: how much to cut extra over the first point at the end of the path
-        :type: Shapely.LinearRing or Shapely.Linear String
-        :param tolerance: All points in the simplified object will be within the
-            tolerance distance of the original geometry.
-        :type tolerance: float
-        :param feedrate: speed for cut on X - Y plane
-        :param feedrate_z: speed for cut on Z plane
-        :param feedrate_rapid: speed to move between cuts; usually is G0 but some CNC require to specify it
-        :return: G-code to cut along the linear feature.
-        :rtype: str
+        :param linear:              The path to cut along.
+        :type:                      Shapely.LinearRing or Shapely.Linear String
+        :param extracut_length:     how much to cut extra over the first point at the end of the path
+        :param tolerance:           All points in the simplified object will be within the
+                                    tolerance distance of the original geometry.
+        :type tolerance:            float
+        :param down:
+        :param up:
+        :param z_cut:
+        :param z_move:
+        :param zdownrate:
+        :param feedrate:            speed for cut on X - Y plane
+        :param feedrate_z:          speed for cut on Z plane
+        :param feedrate_rapid:      speed to move between cuts; usually is G0 but some CNC require to specify it
+        :param cont:
+        :param old_point:
+        :return:                    G-code to cut along the linear feature.
+        :rtype:                     str
         """
 
         if z_cut is None:
@@ -4636,7 +5215,7 @@ class CNCjob(Geometry):
         for pt in path[1:]:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -4652,8 +5231,8 @@ class CNCjob(Geometry):
                 next_y = pt[1]
 
             gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
-            prev_x = pt[0]
-            prev_y = pt[1]
+            prev_x = next_x
+            prev_y = next_y
 
         # this line is added to create an extra cut over the first point in patch
         # to make sure that we remove the copper leftovers
@@ -4673,22 +5252,109 @@ class CNCjob(Geometry):
         # along the path and find the point at the distance extracut_length
 
         if extracut_length == 0.0:
-            gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
-            last_pt = path[1]
-        else:
-            if abs(distance(path[1], path[0])) > extracut_length:
-                i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
-                gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
-                last_pt = (i_point.x, i_point.y)
+            extra_path = [path[-1], path[0], path[1]]
+            new_x = extra_path[0][0]
+            new_y = extra_path[0][1]
+
+            # this is an extra line therefore lift the milling bit
+            gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
+
+            # move fast to the new first point
+            gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
+
+            # lower the milling bit
+            # Different feedrate for vertical cut?
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)
+                gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
             else:
-                last_pt = path[0]
-                for pt in path[1:]:
-                    extracut_distance = abs(distance(pt, last_pt))
-                    if extracut_distance <= extracut_length:
-                        gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
-                        last_pt = pt
-                    else:
-                        break
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)  # Start cutting
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+
+            # go back to the original point
+            gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])
+            last_pt = path[0]
+        else:
+            # go to the point that is 5% in length before the end (therefore 95% length from start of the line),
+            # along the line to be cut
+            if extracut_length >= target_linear.length:
+                extracut_length = target_linear.length
+
+            # ---------------------------------------------
+            # first half
+            # ---------------------------------------------
+            start_length = target_linear.length - (extracut_length * 0.5)
+            extra_line = substring(target_linear, start_length, target_linear.length)
+            extra_path = list(extra_line.coords)
+            new_x = extra_path[0][0]
+            new_y = extra_path[0][1]
+
+            # this is an extra line therefore lift the milling bit
+            gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # lift
+
+            # move fast to the new first point
+            gcode += self.doformat(p.rapid_code, x=new_x, y=new_y)
+
+            # lower the milling bit
+            # Different feedrate for vertical cut?
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)
+                gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
+            else:
+                gcode += self.doformat(p.down_code, x=new_x, y=new_y, z_cut=z_cut)  # Start cutting
+
+            # start cutting the extra line
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+
+            # ---------------------------------------------
+            # second half
+            # ---------------------------------------------
+            extra_line = substring(target_linear, 0, (extracut_length * 0.5))
+            extra_path = list(extra_line.coords)
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+
+            # ---------------------------------------------
+            # back to original start point, cutting
+            # ---------------------------------------------
+            extra_line = substring(target_linear, 0, (extracut_length * 0.5))
+            extra_path = list(extra_line.coords)[::-1]
+
+            # start cutting the extra line
+            last_pt = extra_path[0]
+            for pt in extra_path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                last_pt = pt
+
+        # if extracut_length == 0.0:
+        #     gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
+        #     last_pt = path[1]
+        # else:
+        #     if abs(distance(path[1], path[0])) > extracut_length:
+        #         i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
+        #         gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
+        #         last_pt = (i_point.x, i_point.y)
+        #     else:
+        #         last_pt = path[0]
+        #         for pt in path[1:]:
+        #             extracut_distance = abs(distance(pt, last_pt))
+        #             if extracut_distance <= extracut_length:
+        #                 gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+        #                 last_pt = pt
+        #             else:
+        #                 break
 
         # Up to travelling height.
         if up:
@@ -4701,7 +5367,7 @@ class CNCjob(Geometry):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         path = list(point.coords)
         p = self.pp_geometry
@@ -4724,10 +5390,10 @@ class CNCjob(Geometry):
 
         if self.z_feedrate is not None:
             gcode += self.doformat(p.z_feedrate_code)
-            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=self.z_cut)
             gcode += self.doformat(p.feedrate_code)
         else:
-            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)  # Start cutting
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=self.z_cut)  # Start cutting
 
         gcode += self.doformat(p.lift_code, x=first_x, y=first_y)  # Stop cutting
         return gcode
@@ -4760,10 +5426,12 @@ class CNCjob(Geometry):
         for g in self.gcode_parsed:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
-            if g['kind'][0] == 'C': cuts.append(g)
-            if g['kind'][0] == 'T': travels.append(g)
+            if g['kind'][0] == 'C':
+                cuts.append(g)
+            if g['kind'][0] == 'T':
+                travels.append(g)
 
         # Used to determine the overall board size
         self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
@@ -4774,7 +5442,7 @@ class CNCjob(Geometry):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         if cuts:
             cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
@@ -4790,38 +5458,38 @@ class CNCjob(Geometry):
 
         return svg_elem
 
-    def bounds(self):
+    def bounds(self, flatten=None):
         """
         Returns coordinates of rectangular bounds
         of geometry: (xmin, ymin, xmax, ymax).
+
+        :param flatten:     Not used, it is here for compatibility with base class method
         """
-        # fixed issue of getting bounds only for one level lists of objects
-        # now it can get bounds for nested lists of objects
 
         log.debug("camlib.CNCJob.bounds()")
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = np.Inf
-                miny = np.Inf
-                maxx = -np.Inf
-                maxy = -np.Inf
+                cminx = np.Inf
+                cminy = np.Inf
+                cmaxx = -np.Inf
+                cmaxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
                         for key in k:
                             minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
-                            minx = min(minx, minx_)
-                            miny = min(miny, miny_)
-                            maxx = max(maxx, maxx_)
-                            maxy = max(maxy, maxy_)
+                            cminx = min(cminx, minx_)
+                            cminy = min(cminy, miny_)
+                            cmaxx = max(cmaxx, maxx_)
+                            cmaxy = max(cmaxy, maxy_)
                     else:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                        minx = min(minx, minx_)
-                        miny = min(miny, miny_)
-                        maxx = max(maxx, maxx_)
-                        maxy = max(maxy, maxy_)
-                return minx, miny, maxx, maxy
+                        cminx = min(cminx, minx_)
+                        cminy = min(cminy, miny_)
+                        cmaxx = max(cmaxx, maxx_)
+                        cmaxy = max(cmaxy, maxy_)
+                return cminx, cminy, cmaxx, cmaxy
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
@@ -4867,12 +5535,12 @@ class CNCjob(Geometry):
         given factor. Tool sizes, feedrates, or Z-axis dimensions are
         not altered.
 
-        :param factor: Number by which to scale the object.
-        :type factor: float
-        :param point: the (x,y) coords for the point of origin of scale
-        :type tuple of floats
-        :return: None
-        :rtype: None
+        :param factor:  Number by which to scale the object.
+        :type factor:   float
+        :param point:   the (x,y) coords for the point of origin of scale
+        :type           tuple of floats
+        :return:        None
+        :rtype:         None
         """
         log.debug("camlib.CNCJob.scale()")
 
@@ -4995,8 +5663,7 @@ class CNCjob(Geometry):
             # variables to display the percentage of work done
             self.geo_len = 0
             try:
-                for g in self.gcode_parsed:
-                    self.geo_len += 1
+                self.geo_len = len(self.gcode_parsed)
             except TypeError:
                 self.geo_len = 1
             self.old_disp_number = 0
@@ -5024,8 +5691,7 @@ class CNCjob(Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in v['gcode_parsed']:
-                        self.geo_len += 1
+                    self.geo_len = len(v['gcode_parsed'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -5057,9 +5723,9 @@ class CNCjob(Geometry):
 
         g_offsetx_re, g_offsety_re, multitool, cnnc_tools are attributes of FlatCAMCNCJob class in camlib
 
-        :param vect: (x, y) offset vector.
-        :type vect: tuple
-        :return: None
+        :param vect:    (x, y) offset vector.
+        :type vect:     tuple
+        :return:        None
         """
         log.debug("camlib.CNCJob.offset()")
 
@@ -5105,8 +5771,7 @@ class CNCjob(Geometry):
             # variables to display the percentage of work done
             self.geo_len = 0
             try:
-                for g in self.gcode_parsed:
-                    self.geo_len += 1
+                self.geo_len = len(self.gcode_parsed)
             except TypeError:
                 self.geo_len = 1
             self.old_disp_number = 0
@@ -5134,8 +5799,7 @@ class CNCjob(Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in v['gcode_parsed']:
-                        self.geo_len += 1
+                    self.geo_len = len(v['gcode_parsed'])
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -5161,9 +5825,10 @@ class CNCjob(Geometry):
 
     def mirror(self, axis, point):
         """
-        Mirror the geometrys of an object by an given axis around the coordinates of the 'point'
-        :param angle:
-        :param point: tupple of coordinates (x,y)
+        Mirror the geometry of an object by an given axis around the coordinates of the 'point'
+
+        :param axis:    Axis for Mirror
+        :param point:   tuple of coordinates (x,y). Point of origin for Mirror
         :return:
         """
         log.debug("camlib.CNCJob.mirror()")
@@ -5174,8 +5839,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5200,16 +5864,16 @@ class CNCjob(Geometry):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.
 
-        Parameters
-        ----------
+        :param angle_x:
+        :param angle_y:
         angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
-        point: tupple of coordinates (x,y)
 
-        See shapely manual for more information:
-        http://toblerity.org/shapely/manual.html#affine-transformations
+        :param point:   tupple of coordinates (x,y)
+
+        See shapely manual for more information: http://toblerity.org/shapely/manual.html#affine-transformations
         """
         log.debug("camlib.CNCJob.skew()")
 
@@ -5218,8 +5882,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5242,9 +5905,10 @@ class CNCjob(Geometry):
 
     def rotate(self, angle, point):
         """
-        Rotate the geometrys of an object by an given angle around the coordinates of the 'point'
-        :param angle:
-        :param point: tupple of coordinates (x,y)
+        Rotate the geometry of an object by an given angle around the coordinates of the 'point'
+
+        :param angle:   Angle of Rotation
+        :param point:   tuple of coordinates (x,y). Origin point for Rotation
         :return:
         """
         log.debug("camlib.CNCJob.rotate()")
@@ -5254,8 +5918,7 @@ class CNCjob(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.gcode_parsed:
-                self.geo_len += 1
+            self.geo_len = len(self.gcode_parsed)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -5278,6 +5941,12 @@ class CNCjob(Geometry):
 
 
 def get_bounds(geometry_list):
+    """
+    Will return limit values for a list of geometries
+
+    :param geometry_list:   List of geometries for which to calculate the bounds limits
+    :return:
+    """
     xmin = np.Inf
     ymin = np.Inf
     xmax = -np.Inf
@@ -5300,21 +5969,21 @@ def arc(center, radius, start, stop, direction, steps_per_circ):
     """
     Creates a list of point along the specified arc.
 
-    :param center: Coordinates of the center [x, y]
-    :type center: list
-    :param radius: Radius of the arc.
-    :type radius: float
-    :param start: Starting angle in radians
-    :type start: float
-    :param stop: End angle in radians
-    :type stop: float
-    :param direction: Orientation of the arc, "CW" or "CCW"
-    :type direction: string
-    :param steps_per_circ: Number of straight line segments to
-        represent a circle.
-    :type steps_per_circ: int
-    :return: The desired arc, as list of tuples
-    :rtype: list
+    :param center:          Coordinates of the center [x, y]
+    :type center:           list
+    :param radius:          Radius of the arc.
+    :type radius:           float
+    :param start:           Starting angle in radians
+    :type start:            float
+    :param stop:            End angle in radians
+    :type stop:             float
+    :param direction:       Orientation of the arc, "CW" or "CCW"
+    :type direction:        string
+    :param steps_per_circ:  Number of straight line segments to
+                            represent a circle.
+    :type steps_per_circ:   int
+    :return:                The desired arc, as list of tuples
+    :rtype:                 list
     """
     # TODO: Resolution should be established by maximum error from the exact arc.
 
@@ -5388,10 +6057,10 @@ def to_dict(obj):
     * ApertureMacro
     * BaseGeometry
 
-    :param obj: Shapely geometry.
-    :type obj: BaseGeometry
-    :return: Dictionary with serializable form if ``obj`` was
-        BaseGeometry or ApertureMacro, otherwise returns ``obj``.
+    :param obj:     Shapely geometry.
+    :type obj:      BaseGeometry
+    :return:        Dictionary with serializable form if ``obj`` was
+                    BaseGeometry or ApertureMacro, otherwise returns ``obj``.
     """
     if isinstance(obj, ApertureMacro):
         return {
@@ -5410,9 +6079,9 @@ def dict2obj(d):
     """
     Default deserializer.
 
-    :param d:  Serializable dictionary representation of an object
-        to be reconstructed.
-    :return: Reconstructed object.
+    :param d:   Serializable dictionary representation of an object
+                to be reconstructed.
+    :return:    Reconstructed object.
     """
     if '__class__' in d and '__inst__' in d:
         if d['__class__'] == "Shply":
@@ -5643,7 +6312,7 @@ def dict2obj(d):
 #             cells[pIdx].append((startIdx, endIdx))
 #
 #     # then, form polygons by storing vertex indices in (counter-)clockwise order
-#     polys = dict()
+#     polys = {}
 #     for pIdx, lineIndices_ in cells.items():
 #         # get a directed graph which contains both directions and arbitrarily follow one of both
 #         directedGraph = lineIndices_ + [(i2, i1) for (i1, i2) in lineIndices_]
@@ -5747,10 +6416,10 @@ def three_point_circle(p1, p2, p3):
     Computes the center and radius of a circle from
     3 points on its circumference.
 
-    :param p1: Point 1
-    :param p2: Point 2
-    :param p3: Point 3
-    :return: center, radius
+    :param p1:  Point 1
+    :param p2:  Point 2
+    :param p3:  Point 3
+    :return:    center, radius
     """
     # Midpoints
     a1 = (p1 + p2) / 2.0
@@ -5869,7 +6538,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         self.objects.append(obj)
         idx = len(self.objects) - 1
 
-        # Note: Shapely objects are not hashable any more, althought
+        # Note: Shapely objects are not hashable any more, although
         # there seem to be plans to re-introduce the feature in
         # version 2.0. For now, we will index using the object's id,
         # but it's important to remember that shapely geometry is

@@ -8,9 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox
-from FlatCAMObj import FlatCAMGerber
-import FlatCAMApp
+from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
+from FlatCAMCommon import GracefulException as grace
 
 from shapely.geometry import MultiPolygon
 from shapely.ops import nearest_points
@@ -63,10 +62,11 @@ class ToolOptimal(FlatCAMTool):
         form_lay.addRow(QtWidgets.QLabel(""))
 
         # ## Gerber Object to mirror
-        self.gerber_object_combo = QtWidgets.QComboBox()
+        self.gerber_object_combo = FCComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
+        self.gerber_object_combo.is_last = True
+        self.gerber_object_combo.obj_type = "Gerber"
 
         self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(
@@ -78,7 +78,7 @@ class ToolOptimal(FlatCAMTool):
         self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
         self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
 
-        self.precision_spinner = FCSpinner()
+        self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
         form_lay.addRow(self.precision_label, self.precision_spinner)
@@ -259,7 +259,7 @@ class ToolOptimal(FlatCAMTool):
 
         # dict to hold the distances between every two elements in Gerber as keys and the actual locations where that
         # distances happen as values
-        self.min_dict = dict()
+        self.min_dict = {}
 
         # ############################################################################
         # ############################ Signals #######################################
@@ -277,13 +277,10 @@ class ToolOptimal(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+O', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolOptimal()")
-
-        self.result_entry.set_value(0.0)
-        self.freq_entry.set_value('0')
+        self.app.defaults.report_usage("ToolOptimal()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -310,6 +307,9 @@ class ToolOptimal(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
 
     def set_tool_ui(self):
+        self.result_entry.set_value(0.0)
+        self.freq_entry.set_value('0')
+
         self.precision_spinner.set_value(int(self.app.defaults["tools_opt_precision"]))
         self.locations_textb.clear()
         # new cursor - select all document
@@ -342,7 +342,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGerber):
+        if fcobj.kind != 'gerber':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber objects can be evaluated."))
             return
 
@@ -354,7 +354,7 @@ class ToolOptimal(FlatCAMTool):
                 old_disp_number = 0
                 pol_nr = 0
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = list()
+                total_geo = []
 
                 for ap in list(fcobj.apertures.keys()):
                     if 'geometry' in fcobj.apertures[ap]:
@@ -364,7 +364,7 @@ class ToolOptimal(FlatCAMTool):
                         for geo_el in fcobj.apertures[ap]['geometry']:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
                                 total_geo.append(geo_el['solid'])
@@ -388,13 +388,13 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                self.min_dict = dict()
+                self.min_dict = {}
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         # minimize the number of distances by not taking into considerations those that are too small
                         dist = geo.distance(s_geo)
@@ -458,7 +458,7 @@ class ToolOptimal(FlatCAMTool):
             log.debug("ToolOptimal.on_locate_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
-            return 'fail'
+            return
 
         try:
             loc_1 = loc[0]
@@ -470,7 +470,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
             log.debug("ToolOptimal.on_locate_position() --> sec try %s" % str(e))
-            return 'fail'
+            return
 
     def on_update_text(self, data):
         txt = ''
@@ -566,12 +566,12 @@ class ToolOptimal(FlatCAMTool):
             if self.selected_locations_text != '':
                 loc = eval(self.selected_locations_text)
             else:
-                return 'fail'
+                return
         except Exception as e:
             log.debug("ToolOptimal.on_locate_sec_position() --> first try %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
                                  "((x0, y0), (x1, y1)).")
-            return 'fail'
+            return
 
         try:
             loc_1 = loc[0]
@@ -583,7 +583,7 @@ class ToolOptimal(FlatCAMTool):
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
             log.debug("ToolOptimal.on_locate_sec_position() --> sec try %s" % str(e))
-            return 'fail'
+            return
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -14,9 +14,11 @@ class TclCommandExportExcellon(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['export_exc', 'ee', 'export_excellon']
 
+    description = '%s %s' % ("--", "Export a Excellon object as a Excellon File.")
+
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
-        ('obj_name', str),
+        ('name', str),
         ('filename', str)
     ])
 
@@ -25,16 +27,17 @@ class TclCommandExportExcellon(TclCommand):
     ])
 
     # array of mandatory options for current Tcl command: required = ['name','outname']
-    required = ['obj_name']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Export a Excellon Object as a Excellon File.",
+        'main': "Export a Excellon object as a Excellon File.",
         'args': collections.OrderedDict([
-            ('obj_name', 'Name of the object to export.'),
-            ('filename', 'Path to the file to export.')
+            ('name', 'Name of the Excellon object to export.'),
+            ('filename', 'Absolute path to file to export.\n'
+                         'WARNING: no spaces are allowed. If unsure enclose the entire path with quotes.'),
         ]),
-        'examples': ['export_excellon my_excellon path/my_file.drl']
+        'examples': ['export_excellon my_excellon path/my_file.drl', 'export_excellon My_Excellon D:/drill_file.DRL']
     }
 
     def execute(self, args, unnamed_args):
@@ -44,6 +47,6 @@ class TclCommandExportExcellon(TclCommand):
         :param unnamed_args:
         :return:
         """
-        if  'filename' not in args:
-            args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['obj_name']
-        self.app.export_excellon(use_thread=False,**args)
+        if 'filename' not in args:
+            args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['name']
+        self.app.export_excellon(use_thread=False, **args)

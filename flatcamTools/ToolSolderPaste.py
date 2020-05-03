@@ -7,10 +7,10 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
-from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCInputDialog, FCDoubleSpinner, FCSpinner
+from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
+    FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
 from FlatCAMApp import log
 from camlib import distance
-from FlatCAMObj import FlatCAMCNCjob
 from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -61,7 +61,8 @@ class SolderPaste(FlatCAMTool):
         self.obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
+        self.obj_combo.is_last = True
+        self.obj_combo.obj_type = "Gerber"
 
         self.object_label = QtWidgets.QLabel("Gerber:   ")
         self.object_label.setToolTip(
@@ -105,7 +106,7 @@ class SolderPaste(FlatCAMTool):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new Nozzle tool to add in the Tool Table")
         )
-        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_range(0.0000001, 9999.9999)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.setSingleStep(0.1)
@@ -154,7 +155,7 @@ class SolderPaste(FlatCAMTool):
         step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1'))
         step1_lbl.setToolTip(
             _("First step is to select a number of nozzle tools for usage\n"
-              "and then optionally modify the GCode parameters bellow.")
+              "and then optionally modify the GCode parameters below.")
         )
         step1_description_lbl = QtWidgets.QLabel(_("Select tools.\n"
                                                    "Modify parameters."))
@@ -174,7 +175,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_box.addLayout(self.gcode_form_layout)
 
         # Z dispense start
-        self.z_start_entry = FCDoubleSpinner()
+        self.z_start_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_start_entry.set_range(0.0000001, 9999.9999)
         self.z_start_entry.set_precision(self.decimals)
         self.z_start_entry.setSingleStep(0.1)
@@ -186,7 +187,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_start_label, self.z_start_entry)
 
         # Z dispense
-        self.z_dispense_entry = FCDoubleSpinner()
+        self.z_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_dispense_entry.set_range(0.0000001, 9999.9999)
         self.z_dispense_entry.set_precision(self.decimals)
         self.z_dispense_entry.setSingleStep(0.1)
@@ -198,7 +199,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_dispense_label, self.z_dispense_entry)
 
         # Z dispense stop
-        self.z_stop_entry = FCDoubleSpinner()
+        self.z_stop_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_stop_entry.set_range(0.0000001, 9999.9999)
         self.z_stop_entry.set_precision(self.decimals)
         self.z_stop_entry.setSingleStep(0.1)
@@ -210,7 +211,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_stop_label, self.z_stop_entry)
 
         # Z travel
-        self.z_travel_entry = FCDoubleSpinner()
+        self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_travel_entry.set_range(0.0000001, 9999.9999)
         self.z_travel_entry.set_precision(self.decimals)
         self.z_travel_entry.setSingleStep(0.1)
@@ -223,7 +224,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_travel_label, self.z_travel_entry)
 
         # Z toolchange location
-        self.z_toolchange_entry = FCDoubleSpinner()
+        self.z_toolchange_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_toolchange_entry.set_range(0.0000001, 9999.9999)
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
@@ -244,8 +245,8 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.xy_toolchange_label, self.xy_toolchange_entry)
 
         # Feedrate X-Y
-        self.frxy_entry = FCDoubleSpinner()
-        self.frxy_entry.set_range(0.0000001, 9999.9999)
+        self.frxy_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.frxy_entry.set_range(0.0000, 99999.9999)
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
@@ -256,8 +257,8 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frxy_label, self.frxy_entry)
 
         # Feedrate Z
-        self.frz_entry = FCDoubleSpinner()
-        self.frz_entry.set_range(0.0000001, 9999.9999)
+        self.frz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.frz_entry.set_range(0.0000, 99999.9999)
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
@@ -269,8 +270,8 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_label, self.frz_entry)
 
         # Feedrate Z Dispense
-        self.frz_dispense_entry = FCDoubleSpinner()
-        self.frz_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.frz_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.frz_dispense_entry.set_range(0.0000, 99999.9999)
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
@@ -282,9 +283,9 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 
         # Spindle Speed Forward
-        self.speedfwd_entry = FCSpinner()
+        self.speedfwd_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedfwd_entry.set_range(0, 999999)
-        self.speedfwd_entry.setSingleStep(1000)
+        self.speedfwd_entry.set_step(1000)
 
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
@@ -294,7 +295,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedfwd_label, self.speedfwd_entry)
 
         # Dwell Forward
-        self.dwellfwd_entry = FCDoubleSpinner()
+        self.dwellfwd_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwellfwd_entry.set_range(0.0000001, 9999.9999)
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
@@ -306,9 +307,9 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellfwd_label, self.dwellfwd_entry)
 
         # Spindle Speed Reverse
-        self.speedrev_entry = FCSpinner()
+        self.speedrev_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedrev_entry.set_range(0, 999999)
-        self.speedrev_entry.setSingleStep(1000)
+        self.speedrev_entry.set_step(1000)
 
         self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
@@ -318,7 +319,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedrev_label, self.speedrev_entry)
 
         # Dwell Reverse
-        self.dwellrev_entry = FCDoubleSpinner()
+        self.dwellrev_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwellrev_entry.set_range(0.0000001, 9999.9999)
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)
@@ -331,7 +332,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellrev_label, self.dwellrev_entry)
 
         # Preprocessors
-        pp_label = QtWidgets.QLabel('%s:' % _('PostProcessor'))
+        pp_label = QtWidgets.QLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
@@ -341,8 +342,8 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(pp_label, self.pp_combo)
 
         # ## Buttons
-        grid1 = QtWidgets.QGridLayout()
-        self.gcode_box.addLayout(grid1)
+        # grid1 = QtWidgets.QGridLayout()
+        # self.gcode_box.addLayout(grid1)
 
         self.solder_gcode_btn = QtWidgets.QPushButton(_("Generate GCode"))
         self.solder_gcode_btn.setToolTip(
@@ -383,7 +384,8 @@ class SolderPaste(FlatCAMTool):
         self.geo_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.geo_obj_combo.setModel(self.app.collection)
         self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.geo_obj_combo.setCurrentIndex(1)
+        self.geo_obj_combo.is_last = True
+        self.geo_obj_combo.obj_type = "Geometry"
 
         self.geo_object_label = QtWidgets.QLabel('%s:' % _("Geo Result"))
         self.geo_object_label.setToolTip(
@@ -416,7 +418,8 @@ class SolderPaste(FlatCAMTool):
         self.cnc_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.cnc_obj_combo.setModel(self.app.collection)
         self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
-        self.cnc_obj_combo.setCurrentIndex(1)
+        self.cnc_obj_combo.is_last = True
+        self.geo_obj_combo.obj_type = "CNCJob"
 
         self.cnc_object_label = QtWidgets.QLabel('%s:' % _("CNC Result"))
         self.cnc_object_label.setToolTip(
@@ -491,6 +494,8 @@ class SolderPaste(FlatCAMTool):
         self.units = ''
         self.name = ""
 
+        self.obj = None
+
         self.text_editor_tab = None
 
         # this will be used in the combobox context menu, for delete entry
@@ -500,7 +505,8 @@ class SolderPaste(FlatCAMTool):
         self.flat_geometry = []
 
         # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'), _("Delete Object"))
+        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'),
+                                                          _("Delete Object"))
 
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
@@ -519,7 +525,7 @@ class SolderPaste(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolSolderPaste()")
+        self.app.defaults.report_usage("ToolSolderPaste()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -547,7 +553,7 @@ class SolderPaste(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("SolderPaste Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+K', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
     def on_add_tool_by_key(self):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
@@ -621,11 +627,6 @@ class SolderPaste(FlatCAMTool):
 
         self.units = self.app.defaults['units'].upper()
 
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
-
         for name in list(self.app.preprocessors.keys()):
             # populate only with preprocessor files that start with 'Paste_'
             if name.partition('_')[0] != 'Paste':
@@ -657,10 +658,10 @@ class SolderPaste(FlatCAMTool):
             for tooluid_key, tooluid_value in self.tooltable_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
-                    id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
+                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                     row_no = tool_id - 1
-                    self.tools_table.setItem(row_no, 0, id)  # Tool name/id
+                    self.tools_table.setItem(row_no, 0, id_item)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
                     # There are no drill bits in MM with more than 2 decimals diameter
@@ -913,14 +914,12 @@ class SolderPaste(FlatCAMTool):
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Adding Nozzle tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit('[success] %s' %
-                                     _("New Nozzle tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' % _("New Nozzle tool added to Tool Table."))
             self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
@@ -967,6 +966,7 @@ class SolderPaste(FlatCAMTool):
                 self.build_ui()
                 return
             else:
+                old_tool_dia = ''
                 # identify the old tool_dia and restore the text in tool table
                 for k, v in self.tooltable_tools.items():
                     if k == tooluid:
@@ -975,7 +975,7 @@ class SolderPaste(FlatCAMTool):
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Edit cancelled. New diameter value is already in the Tool Table."))
+                                     _("Cancelled. New diameter value is already in the Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all=None):
@@ -1240,12 +1240,10 @@ class SolderPaste(FlatCAMTool):
                         if not geo_obj.tools[tooluid_key]['solid_geometry']:
                             a += 1
                     if a == len(geo_obj.tools):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _('Cancelled. Empty file, it has no geometry...'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _('Cancelled. Empty file, it has no geometry...'))
                         return 'fail'
 
-                    app_obj.inform.emit('[success] %s...' %
-                                        _("Solder Paste geometry generated successfully"))
+                    app_obj.inform.emit('[success] %s...' % _("Solder Paste geometry generated successfully"))
                     return
 
             # if we still have geometry not processed at the end of the tools then we failed
@@ -1300,7 +1298,7 @@ class SolderPaste(FlatCAMTool):
             if obj.tools[tooluid_key]['solid_geometry'] is None:
                 a += 1
         if a == len(obj.tools):
-            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('Cancelled. Empty file, it has no geometry'))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
             return 'fail'
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
@@ -1335,11 +1333,9 @@ class SolderPaste(FlatCAMTool):
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
-        def job_init(job_obj, app_obj):
-            assert isinstance(job_obj, FlatCAMCNCjob), \
-                "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
-
-            tool_cnc_dict = {}
+        def job_init(job_obj):
+            assert job_obj.kind == 'cncjob', \
+                "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -1353,8 +1349,6 @@ class SolderPaste(FlatCAMTool):
             job_obj.options['ymax'] = ymax
 
             for tooluid_key, tooluid_value in obj.tools.items():
-                app_obj.progress.emit(20)
-
                 # find the tool_dia associated with the tooluid_key
                 tool_dia = tooluid_value['tooldia']
                 tool_cnc_dict = deepcopy(tooluid_value)
@@ -1371,7 +1365,7 @@ class SolderPaste(FlatCAMTool):
                 res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
 
                 if res == 'fail':
-                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
                     tool_cnc_dict['gcode'] = res
@@ -1385,8 +1379,6 @@ class SolderPaste(FlatCAMTool):
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
-                app_obj.progress.emit(80)
-
                 job_obj.cnc_tools.update({
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
@@ -1399,8 +1391,6 @@ class SolderPaste(FlatCAMTool):
                     if app_obj.new_object("cncjob", name, job_init) != 'fail':
                         app_obj.inform.emit('[success] [success] %s: %s' %
                                             (_("ToolSolderPaste CNCjob created"), name))
-                        app_obj.progress.emit(100)
-
             # Create a promise with the name
             self.app.collection.promise(name)
             # Send to worker
@@ -1500,13 +1490,13 @@ class SolderPaste(FlatCAMTool):
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export GCode ..."),
                 directory=dir_file_to_save,
                 filter=_filter_
             )
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Machine Code ..."), filter=_filter_)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' %

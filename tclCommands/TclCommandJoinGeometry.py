@@ -1,5 +1,5 @@
 from tclCommands.TclCommand import TclCommand
-from FlatCAMObj import FlatCAMGeometry
+from flatcamObjects.FlatCAMGeometry import GeometryObject
 
 import collections
 
@@ -14,6 +14,8 @@ class TclCommandJoinGeometry(TclCommand):
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['join_geometries', 'join_geometry']
+
+    description = '%s %s' % ("--", "Merge two or more Geometry objects and create a new Geometry object.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -30,14 +32,14 @@ class TclCommandJoinGeometry(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Runs a merge operation (join) on the Excellon objects.",
+        'main': "Runs a merge operation (join) on the Geometry objects.\n"
+                "The names of the Geometry objects to be merged will be entered after the outname,\n"
+                "separated by spaces. See the example below.\n"
+                "WARNING: if the name of an Geometry objects has spaces, enclose the name with quotes.",
         'args': collections.OrderedDict([
-            ('outname', 'Name of the new Geometry Object.'),
-            ('obj_name_0', 'Name of the first object'),
-            ('obj_name_1', 'Name of the second object.'),
-            ('obj_name_2...', 'Additional object names')
+            ('outname', 'Name of the new Geometry Object made by joining of other Geometry objects. Required'),
         ]),
-        'examples': []
+        'examples': ['join_geometry merged_new_geo geo_name_1 "geo name_2"']
     }
 
     def execute(self, args, unnamed_args):
@@ -60,7 +62,9 @@ class TclCommandJoinGeometry(TclCommand):
                 objs.append(obj)
 
         def initialize(obj_, app):
-            FlatCAMGeometry.merge(objs, obj_)
+            GeometryObject.merge(objs, obj_)
 
-        if objs is not None:
+        if objs and len(objs) >= 2:
             self.app.new_object("geometry", outname, initialize, plot=False)
+        else:
+            return "No Geometry objects to be joined or less than two Geometry objects specified for merging."

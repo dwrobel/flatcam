@@ -22,6 +22,7 @@
 # import xml.etree.ElementTree as ET
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
 from svg.path.path import Move
+from svg.path.path import Close
 from shapely.geometry import LineString, LinearRing, MultiLineString
 from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
@@ -69,6 +70,7 @@ def path2shapely(path, object_type, res=1.0):
     geometry = []
     geo_element = None
     rings = []
+    closed = False
 
     for component in path:
         # Line
@@ -88,7 +90,8 @@ def path2shapely(path, object_type, res=1.0):
 
             # How many points to use in the discrete representation.
             length = component.length(res / 10.0)
-            steps = int(length / res + 0.5)
+            # steps = int(length / res + 0.5)
+            steps = int(length) * 2
 
             # solve error when step is below 1,
             # it may cause other problems, but LineString needs at least  two points
@@ -113,7 +116,25 @@ def path2shapely(path, object_type, res=1.0):
                 continue
             else:
                 rings.append(points)
+                if closed is False:
+                    points = []
+                else:
+                    closed = False
+                    start = component.start
+                    x, y = start.real, start.imag
+                    points = [(x, y)]
+            continue
+
+        closed = False
+
+        # Close
+        if isinstance(component, Close):
+            if not points:
+                continue
+            else:
+                rings.append(points)
                 points = []
+                closed = True
             continue
         log.warning("I don't know what this is: %s" % str(component))
         continue
@@ -122,8 +143,12 @@ def path2shapely(path, object_type, res=1.0):
 
     if points:
         rings.append(points)
+    try:
+        rings = MultiLineString(rings)
+    except Exception as e:
+        log.debug("ParseSVG.path2shapely() MString --> %s" % str(e))
+        return None
 
-    rings = MultiLineString(rings)
     if len(rings) > 0:
         if len(rings) == 1 and not isinstance(rings, MultiLineString):
             # Polygons are closed and require more than 2 points
@@ -135,11 +160,14 @@ def path2shapely(path, object_type, res=1.0):
             try:
                 geo_element = Polygon(rings[0], rings[1:])
             except Exception:
-                coords = list()
+                coords = []
                 for line in rings:
                     coords.append(line.coords[0])
                     coords.append(line.coords[1])
-                geo_element = Polygon(coords)
+                try:
+                    geo_element = Polygon(coords)
+                except Exception:
+                    geo_element = LineString(coords)
         geometry.append(geo_element)
     return geometry
 
@@ -305,7 +333,7 @@ def getsvggeo(node, object_type, root=None):
         root = node
 
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
-    geo = list()
+    geo = []
 
     # Recurse
     if len(node) > 0:

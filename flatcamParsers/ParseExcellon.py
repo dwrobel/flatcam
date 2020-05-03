@@ -7,7 +7,6 @@
 # ########################################################## ##
 
 from camlib import Geometry
-import FlatCAMApp
 
 import shapely.affinity as affinity
 from shapely.geometry import Point, LineString
@@ -19,6 +18,7 @@ import traceback
 from copy import deepcopy
 
 import FlatCAMTranslation as fcTranslate
+from FlatCAMCommon import GracefulException as grace
 
 import gettext
 import builtins
@@ -43,6 +43,7 @@ class Excellon(Geometry):
     ================  ====================================
     C                 Diameter of the tool
     solid_geometry    Geometry list for each tool
+    data              dictionary which holds the options for each tool
     Others            Not supported (Ignored).
     ================  ====================================
 
@@ -85,6 +86,7 @@ class Excellon(Geometry):
         :return: Excellon object.
         :rtype: Excellon
         """
+
         self.decimals = self.app.decimals
 
         if geo_steps_per_circle is None:
@@ -94,11 +96,11 @@ class Excellon(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
-        self.tools = dict()
+        self.tools = {}
         # list to store the drills, see above for description
-        self.drills = list()
+        self.drills = []
         # self.slots (list) to store the slots; each is a dictionary
-        self.slots = list()
+        self.slots = []
 
         self.source_file = ''
 
@@ -109,8 +111,8 @@ class Excellon(Geometry):
         self.match_routing_start = None
         self.match_routing_stop = None
 
-        self.num_tools = list()  # List for keeping the tools sorted
-        self.index_per_tool = dict()  # Dictionary to store the indexed points for each tool
+        self.num_tools = []  # List for keeping the tools sorted
+        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -240,12 +242,12 @@ class Excellon(Geometry):
 
     def parse_file(self, filename=None, file_obj=None):
         """
-        Reads the specified file as array of lines as
-        passes it to ``parse_lines()``.
+        Reads the specified file as array of lines as passes it to ``parse_lines()``.
 
-        :param filename: The file to be read and parsed.
-        :type filename: str
-        :return: None
+        :param filename:    The file to be read and parsed.
+        :param file_obj:
+        :type filename:     str
+        :return:            None
         """
         if file_obj:
             estr = file_obj
@@ -297,7 +299,7 @@ class Excellon(Geometry):
             for eline in elines:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 line_num += 1
                 # log.debug("%3d %s" % (line_num, str(eline)))
@@ -424,7 +426,7 @@ class Excellon(Geometry):
                                     # it's possible that tool definition has only tool number and no diameter info
                                     # (those could be in another file like PCB Wizard do)
                                     # then match.group(2) = None and float(None) will create the exception
-                                    # the bellow construction is so each tool will have a slightly different diameter
+                                    # the below construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
                                     self.app.inform.emit('[WARNING] %s%s %s' %
@@ -525,7 +527,7 @@ class Excellon(Geometry):
                             slot_dia = 0.05
                             try:
                                 slot_dia = float(self.tools[current_tool]['C'])
-                            except Exception as e:
+                            except Exception:
                                 pass
                             log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (
@@ -595,7 +597,7 @@ class Excellon(Geometry):
                             slot_dia = 0.05
                             try:
                                 slot_dia = float(self.tools[current_tool]['C'])
-                            except Exception as e:
+                            except Exception:
                                 pass
                             log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (
@@ -617,82 +619,92 @@ class Excellon(Geometry):
                     match = self.coordsnoperiod_re.search(eline)
                     if match:
                         matchr = self.repeat_re.search(eline)
-                        if matchr:
+                        if matchr:  # if we have a repeat command
                             repeat = int(matchr.group(1))
 
-                        try:
-                            x = self.parse_number(match.group(1))
-                            repeating_x = current_x
-                            current_x = x
-                        except TypeError:
-                            x = current_x
-                            repeating_x = 0
-                        except Exception:
-                            return
+                            if match.group(1):
+                                repeating_x = self.parse_number(match.group(1))
+                            else:
+                                repeating_x = 0
 
-                        try:
-                            y = self.parse_number(match.group(2))
-                            repeating_y = current_y
-                            current_y = y
-                        except TypeError:
-                            y = current_y
-                            repeating_y = 0
-                        except Exception:
-                            return
+                            if match.group(2):
+                                repeating_y = self.parse_number(match.group(2))
+                            else:
+                                repeating_y = 0
 
-                        if x is None or y is None:
-                            log.error("Missing coordinates")
+                            coordx = current_x
+                            coordy = current_y
+
+                            while repeat > 0:
+                                if repeating_x:
+                                    coordx += repeating_x
+                                if repeating_y:
+                                    coordy += repeating_y
+                                self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
+
+                                repeat -= 1
+                            current_x = coordx
+                            current_y = coordy
                             continue
 
-                        # ## Excellon Routing parse
-                        if len(re.findall("G00", eline)) > 0:
-                            self.match_routing_start = 'G00'
+                        else:   # those are normal coordinates
+                            try:
+                                x = self.parse_number(match.group(1))
+                                current_x = x
+                            except TypeError:
+                                x = current_x
+                            except Exception:
+                                return
 
-                            # signal that there are milling slots operations
-                            self.defaults['excellon_drills'] = False
+                            try:
+                                y = self.parse_number(match.group(2))
+                                current_y = y
+                            except TypeError:
+                                y = current_y
+                            except Exception:
+                                return
 
-                            self.routing_flag = 0
-                            slot_start_x = x
-                            slot_start_y = y
-                            continue
+                            if x is None or y is None:
+                                log.error("Missing coordinates")
+                                continue
 
-                        if self.routing_flag == 0:
-                            if len(re.findall("G01", eline)) > 0:
-                                self.match_routing_stop = 'G01'
+                            # ## Excellon Routing parse
+                            if len(re.findall("G00", eline)) > 0:
+                                self.match_routing_start = 'G00'
 
                                 # signal that there are milling slots operations
                                 self.defaults['excellon_drills'] = False
 
-                                self.routing_flag = 1
-                                slot_stop_x = x
-                                slot_stop_y = y
-                                self.slots.append(
-                                    {
-                                        'start': Point(slot_start_x, slot_start_y),
-                                        'stop': Point(slot_stop_x, slot_stop_y),
-                                        'tool': current_tool
-                                    }
-                                )
+                                self.routing_flag = 0
+                                slot_start_x = x
+                                slot_start_y = y
                                 continue
 
-                        if self.match_routing_start is None and self.match_routing_stop is None:
-                            if repeat == 0:
+                            if self.routing_flag == 0:
+                                if len(re.findall("G01", eline)) > 0:
+                                    self.match_routing_stop = 'G01'
+
+                                    # signal that there are milling slots operations
+                                    self.defaults['excellon_drills'] = False
+
+                                    self.routing_flag = 1
+                                    slot_stop_x = x
+                                    slot_stop_y = y
+                                    self.slots.append(
+                                        {
+                                            'start': Point(slot_start_x, slot_start_y),
+                                            'stop': Point(slot_stop_x, slot_stop_y),
+                                            'tool': current_tool
+                                        }
+                                    )
+                                    continue
+
+                            if self.match_routing_start is None and self.match_routing_stop is None:
                                 # signal that there are drill operations
                                 self.defaults['excellon_drills'] = True
                                 self.drills.append({'point': Point((x, y)), 'tool': current_tool})
-                            else:
-                                coordx = x
-                                coordy = y
-                                while repeat > 0:
-                                    if repeating_x:
-                                        coordx = (repeat * x) + repeating_x
-                                    if repeating_y:
-                                        coordy = (repeat * y) + repeating_y
-                                    self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
-                                    repeat -= 1
-                            repeating_x = repeating_y = 0
-                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
-                            continue
+                                # log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                                continue
 
                     # ## Coordinates with period: Use literally. # ##
                     match = self.coordsperiod_re.search(eline)
@@ -882,9 +894,8 @@ class Excellon(Geometry):
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
-            msg = '[ERROR_NOTCL] %s' % \
-                  _("An internal error has ocurred. See shell.\n")
-            msg += ('{e_code} {tx} {l_nr}: {line}\n').format(
+            msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
+            msg += '{e_code} {tx} {l_nr}: {line}\n'.format(
                 e_code='[ERROR]',
                 tx=_("Excellon Parser error.\nParsing Failed. Line"),
                 l_nr=line_num,
@@ -961,14 +972,12 @@ class Excellon(Geometry):
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                try:
-                    self.tools[tool]['solid_geometry'][:] = []
-                except KeyError:
-                    self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['data'] = {}
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
-                if drill['tool'] is '':
+                if drill['tool'] == '':
                     self.app.inform.emit('[WARNING] %s' %
                                          _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"
@@ -979,7 +988,10 @@ class Excellon(Geometry):
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[drill['tool']]['solid_geometry'].append(poly)
+
+                tool_in_drills = drill['tool']
+                self.tools[tool_in_drills]['solid_geometry'].append(poly)
+                self.tools[tool_in_drills]['data'] = deepcopy(self.default_data)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -989,20 +1001,22 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[slot['tool']]['solid_geometry'].append(poly)
 
+                tool_in_slots = slot['tool']
+                self.tools[tool_in_slots]['solid_geometry'].append(poly)
+                self.tools[tool_in_slots]['data'] = deepcopy(self.default_data)
         except Exception as e:
             log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
 
-    def bounds(self):
+    def bounds(self, flatten=None):
         """
         Returns coordinates of rectangular bounds
         of Excellon geometry: (xmin, ymin, xmax, ymax).
+
+        :param flatten:     No used
         """
-        # fixed issue of getting bounds only for one level lists of objects
-        # now it can get bounds for nested lists of objects
 
         log.debug("flatcamParsers.ParseExcellon.Excellon.bounds()")
 
@@ -1042,11 +1056,11 @@ class Excellon(Geometry):
         maxy_list = []
 
         for tool in self.tools:
-            minx, miny, maxx, maxy = bounds_rec(self.tools[tool]['solid_geometry'])
-            minx_list.append(minx)
-            miny_list.append(miny)
-            maxx_list.append(maxx)
-            maxy_list.append(maxy)
+            eminx, eminy, emaxx, emaxy = bounds_rec(self.tools[tool]['solid_geometry'])
+            minx_list.append(eminx)
+            miny_list.append(eminy)
+            maxx_list.append(emaxx)
+            maxy_list.append(emaxy)
 
         return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
 
@@ -1061,8 +1075,9 @@ class Excellon(Geometry):
 
         Kind of convolute way to make the conversion and it is based on the assumption that the Excellon file
         will have detected the units before the tools are parsed and stored in self.tools
-        :param units:
-        :type str: IN or MM
+
+        :param units:   'IN' or 'MM'. String
+
         :return:
         """
 
@@ -1095,12 +1110,13 @@ class Excellon(Geometry):
         Scales geometry on the XY plane in the object by a given factor.
         Tool sizes, feedrates an Z-plane dimensions are untouched.
 
-        :param xfactor: Number by which to scale the object.
-        :type xfactor: float
-        :param yfactor: Number by which to scale the object.
-        :type yfactor: float
-        :return: None
-        :rtype: NOne
+        :param xfactor:     Number by which to scale the object.
+        :type xfactor:      float
+        :param yfactor:     Number by which to scale the object.
+        :type yfactor:      float
+        :param point:       Origin point for scale
+        :return:            None
+        :rtype:             None
         """
         log.debug("flatcamParsers.ParseExcellon.Excellon.scale()")
 
@@ -1131,8 +1147,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.drills:
-                self.geo_len += 1
+            self.geo_len = len(self.drills)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1176,12 +1191,12 @@ class Excellon(Geometry):
             return
 
         def offset_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
-                for g in obj:
-                    new_obj.append(offset_geom(g))
+                for geo in obj:
+                    new_obj.append(offset_geom(geo))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     return affinity.translate(obj, xoff=dx, yoff=dy)
                 except AttributeError:
@@ -1190,8 +1205,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.drills:
-                self.geo_len += 1
+            self.geo_len = len(self.drills)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1223,11 +1237,11 @@ class Excellon(Geometry):
     def mirror(self, axis, point):
         """
 
-        :param axis: "X" or "Y" indicates around which axis to mirror.
-        :type axis: str
-        :param point: [x, y] point belonging to the mirror axis.
-        :type point: list
-        :return: None
+        :param axis:        "X" or "Y" indicates around which axis to mirror.
+        :type axis:         str
+        :param point:       [x, y] point belonging to the mirror axis.
+        :type point:        list
+        :return:            None
         """
         log.debug("flatcamParsers.ParseExcellon.Excellon.mirror()")
 
@@ -1235,12 +1249,12 @@ class Excellon(Geometry):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         def mirror_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
-                for g in obj:
-                    new_obj.append(mirror_geom(g))
+                for geo in obj:
+                    new_obj.append(mirror_geom(geo))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     return affinity.scale(obj, xscale, yscale, origin=(px, py))
                 except AttributeError:
@@ -1251,8 +1265,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.drills:
-                self.geo_len += 1
+            self.geo_len = len(self.drills)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1286,12 +1299,12 @@ class Excellon(Geometry):
         Shear/Skew the geometries of an object by angles along x and y dimensions.
         Tool sizes, feedrates an Z-plane dimensions are untouched.
 
-        Parameters
-        ----------
-        xs, ys : float, float
+        :param angle_x:
+        :param angle_y:
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
+        :param point:       Origin point for Skew
 
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
@@ -1308,12 +1321,12 @@ class Excellon(Geometry):
             return
 
         def skew_geom(obj):
-            if type(obj) is list:
+            try:
                 new_obj = []
                 for g in obj:
                     new_obj.append(skew_geom(g))
                 return new_obj
-            else:
+            except TypeError:
                 try:
                     return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
                 except AttributeError:
@@ -1322,8 +1335,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.drills:
-                self.geo_len += 1
+            self.geo_len = len(self.drills)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1379,9 +1391,10 @@ class Excellon(Geometry):
     def rotate(self, angle, point=None):
         """
         Rotate the geometry of an object by an angle around the 'point' coordinates
+
         :param angle:
-        :param point: tuple of coordinates (x, y)
-        :return:
+        :param point:   tuple of coordinates (x, y)
+        :return:        None
         """
         log.debug("flatcamParsers.ParseExcellon.Excellon.rotate()")
 
@@ -1409,8 +1422,7 @@ class Excellon(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for g in self.drills:
-                self.geo_len += 1
+            self.geo_len = len(self.drills)
         except TypeError:
             self.geo_len = 1
         self.old_disp_number = 0
@@ -1458,3 +1470,46 @@ class Excellon(Geometry):
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
+
+    def buffer(self, distance, join, factor):
+        """
+
+        :param distance:    if 'factor' is True then distance is the factor
+        :param factor:      True or False (None)
+        :param join:        The type of line joint used by the shapely buffer method: round, square, bevel
+        :return:            None
+        """
+        log.debug("flatcamParsers.ParseExcellon.Excellon.buffer()")
+
+        if distance == 0:
+            return
+
+        def buffer_geom(obj):
+            try:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(buffer_geom(g))
+                return new_obj
+            except TypeError:
+                try:
+                    if factor is None:
+                        return obj.buffer(distance, resolution=self.geo_steps_per_circle)
+                    else:
+                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
+                except AttributeError:
+                    return obj
+
+        # buffer solid_geometry
+        for tool, tool_dict in list(self.tools.items()):
+            res = buffer_geom(tool_dict['solid_geometry'])
+            try:
+                __ = iter(res)
+                self.tools[tool]['solid_geometry'] = res
+            except TypeError:
+                self.tools[tool]['solid_geometry'] = [res]
+            if factor is None:
+                self.tools[tool]['C'] += distance
+            else:
+                self.tools[tool]['C'] *= distance
+
+        self.create_geometry()

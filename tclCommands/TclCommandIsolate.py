@@ -1,7 +1,7 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMGerber
 
 import collections
+
 
 class TclCommandIsolate(TclCommandSignaled):
     """
@@ -18,6 +18,8 @@ class TclCommandIsolate(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['isolate']
 
+    description = '%s %s' % ("--", "Creates isolation routing Geometry for the specified Gerber object.")
+
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
         ('name', str)
@@ -28,7 +30,7 @@ class TclCommandIsolate(TclCommandSignaled):
         ('dia', float),
         ('passes', int),
         ('overlap', float),
-        ('combine', int),
+        ('combine', str),
         ('outname', str),
         ('follow', str),
         ('iso_type', int)
@@ -40,19 +42,20 @@ class TclCommandIsolate(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Creates isolation routing geometry for the given Gerber.",
+        'main': "Creates isolation routing Geometry for the specified Gerber object.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the source object.'),
+            ('name', 'Name of the source object. Required.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
-            ('overlap', 'Fraction of tool diameter to overlap passes.'),
-            ('combine', 'Combine all passes into one geometry.'),
+            ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
+                        'E.g: for a 25% from tool diameter overlap use -overlap 25'),
+            ('combine', 'Combine all passes into one geometry. Can be True (1) or False (0)'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('follow', 'Create a Geometry that follows the Gerber path.'),
+            ('follow', 'Create a Geometry that follows the Gerber path. Can be True (1) or False (0).'),
             ('iso_type', 'A value of 0 will isolate exteriors, a value of 1 will isolate interiors '
                          'and a value of 2 will do full isolation.')
         ]),
-        'examples': []
+        'examples': ['isolate my_geo -dia 0.1 -passes 2 -overlap 10 -combine True -iso_type 2 -outname out_geo']
     }
 
     def execute(self, args, unnamed_args):
@@ -78,12 +81,22 @@ class TclCommandIsolate(TclCommandSignaled):
         if 'follow' not in args:
             args['follow'] = None
 
+        # evaluate this parameter so True, False, 0 and 1 works
+        if 'combine' in args:
+            try:
+                par = args['combine'].capitalize()
+            except AttributeError:
+                par = args['combine']
+            args['combine'] = bool(eval(par))
+        else:
+            args['combine'] = bool(eval(self.app.defaults["gerber_combine_passes"]))
+
         obj = self.app.collection.get_by_name(name)
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, FlatCAMGerber):
-            self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (name, type(obj)))
+        if obj.kind != 'gerber':
+            self.raise_tcl_error('Expected GerberObject, got %s %s.' % (name, type(obj)))
 
         del args['name']
         obj.isolate(plot=False, **args)

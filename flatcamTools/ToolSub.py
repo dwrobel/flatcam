@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCCheckBox, FCButton
+from flatcamGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
 from shapely.ops import cascaded_union
@@ -66,10 +66,12 @@ class ToolSub(FlatCAMTool):
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
-        self.target_gerber_combo = QtWidgets.QComboBox()
+        self.target_gerber_combo = FCComboBox()
         self.target_gerber_combo.setModel(self.app.collection)
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.target_gerber_combo.setCurrentIndex(1)
+        # self.target_gerber_combo.setCurrentIndex(1)
+        self.target_gerber_combo.is_last = True
+        self.target_gerber_combo.obj_type = "Gerber"
 
         self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
@@ -80,10 +82,11 @@ class ToolSub(FlatCAMTool):
         form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
 
         # Substractor Gerber Object
-        self.sub_gerber_combo = QtWidgets.QComboBox()
+        self.sub_gerber_combo = FCComboBox()
         self.sub_gerber_combo.setModel(self.app.collection)
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sub_gerber_combo.setCurrentIndex(1)
+        self.sub_gerber_combo.is_last = True
+        self.sub_gerber_combo.obj_type = "Gerber"
 
         self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_gerber_label.setToolTip(
@@ -94,7 +97,7 @@ class ToolSub(FlatCAMTool):
 
         form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
 
-        self.intersect_btn = FCButton(_('Substract Gerber'))
+        self.intersect_btn = FCButton(_('Subtract Gerber'))
         self.intersect_btn.setToolTip(
             _("Will remove the area occupied by the subtractor\n"
               "Gerber from the Target Gerber.\n"
@@ -118,10 +121,12 @@ class ToolSub(FlatCAMTool):
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object
-        self.target_geo_combo = QtWidgets.QComboBox()
+        self.target_geo_combo = FCComboBox()
         self.target_geo_combo.setModel(self.app.collection)
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.target_geo_combo.setCurrentIndex(1)
+        # self.target_geo_combo.setCurrentIndex(1)
+        self.target_geo_combo.is_last = True
+        self.target_geo_combo.obj_type = "Geometry"
 
         self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
@@ -132,10 +137,11 @@ class ToolSub(FlatCAMTool):
         form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
 
         # Substractor Geometry Object
-        self.sub_geo_combo = QtWidgets.QComboBox()
+        self.sub_geo_combo = FCComboBox()
         self.sub_geo_combo.setModel(self.app.collection)
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.sub_geo_combo.setCurrentIndex(1)
+        self.sub_geo_combo.is_last = True
+        self.sub_geo_combo.obj_type = "Geometry"
 
         self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_geo_label.setToolTip(
@@ -227,10 +233,10 @@ class ToolSub(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolSub()")
+        self.app.defaults.report_usage("ToolSub()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -254,14 +260,14 @@ class ToolSub(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
+        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
+
+    def set_tool_ui(self):
         self.new_apertures.clear()
         self.new_tools.clear()
         self.new_solid_geometry = []
         self.target_options.clear()
 
-        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
-
-    def set_tool_ui(self):
         self.tools_frame.show()
         self.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 
@@ -303,14 +309,14 @@ class ToolSub(FlatCAMTool):
 
         # crate the new_apertures dict structure
         for apid in self.target_grb_obj.apertures:
-            self.new_apertures[apid] = dict()
+            self.new_apertures[apid] = {}
             self.new_apertures[apid]['type'] = 'C'
             self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['geometry'] = list()
+            self.new_apertures[apid]['geometry'] = []
 
-        geo_solid_union_list = list()
-        geo_follow_union_list = list()
-        geo_clear_union_list = list()
+        geo_solid_union_list = []
+        geo_follow_union_list = []
+        geo_clear_union_list = []
 
         for apid1 in self.sub_grb_obj.apertures:
             if 'geometry' in self.sub_grb_obj.apertures[apid1]:
@@ -339,14 +345,14 @@ class ToolSub(FlatCAMTool):
             self.app.worker_task.emit({'fcn': self.aperture_intersection, 'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
-        new_geometry = list()
+        new_geometry = []
 
         log.debug("Working on promise: %s" % str(apid))
 
         with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture"), str(apid))):
 
             for geo_el in geo:
-                new_el = dict()
+                new_el = {}
 
                 if 'solid' in geo_el:
                     work_geo = geo_el['solid']
@@ -513,14 +519,14 @@ class ToolSub(FlatCAMTool):
             return
 
         # create the target_options obj
-        # self.target_options = dict()
+        # self.target_options = {}
         # for k, v in self.target_geo_obj.options.items():
         #     if k != 'name':
         #         self.target_options[k] = v
 
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
-            self.new_tools[tool] = dict()
+            self.new_tools[tool] = {}
             for key in self.target_geo_obj.tools[tool]:
                 if key == 'solid_geometry':
                     self.new_tools[tool][key] = []

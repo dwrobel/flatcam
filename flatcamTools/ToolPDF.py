@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-import FlatCAMApp
+from FlatCAMCommon import GracefulException as grace
 
 from shapely.geometry import Point, Polygon, LineString, MultiPolygon
 from shapely.ops import unary_union
@@ -105,7 +105,7 @@ class ToolPDF(FlatCAMTool):
         self.restore_gs_re = re.compile(r'^.*Q.*$')
 
         # graphic stack where we save parameters like transformation, line_width
-        self.gs = dict()
+        self.gs = {}
         # each element is a list composed of sublist elements
         # (each sublist has 2 lists each having 2 elements: first is offset like:
         # offset_geo = [off_x, off_y], second element is scale list with 2 elements, like: scale_geo = [sc_x, sc_yy])
@@ -129,13 +129,13 @@ class ToolPDF(FlatCAMTool):
         self.point_to_unit_factor = 0.01388888888
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolPDF()")
+        self.app.defaults.report_usage("ToolPDF()")
 
         self.set_tool_ui()
         self.on_open_pdf_click()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+Q', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+Q', **kwargs)
 
     def set_tool_ui(self):
         pass
@@ -147,7 +147,7 @@ class ToolPDF(FlatCAMTool):
         :return: None
         """
 
-        self.app.report_usage("ToolPDF.on_open_pdf_click()")
+        self.app.defaults.report_usage("ToolPDF.on_open_pdf_click()")
         self.app.log.debug("ToolPDF.on_open_pdf_click()")
 
         _filter_ = "Adobe PDF Files (*.pdf);;" \
@@ -190,7 +190,7 @@ class ToolPDF(FlatCAMTool):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         with self.app.proc_container.new(_("Parsing PDF file ...")):
             with open(filename, "rb") as f:
@@ -200,7 +200,7 @@ class ToolPDF(FlatCAMTool):
             for s in re.findall(self.stream_re, pdf):
                 if self.app.abort_flag:
                     # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+                    raise grace
 
                 stream_nr += 1
                 log.debug(" PDF STREAM: %d\n" % stream_nr)
@@ -291,7 +291,7 @@ class ToolPDF(FlatCAMTool):
     def layer_rendering_as_gerber(self, filename, ap_dict, layer_nr):
         outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)
 
-        def obj_init(grb_obj, app_obj):
+        def obj_init(grb_obj):
 
             grb_obj.apertures = ap_dict
 
@@ -404,7 +404,7 @@ class ToolPDF(FlatCAMTool):
                     for object_name in self.pdf_parsed:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                            raise grace
 
                         filename = deepcopy(self.pdf_parsed[object_name]['filename'])
                         pdf_content = deepcopy(self.pdf_parsed[object_name]['pdf'])
@@ -412,7 +412,7 @@ class ToolPDF(FlatCAMTool):
                         for k in pdf_content:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
-                                raise FlatCAMApp.GracefulException
+                                raise grace
 
                             ap_dict = pdf_content[k]
                             if ap_dict:
@@ -434,12 +434,12 @@ class ToolPDF(FlatCAMTool):
             traceback.print_exc()
 
     def parse_pdf(self, pdf_content):
-        path = dict()
+        path = {}
         path['lines'] = []      # it's a list of lines subpaths
         path['bezier'] = []     # it's a list of bezier arcs subpaths
         path['rectangle'] = []  # it's a list of rectangle subpaths
 
-        subpath = dict()
+        subpath = {}
         subpath['lines'] = []      # it's a list of points
         subpath['bezier'] = []     # it's a list of sublists each like this [start, c1, c2, stop]
         subpath['rectangle'] = []  # it's a list of sublists of points
@@ -473,9 +473,9 @@ class ToolPDF(FlatCAMTool):
 
         # store the apertures with clear geometry here
         # we are interested only in the circular geometry (drill holes) therefore we target only Bezier subpaths
-        clear_apertures_dict = dict()
+        clear_apertures_dict = {}
         # everything will be stored in the '0' aperture since we are dealing with clear polygons not strokes
-        clear_apertures_dict['0'] = dict()
+        clear_apertures_dict['0'] = {}
         clear_apertures_dict['0']['size'] = 0.0
         clear_apertures_dict['0']['type'] = 'C'
         clear_apertures_dict['0']['geometry'] = []
@@ -493,7 +493,7 @@ class ToolPDF(FlatCAMTool):
         for pline in lines:
             if self.app.abort_flag:
                 # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+                raise grace
 
             line_nr += 1
             log.debug("line %d: %s" % (line_nr, pline))
@@ -515,7 +515,7 @@ class ToolPDF(FlatCAMTool):
                         apertures_dict.clear()
                         layer_nr += 1
 
-                        object_dict[layer_nr] = dict()
+                        object_dict[layer_nr] = {}
                 old_color = copy(color)
                 # we make sure that the following geometry is added to the right storage
                 flag_clear_geo = False
@@ -778,7 +778,7 @@ class ToolPDF(FlatCAMTool):
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-                path_geo = list()
+                path_geo = []
                 if current_subpath == 'lines':
                     if path['lines']:
                         for subp in path['lines']:
@@ -859,16 +859,15 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
-                        found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
                             aperture += 1
@@ -879,12 +878,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
@@ -896,12 +895,12 @@ class ToolPDF(FlatCAMTool):
                     for pdf_geo in path_geo:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = poly
                                 new_el['follow'] = poly.exterior
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                         else:
-                            new_el = dict()
+                            new_el = {}
                             new_el['solid'] = pdf_geo
                             new_el['follow'] = pdf_geo.exterior
                             apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
@@ -913,7 +912,7 @@ class ToolPDF(FlatCAMTool):
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-                path_geo = list()
+                path_geo = []
 
                 if current_subpath == 'lines':
                     if path['lines']:
@@ -1007,11 +1006,11 @@ class ToolPDF(FlatCAMTool):
                         if path_geo:
                             try:
                                 for g in path_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['clear'] = g
                                     clear_apertures_dict['0']['geometry'].append(new_el)
                             except TypeError:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['clear'] = path_geo
                                 clear_apertures_dict['0']['geometry'].append(new_el)
 
@@ -1022,11 +1021,11 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['clear'] = poly
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['clear'] = pdf_geo
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
@@ -1038,11 +1037,11 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['clear'] = poly
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['clear'] = pdf_geo
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                 else:
@@ -1051,12 +1050,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
@@ -1069,12 +1068,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
@@ -1085,8 +1084,8 @@ class ToolPDF(FlatCAMTool):
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-                path_geo = list()
-                fill_geo = list()
+                path_geo = []
+                fill_geo = []
 
                 if current_subpath == 'lines':
                     if path['lines']:
@@ -1222,16 +1221,15 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
-                        found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
                             aperture += 1
@@ -1242,12 +1240,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
@@ -1259,12 +1257,12 @@ class ToolPDF(FlatCAMTool):
                     for pdf_geo in path_geo:
                         if isinstance(pdf_geo, MultiPolygon):
                             for poly in pdf_geo:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = poly
                                 new_el['follow'] = poly.exterior
                                 apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                         else:
-                            new_el = dict()
+                            new_el = {}
                             new_el['solid'] = pdf_geo
                             new_el['follow'] = pdf_geo.exterior
                             apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
@@ -1279,11 +1277,11 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in fill_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['clear'] = poly
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['clear'] = pdf_geo
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
@@ -1295,11 +1293,11 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in fill_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['clear'] = poly
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['clear'] = pdf_geo
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
                 else:
@@ -1307,12 +1305,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in path_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in fill_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
@@ -1325,12 +1323,12 @@ class ToolPDF(FlatCAMTool):
                         for pdf_geo in fill_geo:
                             if isinstance(pdf_geo, MultiPolygon):
                                 for poly in pdf_geo:
-                                    new_el = dict()
+                                    new_el = {}
                                     new_el['solid'] = poly
                                     new_el['follow'] = poly.exterior
                                     apertures_dict['0']['geometry'].append(deepcopy(new_el))
                             else:
-                                new_el = dict()
+                                new_el = {}
                                 new_el['solid'] = pdf_geo
                                 new_el['follow'] = pdf_geo.exterior
                                 apertures_dict['0']['geometry'].append(deepcopy(new_el))
@@ -1355,7 +1353,7 @@ class ToolPDF(FlatCAMTool):
 
         if self.app.abort_flag:
             # graceful abort requested by the user
-            raise FlatCAMApp.GracefulException
+            raise grace
 
         return object_dict
 

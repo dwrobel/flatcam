@@ -9,7 +9,15 @@
 from PyQt5 import QtGui, QtCore, QtWidgets, QtWidgets
 from PyQt5.QtCore import Qt
 
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class FlatCAMTool(QtWidgets.QWidget):
@@ -98,6 +106,7 @@ class FlatCAMTool(QtWidgets.QWidget):
 
         :param old_coords: old coordinates
         :param coords: new coordinates
+        :param kwargs:
         :return:
         """
 
@@ -135,6 +144,119 @@ class FlatCAMTool(QtWidgets.QWidget):
         if self.app.is_legacy is True:
             self.app.tool_shapes.redraw()
 
+    def draw_selection_shape_polygon(self, points, **kwargs):
+        """
+
+        :param points: a list of points from which to create a Polygon
+        :param kwargs:
+        :return:
+        """
+        if 'color' in kwargs:
+            color = kwargs['color']
+        else:
+            color = self.app.defaults['global_sel_line']
+
+        if 'face_color' in kwargs:
+            face_color = kwargs['face_color']
+        else:
+            face_color = self.app.defaults['global_sel_fill']
+
+        if 'face_alpha' in kwargs:
+            face_alpha = kwargs['face_alpha']
+        else:
+            face_alpha = 0.3
+        if len(points) < 3:
+            sel_rect = LineString(points)
+        else:
+            sel_rect = Polygon(points)
+
+        # color_t = Color(face_color)
+        # color_t.alpha = face_alpha
+
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
+        self.app.tool_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
+                                 layer=0, tolerance=None)
+        if self.app.is_legacy is True:
+            self.app.tool_shapes.redraw()
+
     def delete_tool_selection_shape(self):
         self.app.tool_shapes.clear()
         self.app.tool_shapes.redraw()
+
+    def draw_moving_selection_shape_poly(self, points, data, **kwargs):
+        """
+
+        :param points:
+        :param data:
+        :param kwargs:
+        :return:
+        """
+        if 'color' in kwargs:
+            color = kwargs['color']
+        else:
+            color = self.app.defaults['global_sel_line']
+
+        if 'face_color' in kwargs:
+            face_color = kwargs['face_color']
+        else:
+            face_color = self.app.defaults['global_sel_fill']
+
+        if 'face_alpha' in kwargs:
+            face_alpha = kwargs['face_alpha']
+        else:
+            face_alpha = 0.3
+
+        temp_points = [x for x in points]
+        try:
+            if data != temp_points[-1]:
+                temp_points.append(data)
+        except IndexError:
+            return
+
+        l_points = len(temp_points)
+        if l_points == 2:
+            geo = LineString(temp_points)
+        elif l_points > 2:
+            geo = Polygon(temp_points)
+        else:
+            return
+
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+        color_t_error = "#00000000"
+
+        if geo.is_valid and not geo.is_empty:
+            self.app.move_tool.sel_shapes.add(geo, color=color, face_color=color_t, update=True,
+                                              layer=0, tolerance=None)
+        elif not geo.is_valid:
+            self.app.move_tool.sel_shapes.add(geo, color="red", face_color=color_t_error, update=True,
+                                              layer=0, tolerance=None)
+
+        if self.app.is_legacy is True:
+            self.app.move_tool.sel_shapes.redraw()
+
+    def delete_moving_selection_shape(self):
+        self.app.move_tool.sel_shapes.clear()
+        self.app.move_tool.sel_shapes.redraw()
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' %
+                                 (_("Edited value is out of range"), self.decimals, minval, self.decimals, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                 (_("Edited value is out of range"), minval, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
+
+    def sizeHint(self):
+        """
+        I've overloaded this just in case I will need to make changes in the future to enforce dimensions
+        :return:
+        """
+        default_hint_size = super(FlatCAMTool, self).sizeHint()
+        return QtCore.QSize(default_hint_size.width(), default_hint_size.height())

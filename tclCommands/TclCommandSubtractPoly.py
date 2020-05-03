@@ -11,6 +11,9 @@ class TclCommandSubtractPoly(TclCommandSignaled):
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
     aliases = ['subtract_poly']
 
+    description = '%s %s' % ("--", "Subtract polygon from the given Geometry object. "
+                                   "The coordinates are provided in X Y pairs.")
+
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
@@ -28,12 +31,14 @@ class TclCommandSubtractPoly(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Subtract polygon from the given Geometry object.",
+        'main': "Subtract polygon from the given Geometry object. The coordinates are provided in X Y pairs.\n"
+                "If the number of coordinates is not even then the 'Incomplete coordinate' error is raised.\n"
+                "If last coordinates are not the same as the first ones, the polygon will be completed automatically.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the Geometry object from which to subtract.'),
+            ('name', 'Name of the Geometry object from which to subtract. Required.'),
             ('x0 y0 x1 y1 x2 y2 ...', 'Points defining the polygon.')
         ]),
-        'examples': []
+        'examples': ['subtract_poly my_geo 0 0 2 1 3 3 4 4 0 0']
     }
 
     def execute(self, args, unnamed_args):
