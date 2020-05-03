@@ -10,16 +10,28 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
 # ##########################################################
+import platform
 
-from flatcamGUI.PreferencesUI import *
+from flatcamGUI.GUIElements import *
+from flatcamGUI.preferences import settings
+from flatcamGUI.preferences.cncjob.CNCJobPreferencesUI import CNCJobPreferencesUI
+from flatcamGUI.preferences.excellon.ExcellonPreferencesUI import ExcellonPreferencesUI
+from flatcamGUI.preferences.general.GeneralPreferencesUI import GeneralPreferencesUI
+from flatcamGUI.preferences.geometry.GeometryPreferencesUI import GeometryPreferencesUI
+from flatcamGUI.preferences.gerber.GerberPreferencesUI import GerberPreferencesUI
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import webbrowser
+
+from flatcamGUI.preferences.tools.Tools2PreferencesUI import Tools2PreferencesUI
+from flatcamGUI.preferences.tools.ToolsPreferencesUI import ToolsPreferencesUI
+from flatcamGUI.preferences.utilities.UtilPreferencesUI import UtilPreferencesUI
 from flatcamObjects.ObjectCollection import KeySensitiveListView
 
 import subprocess
 import os
+import sys
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -1169,7 +1181,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.plot_tab_area.setTabsClosable(True)
 
         self.plot_tab = QtWidgets.QWidget()
-        self.plot_tab.setObjectName("plotarea")
+        self.plot_tab.setObjectName("plotarea_tab")
         self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
 
         self.right_layout = QtWidgets.QVBoxLayout()
@@ -2354,7 +2366,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ######################## BUILD PREFERENCES #############################
         # ########################################################################
-
         self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
         self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
         self.excellon_defaults_form = ExcellonPreferencesUI(decimals=self.decimals)
@@ -2369,7 +2380,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ################## RESTORE THE TOOLBAR STATE from file #################
         # ########################################################################
-
         flat_settings = QSettings("Open Source", "FlatCAM")
         if flat_settings.contains("saved_gui_state"):
             saved_gui_state = flat_settings.value('saved_gui_state')
@@ -2427,14 +2437,41 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             del qsettings
 
         self.lock_toolbar(lock=lock_state)
+        self.on_grid_snap_triggered(state=True)
+
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
         self.clear_btn.clicked.connect(self.on_gui_clear)
+        self.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
+        self.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    def on_grid_snap_triggered(self, state):
+        """
+
+        :param state:   A parameter with the state of the grid, boolean
+
+        :return:
+        """
+        if state:
+            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_filled_16.png'))
+        else:
+            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
+
+        self.snap_infobar_label.clicked_state = state
+
+    def on_grid_icon_snap_clicked(self):
+        """
+        Slot called by clicking a GUI element, in this case a FCLabel
+
+        :return:
+        """
+        if isinstance(self.sender(), FCLabel):
+            self.grid_snap_btn.trigger()
 
     def eventFilter(self, obj, event):
         """
@@ -2853,14 +2890,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             key = event.key
 
         if self.app.call_source == 'app':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
+            # CTRL + SHIFT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 if key == QtCore.Qt.Key_S:
                     self.app.on_file_saveprojectas()
                     return
+            # CTRL
             elif modifiers == QtCore.Qt.ControlModifier:
                 # Select All
                 if key == QtCore.Qt.Key_A:
@@ -2933,6 +2973,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_toggle_plotarea()
 
                 return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
 
                 # Copy Object Name
@@ -2985,6 +3026,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y:
                     self.app.on_skewy()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 # Eanble all plots
                 if key == Qt.Key_1:
@@ -3103,6 +3145,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F10 or key == 'F10':
                     self.app.on_fullscreen()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Open Manual
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
@@ -3189,7 +3232,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         else:
                             self.app.collection.set_active(names_list[active_index-1])
 
-                # Select the object in the Tree bellow the current one
+                # Select the object in the Tree below the current one
                 if key == QtCore.Qt.Key_Down:
                     # make sure it works only for the Project Tab who is an instance of KeySensitiveListView
                     focused_wdg = QtWidgets.QApplication.focusWidget()
@@ -3300,6 +3343,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 return
         elif self.app.call_source == 'geo_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
@@ -3329,6 +3373,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -3344,6 +3389,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y or key == 'Y':
                     self.app.geo_editor.transform_tool.on_skewy_key()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
 
                 # Transformation Tool
@@ -3360,6 +3406,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y or key == 'Y':
                     self.app.geo_editor.transform_tool.on_offy_key()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
@@ -3567,6 +3614,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == 'F3':
                     self.app.on_shortcut_list()
         elif self.app.call_source == 'grb_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # Eraser Tool
                 if key == QtCore.Qt.Key_E or key == 'E':
@@ -3582,11 +3630,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_min_tool.run()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 # Mark Area Tool
                 if key == QtCore.Qt.Key_A or key == 'A':
@@ -3601,6 +3651,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.grb_editor.on_transform()
                     return
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -3785,10 +3836,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.select_tool('track')
                         return
 
-                    # Zoom Fit
+                    # Zoom fit
                     if key == QtCore.Qt.Key_V or key == 'V':
                         self.app.grb_editor.launched_from_shortcuts = True
-                        self.app.on_zoom_fit(None)
+                        self.app.grb_editor.on_zoom_fit()
                         return
 
                 # Show Shortcut list
@@ -3796,6 +3847,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_shortcut_list()
                     return
         elif self.app.call_source == 'exc_editor':
+            # CTRL
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
@@ -3806,13 +3858,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
+            # SHIFT
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_min_tool.run()
                     return
+            # ALT
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -4025,6 +4080,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # abort the measurement action
@@ -4040,6 +4096,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_J or key == 'J':
                     self.app.on_jump_to()
         elif self.app.call_source == 'qrcode_tool':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
@@ -4051,6 +4108,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -4064,17 +4122,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_J:
                     self.app.on_jump_to()
         elif self.app.call_source == 'copper_thieving_tool':
+            # CTRL + ALT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()
                     return
-
             elif modifiers == QtCore.Qt.ControlModifier:
                 pass
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
+            # NO MODIFIER
             elif modifiers == QtCore.Qt.NoModifier:
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -4086,6 +4145,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Jump to coords
                 if key == QtCore.Qt.Key_J:
+                    self.app.on_jump_to()
+        elif self.app.call_source == 'geometry':
+            if modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            # NO MODIFIER
+            elif modifiers == QtCore.Qt.NoModifier:
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    sel_obj = self.app.collection.get_active()
+                    assert sel_obj.kind == 'geometry', "Expected a Geometry Object, got %s" % type(sel_obj)
+
+                    sel_obj.area_disconnect()
+                    return
+
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.ui.grid_snap_btn.trigger()
+                    return
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
                     self.app.on_jump_to()
 
     def createPopupMenu(self):

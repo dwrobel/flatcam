@@ -2022,14 +2022,94 @@ class GeometryObjectUI(ObjectUI):
         grid4.addWidget(pp_label, 11, 0)
         grid4.addWidget(self.pp_geometry_name_cb, 11, 1)
 
-        grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
+        # grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
+
+        # Exclusion Areas
+        self.exclusion_cb = FCCheckBox('%s:' % _("Exclusion areas"))
+        self.exclusion_cb.setToolTip(
+            _(
+                "Include exclusion areas.\n"
+                "In those areas the travel of the tools\n"
+                "is forbidden."
+            )
+        )
+        grid4.addWidget(self.exclusion_cb, 12, 0, 1, 2)
+
+        # ------------------------------------------------------------------------------------------------------------
+        # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------
+        self.exclusion_frame = QtWidgets.QFrame()
+        self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
+        grid4.addWidget(self.exclusion_frame, 14, 0, 1, 2)
+
+        self.exclusion_box = QtWidgets.QVBoxLayout()
+        self.exclusion_box.setContentsMargins(0, 0, 0, 0)
+        self.exclusion_frame.setLayout(self.exclusion_box)
+
+        h_lay = QtWidgets.QHBoxLayout()
+        self.exclusion_box.addLayout(h_lay)
+
+        # Button Add Area
+        self.add_area_button = QtWidgets.QPushButton(_('Add area'))
+        self.add_area_button.setToolTip(_("Add an Exclusion Area."))
+        h_lay.addWidget(self.add_area_button)
+
+        # Button Delete Area
+        self.delete_area_button = QtWidgets.QPushButton(_('Clear areas'))
+        self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
+        h_lay.addWidget(self.delete_area_button)
+
+        grid_l = QtWidgets.QGridLayout()
+        grid_l.setColumnStretch(0, 0)
+        grid_l.setColumnStretch(1, 1)
+        self.exclusion_box.addLayout(grid_l)
+
+        # Area Selection shape
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid_l.addWidget(self.area_shape_label, 0, 0)
+        grid_l.addWidget(self.area_shape_radio, 0, 1)
+
+        # Chose Strategy
+        self.strategy_label = FCLabel('%s:' % _("Strategy"))
+        self.strategy_label.setToolTip(_("The strategy followed when encountering an exclusion area.\n"
+                                         "Can be:\n"
+                                         "- Over -> when encountering the area, the tool will go to a set height\n"
+                                         "- Around -> will avoid the exclusion area by going around the area"))
+        self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
+                                        {'label': _('Around'), 'value': 'around'}])
+
+        grid_l.addWidget(self.strategy_label, 1, 0)
+        grid_l.addWidget(self.strategy_radio, 1, 1)
+
+        # Over Z
+        self.over_z_label = FCLabel('%s:' % _("Over Z"))
+        self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
+                                       "an interdiction area."))
+        self.over_z_entry = FCDoubleSpinner()
+        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_precision(self.decimals)
+
+        grid_l.addWidget(self.over_z_label, 2, 0)
+        grid_l.addWidget(self.over_z_entry, 2, 1)
+
+        # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------
+        self.ois_exclusion_geo = OptionalInputSection(self.exclusion_cb, [self.exclusion_frame])
+
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add / Select at least one tool in the tool-table.\n"
                 "Click the # header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
-        grid4.addWidget(warning_lbl, 13, 0, 1, 2)
+        grid4.addWidget(warning_lbl, 15, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -2042,9 +2122,9 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_cnc_button, 14, 0, 1, 2)
+        grid4.addWidget(self.generate_cnc_button, 17, 0, 1, 2)
 
-        grid4.addWidget(QtWidgets.QLabel(''), 15, 0, 1, 2)
+        grid4.addWidget(QtWidgets.QLabel(''), 19, 0, 1, 2)
 
         # ##############
         # Paint area ##
@@ -2053,7 +2133,7 @@ class GeometryObjectUI(ObjectUI):
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
-        grid4.addWidget(self.tools_label, 16, 0, 1, 2)
+        grid4.addWidget(self.tools_label, 20, 0, 1, 2)
 
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
@@ -2071,7 +2151,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.paint_tool_button, 17, 0, 1, 2)
+        grid4.addWidget(self.paint_tool_button, 22, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -2085,7 +2165,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_ncc_button, 18, 0, 1, 2)
+        grid4.addWidget(self.generate_ncc_button, 24, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):

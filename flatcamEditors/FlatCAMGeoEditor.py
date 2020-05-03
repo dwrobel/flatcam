@@ -4100,7 +4100,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.on_grid_snap_triggered(state=True)
+            self.app.ui.on_grid_snap_triggered(state=True)
 
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)

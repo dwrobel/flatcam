@@ -1460,8 +1460,6 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui_disconnect()
         try:
             cw = self.sender()
-            assert isinstance(cw, FCCheckBox),\
-                "Expected a cellWidget but got %s" % type(cw)
             cw_index = self.ui.apertures_table.indexAt(cw.pos())
             cw_row = cw_index.row()
         except AttributeError:

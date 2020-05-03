@@ -58,7 +58,7 @@ if platform.architecture()[0] == '64bit':
 
 include_files.append(("locale", "lib/locale"))
 include_files.append(("preprocessors", "lib/preprocessors"))
-include_files.append(("assets", "lib/assets"))
+# include_files.append(("assets", "lib/assets"))
 include_files.append(("assets/examples", "lib/assets/examples"))
 include_files.append(("assets/linux", "lib/assets/linux"))
 include_files.append(("assets/resources", "lib/assets/resources"))
@@ -68,7 +68,7 @@ include_files.append(("config", "lib/config"))
 
 include_files.append(("README.md", "README.md"))
 include_files.append(("LICENSE", "LICENSE"))
-
+include_files.append(("CHANGELOG.md", "CHANGELOG.md"))
 base = None
 
 # Lets not open the console while running the app

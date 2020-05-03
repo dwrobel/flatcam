@@ -25,8 +25,8 @@ if '_' not in builtins.__dict__:
 
 class TextEditor(QtWidgets.QWidget):
 
-    def __init__(self, app, text=None, plain_text=None):
-        super().__init__()
+    def __init__(self, app, text=None, plain_text=None, parent=None):
+        super().__init__(parent=parent)
 
         self.app = app
         self.plain_text = plain_text

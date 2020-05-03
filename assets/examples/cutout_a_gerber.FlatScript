@@ -1,0 +1,28 @@
+# #####################################################################################
+# DESCRIPTION:
+# Will cut a PCB piece with a pattern (Gerber file) out of the surrounding PCB material
+# #####################################################################################
+
+puts "**************** RUNNING an EXAMPLE SCRIPT = Cutout a Gerber file *******************"
+
+# ----------- START: This is needed only for the examples ----------------
+# first set the default location where to search for the files to be open and store it to the ROOT_FOLDER variable
+set ROOT_FOLDER  [get_sys root_folder_path]
+
+# calculate the resources path for the examples we need to run and store it inside the PATH varaible
+set PATH ${ROOT_FOLDER}/assets/examples/files
+# ----------- END: This is needed only for the examples ----------------
+
+# set the working path to the path that holds the files we are going to work with
+set_path $PATH
+
+# load the GERBER file test.gbr as gerber_file
+open_gerber test.gbr -outname gerber_file
+
+# cutout the Gerber file with name gerber_file using an endmill with diameter 1.2 at a distance of 0.1 units from
+# the Gerber object. Will add gaps (bridges to hold the PCB to the surrounding material) on each side of the PCB
+# (4 sides) and the resulting Geometry object that hold the cutout geometry will be named cutout_geo
+cutout gerber_file -dia 1.2 -margin 0.1 -gapsize 3 -gaps "4" -outname cutout_geo
+
+# plot the objects so we can see them; not required for the script but in this script we want to see the results
+plot_all

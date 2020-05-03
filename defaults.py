@@ -28,6 +28,7 @@ class FlatCAMDefaults:
         "version": 8.992,   # defaults format version, not necessarily equal to app version
         "first_run": True,
         "units": "MM",
+        "root_folder_path": '',
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": True,
@@ -340,6 +341,10 @@ class FlatCAMDefaults:
         "geometry_feedrate_probe": 75,
         "geometry_segx": 0.0,
         "geometry_segy": 0.0,
+        "geometry_area_exclusion": False,
+        "geometry_area_shape": "polygon",
+        "geometry_area_strategy": "over",
+        "geometry_area_overz": 1.0,
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,
@@ -457,8 +462,8 @@ class FlatCAMDefaults:
         "tools_film_pagesize": 'A4',
 
         # Panel Tool
-        "tools_panelize_spacing_columns": 0,
-        "tools_panelize_spacing_rows": 0,
+        "tools_panelize_spacing_columns": 0.0,
+        "tools_panelize_spacing_rows": 0.0,
         "tools_panelize_columns": 1,
         "tools_panelize_rows": 1,
         "tools_panelize_constrain": False,

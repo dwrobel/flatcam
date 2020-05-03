@@ -2837,7 +2837,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.on_grid_snap_triggered(state=True)
+            self.app.ui.on_grid_snap_triggered(state=True)
 
         self.app.ui.popmenu_disable.setVisible(False)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
@@ -3226,7 +3226,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             spec = {"C": float(tool_dia[0])}
             self.new_tools[name] = spec
 
-            # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
+            # add in self.tools the 'solid_geometry' key, the value (a list) is populated below
             self.new_tools[name]['solid_geometry'] = []
 
             # create the self.drills for the new Excellon object (the one with edited content)
@@ -3258,7 +3258,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 spec = {"C": float(tool_dia[0])}
                 self.new_tools[name] = spec
 
-                # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
+                # add in self.tools the 'solid_geometry' key, the value (a list) is populated below
                 self.new_tools[name]['solid_geometry'] = []
 
             # create the self.slots for the new Excellon object (the one with edited content)

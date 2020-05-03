@@ -49,7 +49,7 @@ def load_languages():
         available_translations = next(os.walk(languages_path_search))[1]
     except StopIteration:
         if not available_translations:
-            languages_path_search = os.path.join(Path(__file__).parents[1], 'locale')
+            languages_path_search = os.path.join(str(Path(__file__).parents[1]), 'locale')
             try:
                 available_translations = next(os.walk(languages_path_search))[1]
             except StopIteration:

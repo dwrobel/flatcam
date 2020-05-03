@@ -241,10 +241,6 @@ class CutOut(FlatCAMTool):
         )
         grid0.addWidget(title_param_label, 18, 0, 1, 2)
 
-        # Form Layout
-        form_layout_2 = QtWidgets.QFormLayout()
-        grid0.addLayout(form_layout_2, 19, 0, 1, 2)
-
         # Gaps
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
@@ -266,7 +262,8 @@ class CutOut(FlatCAMTool):
         for it in gaps_items:
             self.gaps.addItem(it)
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        form_layout_2.addRow(gaps_label, self.gaps)
+        grid0.addWidget(gaps_label, 19, 0)
+        grid0.addWidget(self.gaps, 19, 1)
 
         # Buttons
         self.ff_cutout_object_btn = FCButton(_("Generate Freeform Geometry"))
@@ -296,12 +293,12 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        self.layout.addWidget(self.rect_cutout_object_btn)
+        grid0.addWidget(self.rect_cutout_object_btn, 21, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 2)
+        grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         # Title5
         title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('B. Manual Bridge Gaps'))
@@ -310,11 +307,7 @@ class CutOut(FlatCAMTool):
               "This is done by mouse clicking on the perimeter of the\n"
               "Geometry object that is used as a cutout object. ")
         )
-        grid0.addWidget(title_manual_label, 22, 0, 1, 2)
-
-        # Form Layout
-        form_layout_3 = QtWidgets.QFormLayout()
-        grid0.addLayout(form_layout_3, 23, 0, 1, 2)
+        grid0.addWidget(title_manual_label, 23, 0, 1, 2)
 
         # Manual Geo Object
         self.man_object_combo = FCComboBox()
@@ -329,10 +322,8 @@ class CutOut(FlatCAMTool):
         )
         # self.man_object_label.setMinimumWidth(60)
 
-        form_layout_3.addRow(self.man_object_label)
-        form_layout_3.addRow(self.man_object_combo)
-
-        # form_layout_3.addRow(e_lab_0)
+        grid0.addWidget(self.man_object_label, 25, 0, 1, 2)
+        grid0.addWidget(self.man_object_combo, 26, 0, 1, 2)
 
         self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
         self.man_geo_creation_btn.setToolTip(
@@ -347,7 +338,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.man_geo_creation_btn, 24, 0, 1, 2)
+        grid0.addWidget(self.man_geo_creation_btn, 28, 0, 1, 2)
 
         self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setToolTip(
@@ -363,7 +354,7 @@ class CutOut(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.man_gaps_creation_btn, 27, 0, 1, 2)
+        grid0.addWidget(self.man_gaps_creation_btn, 30, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -402,6 +393,9 @@ class CutOut(FlatCAMTool):
         # hold the mouse position here
         self.x_pos = None
         self.y_pos = None
+
+        # store the default data for the resulting Geometry Object
+        self.default_data = {}
 
         # Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
@@ -463,12 +457,58 @@ class CutOut(FlatCAMTool):
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
         self.type_obj_radio.set_value('grb')
 
+        self.default_data.update({
+            "plot":             True,
+            "cutz":             float(self.app.defaults["geometry_cutz"]),
+            "multidepth":       self.app.defaults["geometry_multidepth"],
+            "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
+            "travelz":          float(self.app.defaults["geometry_travelz"]),
+            "feedrate":         float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z":       float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid":   float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
+            "dwell":            self.app.defaults["geometry_dwell"],
+            "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
+            "ppname_g":         self.app.defaults["geometry_ppname_g"],
+            "extracut":         self.app.defaults["geometry_extracut"],
+            "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
+            "toolchange":       self.app.defaults["geometry_toolchange"],
+            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
+            "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
+            "startz":           self.app.defaults["geometry_startz"],
+            "endz":             float(self.app.defaults["geometry_endz"]),
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
+
+            # NCC
+            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
+            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"],
+            "tools_nccoverlap":         float(self.app.defaults["tools_nccoverlap"]),
+            "tools_nccmargin":          float(self.app.defaults["tools_nccmargin"]),
+            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
+            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
+            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
+            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
+
+            # Paint
+            "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
+            "tools_paintmargin":        float(self.app.defaults["tools_paintmargin"]),
+            "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
+            "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
+            "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
+        })
+
     def on_freeform_cutout(self):
+        log.debug("Cutout.on_freeform_cutout() was launched ...")
 
         # def subtract_rectangle(obj_, x0, y0, x1, y1):
         #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
         #     obj_.subtract_polygon(pts)
-
         name = self.obj_combo.currentText()
 
         # Get source object.
@@ -631,8 +671,8 @@ class CutOut(FlatCAMTool):
 
                     solid_geo += cutout_handler(geom=geom_struct)
 
-            geo_obj.solid_geometry = deepcopy(solid_geo)
             xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
+            geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['xmin'] = xmin
             geo_obj.options['ymin'] = ymin
             geo_obj.options['xmax'] = xmax
@@ -641,6 +681,23 @@ class CutOut(FlatCAMTool):
             geo_obj.options['cutz'] = self.cutz_entry.get_value()
             geo_obj.options['multidepth'] = self.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
+
+            geo_obj.tools.update({
+                1: {
+                    'tooldia': str(dia),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': self.default_data,
+                    'solid_geometry': geo_obj.solid_geometry
+                }
+            })
+            geo_obj.multigeo = True
+            geo_obj.tools[1]['data']['name'] = outname
+            geo_obj.tools[1]['data']['cutz'] = self.cutz_entry.get_value()
+            geo_obj.tools[1]['data']['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -651,6 +708,7 @@ class CutOut(FlatCAMTool):
         self.app.should_we_save = True
 
     def on_rectangular_cutout(self):
+        log.debug("Cutout.on_rectangular_cutout() was launched ...")
 
         # def subtract_rectangle(obj_, x0, y0, x1, y1):
         #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
@@ -767,6 +825,7 @@ class CutOut(FlatCAMTool):
                 return proc_geometry
 
             if kind == 'single':
+                # fuse the lines
                 object_geo = unary_union(object_geo)
 
                 xmin, ymin, xmax, ymax = object_geo.bounds
@@ -813,11 +872,28 @@ class CutOut(FlatCAMTool):
                                          _("Rectangular cutout with negative margin is not possible."))
                     return "fail"
 
-            geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
             geo_obj.options['cutz'] = self.cutz_entry.get_value()
             geo_obj.options['multidepth'] = self.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
+            geo_obj.solid_geometry = deepcopy(solid_geo)
+
+            geo_obj.tools.update({
+                1: {
+                    'tooldia': str(dia),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': self.default_data,
+                    'solid_geometry': geo_obj.solid_geometry
+                }
+            })
+            geo_obj.multigeo = True
+            geo_obj.tools[1]['data']['name'] = outname
+            geo_obj.tools[1]['data']['cutz'] = self.cutz_entry.get_value()
+            geo_obj.tools[1]['data']['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.new_object('geometry', outname, geo_init)
@@ -961,6 +1037,23 @@ class CutOut(FlatCAMTool):
             geo_obj.options['cutz'] = self.cutz_entry.get_value()
             geo_obj.options['multidepth'] = self.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
+
+            geo_obj.tools.update({
+                1: {
+                    'tooldia': str(dia),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': self.default_data,
+                    'solid_geometry': geo_obj.solid_geometry
+                }
+            })
+            geo_obj.multigeo = True
+            geo_obj.tools[1]['data']['name'] = outname
+            geo_obj.tools[1]['data']['cutz'] = self.cutz_entry.get_value()
+            geo_obj.tools[1]['data']['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)

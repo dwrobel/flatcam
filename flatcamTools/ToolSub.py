@@ -97,7 +97,7 @@ class ToolSub(FlatCAMTool):
 
         form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
 
-        self.intersect_btn = FCButton(_('Substract Gerber'))
+        self.intersect_btn = FCButton(_('Subtract Gerber'))
         self.intersect_btn.setToolTip(
             _("Will remove the area occupied by the subtractor\n"
               "Gerber from the Target Gerber.\n"

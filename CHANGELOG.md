@@ -7,6 +7,54 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.05.2020
+
+- small changes to allow making the x86 installer that is made from a Python 3.5 run FlatCAM beta 
+- fixed multiple parameter 'outname' in the Tcl commands OpenGerber and OpenGcode 
+- added more examples in the scripts Examples: isolate and cutout examples
+- updated the Italian translation
+- updated the translation files
+- changed the line endings for Makefile and setup_ubuntu.sh files
+- protected a dict in VispyVisuals from issuing errors of keys changed while iterating through it
+
+2.05.2020
+
+- working on a new feature: adding interdiction area for Gcode generation. They will be added in the Geometry Object
+
+2.05.2020
+
+- changed the icons for the grid snap in the status bar
+- moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
+- fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
+- fixed bug in Gerber Editor in which the QThread that is started on object edit was not stopped at clean up stage
+- fixed bug in Gerber Editor that kept all the apertures (including the geometry) of a previously edited object that was not saved after edit
+- modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
+- modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
+- some string corrections
+- updated the Italian translation done by user @pcb-hobbyst (Golfetto Massimiliano)
+- RELEASE 8.992
+
+01.05.2020
+
+- added some ToolTips (strings needed to be translated too) for the Cut Z entry in Geometry Object UI that explain why is sometime disabled and reason for it's value (sometime is zero)
+- solve parenting issues when trying to load a FlatScript from Menu -> File -> Scripting
+- added a first new example script and added some files to work with
+- added a new parameter that will store the home folder of the FlatCAM installation so we can access the example folder
+- added in Gerber editor a method for zoom fit that takes into consideration the current geometry of the edited object
+
+30.04.2020 
+
+- made some corrections - due of recent refactoring PyCharm reported errors all over (not correct but it made programming difficult)
+- modified the requirements.txt file to force svg.path module to be at least version 4.0
+- fixed bug in Tools DB that crashed when a tool is copied
+- in Tools Database added a Save Button whose color is changed in Red if the DB was modified and back to default when the DB is saved.
+- fixed bug in Tool DB that crashed the app when the Tool Name was modified but there was no tree item (a tool in the list) selected in the Tree widget (list of tools)
+- now on tool add and tool copy, the last item (tool, which is the one added) is autoselected; o tool delete always the first item (tool) is selected
+- fixed issue #409; problem was due of an assert I used in the handler of the Menu ->Options -> Flip X(Y) menu entry
+- activated and updated the editing in the Aperture Table in the Gerber Editor; not all parameters can be edited for every type of aperture
+- some strings updated
+- fixed a small issue in loading the Projects
+
 29.04.2020
 
 - added a try-except clause in the FlatCAMTranslation.restart_program() when closing the Listener and the thread that runs it to adjust to MacOS usage
@@ -21,6 +69,11 @@ CHANGELOG for FlatCAM beta
 - fixed a SyntaxError Exception when checking for types of found old preferences
 - updated the French, German and Spanish Google translations
 - updated the Romanian translation
+- fixed units conversion issue
+- updated the units conversion method to convert all the convertible parameters in the Preferences
+- solved the problem with not closing all the tabs in Plot Area when creating a New Project; the issue was that once a tab was removed the indexes are remade (when tab 0 is removed then tab 1 becomes tab 0 and so on)
+- some more strings changed -> updated the translations
+- replaced some FormLayouts with Gridlayouts in Tool Cutout.
 
 28.04.2020
 
