@@ -479,6 +479,10 @@ class CutOut(FlatCAMTool):
             "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
 
             # NCC
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],

@@ -52,7 +52,8 @@ class TclCommandOpenGCode(TclCommandSignaled):
         """
         args['plot'] = False
         args['from_tcl'] = True
-        filename = args["filename"]
+        filename = args.pop("filename")
+
         # if ' ' in filename:
         #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
         #            "Please enclose the path within quotes."

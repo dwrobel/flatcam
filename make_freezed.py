@@ -68,7 +68,7 @@ include_files.append(("config", "lib/config"))
 
 include_files.append(("README.md", "README.md"))
 include_files.append(("LICENSE", "LICENSE"))
-
+include_files.append(("CHANGELOG.md", "CHANGELOG.md"))
 base = None
 
 # Lets not open the console while running the app

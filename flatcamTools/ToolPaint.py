@@ -1013,6 +1013,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+
             "tooldia": self.app.defaults["tools_painttooldia"],
             "tools_paintmargin": self.app.defaults["tools_paintmargin"],
             "tools_paintmethod": self.app.defaults["tools_paintmethod"],

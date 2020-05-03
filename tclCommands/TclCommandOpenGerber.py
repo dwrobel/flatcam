@@ -56,7 +56,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
         filename = args.pop('filename')
 
         if 'outname' in args:
-            outname = args['outname']
+            outname = args.pop('outname')
         else:
             outname = filename.split('/')[-1].split('\\')[-1]
 

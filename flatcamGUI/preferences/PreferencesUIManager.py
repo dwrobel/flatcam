@@ -237,6 +237,10 @@ class PreferencesUIManager:
             "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
             "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
+            "geometry_area_exclusion": self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
+            "geometry_area_shape": self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
+            "geometry_area_strategy": self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
+            "geometry_area_overz": self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
 
             # Geometry Editor
             "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,

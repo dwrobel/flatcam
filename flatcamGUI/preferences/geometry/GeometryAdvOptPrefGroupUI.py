@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from flatcamGUI.GUIElements import FCEntry, FloatEntry, FCDoubleSpinner, FCCheckBox, RadioSet
+from flatcamGUI.GUIElements import FCEntry, FloatEntry, FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -184,5 +184,62 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
 
         grid1.addWidget(segy_label, 11, 0)
         grid1.addWidget(self.segy_entry, 11, 1)
+
+        # -----------------------------
+        # --- Area Exclusion ----------
+        # -----------------------------
+        self.adv_label = QtWidgets.QLabel('<b>%s:</b>' % _('Area Exclusion'))
+        self.adv_label.setToolTip(
+            _("Area exclusion parameters.\n"
+              "Those parameters are available only for\n"
+              "Advanced App. Level.")
+        )
+        grid1.addWidget(self.adv_label, 12, 0, 1, 2)
+
+        # Exclusion Area CB
+        self.exclusion_cb = FCCheckBox('%s:' % _("Exclusion areas"))
+        self.exclusion_cb.setToolTip(
+            _(
+                "Include exclusion areas.\n"
+                "In those areas the travel of the tools\n"
+                "is forbidden."
+            )
+        )
+        grid1.addWidget(self.exclusion_cb, 13, 0, 1, 2)
+
+        # Area Selection shape
+        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid1.addWidget(self.area_shape_label, 14, 0)
+        grid1.addWidget(self.area_shape_radio, 14, 1)
+
+        # Chose Strategy
+        self.strategy_label = FCLabel('%s:' % _("Strategy"))
+        self.strategy_label.setToolTip(_("The strategy followed when encountering an exclusion area.\n"
+                                         "Can be:\n"
+                                         "- Over -> when encountering the area, the tool will go to a set height\n"
+                                         "- Around -> will avoid the exclusion area by going around the area"))
+        self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
+                                        {'label': _('Around'), 'value': 'around'}])
+
+        grid1.addWidget(self.strategy_label, 15, 0)
+        grid1.addWidget(self.strategy_radio, 15, 1)
+
+        # Over Z
+        self.over_z_label = FCLabel('%s:' % _("Over Z"))
+        self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
+                                       "an interdiction area."))
+        self.over_z_entry = FCDoubleSpinner()
+        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_precision(self.decimals)
+
+        grid1.addWidget(self.over_z_label, 18, 0)
+        grid1.addWidget(self.over_z_entry, 18, 1)
 
         self.layout.addStretch()

@@ -462,7 +462,7 @@ class ShapeCollectionVisual(CompoundVisual):
         self.update_lock.acquire(True)
 
         # Merge shapes buffers
-        for data in self.data.values():
+        for data in list(self.data.values()):
             if data['visible'] and 'line_pts' in data:
                 try:
                     line_pts[data['layer']] += data['line_pts']
