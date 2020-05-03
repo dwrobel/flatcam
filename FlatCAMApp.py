@@ -4952,7 +4952,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.preferencesUiManager.option_dict()["global_workspace"].get_field().get_value():
+        if self.preferencesUiManager.get_form_field("global_workspace").get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
@@ -4960,13 +4960,13 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.preferencesUiManager.option_dict()["global_workspace"].get_field().get_value() else True
+        state = False if self.preferencesUiManager.get_form_field("global_workspace").get_value() else True
         try:
-            self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.disconnect(self.on_workspace)
+            self.preferencesUiManager.get_form_field("global_workspace").stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
-        self.preferencesUiManager.option_dict()["global_workspace"].get_field().set_value(state)
-        self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.connect(self.on_workspace)
+        self.preferencesUiManager.get_form_field("global_workspace").set_value(state)
+        self.preferencesUiManager.get_form_field("global_workspace").stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_cursor_type(self, val):
