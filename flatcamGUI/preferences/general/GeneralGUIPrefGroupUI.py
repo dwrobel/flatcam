@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import QSettings
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2
 
 import gettext
@@ -234,8 +234,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
         else:
             current_layout = self.layout_field.get_value()
         self.app.ui.set_layout(current_layout)
-
-
 
     @staticmethod
     def handle_style(style):

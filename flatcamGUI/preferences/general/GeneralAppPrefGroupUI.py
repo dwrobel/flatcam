@@ -1,7 +1,5 @@
 import sys
-
 from PyQt5.QtCore import QSettings
-
 from flatcamGUI.GUIElements import OptionalInputSection
 from flatcamGUI.preferences.OptionUI import *
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2

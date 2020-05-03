@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore
 from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import OptionalInputSection
 from flatcamGUI.preferences import settings
