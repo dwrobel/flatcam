@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - added more examples in the scripts Examples: isolate and cutout examples
 - updated the Italian translation
 - updated the translation files
+- changed the line endings for Makefile and setup_ubuntu.sh files
 
 2.05.2020
 
@@ -29,7 +30,7 @@ CHANGELOG for FlatCAM beta
 - modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
 - modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
 - some string corrections
-- updated the Italian translation done by user @pcb-hobbyst
+- updated the Italian translation done by user @pcb-hobbyst (Golfetto Massimiliano)
 - RELEASE 8.992
 
 01.05.2020
