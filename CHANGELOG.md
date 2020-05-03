@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - updated the Italian translation
 - updated the translation files
 - changed the line endings for Makefile and setup_ubuntu.sh files
+- protected a dict in VispyVisuals from issuing errors of keys changed while iterating through it
 
 2.05.2020
 
