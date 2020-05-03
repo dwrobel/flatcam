@@ -2,7 +2,7 @@ from typing import Union
 
 from PyQt5 import QtWidgets
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
-    FCSliderWithSpinner
+    FCSliderWithSpinner, FCDoubleSpinner
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -108,14 +108,37 @@ class ColorOptionUI(BasicOptionUI):
 
 
 class SliderWithSpinnerOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, label_tooltip: str, min=0, max=100, step=1):
-        self.min = min
-        self.max = max
+    def __init__(self, option: str, label_text: str, label_tooltip: str, min_value=0, max_value=100, step=1):
+        self.min_value = min_value
+        self.max_value = max_value
         self.step = step
         super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
-        entry = FCSliderWithSpinner(min=self.min, max=self.max, step=self.step)
+        entry = FCSliderWithSpinner(min=self.min_value, max=self.max_value, step=self.step)
+        return entry
+
+
+class DoubleSpinnerOptionUI(BasicOptionUI):
+    def __init__(self, option: str, label_text: str, label_tooltip: str, step: float, decimals: int, min_value=None, max_value=None):
+        self.min_value = min_value
+        self.max_value = max_value
+        self.step = step
+        self.decimals = decimals
+        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+
+    def build_entry_widget(self) -> QtWidgets.QWidget:
+        entry = FCDoubleSpinner()
+        entry.set_precision(self.decimals)
+        entry.setSingleStep(self.step)
+        if self.min_value is None:
+            self.min_value = entry.minimum()
+        else:
+            entry.setMinimum(self.min_value)
+        if self.max_value is None:
+            self.max_value = entry.maximum()
+        else:
+            entry.setMaximum(self.max_value)
         return entry
 
 
