@@ -115,7 +115,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI2):
                 option="global_language",
                 label_text="Language",
                 label_tooltip="Set the language used throughout FlatCAM.",
-                choices=[] # FIXME: choices should be added here instead of in App
+                choices=[]  # FIXME: choices should be added here instead of in App
             ),
             FullWidthButtonOptionUI(
                 option="__apply_language_button",

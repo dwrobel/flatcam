@@ -4252,6 +4252,153 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.final_save.emit()
         event.ignore()
 
+    def set_layout(self, layout: str):
+        """
+        Set the toolbars layout (location)
+
+        :param index:
+        :param lay:     Type of layout to be set on the toolbard
+        :return:        None
+        """
+
+        self.app.defaults.report_usage("on_layout()")
+
+        lay_settings = QSettings("Open Source", "FlatCAM")
+        lay_settings.setValue('layout', layout)
+        # This will write the setting to the platform specific storage.
+        del lay_settings
+
+        # first remove the toolbars:
+        try:
+            self.removeToolBar(self.app.ui.toolbarfile)
+            self.removeToolBar(self.app.ui.toolbargeo)
+            self.removeToolBar(self.app.ui.toolbarview)
+            self.removeToolBar(self.app.ui.toolbarshell)
+            self.removeToolBar(self.app.ui.toolbartools)
+            self.removeToolBar(self.app.ui.exc_edit_toolbar)
+            self.removeToolBar(self.app.ui.geo_edit_toolbar)
+            self.removeToolBar(self.app.ui.grb_edit_toolbar)
+            self.removeToolBar(self.app.ui.snap_toolbar)
+            self.removeToolBar(self.app.ui.toolbarshell)
+        except Exception:
+            pass
+
+        if layout == 'compact':
+            # ## TOOLBAR INSTALLATION # ##
+            self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.toolbarfile.setObjectName('File_TB')
+            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarfile)
+
+            self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.toolbargeo.setObjectName('Edit_TB')
+            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbargeo)
+
+            self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.toolbarshell.setObjectName('Shell_TB')
+            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarshell)
+
+            self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.toolbartools.setObjectName('Tools_TB')
+            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbartools)
+
+            self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            # self.geo_edit_toolbar.setVisible(False)
+            self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.addToolBar(Qt.RightToolBarArea, self.app.ui.geo_edit_toolbar)
+
+            self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.toolbarview.setObjectName('View_TB')
+            self.addToolBar(Qt.RightToolBarArea, self.app.ui.toolbarview)
+
+            self.addToolBarBreak(area=Qt.RightToolBarArea)
+
+            self.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.grb_edit_toolbar.setVisible(False)
+            self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.addToolBar(Qt.RightToolBarArea, self.app.ui.grb_edit_toolbar)
+
+            self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.addToolBar(Qt.RightToolBarArea, self.app.ui.exc_edit_toolbar)
+
+            self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.snap_toolbar.setObjectName('Snap_TB')
+            self.snap_toolbar.setMaximumHeight(30)
+            self.splitter_left.addWidget(self.app.ui.snap_toolbar)
+
+            self.corner_snap_btn.setVisible(True)
+            self.snap_magnet.setVisible(True)
+        else:
+            # ## TOOLBAR INSTALLATION # ##
+            self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.toolbarfile.setObjectName('File_TB')
+            self.addToolBar(self.app.ui.toolbarfile)
+
+            self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.toolbargeo.setObjectName('Edit_TB')
+            self.addToolBar(self.app.ui.toolbargeo)
+
+            self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.toolbarview.setObjectName('View_TB')
+            self.addToolBar(self.app.ui.toolbarview)
+
+            self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.toolbarshell.setObjectName('Shell_TB')
+            self.addToolBar(self.app.ui.toolbarshell)
+
+            self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.toolbartools.setObjectName('Tools_TB')
+            self.addToolBar(self.app.ui.toolbartools)
+
+            self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            # self.exc_edit_toolbar.setVisible(False)
+            self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.addToolBar(self.app.ui.exc_edit_toolbar)
+
+            self.addToolBarBreak()
+
+            self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            # self.geo_edit_toolbar.setVisible(False)
+            self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.addToolBar(self.app.ui.geo_edit_toolbar)
+
+            self.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.grb_edit_toolbar.setVisible(False)
+            self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.addToolBar(self.app.ui.grb_edit_toolbar)
+
+            self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.snap_toolbar.setObjectName('Snap_TB')
+            # self.snap_toolbar.setMaximumHeight(30)
+            self.addToolBar(self.app.ui.snap_toolbar)
+
+            self.corner_snap_btn.setVisible(False)
+            self.snap_magnet.setVisible(False)
+
+        if layout == 'minimal':
+            self.toolbarview.setVisible(False)
+            self.toolbarshell.setVisible(False)
+            self.snap_toolbar.setVisible(False)
+            self.geo_edit_toolbar.setVisible(False)
+            self.grb_edit_toolbar.setVisible(False)
+            self.exc_edit_toolbar.setVisible(False)
+            self.lock_toolbar(lock=True)
+
+        # add all the actions to the toolbars
+        self.populate_toolbars()
+
+        # reconnect all the signals to the toolbar actions
+        self.app.connect_toolbar_signals()
+
+        self.grid_snap_btn.setChecked(True)
+        self.on_grid_snap_triggered(state=True)
+
+        self.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
+        self.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))
+        self.snap_max_dist_entry.setText(str(self.app.defaults["global_snap_max"]))
+        self.grid_gap_link_cb.setChecked(True)
+
+
 
 class FlatCAMActivityView(QtWidgets.QWidget):
     """

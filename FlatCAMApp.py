@@ -560,13 +560,11 @@ class App(QtCore.QObject):
 
         if self.defaults["first_run"] is True:
 
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             initial_lay = 'minimal'
-            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_field.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_field.setCurrentIndex(idx)
+            layout_field = self.preferencesUiManager.get_form_field("layout")
+            layout_field.setCurrentIndex(layout_field.findText(initial_lay))
+            self.ui.set_layout(initial_lay)
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False
@@ -10206,7 +10204,8 @@ class App(QtCore.QObject):
 
         self.log.debug("version_check()")
 
-        if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
+
+        if self.defaults["global_send_stats"] is True:
             full_url = "%s?s=%s&v=%s&os=%s&%s" % (
                 App.version_url,
                 str(self.defaults['global_serial']),
