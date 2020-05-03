@@ -963,19 +963,22 @@ class App(QtCore.QObject):
             lambda: self.on_toggle_units(no_pref=False))
 
         # ##################################### Workspace Setting Signals ###########################################
-        self.ui.general_defaults_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
+
+
+        self.preferencesUiManager.option_dict()["global_workspaceT"].get_field().currentIndexChanged.connect(
             self.on_workspace_modified)
-        self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio.activated_custom.connect(
+        self.preferencesUiManager.option_dict()["global_workspace_orientation"].get_field().activated_custom.connect(
             self.on_workspace_modified
         )
+        self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.connect(self.on_workspace)
 
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
         self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
-        self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
+
+        self.preferencesUiManager.get_form_field("global_cursor_type").activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
         # Film Tool
@@ -3563,20 +3566,20 @@ class App(QtCore.QObject):
             )
             stgs.setValue(
                 'notebook_font_size',
-                self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("notebook_font_size").get_value()
             )
             stgs.setValue(
                 'axis_font_size',
-                self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("axis_font_size").get_value()
             )
             stgs.setValue(
                 'textbox_font_size',
-                self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("textbox_font_size").get_value()
             )
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
             stgs.setValue(
                 'machinist',
-                1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
+                1 if self.preferencesUiManager.get_form_field("global_machinist_setting").get_value() else 0
             )
 
             # This will write the setting to the platform specific storage.
@@ -4951,7 +4954,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
+        if self.preferencesUiManager.option_dict()["global_workspace"].get_field().get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
@@ -4959,13 +4962,13 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value() else True
+        state = False if self.preferencesUiManager.option_dict()["global_workspace"].get_field().get_value() else True
         try:
-            self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
+            self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.preferencesUiManager.option_dict()["global_workspace"].get_field().set_value(state)
+        self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_cursor_type(self, val):
@@ -4977,12 +4980,12 @@ class App(QtCore.QObject):
         self.app_cursor.enabled = False
 
         if val == 'small':
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(False)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
+            self.preferencesUiManager.get_form_field("global_cursor_size").setDisabled(False)
+            #self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(True)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
+            self.preferencesUiManager.get_form_field("global_cursor_size").setDisabled(False)
+            #self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():

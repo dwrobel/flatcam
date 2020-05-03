@@ -51,7 +51,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
         self.alt_sel_alpha_field = self.option_dict()["_global_alt_sel_alpha"].get_field()
         self.alt_sel_alpha_field.spinner.valueChanged.connect(self.on_alt_sel_alpha_change)
 
-
     def build_options(self) -> [OptionUI]:
         return [
             RadioSetOptionUI(
@@ -132,7 +131,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                 option="_global_sel_alpha",
                 label_text="Alpha",
                 label_tooltip="Set the fill transparency for the 'left to right' selection box.",
-                min=0, max=255, step=1
+                min_value=0, max_value=255, step=1
             ),
             SeparatorOptionUI(),
 
@@ -154,7 +153,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                 option="_global_alt_sel_alpha",
                 label_text="Alpha",
                 label_tooltip="Set the fill transparency for the 'right to left' selection box.",
-                min=0, max=255, step=1
+                min_value=0, max_value=255, step=1
             ),
             SeparatorOptionUI(),
 

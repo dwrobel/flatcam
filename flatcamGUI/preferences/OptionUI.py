@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Sequence
 
 from PyQt5 import QtWidgets
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
@@ -89,7 +89,7 @@ class CheckboxOptionUI(OptionUI):
 
 class ComboboxOptionUI(BasicOptionUI):
 
-    def __init__(self, option: str, label_text: str, label_tooltip: str, choices: list):
+    def __init__(self, option: str, label_text: str, label_tooltip: str, choices: Sequence):
         self.choices = choices
         super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
 
@@ -116,6 +116,21 @@ class SliderWithSpinnerOptionUI(BasicOptionUI):
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCSliderWithSpinner(min=self.min_value, max=self.max_value, step=self.step)
+        return entry
+
+
+class SpinnerOptionUI(BasicOptionUI):
+    def __init__(self, option: str, label_text: str, label_tooltip: str, min_value: int, max_value: int, step: int = 1):
+        self.min_value = min_value
+        self.max_value = max_value
+        self.step = step
+        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+
+    def build_entry_widget(self) -> QtWidgets.QWidget:
+        entry = FCSpinner()
+        entry.set_range(self.min_value, self.max_value)
+        entry.set_step(self.step)
+        entry.setWrapping(True)
         return entry
 
 

@@ -76,29 +76,6 @@ class PreferencesUIManager:
             "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
             "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
 
-            # General GUI Settings
-            "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
-            "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
-            "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
-            "global_workspace": self.ui.general_defaults_form.general_app_set_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_app_set_group.wk_cb,
-            "global_workspace_orientation": self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio,
-
-            "global_cursor_type": self.ui.general_defaults_form.general_app_set_group.cursor_radio,
-            "global_cursor_size": self.ui.general_defaults_form.general_app_set_group.cursor_size_entry,
-            "global_cursor_width": self.ui.general_defaults_form.general_app_set_group.cursor_width_entry,
-            "global_cursor_color_enabled": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_color_cb,
-            "global_cursor_color": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry,
-            "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
-            "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
-            "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
-
-            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_set_group.bm_limit_spinner,
-            "global_activity_icon": self.ui.general_defaults_form.general_app_set_group.activity_combo,
-
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -774,12 +751,7 @@ class PreferencesUIManager:
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
 
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(
-            self.defaults['global_cursor_color'])
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
+
 
         # Init the Annotation CNC Job color
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
@@ -839,20 +811,20 @@ class PreferencesUIManager:
         settgs = QSettings("Open Source", "FlatCAM")
 
         # save the notebook font size
-        fsize = self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
+        fsize = self.get_form_field("notebook_font_size").get_value()
         settgs.setValue('notebook_font_size', fsize)
 
         # save the axis font size
-        g_fsize = self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
+        g_fsize = self.get_form_field("axis_font_size").get_value()
         settgs.setValue('axis_font_size', g_fsize)
 
         # save the textbox font size
-        tb_fsize = self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
+        tb_fsize = self.get_form_field("textbox_font_size").get_value()
         settgs.setValue('textbox_font_size', tb_fsize)
 
         settgs.setValue(
             'machinist',
-            1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
+            1 if self.get_form_field("global_machinist_setting").get_value() else 0
         )
 
         # This will write the setting to the platform specific storage.
