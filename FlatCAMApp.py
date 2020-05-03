@@ -165,6 +165,7 @@ class App(QtCore.QObject):
     version = 8.993
     version_date = "2020/08/01"
     beta = True
+
     engine = '3D'
 
     # current date now
@@ -3344,9 +3345,9 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@pcb-hobyst"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Golfetto Massimiliano"), 4, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "pcb@golfetto.eu"), 4, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 5, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 5, 1)

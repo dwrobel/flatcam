@@ -44,7 +44,7 @@ class TclCommandIsolate(TclCommandSignaled):
     help = {
         'main': "Creates isolation routing Geometry for the specified Gerber object.",
         'args': collections.OrderedDict([
-            ('name', 'Name of the source object. Required.'),
+            ('name', 'Name of the Gerber source object to be isolated. Required.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
@@ -55,7 +55,7 @@ class TclCommandIsolate(TclCommandSignaled):
             ('iso_type', 'A value of 0 will isolate exteriors, a value of 1 will isolate interiors '
                          'and a value of 2 will do full isolation.')
         ]),
-        'examples': ['isolate my_geo -dia 0.1 -passes 2 -overlap 10 -combine True -iso_type 2 -outname out_geo']
+        'examples': ['isolate my_gerber -dia 0.1 -passes 2 -overlap 10 -combine True -iso_type 2 -outname out_geo']
     }
 
     def execute(self, args, unnamed_args):

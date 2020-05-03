@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.05.2020
+
+- small changes to allow making the x86 installer that is made from a Python 3.5 run FlatCAM beta 
+- fixed multiple parameter 'outname' in the Tcl commands OpenGerber and OpenGcode 
+- added more examples in the scripts Examples: isolate and cutout examples
+- updated the Italian translation
+- updated the translation files
+
 2.05.2020
 
 - working on a new feature: adding interdiction area for Gcode generation. They will be added in the Geometry Object
@@ -21,7 +29,7 @@ CHANGELOG for FlatCAM beta
 - modified the Cutout Tool to generate multi-geo objects therefore the set geometry parameters will populate the Geometry Object UI
 - modified the Panelize Tool to optimize the output from Cutout Tool such that there are no longer overlapping cuts
 - some string corrections
-- updated the Italian translation done by user @pcb-hobbyst
+- updated the Italian translation done by user @pcb-hobbyst (Golfetto Massimiliano)
 - RELEASE 8.992
 
 01.05.2020
