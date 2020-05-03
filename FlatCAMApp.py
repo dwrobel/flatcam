@@ -625,8 +625,9 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         self.languages = fcTranslate.load_languages()
+        language_field = self.preferencesUiManager.get_form_field("global_language")
         for name in sorted(self.languages.values()):
-            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
+            language_field.addItem(name)
 
         # ###########################################################################################################
         # ####################################### APPLY APP LANGUAGE ################################################
@@ -639,7 +640,7 @@ class App(QtCore.QObject):
             log.debug("Could not find the Language files. The App strings are missing.")
         else:
             # make the current language the current selection on the language combobox
-            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
+            self.preferencesUiManager.get_form_field("global_language").setCurrentText(ret_val)
             log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
@@ -959,25 +960,24 @@ class App(QtCore.QObject):
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.preferencesUiManager.get_form_field("units").activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
         # ##################################### Workspace Setting Signals ###########################################
 
 
-        self.preferencesUiManager.option_dict()["global_workspaceT"].get_field().currentIndexChanged.connect(
+        self.preferencesUiManager.get_form_field("global_workspaceT").currentIndexChanged.connect(
             self.on_workspace_modified)
-        self.preferencesUiManager.option_dict()["global_workspace_orientation"].get_field().activated_custom.connect(
+        self.preferencesUiManager.get_form_field("global_workspace_orientation").activated_custom.connect(
             self.on_workspace_modified
         )
-        self.preferencesUiManager.option_dict()["global_workspace"].get_field().stateChanged.connect(self.on_workspace)
+        self.preferencesUiManager.get_form_field("global_workspace").stateChanged.connect(self.on_workspace)
 
 
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
-
+        self.preferencesUiManager.get_form_field("global_graphic_engine").activated_custom.connect(self.on_app_restart)
         self.preferencesUiManager.get_form_field("global_cursor_type").activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
@@ -998,7 +998,7 @@ class App(QtCore.QObject):
             self.on_qrcode_back_color_button)
 
         # portability changed signal
-        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+        self.preferencesUiManager.get_form_field("global_portable").stateChanged.connect(self.on_portable_checked)
 
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
@@ -1421,8 +1421,8 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
-            App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
+                self.preferencesUiManager.get_form_field("global_version_check").get_value() is True:
+            App.log.info("Checking for updates in background (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
@@ -1549,7 +1549,7 @@ class App(QtCore.QObject):
         self.abort_flag = False
 
         # set the value used in the Windows Title
-        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+        self.engine = self.preferencesUiManager.get_form_field("global_graphic_engine").get_value()
 
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
@@ -3562,7 +3562,7 @@ class App(QtCore.QObject):
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(
                 'language',
-                self.ui.general_defaults_form.general_app_group.language_cb.get_value()
+                self.preferencesUiManager.get_form_field("global_language").get_value()
             )
             stgs.setValue(
                 'notebook_font_size',
@@ -4204,18 +4204,18 @@ class App(QtCore.QObject):
 
     def on_toggle_units_click(self):
         try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+            self.preferencesUiManager.get_form_field("units").activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
         if self.defaults["units"] == 'MM':
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+            self.preferencesUiManager.get_form_field("units").set_value("IN")
         else:
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+            self.preferencesUiManager.get_form_field("units").set_value("MM")
 
         self.on_toggle_units(no_pref=True)
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.preferencesUiManager.get_form_field("units").activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
     def on_toggle_units(self, no_pref=False):
@@ -4233,7 +4233,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        new_units = self.preferencesUiManager.get_form_field("units").get_value().upper()
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
@@ -4530,9 +4530,9 @@ class App(QtCore.QObject):
             # Undo toggling
             self.toggle_units_ignore = True
             if self.defaults['units'].upper() == 'MM':
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('IN')
+                self.preferencesUiManager.get_form_field("units").set_value('IN')
             else:
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
+                self.preferencesUiManager.get_form_field("units").set_value('MM')
             self.toggle_units_ignore = False
 
             # store the grid values so they are not changed in the next step

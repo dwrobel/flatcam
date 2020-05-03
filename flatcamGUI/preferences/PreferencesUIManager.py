@@ -48,34 +48,6 @@ class PreferencesUIManager:
         # when adding entries here read the comments in the  method found below named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
-            # General App
-            "decimals_inch": self.ui.general_defaults_form.general_app_group.precision_inch_entry,
-            "decimals_metric": self.ui.general_defaults_form.general_app_group.precision_metric_entry,
-            "units": self.ui.general_defaults_form.general_app_group.units_radio,
-            "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
-            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
-            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
-            "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
-
-            "global_systray_icon": self.ui.general_defaults_form.general_app_group.systray_cb,
-            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
-            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
-            "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
-            "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
-
-            "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
-            "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
-
-            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
-            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
-            "global_autosave": self.ui.general_defaults_form.general_app_group.autosave_cb,
-            "global_autosave_timeout": self.ui.general_defaults_form.general_app_group.autosave_entry,
-
-            "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
-            "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
-            "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
-            "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
-
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -844,11 +816,11 @@ class PreferencesUIManager:
         self.ignore_tab_close_event = True
 
         try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+            self.get_form_field("units").activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.get_form_field("units").activated_custom.connect(
             lambda: self.ui.app.on_toggle_units(no_pref=False))
         self.defaults.update(self.defaults.current_defaults)
 

@@ -30,15 +30,22 @@ class OptionUI:
 
 class BasicOptionUI(OptionUI):
     """Abstract OptionUI that has a label on the left then some other widget on the right"""
-    def __init__(self, option: str, label_text: str, label_tooltip: str):
+    def __init__(self, option: str, label_text: str, label_tooltip: Union[str, None] = None, label_bold: bool = False, label_red: bool = False):
         super().__init__(option=option)
         self.label_text = label_text
         self.label_tooltip = label_tooltip
+        self.label_bold = label_bold
+        self.label_red = label_red
         self.label_widget = self.build_label_widget()
         self.entry_widget = self.build_entry_widget()
 
     def build_label_widget(self) -> QtWidgets.QLabel:
-        label_widget = QtWidgets.QLabel('%s:' % _(self.label_text))
+        fmt = "%s:"
+        if self.label_bold:
+            fmt = "<b>%s</b>" % fmt
+        if self.label_red:
+            fmt = "<span style=\"color:red;\">%s</span>" % fmt
+        label_widget = QtWidgets.QLabel(fmt % _(self.label_text))
         if self.label_tooltip is not None:
             label_widget.setToolTip(_(self.label_tooltip))
         return label_widget
@@ -57,10 +64,10 @@ class BasicOptionUI(OptionUI):
 
 class RadioSetOptionUI(BasicOptionUI):
 
-    def __init__(self, option: str, label_text: str, label_tooltip: str, choices: list, orientation='horizontal'):
+    def __init__(self, option: str, label_text: str, choices: list, orientation='horizontal', **kwargs):
         self.choices = choices
         self.orientation = orientation
-        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+        super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         return RadioSet(choices=self.choices, orientation=self.orientation)
@@ -89,9 +96,9 @@ class CheckboxOptionUI(OptionUI):
 
 class ComboboxOptionUI(BasicOptionUI):
 
-    def __init__(self, option: str, label_text: str, label_tooltip: str, choices: Sequence):
+    def __init__(self, option: str, label_text: str, choices: Sequence, **kwargs):
         self.choices = choices
-        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+        super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self):
         combo = FCComboBox()
@@ -108,11 +115,11 @@ class ColorOptionUI(BasicOptionUI):
 
 
 class SliderWithSpinnerOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, label_tooltip: str, min_value=0, max_value=100, step=1):
+    def __init__(self, option: str, label_text: str, min_value=0, max_value=100, step=1, **kwargs):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
-        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+        super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCSliderWithSpinner(min=self.min_value, max=self.max_value, step=self.step)
@@ -120,11 +127,11 @@ class SliderWithSpinnerOptionUI(BasicOptionUI):
 
 
 class SpinnerOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, label_tooltip: str, min_value: int, max_value: int, step: int = 1):
+    def __init__(self, option: str, label_text: str, min_value: int, max_value: int, step: int = 1, **kwargs):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
-        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+        super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCSpinner()
@@ -135,12 +142,12 @@ class SpinnerOptionUI(BasicOptionUI):
 
 
 class DoubleSpinnerOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, label_tooltip: str, step: float, decimals: int, min_value=None, max_value=None):
+    def __init__(self, option: str, label_text: str, step: float, decimals: int, min_value=None, max_value=None, **kwargs):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
         self.decimals = decimals
-        super().__init__(option=option, label_text=label_text, label_tooltip=label_tooltip)
+        super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCDoubleSpinner()
@@ -158,7 +165,7 @@ class DoubleSpinnerOptionUI(BasicOptionUI):
 
 
 class HeadingOptionUI(OptionUI):
-    def __init__(self, label_text: str, label_tooltip: Union[str, None]):
+    def __init__(self, label_text: str, label_tooltip: Union[str, None] = None):
         super().__init__(option="__heading")
         self.label_text = label_text
         self.label_tooltip = label_tooltip

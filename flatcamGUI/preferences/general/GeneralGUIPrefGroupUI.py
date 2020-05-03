@@ -17,8 +17,8 @@ from flatcamGUI.preferences.OptionUI import OptionUI, CheckboxOptionUI, RadioSet
 class GeneralGUIPrefGroupUI(OptionsGroupUI2):
 
     def __init__(self, decimals=4, **kwargs):
-        super().__init__(**kwargs)
         self.decimals = decimals
+        super().__init__(**kwargs)
         self.setTitle(str(_("GUI Preferences")))
 
         self.layout_field = self.option_dict()["layout"].get_field()

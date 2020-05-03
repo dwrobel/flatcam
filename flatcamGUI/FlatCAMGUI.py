@@ -4057,7 +4057,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key_T or key == 'T':
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
-                        self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
+                        self.units = self.general_defaults_form.option_dict()["units"].get_field().get_value().upper()
                         tool_add_popup = FCInputDialog(title=_("New Tool ..."),
                                                        text='%s:' % _('Enter a Tool Diameter'),
                                                        min=0.0000, max=99.9999, decimals=4)
