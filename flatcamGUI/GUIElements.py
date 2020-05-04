@@ -20,6 +20,7 @@ from copy import copy
 import re
 import logging
 import html
+import sys
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -1480,9 +1481,11 @@ class FCDetachableTab(QtWidgets.QTabWidget):
     From here:
     https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
     """
+    tab_detached = QtCore.pyqtSignal(str)
+    tab_attached = QtCore.pyqtSignal(str)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
-        super().__init__()
+        super().__init__(parent=parent)
 
         self.tabBar = self.FCTabBar(self)
         self.tabBar.onMoveTabSignal.connect(self.moveTab)
@@ -1619,7 +1622,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.insertTab(toIndex, widget, icon, text)
         self.setCurrentIndex(toIndex)
 
-    @pyqtSlot(int, QtCore.QPoint)
+    # @pyqtSlot(int, QtCore.QPoint)
     def detachTab(self, index, point):
         """
         Detach the tab by removing it's contents and placing them in
@@ -1656,6 +1659,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # Create a reference to maintain access to the detached tab
         self.detachedTabs[name] = detachedTab
 
+        self.tab_detached.emit(name)
+
     def attachTab(self, contentWidget, name, icon, insertAt=None):
         """
         Re-attach the tab by removing the content from the DetachedTab window,
@@ -1668,11 +1673,11 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         :return:
         """
 
+        old_name = name
+
         # Make the content widget a child of this widget
         contentWidget.setParent(self)
 
-        # Remove the reference
-        del self.detachedTabs[name]
         # make sure that we strip the 'FlatCAM' part of the detached name otherwise the tab name will be too long
         name = name.partition(' ')[2]
 
@@ -1712,6 +1717,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             else:
                 index = self.insertTab(insert_index, contentWidget, icon, name)
 
+        obj_name = contentWidget.objectName()
+        self.tab_attached.emit(obj_name)
+
         # on reattaching the tab if protect is true then the closure button is not added
         if self.protect_tab is True:
             self.protectTab(index)
@@ -1726,6 +1734,14 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # Make this tab the current tab
             if index > -1:
                 self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
+
+        # Remove the reference
+        # Unix-like OS's crash with segmentation fault after this. FOr whatever reason, they loose reference
+        if sys.platform == 'win32':
+            try:
+                del self.detachedTabs[old_name]
+            except KeyError:
+                pass
 
     def removeTabByName(self, name):
         """
