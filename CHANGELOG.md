@@ -7,10 +7,15 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.05.2020
+
+- fixed an issue that made the preprocessors comboxes in Preferences not to load and display the saved value fro the file
+- some PEP8 corrections
+
 4.05.2020
 
 - in detachable tabs, Linux loose the reference of the detached tab and on close of the detachable tabs will gave a 'segmantation fault' error. Solved it by not deleting the reference in case of Unix-like systems
-- some strigns added to translation strings
+- some strings added to translation strings
 
 3.05.2020
 

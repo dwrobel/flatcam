@@ -1115,6 +1115,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     else:
                         geo_obj.solid_geometry.append(
                             Point(hole['point']).buffer(buffer_value).exterior)
+
         if use_thread:
             def geo_thread(app_obj):
                 app_obj.new_object("geometry", outname, geo_init, plot=plot)
