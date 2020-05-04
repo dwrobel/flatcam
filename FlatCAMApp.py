@@ -3251,7 +3251,7 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Program Author"), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
@@ -3604,6 +3604,7 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         QtWidgets.qApp.quit()
+        # QtCore.QCoreApplication.exit()
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -3612,6 +3613,7 @@ class App(QtCore.QObject):
             sys.exit(0)
         else:
             os._exit(0)  # fix to work with Python 3.8
+    
 
     @staticmethod
     def kill_app():

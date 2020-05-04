@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+4.05.2020
+
+- in detachable tabs, Linux loose the reference of the detached tab and on close of the detachable tabs will gave a 'segmantation fault' error. Solved it by not deleting the reference in case of Unix-like systems
+- some strigns added to translation strings
+
 3.05.2020
 
 - small changes to allow making the x86 installer that is made from a Python 3.5 run FlatCAM beta 
