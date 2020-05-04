@@ -544,50 +544,13 @@ class App(QtCore.QObject):
         self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # ###########################################################################################################
-        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
-        # ###########################################################################################################
-
-        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
-                                                         inform=self.inform)
-        self.preferencesUiManager.defaults_write_form()
-
-        # When the self.defaults dictionary changes will update the Preferences GUI forms
-        self.defaults.set_change_callback(self.on_defaults_dict_change)
-
-        # ###########################################################################################################
-        # ##################################### FIRST RUN SECTION ###################################################
-        # ################################ It's done only once after install   #####################################
-        # ###########################################################################################################
-
-        if self.defaults["first_run"] is True:
-
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'minimal'
-            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
-
-            # after the first run, this object should be False
-            self.defaults["first_run"] = False
-            self.preferencesUiManager.save_defaults(silent=True)
-
-        # ###########################################################################################################
-        # ############################################ Data #########################################################
-        # ###########################################################################################################
-
-        self.recent = []
-        self.recent_projects = []
-
-        self.clipboard = QtWidgets.QApplication.clipboard()
-
-        self.project_filename = None
-        self.toggle_units_ignore = False
-
-        # ###########################################################################################################
         # #################################### LOAD PREPROCESSORS ###################################################
         # ###########################################################################################################
+
+        # ----------------------------------------- WARNING --------------------------------------------------------
+        # Preprocessors need to be loaded before the Preferences Manager builds the Preferences
+        # That's because the number of preprocessors can vary and here the comboboxes are populated
+        # -----------------------------------------------------------------------------------------------------------
 
         # a dictionary that have as keys the name of the preprocessor files and the value is the class from
         # the preprocessor file
@@ -620,6 +583,46 @@ class App(QtCore.QObject):
                 continue
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
+
+        # ###########################################################################################################
+        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
+        # ###########################################################################################################
+
+        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
+                                                         inform=self.inform)
+        self.preferencesUiManager.defaults_write_form()
+
+        # When the self.defaults dictionary changes will update the Preferences GUI forms
+        self.defaults.set_change_callback(self.on_defaults_dict_change)
+
+        # ###########################################################################################################
+        # ##################################### FIRST RUN SECTION ###################################################
+        # ################################ It's done only once after install   #####################################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            initial_lay = 'minimal'
+            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
+
+            # Set the combobox in Preferences to the current layout
+            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+
+            # after the first run, this object should be False
+            self.defaults["first_run"] = False
+            self.preferencesUiManager.save_defaults(silent=True)
+
+        # ###########################################################################################################
+        # ############################################ Data #########################################################
+        # ###########################################################################################################
+
+        self.recent = []
+        self.recent_projects = []
+
+        self.clipboard = QtWidgets.QApplication.clipboard()
+
+        self.project_filename = None
+        self.toggle_units_ignore = False
 
         # ###########################################################################################################
         # ########################################## LOAD LANGUAGES  ################################################
@@ -2577,7 +2580,7 @@ class App(QtCore.QObject):
         self.date = self.date.replace(' ', '_')
 
         filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
-        path_to_save = self.defaults["global_last_save_folder"] if\
+        path_to_save = self.defaults["global_last_save_folder"] if \
             self.defaults["global_last_save_folder"] is not None else self.data_path
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
@@ -3347,7 +3350,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Golfetto Massimiliano"), 4, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "pcb@golfetto.eu"), 4, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<golfetto.pcb@gmail.com>"), 4, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 5, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 5, 1)
@@ -3613,7 +3616,6 @@ class App(QtCore.QObject):
             sys.exit(0)
         else:
             os._exit(0)  # fix to work with Python 3.8
-    
 
     @staticmethod
     def kill_app():
