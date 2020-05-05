@@ -16,6 +16,7 @@ import shapely.affinity as affinity
 from camlib import Geometry
 
 from flatcamObjects.FlatCAMObj import *
+from flatcamGUI.VisPyVisuals import ShapeCollection
 import FlatCAMTool
 
 import ezdxf
@@ -162,6 +163,18 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.first_click = False
         self.points = []
         self.poly_drawn = False
+
+        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
+        # VisPy visuals
+        if self.app.is_legacy is False:
+            try:
+                self.exclusion_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.exclusion_shapes = None
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.exclusion_shapes = ShapeCollectionLegacy(
+                obj=self, app=self.app, name="exclusion" + self.options['name'])
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -363,7 +376,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             "endxy": self.ui.endxy_entry,
             "cnctooldia": self.ui.addtool_entry,
             "area_exclusion": self.ui.exclusion_cb,
-            "area_shape":self.ui.area_shape_radio,
+            "area_shape": self.ui.area_shape_radio,
             "area_strategy": self.ui.strategy_radio,
             "area_overz": self.ui.over_z_entry,
         })
@@ -1149,8 +1162,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                   "- 'V-tip Angle' -> angle at the tip of the tool\n"
                   "- 'V-tip Dia' -> diameter at the tip of the tool \n"
                   "- Tool Dia -> 'Dia' column found in the Tool Table\n"
-                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'"
-                )
+                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'")
             )
             self.ui.cutz_entry.setToolTip(
                 _("Disabled because the tool is V-shape.\n"
@@ -1159,8 +1171,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                   "- 'V-tip Angle' -> angle at the tip of the tool\n"
                   "- 'V-tip Dia' -> diameter at the tip of the tool \n"
                   "- Tool Dia -> 'Dia' column found in the Tool Table\n"
-                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'"
-                  )
+                  "NB: a value of zero means that Tool Dia = 'V-tip Dia'")
             )
 
             self.update_cutz()
@@ -1172,8 +1183,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.cutz_entry.setDisabled(False)
             self.ui.cutzlabel.setToolTip(
                 _("Cutting depth (negative)\n"
-                  "below the copper surface."
-                )
+                  "below the copper surface.")
             )
             self.ui.cutz_entry.setToolTip('')
 
@@ -2636,7 +2646,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.exclusion_areas_list.append(new_rectangle)
 
                     # add a temporary shape on canvas
-                    FlatCAMTool.FlatCAMTool.draw_tool_selection_shape(self, old_coords=(x0, y0), coords=(x1, y1))
+                    FlatCAMTool.FlatCAMTool.draw_tool_selection_shape(
+                        self, old_coords=(x0, y0), coords=(x1, y1),
+                        color="#FF7400",
+                        face_color="#FF7400BF",
+                        shapes_storage=self.exclusion_shapes)
 
                     self.first_click = False
                     return
@@ -2672,7 +2686,11 @@ class GeometryObject(FlatCAMObj, Geometry):
                         # do not add invalid polygons even if they are drawn by utility geometry
                         if pol.is_valid:
                             self.exclusion_areas_list.append(pol)
-                            FlatCAMTool.FlatCAMTool.draw_selection_shape_polygon(self, points=self.points)
+                            FlatCAMTool.FlatCAMTool.draw_selection_shape_polygon(
+                                self, points=self.points,
+                                color="#FF7400",
+                                face_color="#FF7400BF",
+                                shapes_storage=self.exclusion_shapes)
                             self.app.inform.emit(
                                 _("Zone added. Click to start adding next zone or right click to finish."))
 
@@ -2680,7 +2698,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.poly_drawn = False
                     return
 
-            FlatCAMTool.FlatCAMTool.delete_tool_selection_shape(self)
+            # FlatCAMTool.FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
@@ -2702,6 +2720,29 @@ class GeometryObject(FlatCAMObj, Geometry):
 
             if len(self.exclusion_areas_list) == 0:
                 return
+            else:
+                self.exclusion_areas_list = MultiPolygon(self.exclusion_areas_list)
+
+            self.app.inform.emit(
+                "[success] %s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
+            if self.exclusion_areas_list.intersects(MultiPolygon(self.solid_geometry)):
+                self.exclusion_areas_list = []
+                self.app.inform.emit(
+                    "[ERROR_NOTCL] %s" % _("Failed. Exclusion areas intersects the object geometry ..."))
+                return
+            else:
+                self.app.inform.emit(
+                    "[success] %s" % _("Exclusion areas added."))
+                self.ui.generate_cnc_button.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                            color: orange;
+                                        }
+                                        """)
+                self.ui.generate_cnc_button.setToolTip(
+                    '%s %s' % (_("Generate the CNC Job object."), _("With Exclusion areas."))
+                )
 
     def area_disconnect(self):
         if self.app.is_legacy is False:
@@ -2723,7 +2764,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.exclusion_areas_list = []
 
         FlatCAMTool.FlatCAMTool.delete_moving_selection_shape(self)
-        FlatCAMTool.FlatCAMTool.delete_tool_selection_shape(self)
+        # FlatCAMTool.FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
         self.app.call_source = "app"
         self.app.inform.emit("[WARNING_NOTCL] %s" % _("Cancelled. Area exclusion drawing was interrupted."))
@@ -2775,16 +2816,33 @@ class GeometryObject(FlatCAMObj, Geometry):
             if self.first_click:
                 self.app.delete_selection_shape()
                 self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                     color="#FF7400",
+                                                     face_color="#FF7400BF",
                                                      coords=(curr_pos[0], curr_pos[1]))
         else:
             FlatCAMTool.FlatCAMTool.delete_moving_selection_shape(self)
             FlatCAMTool.FlatCAMTool.draw_moving_selection_shape_poly(
-                self, points=self.points, data=(curr_pos[0], curr_pos[1]))
+                self, points=self.points,
+                color="#FF7400",
+                face_color="#FF7400BF",
+                data=(curr_pos[0], curr_pos[1]))
 
     def on_clear_area_click(self):
         self.exclusion_areas_list = []
         FlatCAMTool.FlatCAMTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
+        FlatCAMTool.FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+        # restore the default StyleSheet
+        self.ui.generate_cnc_button.setStyleSheet("")
+        # update the StyleSheet
+        self.ui.generate_cnc_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.ui.generate_cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
     @staticmethod
     def merge(geo_list, geo_final, multigeo=None):

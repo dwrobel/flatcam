@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.05.2020
+
+- wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)
+
 5.05.2020
 
 - fixed an issue that made the preprocessors comboxes in Preferences not to load and display the saved value fro the file

@@ -2066,6 +2066,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # unfortunately for this function to work time efficient,
             # if the Gerber was loaded without buffering then it require the buffering now.
+            # TODO 'buffering status' should be a property of the object not the project property
             if self.app.defaults['gerber_buffering'] == 'no':
                 self.solid_geometry = ncc_obj.solid_geometry.buffer(0)
             else:
@@ -2158,6 +2159,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                 sol_geo = sol_geo.buffer(distance=ncc_offset)
                 self.app.inform.emit('[success] %s ...' % _("Buffering finished"))
+
             empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             if empty == 'fail':
                 return 'fail'
@@ -2203,14 +2205,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         """
         Clear the excess copper from the entire object.
 
-        :param ncc_obj: ncc cleared object
+        :param ncc_obj:         ncc cleared object
         :param sel_obj:
-        :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
-        :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
-        :param outname: name of the resulting object
-        :param order:
-        :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
-        Usage of the different one is related to when this function is called from a TcL command.
+        :param ncctooldia:      a tuple or single element made out of diameters of the tools to be used to ncc clear
+        :param isotooldia:      a tuple or single element made out of diameters of the tools to be used for isolation
+        :param outname:         name of the resulting object
+        :param order:           Tools order
+        :param tools_storage:   whether to use the current tools_storage self.ncc_tools or a different one.
+                                Usage of the different one is related to when this function is called
+                                from a TcL command.
 
         :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
         run non-threaded for TclShell usage
@@ -3870,6 +3873,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         Returns the complement of target geometry within
         the given boundary polygon. If not specified, it defaults to
         the rectangular bounding box of target geometry.
+
+        :param target:      The geometry that is to be 'inverted'
+        :param boundary:    A polygon that surrounds the entire solid geometry and from which we subtract in order to
+                            create a "negative" geometry (geometry to be emptied of copper)
+        :return:
         """
         if isinstance(target, Polygon):
             geo_len = 1
@@ -3882,6 +3890,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             boundary = target.envelope
         else:
             boundary = boundary
+
         try:
             ret_val = boundary.difference(target)
         except Exception:
@@ -3889,10 +3898,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 for el in target:
                     # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
-
                     if self.app.abort_flag:
                         # graceful abort requested by the user
                         raise grace
+
                     boundary = boundary.difference(el)
                     pol_nr += 1
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
