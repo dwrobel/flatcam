@@ -51,3 +51,8 @@ class ToolsPreferencesUI(PreferencesSectionUI):
             self.tools_solderpaste_group,
         ]
 
+    def get_tab_id(self):
+        return "tools_tab"
+
+    def get_tab_label(self):
+        return _("TOOLS")

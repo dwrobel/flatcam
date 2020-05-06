@@ -23,3 +23,9 @@ class UtilPreferencesUI(PreferencesSectionUI):
             self.fa_gerber_group,
             self.kw_group,
         ]
+
+    def get_tab_id(self):
+        return "fa_tab"
+
+    def get_tab_label(self):
+        return _("UTILITIES")

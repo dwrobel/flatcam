@@ -47,3 +47,9 @@ class Tools2PreferencesUI(PreferencesSectionUI):
             self.tools2_punch_group,
             self.tools2_invert_group,
         ]
+
+    def get_tab_id(self):
+        return "tools2_tab"
+
+    def get_tab_label(self):
+        return _("TOOLS 2")

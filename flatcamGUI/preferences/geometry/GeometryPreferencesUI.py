@@ -23,3 +23,10 @@ class GeometryPreferencesUI(PreferencesSectionUI):
             self.geometry_adv_opt_group,
             self.geometry_editor_group
         ]
+
+    def get_tab_id(self):
+        return "geometry_tab"
+
+    def get_tab_label(self):
+        return _("GEOMETRY")
+

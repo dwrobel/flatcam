@@ -521,29 +521,7 @@ class PreferencesUIManager:
 
         }
 
-        self.child_forms = {
-            "general": ui.general_defaults_form,
-            "gerber": ui.gerber_defaults_form,
-            "excellon": ui.excellon_defaults_form,
-            "geometry": ui.geometry_defaults_form,
-            "cncjob": ui.cncjob_defaults_form,
-            "tools": ui.tools_defaults_form,
-            "tools2": ui.tools2_defaults_form,
-            "util": ui.util_defaults_form
-        }
-        self.child_scroll_areas = {
-            "general": ui.general_scroll_area,
-            "gerber": ui.gerber_scroll_area,
-            "excellon": ui.excellon_scroll_area,
-            "geometry": ui.geometry_scroll_area,
-            "cncjob": ui.cncjob_scroll_area,
-            "tools": ui.tools_scroll_area,
-            "tools2": ui.tools2_scroll_area,
-            "util": ui.fa_scroll_area
-        }
-
         self.sections = [
-            # FIXME
             ui.general_defaults_form,
             ui.gerber_defaults_form,
             ui.excellon_defaults_form,
@@ -642,16 +620,12 @@ class PreferencesUIManager:
 
         :return: None
         """
+        # FIXME this should be done in __init__
 
-        for section in self.child_scroll_areas:
-            scroll_area = self.child_scroll_areas[section]
-            form = self.child_forms[section]
-            try:
-                scroll_area.takeWidget()
-            except Exception:
-                log.debug("Nothing to remove for section "+section)
-            scroll_area.setWidget(form)
-            form.show()
+        for section in self.sections:
+            tab = section.build_tab()
+            tab.setObjectName(section.get_tab_id())
+            self.ui.pref_tab_area.addTab(tab, section.get_tab_label())
 
         # Initialize the color box's color in Preferences -> Global -> Colo
         self.__init_color_pickers()

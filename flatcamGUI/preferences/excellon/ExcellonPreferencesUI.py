@@ -27,3 +27,9 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
             self.excellon_editor_group
         ]
 
+    def get_tab_id(self):
+        return "excellon_tab"
+
+    def get_tab_label(self):
+        return _("EXCELLON")
+

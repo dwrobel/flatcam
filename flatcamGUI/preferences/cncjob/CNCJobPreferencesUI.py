@@ -22,3 +22,10 @@ class CNCJobPreferencesUI(PreferencesSectionUI):
             self.cncjob_opt_group,
             self.cncjob_adv_opt_group
         ]
+
+    def get_tab_id(self):
+        # FIXME this doesn't seem right
+        return "text_editor_tab"
+
+    def get_tab_label(self):
+        return _("CNC-JOB")

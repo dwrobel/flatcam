@@ -26,3 +26,9 @@ class GerberPreferencesUI(PreferencesSectionUI):
             self.gerber_adv_opt_group,
             self.gerber_editor_group
         ]
+
+    def get_tab_id(self):
+        return "gerber_tab"
+
+    def get_tab_label(self):
+        return _("GERBER")

@@ -18,3 +18,8 @@ class GeneralPreferencesUI(PreferencesSectionUI):
             GeneralAppSettingsGroupUI(decimals=self.decimals)
         ]
 
+    def get_tab_id(self):
+        return "general_tab"
+
+    def get_tab_label(self):
+        return _("General")
