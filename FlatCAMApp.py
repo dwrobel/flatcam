@@ -43,7 +43,7 @@ import socket
 # ####################################################################################################################
 
 # Diverse
-from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMCommon import LoudDict, color_variant, ExclusionAreas
 from FlatCAMBookmark import BookmarkManager
 from FlatCAMDB import ToolsDB2
 
@@ -1600,6 +1600,11 @@ class App(QtCore.QObject):
         if current_platform != '64bit':
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
+        # ###########################################################################################################
+        # ########################################### EXCLUSION AREAS ###############################################
+        # ###########################################################################################################
+        self.exc_areas = ExclusionAreas(app=self)
 
         # ###########################################################################################################
         # ##################################### Finished the CONSTRUCTOR ############################################
