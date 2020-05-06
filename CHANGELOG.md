@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.05.2020
+
+- added a fix so the app close is now clean, with exit code 0 as set
+
 6.05.2020
 
 - wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)

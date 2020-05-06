@@ -3598,14 +3598,13 @@ class App(QtCore.QObject):
 
         # try to quit the Socket opened by ArgsThread class
         try:
-            self.new_launch.thread_exit = True
-            self.new_launch.listener.close()
+            self.new_launch.stop.emit()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
-            self.th.terminate()
+            self.th.quit()
         except Exception as e:
             log.debug("App.quit_application() --> %s" % str(e))
 
@@ -3615,7 +3614,6 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         QtWidgets.qApp.quit()
-        # QtCore.QCoreApplication.exit()
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -3627,7 +3625,6 @@ class App(QtCore.QObject):
 
     @staticmethod
     def kill_app():
-        # QtCore.QCoreApplication.quit()
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -10888,6 +10885,7 @@ class App(QtCore.QObject):
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)
     start = pyqtSignal()
+    stop = pyqtSignal()
 
     if sys.platform == 'win32':
         address = (r'\\.\pipe\NPtest', 'AF_PIPE')
@@ -10900,6 +10898,7 @@ class ArgsThread(QtCore.QObject):
         self.thread_exit = False
 
         self.start.connect(self.run)
+        self.stop.connect(self.close_listener)
 
     def my_loop(self, address):
         try:
@@ -10942,5 +10941,10 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
+
+    @pyqtSlot()
+    def close_listener(self):
+        self.thread_exit = True
+        self.listener.close()
 
 # end of file
