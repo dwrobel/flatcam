@@ -33,7 +33,7 @@ class PreferencesUIManager:
         :param defaults:    a dictionary storage where all the application settings are stored
         :param data_path:   a path to the file where all the preferences are stored for persistence
         :param ui:          reference to the FlatCAMGUI class which constructs the UI
-        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        :param inform:      a pyqtSignal used to display information in the StatusBar of the GUI
         """
 
         self.defaults = defaults

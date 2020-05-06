@@ -32,23 +32,9 @@ class PreferencesSectionUI(QtWidgets.QWidget):
         return result
 
     def build_tab(self):
-        tab = QtWidgets.QWidget()
-
-        tab_lay = QtWidgets.QVBoxLayout()
-        tab_lay.setContentsMargins(2, 2, 2, 2)
-        tab.setLayout(tab_lay)
-
-        # Not sure what the point of this is ???
-        hlay1 = QtWidgets.QHBoxLayout()
-        hlay1.addStretch()
-        tab_lay.addLayout(hlay1)
-
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(self)
-        self.show()
-        tab_lay.addWidget(scroll_area)
-
-        return tab
+        return scroll_area
 
     def get_tab_id(self) -> str:
         raise NotImplementedError
