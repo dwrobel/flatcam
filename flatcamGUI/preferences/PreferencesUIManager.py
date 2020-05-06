@@ -543,8 +543,15 @@ class PreferencesUIManager:
         }
 
         self.sections = [
-            # FIXME!
-            ui.general_defaults_form
+            # FIXME
+            ui.general_defaults_form,
+            ui.gerber_defaults_form,
+            ui.excellon_defaults_form,
+            ui.geometry_defaults_form,
+            ui.cncjob_defaults_form,
+            ui.tools_defaults_form,
+            ui.tools2_defaults_form,
+            ui.util_defaults_form
         ]
 
     def get_form_fields(self) -> Dict[str, Any]:
