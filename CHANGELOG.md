@@ -10,16 +10,17 @@ CHANGELOG for FlatCAM beta
 6.05.2020
 
 - wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)
-- changed the above: too many shapes collections and the performance will go down. Created a class Exclusion areas that holds all the require properties and the Object UI elements will connect to it's methods. This way I can apply this to Excellon object too (who are a special type of Geometry Object)
+- changed the above: too many shapes collections and the performance will go down. Created a class ExclusionAreas that holds all the require properties and the Object UI elements will connect to it's methods. This way I can apply this feature to Excellon object too (who is a special type of Geometry Object)
+- handled the New project event and the object deletion (when all objects are deleted then the exclusion areas will be deleted too)
 
 5.05.2020
 
-- fixed an issue that made the preprocessors comboxes in Preferences not to load and display the saved value fro the file
+- fixed an issue that made the preprocessors combo boxes in Preferences not to load and display the saved value fro the file
 - some PEP8 corrections
 
 4.05.2020
 
-- in detachable tabs, Linux loose the reference of the detached tab and on close of the detachable tabs will gave a 'segmantation fault' error. Solved it by not deleting the reference in case of Unix-like systems
+- in detachable tabs, Linux loose the reference of the detached tab and on close of the detachable tabs will gave a 'segmentation fault' error. Solved it by not deleting the reference in case of Unix-like systems
 - some strings added to translation strings
 
 3.05.2020
