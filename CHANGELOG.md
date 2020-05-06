@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.05.2020
+
+- wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)
+- changed the above: too many shapes collections and the performance will go down. Created a class Exclusion areas that holds all the require properties and the Object UI elements will connect to it's methods. This way I can apply this to Excellon object too (who are a special type of Geometry Object)
+
 5.05.2020
 
 - fixed an issue that made the preprocessors comboxes in Preferences not to load and display the saved value fro the file

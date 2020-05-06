@@ -110,6 +110,11 @@ class FlatCAMTool(QtWidgets.QWidget):
         :return:
         """
 
+        if 'shapes_storage' in kwargs:
+            s_storage = kwargs['shapes_storage']
+        else:
+            s_storage = self.app.tool_shapes
+
         if 'color' in kwargs:
             color = kwargs['color']
         else:
@@ -139,10 +144,9 @@ class FlatCAMTool(QtWidgets.QWidget):
 
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
-        self.app.tool_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
-                                 layer=0, tolerance=None)
+        s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
         if self.app.is_legacy is True:
-            self.app.tool_shapes.redraw()
+            s_storage.redraw()
 
     def draw_selection_shape_polygon(self, points, **kwargs):
         """
@@ -151,6 +155,12 @@ class FlatCAMTool(QtWidgets.QWidget):
         :param kwargs:
         :return:
         """
+
+        if 'shapes_storage' in kwargs:
+            s_storage = kwargs['shapes_storage']
+        else:
+            s_storage = self.app.tool_shapes
+
         if 'color' in kwargs:
             color = kwargs['color']
         else:
@@ -165,6 +175,7 @@ class FlatCAMTool(QtWidgets.QWidget):
             face_alpha = kwargs['face_alpha']
         else:
             face_alpha = 0.3
+
         if len(points) < 3:
             sel_rect = LineString(points)
         else:
@@ -175,14 +186,24 @@ class FlatCAMTool(QtWidgets.QWidget):
 
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
-        self.app.tool_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
-                                 layer=0, tolerance=None)
+        s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
         if self.app.is_legacy is True:
-            self.app.tool_shapes.redraw()
+            s_storage.redraw()
 
-    def delete_tool_selection_shape(self):
-        self.app.tool_shapes.clear()
-        self.app.tool_shapes.redraw()
+    def delete_tool_selection_shape(self, **kwargs):
+        """
+
+        :param kwargs:
+        :return:
+        """
+
+        if 'shapes_storage' in kwargs:
+            s_storage = kwargs['shapes_storage']
+        else:
+            s_storage = self.app.tool_shapes
+
+        s_storage.clear()
+        s_storage.redraw()
 
     def draw_moving_selection_shape_poly(self, points, data, **kwargs):
         """
@@ -192,6 +213,12 @@ class FlatCAMTool(QtWidgets.QWidget):
         :param kwargs:
         :return:
         """
+
+        if 'shapes_storage' in kwargs:
+            s_storage = kwargs['shapes_storage']
+        else:
+            s_storage = self.app.move_tool.sel_shapes
+
         if 'color' in kwargs:
             color = kwargs['color']
         else:
@@ -226,18 +253,27 @@ class FlatCAMTool(QtWidgets.QWidget):
         color_t_error = "#00000000"
 
         if geo.is_valid and not geo.is_empty:
-            self.app.move_tool.sel_shapes.add(geo, color=color, face_color=color_t, update=True,
-                                              layer=0, tolerance=None)
+            s_storage.add(geo, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
         elif not geo.is_valid:
-            self.app.move_tool.sel_shapes.add(geo, color="red", face_color=color_t_error, update=True,
-                                              layer=0, tolerance=None)
+            s_storage.add(geo, color="red", face_color=color_t_error, update=True, layer=0, tolerance=None)
 
         if self.app.is_legacy is True:
-            self.app.move_tool.sel_shapes.redraw()
+            s_storage.redraw()
 
-    def delete_moving_selection_shape(self):
-        self.app.move_tool.sel_shapes.clear()
-        self.app.move_tool.sel_shapes.redraw()
+    def delete_moving_selection_shape(self, **kwargs):
+        """
+
+        :param kwargs:
+        :return:
+        """
+
+        if 'shapes_storage' in kwargs:
+            s_storage = kwargs['shapes_storage']
+        else:
+            s_storage = self.app.move_tool.sel_shapes
+
+        s_storage.clear()
+        s_storage.redraw()
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:

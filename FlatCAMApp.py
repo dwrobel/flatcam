@@ -43,7 +43,7 @@ import socket
 # ####################################################################################################################
 
 # Diverse
-from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMCommon import LoudDict, color_variant, ExclusionAreas
 from FlatCAMBookmark import BookmarkManager
 from FlatCAMDB import ToolsDB2
 
@@ -1600,6 +1600,11 @@ class App(QtCore.QObject):
         if current_platform != '64bit':
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
+        # ###########################################################################################################
+        # ########################################### EXCLUSION AREAS ###############################################
+        # ###########################################################################################################
+        self.exc_areas = ExclusionAreas(app=self)
 
         # ###########################################################################################################
         # ##################################### Finished the CONSTRUCTOR ############################################
@@ -5119,12 +5124,17 @@ class App(QtCore.QObject):
 
                     for obj_active in self.collection.get_selected():
                         # if the deleted object is GerberObject then make sure to delete the possible mark shapes
-                        if isinstance(obj_active, GerberObject):
+                        if obj_active.kind == 'gerber':
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
+                        # if the deleted object is GerberObject then make sure to delete the possible mark shapes
+                        if obj_active.kind == 'geometry':
+                            obj_active.exclusion_shapes.clear(update=True)
+                            obj_active.exclusion_shapes.enabled = False
+                            del obj_active.exclusion_shapes
                         elif isinstance(obj_active, CNCJobObject):
                             try:
                                 obj_active.text_col.enabled = False
