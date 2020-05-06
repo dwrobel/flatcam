@@ -2,8 +2,6 @@ from typing import Dict
 
 from PyQt5 import QtWidgets
 
-
-
 from PyQt5.QtCore import QSettings
 
 import gettext

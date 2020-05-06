@@ -1,4 +1,4 @@
-from typing import Union, Sequence
+from typing import Union, Sequence, List
 
 from PyQt5 import QtWidgets
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
@@ -7,6 +7,7 @@ from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, F
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -124,6 +125,51 @@ class SliderWithSpinnerOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCSliderWithSpinner(min=self.min_value, max=self.max_value, step=self.step)
         return entry
+
+class ColorAlphaSliderOptionUI(SliderWithSpinnerOptionUI):
+    def __init__(self, applies_to: List[str], group, label_text: str, **kwargs):
+        self.applies_to = applies_to
+        self.group = group
+        super().__init__(option="__color_alpha_slider", label_text=label_text, min_value=0, max_value=255, step=1, **kwargs)
+        self.get_field().valueChanged.connect(self._on_alpha_change)
+
+    def add_to_grid(self, grid: QtWidgets.QGridLayout, row: int) -> int:
+        for index, field in enumerate(self._get_target_fields()):
+            field.entry.textChanged.connect(lambda value, i=index: self._on_target_change(target_index=i))
+        return super().add_to_grid(grid, row)
+
+    def _get_target_fields(self):
+        return list(map(lambda n: self.group.option_dict()[n].get_field(), self.applies_to))
+
+    def _on_target_change(self, target_index: int):
+        field = self._get_target_fields()[target_index]
+        color = field.get_value()
+        alpha_part = color[7:]
+        if len(alpha_part) != 2:
+            return
+        alpha = int(alpha_part, 16)
+        if alpha < 0 or alpha > 255 or self.get_field().get_value() == alpha:
+            return
+        self.get_field().set_value(alpha)
+
+    def _on_alpha_change(self):
+        alpha = self.get_field().get_value()
+        for field in self._get_target_fields():
+            old_value = field.get_value()
+            new_value = self._modify_color_alpha(old_value, alpha=alpha)
+            field.set_value(new_value)
+
+    def _modify_color_alpha(self, color: str, alpha: int):
+        color_without_alpha = color[:7]
+        if alpha > 255:
+            return color_without_alpha + "FF"
+        elif alpha < 0:
+            return color_without_alpha + "00"
+        else:
+            hexalpha = hex(alpha)[2:]
+            if len(hexalpha) == 1:
+                hexalpha = "0" + hexalpha
+            return color_without_alpha + hexalpha
 
 
 class SpinnerOptionUI(BasicOptionUI):

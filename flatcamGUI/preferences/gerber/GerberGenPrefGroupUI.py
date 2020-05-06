@@ -1,4 +1,3 @@
-from PyQt5 import QtCore, QtGui
 from flatcamGUI.preferences.OptionUI import *
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2
 
@@ -15,11 +14,6 @@ class GerberGenPrefGroupUI(OptionsGroupUI2):
         self.decimals = decimals
         super().__init__(**kwargs)
         self.setTitle(str(_("Gerber General")))
-
-        self.plot_line_field = self.option_dict()["gerber_plot_line"].get_field()
-        self.plot_fill_field = self.option_dict()["gerber_plot_fill"].get_field()
-        self.plot_alpha_field = self.option_dict()["_gerber_plot_alpha"].get_field()
-        self.plot_alpha_field.spinner.valueChanged.connect(self.on_plot_alpha_change)
 
     def build_options(self) -> [OptionUI]:
         return [
@@ -102,40 +96,11 @@ class GerberGenPrefGroupUI(OptionsGroupUI2):
                               "First 6 digits are the color and the last 2\n"
                               "digits are for alpha (transparency) level."
             ),
-            SliderWithSpinnerOptionUI(
-                option="_gerber_plot_alpha",
+            ColorAlphaSliderOptionUI(
+                applies_to=["gerber_plot_line", "gerber_plot_fill"],
+                group=self,
                 label_text="Alpha",
-                label_tooltip="Set the transparency for plotted objects.",
-                min_value=0, max_value=255, step=1
+                label_tooltip="Set the transparency for plotted objects."
             )
         ]
-
-    def on_plot_alpha_change(self):
-        alpha = self.plot_alpha_field.get_value()
-        fill = self._modify_color_alpha(color=self.plot_fill_field.get_value(), alpha=alpha)
-        self.plot_fill_field.set_value(fill)
-        line = self._modify_color_alpha(color=self.plot_line_field.get_value(), alpha=alpha)
-        self.plot_line_field.set_value(line)
-
-    def _modify_color_alpha(self, color: str, alpha: int):
-        color_without_alpha = color[:7]
-        if alpha > 255:
-            return color_without_alpha + "FF"
-        elif alpha < 0:
-            return color_without_alpha + "00"
-        else:
-            hexalpha = hex(alpha)[2:]
-            if len(hexalpha) == 1:
-                hexalpha = "0" + hexalpha
-            return color_without_alpha + hexalpha
-
-
-    # def on_pf_color_alpha_spinner(self):
-    #     self.pf_color_alpha_slider.setValue(spinner_value)
-    #     self.app.defaults['gerber_plot_fill'] = \
-    #         self.app.defaults['gerber_plot_fill'][:7] + \
-    #         (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-    #     self.app.defaults['gerber_plot_line'] = \
-    #         self.app.defaults['gerber_plot_line'][:7] + \
-    #         (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 

@@ -677,6 +677,7 @@ class FCColorEntry(QtWidgets.QFrame):
         self.entry.editingFinished.connect(self._sync_button_color)
         self.button.clicked.connect(self._on_button_clicked)
 
+
     def get_value(self) -> str:
         return self.entry.get_value()
 
@@ -732,6 +733,8 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
 
         self.slider.valueChanged.connect(self._on_slider)
         self.spinner.valueChanged.connect(self._on_spinner)
+
+        self.valueChanged = self.spinner.valueChanged
 
     def get_value(self) -> int:
         return self.spinner.get_value()
