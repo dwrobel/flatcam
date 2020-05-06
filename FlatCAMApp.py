@@ -5130,11 +5130,6 @@ class App(QtCore.QObject):
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
-                        # if the deleted object is GerberObject then make sure to delete the possible mark shapes
-                        if obj_active.kind == 'geometry':
-                            obj_active.exclusion_shapes.clear(update=True)
-                            obj_active.exclusion_shapes.enabled = False
-                            del obj_active.exclusion_shapes
                         elif isinstance(obj_active, CNCJobObject):
                             try:
                                 obj_active.text_col.enabled = False
@@ -5152,6 +5147,10 @@ class App(QtCore.QObject):
                     self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
+
+                    # if there are no longer objects delete also the exclusion areas shapes
+                    if not self.collection.get_list():
+                        self.exc_areas.clear_shapes()
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
@@ -7418,6 +7417,9 @@ class App(QtCore.QObject):
                     del obj.annotation
                 except AttributeError:
                     pass
+
+        # delete the exclusion areas
+        self.exc_areas.clear_shapes()
 
         # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.shell.init_tcl()

@@ -472,10 +472,7 @@ class ExclusionAreas:
                 data=(curr_pos[0], curr_pos[1]))
 
     def on_clear_area_click(self):
-        self.exclusion_areas_storage.clear()
-        FlatCAMTool.delete_moving_selection_shape(self)
-        self.app.delete_selection_shape()
-        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        self.clear_shapes()
 
         # restore the default StyleSheet
         self.cnc_button.setStyleSheet("")
@@ -487,3 +484,9 @@ class ExclusionAreas:
                                 }
                                 """)
         self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
+
+    def clear_shapes(self):
+        self.exclusion_areas_storage.clear()
+        FlatCAMTool.delete_moving_selection_shape(self)
+        self.app.delete_selection_shape()
+        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
