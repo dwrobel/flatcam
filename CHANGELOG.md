@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)
 - changed the above: too many shapes collections and the performance will go down. Created a class ExclusionAreas that holds all the require properties and the Object UI elements will connect to it's methods. This way I can apply this feature to Excellon object too (who is a special type of Geometry Object)
 - handled the New project event and the object deletion (when all objects are deleted then the exclusion areas will be deleted too)
+- solved issue with new parameter end_xy when it is None
+- solved issue with applying theme and not making the change in the Preferences UI. In Preferences UI the theme radio is always Light (white)
+- now the annotations will invert the selected color in the Preferences, when selecting Dark theme 
 
 5.05.2020
 

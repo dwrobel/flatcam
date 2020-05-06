@@ -420,13 +420,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
     def on_theme_change(self):
         val = self.theme_radio.get_value()
-        qsettings = QSettings("Open Source", "FlatCAM")
-        qsettings.setValue('theme', val)
 
-        # This will write the setting to the platform specific storage.
-        del qsettings
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
 
-        self.app.on_app_restart()
+        if val != theme:
+            theme_settings.setValue('theme', val)
+
+            # This will write the setting to the platform specific storage.
+            del theme_settings
+
+            self.app.on_app_restart()
 
     @staticmethod
     def handle_style(style):

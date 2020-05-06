@@ -17,6 +17,7 @@ from flatcamGUI.VisPyVisuals import ShapeCollection
 from FlatCAMTool import FlatCAMTool
 
 import numpy as np
+import re
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -490,3 +491,27 @@ class ExclusionAreas:
         FlatCAMTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+
+class InvertHexColor:
+    """
+    Will invert a hex color made out of 3 chars or 6 chars
+    From here: http://code.activestate.com/recipes/527747-invert-css-hex-colors/
+    """
+    def __init__(self):
+        self.p6 = re.compile("#[0-9a-f]{6};", re.IGNORECASE)
+        self.p3 = re.compile("#[0-9a-f]{3};", re.IGNORECASE)
+
+    def modify(self, original_color=3):
+        code = {}
+        l1 = "#;0123456789abcdef"
+        l2 = "#;fedcba9876543210"
+
+        for i in range(len(l1)):
+            code[l1[i]] = l2[i]
+        inverted = ""
+
+        content = p6.sub(modify, content)
+        content = p3.sub(modify, content)
+        return inverted
+

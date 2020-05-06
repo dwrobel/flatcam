@@ -522,6 +522,9 @@ class App(QtCore.QObject):
             else:
                 self.cursor_color_3D = 'gray'
 
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
+
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
