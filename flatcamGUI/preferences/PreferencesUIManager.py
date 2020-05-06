@@ -48,17 +48,6 @@ class PreferencesUIManager:
         # when adding entries here read the comments in the  method found below named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
-            # Gerber General
-            "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
-            "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
-            "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
-            "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
-            "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
-            "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
-            "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
-            "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
-            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry,
-            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -87,11 +76,6 @@ class PreferencesUIManager:
             "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
             "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
 
-            # Gerber Export
-            "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
-            "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
-            "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
-            "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
 
             # Gerber Editor
             "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
@@ -639,21 +623,6 @@ class PreferencesUIManager:
         log.debug("Finished Preferences GUI form initialization.")
 
     def __init_color_pickers(self):
-        # Init Gerber Plot Colors
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_spinner.set_value(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.setValue(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
-
         # Init Excellon Plot Colors
         self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
             self.defaults['excellon_plot_fill'])

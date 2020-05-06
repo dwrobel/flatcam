@@ -10552,7 +10552,7 @@ class App(QtCore.QObject):
                 alpha_level = str(hex(
                     self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+                alpha_level = self.defaults["gerber_plot_fill"][7:]
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:
