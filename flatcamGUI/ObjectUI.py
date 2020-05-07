@@ -1293,7 +1293,7 @@ class ExcellonObjectUI(ObjectUI):
         self.grid5.addWidget(self.pp_geo_name_cb, 16, 1)
 
         # Exclusion Areas
-        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
+        self.exclusion_cb = FCCheckBox('%s' % _("Add exclusion areas"))
         self.exclusion_cb.setToolTip(
             _(
                 "Include exclusion areas.\n"
@@ -2104,7 +2104,7 @@ class GeometryObjectUI(ObjectUI):
         # grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
 
         # Exclusion Areas
-        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
+        self.exclusion_cb = FCCheckBox('%s' % _("Add exclusion areas"))
         self.exclusion_cb.setToolTip(
             _(
                 "Include exclusion areas.\n"

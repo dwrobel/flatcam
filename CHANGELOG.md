@@ -7,10 +7,16 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.05.2020
+
+- added a parameter to the FlatCAMDefaults class, whenever a value in the self.defaults dict change it will call a callback function and send to it the modified key
+- optimized and fixed some issues in the self.on_toggle_units() method
+- the Exclusion areas will have all the orange color but the color of the outline will differ according to the type of the object from where it was added (cosmetic use only as the Exclusion areas will be applied globally)
+
 7.05.2020
 
 - added a fix so the app close is now clean, with exit code 0 as set
-- added the ability to add exclusion areas from the Excellon object too. Now there is a different in color to differentiate from which type of object the exclusion areas were added but they all serve the same purpose
+- added the ability to add exclusion areas from the Excellon object too. Now there is a difference in color to differentiate from which type of object the exclusion areas were added but they all serve the same purpose
 
 6.05.2020
 

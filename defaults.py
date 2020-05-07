@@ -495,7 +495,7 @@ class FlatCAMDefaults:
         "tools_transform_offset_x": 0.0,
         "tools_transform_offset_y": 0.0,
         "tools_transform_mirror_reference": False,
-        "tools_transform_mirror_point": (0, 0),
+        "tools_transform_mirror_point": "0.0, 0.0",
         "tools_transform_buffer_dis": 0.0,
         "tools_transform_buffer_factor": 100.0,
         "tools_transform_buffer_corner": True,
@@ -697,12 +697,18 @@ class FlatCAMDefaults:
         except Exception as e:
             log.error("save_factory_defaults() -> %s" % str(e))
 
-    def __init__(self):
+    def __init__(self, callback=lambda x: None):
+        """
+
+        :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
+        """
         self.defaults = LoudDict()
         self.defaults.update(self.factory_defaults)
         self.current_defaults = {}  # copy used for restoring after cancelled prefs changes
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
+
+        self.defaults.set_change_callback(callback)
 
     # #### Pass-through to the defaults LoudDict #####
     def __len__(self):

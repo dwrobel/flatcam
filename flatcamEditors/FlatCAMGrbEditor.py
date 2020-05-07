@@ -5633,7 +5633,7 @@ class TransformEditorTool(FlatCAMTool):
               "the 'y' in (x, y) will be used when using Flip on Y.")
         )
         self.flip_ref_label.setMinimumWidth(50)
-        self.flip_ref_entry = EvalEntry2("(0, 0)")
+        self.flip_ref_entry = FCEntry()
         self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.flip_ref_entry.setFixedWidth(60)
 
@@ -5760,7 +5760,7 @@ class TransformEditorTool(FlatCAMTool):
         if self.app.defaults["tools_transform_mirror_point"]:
             self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
         else:
-            self.flip_ref_entry.set_value((0, 0))
+            self.flip_ref_entry.set_value("0, 0")
 
     def template(self):
         if not self.draw_app.selected:
