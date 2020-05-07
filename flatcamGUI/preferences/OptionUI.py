@@ -188,15 +188,16 @@ class SpinnerOptionUI(BasicOptionUI):
 
 
 class DoubleSpinnerOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, step: float, decimals: int, min_value=None, max_value=None, **kwargs):
+    def __init__(self, option: str, label_text: str, step: float, decimals: int, min_value=None, max_value=None, suffix=None, **kwargs):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
+        self.suffix = suffix
         self.decimals = decimals
         super().__init__(option=option, label_text=label_text, **kwargs)
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
-        entry = FCDoubleSpinner()
+        entry = FCDoubleSpinner(suffix=self.suffix)
         entry.set_precision(self.decimals)
         entry.setSingleStep(self.step)
         if self.min_value is None:
