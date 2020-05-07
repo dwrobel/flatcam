@@ -767,7 +767,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.setCentralWidget(self.splitter)
 
         # self.notebook = QtWidgets.QTabWidget()
-        self.notebook = FCDetachableTab(protect=True)
+        self.notebook = FCDetachableTab(protect=True, parent=self)
         self.notebook.setTabsClosable(False)
         self.notebook.useOldIndex(True)
 
@@ -1174,7 +1174,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## PLOT AREA Tab # #############################
         # ########################################################################
-        self.plot_tab_area = FCDetachableTab2(protect=False, protect_by_name=[_('Plot Area')])
+        self.plot_tab_area = FCDetachableTab2(protect=False, protect_by_name=[_('Plot Area')], parent=self)
         self.plot_tab_area.useOldIndex(True)
 
         self.right_lay.addWidget(self.plot_tab_area)
@@ -1372,7 +1372,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
         self.app_sh_msg = (
-            '''<b>General Shortcut list</b><br>
+            '''<b>%s</b><br>
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -1716,6 +1716,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             </table>
             ''' %
             (
+                _("General Shortcut list"),
                 _("SHOW SHORTCUT LIST"), _("Switch to Project Tab"), _("Switch to Selected Tab"),
                 _("Switch to Tool Tab"),
                 _("New Gerber"), _("Edit Object (if selected)"), _("Grid On/Off"), _("Jump to Coordinates"),
@@ -2445,6 +2446,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.clear_btn.clicked.connect(self.on_gui_clear)
         self.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
         self.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
+
+        # to be used in the future
+        # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
+        # self.plot_tab_area.tab_detached.connect(lambda x: print(x))
 
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

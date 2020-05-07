@@ -43,7 +43,7 @@ import socket
 # ####################################################################################################################
 
 # Diverse
-from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMCommon import LoudDict, color_variant, ExclusionAreas
 from FlatCAMBookmark import BookmarkManager
 from FlatCAMDB import ToolsDB2
 
@@ -522,6 +522,9 @@ class App(QtCore.QObject):
             else:
                 self.cursor_color_3D = 'gray'
 
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
+
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
@@ -544,50 +547,13 @@ class App(QtCore.QObject):
         self.autosave_timer.timeout.connect(self.save_project_auto)
 
         # ###########################################################################################################
-        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
-        # ###########################################################################################################
-
-        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
-                                                         inform=self.inform)
-        self.preferencesUiManager.defaults_write_form()
-
-        # When the self.defaults dictionary changes will update the Preferences GUI forms
-        self.defaults.set_change_callback(self.on_defaults_dict_change)
-
-        # ###########################################################################################################
-        # ##################################### FIRST RUN SECTION ###################################################
-        # ################################ It's done only once after install   #####################################
-        # ###########################################################################################################
-
-        if self.defaults["first_run"] is True:
-
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'minimal'
-            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
-
-            # after the first run, this object should be False
-            self.defaults["first_run"] = False
-            self.preferencesUiManager.save_defaults(silent=True)
-
-        # ###########################################################################################################
-        # ############################################ Data #########################################################
-        # ###########################################################################################################
-
-        self.recent = []
-        self.recent_projects = []
-
-        self.clipboard = QtWidgets.QApplication.clipboard()
-
-        self.project_filename = None
-        self.toggle_units_ignore = False
-
-        # ###########################################################################################################
         # #################################### LOAD PREPROCESSORS ###################################################
         # ###########################################################################################################
+
+        # ----------------------------------------- WARNING --------------------------------------------------------
+        # Preprocessors need to be loaded before the Preferences Manager builds the Preferences
+        # That's because the number of preprocessors can vary and here the comboboxes are populated
+        # -----------------------------------------------------------------------------------------------------------
 
         # a dictionary that have as keys the name of the preprocessor files and the value is the class from
         # the preprocessor file
@@ -620,6 +586,46 @@ class App(QtCore.QObject):
                 continue
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
+
+        # ###########################################################################################################
+        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
+        # ###########################################################################################################
+
+        self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
+                                                         inform=self.inform)
+        self.preferencesUiManager.defaults_write_form()
+
+        # When the self.defaults dictionary changes will update the Preferences GUI forms
+        self.defaults.set_change_callback(self.on_defaults_dict_change)
+
+        # ###########################################################################################################
+        # ##################################### FIRST RUN SECTION ###################################################
+        # ################################ It's done only once after install   #####################################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            initial_lay = 'minimal'
+            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
+
+            # Set the combobox in Preferences to the current layout
+            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+
+            # after the first run, this object should be False
+            self.defaults["first_run"] = False
+            self.preferencesUiManager.save_defaults(silent=True)
+
+        # ###########################################################################################################
+        # ############################################ Data #########################################################
+        # ###########################################################################################################
+
+        self.recent = []
+        self.recent_projects = []
+
+        self.clipboard = QtWidgets.QApplication.clipboard()
+
+        self.project_filename = None
+        self.toggle_units_ignore = False
 
         # ###########################################################################################################
         # ########################################## LOAD LANGUAGES  ################################################
@@ -1597,6 +1603,11 @@ class App(QtCore.QObject):
         if current_platform != '64bit':
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
+        # ###########################################################################################################
+        # ########################################### EXCLUSION AREAS ###############################################
+        # ###########################################################################################################
+        self.exc_areas = ExclusionAreas(app=self)
 
         # ###########################################################################################################
         # ##################################### Finished the CONSTRUCTOR ############################################
@@ -2577,7 +2588,7 @@ class App(QtCore.QObject):
         self.date = self.date.replace(' ', '_')
 
         filter__ = "HTML File .html (*.html);;TXT File .txt (*.txt);;All Files (*.*)"
-        path_to_save = self.defaults["global_last_save_folder"] if\
+        path_to_save = self.defaults["global_last_save_folder"] if \
             self.defaults["global_last_save_folder"] is not None else self.data_path
         try:
             filename, _f = FCFileSaveDialog.get_saved_filename(
@@ -3251,7 +3262,7 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Program Author"), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
@@ -3347,7 +3358,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Golfetto Massimiliano"), 4, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "pcb@golfetto.eu"), 4, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<golfetto.pcb@gmail.com>"), 4, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 5, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 5, 1)
@@ -3587,14 +3598,13 @@ class App(QtCore.QObject):
 
         # try to quit the Socket opened by ArgsThread class
         try:
-            self.new_launch.thread_exit = True
-            self.new_launch.listener.close()
+            self.new_launch.stop.emit()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
-            self.th.terminate()
+            self.th.quit()
         except Exception as e:
             log.debug("App.quit_application() --> %s" % str(e))
 
@@ -3615,7 +3625,6 @@ class App(QtCore.QObject):
 
     @staticmethod
     def kill_app():
-        # QtCore.QCoreApplication.quit()
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -5115,7 +5124,7 @@ class App(QtCore.QObject):
 
                     for obj_active in self.collection.get_selected():
                         # if the deleted object is GerberObject then make sure to delete the possible mark shapes
-                        if isinstance(obj_active, GerberObject):
+                        if obj_active.kind == 'gerber':
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
@@ -5138,6 +5147,10 @@ class App(QtCore.QObject):
                     self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
+
+                    # if there are no longer objects delete also the exclusion areas shapes
+                    if not self.collection.get_list():
+                        self.exc_areas.clear_shapes()
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
@@ -7404,6 +7417,9 @@ class App(QtCore.QObject):
                     del obj.annotation
                 except AttributeError:
                     pass
+
+        # delete the exclusion areas
+        self.exc_areas.clear_shapes()
 
         # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.shell.init_tcl()
@@ -10869,6 +10885,7 @@ class App(QtCore.QObject):
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)
     start = pyqtSignal()
+    stop = pyqtSignal()
 
     if sys.platform == 'win32':
         address = (r'\\.\pipe\NPtest', 'AF_PIPE')
@@ -10881,6 +10898,7 @@ class ArgsThread(QtCore.QObject):
         self.thread_exit = False
 
         self.start.connect(self.run)
+        self.stop.connect(self.close_listener)
 
     def my_loop(self, address):
         try:
@@ -10923,5 +10941,10 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
+
+    @pyqtSlot()
+    def close_listener(self):
+        self.thread_exit = True
+        self.listener.close()
 
 # end of file

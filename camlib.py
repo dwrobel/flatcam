@@ -249,7 +249,7 @@ class ApertureMacro:
 
         pol, dia, x, y = ApertureMacro.default2zero(4, mods)
 
-        return {"pol": int(pol), "geometry": Point(x, y).buffer(dia/2)}
+        return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
     def make_vectorline(mods):
@@ -262,7 +262,7 @@ class ApertureMacro:
         pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
 
         line = LineString([(xs, ys), (xe, ye)])
-        box = line.buffer(width/2, cap_style=2)
+        box = line.buffer(width / 2, cap_style=2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -278,7 +278,7 @@ class ApertureMacro:
 
         pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
 
-        box = shply_box(x-width/2, y-height/2, x+width/2, y+height/2)
+        box = shply_box(x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -294,7 +294,7 @@ class ApertureMacro:
 
         pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
 
-        box = shply_box(x, y, x+width, y+height)
+        box = shply_box(x, y, x + width, y + height)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
 
         return {"pol": int(pol), "geometry": box_rotated}
@@ -309,12 +309,12 @@ class ApertureMacro:
 
         pol = mods[0]
         n = mods[1]
-        points = [(0, 0)]*(n+1)
+        points = [(0, 0)] * (n + 1)
 
-        for i in range(n+1):
-            points[i] = mods[2*i + 2:2*i + 4]
+        for i in range(n + 1):
+            points[i] = mods[2 * i + 2:2 * i + 4]
 
-        angle = mods[2*n + 4]
+        angle = mods[2 * n + 4]
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -333,11 +333,11 @@ class ApertureMacro:
         """
 
         pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
-        points = [(0, 0)]*nverts
+        points = [(0, 0)] * nverts
 
         for i in range(nverts):
-            points[i] = (x + 0.5 * dia * np.cos(2*np.pi * i/nverts),
-                         y + 0.5 * dia * np.sin(2*np.pi * i/nverts))
+            points[i] = (x + 0.5 * dia * np.cos(2 * np.pi * i / nverts),
+                         y + 0.5 * dia * np.sin(2 * np.pi * i / nverts))
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -358,9 +358,9 @@ class ApertureMacro:
 
         x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
 
-        r = dia/2 - thickness/2
-        result = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)
-        ring = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)  # Need a copy!
+        r = dia / 2 - thickness / 2
+        result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
+        ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)  # Need a copy!
 
         i = 1  # Number of rings created so far
 
@@ -370,13 +370,13 @@ class ApertureMacro:
             r -= thickness + gap
             if r <= 0:
                 break
-            ring = Point((x, y)).buffer(r).exterior.buffer(thickness/2.0)
+            ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
             result = cascaded_union([result, ring])
             i += 1
 
         # ## Crosshair
-        hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th/2.0, cap_style=2)
-        ver = LineString([(x, y-cross_len), (x, y + cross_len)]).buffer(cross_th/2.0, cap_style=2)
+        hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th / 2.0, cap_style=2)
+        ver = LineString([(x, y - cross_len), (x, y + cross_len)]).buffer(cross_th / 2.0, cap_style=2)
         result = cascaded_union([result, hor, ver])
 
         return {"pol": 1, "geometry": result}
@@ -394,9 +394,9 @@ class ApertureMacro:
 
         x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
 
-        ring = Point((x, y)).buffer(dout/2.0).difference(Point((x, y)).buffer(din/2.0))
-        hline = LineString([(x - dout/2.0, y), (x + dout/2.0, y)]).buffer(t/2.0, cap_style=3)
-        vline = LineString([(x, y - dout/2.0), (x, y + dout/2.0)]).buffer(t/2.0, cap_style=3)
+        ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
+        hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)
+        vline = LineString([(x, y - dout / 2.0), (x, y + dout / 2.0)]).buffer(t / 2.0, cap_style=3)
         thermal = ring.difference(hline.union(vline))
 
         return {"pol": 1, "geometry": thermal}
@@ -920,14 +920,16 @@ class Geometry(object):
         Creates contours around geometry at a given
         offset distance.
 
-        :param offset: Offset distance.
-        :type offset: float
-        :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
-        :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
-        :param follow: whether the geometry to be isolated is a follow_geometry
-        :param passes: current pass out of possible multiple passes for which the isolation is done
-        :return: The buffered geometry.
-        :rtype: Shapely.MultiPolygon or Shapely.Polygon
+        :param offset:      Offset distance.
+        :type offset:       float
+        :param geometry     The geometry to work with
+        :param iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
+        :param corner:      type of corner for the isolation:
+                            0 = round; 1 = square; 2= beveled (line that connects the ends)
+        :param follow:      whether the geometry to be isolated is a follow_geometry
+        :param passes:      current pass out of possible multiple passes for which the isolation is done
+        :return:            The buffered geometry.
+        :rtype:             Shapely.MultiPolygon or Shapely.Polygon
         """
 
         if self.app.abort_flag:
@@ -1194,7 +1196,7 @@ class Geometry(object):
             return 0
         bounds = self.bounds()
         return bounds[2] - bounds[0], bounds[3] - bounds[1]
-        
+
     def get_empty_area(self, boundary=None):
         """
         Returns the complement of self.solid_geometry within
@@ -1886,6 +1888,7 @@ class Geometry(object):
         # ## Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
+
         #
         # storage = FlatCAMRTreeStorage()
         # storage.get_points = get_pts
@@ -1982,10 +1985,10 @@ class Geometry(object):
         the geometry appropriately. This call ``scale()``. Don't call
         it again in descendents.
 
-        :param units: "IN" or "MM"
-        :type units: str
-        :return: Scaling factor resulting from unit change.
-        :rtype: float
+        :param obj_units:   "IN" or "MM"
+        :type units:        str
+        :return:            Scaling factor resulting from unit change.
+        :rtype:             float
         """
 
         if obj_units.upper() == self.units.upper():
@@ -2013,8 +2016,8 @@ class Geometry(object):
         Returns a representation of the object as a dictionary.
         Attributes to include are listed in ``self.ser_attrs``.
 
-        :return: A dictionary-encoded copy of the object.
-        :rtype: dict
+        :return:    A dictionary-encoded copy of the object.
+        :rtype:     dict
         """
         d = {}
         for attr in self.ser_attrs:
@@ -2030,9 +2033,9 @@ class Geometry(object):
         be present. Use only for deserializing saved
         objects.
 
-        :param d: Dictionary of attributes to set in the object.
-        :type d: dict
-        :return: None
+        :param d:   Dictionary of attributes to set in the object.
+        :type d:    dict
+        :return:    None
         """
         for attr in self.ser_attrs:
             setattr(self, attr, d[attr])
@@ -2432,7 +2435,7 @@ class CNCjob(Geometry):
                  pp_geometry_name='default', pp_excellon_name='default',
                  depthpercut=0.1, z_pdepth=-0.02,
                  spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
-                 toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
+                 toolchangez=0.787402, toolchange_xy='0.0,0.0',
                  endz=2.0, endxy='',
                  segx=None,
                  segy=None,
@@ -2441,7 +2444,8 @@ class CNCjob(Geometry):
         self.decimals = self.app.decimals
 
         # Used when parsing G-code arcs
-        self.steps_per_circle = int(self.app.defaults['cncjob_steps_per_circle'])
+        self.steps_per_circle = steps_per_circle if steps_per_circle is not None else \
+            int(self.app.defaults['cncjob_steps_per_circle'])
 
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
@@ -2667,7 +2671,11 @@ class CNCjob(Geometry):
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",") if self.xy_toolchange != '']
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if self.xy_toolchange and len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
@@ -2677,7 +2685,11 @@ class CNCjob(Geometry):
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+        if self.xy_end and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -2689,7 +2701,7 @@ class CNCjob(Geometry):
         log.debug("Creating CNC Job from Excellon...")
 
         # Tools
-        
+
         # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
         # so we actually are sorting the tools by diameter
         # sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
@@ -2700,7 +2712,7 @@ class CNCjob(Geometry):
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
-            tools = [i[0] for i in sorted_tools]   # we get a array of ordered tools
+            tools = [i[0] for i in sorted_tools]  # we get a array of ordered tools
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
         else:
             selected_tools = [x.strip() for x in tools.split(",")]  # we strip spaces and also separate the tools by ','
@@ -3101,7 +3113,7 @@ class CNCjob(Geometry):
                             raise grace
 
                         self.tool = tool
-                        self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
                         if self.use_ui:
@@ -3577,7 +3589,11 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else None
         self.z_end = float(endz) if endz is not None else None
 
-        self.xy_end = [float(eval(a)) for a in endxy.split(",") if endxy != '']
+        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else None
+
+        if self.xy_end and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -3595,7 +3611,11 @@ class CNCjob(Geometry):
             if toolchangexy == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) if toolchangexy else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]  %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                                            "in the format (x, y) \n"
@@ -3693,7 +3713,7 @@ class CNCjob(Geometry):
 
         self.gcode = self.doformat(p.start_code)
 
-        self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
+        self.gcode += self.doformat(p.feedrate_code)  # sets the feed rate
 
         if toolchange is False:
             self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
@@ -3707,19 +3727,19 @@ class CNCjob(Geometry):
             self.gcode += self.doformat(p.toolchange_code)
 
             if 'laser' not in self.pp_geometry_name:
-                self.gcode += self.doformat(p.spindle_code)     # Spindle start
+                self.gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
                 self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)   # Dwell time
+                self.gcode += self.doformat(p.dwell_code)  # Dwell time
         else:
             if 'laser' not in self.pp_geometry_name:
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
 
             if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)   # Dwell time
+                self.gcode += self.doformat(p.dwell_code)  # Dwell time
 
         total_travel = 0.0
         total_cut = 0.0
@@ -3788,7 +3808,7 @@ class CNCjob(Geometry):
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
-                pt, geo = storage.nearest(current_pt)   # Next
+                pt, geo = storage.nearest(current_pt)  # Next
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
@@ -3961,8 +3981,13 @@ class CNCjob(Geometry):
 
         self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
         self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
-        self.xy_end = endxy if endxy != '' else self.app.defaults["geometry_endxy"]
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+
+        self.xy_end = endxy if endxy != '' and endxy else self.app.defaults["geometry_endxy"]
+        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+        if self.xy_end is not None and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -3978,7 +4003,11 @@ class CNCjob(Geometry):
             if toolchangexy == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) if self.xy_toolchange else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit(
                         '[ERROR] %s' %
@@ -4085,7 +4114,7 @@ class CNCjob(Geometry):
 
         self.gcode = self.doformat(p.start_code)
 
-        self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
+        self.gcode += self.doformat(p.feedrate_code)  # sets the feed rate
 
         if toolchange is False:
             self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
@@ -4099,19 +4128,19 @@ class CNCjob(Geometry):
             self.gcode += self.doformat(p.toolchange_code)
 
             if 'laser' not in self.pp_geometry_name:
-                self.gcode += self.doformat(p.spindle_code)     # Spindle start
+                self.gcode += self.doformat(p.spindle_code)  # Spindle start
             else:
                 # for laser this will disable the laser
                 self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)   # Dwell time
+                self.gcode += self.doformat(p.dwell_code)  # Dwell time
         else:
             if 'laser' not in self.pp_geometry_name:
                 self.gcode += self.doformat(p.spindle_code)  # Spindle start
 
             if self.dwell is True:
-                self.gcode += self.doformat(p.dwell_code)   # Dwell time
+                self.gcode += self.doformat(p.dwell_code)  # Dwell time
 
         total_travel = 0.0
         total_cut = 0.0
@@ -4553,7 +4582,7 @@ class CNCjob(Geometry):
         kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
 
         # Results go here
-        geometry = []        
+        geometry = []
 
         # Last known instruction
         current = {'X': 0.0, 'Y': 0.0, 'Z': 0.0, 'G': 0}
@@ -4636,7 +4665,7 @@ class CNCjob(Geometry):
                                 kind = ['C', 'F']
                                 geometry.append(
                                     {
-                                        "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
+                                        "geom": Point(current_drill_point_coords).buffer(dia / 2.0).exterior,
                                         "kind": kind
                                     }
                                 )
@@ -4644,14 +4673,14 @@ class CNCjob(Geometry):
 
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])
-                
+
             if 'X' in gobj or 'Y' in gobj:
                 if 'X' in gobj:
                     x = gobj['X']
                     # current['X'] = x
                 else:
                     x = current['X']
-                
+
                 if 'Y' in gobj:
                     y = gobj['Y']
                 else:
@@ -4670,7 +4699,7 @@ class CNCjob(Geometry):
                 arcdir = [None, None, "cw", "ccw"]
                 if current['G'] in [2, 3]:  # arc
                     center = [gobj['I'] + current['X'], gobj['J'] + current['Y']]
-                    radius = np.sqrt(gobj['I']**2 + gobj['J']**2)
+                    radius = np.sqrt(gobj['I'] ** 2 + gobj['J'] ** 2)
                     start = np.arctan2(-gobj['J'], -gobj['I'])
                     stop = np.arctan2(-center[1] + y, -center[0] + x)
                     path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle))
@@ -4864,97 +4893,30 @@ class CNCjob(Geometry):
                         if geo['kind'][0] == 'C':
                             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                           visible=visible, layer=1)
-                # current_x = gcode_parsed[0]['geom'].coords[0][0]
-                # current_y = gcode_parsed[0]['geom'].coords[0][1]
-                # old_pos = (
-                #     current_x,
-                #     current_y
-                # )
-                #
-                # for geo in gcode_parsed:
-                #     if geo['kind'][0] == 'T':
-                #         current_position = (
-                #             geo['geom'].coords[0][0] + old_pos[0],
-                #             geo['geom'].coords[0][1] + old_pos[1]
-                #         )
-                #         if current_position not in pos:
-                #             pos.append(current_position)
-                #             path_num += 1
-                #             text.append(str(path_num))
-                #
-                #         delta = (
-                #             geo['geom'].coords[-1][0] - geo['geom'].coords[0][0],
-                #             geo['geom'].coords[-1][1] - geo['geom'].coords[0][1]
-                #         )
-                #         current_position = (
-                #             current_position[0] + geo['geom'].coords[-1][0],
-                #             current_position[1] + geo['geom'].coords[-1][1]
-                #         )
-                #         if current_position not in pos:
-                #             pos.append(current_position)
-                #             path_num += 1
-                #             text.append(str(path_num))
-                #
-                #     # plot the geometry of Excellon objects
-                #     if self.origin_kind == 'excellon':
-                #         if isinstance(geo['geom'], Point):
-                #             # if geo is Point
-                #             current_position = (
-                #                 current_position[0] + geo['geom'].x,
-                #                 current_position[1] + geo['geom'].y
-                #             )
-                #             poly = Polygon(Point(current_position))
-                #         elif isinstance(geo['geom'], LineString):
-                #             # if the geos are travel lines (LineStrings)
-                #             new_line_pts = []
-                #             old_line_pos = deepcopy(current_position)
-                #             for p in list(geo['geom'].coords):
-                #                 current_position = (
-                #                     current_position[0] + p[0],
-                #                     current_position[1] + p[1]
-                #                 )
-                #                 new_line_pts.append(current_position)
-                #                 old_line_pos = p
-                #             new_line = LineString(new_line_pts)
-                #
-                #             poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                #             poly = poly.simplify(tool_tolerance)
-                #     else:
-                #         # plot the geometry of any objects other than Excellon
-                #         new_line_pts = []
-                #         old_line_pos = deepcopy(current_position)
-                #         for p in list(geo['geom'].coords):
-                #             current_position = (
-                #                 current_position[0] + p[0],
-                #                 current_position[1] + p[1]
-                #             )
-                #             new_line_pts.append(current_position)
-                #             old_line_pos = p
-                #         new_line = LineString(new_line_pts)
-                #
-                #         poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                #         poly = poly.simplify(tool_tolerance)
-                #
-                #     old_pos = deepcopy(current_position)
-                #
-                #     if kind == 'all':
-                #         obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                #                       visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
-                #     elif kind == 'travel':
-                #         if geo['kind'][0] == 'T':
-                #             obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
-                #                           visible=visible, layer=2)
-                #     elif kind == 'cut':
-                #         if geo['kind'][0] == 'C':
-                #             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
-                #                           visible=visible, layer=1)
 
             try:
-                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
-            except Exception:
-                pass
+                if self.app.defaults['global_theme'] == 'white':
+                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                       color=self.app.defaults["cncjob_annotation_fontcolor"])
+                else:
+                    # invert the color
+                    old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
+                    new_color = ''
+                    code = {}
+                    l1 = "#;0123456789abcdef"
+                    l2 = "#;fedcba9876543210"
+                    for i in range(len(l1)):
+                        code[l1[i]] = l2[i]
+
+                    for x in range(len(old_color)):
+                        new_color += code[old_color[x]]
+
+                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                       color=new_color)
+            except Exception as e:
+                log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
 
     def create_geometry(self):
         self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
@@ -5592,7 +5554,7 @@ class CNCjob(Geometry):
                             new_nr = float(nr) * xfactor
                             # replace the updated string
                             line = line.replace(nr, ('%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_nr))
-                            )
+                                                )
 
                 # this scales all the X and Y and Z and F values and also the Tool Dia in the toolchange message
                 if header_stop is True:
@@ -5993,9 +5955,9 @@ def arc(center, radius, start, stop, direction, steps_per_circ):
         stop += 2 * np.pi
     if direction == "cw" and stop >= start:
         stop -= 2 * np.pi
-    
+
     angle = abs(stop - start)
-        
+
     # angle = stop-start
     steps = max([int(np.ceil(angle / (2 * np.pi) * steps_per_circ)), 2])
     delta_angle = da_sign[direction] * angle * 1.0 / steps
@@ -6577,7 +6539,6 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         """
         tidx = super(FlatCAMRTreeStorage, self).nearest(pt)
         return (tidx.bbox[0], tidx.bbox[1]), self.objects[tidx.object]
-
 
 # class myO:
 #     def __init__(self, coords):
