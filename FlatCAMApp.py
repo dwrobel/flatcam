@@ -43,7 +43,7 @@ import socket
 # ####################################################################################################################
 
 # Diverse
-from FlatCAMCommon import LoudDict, color_variant
+from FlatCAMCommon import LoudDict, color_variant, ExclusionAreas
 from FlatCAMBookmark import BookmarkManager
 from FlatCAMDB import ToolsDB2
 
@@ -521,6 +521,9 @@ class App(QtCore.QObject):
                 self.cursor_color_3D = 'black'
             else:
                 self.cursor_color_3D = 'gray'
+
+        # update the defaults dict with the setting in QSetting
+        self.defaults['global_theme'] = theme
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -1601,6 +1604,11 @@ class App(QtCore.QObject):
         if current_platform != '64bit':
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
+        # ###########################################################################################################
+        # ########################################### EXCLUSION AREAS ###############################################
+        # ###########################################################################################################
+        self.exc_areas = ExclusionAreas(app=self)
 
         # ###########################################################################################################
         # ##################################### Finished the CONSTRUCTOR ############################################
@@ -5120,7 +5128,7 @@ class App(QtCore.QObject):
 
                     for obj_active in self.collection.get_selected():
                         # if the deleted object is GerberObject then make sure to delete the possible mark shapes
-                        if isinstance(obj_active, GerberObject):
+                        if obj_active.kind == 'gerber':
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
@@ -5143,6 +5151,10 @@ class App(QtCore.QObject):
                     self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
+
+                    # if there are no longer objects delete also the exclusion areas shapes
+                    if not self.collection.get_list():
+                        self.exc_areas.clear_shapes()
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
@@ -7409,6 +7421,9 @@ class App(QtCore.QObject):
                     del obj.annotation
                 except AttributeError:
                     pass
+
+        # delete the exclusion areas
+        self.exc_areas.clear_shapes()
 
         # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.shell.init_tcl()

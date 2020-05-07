@@ -948,10 +948,10 @@ class ShapeCollectionLegacy:
         """
 
         :param obj:             This is the object to which the shapes collection is attached and for
-        which it will have to draw shapes
+                                which it will have to draw shapes
         :param app:             This is the FLatCAM.App usually, needed because we have to access attributes there
         :param name:            This is the name given to the Matplotlib axes; it needs to be unique due of
-        Matplotlib requurements
+                                Matplotlib requurements
         :param annotation_job:  Make this True if the job needed is just for annotation
         :param linewidth:       THe width of the line (outline where is the case)
         """

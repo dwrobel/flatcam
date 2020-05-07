@@ -11,6 +11,14 @@
 # Date: 11/4/2019                                          #
 # ##########################################################
 
+from shapely.geometry import Polygon, MultiPolygon
+
+from flatcamGUI.VisPyVisuals import ShapeCollection
+from FlatCAMTool import FlatCAMTool
+
+import numpy as np
+import re
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -119,3 +127,391 @@ def color_variant(hex_color, bright_factor=1):
         new_rgb.append(mod_color_hex)
 
     return "#" + "".join([i for i in new_rgb])
+
+
+class ExclusionAreas:
+
+    def __init__(self, app):
+        self.app = app
+
+        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
+        # VisPy visuals
+        if self.app.is_legacy is False:
+            try:
+                self.exclusion_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.exclusion_shapes = None
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.exclusion_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="exclusion")
+
+        # Event signals disconnect id holders
+        self.mr = None
+        self.mm = None
+        self.kp = None
+
+        # variables to be used in area exclusion
+        self.cursor_pos = (0, 0)
+        self.first_click = False
+        self.points = []
+        self.poly_drawn = False
+
+        '''
+        Here we store the exclusion shapes and some other information's
+        Each list element is a dictionary with the format:
+        
+        {
+            "obj_type":   string ("excellon" or "geometry")   <- self.obj_type
+            "shape":      Shapely polygon
+            "strategy":   string ("over" or "around")         <- self.strategy
+            "overz":      float                               <- self.over_z
+        }
+        '''
+        self.exclusion_areas_storage = []
+
+        self.mouse_is_dragging = False
+
+        self.solid_geometry = []
+        self.obj_type = None
+
+        self.shape_type = 'square'  # TODO use the self.app.defaults when made general (not in Geo object Pref UI)
+        self.over_z = 0.1
+        self.strategy = None
+        self.cnc_button = None
+
+    def on_add_area_click(self, shape_button, overz_button, strategy_radio, cnc_button, solid_geo, obj_type):
+        """
+
+        :param shape_button:    a FCButton that has the value for the shape
+        :param overz_button:    a FCDoubleSpinner that holds the Over Z value
+        :param strategy_radio:  a RadioSet button with the strategy value
+        :param cnc_button:      a FCButton in Object UI that when clicked the CNCJob is created
+                                We have a reference here so we can change the color signifying that exclusion areas are
+                                available.
+        :param solid_geo:       reference to the object solid geometry for which we add exclusion areas
+        :param obj_type:        Type of FlatCAM object that called this method
+        :type obj_type:         String: "excellon" or "geometry"
+        :return:
+        """
+        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
+        self.app.call_source = 'geometry'
+
+        self.shape_type = shape_button.get_value()
+        self.over_z = overz_button.get_value()
+        self.strategy = strategy_radio.get_value()
+        self.cnc_button = cnc_button
+
+        self.solid_geometry = solid_geo
+        self.obj_type = obj_type
+
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+        self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+        # self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+
+    # To be called after clicking on the plot.
+    def on_mouse_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            # event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        event_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+        else:
+            curr_pos = (event_pos[0], event_pos[1])
+
+        x1, y1 = curr_pos[0], curr_pos[1]
+
+        # shape_type = self.ui.area_shape_radio.get_value()
+
+        # do clear area only for left mouse clicks
+        if event.button == 1:
+            if self.shape_type == "square":
+                if self.first_click is False:
+                    self.first_click = True
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the area."))
+
+                    self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
+                    if self.app.grid_status():
+                        self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+                else:
+                    self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                    self.app.delete_selection_shape()
+
+                    x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+
+                    pt1 = (x0, y0)
+                    pt2 = (x1, y0)
+                    pt3 = (x1, y1)
+                    pt4 = (x0, y1)
+
+                    new_rectangle = Polygon([pt1, pt2, pt3, pt4])
+
+                    # {
+                    #     "obj_type":   string("excellon" or "geometry") < - self.obj_type
+                    #     "shape":      Shapely polygon
+                    #     "strategy":   string("over" or "around") < - self.strategy
+                    #     "overz":      float < - self.over_z
+                    # }
+                    new_el = {
+                        "obj_type":     self.obj_type,
+                        "shape":        new_rectangle,
+                        "strategy":     self.strategy,
+                        "overz":        self.over_z
+                    }
+                    self.exclusion_areas_storage.append(new_el)
+
+                    # add a temporary shape on canvas
+                    FlatCAMTool.draw_tool_selection_shape(
+                        self, old_coords=(x0, y0), coords=(x1, y1),
+                        color="#FF7400",
+                        face_color="#FF7400BF",
+                        shapes_storage=self.exclusion_shapes)
+
+                    self.first_click = False
+                    return
+            else:
+                self.points.append((x1, y1))
+
+                if len(self.points) > 1:
+                    self.poly_drawn = True
+                    self.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
+
+                return ""
+        elif event.button == right_button and self.mouse_is_dragging is False:
+
+            shape_type = self.shape_type
+
+            if shape_type == "square":
+                self.first_click = False
+            else:
+                # if we finish to add a polygon
+                if self.poly_drawn is True:
+                    try:
+                        # try to add the point where we last clicked if it is not already in the self.points
+                        last_pt = (x1, y1)
+                        if last_pt != self.points[-1]:
+                            self.points.append(last_pt)
+                    except IndexError:
+                        pass
+
+                    # we need to add a Polygon and a Polygon can be made only from at least 3 points
+                    if len(self.points) > 2:
+                        FlatCAMTool.delete_moving_selection_shape(self)
+                        pol = Polygon(self.points)
+                        # do not add invalid polygons even if they are drawn by utility geometry
+                        if pol.is_valid:
+                            # {
+                            #     "obj_type":   string("excellon" or "geometry") < - self.obj_type
+                            #     "shape":      Shapely polygon
+                            #     "strategy":   string("over" or "around") < - self.strategy
+                            #     "overz":      float < - self.over_z
+                            # }
+                            new_el = {
+                                "obj_type": self.obj_type,
+                                "shape": pol,
+                                "strategy": self.strategy,
+                                "overz": self.over_z
+                            }
+                            self.exclusion_areas_storage.append(new_el)
+                            FlatCAMTool.draw_selection_shape_polygon(
+                                self, points=self.points,
+                                color="#FF7400",
+                                face_color="#FF7400BF",
+                                shapes_storage=self.exclusion_shapes)
+                            self.app.inform.emit(
+                                _("Zone added. Click to start adding next zone or right click to finish."))
+
+                    self.points = []
+                    self.poly_drawn = False
+                    return
+
+            # FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                # self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+                # self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            self.app.call_source = 'app'
+
+            if len(self.exclusion_areas_storage) == 0:
+                return
+
+            self.app.inform.emit(
+                "[success] %s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
+
+            for el in self.exclusion_areas_storage:
+                if el["shape"].intersects(MultiPolygon(self.solid_geometry)):
+                    self.on_clear_area_click()
+                    self.app.inform.emit(
+                        "[ERROR_NOTCL] %s" % _("Failed. Exclusion areas intersects the object geometry ..."))
+                    return
+
+            self.app.inform.emit(
+                "[success] %s" % _("Exclusion areas added."))
+            self.cnc_button.setStyleSheet("""
+                                    QPushButton
+                                    {
+                                        font-weight: bold;
+                                        color: orange;
+                                    }
+                                    """)
+            self.cnc_button.setToolTip(
+                '%s %s' % (_("Generate the CNC Job object."), _("With Exclusion areas."))
+            )
+
+            for k in self.exclusion_areas_storage:
+                print(k)
+
+    def area_disconnect(self):
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+        self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                              self.app.on_mouse_click_over_plot)
+        self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                              self.app.on_mouse_move_over_plot)
+        self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                              self.app.on_mouse_click_release_over_plot)
+        self.points = []
+        self.poly_drawn = False
+        self.exclusion_areas_storage = []
+
+        FlatCAMTool.delete_moving_selection_shape(self)
+        # FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+        self.app.call_source = "app"
+        self.app.inform.emit("[WARNING_NOTCL] %s" % _("Cancelled. Area exclusion drawing was interrupted."))
+
+    # called on mouse move
+    def on_mouse_move(self, event):
+        shape_type = self.shape_type
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            # right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            # right_button = 3
+
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+
+        # detect mouse dragging motion
+        if event_is_dragging is True:
+            self.mouse_is_dragging = True
+        else:
+            self.mouse_is_dragging = False
+
+        # update the cursor position
+        if self.app.grid_status():
+            # Update cursor
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+
+            self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                         symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
+                                         size=self.app.defaults["global_cursor_size"])
+
+        # update the positions on status bar
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f" % (curr_pos[0], curr_pos[1]))
+        if self.cursor_pos is None:
+            self.cursor_pos = (0, 0)
+
+        self.app.dx = curr_pos[0] - float(self.cursor_pos[0])
+        self.app.dy = curr_pos[1] - float(self.cursor_pos[1])
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+
+        # draw the utility geometry
+        if shape_type == "square":
+            if self.first_click:
+                self.app.delete_selection_shape()
+                self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                     color="#FF7400",
+                                                     face_color="#FF7400BF",
+                                                     coords=(curr_pos[0], curr_pos[1]))
+        else:
+            FlatCAMTool.delete_moving_selection_shape(self)
+            FlatCAMTool.draw_moving_selection_shape_poly(
+                self, points=self.points,
+                color="#FF7400",
+                face_color="#FF7400BF",
+                data=(curr_pos[0], curr_pos[1]))
+
+    def on_clear_area_click(self):
+        self.clear_shapes()
+
+        # restore the default StyleSheet
+        self.cnc_button.setStyleSheet("")
+        # update the StyleSheet
+        self.cnc_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
+
+    def clear_shapes(self):
+        self.exclusion_areas_storage.clear()
+        FlatCAMTool.delete_moving_selection_shape(self)
+        self.app.delete_selection_shape()
+        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+
+class InvertHexColor:
+    """
+    Will invert a hex color made out of 3 chars or 6 chars
+    From here: http://code.activestate.com/recipes/527747-invert-css-hex-colors/
+    """
+    def __init__(self):
+        self.p6 = re.compile("#[0-9a-f]{6};", re.IGNORECASE)
+        self.p3 = re.compile("#[0-9a-f]{3};", re.IGNORECASE)
+
+    def modify(self, original_color=3):
+        code = {}
+        l1 = "#;0123456789abcdef"
+        l2 = "#;fedcba9876543210"
+
+        for i in range(len(l1)):
+            code[l1[i]] = l2[i]
+        inverted = ""
+
+        content = p6.sub(modify, content)
+        content = p3.sub(modify, content)
+        return inverted
+

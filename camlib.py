@@ -2671,8 +2671,11 @@ class CNCjob(Geometry):
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange))
-                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",") if self.xy_toolchange != '']
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if self.xy_toolchange and len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
@@ -2682,8 +2685,11 @@ class CNCjob(Geometry):
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
 
-        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end))
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+        if self.xy_end and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -3583,8 +3589,11 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else None
         self.z_end = float(endz) if endz is not None else None
 
-        self.xy_end = re.sub('[()\[\]]', '', str(endxy))
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if endxy != '']
+        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else None
+
+        if self.xy_end and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -3602,8 +3611,11 @@ class CNCjob(Geometry):
             if toolchangexy == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy))
-                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) if toolchangexy else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]  %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                                            "in the format (x, y) \n"
@@ -3970,9 +3982,12 @@ class CNCjob(Geometry):
         self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
         self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
 
-        self.xy_end = endxy if endxy != '' else self.app.defaults["geometry_endxy"]
-        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end))
-        self.xy_end = [float(eval(a)) for a in self.xy_end.split(",") if self.xy_end != '']
+        self.xy_end = endxy if endxy != '' and endxy else self.app.defaults["geometry_endxy"]
+        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+        if self.xy_end is not None and self.xy_end != '':
+            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
         if self.xy_end and len(self.xy_end) < 2:
             self.app.inform.emit('[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
                                                    "in the format (x, y) but now there is only one value, not two."))
@@ -3988,8 +4003,11 @@ class CNCjob(Geometry):
             if toolchangexy == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy))
-                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) if self.xy_toolchange else None
+
+                if self.xy_toolchange and self.xy_toolchange != '':
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit(
                         '[ERROR] %s' %
@@ -4875,97 +4893,30 @@ class CNCjob(Geometry):
                         if geo['kind'][0] == 'C':
                             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                           visible=visible, layer=1)
-                # current_x = gcode_parsed[0]['geom'].coords[0][0]
-                # current_y = gcode_parsed[0]['geom'].coords[0][1]
-                # old_pos = (
-                #     current_x,
-                #     current_y
-                # )
-                #
-                # for geo in gcode_parsed:
-                #     if geo['kind'][0] == 'T':
-                #         current_position = (
-                #             geo['geom'].coords[0][0] + old_pos[0],
-                #             geo['geom'].coords[0][1] + old_pos[1]
-                #         )
-                #         if current_position not in pos:
-                #             pos.append(current_position)
-                #             path_num += 1
-                #             text.append(str(path_num))
-                #
-                #         delta = (
-                #             geo['geom'].coords[-1][0] - geo['geom'].coords[0][0],
-                #             geo['geom'].coords[-1][1] - geo['geom'].coords[0][1]
-                #         )
-                #         current_position = (
-                #             current_position[0] + geo['geom'].coords[-1][0],
-                #             current_position[1] + geo['geom'].coords[-1][1]
-                #         )
-                #         if current_position not in pos:
-                #             pos.append(current_position)
-                #             path_num += 1
-                #             text.append(str(path_num))
-                #
-                #     # plot the geometry of Excellon objects
-                #     if self.origin_kind == 'excellon':
-                #         if isinstance(geo['geom'], Point):
-                #             # if geo is Point
-                #             current_position = (
-                #                 current_position[0] + geo['geom'].x,
-                #                 current_position[1] + geo['geom'].y
-                #             )
-                #             poly = Polygon(Point(current_position))
-                #         elif isinstance(geo['geom'], LineString):
-                #             # if the geos are travel lines (LineStrings)
-                #             new_line_pts = []
-                #             old_line_pos = deepcopy(current_position)
-                #             for p in list(geo['geom'].coords):
-                #                 current_position = (
-                #                     current_position[0] + p[0],
-                #                     current_position[1] + p[1]
-                #                 )
-                #                 new_line_pts.append(current_position)
-                #                 old_line_pos = p
-                #             new_line = LineString(new_line_pts)
-                #
-                #             poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                #             poly = poly.simplify(tool_tolerance)
-                #     else:
-                #         # plot the geometry of any objects other than Excellon
-                #         new_line_pts = []
-                #         old_line_pos = deepcopy(current_position)
-                #         for p in list(geo['geom'].coords):
-                #             current_position = (
-                #                 current_position[0] + p[0],
-                #                 current_position[1] + p[1]
-                #             )
-                #             new_line_pts.append(current_position)
-                #             old_line_pos = p
-                #         new_line = LineString(new_line_pts)
-                #
-                #         poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                #         poly = poly.simplify(tool_tolerance)
-                #
-                #     old_pos = deepcopy(current_position)
-                #
-                #     if kind == 'all':
-                #         obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                #                       visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
-                #     elif kind == 'travel':
-                #         if geo['kind'][0] == 'T':
-                #             obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
-                #                           visible=visible, layer=2)
-                #     elif kind == 'cut':
-                #         if geo['kind'][0] == 'C':
-                #             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
-                #                           visible=visible, layer=1)
 
             try:
-                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
-            except Exception:
-                pass
+                if self.app.defaults['global_theme'] == 'white':
+                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                       color=self.app.defaults["cncjob_annotation_fontcolor"])
+                else:
+                    # invert the color
+                    old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
+                    new_color = ''
+                    code = {}
+                    l1 = "#;0123456789abcdef"
+                    l2 = "#;fedcba9876543210"
+                    for i in range(len(l1)):
+                        code[l1[i]] = l2[i]
+
+                    for x in range(len(old_color)):
+                        new_color += code[old_color[x]]
+
+                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                       color=new_color)
+            except Exception as e:
+                log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
 
     def create_geometry(self):
         self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
