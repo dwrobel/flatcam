@@ -275,11 +275,18 @@ class ExclusionAreas:
                     }
                     self.exclusion_areas_storage.append(new_el)
 
+                    if self.obj_type == 'excellon':
+                        color = "#FF7400"
+                        face_color = "#FF7400BF"
+                    else:
+                        color = "#098a8f"
+                        face_color = "#098a8fBF"
+
                     # add a temporary shape on canvas
                     FlatCAMTool.draw_tool_selection_shape(
                         self, old_coords=(x0, y0), coords=(x1, y1),
-                        color="#FF7400",
-                        face_color="#FF7400BF",
+                        color=color,
+                        face_color=face_color,
                         shapes_storage=self.exclusion_shapes)
 
                     self.first_click = False
@@ -328,10 +335,18 @@ class ExclusionAreas:
                                 "overz": self.over_z
                             }
                             self.exclusion_areas_storage.append(new_el)
+
+                            if self.obj_type == 'excellon':
+                                color = "#FF7400"
+                                face_color = "#FF7400BF"
+                            else:
+                                color = "#098a8f"
+                                face_color = "#098a8fBF"
+
                             FlatCAMTool.draw_selection_shape_polygon(
                                 self, points=self.points,
-                                color="#FF7400",
-                                face_color="#FF7400BF",
+                                color=color,
+                                face_color=face_color,
                                 shapes_storage=self.exclusion_shapes)
                             self.app.inform.emit(
                                 _("Zone added. Click to start adding next zone or right click to finish."))
@@ -456,20 +471,28 @@ class ExclusionAreas:
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
+        if self.obj_type == 'excellon':
+            color = "#FF7400"
+            face_color = "#FF7400BF"
+        else:
+            color = "#098a8f"
+            face_color = "#098a8fBF"
+
         # draw the utility geometry
         if shape_type == "square":
             if self.first_click:
                 self.app.delete_selection_shape()
+
                 self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                     color="#FF7400",
-                                                     face_color="#FF7400BF",
+                                                     color=color,
+                                                     face_color=face_color,
                                                      coords=(curr_pos[0], curr_pos[1]))
         else:
             FlatCAMTool.delete_moving_selection_shape(self)
             FlatCAMTool.draw_moving_selection_shape_poly(
                 self, points=self.points,
-                color="#FF7400",
-                face_color="#FF7400BF",
+                color=color,
+                face_color=face_color,
                 data=(curr_pos[0], curr_pos[1]))
 
     def on_clear_area_click(self):
@@ -491,27 +514,3 @@ class ExclusionAreas:
         FlatCAMTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
-
-
-class InvertHexColor:
-    """
-    Will invert a hex color made out of 3 chars or 6 chars
-    From here: http://code.activestate.com/recipes/527747-invert-css-hex-colors/
-    """
-    def __init__(self):
-        self.p6 = re.compile("#[0-9a-f]{6};", re.IGNORECASE)
-        self.p3 = re.compile("#[0-9a-f]{3};", re.IGNORECASE)
-
-    def modify(self, original_color=3):
-        code = {}
-        l1 = "#;0123456789abcdef"
-        l2 = "#;fedcba9876543210"
-
-        for i in range(len(l1)):
-            code[l1[i]] = l2[i]
-        inverted = ""
-
-        content = p6.sub(modify, content)
-        content = p3.sub(modify, content)
-        return inverted
-

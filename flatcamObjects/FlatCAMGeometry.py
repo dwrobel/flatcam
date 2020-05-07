@@ -1674,15 +1674,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         The actual work is done by the target CNCJobObject object's
         `generate_from_geometry_2()` method.
 
-        :param tools_dict: a dictionary that holds the whole data needed to create the Gcode
-        (including the solid_geometry)
-
-        :param tools_in_use: the tools that are used, needed by some preprocessors
-        :type list of lists, each list in the list is made out of row elements of tools table from GUI
-
         :param outname:
-        :param tools_dict:
-        :param tools_in_use:
+        :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
+                                (including the solid_geometry)
+        :param tools_in_use:    the tools that are used, needed by some preprocessors
+        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
@@ -1726,7 +1722,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -1866,7 +1862,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -2040,7 +2036,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             use_thread=True,
             plot=True):
         """
-        Only used for TCL Command.
+        Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
         work is done by the target camlib.CNCjob
         `generate_from_geometry_2()` method.

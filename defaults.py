@@ -263,6 +263,10 @@ class FlatCAMDefaults:
         "excellon_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
         "excellon_gcode_type": "drills",
+        "excellon_area_exclusion": False,
+        "excellon_area_shape": "polygon",
+        "excellon_area_strategy": "over",
+        "excellon_area_overz": 1.0,
 
         # Excellon Advanced Options
         "excellon_offset": 0.0,

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.05.2020
+
+- added a fix so the app close is now clean, with exit code 0 as set
+- added the ability to add exclusion areas from the Excellon object too. Now there is a different in color to differentiate from which type of object the exclusion areas were added but they all serve the same purpose
+
 6.05.2020
 
 - wip in adding Exclusion areas in Geometry object; each Geometry object has now a storage for shapes (exclusion shapes, should I make them more general?)

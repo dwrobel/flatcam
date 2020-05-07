@@ -186,8 +186,7 @@ def restart_program(app, ask=None):
 
     # try to quit the Socket opened by ArgsThread class
     try:
-        app.new_launch.thread_exit = True
-        app.new_launch.listener.close()
+        app.new_launch.stop.emit()
     except Exception as err:
         log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
