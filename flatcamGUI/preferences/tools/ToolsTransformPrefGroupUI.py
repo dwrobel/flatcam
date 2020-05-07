@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, EvalEntry2
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCEntry
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -191,7 +191,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "The 'x' in (x, y) will be used when using Flip on X and\n"
               "the 'y' in (x, y) will be used when using Flip on Y and")
         )
-        self.flip_ref_entry = EvalEntry2("(0, 0)")
+        self.flip_ref_entry = FCEntry()
 
         grid0.addWidget(self.flip_ref_label, 14, 0, 1, 2)
         grid0.addWidget(self.flip_ref_entry, 15, 0, 1, 2)

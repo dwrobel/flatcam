@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, EvalEntry2
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCEntry
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -300,7 +300,7 @@ class ToolTransform(FlatCAMTool):
               "The 'x' in (x, y) will be used when using Flip on X and\n"
               "the 'y' in (x, y) will be used when using Flip on Y.")
         )
-        self.flip_ref_entry = EvalEntry2("(0, 0)")
+        self.flip_ref_entry = FCEntry()
         # self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.flip_ref_entry.setFixedWidth(70)
 
@@ -533,7 +533,7 @@ class ToolTransform(FlatCAMTool):
         if self.app.defaults["tools_transform_mirror_point"]:
             self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
         else:
-            self.flip_ref_entry.set_value((0, 0))
+            self.flip_ref_entry.set_value("0, 0")
 
         if self.app.defaults["tools_transform_buffer_dis"]:
             self.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])

@@ -280,7 +280,7 @@ class ExclusionAreas:
                         face_color = "#FF7400BF"
                     else:
                         color = "#098a8f"
-                        face_color = "#098a8fBF"
+                        face_color = "#FF7400BF"
 
                     # add a temporary shape on canvas
                     FlatCAMTool.draw_tool_selection_shape(
@@ -341,7 +341,7 @@ class ExclusionAreas:
                                 face_color = "#FF7400BF"
                             else:
                                 color = "#098a8f"
-                                face_color = "#098a8fBF"
+                                face_color = "#FF7400BF"
 
                             FlatCAMTool.draw_selection_shape_polygon(
                                 self, points=self.points,
@@ -476,7 +476,7 @@ class ExclusionAreas:
             face_color = "#FF7400BF"
         else:
             color = "#098a8f"
-            face_color = "#098a8fBF"
+            face_color = "#FF7400BF"
 
         # draw the utility geometry
         if shape_type == "square":
