@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - added a parameter to the FlatCAMDefaults class, whenever a value in the self.defaults dict change it will call a callback function and send to it the modified key
 - optimized and fixed some issues in the self.on_toggle_units() method
 - the Exclusion areas will have all the orange color but the color of the outline will differ according to the type of the object from where it was added (cosmetic use only as the Exclusion areas will be applied globally)
+- removed the Apply theme button in the Preferences; it is now replaced by the more general buttons (either Save or Apply)
+- added a confirmation/warning message when applying a new theme
 
 7.05.2020
 
