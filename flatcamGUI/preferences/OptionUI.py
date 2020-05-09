@@ -97,7 +97,7 @@ class TextAreaOptionUI(OptionUI):
         self.textarea_widget = self.build_textarea_widget()
 
     def build_label_widget(self):
-        label = QtWidgets.QLabel(_(self.label_text))
+        label = QtWidgets.QLabel("%s:" % _(self.label_text))
         label.setToolTip(_(self.label_tooltip))
         return label
 

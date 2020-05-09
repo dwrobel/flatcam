@@ -141,13 +141,6 @@ class PreferencesUIManager:
             "excellon_editor_slot_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
-
-            # CNC Job Advanced Options
-            "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
-            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
-            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
-
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
             "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
@@ -531,17 +524,6 @@ class PreferencesUIManager:
         self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
-
-
-
-
-        # Init the Annotation CNC Job color
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
-            self.defaults['cncjob_annotation_fontcolor'])
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
 
         # Init the Tool Film color
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
