@@ -6,25 +6,29 @@ from flatcamGUI.preferences.gerber.GerberAdvOptPrefGroupUI import GerberAdvOptPr
 from flatcamGUI.preferences.gerber.GerberOptPrefGroupUI import GerberOptPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberGenPrefGroupUI import GerberGenPrefGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class GerberPreferencesUI(PreferencesSectionUI):
 
     def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals)
-        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals)
-        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals)
-        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals)
-        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals)
         super().__init__(**kwargs)
 
     def build_groups(self) -> [OptionsGroupUI]:
         return [
-            self.gerber_gen_group,
-            self.gerber_opt_group,  # FIXME vertical layout with opt and ext
-            self.gerber_exp_group,
-            self.gerber_adv_opt_group,
-            self.gerber_editor_group
+            GerberGenPrefGroupUI(decimals=self.decimals),
+
+            GerberOptPrefGroupUI(decimals=self.decimals),  # FIXME vertical layout with opt and exp
+            GerberExpPrefGroupUI(decimals=self.decimals),
+
+            GerberAdvOptPrefGroupUI(decimals=self.decimals),
+            GerberEditorPrefGroupUI(decimals=self.decimals)
         ]
 
     def get_tab_id(self):
