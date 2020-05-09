@@ -142,21 +142,6 @@ class PreferencesUIManager:
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
 
-            # Geometry Options
-            "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
-            "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
-            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
-            "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             # Geometry Advanced Options
             "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
