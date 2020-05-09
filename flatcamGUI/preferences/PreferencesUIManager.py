@@ -142,11 +142,6 @@ class PreferencesUIManager:
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
 
-
-            # CNC Job Options
-            "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
-
             # CNC Job Advanced Options
             "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
             "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,

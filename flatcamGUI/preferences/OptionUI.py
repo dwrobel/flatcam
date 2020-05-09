@@ -1,8 +1,10 @@
 from typing import Union, Sequence, List
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
-    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry
+    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry, FCTextArea
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -67,11 +69,11 @@ class LineEntryOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
         return FCEntry()
 
+
 # Not sure why this is needed over DoubleSpinnerOptionUI
 class FloatEntryOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
         return FloatEntry()
-
 
 
 class RadioSetOptionUI(BasicOptionUI):
@@ -83,6 +85,44 @@ class RadioSetOptionUI(BasicOptionUI):
 
     def build_entry_widget(self) -> QtWidgets.QWidget:
         return RadioSet(choices=self.choices, orientation=self.orientation)
+
+
+class TextAreaOptionUI(OptionUI):
+
+    def __init__(self, option: str, label_text: str, label_tooltip: str):
+        super().__init__(option=option)
+        self.label_text = label_text
+        self.label_tooltip = label_tooltip
+        self.label_widget = self.build_label_widget()
+        self.textarea_widget = self.build_textarea_widget()
+
+    def build_label_widget(self):
+        label = QtWidgets.QLabel(_(self.label_text))
+        label.setToolTip(_(self.label_tooltip))
+        return label
+
+    def build_textarea_widget(self):
+        textarea = FCTextArea()
+        textarea.setPlaceholderText(_(self.label_tooltip))
+
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("textbox_font_size"):
+            tb_fsize = qsettings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+        textarea.setFont(font)
+
+        return textarea
+
+    def get_field(self):
+        return self.textarea_widget
+
+    def add_to_grid(self, grid: QtWidgets.QGridLayout, row: int) -> int:
+        grid.addWidget(self.label_widget, row, 0, 1, 3)
+        grid.addWidget(self.textarea_widget, row+1, 0, 1, 3)
+        return 2
 
 
 class CheckboxOptionUI(OptionUI):
