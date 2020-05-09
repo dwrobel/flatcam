@@ -10,7 +10,8 @@ CHANGELOG for FlatCAM beta
 9.05.2020
 
 - modified the GUI for Exclusion areas; now the shapes are displayed in a Table where they can be selected and deleted. Modification applied for Geometry Objects only (for now).
-- fixed and error when converting units, error that acted when in those fields that accept lists of tools only one tool was added
+- fixed an error when converting units, error that acted when in those fields that accept lists of tools only one tool was added
+- finished the GUI for exclusion areas both in the Excellon and Geometry Objects. Need to think if to make it visible only in Advanced Mode
 
 8.05.2020
 
