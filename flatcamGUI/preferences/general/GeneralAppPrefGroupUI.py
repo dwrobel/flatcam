@@ -49,7 +49,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI2):
                               "Whatever is selected here is set every time\n"
                               "FlatCAM is started.",
                 label_bold=True,
-                label_red=True,
+                label_color="red",
                 choices=[{'label': _('MM'), 'value': 'MM'},
                          {'label': _('IN'), 'value': 'IN'}]
             ),
@@ -94,7 +94,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI2):
                               "The choice here will influence the parameters in\n"
                               "the Selected Tab for all kinds of FlatCAM objects.",
                 label_bold=True,
-                label_red=True,
+                label_color="red",
                 choices=[{'label': _('Basic'),    'value': 'b'},
                          {'label': _('Advanced'), 'value': 'a'}]
             ),

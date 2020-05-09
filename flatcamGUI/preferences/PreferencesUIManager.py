@@ -141,11 +141,6 @@ class PreferencesUIManager:
             "excellon_editor_slot_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
-            # Geometry General
-            "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_plot_line": self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
 
             # Geometry Options
             "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
@@ -593,13 +588,6 @@ class PreferencesUIManager:
         self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
-        # Init Geometry Plot Colors
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry.set_value(
-            self.defaults['geometry_plot_line'])
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['geometry_plot_line'])[:7])
 
         # Init CNCJob Travel Line Colors
         self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry.set_value(

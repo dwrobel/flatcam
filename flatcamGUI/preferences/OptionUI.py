@@ -31,12 +31,12 @@ class OptionUI:
 
 class BasicOptionUI(OptionUI):
     """Abstract OptionUI that has a label on the left then some other widget on the right"""
-    def __init__(self, option: str, label_text: str, label_tooltip: Union[str, None] = None, label_bold: bool = False, label_red: bool = False):
+    def __init__(self, option: str, label_text: str, label_tooltip: Union[str, None] = None, label_bold: bool = False, label_color: Union[str, None] = None):
         super().__init__(option=option)
         self.label_text = label_text
         self.label_tooltip = label_tooltip
         self.label_bold = label_bold
-        self.label_red = label_red
+        self.label_color = label_color
         self.label_widget = self.build_label_widget()
         self.entry_widget = self.build_entry_widget()
 
@@ -44,8 +44,8 @@ class BasicOptionUI(OptionUI):
         fmt = "%s:"
         if self.label_bold:
             fmt = "<b>%s</b>" % fmt
-        if self.label_red:
-            fmt = "<span style=\"color:red;\">%s</span>" % fmt
+        if self.label_color:
+            fmt = "<span style=\"color:%s;\">%s</span>" % (self.label_color, fmt)
         label_widget = QtWidgets.QLabel(fmt % _(self.label_text))
         if self.label_tooltip is not None:
             label_widget.setToolTip(_(self.label_tooltip))

@@ -5,6 +5,13 @@ from flatcamGUI.preferences.geometry.GeometryAdvOptPrefGroupUI import GeometryAd
 from flatcamGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPrefGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class GeometryPreferencesUI(PreferencesSectionUI):
 
