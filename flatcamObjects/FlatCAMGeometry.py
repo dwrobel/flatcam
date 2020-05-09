@@ -159,6 +159,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_disconnect()
         FlatCAMObj.build_ui(self)
 
+        # Area Exception - exclusion shape added signal
+        # first disconnect it from any other object
+        try:
+            self.app.exc_areas.e_shape_modified.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        # then connect it to the current build_ui() method
+        self.app.exc_areas.e_shape_modified.connect(self.build_ui)
+
         self.units = self.app.defaults['units']
 
         tool_idx = 0
@@ -179,7 +188,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
 
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
-
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             offset_item = FCComboBox()
@@ -309,6 +317,58 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
+
+        # Build Exclusion Areas section
+        e_len = len(self.app.exc_areas.exclusion_areas_storage)
+        self.ui.exclusion_table.setRowCount(e_len)
+
+        area_id = 0
+
+        for area in range(e_len):
+            area_id += 1
+
+            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
+
+            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
+            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
+
+            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
+            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
+
+            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
+            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+
+            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
+            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+
+        self.ui.exclusion_table.resizeColumnsToContents()
+        self.ui.exclusion_table.resizeRowsToContents()
+
+        area_vheader = self.ui.exclusion_table.verticalHeader()
+        area_vheader.hide()
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        area_hheader = self.ui.exclusion_table.horizontalHeader()
+        area_hheader.setMinimumSectionSize(10)
+        area_hheader.setDefaultSectionSize(70)
+
+        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        area_hheader.resizeSection(0, 20)
+        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+
+        # area_hheader.setStretchLastSection(True)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exclusion_table.setColumnWidth(0, 20)
+
+        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
+        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -534,8 +594,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
 
+        # Exclusion areas
+        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.ui.exclusion_table.selectAll)
         self.ui.add_area_button.clicked.connect(self.on_add_area_click)
         self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
+        self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
 
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
@@ -1674,15 +1737,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         The actual work is done by the target CNCJobObject object's
         `generate_from_geometry_2()` method.
 
-        :param tools_dict: a dictionary that holds the whole data needed to create the Gcode
-        (including the solid_geometry)
-
-        :param tools_in_use: the tools that are used, needed by some preprocessors
-        :type list of lists, each list in the list is made out of row elements of tools table from GUI
-
         :param outname:
-        :param tools_dict:
-        :param tools_in_use:
+        :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
+                                (including the solid_geometry)
+        :param tools_in_use:    the tools that are used, needed by some preprocessors
+        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
@@ -1726,7 +1785,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -1866,7 +1925,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            # dia_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -2040,7 +2099,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             use_thread=True,
             plot=True):
         """
-        Only used for TCL Command.
+        Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
         work is done by the target camlib.CNCjob
         `generate_from_geometry_2()` method.
@@ -2467,6 +2526,20 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def on_clear_area_click(self):
         self.app.exc_areas.on_clear_area_click()
+        self.app.exc_areas.e_shape_modified.emit()
+
+    def on_delete_sel_areas(self):
+        sel_model = self.ui.exclusion_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # so the duplicate rows will not be added
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        self.app.exc_areas.delete_sel_shapes(idxs=list(sel_rows))
+        self.app.exc_areas.e_shape_modified.emit()
 
     def plot_element(self, element, color=None, visible=None):
 

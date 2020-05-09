@@ -10,6 +10,7 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 11/4/2019                                          #
 # ##########################################################
+from PyQt5 import QtCore
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -17,7 +18,6 @@ from flatcamGUI.VisPyVisuals import ShapeCollection
 from FlatCAMTool import FlatCAMTool
 
 import numpy as np
-import re
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -129,9 +129,13 @@ def color_variant(hex_color, bright_factor=1):
     return "#" + "".join([i for i in new_rgb])
 
 
-class ExclusionAreas:
+class ExclusionAreas(QtCore.QObject):
+
+    e_shape_modified = QtCore.pyqtSignal()
 
     def __init__(self, app):
+        super().__init__()
+
         self.app = app
 
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
@@ -275,11 +279,18 @@ class ExclusionAreas:
                     }
                     self.exclusion_areas_storage.append(new_el)
 
+                    if self.obj_type == 'excellon':
+                        color = "#FF7400"
+                        face_color = "#FF7400BF"
+                    else:
+                        color = "#098a8f"
+                        face_color = "#FF7400BF"
+
                     # add a temporary shape on canvas
                     FlatCAMTool.draw_tool_selection_shape(
                         self, old_coords=(x0, y0), coords=(x1, y1),
-                        color="#FF7400",
-                        face_color="#FF7400BF",
+                        color=color,
+                        face_color=face_color,
                         shapes_storage=self.exclusion_shapes)
 
                     self.first_click = False
@@ -328,10 +339,18 @@ class ExclusionAreas:
                                 "overz": self.over_z
                             }
                             self.exclusion_areas_storage.append(new_el)
+
+                            if self.obj_type == 'excellon':
+                                color = "#FF7400"
+                                face_color = "#FF7400BF"
+                            else:
+                                color = "#098a8f"
+                                face_color = "#FF7400BF"
+
                             FlatCAMTool.draw_selection_shape_polygon(
                                 self, points=self.points,
-                                color="#FF7400",
-                                face_color="#FF7400BF",
+                                color=color,
+                                face_color=face_color,
                                 shapes_storage=self.exclusion_shapes)
                             self.app.inform.emit(
                                 _("Zone added. Click to start adding next zone or right click to finish."))
@@ -386,6 +405,7 @@ class ExclusionAreas:
                 '%s %s' % (_("Generate the CNC Job object."), _("With Exclusion areas."))
             )
 
+            self.e_shape_modified.emit()
             for k in self.exclusion_areas_storage:
                 print(k)
 
@@ -456,20 +476,28 @@ class ExclusionAreas:
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
+        if self.obj_type == 'excellon':
+            color = "#FF7400"
+            face_color = "#FF7400BF"
+        else:
+            color = "#098a8f"
+            face_color = "#FF7400BF"
+
         # draw the utility geometry
         if shape_type == "square":
             if self.first_click:
                 self.app.delete_selection_shape()
+
                 self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                     color="#FF7400",
-                                                     face_color="#FF7400BF",
+                                                     color=color,
+                                                     face_color=face_color,
                                                      coords=(curr_pos[0], curr_pos[1]))
         else:
             FlatCAMTool.delete_moving_selection_shape(self)
             FlatCAMTool.draw_moving_selection_shape_poly(
                 self, points=self.points,
-                color="#FF7400",
-                face_color="#FF7400BF",
+                color=color,
+                face_color=face_color,
                 data=(curr_pos[0], curr_pos[1]))
 
     def on_clear_area_click(self):
@@ -491,27 +519,52 @@ class ExclusionAreas:
         FlatCAMTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
 
+    def delete_sel_shapes(self, idxs):
+        """
 
-class InvertHexColor:
-    """
-    Will invert a hex color made out of 3 chars or 6 chars
-    From here: http://code.activestate.com/recipes/527747-invert-css-hex-colors/
-    """
-    def __init__(self):
-        self.p6 = re.compile("#[0-9a-f]{6};", re.IGNORECASE)
-        self.p3 = re.compile("#[0-9a-f]{3};", re.IGNORECASE)
+        :param idxs: list of indexes in self.exclusion_areas_storage list to be deleted
+        :return:
+        """
 
-    def modify(self, original_color=3):
-        code = {}
-        l1 = "#;0123456789abcdef"
-        l2 = "#;fedcba9876543210"
+        # delete all plotted shapes
+        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
-        for i in range(len(l1)):
-            code[l1[i]] = l2[i]
-        inverted = ""
+        # delete shapes
+        for idx in sorted(idxs, reverse=True):
+            del self.exclusion_areas_storage[idx]
 
-        content = p6.sub(modify, content)
-        content = p3.sub(modify, content)
-        return inverted
+        # re-add what's left after deletion in first step
+        if self.obj_type == 'excellon':
+            color = "#FF7400"
+            face_color = "#FF7400BF"
+        else:
+            color = "#098a8f"
+            face_color = "#FF7400BF"
 
+        face_alpha = 0.3
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
+        for geo_el in self.exclusion_areas_storage:
+            if isinstance(geo_el['shape'], Polygon):
+                self.exclusion_shapes.add(
+                    geo_el['shape'], color=color, face_color=color_t, update=True, layer=0, tolerance=None)
+        if self.app.is_legacy is True:
+            self.exclusion_shapes.redraw()
+
+        if self.exclusion_areas_storage:
+            self.app.inform.emit('[success] %s' % _("Selected exclusion zones deleted."))
+        else:
+            # restore the default StyleSheet
+            self.cnc_button.setStyleSheet("")
+            # update the StyleSheet
+            self.cnc_button.setStyleSheet("""
+                                            QPushButton
+                                            {
+                                                font-weight: bold;
+                                            }
+                                            """)
+            self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
+
+            self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))

@@ -714,7 +714,40 @@ class PreferencesUIManager:
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
         self.defaults.current_defaults.update(self.defaults)
 
-        if save_to_file:
+        # deal with theme change
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        should_restart = False
+
+        val = self.get_form_field("global_theme").get_value()
+        if val != theme:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setText(_("Are you sure you want to continue?"))
+            msgbox.setWindowTitle(_("Application restart"))
+            msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
+
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
+
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
+
+            if response == bt_yes:
+                theme_settings.setValue('theme', val)
+
+                # This will write the setting to the platform specific storage.
+                del theme_settings
+
+                should_restart = True
+            else:
+                self.ui.general_defaults_form.general_gui_group.theme_radio.set_value(theme)
+
+        if save_to_file or should_restart is True:
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
             self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
@@ -751,6 +784,9 @@ class PreferencesUIManager:
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
                     self.ui.plot_tab_area.closeTab(idx)
                     break
+
+        if should_restart is True:
+            self.ui.app.on_app_restart()
 
     def on_pref_close_button(self):
         # Preferences saved, update flag

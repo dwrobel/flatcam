@@ -567,7 +567,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "ppname_g": self.ui.pp_geo_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
-            # "gcode_type": self.ui.excellon_gcode_type_radio
+            # "gcode_type": self.ui.excellon_gcode_type_radio,
+            "area_exclusion": self.ui.exclusion_cb,
+            "area_shape": self.ui.area_shape_radio,
+            "area_strategy": self.ui.strategy_radio,
+            "area_overz": self.ui.over_z_entry,
         })
 
         self.name2option = {
@@ -633,6 +637,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.generate_cnc_button.clicked.connect(self.on_create_cncjob_button_click)
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
+
+        self.ui.add_area_button.clicked.connect(self.on_add_area_click)
+        self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
 
         self.on_operation_type(val='drill')
         self.ui.operation_radio.activated_custom.connect(self.on_operation_type)
@@ -1466,6 +1473,21 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # if self.options['startz'] is not None:
         #     self.options['startz'] = float(self.options['startz']) * factor
         # self.options['endz'] = float(self.options['endz']) * factor
+
+    def on_add_area_click(self):
+        shape_button = self.ui.area_shape_radio
+        overz_button = self.ui.over_z_entry
+        strategy_radio = self.ui.strategy_radio
+        cnc_button = self.ui.generate_cnc_button
+        solid_geo = self.solid_geometry
+        obj_type = self.kind
+
+        self.app.exc_areas.on_add_area_click(
+            shape_button=shape_button, overz_button=overz_button, cnc_button=cnc_button, strategy_radio=strategy_radio,
+            solid_geo=solid_geo, obj_type=obj_type)
+
+    def on_clear_area_click(self):
+        self.app.exc_areas.on_clear_area_click()
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:

@@ -3599,14 +3599,13 @@ class App(QtCore.QObject):
 
         # try to quit the Socket opened by ArgsThread class
         try:
-            self.new_launch.thread_exit = True
-            self.new_launch.listener.close()
+            self.new_launch.stop.emit()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
-            self.th.terminate()
+            self.th.quit()
         except Exception as e:
             log.debug("App.quit_application() --> %s" % str(e))
 
@@ -3616,7 +3615,6 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         QtWidgets.qApp.quit()
-        # QtCore.QCoreApplication.exit()
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -3628,7 +3626,6 @@ class App(QtCore.QObject):
 
     @staticmethod
     def kill_app():
-        # QtCore.QCoreApplication.quit()
         QtWidgets.qApp.quit()
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -4248,10 +4245,10 @@ class App(QtCore.QObject):
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
-            self.log.debug("on_toggle_units(): Same as defaults, so ignoring.")
+            self.log.debug("on_toggle_units(): Same as previous, ignoring.")
             return
 
-        # Options to scale
+        # Keys in self.defaults for which to scale their values
         dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
                       "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "gerber_vtipdia",
                       "gerber_vcutz", "gerber_editor_newdim", "gerber_editor_ma_low",
@@ -4325,149 +4322,62 @@ class App(QtCore.QObject):
 
         def scale_defaults(sfactor):
             for dim in dimensions:
-
-                if dim == 'gerber_editor_newdim':
-                    if self.defaults["gerber_editor_newdim"] is None or self.defaults["gerber_editor_newdim"] == '':
-                        continue
-                    coordinates = self.defaults["gerber_editor_newdim"].split(",")
-                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    coords_xy[0] *= sfactor
-                    coords_xy[1] *= sfactor
-                    self.defaults['gerber_editor_newdim'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
-                                                                            self.decimals, coords_xy[1])
-                if dim == 'excellon_toolchangexy':
-                    if self.defaults["excellon_toolchangexy"] is None or self.defaults["excellon_toolchangexy"] == '':
-                        continue
-                    coordinates = self.defaults["excellon_toolchangexy"].split(",")
-                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    coords_xy[0] *= sfactor
-                    coords_xy[1] *= sfactor
-                    self.defaults['excellon_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
-                                                                             self.decimals, coords_xy[1])
-                elif dim == 'geometry_toolchangexy':
-                    if self.defaults["geometry_toolchangexy"] is None or self.defaults["geometry_toolchangexy"] == '':
-                        continue
-                    coordinates = self.defaults["geometry_toolchangexy"].split(",")
-                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    coords_xy[0] *= sfactor
-                    coords_xy[1] *= sfactor
-                    self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
-                                                                             self.decimals, coords_xy[1])
-                elif dim == 'excellon_endxy':
-                    if self.defaults["excellon_endxy"] is None or self.defaults["excellon_endxy"] == '':
+                if dim in [
+                    'gerber_editor_newdim', 'excellon_toolchangexy', 'geometry_toolchangexy', 'excellon_endxy',
+                    'geometry_endxy', 'tools_solderpaste_xy_toolchange', 'tools_cal_toolchange_xy',
+                    'tools_transform_mirror_point'
+                ]:
+                    if self.defaults[dim] is None or self.defaults[dim] == '':
                         continue
 
-                    coordinates = self.defaults["excellon_endxy"].split(",")
-                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    end_coords_xy[0] *= sfactor
-                    end_coords_xy[1] *= sfactor
-                    self.defaults['excellon_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
-                                                                      self.decimals, end_coords_xy[1])
-                elif dim == 'geometry_endxy':
-                    if self.defaults["geometry_endxy"] is None or self.defaults["geometry_endxy"] == '':
-                        continue
-                    coordinates = self.defaults["geometry_endxy"].split(",")
-                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    end_coords_xy[0] *= sfactor
-                    end_coords_xy[1] *= sfactor
-                    self.defaults['geometry_endxy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
-                                                                      self.decimals, end_coords_xy[1])
+                    try:
+                        coordinates = self.defaults[dim].split(",")
+                        coords_xy = [float(eval(a)) for a in coordinates if a != '']
+                        coords_xy[0] *= sfactor
+                        coords_xy[1] *= sfactor
+                        self.defaults[dim] = "%.*f, %.*f" % (
+                            self.decimals, coords_xy[0], self.decimals, coords_xy[1])
+                    except Exception as e:
+                        log.debug("App.on_toggle_units.scale_defaults() --> 'string tuples': %s" % str(e))
 
-                elif dim == 'geometry_cnctooldia':
-                    if self.defaults["geometry_cnctooldia"] is None or self.defaults["geometry_cnctooldia"] == '':
+                elif dim in [
+                    'geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools'
+                ]:
+                    if self.defaults[dim] is None or self.defaults[dim] == '':
                         continue
-                    if type(self.defaults["geometry_cnctooldia"]) is float:
-                        tools_diameters = [self.defaults["geometry_cnctooldia"]]
-                    else:
+
+                    try:
+                        self.defaults[dim] = float(self.defaults[dim])
+                        tools_diameters = [self.defaults[dim]]
+                    except ValueError:
                         try:
-                            tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                            tools_string = self.defaults[dim].split(",")
                             tools_diameters = [eval(a) for a in tools_string if a != '']
                         except Exception as e:
                             log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
                             continue
 
-                    self.defaults['geometry_cnctooldia'] = ''
-                    for t in range(len(tools_diameters)):
-                        tools_diameters[t] *= sfactor
-                        self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
-                elif dim == 'tools_ncctools':
-                    if self.defaults["tools_ncctools"] is None or self.defaults["tools_ncctools"] == '':
-                        continue
-                    if type(self.defaults["tools_ncctools"]) == float:
-                        ncctools = [self.defaults["tools_ncctools"]]
+                    self.defaults[dim] = ''
+                    td_len = len(tools_diameters)
+                    if td_len > 1:
+                        for t in range(td_len):
+                            tools_diameters[t] *= sfactor
+                            self.defaults[dim] += "%.*f," % (self.decimals, tools_diameters[t])
                     else:
-                        try:
-                            tools_string = self.defaults["tools_ncctools"].split(",")
-                            ncctools = [eval(a) for a in tools_string if a != '']
-                        except Exception as e:
-                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
-                            continue
+                        tools_diameters[0] *= sfactor
+                        self.defaults[dim] += "%.*f" % (self.decimals, tools_diameters[0])
 
-                    self.defaults['tools_ncctools'] = ''
-                    for t in range(len(ncctools)):
-                        ncctools[t] *= sfactor
-                        self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
-                elif dim == 'tools_solderpaste_tools':
-                    if self.defaults["tools_solderpaste_tools"] is None or \
-                            self.defaults["tools_solderpaste_tools"] == '':
-                        continue
-                    if type(self.defaults["tools_solderpaste_tools"]) == float:
-                        sptools = [self.defaults["tools_solderpaste_tools"]]
-                    else:
-                        try:
-                            tools_string = self.defaults["tools_solderpaste_tools"].split(",")
-                            sptools = [eval(a) for a in tools_string if a != '']
-                        except Exception as e:
-                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
-                            continue
-
-                    self.defaults['tools_solderpaste_tools'] = ""
-                    for t in range(len(sptools)):
-                        sptools[t] *= sfactor
-                        self.defaults['tools_solderpaste_tools'] += "%.*f," % (self.decimals, sptools[t])
-                elif dim == 'tools_solderpaste_xy_toolchange':
-                    if self.defaults["tools_solderpaste_xy_toolchange"] is None or \
-                            self.defaults["tools_solderpaste_xy_toolchange"] == '':
-                        continue
+                elif dim in ['global_gridx', 'global_gridy']:
+                    # format the number of decimals to the one specified in self.decimals
                     try:
-                        coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
-                        sp_coords = [float(eval(a)) for a in coordinates if a != '']
-                        sp_coords[0] *= sfactor
-                        sp_coords[1] *= sfactor
-                        self.defaults['tools_solderpaste_xy_toolchange'] = "%.*f, %.*f" % (self.decimals, sp_coords[0],
-                                                                                           self.decimals, sp_coords[1])
+                        val = float(self.defaults[dim]) * sfactor
                     except Exception as e:
-                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                        log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
                         continue
-                elif dim == 'tools_cal_toolchange_xy':
-                    if self.defaults["tools_cal_toolchange_xy"] is None or \
-                            self.defaults["tools_cal_toolchange_xy"] == '':
-                        continue
-                    coordinates = self.defaults["tools_cal_toolchange_xy"].split(",")
-                    end_coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                    end_coords_xy[0] *= sfactor
-                    end_coords_xy[1] *= sfactor
-                    self.defaults['tools_cal_toolchange_xy'] = "%.*f, %.*f" % (self.decimals, end_coords_xy[0],
-                                                                               self.decimals, end_coords_xy[1])
 
-                elif dim == 'global_gridx' or dim == 'global_gridy':
-                    if new_units == 'IN':
-                        try:
-                            val = float(self.defaults[dim]) * sfactor
-                        except Exception as e:
-                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
-                            continue
-
-                        self.defaults[dim] = float('%.*f' % (self.decimals, val))
-                    else:
-                        try:
-                            val = float(self.defaults[dim]) * sfactor
-                        except Exception as e:
-                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
-                            continue
-
-                        self.defaults[dim] = float('%.*f' % (self.decimals, val))
+                    self.defaults[dim] = float('%.*f' % (self.decimals, val))
                 else:
+                    # the number of decimals for the rest is kept unchanged
                     if self.defaults[dim]:
                         try:
                             val = float(self.defaults[dim]) * sfactor
@@ -4530,10 +4440,11 @@ class App(QtCore.QObject):
 
             # replot all objects
             self.plot_all()
+
             # set the status labels to reflect the current FlatCAM units
             self.set_screen_units(new_units)
 
-            # signal to the app that we changed the object properties and it shoud save the project
+            # signal to the app that we changed the object properties and it should save the project
             self.should_we_save = True
 
             self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
@@ -10890,6 +10801,7 @@ class App(QtCore.QObject):
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)
     start = pyqtSignal()
+    stop = pyqtSignal()
 
     if sys.platform == 'win32':
         address = (r'\\.\pipe\NPtest', 'AF_PIPE')
@@ -10902,6 +10814,7 @@ class ArgsThread(QtCore.QObject):
         self.thread_exit = False
 
         self.start.connect(self.run)
+        self.stop.connect(self.close_listener)
 
     def my_loop(self, address):
         try:
@@ -10944,5 +10857,10 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
+
+    @pyqtSlot()
+    def close_listener(self):
+        self.thread_exit = True
+        self.listener.close()
 
 # end of file

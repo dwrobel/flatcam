@@ -25,8 +25,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
         self.layout_field.activated.connect(self.on_layout)
 
         self.theme_field = self.option_dict()["global_theme"].get_field()
-        self.theme_apply_button = self.option_dict()["__button_apply_theme"].get_field()
-        self.theme_apply_button.clicked.connect(self.on_theme_change)
 
         self.style_field = self.option_dict()["style"].get_field()
         current_style_index = self.style_field.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
@@ -57,13 +55,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                 option="global_gray_icons",
                 label_text="Use Gray Icons",
                 label_tooltip="Check this box to use a set of icons with\na lighter (gray) color. To be used when a\nfull dark theme is applied."
-            ),
-            FullWidthButtonOptionUI(
-                option="__button_apply_theme",
-                label_text="Apply Theme",
-                label_tooltip="Select a theme for FlatCAM.\n"
-                              "It will theme the plot area.\n"
-                              "The application will restart after change."
             ),
             SeparatorOptionUI(),
 
@@ -180,24 +171,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI2):
                               "to show whenever a new object is created."
             ),
         ]
-
-    def on_theme_change(self):
-        # FIXME: this should be moved out to a view model
-        val = self.theme_field.get_value()
-
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
-        else:
-            theme = 'white'
-
-        if val != theme:
-            theme_settings.setValue("theme", val)
-
-            # This will write the setting to the platform specific storage.
-            del theme_settings
-
-            self.app.on_app_restart()
 
     def on_layout(self, index=None, lay=None):
         if lay:

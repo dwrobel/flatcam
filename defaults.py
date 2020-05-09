@@ -263,6 +263,10 @@ class FlatCAMDefaults:
         "excellon_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
         "excellon_gcode_type": "drills",
+        "excellon_area_exclusion": False,
+        "excellon_area_shape": "polygon",
+        "excellon_area_strategy": "over",
+        "excellon_area_overz": 1.0,
 
         # Excellon Advanced Options
         "excellon_offset": 0.0,
@@ -491,7 +495,7 @@ class FlatCAMDefaults:
         "tools_transform_offset_x": 0.0,
         "tools_transform_offset_y": 0.0,
         "tools_transform_mirror_reference": False,
-        "tools_transform_mirror_point": (0, 0),
+        "tools_transform_mirror_point": "0.0, 0.0",
         "tools_transform_buffer_dis": 0.0,
         "tools_transform_buffer_factor": 100.0,
         "tools_transform_buffer_corner": True,
@@ -693,12 +697,18 @@ class FlatCAMDefaults:
         except Exception as e:
             log.error("save_factory_defaults() -> %s" % str(e))
 
-    def __init__(self):
+    def __init__(self, callback=lambda x: None):
+        """
+
+        :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
+        """
         self.defaults = LoudDict()
         self.defaults.update(self.factory_defaults)
         self.current_defaults = {}  # copy used for restoring after cancelled prefs changes
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
+
+        self.defaults.set_change_callback(callback)
 
     # #### Pass-through to the defaults LoudDict #####
     def __len__(self):

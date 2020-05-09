@@ -933,7 +933,7 @@ class TransformEditorTool(FlatCAMTool):
               "the 'y' in (x, y) will be used when using Flip on Y.")
         )
         self.flip_ref_label.setFixedWidth(50)
-        self.flip_ref_entry = FCEntry("(0, 0)")
+        self.flip_ref_entry = FCEntry("0, 0")
 
         self.flip_ref_button = FCButton()
         self.flip_ref_button.set_value(_("Add"))
@@ -1048,7 +1048,7 @@ class TransformEditorTool(FlatCAMTool):
         if self.app.defaults["tools_transform_mirror_point"]:
             self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
         else:
-            self.flip_ref_entry.set_value((0, 0))
+            self.flip_ref_entry.set_value("0, 0")
 
     def template(self):
         if not self.draw_app.selected:
