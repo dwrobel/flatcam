@@ -17,18 +17,16 @@ class GeometryPreferencesUI(PreferencesSectionUI):
 
     def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-        self.geometry_gen_group = GeometryGenPrefGroupUI(decimals=self.decimals)
+        # FIXME: remove the need for external access to geometry_opt_group
         self.geometry_opt_group = GeometryOptPrefGroupUI(decimals=self.decimals)
-        self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI(decimals=self.decimals)
-        self.geometry_editor_group = GeometryEditorPrefGroupUI(decimals=self.decimals)
         super().__init__(**kwargs)
 
     def build_groups(self) -> [OptionsGroupUI]:
         return [
-            self.geometry_gen_group,
+            GeometryGenPrefGroupUI(decimals=self.decimals),
             self.geometry_opt_group,
-            self.geometry_adv_opt_group,
-            self.geometry_editor_group
+            GeometryAdvOptPrefGroupUI(decimals=self.decimals),
+            GeometryEditorPrefGroupUI(decimals=self.decimals)
         ]
 
     def get_tab_id(self):
