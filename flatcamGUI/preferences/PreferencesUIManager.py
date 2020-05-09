@@ -142,24 +142,6 @@ class PreferencesUIManager:
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
 
-
-            # Geometry Advanced Options
-            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
-            "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
-            "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
-            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
-            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
-            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
-            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
-            "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
-            "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
-            "geometry_area_exclusion": self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
-            "geometry_area_shape": self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
-            "geometry_area_strategy": self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
-            "geometry_area_overz": self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
-
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,

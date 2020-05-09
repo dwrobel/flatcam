@@ -2,7 +2,7 @@ from typing import Union, Sequence, List
 
 from PyQt5 import QtWidgets
 from flatcamGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner, FCColorEntry, \
-    FCSliderWithSpinner, FCDoubleSpinner
+    FCSliderWithSpinner, FCDoubleSpinner, FloatEntry
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -64,11 +64,14 @@ class BasicOptionUI(OptionUI):
 
 
 class LineEntryOptionUI(BasicOptionUI):
-    def __init__(self, option: str, label_text: str, **kwargs):
-        super().__init__(option=option, label_text=label_text, **kwargs)
-
     def build_entry_widget(self) -> QtWidgets.QWidget:
         return FCEntry()
+
+# Not sure why this is needed over DoubleSpinnerOptionUI
+class FloatEntryOptionUI(BasicOptionUI):
+    def build_entry_widget(self) -> QtWidgets.QWidget:
+        return FloatEntry()
+
 
 
 class RadioSetOptionUI(BasicOptionUI):

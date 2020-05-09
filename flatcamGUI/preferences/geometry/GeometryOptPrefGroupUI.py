@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import QSettings
 
 from flatcamGUI.GUIElements import OptionalInputSection
 from flatcamGUI.preferences import machinist_setting
