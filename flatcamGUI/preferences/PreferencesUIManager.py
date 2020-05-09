@@ -175,10 +175,6 @@ class PreferencesUIManager:
             "geometry_area_strategy": self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
             "geometry_area_overz": self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
 
-            # Geometry Editor
-            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
-            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
-
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
