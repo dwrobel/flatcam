@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.05.2020
+
+- modified the GUI for Exclusion areas; now the shapes are displayed in a Table where they can be selected and deleted. Modification applied for Geometry Objects only (for now).
+- fixed and error when converting units, error that acted when in those fields that accept lists of tools only one tool was added
+
 8.05.2020
 
 - added a parameter to the FlatCAMDefaults class, whenever a value in the self.defaults dict change it will call a callback function and send to it the modified key

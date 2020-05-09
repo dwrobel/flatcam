@@ -4328,12 +4328,14 @@ class App(QtCore.QObject):
                 ]:
                     if self.defaults[dim] is None or self.defaults[dim] == '':
                         continue
+
                     try:
                         coordinates = self.defaults[dim].split(",")
                         coords_xy = [float(eval(a)) for a in coordinates if a != '']
                         coords_xy[0] *= sfactor
                         coords_xy[1] *= sfactor
-                        self.defaults[dim] = "%.*f, %.*f" % (self.decimals, coords_xy[0], self.decimals, coords_xy[1])
+                        self.defaults[dim] = "%.*f, %.*f" % (
+                            self.decimals, coords_xy[0], self.decimals, coords_xy[1])
                     except Exception as e:
                         log.debug("App.on_toggle_units.scale_defaults() --> 'string tuples': %s" % str(e))
 
@@ -4343,9 +4345,10 @@ class App(QtCore.QObject):
                     if self.defaults[dim] is None or self.defaults[dim] == '':
                         continue
 
-                    if isinstance(self.defaults[dim], float):
+                    try:
+                        self.defaults[dim] = float(self.defaults[dim])
                         tools_diameters = [self.defaults[dim]]
-                    else:
+                    except ValueError:
                         try:
                             tools_string = self.defaults[dim].split(",")
                             tools_diameters = [eval(a) for a in tools_string if a != '']
@@ -4354,9 +4357,14 @@ class App(QtCore.QObject):
                             continue
 
                     self.defaults[dim] = ''
-                    for t in range(len(tools_diameters)):
-                        tools_diameters[t] *= sfactor
-                        self.defaults[dim] += "%.*f," % (self.decimals, tools_diameters[t])
+                    td_len = len(tools_diameters)
+                    if td_len > 1:
+                        for t in range(td_len):
+                            tools_diameters[t] *= sfactor
+                            self.defaults[dim] += "%.*f," % (self.decimals, tools_diameters[t])
+                    else:
+                        tools_diameters[0] *= sfactor
+                        self.defaults[dim] += "%.*f" % (self.decimals, tools_diameters[0])
 
                 elif dim in ['global_gridx', 'global_gridy']:
                     # format the number of decimals to the one specified in self.decimals
