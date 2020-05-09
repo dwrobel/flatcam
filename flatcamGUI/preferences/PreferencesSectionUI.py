@@ -1,7 +1,7 @@
 from typing import Dict
+from PyQt5 import QtWidgets, QtCore
 
-from PyQt5 import QtWidgets
-
+from flatcamGUI.ColumnarFlowLayout import ColumnarFlowLayout
 from flatcamGUI.preferences.OptionUI import OptionUI
 from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -10,8 +10,7 @@ class PreferencesSectionUI(QtWidgets.QWidget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.layout = QtWidgets.QHBoxLayout()
+        self.layout = ColumnarFlowLayout() #QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
         self.groups = self.build_groups()
@@ -19,7 +18,6 @@ class PreferencesSectionUI(QtWidgets.QWidget):
             group.setMinimumWidth(250)
             self.layout.addWidget(group)
 
-        self.layout.addStretch()
 
     def build_groups(self) -> [OptionsGroupUI]:
         return []
@@ -34,6 +32,7 @@ class PreferencesSectionUI(QtWidgets.QWidget):
     def build_tab(self):
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(self)
+        scroll_area.setWidgetResizable(True)
         return scroll_area
 
     def get_tab_id(self) -> str:
