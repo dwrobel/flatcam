@@ -186,11 +186,9 @@ class FlatCAMObj(QtCore.QObject):
 
     def build_ui(self):
         """
-        Sets up the UI/form for this object. Show the UI
-        in the App.
+        Sets up the UI/form for this object. Show the UI in the App.
 
         :return: None
-        :rtype: None
         """
 
         self.muted_ui = True
