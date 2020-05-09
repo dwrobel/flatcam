@@ -63,6 +63,14 @@ class BasicOptionUI(OptionUI):
         return self.entry_widget
 
 
+class LineEntryOptionUI(BasicOptionUI):
+    def __init__(self, option: str, label_text: str, **kwargs):
+        super().__init__(option=option, label_text=label_text, **kwargs)
+
+    def build_entry_widget(self) -> QtWidgets.QWidget:
+        return FCEntry()
+
+
 class RadioSetOptionUI(BasicOptionUI):
 
     def __init__(self, option: str, label_text: str, choices: list, orientation='horizontal', **kwargs):
@@ -125,6 +133,7 @@ class SliderWithSpinnerOptionUI(BasicOptionUI):
     def build_entry_widget(self) -> QtWidgets.QWidget:
         entry = FCSliderWithSpinner(min=self.min_value, max=self.max_value, step=self.step)
         return entry
+
 
 class ColorAlphaSliderOptionUI(SliderWithSpinnerOptionUI):
     def __init__(self, applies_to: List[str], group, label_text: str, **kwargs):
