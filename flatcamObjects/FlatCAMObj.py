@@ -308,8 +308,8 @@ class FlatCAMObj(QtCore.QObject):
         for option in self.options:
             try:
                 self.set_form_item(option)
-            except Exception:
-                self.app.log.warning("Unexpected error:", sys.exc_info())
+            except Exception as err:
+                self.app.log.warning("Unexpected error: %s" % str(sys.exc_info()), str(err))
 
     def read_form(self):
         """
@@ -323,7 +323,7 @@ class FlatCAMObj(QtCore.QObject):
             try:
                 self.read_form_item(option)
             except Exception:
-                self.app.log.warning("Unexpected error:", sys.exc_info())
+                self.app.log.warning("Unexpected error: %s" % str(sys.exc_info()))
 
     def set_form_item(self, option):
         """
