@@ -50,19 +50,8 @@ class PreferencesUIManager:
         self.defaults_form_fields = {
 
             # Gerber Advanced Options
-            "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
             # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
             # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
-            "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
-            "gerber_tool_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.tool_type_radio,
-            "gerber_vtipdia": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipdia_spinner,
-            "gerber_vtipangle": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipangle_spinner,
-            "gerber_vcutz": self.ui.gerber_defaults_form.gerber_adv_opt_group.cutz_spinner,
-            "gerber_iso_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.iso_type_radio,
-
-            "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
-            "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
-            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
 
 
             # Gerber Editor
