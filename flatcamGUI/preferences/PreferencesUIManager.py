@@ -60,14 +60,6 @@ class PreferencesUIManager:
             "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
             "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
 
-            # Excellon Export
-            "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
-            "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
-            "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
-            "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
-            "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
-            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
-
             # Excellon Editor
             "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
             "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,

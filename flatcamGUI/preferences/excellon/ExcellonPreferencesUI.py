@@ -18,24 +18,21 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
 
     def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-        self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals)
 
         # FIXME: remove the need for external access to excellon_opt_group
         self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
 
-        self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)
         self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
         self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
 
         super().__init__(**kwargs)
         self.init_sync_export()
 
-
     def build_groups(self) -> [OptionsGroupUI]:
         return [
-            self.excellon_gen_group,
+            ExcellonGenPrefGroupUI(decimals=self.decimals),
             self.excellon_opt_group,
-            self.excellon_exp_group,
+            ExcellonExpPrefGroupUI(decimals=self.decimals),
             self.excellon_adv_opt_group,
             self.excellon_editor_group
         ]
@@ -60,13 +57,19 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
             # User has disabled sync.
             return
 
-        self.excellon_exp_group.zeros_radio.set_value(self.option_dict()["excellon_zeros"].get_field().get_value() + 'Z')
-        self.excellon_exp_group.excellon_units_radio.set_value(self.option_dict()["excellon_units"].get_field().get_value())
-        if self.option_dict()["excellon_units"].get_field().get_value().upper() == 'METRIC':
-            self.excellon_exp_group.format_whole_entry.set_value(self.option_dict()["excellon_format_upper_mm"].get_field().get_value())
-            self.excellon_exp_group.format_dec_entry.set_value(self.option_dict()["excellon_format_lower_mm"].get_field().get_value())
+        zeros = self.option_dict()["excellon_zeros"].get_field().get_value() + 'Z'
+        self.option_dict()["excellon_exp_zeros"].get_field().set_value(zeros)
+
+        units = self.option_dict()["excellon_units"].get_field().get_value()
+        self.option_dict()["excellon_exp_units"].get_field().set_value(units)
+
+        if units.upper() == 'METRIC':
+            whole = self.option_dict()["excellon_format_upper_mm"].get_field().get_value()
+            dec = self.option_dict()["excellon_format_lower_mm"].get_field().get_value()
         else:
-            self.excellon_exp_group.format_whole_entry.set_value(self.option_dict()["excellon_format_upper_in"].get_field().get_value())
-            self.excellon_exp_group.format_dec_entry.set_value(self.option_dict()["excellon_format_lower_in"].get_field().get_value())
+            whole = self.option_dict()["excellon_format_upper_in"].get_field().get_value()
+            dec = self.option_dict()["excellon_format_lower_in"].get_field().get_value()
+        self.option_dict()["excellon_exp_integer"].get_field().set_value(whole)
+        self.option_dict()["excellon_exp_decimals"].get_field().set_value(dec)
 
 
