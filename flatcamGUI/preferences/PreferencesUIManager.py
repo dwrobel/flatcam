@@ -49,37 +49,6 @@ class PreferencesUIManager:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
 
-
-            # Excellon Editor
-            "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
-            "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
-            "excellon_editor_array_size": self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
-            "excellon_editor_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
-            "excellon_editor_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
-            "excellon_editor_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
-            "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
-            "excellon_editor_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
-            # Excellon Slots
-            "excellon_editor_slot_direction":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
-            "excellon_editor_slot_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
-            "excellon_editor_slot_length":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
-            # Excellon Slots
-            "excellon_editor_slot_array_size":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
-            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
-            "excellon_editor_slot_lin_pitch":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
-            "excellon_editor_slot_lin_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
-            "excellon_editor_slot_circ_dir":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
-            "excellon_editor_slot_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
-
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
             "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,

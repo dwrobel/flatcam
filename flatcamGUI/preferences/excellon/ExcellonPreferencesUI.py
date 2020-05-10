@@ -20,7 +20,6 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
         self.decimals = decimals
         # FIXME: remove the need for external access to excellon_opt_group
         self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
-        self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
         super().__init__(**kwargs)
         self.init_sync_export()
 
@@ -30,7 +29,7 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
             self.excellon_opt_group,
             ExcellonExpPrefGroupUI(decimals=self.decimals),
             ExcellonAdvOptPrefGroupUI(decimals=self.decimals),
-            self.excellon_editor_group
+            ExcellonEditorPrefGroupUI(decimals=self.decimals)
         ]
 
     def get_tab_id(self):
