@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-05-03 16:11+0300\n"
+"POT-Creation-Date: 2020-05-03 15:58+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: build\n"
@@ -1196,7 +1196,7 @@ msgstr "Импортирование SVG"
 
 #: FlatCAMApp.py:9290 FlatCAMApp.py:9336
 msgid "Import failed."
-msgstr "Не удалось импортировать"
+msgstr "Не удалось импортировать."
 
 #: FlatCAMApp.py:9297 FlatCAMApp.py:9343 FlatCAMApp.py:9407 FlatCAMApp.py:9474
 #: FlatCAMApp.py:9540 FlatCAMApp.py:9605 FlatCAMApp.py:9662
@@ -2635,6 +2635,19 @@ msgstr "Вы уверены, что хотите изменить текущий
 #: FlatCAMTranslation.py:107
 msgid "Apply Language ..."
 msgstr "Применить язык ..."
+
+#: assets/linux/flatcam-beta.desktop:3
+#| msgid "FlatCAM Object"
+msgid "FlatCAM Beta"
+msgstr "FlatCAM Beta"
+
+#: assets/linux/flatcam-beta.desktop:7
+msgid "./assets/icon.png"
+msgstr ""
+
+#: assets/linux/flatcam-beta.desktop:8
+msgid "G-Code from GERBERS"
+msgstr "G-Code из GERBERS"
 
 #: camlib.py:597
 msgid "self.solid_geometry is neither BaseGeometry or list."
@@ -8501,7 +8514,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:2028
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:201
 msgid "Exclusion areas"
-msgstr ""
+msgstr "Зоны исключения"
 
 #: flatcamGUI/ObjectUI.py:2031
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:204
@@ -8510,28 +8523,25 @@ msgid ""
 "In those areas the travel of the tools\n"
 "is forbidden."
 msgstr ""
+"Включает зоны исключения.\n"
+"В этих областях движение инструмента\n"
+"запрещено."
 
 #: flatcamGUI/ObjectUI.py:2053
-#, fuzzy
-#| msgid "Add Track"
 msgid "Add area"
-msgstr "Добавить маршрут"
+msgstr "Добавить область"
 
 #: flatcamGUI/ObjectUI.py:2054
 msgid "Add an Exclusion Area."
-msgstr ""
+msgstr "Добавить зону исключения."
 
 #: flatcamGUI/ObjectUI.py:2058
-#, fuzzy
-#| msgid "Clearance"
 msgid "Clear areas"
-msgstr "Зазор"
+msgstr "Очистить участки"
 
 #: flatcamGUI/ObjectUI.py:2059
-#, fuzzy
-#| msgid "Delete all extensions from the list."
 msgid "Delete all exclusion areas."
-msgstr "Удаляет все расширения из списка."
+msgstr "Удаляет все исключаемые зоны."
 
 #: flatcamGUI/ObjectUI.py:2068
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:212
@@ -8552,7 +8562,7 @@ msgstr "Вид формы выделения, используемый для в
 #: flatcamGUI/ObjectUI.py:2080
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:224
 msgid "Strategy"
-msgstr ""
+msgstr "Стратегия"
 
 #: flatcamGUI/ObjectUI.py:2081
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:225
@@ -8562,27 +8572,26 @@ msgid ""
 "- Over -> when encountering the area, the tool will go to a set height\n"
 "- Around -> will avoid the exclusion area by going around the area"
 msgstr ""
+"Стратегия, используемая при столкновении с зоной исключения.\n"
+"Может быть:\n"
+"- Сверху -> при столкновении с зоной, инструмент перейдет на заданную "
+"высоту.\n"
+"- Вокруг -> избегает зоны исключения, обойдя зону"
 
 #: flatcamGUI/ObjectUI.py:2085
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:229
-#, fuzzy
-#| msgid "Overlap"
 msgid "Over"
-msgstr "Перекрытие"
+msgstr "Сверху"
 
 #: flatcamGUI/ObjectUI.py:2086
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:230
-#, fuzzy
-#| msgid "Round"
 msgid "Around"
-msgstr "Круглый"
+msgstr "Вокруг"
 
 #: flatcamGUI/ObjectUI.py:2092
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:236
-#, fuzzy
-#| msgid "Overlap"
 msgid "Over Z"
-msgstr "Перекрытие"
+msgstr "Z обхода"
 
 #: flatcamGUI/ObjectUI.py:2093
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:237
@@ -8590,6 +8599,7 @@ msgid ""
 "The height Z to which the tool will rise in order to avoid\n"
 "an interdiction area."
 msgstr ""
+"Высота Z, на которую поднимется инструмент, чтобы избежать зоны исключения."
 
 #: flatcamGUI/ObjectUI.py:2117
 msgid "Generate the CNC Job object."
@@ -8657,7 +8667,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:2241
 msgid "Travelled dist."
-msgstr "Пройденное расстояние"
+msgstr "Пройденное расстояние."
 
 #: flatcamGUI/ObjectUI.py:2243 flatcamGUI/ObjectUI.py:2248
 msgid ""
@@ -10843,25 +10853,18 @@ msgstr ""
 "Значение 0 означает отсутствие сегментации по оси Y."
 
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:192
-#, fuzzy
-#| msgid "Area Selection"
 msgid "Area Exclusion"
-msgstr "Выбор области"
+msgstr "Область исключения"
 
 #: flatcamGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:194
-#, fuzzy
-#| msgid ""
-#| "A list of Excellon advanced parameters.\n"
-#| "Those parameters are available only for\n"
-#| "Advanced App. Level."
 msgid ""
 "Area exclusion parameters.\n"
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
-"Список расширенных параметров Excellon.\n"
+"Параметры исключения областей.\n"
 "Эти параметры доступны только для\n"
-"расширенного режима приложения."
+"Расширенного режима приложения."
 
 #: flatcamGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:33
 msgid "A list of Geometry Editor parameters."
@@ -14060,10 +14063,8 @@ msgid "Click the start point of the area."
 msgstr "Нажмите на начальную точку области."
 
 #: flatcamObjects/FlatCAMGeometry.py:2619
-#, fuzzy
-#| msgid "Click the end point of the paint area."
 msgid "Click the end point of the area."
-msgstr "Нажмите на конечную точку области рисования."
+msgstr "Нажмите на конечную точку области."
 
 #: flatcamObjects/FlatCAMGeometry.py:2625
 #: flatcamObjects/FlatCAMGeometry.py:2677
@@ -14075,7 +14076,7 @@ msgstr "Зона добавлена. Щелкните правой кнопко�
 
 #: flatcamObjects/FlatCAMGeometry.py:2729
 msgid "Cancelled. Area exclusion drawing was interrupted."
-msgstr ""
+msgstr "Отменено. Рисование зоны исключения было прервано."
 
 #: flatcamObjects/FlatCAMGerber.py:494
 msgid "Buffering solid geometry"
@@ -17256,7 +17257,7 @@ msgstr "Нет подавления"
 
 #: flatcamTools/ToolPcbWizard.py:114
 msgid "Zeros supp."
-msgstr "Подавление нулей"
+msgstr "Подавление нулей."
 
 #: flatcamTools/ToolPcbWizard.py:116
 msgid ""
@@ -18509,58 +18510,6 @@ msgstr ""
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
 
-#~ msgid "Could not load factory defaults file."
-#~ msgstr "Не удалось загрузить файл с исходными значениями."
-
-#~ msgid "Failed to parse factory defaults file."
-#~ msgstr "Не удалось прочитать файл с исходными значениями."
-
-#~ msgid "Could not load preferences file."
-#~ msgstr "Не удаётся загрузить файл настроек."
-
-#~ msgid "Failed to write factory defaults to file."
-#~ msgstr "Не удалось записать исходные значения в файл."
-
-#~ msgid "Factory defaults saved."
-#~ msgstr "Исходные значения сохранены."
-
-#~ msgid "e_fr_probe"
-#~ msgstr "e_fr_probe"
-
-#~ msgid ""
-#~ "The Tool Type (TT) can be:<BR>- <B>Circular</B> with 1 ... 4 teeth -> it "
-#~ "is informative only. Being circular, <BR>the cut width in material is "
-#~ "exactly the tool diameter.<BR>- <B>Ball</B> -> informative only and make "
-#~ "reference to the Ball type endmill.<BR>- <B>V-Shape</B> -> it will "
-#~ "disable de Z-Cut parameter in the resulting geometry UI form and enable "
-#~ "two additional UI form fields in the resulting geometry: V-Tip Dia and V-"
-#~ "Tip Angle. Adjusting those two values will adjust the Z-Cut parameter "
-#~ "such as the cut width into material will be equal with the value in the "
-#~ "Tool Diameter column of this table.<BR>Choosing the <B>V-Shape</B> Tool "
-#~ "Type automatically will select the Operation Type in the resulting "
-#~ "geometry as Isolation."
-#~ msgstr ""
-#~ "Тип инструмента (TT) может быть: <BR>-<B> Дисковый </B> с 1 ... 4 зубцами "
-#~ "-> только для информации. Будучи круглым, <BR>ширина реза в материале "
-#~ "точно соответствует диаметру инструмента. <BR>-<B> Шар </B> -> только для "
-#~ "информации и содержит ссылку на концевую фрезу типа шара. <BR>-<B> V -"
-#~ "Shape </B> -> отключит параметр de Z-Cut в результирующей геометрии "
-#~ "пользовательского интерфейса и включит два дополнительных поля формы "
-#~ "пользовательского интерфейса в результирующей геометрии: V-Tip Dia и V-"
-#~ "Tip Angle. Регулировка этих двух значений приведет к тому, что параметр Z-"
-#~ "Cut, такой как ширина среза по материалу, будет равна значению в столбце "
-#~ "«Диаметр инструмента» этой таблицы. <BR>Выбор типа инструмента <B> V-"
-#~ "Shape </B> автоматически выберет Тип операции в результирующей геометрии "
-#~ "как Изоляция."
-
-#~ msgid ""
-#~ " Could not generate punched hole Gerber because the punch hole sizeis "
-#~ "bigger than some of the apertures in the Gerber object."
-#~ msgstr ""
-#~ " Не удалось создать пленку с перфорированным отверстием, поскольку размер "
-#~ "перфорированного отверстия больше, чем некоторые отверстия в объекте "
-#~ "Gerber."
-
 #, fuzzy
 #~| msgid ""
 #~| "How much (fraction) of the tool width to overlap each tool pass.\n"
@@ -18613,6 +18562,58 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 
 #~ msgid "tool_tab"
 #~ msgstr "tool_tab"
+
+#~ msgid "Could not load factory defaults file."
+#~ msgstr "Не удалось загрузить файл с исходными значениями."
+
+#~ msgid "Failed to parse factory defaults file."
+#~ msgstr "Не удалось прочитать файл с исходными значениями."
+
+#~ msgid "Could not load preferences file."
+#~ msgstr "Не удаётся загрузить файл настроек."
+
+#~ msgid "Failed to write factory defaults to file."
+#~ msgstr "Не удалось записать исходные значения в файл."
+
+#~ msgid "Factory defaults saved."
+#~ msgstr "Исходные значения сохранены."
+
+#~ msgid "e_fr_probe"
+#~ msgstr "e_fr_probe"
+
+#~ msgid ""
+#~ "The Tool Type (TT) can be:<BR>- <B>Circular</B> with 1 ... 4 teeth -> it "
+#~ "is informative only. Being circular, <BR>the cut width in material is "
+#~ "exactly the tool diameter.<BR>- <B>Ball</B> -> informative only and make "
+#~ "reference to the Ball type endmill.<BR>- <B>V-Shape</B> -> it will "
+#~ "disable de Z-Cut parameter in the resulting geometry UI form and enable "
+#~ "two additional UI form fields in the resulting geometry: V-Tip Dia and V-"
+#~ "Tip Angle. Adjusting those two values will adjust the Z-Cut parameter "
+#~ "such as the cut width into material will be equal with the value in the "
+#~ "Tool Diameter column of this table.<BR>Choosing the <B>V-Shape</B> Tool "
+#~ "Type automatically will select the Operation Type in the resulting "
+#~ "geometry as Isolation."
+#~ msgstr ""
+#~ "Тип инструмента (TT) может быть: <BR>-<B> Дисковый </B> с 1 ... 4 зубцами "
+#~ "-> только для информации. Будучи круглым, <BR>ширина реза в материале "
+#~ "точно соответствует диаметру инструмента. <BR>-<B> Шар </B> -> только для "
+#~ "информации и содержит ссылку на концевую фрезу типа шара. <BR>-<B> V -"
+#~ "Shape </B> -> отключит параметр de Z-Cut в результирующей геометрии "
+#~ "пользовательского интерфейса и включит два дополнительных поля формы "
+#~ "пользовательского интерфейса в результирующей геометрии: V-Tip Dia и V-"
+#~ "Tip Angle. Регулировка этих двух значений приведет к тому, что параметр Z-"
+#~ "Cut, такой как ширина среза по материалу, будет равна значению в столбце "
+#~ "«Диаметр инструмента» этой таблицы. <BR>Выбор типа инструмента <B> V-"
+#~ "Shape </B> автоматически выберет Тип операции в результирующей геометрии "
+#~ "как Изоляция."
+
+#~ msgid ""
+#~ " Could not generate punched hole Gerber because the punch hole sizeis "
+#~ "bigger than some of the apertures in the Gerber object."
+#~ msgstr ""
+#~ " Не удалось создать пленку с перфорированным отверстием, поскольку размер "
+#~ "перфорированного отверстия больше, чем некоторые отверстия в объекте "
+#~ "Gerber."
 
 #~ msgid "Executing Tcl Script ..."
 #~ msgstr "Выполнение Tcl-сценария ..."
