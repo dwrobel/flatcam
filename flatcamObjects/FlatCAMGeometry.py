@@ -150,6 +150,10 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.param_fields = {}
 
+        # store here the state of the exclusion checkbox state to be restored after building the UI
+        # TODO add this in the sel.app.defaults dict and in Preferences
+        self.exclusion_area_cb_is_checked = False
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -158,6 +162,15 @@ class GeometryObject(FlatCAMObj, Geometry):
     def build_ui(self):
         self.ui_disconnect()
         FlatCAMObj.build_ui(self)
+
+        # Area Exception - exclusion shape added signal
+        # first disconnect it from any other object
+        try:
+            self.app.exc_areas.e_shape_modified.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        # then connect it to the current build_ui() method
+        self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
         self.units = self.app.defaults['units']
 
@@ -179,7 +192,6 @@ class GeometryObject(FlatCAMObj, Geometry):
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
 
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
-
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             offset_item = FCComboBox()
@@ -309,6 +321,58 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
+
+        # Build Exclusion Areas section
+        e_len = len(self.app.exc_areas.exclusion_areas_storage)
+        self.ui.exclusion_table.setRowCount(e_len)
+
+        area_id = 0
+
+        for area in range(e_len):
+            area_id += 1
+
+            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
+
+            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
+            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
+
+            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
+            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
+
+            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
+            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
+
+            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
+            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
+
+        self.ui.exclusion_table.resizeColumnsToContents()
+        self.ui.exclusion_table.resizeRowsToContents()
+
+        area_vheader = self.ui.exclusion_table.verticalHeader()
+        area_vheader.hide()
+        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        area_hheader = self.ui.exclusion_table.horizontalHeader()
+        area_hheader.setMinimumSectionSize(10)
+        area_hheader.setDefaultSectionSize(70)
+
+        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        area_hheader.resizeSection(0, 20)
+        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+
+        # area_hheader.setStretchLastSection(True)
+        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exclusion_table.setColumnWidth(0, 20)
+
+        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
+        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -534,8 +598,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
 
+        # Exclusion areas signals
+        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
+        self.ui.exclusion_table.lost_focus.connect(self.clear_selection)
+        self.ui.exclusion_table.itemClicked.connect(self.draw_sel_shape)
         self.ui.add_area_button.clicked.connect(self.on_add_area_click)
         self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
+        self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
+        self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
@@ -2462,7 +2532,96 @@ class GeometryObject(FlatCAMObj, Geometry):
             solid_geo=solid_geo, obj_type=obj_type)
 
     def on_clear_area_click(self):
+        if not self.app.exc_areas.exclusion_areas_storage:
+            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Delete failed. There are no exclusion areas to delete."))
+            return
+
         self.app.exc_areas.on_clear_area_click()
+        self.app.exc_areas.e_shape_modified.emit()
+
+    def on_delete_sel_areas(self):
+        sel_model = self.ui.exclusion_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        # so the duplicate rows will not be added
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if not sel_rows:
+            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Delete failed. Nothing is selected."))
+            return
+
+        self.app.exc_areas.delete_sel_shapes(idxs=list(sel_rows))
+        self.app.exc_areas.e_shape_modified.emit()
+
+    def draw_sel_shape(self):
+        sel_model = self.ui.exclusion_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        self.delete_sel_shape()
+
+        if self.app.is_legacy is False:
+            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
+        else:
+            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
+            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
+
+        for row in sel_rows:
+            sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
+            self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
+                                              tolerance=None)
+        if self.app.is_legacy is True:
+            self.app.move_tool.sel_shapes.redraw()
+
+    def clear_selection(self):
+        self.app.delete_selection_shape()
+        # self.ui.exclusion_table.clearSelection()
+
+    def delete_sel_shape(self):
+        self.app.delete_selection_shape()
+
+    def update_exclusion_table(self):
+        self.exclusion_area_cb_is_checked = True if self.ui.exclusion_cb.isChecked() else False
+
+        self.build_ui()
+        self.ui.exclusion_cb.set_value(self.exclusion_area_cb_is_checked)
+
+    def on_strategy(self, val):
+        if val == 'around':
+            self.ui.over_z_label.setDisabled(True)
+            self.ui.over_z_entry.setDisabled(True)
+        else:
+            self.ui.over_z_label.setDisabled(False)
+            self.ui.over_z_entry.setDisabled(False)
+
+    def exclusion_table_toggle_all(self):
+        """
+        will toggle the selection of all rows in Exclusion Areas table
+
+        :return:
+        """
+        sel_model = self.ui.exclusion_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if sel_rows:
+            self.ui.exclusion_table.clearSelection()
+            self.delete_sel_shape()
+        else:
+            self.ui.exclusion_table.selectAll()
+            self.draw_sel_shape()
 
     def plot_element(self, element, color=None, visible=None):
 

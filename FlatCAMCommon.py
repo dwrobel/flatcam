@@ -10,6 +10,7 @@
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 11/4/2019                                          #
 # ##########################################################
+from PyQt5 import QtCore
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -17,7 +18,6 @@ from flatcamGUI.VisPyVisuals import ShapeCollection
 from FlatCAMTool import FlatCAMTool
 
 import numpy as np
-import re
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -129,9 +129,13 @@ def color_variant(hex_color, bright_factor=1):
     return "#" + "".join([i for i in new_rgb])
 
 
-class ExclusionAreas:
+class ExclusionAreas(QtCore.QObject):
+
+    e_shape_modified = QtCore.pyqtSignal()
 
     def __init__(self, app):
+        super().__init__()
+
         self.app = app
 
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
@@ -280,7 +284,7 @@ class ExclusionAreas:
                         face_color = "#FF7400BF"
                     else:
                         color = "#098a8f"
-                        face_color = "#098a8fBF"
+                        face_color = "#FF7400BF"
 
                     # add a temporary shape on canvas
                     FlatCAMTool.draw_tool_selection_shape(
@@ -341,7 +345,7 @@ class ExclusionAreas:
                                 face_color = "#FF7400BF"
                             else:
                                 color = "#098a8f"
-                                face_color = "#098a8fBF"
+                                face_color = "#FF7400BF"
 
                             FlatCAMTool.draw_selection_shape_polygon(
                                 self, points=self.points,
@@ -401,6 +405,7 @@ class ExclusionAreas:
                 '%s %s' % (_("Generate the CNC Job object."), _("With Exclusion areas."))
             )
 
+            self.e_shape_modified.emit()
             for k in self.exclusion_areas_storage:
                 print(k)
 
@@ -476,7 +481,7 @@ class ExclusionAreas:
             face_color = "#FF7400BF"
         else:
             color = "#098a8f"
-            face_color = "#098a8fBF"
+            face_color = "#FF7400BF"
 
         # draw the utility geometry
         if shape_type == "square":
@@ -514,3 +519,52 @@ class ExclusionAreas:
         FlatCAMTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
+
+    def delete_sel_shapes(self, idxs):
+        """
+
+        :param idxs: list of indexes in self.exclusion_areas_storage list to be deleted
+        :return:
+        """
+
+        # delete all plotted shapes
+        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+
+        # delete shapes
+        for idx in sorted(idxs, reverse=True):
+            del self.exclusion_areas_storage[idx]
+
+        # re-add what's left after deletion in first step
+        if self.obj_type == 'excellon':
+            color = "#FF7400"
+            face_color = "#FF7400BF"
+        else:
+            color = "#098a8f"
+            face_color = "#FF7400BF"
+
+        face_alpha = 0.3
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
+        for geo_el in self.exclusion_areas_storage:
+            if isinstance(geo_el['shape'], Polygon):
+                self.exclusion_shapes.add(
+                    geo_el['shape'], color=color, face_color=color_t, update=True, layer=0, tolerance=None)
+        if self.app.is_legacy is True:
+            self.exclusion_shapes.redraw()
+
+        if self.exclusion_areas_storage:
+            self.app.inform.emit('[success] %s' % _("Selected exclusion zones deleted."))
+        else:
+            # restore the default StyleSheet
+            self.cnc_button.setStyleSheet("")
+            # update the StyleSheet
+            self.cnc_button.setStyleSheet("""
+                                            QPushButton
+                                            {
+                                                font-weight: bold;
+                                            }
+                                            """)
+            self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
+
+            self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))

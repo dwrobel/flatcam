@@ -56,13 +56,13 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.gray_icons_cb, 1, 0, 1, 3)
 
-        self.theme_button = FCButton(_("Apply Theme"))
-        self.theme_button.setToolTip(
-            _("Select a theme for FlatCAM.\n"
-              "It will theme the plot area.\n"
-              "The application will restart after change.")
-        )
-        grid0.addWidget(self.theme_button, 2, 0, 1, 3)
+        # self.theme_button = FCButton(_("Apply Theme"))
+        # self.theme_button.setToolTip(
+        #     _("Select a theme for FlatCAM.\n"
+        #       "It will theme the plot area.\n"
+        #       "The application will restart after change.")
+        # )
+        # grid0.addWidget(self.theme_button, 2, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -381,8 +381,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
-        self.theme_button.clicked.connect(self.on_theme_change)
-
         # #############################################################################
         # ############################# GUI COLORS SIGNALS ############################
         # #############################################################################
@@ -417,23 +415,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.proj_color_dis_button.clicked.connect(self.on_proj_color_dis_button)
 
         self.layout_combo.activated.connect(self.on_layout)
-
-    def on_theme_change(self):
-        val = self.theme_radio.get_value()
-
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
-        else:
-            theme = 'white'
-
-        if val != theme:
-            theme_settings.setValue('theme', val)
-
-            # This will write the setting to the platform specific storage.
-            del theme_settings
-
-            self.app.on_app_restart()
 
     @staticmethod
     def handle_style(style):

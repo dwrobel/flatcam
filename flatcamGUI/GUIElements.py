@@ -2232,6 +2232,7 @@ class OptionalHideInputSection:
 class FCTable(QtWidgets.QTableWidget):
 
     drag_drop_sig = QtCore.pyqtSignal()
+    lost_focus = QtCore.pyqtSignal()
 
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
         super(FCTable, self).__init__(parent)
@@ -2294,6 +2295,10 @@ class FCTable(QtWidgets.QTableWidget):
             self.clearFocus()
         else:
             QtWidgets.QTableWidget.mousePressEvent(self, event)
+
+    def focusOutEvent(self, event):
+        self.lost_focus.emit()
+        super().focusOutEvent(event)
 
     def setupContextMenu(self):
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)

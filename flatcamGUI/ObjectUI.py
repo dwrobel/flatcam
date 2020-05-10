@@ -1292,8 +1292,12 @@ class ExcellonObjectUI(ObjectUI):
         self.grid5.addWidget(pp_geo_label, 16, 0)
         self.grid5.addWidget(self.pp_geo_name_cb, 16, 1)
 
+        # ------------------------------------------------------------------------------------------------------------
+        # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------
+
         # Exclusion Areas
-        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
+        self.exclusion_cb = FCCheckBox('%s' % _("Add exclusion areas"))
         self.exclusion_cb.setToolTip(
             _(
                 "Include exclusion areas.\n"
@@ -1301,48 +1305,39 @@ class ExcellonObjectUI(ObjectUI):
                 "is forbidden."
             )
         )
-        self.grid5.addWidget(self.exclusion_cb, 17, 0, 1, 2)
+        self.grid5.addWidget(self.exclusion_cb, 20, 0, 1, 2)
 
-        # ------------------------------------------------------------------------------------------------------------
-        # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
-        # ------------------------------------------------------------------------------------------------------------
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
-        self.grid5.addWidget(self.exclusion_frame, 18, 0, 1, 2)
+        self.grid5.addWidget(self.exclusion_frame, 22, 0, 1, 2)
 
         self.exclusion_box = QtWidgets.QVBoxLayout()
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)
         self.exclusion_frame.setLayout(self.exclusion_box)
 
-        h_lay = QtWidgets.QHBoxLayout()
-        self.exclusion_box.addLayout(h_lay)
+        self.exclusion_table = FCTable()
+        self.exclusion_box.addWidget(self.exclusion_table)
+        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
 
-        # Button Add Area
-        self.add_area_button = QtWidgets.QPushButton(_('Add area'))
-        self.add_area_button.setToolTip(_("Add an Exclusion Area."))
-        h_lay.addWidget(self.add_area_button)
+        self.exclusion_table.setColumnCount(4)
+        self.exclusion_table.setColumnWidth(0, 20)
+        self.exclusion_table.setHorizontalHeaderLabels(['#', _('Object'), _('Strategy'), _('Over Z')])
 
-        # Button Delete Area
-        self.delete_area_button = QtWidgets.QPushButton(_('Clear areas'))
-        self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
-        h_lay.addWidget(self.delete_area_button)
+        self.exclusion_table.horizontalHeaderItem(0).setToolTip(_("This is the Area ID."))
+        self.exclusion_table.horizontalHeaderItem(1).setToolTip(
+            _("Type of the object where the exclusion area was added."))
+        self.exclusion_table.horizontalHeaderItem(2).setToolTip(
+            _("The strategy used for exclusion area. Go around the exclusion areas or over it."))
+        self.exclusion_table.horizontalHeaderItem(3).setToolTip(
+            _("If the strategy is to go over the area then this is the height at which the tool will go to avoid the "
+              "exclusion area."))
 
-        grid_l = QtWidgets.QGridLayout()
-        grid_l.setColumnStretch(0, 0)
-        grid_l.setColumnStretch(1, 1)
-        self.exclusion_box.addLayout(grid_l)
+        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
-        # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
-        self.area_shape_label.setToolTip(
-            _("The kind of selection shape used for area selection.")
-        )
-
-        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
-
-        grid_l.addWidget(self.area_shape_label, 0, 0)
-        grid_l.addWidget(self.area_shape_radio, 0, 1)
+        grid_a1 = QtWidgets.QGridLayout()
+        grid_a1.setColumnStretch(0, 0)
+        grid_a1.setColumnStretch(1, 1)
+        self.exclusion_box.addLayout(grid_a1)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -1353,8 +1348,8 @@ class ExcellonObjectUI(ObjectUI):
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
 
-        grid_l.addWidget(self.strategy_label, 1, 0)
-        grid_l.addWidget(self.strategy_radio, 1, 1)
+        grid_a1.addWidget(self.strategy_label, 1, 0)
+        grid_a1.addWidget(self.strategy_radio, 1, 1)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))
@@ -1364,17 +1359,45 @@ class ExcellonObjectUI(ObjectUI):
         self.over_z_entry.set_range(0.000, 9999.9999)
         self.over_z_entry.set_precision(self.decimals)
 
-        grid_l.addWidget(self.over_z_label, 2, 0)
-        grid_l.addWidget(self.over_z_entry, 2, 1)
+        grid_a1.addWidget(self.over_z_label, 2, 0)
+        grid_a1.addWidget(self.over_z_entry, 2, 1)
 
+        # Button Add Area
+        self.add_area_button = QtWidgets.QPushButton(_('Add area:'))
+        self.add_area_button.setToolTip(_("Add an Exclusion Area."))
+
+        # Area Selection shape
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+        self.area_shape_radio.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        grid_a1.addWidget(self.add_area_button, 4, 0)
+        grid_a1.addWidget(self.area_shape_radio, 4, 1)
+
+        h_lay_1 = QtWidgets.QHBoxLayout()
+        self.exclusion_box.addLayout(h_lay_1)
+
+        # Button Delete All Areas
+        self.delete_area_button = QtWidgets.QPushButton(_('Delete All'))
+        self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
+
+        # Button Delete Selected Areas
+        self.delete_sel_area_button = QtWidgets.QPushButton(_('Delete Selected'))
+        self.delete_sel_area_button.setToolTip(_("Delete all exclusion areas that are selected in the table."))
+
+        h_lay_1.addWidget(self.delete_area_button)
+        h_lay_1.addWidget(self.delete_sel_area_button)
+
+        self.ois_exclusion_exc = OptionalHideInputSection(self.exclusion_cb, [self.exclusion_frame])
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
-        self.ois_exclusion_geo = OptionalHideInputSection(self.exclusion_cb, [self.exclusion_frame])
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid5.addWidget(separator_line, 19, 0, 1, 2)
+        self.grid5.addWidget(separator_line, 25, 0, 1, 2)
 
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################
@@ -1391,7 +1414,7 @@ class ExcellonObjectUI(ObjectUI):
                 "for custom selection of tools."
             ))
 
-        self.grid6.addWidget(QtWidgets.QLabel(''), 1, 0, 1, 3)
+        # self.grid6.addWidget(QtWidgets.QLabel(''), 1, 0, 1, 3)
         self.grid6.addWidget(warning_lbl, 2, 0, 1, 3)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -2103,8 +2126,12 @@ class GeometryObjectUI(ObjectUI):
 
         # grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
 
+        # ------------------------------------------------------------------------------------------------------------
+        # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------
+
         # Exclusion Areas
-        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
+        self.exclusion_cb = FCCheckBox('%s' % _("Add exclusion areas"))
         self.exclusion_cb.setToolTip(
             _(
                 "Include exclusion areas.\n"
@@ -2114,9 +2141,6 @@ class GeometryObjectUI(ObjectUI):
         )
         grid4.addWidget(self.exclusion_cb, 12, 0, 1, 2)
 
-        # ------------------------------------------------------------------------------------------------------------
-        # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
-        # ------------------------------------------------------------------------------------------------------------
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
         grid4.addWidget(self.exclusion_frame, 14, 0, 1, 2)
@@ -2125,35 +2149,29 @@ class GeometryObjectUI(ObjectUI):
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)
         self.exclusion_frame.setLayout(self.exclusion_box)
 
-        h_lay = QtWidgets.QHBoxLayout()
-        self.exclusion_box.addLayout(h_lay)
+        self.exclusion_table = FCTable()
+        self.exclusion_box.addWidget(self.exclusion_table)
+        self.exclusion_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
 
-        # Button Add Area
-        self.add_area_button = QtWidgets.QPushButton(_('Add area'))
-        self.add_area_button.setToolTip(_("Add an Exclusion Area."))
-        h_lay.addWidget(self.add_area_button)
+        self.exclusion_table.setColumnCount(4)
+        self.exclusion_table.setColumnWidth(0, 20)
+        self.exclusion_table.setHorizontalHeaderLabels(['#', _('Object'), _('Strategy'), _('Over Z')])
 
-        # Button Delete Area
-        self.delete_area_button = QtWidgets.QPushButton(_('Clear areas'))
-        self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
-        h_lay.addWidget(self.delete_area_button)
+        self.exclusion_table.horizontalHeaderItem(0).setToolTip(_("This is the Area ID."))
+        self.exclusion_table.horizontalHeaderItem(1).setToolTip(
+            _("Type of the object where the exclusion area was added."))
+        self.exclusion_table.horizontalHeaderItem(2).setToolTip(
+            _("The strategy used for exclusion area. Go around the exclusion areas or over it."))
+        self.exclusion_table.horizontalHeaderItem(3).setToolTip(
+            _("If the strategy is to go over the area then this is the height at which the tool will go to avoid the "
+              "exclusion area."))
 
-        grid_l = QtWidgets.QGridLayout()
-        grid_l.setColumnStretch(0, 0)
-        grid_l.setColumnStretch(1, 1)
-        self.exclusion_box.addLayout(grid_l)
+        self.exclusion_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
-        # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
-        self.area_shape_label.setToolTip(
-            _("The kind of selection shape used for area selection.")
-        )
-
-        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
-                                          {'label': _("Polygon"), 'value': 'polygon'}])
-
-        grid_l.addWidget(self.area_shape_label, 0, 0)
-        grid_l.addWidget(self.area_shape_radio, 0, 1)
+        grid_a1 = QtWidgets.QGridLayout()
+        grid_a1.setColumnStretch(0, 0)
+        grid_a1.setColumnStretch(1, 1)
+        self.exclusion_box.addLayout(grid_a1)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -2164,8 +2182,8 @@ class GeometryObjectUI(ObjectUI):
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
 
-        grid_l.addWidget(self.strategy_label, 1, 0)
-        grid_l.addWidget(self.strategy_radio, 1, 1)
+        grid_a1.addWidget(self.strategy_label, 1, 0)
+        grid_a1.addWidget(self.strategy_radio, 1, 1)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))
@@ -2175,12 +2193,45 @@ class GeometryObjectUI(ObjectUI):
         self.over_z_entry.set_range(0.000, 9999.9999)
         self.over_z_entry.set_precision(self.decimals)
 
-        grid_l.addWidget(self.over_z_label, 2, 0)
-        grid_l.addWidget(self.over_z_entry, 2, 1)
+        grid_a1.addWidget(self.over_z_label, 2, 0)
+        grid_a1.addWidget(self.over_z_entry, 2, 1)
 
+        # Button Add Area
+        self.add_area_button = QtWidgets.QPushButton(_('Add area:'))
+        self.add_area_button.setToolTip(_("Add an Exclusion Area."))
+
+        # Area Selection shape
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+        self.area_shape_radio.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        grid_a1.addWidget(self.add_area_button, 4, 0)
+        grid_a1.addWidget(self.area_shape_radio, 4, 1)
+
+        h_lay_1 = QtWidgets.QHBoxLayout()
+        self.exclusion_box.addLayout(h_lay_1)
+
+        # Button Delete All Areas
+        self.delete_area_button = QtWidgets.QPushButton(_('Delete All'))
+        self.delete_area_button.setToolTip(_("Delete all exclusion areas."))
+
+        # Button Delete Selected Areas
+        self.delete_sel_area_button = QtWidgets.QPushButton(_('Delete Selected'))
+        self.delete_sel_area_button.setToolTip(_("Delete all exclusion areas that are selected in the table."))
+
+        h_lay_1.addWidget(self.delete_area_button)
+        h_lay_1.addWidget(self.delete_sel_area_button)
+
+        self.ois_exclusion_geo = OptionalHideInputSection(self.exclusion_cb, [self.exclusion_frame])
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
-        self.ois_exclusion_geo = OptionalHideInputSection(self.exclusion_cb, [self.exclusion_frame])
+
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid4.addWidget(separator_line2, 15, 0, 1, 2)
 
         warning_lbl = QtWidgets.QLabel(
             _(
@@ -2188,7 +2239,7 @@ class GeometryObjectUI(ObjectUI):
                 "Click the # header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
-        grid4.addWidget(warning_lbl, 15, 0, 1, 2)
+        grid4.addWidget(warning_lbl, 16, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))

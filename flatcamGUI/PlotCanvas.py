@@ -287,6 +287,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
     def on_mouse_scroll(self, event):
         # key modifiers
         modifiers = event.modifiers
+
         pan_delta_x = self.fcapp.defaults["global_gridx"]
         pan_delta_y = self.fcapp.defaults["global_gridy"]
         curr_pos = event.pos

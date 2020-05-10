@@ -7,10 +7,24 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.05.2020
+
+- modified the GUI for Exclusion areas; now the shapes are displayed in a Table where they can be selected and deleted. Modification applied for Geometry Objects only (for now).
+- fixed an error when converting units, error that acted when in those fields that accept lists of tools only one tool was added
+- finished the GUI for exclusion areas both in the Excellon and Geometry Objects. Need to think if to make it visible only in Advanced Mode
+
+8.05.2020
+
+- added a parameter to the FlatCAMDefaults class, whenever a value in the self.defaults dict change it will call a callback function and send to it the modified key
+- optimized and fixed some issues in the self.on_toggle_units() method
+- the Exclusion areas will have all the orange color but the color of the outline will differ according to the type of the object from where it was added (cosmetic use only as the Exclusion areas will be applied globally)
+- removed the Apply theme button in the Preferences; it is now replaced by the more general buttons (either Save or Apply)
+- added a confirmation/warning message when applying a new theme
+
 7.05.2020
 
 - added a fix so the app close is now clean, with exit code 0 as set
-- added the ability to add exclusion areas from the Excellon object too. Now there is a different in color to differentiate from which type of object the exclusion areas were added but they all serve the same purpose
+- added the ability to add exclusion areas from the Excellon object too. Now there is a difference in color to differentiate from which type of object the exclusion areas were added but they all serve the same purpose
 
 6.05.2020
 
