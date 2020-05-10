@@ -26,14 +26,9 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
         self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)
         self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
         self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
-        super().__init__(**kwargs)
 
-        self.excellon_gen_group.excellon_format_upper_in_entry.returnPressed.connect(self.sync_export)
-        self.excellon_gen_group.excellon_format_lower_in_entry.returnPressed.connect(self.sync_export)
-        self.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed.connect(self.sync_export)
-        self.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed.connect(self.sync_export)
-        self.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(self.sync_export)
-        self.excellon_gen_group.excellon_units_radio.activated_custom.connect(self.sync_export)
+        super().__init__(**kwargs)
+        self.init_sync_export()
 
 
     def build_groups(self) -> [OptionsGroupUI]:
@@ -51,18 +46,27 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
     def get_tab_label(self):
         return _("EXCELLON")
 
+    def init_sync_export(self):
+        self.option_dict()["excellon_update"].get_field().stateChanged.connect(self.sync_export)
+        self.option_dict()["excellon_format_upper_in"].get_field().returnPressed.connect(self.sync_export)
+        self.option_dict()["excellon_format_lower_in"].get_field().returnPressed.connect(self.sync_export)
+        self.option_dict()["excellon_format_upper_mm"].get_field().returnPressed.connect(self.sync_export)
+        self.option_dict()["excellon_format_lower_mm"].get_field().returnPressed.connect(self.sync_export)
+        self.option_dict()["excellon_zeros"].get_field().activated_custom.connect(self.sync_export)
+        self.option_dict()["excellon_units"].get_field().activated_custom.connect(self.sync_export)
+
     def sync_export(self):
-        if not self.excellon_gen_group.update_excellon_cb.get_value():
+        if not self.option_dict()["excellon_update"].get_field().get_value():
             # User has disabled sync.
             return
 
-        self.excellon_exp_group.zeros_radio.set_value(self.excellon_gen_group.excellon_zeros_radio.get_value() + 'Z')
-        self.excellon_exp_group.excellon_units_radio.set_value(self.excellon_gen_group.excellon_units_radio.get_value())
-        if self.excellon_gen_group.excellon_units_radio.get_value().upper() == 'METRIC':
-            self.excellon_exp_group.format_whole_entry.set_value(self.excellon_gen_group.excellon_format_upper_mm_entry.get_value())
-            self.excellon_exp_group.format_dec_entry.set_value(self.excellon_gen_group.excellon_format_lower_mm_entry.get_value())
+        self.excellon_exp_group.zeros_radio.set_value(self.option_dict()["excellon_zeros"].get_field().get_value() + 'Z')
+        self.excellon_exp_group.excellon_units_radio.set_value(self.option_dict()["excellon_units"].get_field().get_value())
+        if self.option_dict()["excellon_units"].get_field().get_value().upper() == 'METRIC':
+            self.excellon_exp_group.format_whole_entry.set_value(self.option_dict()["excellon_format_upper_mm"].get_field().get_value())
+            self.excellon_exp_group.format_dec_entry.set_value(self.option_dict()["excellon_format_lower_mm"].get_field().get_value())
         else:
-            self.excellon_exp_group.format_whole_entry.set_value(self.excellon_gen_group.excellon_format_upper_in_entry.get_value())
-            self.excellon_exp_group.format_dec_entry.set_value(self.excellon_gen_group.excellon_format_lower_in_entry.get_value())
+            self.excellon_exp_group.format_whole_entry.set_value(self.option_dict()["excellon_format_upper_in"].get_field().get_value())
+            self.excellon_exp_group.format_dec_entry.set_value(self.option_dict()["excellon_format_lower_in"].get_field().get_value())
 
 

@@ -452,6 +452,8 @@ class App(QtCore.QObject):
 
         self.current_units = self.defaults['units']
 
+
+
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################
         # ###########################################################################################################
@@ -1590,11 +1592,7 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
-        # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
-        current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################
@@ -10340,8 +10338,7 @@ class App(QtCore.QObject):
         alpha_level = 'BF'
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
-                alpha_level = str(hex(
-                    self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
+                alpha_level = self.defaults["excellon_plot_fill"][7:]
             elif sel_obj.kind == 'gerber':
                 alpha_level = self.defaults["gerber_plot_fill"][7:]
             elif sel_obj.kind == 'geometry':

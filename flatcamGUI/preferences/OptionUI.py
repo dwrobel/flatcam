@@ -302,7 +302,7 @@ class SeparatorOptionUI(OptionUI):
 
 
 class FullWidthButtonOptionUI(OptionUI):
-    def __init__(self, option: str, label_text: str, label_tooltip: str):
+    def __init__(self, option: str, label_text: str, label_tooltip: Union[str, None]):
         super().__init__(option=option)
         self.label_text = label_text
         self.label_tooltip = label_tooltip
@@ -310,7 +310,8 @@ class FullWidthButtonOptionUI(OptionUI):
 
     def build_button_widget(self):
         button = FCButton(_(self.label_text))
-        button.setToolTip(_(self.label_tooltip))
+        if self.label_tooltip is not None:
+            button.setToolTip(_(self.label_tooltip))
         return button
 
     def add_to_grid(self, grid: QtWidgets.QGridLayout, row: int) -> int:

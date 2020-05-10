@@ -49,26 +49,6 @@ class PreferencesUIManager:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
 
-            # Excellon General
-            "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
-            "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
-            "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
-            "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
-            "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
-            "excellon_plot_fill": self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry,
-            "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
-
-
             # Excellon Advanced Options
             "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
             "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
@@ -485,23 +465,6 @@ class PreferencesUIManager:
         log.debug("Finished Preferences GUI form initialization.")
 
     def __init_color_pickers(self):
-        # Init Excellon Plot Colors
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
-            self.defaults['excellon_plot_fill'])
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_spinner.set_value(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.setValue(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
-            self.defaults['excellon_plot_line'])
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
         # Init the Tool Film color
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
             self.defaults['tools_film_color'])
