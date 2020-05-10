@@ -3467,22 +3467,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
             :return:
             """
             try:
-                self.options[opt] = float(entry.text())
+                text_value = entry.text()
+                if ',' in text_value:
+                    text_value = text_value.replace(',', '.')
+                self.options[opt] = float(text_value)
             except Exception as e:
+                entry.set_value(self.app.defaults[opt])
                 log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
-        def gridx_changed(goption, gentry):
+        def grid_changed(goption, gentry):
             """
 
-            :param goption: String. Can be either 'global_gridx' or 'global_gridy'
-            :param gentry:  A GUI element which text value is read and used
+            :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
+            :param gentry:      A GUI element which text value is read and used
             :return:
             """
+            if goption not in ['global_gridx', 'global_gridy']:
+                return
+
             entry2option(opt=goption, entry=gentry)
             # if the grid link is checked copy the value in the GridX field to GridY
             try:
-                val = float(gentry.get_value())
+                text_value = gentry.text()
+                if ',' in text_value:
+                    text_value = text_value.replace(',', '.')
+                val = float(text_value)
             except ValueError:
                 return
 
@@ -3491,7 +3501,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
-            lambda: gridx_changed("global_gridx", self.app.ui.grid_gap_x_entry))
+            lambda: grid_changed("global_gridx", self.app.ui.grid_gap_x_entry))
 
         self.app.ui.grid_gap_y_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_y_entry.textChanged.connect(

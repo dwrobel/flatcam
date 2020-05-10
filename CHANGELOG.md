@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.05.2020
+
+- fixed the problem with using comma as decimal separator in Grid Snap fields
+
 9.05.2020
 
 - modified the GUI for Exclusion areas; now the shapes are displayed in a Table where they can be selected and deleted. Modification applied for Geometry Objects only (for now).
