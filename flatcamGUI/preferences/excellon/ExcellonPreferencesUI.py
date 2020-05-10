@@ -18,13 +18,9 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
 
     def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-
         # FIXME: remove the need for external access to excellon_opt_group
         self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
-
-        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
         self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
-
         super().__init__(**kwargs)
         self.init_sync_export()
 
@@ -33,7 +29,7 @@ class ExcellonPreferencesUI(PreferencesSectionUI):
             ExcellonGenPrefGroupUI(decimals=self.decimals),
             self.excellon_opt_group,
             ExcellonExpPrefGroupUI(decimals=self.decimals),
-            self.excellon_adv_opt_group,
+            ExcellonAdvOptPrefGroupUI(decimals=self.decimals),
             self.excellon_editor_group
         ]
 

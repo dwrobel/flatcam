@@ -49,16 +49,6 @@ class PreferencesUIManager:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
 
-            # Excellon Advanced Options
-            "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
 
             # Excellon Editor
             "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
