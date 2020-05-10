@@ -68,29 +68,6 @@ class PreferencesUIManager:
             "excellon_plot_fill": self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry,
             "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
 
-            # Excellon Options
-            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
-            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
-
-            "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
-
-            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
-            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
-
-            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
-            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
-            "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
             # Excellon Advanced Options
             "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,

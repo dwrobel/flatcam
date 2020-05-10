@@ -6,6 +6,13 @@ from flatcamGUI.preferences.excellon.ExcellonAdvOptPrefGroupUI import ExcellonAd
 from flatcamGUI.preferences.excellon.ExcellonOptPrefGroupUI import ExcellonOptPrefGroupUI
 from flatcamGUI.preferences.excellon.ExcellonGenPrefGroupUI import ExcellonGenPrefGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class ExcellonPreferencesUI(PreferencesSectionUI):
 
