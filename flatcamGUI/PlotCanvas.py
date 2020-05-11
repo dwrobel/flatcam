@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 import logging
 from flatcamGUI.VisPyCanvas import VisPyCanvas, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
-from vispy.scene.visuals import InfiniteLine, Line
+from vispy.scene.visuals import InfiniteLine, Line, Rectangle, Text
 
 import numpy as np
 from vispy.geometry import Rect
@@ -54,8 +54,12 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         if theme == 'white':
             self.line_color = (0.3, 0.0, 0.0, 1.0)
+            self.rect_hud_color = Color('#0000FF10')
+            self.text_hud_color = 'black'
         else:
             self.line_color = (0.4, 0.4, 0.4, 1.0)
+            self.rect_hud_color = Color('#0000FF10')
+            self.text_hud_color = 'white'
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
@@ -146,13 +150,28 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
 
+        self.rect_hud = Rectangle(center=(90,45), color=self.rect_hud_color, border_color=self.rect_hud_color,
+                                  width=170, height=80, radius=[5, 5, 5, 5], parent=None)
+        self.rect_hud.set_gl_state(depth_test=False)
+
+        # HUD Display
+        self.hud_enabled = False
+
+        self.text_hud = Text('', color=self.text_hud_color, pos=(8, 45), method='gpu', anchor_x='left', parent=None)
+        self.text_hud.font_size = 8
+        units = self.fcapp.defaults["units"].lower()
+        self.text_hud.text = 'Dx:\t%s [%s]\nDy:\t%s [%s]\nX:  \t%s [%s]\nY:  \t%s [%s]' % \
+                             ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
+
+        if self.fcapp.defaults['global_hud'] is True:
+            self.on_toggle_hud(state=True)
+
         self.shape_collections = []
 
         self.shape_collection = self.new_shape_collection()
         self.fcapp.pool_recreated.connect(self.on_pool_recreated)
         self.text_collection = self.new_text_collection()
 
-        # TODO: Should be setting to show/hide CNC job annotations (global or per object)
         self.text_collection.enabled = True
 
         self.c = None
@@ -162,6 +181,16 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.fit_view()
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
+
+    def on_toggle_hud(self, state):
+        if state:
+            self.hud_enabled = True
+            self.rect_hud.parent = self.view
+            self.text_hud.parent = self.view
+        else:
+            self.hud_enabled = False
+            self.rect_hud.parent = None
+            self.text_hud.parent = None
 
     def draw_workspace(self, workspace_size):
         """

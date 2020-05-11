@@ -2223,17 +2223,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
         self.infobar.addWidget(self.snap_infobar_label)
 
-        self.rel_position_label = QtWidgets.QLabel(
-            "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
-        self.rel_position_label.setMinimumWidth(110)
-        self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
-        self.infobar.addWidget(self.rel_position_label)
-
-        self.position_label = QtWidgets.QLabel(
-            "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
-        self.position_label.setMinimumWidth(110)
-        self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
-        self.infobar.addWidget(self.position_label)
+        # self.rel_position_label = QtWidgets.QLabel(
+        #     "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
+        # self.rel_position_label.setMinimumWidth(110)
+        # self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
+        # self.infobar.addWidget(self.rel_position_label)
+        #
+        # self.position_label = QtWidgets.QLabel(
+        #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
+        # self.position_label.setMinimumWidth(110)
+        # self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
+        # self.infobar.addWidget(self.position_label)
 
         self.units_label = QtWidgets.QLabel("[in]")
         self.units_label.setMargin(2)
@@ -2909,6 +2909,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_axis()
+
+                # Toggle HUD (Heads-Up Display)
+                if key == QtCore.Qt.Key_H:
+                    state = False if self.app.plotcanvas.hud_enabled else True
+                    self.app.plotcanvas.on_toggle_hud(state=state)
 
                 # Locate in Object
                 if key == QtCore.Qt.Key_J:
