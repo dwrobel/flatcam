@@ -981,7 +981,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
         self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
@@ -4621,7 +4620,7 @@ class App(QtCore.QObject):
         if self.is_legacy is False:
             # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
             # - perhaps is a bug in VisPy implementation
-            if self.grid_status() is True:
+            if self.grid_status():
                 self.app_cursor.enabled = False
                 self.app_cursor.enabled = True
             else:

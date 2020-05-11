@@ -18,6 +18,9 @@ CHANGELOG for FlatCAM beta
 - fixed some minor issues (in the HUD added a separating line, missing an icon in toolbars on first launch)
 - made sure that the corner snap buttons are shown only in Editors
 - changed the HUD color when using Dark theme 
+- fix issue in Legacy2D graphic mode where the snap function was not accessible when the PlotCanvasLegacy class was created
+- modified the HUD in Legacy2D when using Dark Theme to use different colors
+- modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
 
 10.05.2020
 

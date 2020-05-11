@@ -19,6 +19,8 @@ from shapely.geometry import Polygon, LineString, LinearRing
 from copy import deepcopy
 import logging
 
+import numpy as np
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -153,8 +155,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         else:
             theme_color = '#000000'
             tick_color = '#FFFFFF'
-            self.rect_hud_color = '#0000FF10'
-            self.text_hud_color = '#000000'
+            self.rect_hud_color = '#80808040'
+            self.text_hud_color = '#FFFFFF'
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
@@ -306,11 +308,6 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.hud_enabled = False
         self.text_hud = self.Thud(plotcanvas=self)
 
-        # bbox_props = dict(boxstyle="round,pad=0.3", fc="blue", ec="b", lw=0)
-        # self.text_hud = self.figure.text(0, 0, "Direction", ha="left", va="center", rotation=0,
-        #                                size=15,
-        #                                bbox=bbox_props)
-
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
         if self.app.defaults['global_workspace'] is True:
@@ -336,19 +333,21 @@ class PlotCanvasLegacy(QtCore.QObject):
 
             self.p = plotcanvas
             units = self.p.app.defaults['units']
-            self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\nX:      %s [%s]\nY:      %s [%s]' % \
+            self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
                          ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
 
-            self.hud_holder = AnchoredText(self._text,
-                              prop=dict(size=20), frameon=True,
-                              loc='upper left',
-                              )
+            self.hud_holder = AnchoredText(self._text, prop=dict(size=20), frameon=True, loc='upper left')
             self.hud_holder.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
 
-            self.hud_holder.patch.set_facecolor('blue')
-            self.hud_holder.patch.set_alpha(0.3)
+            fc_color = self.p.rect_hud_color[:-2]
+            fc_alpha = int(self.p.rect_hud_color[-2:], 16) / 255
+            text_color = self.p.text_hud_color
+
+            self.hud_holder.patch.set_facecolor(fc_color)
+            self.hud_holder.patch.set_alpha(fc_alpha)
             self.hud_holder.patch.set_edgecolor((0, 0, 0, 0))
 
+            self. hud_holder.txt._text.set_color(color=text_color)
             self.text_changed.connect(self.on_text_changed)
 
         @property
@@ -496,7 +495,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
             if self.big_cursor is False:
                 try:
-                    x, y = self.app.geo_editor.snap(x_pos, y_pos)
+                    x, y = self.snap(x_pos, y_pos)
 
                     # Pointer (snapped)
                     # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
@@ -529,7 +528,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                     pass
                 self.canvas.draw_idle()
 
-        self.canvas.blit(self.axes.bbox)
+            self.canvas.blit(self.axes.bbox)
 
     def clear_cursor(self, state):
         if state is True:
@@ -931,7 +930,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.canvas.draw_idle()
 
             # #### Temporary place-holder for cached update #####
-            self.update_screen_request.emit([0, 0, 0, 0, 0])
+            # self.update_screen_request.emit([0, 0, 0, 0, 0])
 
         if self.app.defaults["global_cursor_color_enabled"] is True:
             self.draw_cursor(x_pos=x, y_pos=y, color=self.app.cursor_color_3D)
@@ -982,6 +981,59 @@ class PlotCanvasLegacy(QtCore.QObject):
         height = ymax - ymin
 
         return width / xpx, height / ypx
+
+    def snap(self, x, y):
+        """
+        Adjusts coordinates to snap settings.
+
+        :param x: Input coordinate X
+        :param y: Input coordinate Y
+        :return: Snapped (x, y)
+        """
+
+        snap_x, snap_y = (x, y)
+        snap_distance = np.Inf
+
+        # ### Grid snap
+        if self.app.grid_status():
+            if self.app.defaults["global_gridx"] != 0:
+                try:
+                    snap_x_ = round(x / float(self.app.defaults["global_gridx"])) * \
+                              float(self.app.defaults["global_gridx"])
+                except TypeError:
+                    snap_x_ = x
+            else:
+                snap_x_ = x
+
+            # If the Grid_gap_linked on Grid Toolbar is checked then the snap distance on GridY entry will be ignored
+            # and it will use the snap distance from GridX entry
+            if self.app.ui.grid_gap_link_cb.isChecked():
+                if self.app.defaults["global_gridx"] != 0:
+                    try:
+                        snap_y_ = round(y / float(self.app.defaults["global_gridx"])) * \
+                                  float(self.app.defaults["global_gridx"])
+                    except TypeError:
+                        snap_y_ = y
+                else:
+                    snap_y_ = y
+            else:
+                if self.app.defaults["global_gridy"] != 0:
+                    try:
+                        snap_y_ = round(y / float(self.app.defaults["global_gridy"])) * \
+                                  float(self.app.defaults["global_gridy"])
+                    except TypeError:
+                        snap_y_ = y
+                else:
+                    snap_y_ = y
+            nearest_grid_distance = self.distance((x, y), (snap_x_, snap_y_))
+            if nearest_grid_distance < snap_distance:
+                snap_x, snap_y = (snap_x_, snap_y_)
+
+        return snap_x, snap_y
+
+    @staticmethod
+    def distance(pt1, pt2):
+        return np.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
 class FakeCursor(QtCore.QObject):
