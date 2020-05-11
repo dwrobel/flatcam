@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
 - re-added the position labels in the status bar; they will be useful if HUD is Off (Altium does the same :) so learn from the best)
 
+
 10.05.2020
 
 - fixed the problem with using comma as decimal separator in Grid Snap fields
