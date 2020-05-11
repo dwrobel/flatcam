@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - made the HUD work in Legacy2D mode
 - fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
 
+
 10.05.2020
 
 - fixed the problem with using comma as decimal separator in Grid Snap fields
