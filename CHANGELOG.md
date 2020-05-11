@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - fix issue in Legacy2D graphic mode where the snap function was not accessible when the PlotCanvasLegacy class was created
 - modified the HUD in Legacy2D when using Dark Theme to use different colors
 - modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
+- re-added the position labels in the status bar; they will be useful if HUD is Off (Altium does the same :) so learn from the best)
 
 10.05.2020
 

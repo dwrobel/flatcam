@@ -3782,8 +3782,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.dy = y - self.pos[1]
 
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                    "<b>Y</b>: %.4f" % (x, y))
+        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f&nbsp;" % (x, y))
         # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))

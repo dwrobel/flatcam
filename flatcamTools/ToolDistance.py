@@ -544,11 +544,11 @@ class Distance(FlatCAMTool):
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 
-            # self.app.ui.position_label.setText(
-            #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
-            #         '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-            #     )
-            # )
+            self.app.ui.position_label.setText(
+                "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                )
+            )
 
             units = self.app.defaults["units"].lower()
             self.app.plotcanvas.text_hud.text = \
@@ -583,7 +583,7 @@ class Distance(FlatCAMTool):
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
-            self.app.ui.rel_position_label.setText("")
+            # self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape

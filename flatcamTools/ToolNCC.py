@@ -1832,8 +1832,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.dy = curr_pos[1] - float(self.cursor_pos[1])
 
         # # update the positions on status bar
-        # self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                    "<b>Y</b>: %.4f" % (curr_pos[0], curr_pos[1]))
+        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f&nbsp;" % (curr_pos[0], curr_pos[1]))
         # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 

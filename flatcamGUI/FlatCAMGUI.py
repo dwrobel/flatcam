@@ -2309,11 +2309,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
         # self.infobar.addWidget(self.rel_position_label)
         #
-        # self.position_label = QtWidgets.QLabel(
-        #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
-        # self.position_label.setMinimumWidth(110)
-        # self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
-        # self.infobar.addWidget(self.position_label)
+        self.position_label = QtWidgets.QLabel(
+            "&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
+        self.position_label.setMinimumWidth(110)
+        self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
+        self.infobar.addWidget(self.position_label)
 
         self.snap_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.snap_toolbar)
