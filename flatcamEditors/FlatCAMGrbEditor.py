@@ -3685,10 +3685,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
 
-        self.app.ui.snap_max_dist_entry.setEnabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(True)
-        self.app.ui.snap_magnet.setVisible(True)
         self.app.ui.corner_snap_btn.setVisible(True)
+        self.app.ui.snap_magnet.setVisible(True)
 
         self.app.ui.grb_editor_menu.setDisabled(False)
         self.app.ui.grb_editor_menu.menuAction().setVisible(True)
@@ -3703,7 +3701,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.ui.on_grid_snap_triggered(state=True)
 
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(False)
@@ -3736,29 +3733,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                # self.app.ui.exc_edit_toolbar.setVisible(False)
-
-                self.app.ui.snap_max_dist_entry.setEnabled(False)
-                self.app.ui.corner_snap_btn.setEnabled(False)
-                self.app.ui.snap_magnet.setVisible(False)
-                self.app.ui.corner_snap_btn.setVisible(False)
-            else:
-                # self.app.ui.exc_edit_toolbar.setVisible(True)
-
-                self.app.ui.snap_max_dist_entry.setEnabled(False)
-                self.app.ui.corner_snap_btn.setEnabled(False)
-                self.app.ui.snap_magnet.setVisible(True)
-                self.app.ui.corner_snap_btn.setVisible(True)
-        else:
-            # self.app.ui.exc_edit_toolbar.setVisible(False)
-
-            self.app.ui.snap_max_dist_entry.setEnabled(False)
-            self.app.ui.corner_snap_btn.setEnabled(False)
-            self.app.ui.snap_magnet.setVisible(False)
-            self.app.ui.corner_snap_btn.setVisible(False)
+        self.app.ui.corner_snap_btn.setVisible(False)
+        self.app.ui.snap_magnet.setVisible(False)
 
         # set the Editor Toolbar visibility to what was before entering in the Editor
         self.app.ui.grb_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
@@ -4537,8 +4513,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
             if self.active_tool is not None:
@@ -4550,8 +4526,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         self.app.defaults["global_point_clipboard_format"] %
                         (self.decimals, self.pos[0], self.decimals, self.pos[1])
                     )
-                    self.app.inform.emit('[success] %s' %
-                                         _("Coordinates copied to clipboard."))
+                    self.app.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
                     return
 
                 # Dispatch event to active_tool
@@ -4780,16 +4755,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.dy = y - self.pos[1]
 
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                    "<b>Y</b>: %.4f" % (x, y))
+        self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f&nbsp;" % (x, y))
         #
         # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+        self.app.plotcanvas.text_hud.text = \
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.app.dx, units, self.app.dy, units, x, units, y, units)
 
         self.update_utility_geometry(data=(x, y))

@@ -544,15 +544,15 @@ class Distance(FlatCAMTool):
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 
-            # self.app.ui.position_label.setText(
-            #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
-            #         '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-            #     )
-            # )
+            self.app.ui.position_label.setText(
+                "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                )
+            )
 
             units = self.app.defaults["units"].lower()
-            self.plotcanvas.text_hud.text = \
-                'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            self.app.plotcanvas.text_hud.text = \
+                'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                     0.0000, units, 0.0000, units, pos[0], units, pos[1], units)
 
             if self.rel_point1 is not None:
@@ -583,7 +583,7 @@ class Distance(FlatCAMTool):
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
-            self.app.ui.rel_position_label.setText("")
+            # self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape

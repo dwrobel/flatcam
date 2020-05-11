@@ -921,8 +921,12 @@ class PreferencesUIManager:
             theme = 'white'
 
         should_restart = False
-        val = self.ui.general_defaults_form.general_gui_group.theme_radio.get_value()
-        if val != theme:
+        theme_new_val = self.ui.general_defaults_form.general_gui_group.theme_radio.get_value()
+
+        ge = self.defaults["global_graphic_engine"]
+        ge_val = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+
+        if theme_new_val != theme or ge != ge_val:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("Are you sure you want to continue?"))
             msgbox.setWindowTitle(_("Application restart"))
@@ -935,15 +939,22 @@ class PreferencesUIManager:
             msgbox.exec_()
             response = msgbox.clickedButton()
 
-            if response == bt_yes:
-                theme_settings.setValue('theme', val)
+            if theme_new_val != theme:
+                if response == bt_yes:
+                    theme_settings.setValue('theme', theme_new_val)
 
-                # This will write the setting to the platform specific storage.
-                del theme_settings
+                    # This will write the setting to the platform specific storage.
+                    del theme_settings
 
-                should_restart = True
+                    should_restart = True
+                else:
+                    self.ui.general_defaults_form.general_gui_group.theme_radio.set_value(theme)
             else:
-                self.ui.general_defaults_form.general_gui_group.theme_radio.set_value(theme)
+                if response == bt_yes:
+                    self.defaults["global_graphic_engine"] = ge_val
+                    should_restart = True
+                else:
+                    self.ui.general_defaults_form.general_app_group.ge_radio.set_value(ge)
 
         if save_to_file or should_restart is True:
             self.save_defaults(silent=False)
@@ -1035,6 +1046,7 @@ class PreferencesUIManager:
         :return:            None
         """
         self.defaults.report_usage("save_defaults")
+        log.debug("App.PreferencesUIManager.save_defaults()")
 
         if data_path is None:
             data_path = self.data_path
