@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.05.2020
+
+- removed the labels in status bar that display X,Y positions and replaced it with a HUD display on canvas (combo key SHIFT+H) will toggle the display of the HUD
+- made the HUD work in Legacy2D mode
+- fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
+
 10.05.2020
 
 - fixed the problem with using comma as decimal separator in Grid Snap fields

@@ -29,6 +29,7 @@ mpl_use("Qt5Agg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.lines import Line2D
+from matplotlib.offsetbox import AnchoredText
 # from matplotlib.widgets import Cursor
 
 fcTranslate.apply_language('strings')
@@ -147,9 +148,13 @@ class PlotCanvasLegacy(QtCore.QObject):
         if self.app.defaults['global_theme'] == 'white':
             theme_color = '#FFFFFF'
             tick_color = '#000000'
+            self.rect_hud_color = '#0000FF10'
+            self.text_hud_color = '#000000'
         else:
             theme_color = '#000000'
             tick_color = '#FFFFFF'
+            self.rect_hud_color = '#0000FF10'
+            self.text_hud_color = '#000000'
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
@@ -298,10 +303,78 @@ class PlotCanvasLegacy(QtCore.QObject):
         # signal if there is a doubleclick
         self.is_dblclk = False
 
+        self.hud_enabled = False
+        self.text_hud = self.Thud(plotcanvas=self)
+
+        # bbox_props = dict(boxstyle="round,pad=0.3", fc="blue", ec="b", lw=0)
+        # self.text_hud = self.figure.text(0, 0, "Direction", ha="left", va="center", rotation=0,
+        #                                size=15,
+        #                                bbox=bbox_props)
+
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
         if self.app.defaults['global_workspace'] is True:
             self.draw_workspace(workspace_size=self.app.defaults["global_workspaceT"])
+
+        if self.app.defaults['global_hud'] is True:
+            self.on_toggle_hud(state=True)
+
+    def on_toggle_hud(self, state):
+        if state:
+            self.hud_enabled = True
+            self.text_hud.add_artist()
+        else:
+            self.hud_enabled = False
+            self.text_hud.remove_artist()
+        self.canvas.draw()
+
+    class Thud(QtCore.QObject):
+        text_changed = QtCore.pyqtSignal(str)
+
+        def __init__(self, plotcanvas):
+            super().__init__()
+
+            self.p = plotcanvas
+            units = self.p.app.defaults['units']
+            self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\nX:      %s [%s]\nY:      %s [%s]' % \
+                         ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
+
+            self.hud_holder = AnchoredText(self._text,
+                              prop=dict(size=20), frameon=True,
+                              loc='upper left',
+                              )
+            self.hud_holder.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+
+            self.hud_holder.patch.set_facecolor('blue')
+            self.hud_holder.patch.set_alpha(0.3)
+            self.hud_holder.patch.set_edgecolor((0, 0, 0, 0))
+
+            self.text_changed.connect(self.on_text_changed)
+
+        @property
+        def text(self):
+            return self._text
+
+        @text.setter
+        def text(self, val):
+            self.text_changed.emit(val)
+            self._text = val
+
+        def on_text_changed(self, txt):
+            try:
+                txt = txt.replace('\t', '    ')
+                self.hud_holder.txt.set_text(txt)
+                self.p.canvas.draw()
+            except Exception:
+                pass
+
+        def add_artist(self):
+            if self.hud_holder not in self.p.axes.artists:
+                self.p.axes.add_artist(self.hud_holder)
+
+        def remove_artist(self):
+            if self.hud_holder in self.p.axes.artists:
+                self.p.axes.artists.remove(self.hud_holder)
 
     def draw_workspace(self, workspace_size):
         """
