@@ -981,7 +981,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
         self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
@@ -2064,18 +2063,22 @@ class App(QtCore.QObject):
         """
 
         # Toolbar
+
+        # File Toolbar Signals
         # self.ui.file_new_btn.triggered.connect(self.on_file_new)
         self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
         self.ui.file_save_btn.triggered.connect(self.on_file_saveproject)
         self.ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
         self.ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
 
+        # View Toolbar Signals
         self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
         self.ui.replot_btn.triggered.connect(self.plot_all)
         self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
+        # Edit Toolbar Signals
         self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
         self.ui.newgrb_btn.triggered.connect(self.new_gerber_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
@@ -2092,6 +2095,7 @@ class App(QtCore.QObject):
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
+        # Scripting Toolbar Signals
         self.ui.shell_btn.triggered.connect(self.toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
         self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
@@ -3476,7 +3480,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
@@ -4503,14 +4507,16 @@ class App(QtCore.QObject):
 
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
-            self.ui.splitter_left.setVisible(False)
+            self.ui.snap_toolbar.setVisible(True)   # This is always visible
+            # self.ui.splitter_left.setVisible(False)
+            self.ui.splitter.setSizes([0, 1])
             self.toggle_fscreen = True
         elif self.toggle_fscreen is True or disable is True:
             self.ui.setWindowFlags(flags & ~Qt.FramelessWindowHint)
             self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
             self.ui.showNormal()
             self.restore_toolbar_view()
-            self.ui.splitter_left.setVisible(True)
+            # self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
 
     def on_toggle_plotarea(self):
@@ -4573,7 +4579,6 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
-        self.ui.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -4615,7 +4620,7 @@ class App(QtCore.QObject):
         if self.is_legacy is False:
             # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
             # - perhaps is a bug in VisPy implementation
-            if self.grid_status() is True:
+            if self.grid_status():
                 self.app_cursor.enabled = False
                 self.app_cursor.enabled = True
             else:
@@ -5381,8 +5386,8 @@ class App(QtCore.QObject):
         # Set the relative position label
         dx = location[0] - float(self.rel_point1[0])
         dy = location[1] - float(self.rel_point1[1])
-        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
         # # Set the position label
         #
         # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
@@ -5390,7 +5395,7 @@ class App(QtCore.QObject):
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 dx, units, dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
@@ -5537,14 +5542,14 @@ class App(QtCore.QObject):
         self.dx = location[0] - float(self.rel_point1[0])
         self.dy = location[1] - float(self.rel_point1[1])
         # Set the position label
-        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
         # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
         #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.dx, units, self.dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
@@ -5854,7 +5859,7 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
         # delete the absolute and relative position and messages in the infobar
-        # self.ui.position_label.setText("")
+        self.ui.position_label.setText("")
         # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
@@ -5952,7 +5957,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
@@ -6618,7 +6623,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
@@ -6766,14 +6771,14 @@ class App(QtCore.QObject):
                 self.dx = pos[0] - float(self.rel_point1[0])
                 self.dy = pos[1] - float(self.rel_point1[1])
 
-                # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                #                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
+                self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                               "<b>Y</b>: %.4f&nbsp;" % (pos[0], pos[1]))
                 # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                 #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
                 units = self.defaults["units"].lower()
                 self.plotcanvas.text_hud.text = \
-                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                         self.dx, units, self.dy, units, pos[0], units, pos[1], units)
 
                 self.mouse = [pos[0], pos[1]]
@@ -6826,7 +6831,7 @@ class App(QtCore.QObject):
 
             except Exception as e:
                 log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
-                # self.ui.position_label.setText("")
+                self.ui.position_label.setText("")
                 # self.ui.rel_position_label.setText("")
                 self.mouse = None
 
@@ -8137,7 +8142,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
         self.text_editor_tab.code_editor.clear()
@@ -8188,7 +8193,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
         self.source_editor_tab.code_editor.clear()
@@ -8312,7 +8317,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         self.new_script_object()
 

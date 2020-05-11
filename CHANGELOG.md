@@ -12,6 +12,17 @@ CHANGELOG for FlatCAM beta
 - removed the labels in status bar that display X,Y positions and replaced it with a HUD display on canvas (combo key SHIFT+H) will toggle the display of the HUD
 - made the HUD work in Legacy2D mode
 - fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
+- remade the Snap Toolbar presence; now it is always active and situated in the Status Bar
+- Snap Toolbar is now visible in Fullscreen
+- in Fullscreen now the Notebook is available but it will be hidden on Fullscreen launch
+- fixed some minor issues (in the HUD added a separating line, missing an icon in toolbars on first launch)
+- made sure that the corner snap buttons are shown only in Editors
+- changed the HUD color when using Dark theme 
+- fix issue in Legacy2D graphic mode where the snap function was not accessible when the PlotCanvasLegacy class was created
+- modified the HUD in Legacy2D when using Dark Theme to use different colors
+- modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
+- re-added the position labels in the status bar; they will be useful if HUD is Off (Altium does the same :) so learn from the best)
+
 
 
 10.05.2020

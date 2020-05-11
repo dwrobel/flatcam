@@ -564,7 +564,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
-        self.app.ui.rel_position_label.setText("")
+        # self.app.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
         self.gcode_editor_tab.code_editor.clear()
