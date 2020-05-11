@@ -3813,7 +3813,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
+        self.app.plotcanvas.text_hud.text = \
             'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.app.dx, units, self.app.dy, units, x, units, y, units)
 

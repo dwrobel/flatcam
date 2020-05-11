@@ -748,6 +748,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.exc_edit_toolbar.setVisible(False)
             self.app.ui.lock_toolbar(lock=True)
 
+            self.app.ui.corner_snap_btn.setVisible(False)
+            self.app.ui.snap_magnet.setVisible(False)
+
         # add all the actions to the toolbars
         self.app.ui.populate_toolbars()
 

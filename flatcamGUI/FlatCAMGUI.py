@@ -2555,6 +2555,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.move2origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
         self.locate_btn = self.toolbargeo.addAction(

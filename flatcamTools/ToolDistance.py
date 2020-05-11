@@ -551,7 +551,7 @@ class Distance(FlatCAMTool):
             # )
 
             units = self.app.defaults["units"].lower()
-            self.plotcanvas.text_hud.text = \
+            self.app.plotcanvas.text_hud.text = \
                 'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                     0.0000, units, 0.0000, units, pos[0], units, pos[1], units)
 

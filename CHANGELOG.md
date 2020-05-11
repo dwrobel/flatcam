@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - made the HUD work in Legacy2D mode
 - fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
 - remade the Snap Toolbar presence; now it is always active and situated in the Status Bar
+- Snap Toolbar is now visible in Fullscreen
+- in Fullscreen now the Notebook is available but it will be hidden on Fullscreen launch
+- fixed some minor issues (in the HUD added a separating line, missing an icon in toolbars on first launch)
 
 10.05.2020
 

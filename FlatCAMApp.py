@@ -4508,14 +4508,16 @@ class App(QtCore.QObject):
 
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
-            self.ui.splitter_left.setVisible(False)
+            self.ui.snap_toolbar.setVisible(True)   # This is always visible
+            # self.ui.splitter_left.setVisible(False)
+            self.ui.splitter.setSizes([0, 1])
             self.toggle_fscreen = True
         elif self.toggle_fscreen is True or disable is True:
             self.ui.setWindowFlags(flags & ~Qt.FramelessWindowHint)
             self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
             self.ui.showNormal()
             self.restore_toolbar_view()
-            self.ui.splitter_left.setVisible(True)
+            # self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
 
     def on_toggle_plotarea(self):

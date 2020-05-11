@@ -4536,8 +4536,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
             if self.active_tool is not None:
@@ -4549,8 +4549,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         self.app.defaults["global_point_clipboard_format"] %
                         (self.decimals, self.pos[0], self.decimals, self.pos[1])
                     )
-                    self.app.inform.emit('[success] %s' %
-                                         _("Coordinates copied to clipboard."))
+                    self.app.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
                     return
 
                 # Dispatch event to active_tool
@@ -4787,7 +4786,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
+        self.app.plotcanvas.text_hud.text = \
             'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.app.dx, units, self.app.dy, units, x, units, y, units)
 
