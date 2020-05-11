@@ -43,6 +43,7 @@ class FlatCAMDefaults:
 
         # General
         "global_graphic_engine": '3D',
+        "global_hud": True,
         "global_app_level": 'b',
         "global_portable": False,
         "global_language": 'English',

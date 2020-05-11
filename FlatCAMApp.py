@@ -285,6 +285,8 @@ class App(QtCore.QObject):
         :rtype: App
         """
 
+        super().__init__()
+
         App.log.info("FlatCAM Starting...")
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
@@ -503,8 +505,6 @@ class App(QtCore.QObject):
         self.FC_dark_green = '#006E20BF'
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
-
-        QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
 
@@ -5378,14 +5378,20 @@ class App(QtCore.QObject):
                                      edge_width=self.defaults["global_cursor_width"],
                                      size=self.defaults["global_cursor_size"])
 
-        # Set the position label
-        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
         # Set the relative position label
         dx = location[0] - float(self.rel_point1[0])
         dy = location[1] - float(self.rel_point1[1])
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # # Set the position label
+        #
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        units = self.defaults["units"].lower()
+        self.plotcanvas.text_hud.text = \
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                dx, units, dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -5527,14 +5533,19 @@ class App(QtCore.QObject):
                                      edge_width=self.defaults["global_cursor_width"],
                                      size=self.defaults["global_cursor_size"])
 
-        # Set the position label
-        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
         # Set the relative position label
         self.dx = location[0] - float(self.rel_point1[0])
         self.dy = location[1] - float(self.rel_point1[1])
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+        # Set the position label
+        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+        units = self.defaults["units"].lower()
+        self.plotcanvas.text_hud.text = \
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                self.dx, units, self.dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -5843,8 +5854,8 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
@@ -6738,6 +6749,9 @@ class App(QtCore.QObject):
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
+                if pos_canvas[0] is None or pos_canvas[1] is None:
+                    return
+
                 if self.grid_status():
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
@@ -6749,13 +6763,19 @@ class App(QtCore.QObject):
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
-                self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                               "<b>Y</b>: %.4f" % (pos[0], pos[1]))
-
                 self.dx = pos[0] - float(self.rel_point1[0])
                 self.dy = pos[1] - float(self.rel_point1[1])
-                self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+                # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                #                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
+                # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+                units = self.defaults["units"].lower()
+                self.plotcanvas.text_hud.text = \
+                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                        self.dx, units, self.dy, units, pos[0], units, pos[1], units)
+
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
@@ -6804,9 +6824,10 @@ class App(QtCore.QObject):
                             # In this case poly_obj creation (see above) will fail
                             pass
 
-            except Exception:
-                self.ui.position_label.setText("")
-                self.ui.rel_position_label.setText("")
+            except Exception as e:
+                log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
+                # self.ui.position_label.setText("")
+                # self.ui.rel_position_label.setText("")
                 self.mouse = None
 
     def on_mouse_click_release_over_plot(self, event):
