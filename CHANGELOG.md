@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - Snap Toolbar is now visible in Fullscreen
 - in Fullscreen now the Notebook is available but it will be hidden on Fullscreen launch
 - fixed some minor issues (in the HUD added a separating line, missing an icon in toolbars on first launch)
+- made sure that the corner snap buttons are shown only in Editors
+- changed the HUD color when using Dark theme 
 
 10.05.2020
 

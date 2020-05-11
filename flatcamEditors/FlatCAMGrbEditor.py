@@ -3685,10 +3685,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
 
-        self.app.ui.snap_max_dist_entry.setEnabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(True)
-        self.app.ui.snap_magnet.setVisible(True)
         self.app.ui.corner_snap_btn.setVisible(True)
+        self.app.ui.snap_magnet.setVisible(True)
 
         self.app.ui.grb_editor_menu.setDisabled(False)
         self.app.ui.grb_editor_menu.menuAction().setVisible(True)
@@ -3735,29 +3733,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
-            if layout == 'standard':
-                # self.app.ui.exc_edit_toolbar.setVisible(False)
-
-                self.app.ui.snap_max_dist_entry.setEnabled(False)
-                self.app.ui.corner_snap_btn.setEnabled(False)
-                self.app.ui.snap_magnet.setVisible(False)
-                self.app.ui.corner_snap_btn.setVisible(False)
-            else:
-                # self.app.ui.exc_edit_toolbar.setVisible(True)
-
-                self.app.ui.snap_max_dist_entry.setEnabled(False)
-                self.app.ui.corner_snap_btn.setEnabled(False)
-                self.app.ui.snap_magnet.setVisible(True)
-                self.app.ui.corner_snap_btn.setVisible(True)
-        else:
-            # self.app.ui.exc_edit_toolbar.setVisible(False)
-
-            self.app.ui.snap_max_dist_entry.setEnabled(False)
-            self.app.ui.corner_snap_btn.setEnabled(False)
-            self.app.ui.snap_magnet.setVisible(False)
-            self.app.ui.corner_snap_btn.setVisible(False)
+        self.app.ui.corner_snap_btn.setVisible(False)
+        self.app.ui.snap_magnet.setVisible(False)
 
         # set the Editor Toolbar visibility to what was before entering in the Editor
         self.app.ui.grb_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \

@@ -1110,6 +1110,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_max_dist_entry.setToolTip(_("Max. magnet distance"))
         self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
+        self.corner_snap_btn.setVisible(False)
+        self.snap_magnet.setVisible(False)
+
         # ########################################################################
         # ########################## Notebook # ##################################
         # ########################################################################
@@ -2384,28 +2387,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored from QSettings.")
 
+        self.corner_snap_btn.setVisible(False)
+        self.snap_magnet.setVisible(False)
+
         if flat_settings.contains("layout"):
             layout = flat_settings.value('layout', type=str)
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
 
-            if layout == 'standard':
-                self.corner_snap_btn.setVisible(False)
-                self.snap_magnet.setVisible(False)
-            else:
-                self.snap_magnet.setVisible(True)
-                self.corner_snap_btn.setVisible(True)
-                self.snap_magnet.setDisabled(True)
-                self.corner_snap_btn.setDisabled(True)
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
         else:
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
-
-            self.corner_snap_btn.setVisible(False)
-            self.snap_magnet.setVisible(False)
 
             flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
@@ -2759,18 +2754,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
+        self.corner_snap_btn.setVisible(False)
+        self.snap_magnet.setVisible(False)
+
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("layout"):
             layout = qsettings.value('layout', type=str)
-
-            if layout == 'standard' or layout == 'minimal':
-                self.corner_snap_btn.setVisible(False)
-                self.snap_magnet.setVisible(False)
-            else:
-                self.corner_snap_btn.setVisible(True)
-                self.snap_magnet.setVisible(True)
-                self.corner_snap_btn.setDisabled(True)
-                self.snap_magnet.setDisabled(True)
 
             # on 'minimal' layout only some toolbars are active
             if layout != 'minimal':

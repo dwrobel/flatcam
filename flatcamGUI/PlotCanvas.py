@@ -58,7 +58,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.text_hud_color = 'black'
         else:
             self.line_color = (0.4, 0.4, 0.4, 1.0)
-            self.rect_hud_color = Color('#0000FF10')
+            self.rect_hud_color = Color('#80808040')
             self.text_hud_color = 'white'
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,

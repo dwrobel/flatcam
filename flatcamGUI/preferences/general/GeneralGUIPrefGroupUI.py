@@ -696,8 +696,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
             self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.exc_edit_toolbar)
 
-            self.app.ui.corner_snap_btn.setVisible(True)
-            self.app.ui.snap_magnet.setVisible(True)
         else:
             # ## TOOLBAR INSTALLATION # ##
             self.app.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
@@ -737,9 +735,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.app.ui.addToolBar(self.app.ui.grb_edit_toolbar)
 
-            self.app.ui.corner_snap_btn.setVisible(False)
-            self.app.ui.snap_magnet.setVisible(False)
-
         if current_layout == 'minimal':
             self.app.ui.toolbarview.setVisible(False)
             self.app.ui.toolbarshell.setVisible(False)
@@ -748,9 +743,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.exc_edit_toolbar.setVisible(False)
             self.app.ui.lock_toolbar(lock=True)
 
-            self.app.ui.corner_snap_btn.setVisible(False)
-            self.app.ui.snap_magnet.setVisible(False)
-
         # add all the actions to the toolbars
         self.app.ui.populate_toolbars()
 
@@ -758,6 +750,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.connect_toolbar_signals()
 
         self.app.ui.grid_snap_btn.setChecked(True)
+
+        self.app.ui.corner_snap_btn.setVisible(False)
+        self.app.ui.snap_magnet.setVisible(False)
 
         self.app.ui.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
         self.app.ui.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))
