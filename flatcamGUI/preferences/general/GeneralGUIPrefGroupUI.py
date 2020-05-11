@@ -654,7 +654,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.removeToolBar(self.app.ui.exc_edit_toolbar)
             self.app.ui.removeToolBar(self.app.ui.geo_edit_toolbar)
             self.app.ui.removeToolBar(self.app.ui.grb_edit_toolbar)
-            self.app.ui.removeToolBar(self.app.ui.snap_toolbar)
             self.app.ui.removeToolBar(self.app.ui.toolbarshell)
         except Exception:
             pass
@@ -697,11 +696,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
             self.app.ui.addToolBar(Qt.RightToolBarArea, self.app.ui.exc_edit_toolbar)
 
-            self.app.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.app.ui.snap_toolbar.setObjectName('Snap_TB')
-            self.app.ui.snap_toolbar.setMaximumHeight(30)
-            self.app.ui.splitter_left.addWidget(self.app.ui.snap_toolbar)
-
             self.app.ui.corner_snap_btn.setVisible(True)
             self.app.ui.snap_magnet.setVisible(True)
         else:
@@ -743,18 +737,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.app.ui.addToolBar(self.app.ui.grb_edit_toolbar)
 
-            self.app.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.app.ui.snap_toolbar.setObjectName('Snap_TB')
-            # self.app.ui.snap_toolbar.setMaximumHeight(30)
-            self.app.ui.addToolBar(self.app.ui.snap_toolbar)
-
             self.app.ui.corner_snap_btn.setVisible(False)
             self.app.ui.snap_magnet.setVisible(False)
 
         if current_layout == 'minimal':
             self.app.ui.toolbarview.setVisible(False)
             self.app.ui.toolbarshell.setVisible(False)
-            self.app.ui.snap_toolbar.setVisible(False)
             self.app.ui.geo_edit_toolbar.setVisible(False)
             self.app.ui.grb_edit_toolbar.setVisible(False)
             self.app.ui.exc_edit_toolbar.setVisible(False)
@@ -767,7 +755,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.connect_toolbar_signals()
 
         self.app.ui.grid_snap_btn.setChecked(True)
-        self.app.ui.on_grid_snap_triggered(state=True)
 
         self.app.ui.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
         self.app.ui.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))

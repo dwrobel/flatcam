@@ -4110,7 +4110,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
-            self.app.ui.on_grid_snap_triggered(state=True)
 
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)
@@ -4286,7 +4285,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         units = self.app.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.app.dx, units, self.app.dy, units, x, units, y, units)
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):

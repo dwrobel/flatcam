@@ -150,17 +150,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
 
-        self.rect_hud = Rectangle(center=(90,45), color=self.rect_hud_color, border_color=self.rect_hud_color,
-                                  width=170, height=80, radius=[5, 5, 5, 5], parent=None)
+        self.rect_hud = Rectangle(center=(95,50), color=self.rect_hud_color, border_color=self.rect_hud_color,
+                                  width=180, height=90, radius=[5, 5, 5, 5], parent=None)
         self.rect_hud.set_gl_state(depth_test=False)
 
         # HUD Display
         self.hud_enabled = False
 
-        self.text_hud = Text('', color=self.text_hud_color, pos=(8, 45), method='gpu', anchor_x='left', parent=None)
+        self.text_hud = Text('', color=self.text_hud_color, pos=(10, 50), method='gpu', anchor_x='left', parent=None)
         self.text_hud.font_size = 8
         units = self.fcapp.defaults["units"].lower()
-        self.text_hud.text = 'Dx:\t%s [%s]\nDy:\t%s [%s]\nX:  \t%s [%s]\nY:  \t%s [%s]' % \
+        self.text_hud.text = 'Dx:\t%s [%s]\nDy:\t%s [%s]\n\nX:  \t%s [%s]\nY:  \t%s [%s]' % \
                              ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
 
         if self.fcapp.defaults['global_hud'] is True:

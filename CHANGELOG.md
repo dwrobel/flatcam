@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - removed the labels in status bar that display X,Y positions and replaced it with a HUD display on canvas (combo key SHIFT+H) will toggle the display of the HUD
 - made the HUD work in Legacy2D mode
 - fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
+- remade the Snap Toolbar presence; now it is always active and situated in the Status Bar
 
 10.05.2020
 

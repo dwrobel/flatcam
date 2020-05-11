@@ -2064,18 +2064,22 @@ class App(QtCore.QObject):
         """
 
         # Toolbar
+
+        # File Toolbar Signals
         # self.ui.file_new_btn.triggered.connect(self.on_file_new)
         self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
         self.ui.file_save_btn.triggered.connect(self.on_file_saveproject)
         self.ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
         self.ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
 
+        # View Toolbar Signals
         self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
         self.ui.replot_btn.triggered.connect(self.plot_all)
         self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
+        # Edit Toolbar Signals
         self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
         self.ui.newgrb_btn.triggered.connect(self.new_gerber_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
@@ -2092,6 +2096,7 @@ class App(QtCore.QObject):
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
+        # Scripting Toolbar Signals
         self.ui.shell_btn.triggered.connect(self.toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
         self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
@@ -4573,7 +4578,6 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
-        self.ui.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -5390,7 +5394,7 @@ class App(QtCore.QObject):
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 dx, units, dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
@@ -5544,7 +5548,7 @@ class App(QtCore.QObject):
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.dx, units, self.dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
@@ -6773,7 +6777,7 @@ class App(QtCore.QObject):
 
                 units = self.defaults["units"].lower()
                 self.plotcanvas.text_hud.text = \
-                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                         self.dx, units, self.dy, units, pos[0], units, pos[1], units)
 
                 self.mouse = [pos[0], pos[1]]

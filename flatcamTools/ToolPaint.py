@@ -1738,7 +1738,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         units = self.app.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\n\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
                 self.app.dx, units, self.app.dy, units, curr_pos[0], units, curr_pos[1], units)
 
         # draw the utility geometry

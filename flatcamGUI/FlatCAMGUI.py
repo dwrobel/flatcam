@@ -819,15 +819,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.snap_toolbar = QtWidgets.QToolBar(_('Grid Toolbar'))
         self.snap_toolbar.setObjectName('Snap_TB')
-        self.addToolBar(self.snap_toolbar)
-
-        flat_settings = QSettings("Open Source", "FlatCAM")
-        if flat_settings.contains("layout"):
-            layout = flat_settings.value('layout', type=str)
-            if layout == 'compact':
-                self.removeToolBar(self.snap_toolbar)
-                self.snap_toolbar.setMaximumHeight(30)
-                self.splitter_left.addWidget(self.snap_toolbar)
+        # self.addToolBar(self.snap_toolbar)
+        self.snap_toolbar.setStyleSheet(
+            """
+            QToolBar { padding: 0; }
+            QToolBar QToolButton { padding: -2; margin: -2; }
+            """
+        )
 
         # ########################################################################
         # ########################## File Toolbar# ###############################
@@ -2302,10 +2300,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
-        self.snap_infobar_label = FCLabel()
-        self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
-        self.infobar.addWidget(self.snap_infobar_label)
-
         # self.rel_position_label = QtWidgets.QLabel(
         #     "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
         # self.rel_position_label.setMinimumWidth(110)
@@ -2317,6 +2311,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.position_label.setMinimumWidth(110)
         # self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
         # self.infobar.addWidget(self.position_label)
+
+        self.snap_toolbar.setMaximumHeight(24)
+        self.infobar.addWidget(self.snap_toolbar)
 
         self.units_label = QtWidgets.QLabel("[in]")
         self.units_label.setMargin(2)
@@ -2438,14 +2435,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             del qsettings
 
         self.lock_toolbar(lock=lock_state)
-        self.on_grid_snap_triggered(state=True)
 
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
         self.clear_btn.clicked.connect(self.on_gui_clear)
-        self.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
-        self.snap_infobar_label.clicked.connect(self.on_grid_icon_snap_clicked)
 
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
@@ -2454,29 +2448,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    def on_grid_snap_triggered(self, state):
-        """
-
-        :param state:   A parameter with the state of the grid, boolean
-
-        :return:
-        """
-        if state:
-            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_filled_16.png'))
-        else:
-            self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
-
-        self.snap_infobar_label.clicked_state = state
-
-    def on_grid_icon_snap_clicked(self):
-        """
-        Slot called by clicking a GUI element, in this case a FCLabel
-
-        :return:
-        """
-        if isinstance(self.sender(), FCLabel):
-            self.grid_snap_btn.trigger()
 
     def eventFilter(self, obj, event):
         """
@@ -2786,52 +2757,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
-        # ########################################################################
-        # ## Snap Toolbar # ##
-        # ########################################################################
-
-        # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
-        # self.addToolBar(self.snap_toolbar)
-        self.grid_snap_btn = self.snap_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
-        self.grid_gap_x_entry = FCEntry2()
-        self.grid_gap_x_entry.setMaximumWidth(70)
-        self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
-        self.snap_toolbar.addWidget(self.grid_gap_x_entry)
-
-        self.grid_gap_y_entry = FCEntry2()
-        self.grid_gap_y_entry.setMaximumWidth(70)
-        self.grid_gap_y_entry.setToolTip(_("Grid Y snapping distance"))
-        self.snap_toolbar.addWidget(self.grid_gap_y_entry)
-
-        self.grid_space_label = QtWidgets.QLabel("  ")
-        self.snap_toolbar.addWidget(self.grid_space_label)
-        self.grid_gap_link_cb = FCCheckBox()
-        self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n" 
-                                           "is copied to the Grid_Y value."))
-        self.snap_toolbar.addWidget(self.grid_gap_link_cb)
-
-        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
-
-        self.corner_snap_btn = self.snap_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
-
-        self.snap_max_dist_entry = FCEntry()
-        self.snap_max_dist_entry.setMaximumWidth(70)
-        self.snap_max_dist_entry.setToolTip(_("Max. magnet distance"))
-        self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
-
-        self.grid_snap_btn.setCheckable(True)
-        self.corner_snap_btn.setCheckable(True)
-        self.update_obj_btn.setEnabled(False)
-        # start with GRID activated
-        self.grid_snap_btn.trigger()
-
         qsettings = QSettings("Open Source", "FlatCAM")
         if qsettings.contains("layout"):
             layout = qsettings.value('layout', type=str)
 
-            if layout == 'standard':
+            if layout == 'standard' or layout == 'minimal':
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
             else:
