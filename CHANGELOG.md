@@ -22,8 +22,9 @@ CHANGELOG for FlatCAM beta
 - modified the HUD in Legacy2D when using Dark Theme to use different colors
 - modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
 - re-added the position labels in the status bar; they will be useful if HUD is Off (Altium does the same :) so learn from the best)
-
-
+- fixed the Tcl command Cncjob: there was a problem reported as issue #416. The command did not work due of the dpp parameter
+- modified the Tcl command Cncjob such that if some of the parameters are not used then the default values will be used (set with set_sys)
+- modified the Tcl command Drillcncjob to use the defaults when some of the parameters are not used
 
 10.05.2020
 

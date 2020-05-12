@@ -2092,19 +2092,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
-    def generatecncjob(
-            self, outname=None,
-            dia=None, offset=None,
-            z_cut=None, z_move=None,
-            feedrate=None, feedrate_z=None, feedrate_rapid=None,
-            spindlespeed=None, dwell=None, dwelltime=None,
-            multidepth=None, depthperpass=None,
-            toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, extracut_length=None, startz=None, endz=None,
-            pp=None,
-            segx=None, segy=None,
-            use_thread=True,
-            plot=True):
+    def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None,
+            feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
+            multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
+            extracut=None, extracut_length=None, startz=None, endz=None, pp=None, segx=None, segy=None,
+            use_thread=True, plot=True):
         """
         Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
@@ -2123,7 +2115,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param dwell:
         :param dwelltime:
         :param multidepth:
-        :param depthperpass:
+        :param dpp:             Depth for each pass when multidepth parameter is True
         :param toolchange:
         :param toolchangez:
         :param toolchangexy:
@@ -2150,7 +2142,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         feedrate_rapid = feedrate_rapid if feedrate_rapid is not None else float(self.options["feedrate_rapid"])
 
         multidepth = multidepth if multidepth is not None else self.options["multidepth"]
-        depthperpass = depthperpass if depthperpass is not None else float(self.options["depthperpass"])
+        depthperpass = dpp if dpp is not None else float(self.options["depthperpass"])
 
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])

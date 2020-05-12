@@ -2869,7 +2869,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Open Project
                 if key == QtCore.Qt.Key_O:
-                    self.app.on_file_openproject()
+                    self.app.on_file_openproject(signal=None)
 
                 # Open Project
                 if key == QtCore.Qt.Key_P:
