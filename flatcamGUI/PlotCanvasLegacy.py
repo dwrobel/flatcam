@@ -320,9 +320,14 @@ class PlotCanvasLegacy(QtCore.QObject):
         if state:
             self.hud_enabled = True
             self.text_hud.add_artist()
+
+            self.app.defaults['global_hud'] = True
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
+
+            self.app.defaults['global_hud'] = False
+            
         self.canvas.draw()
 
     class Thud(QtCore.QObject):
