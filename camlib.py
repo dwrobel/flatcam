@@ -2676,7 +2676,7 @@ class CNCjob(Geometry):
                 if self.xy_toolchange and self.xy_toolchange != '':
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
-                if self.xy_toolchange and len(self.xy_toolchange) < 2:
+                if self.xy_toolchange and len(self.xy_toolchange) != 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
