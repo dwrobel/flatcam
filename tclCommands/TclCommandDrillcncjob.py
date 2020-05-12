@@ -59,7 +59,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('name', 'Name of the source object.'),
             ('drilled_dias',
              'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). '
-             'No space allowed'),
+             'WARNING: No space allowed'),
             ('drillz', 'Drill depth into material (example: -2.0). Negative value.'),
             ('dpp', 'Progressive drilling into material with a specified step (example: 0.7). Positive value.'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
@@ -69,11 +69,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'The X,Y coordinates at Toolchange event in format (x, y) (example: (30.0, 15.2) or '
-                             'without parenthesis like: 0.3,1.0 - no spaces allowed in this case).'),
+                             'without parenthesis like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('startz', 'The Z coordinate at job start (example: 30.0).'),
             ('endz', 'The Z coordinate at job end (example: 30.0).'),
-            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (30.0, 15.2) or without parenthesis'
-                      'like: 0.3,1.0 - no spaces allowed in this case).'),
+            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (2.0, 1.2) or without parenthesis'
+                      'like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
@@ -240,8 +240,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     xy_toolchange = '0, 0'
             if len(eval(xy_toolchange)) != 2:
-                self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y - no spaces or "
-                                     "in format (x, y) - spaces allowed. But always two comma separated values.")
+                self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
+                                     "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
             endz = args["endz"] if "endz" in args and args["endz"] is not None else self.app.defaults["excellon_endz"]
 
@@ -252,9 +252,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     xy_end = self.app.defaults["excellon_endxy"]
                 else:
                     xy_end = '0, 0'
+
             if len(eval(xy_end)) != 2:
-                self.raise_tcl_error("The entered value for 'xy_end' needs to have the format x,y - no spaces or "
-                                     "in format (x, y) - spaces allowed. But always two comma separated values.")
+                self.raise_tcl_error("The entered value for 'xy_end' needs to have the format x,y or "
+                                     "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 

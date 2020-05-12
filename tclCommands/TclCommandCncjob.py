@@ -67,11 +67,11 @@ class TclCommandCncjob(TclCommandSignaled):
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'The X,Y coordinates at Toolchange event in format (x, y) (example: (30.0, 15.2) or '
-                             'without parenthesis like: 0.3,1.0 - no spaces allowed in this case).'),
+                             'without parenthesis like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('startz', 'Height before the first move.'),
             ('endz', 'Height where the last move will park.'),
-            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (30.0, 15.2) or without parenthesis'
-                      'like: 0.3,1.0 - no spaces allowed in this case).'),
+            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (2.0, 1.2) or without parenthesis'
+                      'like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
@@ -173,8 +173,8 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["endxy"] = '0, 0'
         if len(eval(args["endxy"])) != 2:
-            self.raise_tcl_error("The entered value for 'endxy' needs to have the format x,y - no spaces or "
-                                 "in format (x, y) - spaces allowed. But always two comma separated values.")
+            self.raise_tcl_error("The entered value for 'endxy' needs to have the format x,y or "
+                                 "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
 
@@ -208,8 +208,8 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["toolchangexy"] = '0, 0'
         if len(eval(args["toolchangexy"])) != 2:
-            self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y - no spaces or "
-                                 "in format (x, y) - spaces allowed. But always two comma separated values.")
+            self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
+                                 "in format (x, y) - no spaces allowed. But always two comma separated values.")
 
         del args['name']
 
