@@ -227,17 +227,24 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     toolchangez = obj.options["toolchangez"]
             else:
-                toolchange = False
-                toolchangez = 0.0
+                toolchange = self.app.defaults["excellon_toolchange"]
+                toolchangez = float(self.app.defaults["excellon_toolchangez"])
 
             xy_toolchange = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
-                obj.options["toolchangexy"]
+                self.app.defaults["excellon_toolchangexy"]
             xy_toolchange = ','.join([xy_toolchange[0], xy_toolchange[2]])
 
-            endz = args["endz"] if "endz" in args and args["endz"] is not None else obj.options["endz"]
-            xy_end = args["endxy"] if "endxy" in args and args["endxy"] else '0,0'
+            endz = args["endz"] if "endz" in args and args["endz"] is not None else self.app.defaults["excellon_endz"]
+            if "endxy" in args and args["endxy"]:
+                xy_end = args["endxy"]
+            else:
+                if self.app.defaults["excellon_endxy"]:
+                    xy_end = self.app.defaults["excellon_endxy"]
+                else:
+                    xy_end = (0, 0)
+
             xy_end = ','.join([xy_end[0], xy_end[2]])
-            print(xy_end)
+
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             # ##########################################################################################
@@ -248,7 +255,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.options['Tools_in_use'] = used_tools_info
             job_obj.options['type'] = 'Excellon'
 
-            pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_e"]
+            pp_excellon_name = args["pp"] if "pp" in args and args["pp"] else self.app.defaults["excellon_ppname_e"]
             job_obj.pp_excellon_name = pp_excellon_name
             job_obj.options['ppname_e'] = pp_excellon_name
 
@@ -259,16 +266,19 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     job_obj.z_depthpercut = float(obj.options["dpp"])
             else:
-                job_obj.multidepth = False
-                job_obj.z_depthpercut = 0.0
+                job_obj.multidepth = self.app.defaults["excellon_multidepth"]
+                job_obj.z_depthpercut = self.app.defaults["excellon_depthperpass"]
 
-            job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else obj.options["travelz"]
+            job_obj.z_move = float(args["travelz"]) if "travelz" in args and args["travelz"] else \
+                self.app.defaults["excellon_travelz"]
+
             job_obj.feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
-                obj.options["feedrate_z"]
+                self.app.defaults["excellon_feedrate_z"]
             job_obj.z_feedrate = float(args["feedrate_z"]) if "feedrate_z" in args and args["feedrate_z"] else \
-                obj.options["feedrate_z"]
+                self.app.defaults["excellon_feedrate_z"]
+
             job_obj.feedrate_rapid = float(args["feedrate_rapid"]) \
-                if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
+                if "feedrate_rapid" in args and args["feedrate_rapid"] else self.app.defaults["excellon_feedrate_rapid"]
 
             job_obj.spindlespeed = float(args["spindlespeed"]) if "spindlespeed" in args else None
             job_obj.spindledir = self.app.defaults['excellon_spindledir']
@@ -277,10 +287,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 if args['dwelltime'] is not None:
                     job_obj.dwelltime = float(args['dwelltime'])
                 else:
-                    job_obj.dwelltime = float(obj.options["dwelltime"])
+                    job_obj.dwelltime = float(self.app.defaults["excellon_dwelltime"])
             else:
-                job_obj.dwell = False
-                job_obj.dwelltime = 0.0
+                job_obj.dwell = self.app.defaults["excellon_dwell"]
+                job_obj.dwelltime = self.app.defaults["excellon_dwelltime"]
 
             job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
@@ -295,7 +305,15 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.toolchange = toolchange
             job_obj.xy_toolchange = xy_toolchange
             job_obj.z_toolchange = float(toolchangez)
-            job_obj.startz = float(args["startz"]) if "endz" in args and args["endz"] is not None else (0, 0)
+
+            if "startz" in args and args["startz"] is not None:
+                job_obj.startz = float(args["startz"])
+            else:
+                if self.app.defaults["excellon_startz"]:
+                    job_obj.startz = self.app.defaults["excellon_startz"]
+                else:
+                    job_obj.startz = (0, 0)
+
             job_obj.endz = float(endz)
             job_obj.xy_end = xy_end
             job_obj.excellon_optimization_type = opt_type
