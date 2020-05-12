@@ -37,10 +37,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('feedrate_rapid', float),
         ('spindlespeed', int),
         ('toolchangez', float),
-        ('toolchangexy', tuple),
+        ('toolchangexy', str),
         ('startz', float),
         ('endz', float),
-        ('endxy', tuple),
+        ('endxy', str),
         ('dwelltime', float),
         ('pp', str),
         ('opt_type', str),
@@ -68,10 +68,12 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
-            ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
+            ('toolchangexy', 'The X,Y coordinates at Toolchange event in format (x, y) (example: (30.0, 15.2) or '
+                             'without parenthesis like: 0.3,1.0 - no spaces allowed in this case).'),
             ('startz', 'The Z coordinate at job start (example: 30.0).'),
             ('endz', 'The Z coordinate at job end (example: 30.0).'),
-            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (30.0, 15.2)).'),
+            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (30.0, 15.2) or without parenthesis'
+                      'like: 0.3,1.0 - no spaces allowed in this case).'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
@@ -230,20 +232,29 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 toolchange = self.app.defaults["excellon_toolchange"]
                 toolchangez = float(self.app.defaults["excellon_toolchangez"])
 
-            xy_toolchange = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
-                self.app.defaults["excellon_toolchangexy"]
-            xy_toolchange = ','.join([xy_toolchange[0], xy_toolchange[2]])
+            if "toolchangexy" in args and args["toolchangexy"]:
+                xy_toolchange = args["toolchangexy"]
+            else:
+                if self.app.defaults["excellon_toolchangexy"]:
+                    xy_toolchange = self.app.defaults["excellon_toolchangexy"]
+                else:
+                    xy_toolchange = '0, 0'
+            if len(eval(xy_toolchange)) != 2:
+                self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y - no spaces or "
+                                     "in format (x, y) - spaces allowed. But always two comma separated values.")
 
             endz = args["endz"] if "endz" in args and args["endz"] is not None else self.app.defaults["excellon_endz"]
+
             if "endxy" in args and args["endxy"]:
                 xy_end = args["endxy"]
             else:
                 if self.app.defaults["excellon_endxy"]:
                     xy_end = self.app.defaults["excellon_endxy"]
                 else:
-                    xy_end = (0, 0)
-
-            xy_end = ','.join([xy_end[0], xy_end[2]])
+                    xy_end = '0, 0'
+            if len(eval(xy_end)) != 2:
+                self.raise_tcl_error("The entered value for 'xy_end' needs to have the format x,y - no spaces or "
+                                     "in format (x, y) - spaces allowed. But always two comma separated values.")
 
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 

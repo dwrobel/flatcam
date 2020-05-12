@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.05.2020
+
+- fixed recent issues introduced in Tcl command Drillcncjob
+- updated the Cncjob to use the 'endxy' parameter which dictates the x,y position at the end of the job
+- now the Tcl commands Drillcncjob and Cncjob can use the toolchangexy and endxy parameters with or without parenthesis (but no spaces allowed)
+
+
 11.05.2020
 
 - removed the labels in status bar that display X,Y positions and replaced it with a HUD display on canvas (combo key SHIFT+H) will toggle the display of the HUD

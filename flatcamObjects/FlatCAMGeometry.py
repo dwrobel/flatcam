@@ -2095,7 +2095,7 @@ class GeometryObject(FlatCAMObj, Geometry):
     def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None,
             feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, extracut_length=None, startz=None, endz=None, pp=None, segx=None, segy=None,
+            extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None, segx=None, segy=None,
             use_thread=True, plot=True):
         """
         Only used by the TCL Command Cncjob.
@@ -2118,11 +2118,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param dpp:             Depth for each pass when multidepth parameter is True
         :param toolchange:
         :param toolchangez:
-        :param toolchangexy:
+        :param toolchangexy:    A sequence ox X,Y coordinates: a 2-length tuple or a string.
+                                Coordinates in X,Y plane for the Toolchange event
         :param extracut:
         :param extracut_length:
         :param startz:
         :param endz:
+        :param endxy:           A sequence ox X,Y coordinates: a 2-length tuple or a string.
+                                Coordinates in X, Y plane for the last move after ending the job.
         :param pp:              Name of the preprocessor
         :param segx:
         :param segy:
@@ -2152,10 +2155,21 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
-        endxy = self.options["endxy"]
+
+        endxy = endxy if endxy else self.options["endxy"]
+        if isinstance(endxy, str):
+            endxy = re.sub('[()\[\]]', '', endxy)
+            if endxy and endxy != '':
+                endxy = [float(eval(a)) for a in endxy.split(",")]
 
         toolchangez = toolchangez if toolchangez else float(self.options["toolchangez"])
+
         toolchangexy = toolchangexy if toolchangexy else self.options["toolchangexy"]
+        if isinstance(toolchangexy, str):
+            toolchangexy = re.sub('[()\[\]]', '', toolchangexy)
+            if toolchangexy and toolchangexy != '':
+                toolchangexy = [float(eval(a)) for a in toolchangexy.split(",")]
+
         toolchange = toolchange if toolchange else self.options["toolchange"]
 
         offset = offset if offset else 0.0
