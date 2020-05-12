@@ -3438,8 +3438,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button == 1:
