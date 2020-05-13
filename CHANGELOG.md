@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.05.2020
+
+- updated the French translation strings, made by @micmac (Michel)
+
 12.05.2020
 
 - fixed recent issues introduced in Tcl command Drillcncjob
