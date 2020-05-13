@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - updated the Cncjob to use the 'endxy' parameter which dictates the x,y position at the end of the job
 - now the Tcl commands Drillcncjob and Cncjob can use the toolchangexy and endxy parameters with or without parenthesis (but no spaces allowed)
 - modified the Tcl command Paint "single" parameter. Now it's value is a tuple with the x,y coordinates of the single polygon to be painted.
+- the HUD display state is now persistent between app restarts
+- updated the Distance Tool such that the right click of the mouse will cancel the tool unless it was a panning move
+- modified the PlotCanvasLegacy to decide if there is a mouse drag based on the distance between the press event position and the release event position. If the distance is smaller than a delta distance then it is not a drag move.
 
 11.05.2020
 

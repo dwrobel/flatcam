@@ -302,6 +302,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         # signal is the mouse is dragging
         self.is_dragging = False
 
+        self.mouse_press_pos = None
+
         # signal if there is a doubleclick
         self.is_dblclk = False
 
@@ -320,9 +322,14 @@ class PlotCanvasLegacy(QtCore.QObject):
         if state:
             self.hud_enabled = True
             self.text_hud.add_artist()
+
+            self.app.defaults['global_hud'] = True
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
+
+            self.app.defaults['global_hud'] = False
+
         self.canvas.draw()
 
     class Thud(QtCore.QObject):
@@ -853,6 +860,7 @@ class PlotCanvasLegacy(QtCore.QObject):
     def on_mouse_press(self, event):
 
         self.is_dragging = True
+        self.mouse_press_pos = (event.x, event.y)
 
         # Check for middle mouse button press
         if self.app.defaults["global_pan_button"] == '2':
@@ -878,7 +886,11 @@ class PlotCanvasLegacy(QtCore.QObject):
 
     def on_mouse_release(self, event):
 
-        self.is_dragging = False
+        mouse_release_pos = (event.x, event.y)
+        delta = 0.05
+
+        if abs(self.distance(self.mouse_press_pos, mouse_release_pos)) < delta:
+            self.is_dragging = False
 
         # Check for middle mouse button release to complete pan procedure
         # Check for middle mouse button press

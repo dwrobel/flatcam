@@ -170,6 +170,8 @@ class Distance(FlatCAMTool):
         # store here if the snap button was clicked
         self.snap_toggled = None
 
+        self.mouse_is_dragging = False
+
         # VisPy visuals
         if self.app.is_legacy is False:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
@@ -392,12 +394,16 @@ class Distance(FlatCAMTool):
         # are used for panning on the canvas
         log.debug("Distance Tool --> mouse click release")
 
-        if event.button == 1:
-            if self.app.is_legacy is False:
-                event_pos = event.pos
-            else:
-                event_pos = (event.xdata, event.ydata)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+            event_is_dragging = self.mouse_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            event_is_dragging = self.app.plotcanvas.is_dragging
 
+        if event.button == 1:
             pos_canvas = self.canvas.translate_coords(event_pos)
 
             if self.snap_center_cb.get_value() is False:
@@ -478,6 +484,8 @@ class Distance(FlatCAMTool):
                 self.rel_point1 = pos
 
             self.calculate_distance(pos=pos)
+        elif event.button == right_button and event_is_dragging is False:
+            self.deactivate_measure_tool()
 
     def calculate_distance(self, pos):
         if len(self.points) == 1:
@@ -522,6 +530,7 @@ class Distance(FlatCAMTool):
         try:  # May fail in case mouse not within axes
             if self.app.is_legacy is False:
                 event_pos = event.pos
+                self.mouse_is_dragging = event.is_dragging
             else:
                 event_pos = (event.xdata, event.ydata)
 

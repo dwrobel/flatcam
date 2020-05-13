@@ -187,10 +187,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.hud_enabled = True
             self.rect_hud.parent = self.view
             self.text_hud.parent = self.view
+
+            self.fcapp.defaults['global_hud'] = True
         else:
             self.hud_enabled = False
             self.rect_hud.parent = None
             self.text_hud.parent = None
+
+            self.fcapp.defaults['global_hud'] = False
 
     def draw_workspace(self, workspace_size):
         """
