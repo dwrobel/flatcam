@@ -150,19 +150,38 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
 
-        self.rect_hud = Rectangle(center=(95,50), color=self.rect_hud_color, border_color=self.rect_hud_color,
-                                  width=180, height=90, radius=[5, 5, 5, 5], parent=None)
-        self.rect_hud.set_gl_state(depth_test=False)
-
         # HUD Display
         self.hud_enabled = False
 
-        self.text_hud = Text('', color=self.text_hud_color, pos=(10, 50), method='gpu', anchor_x='left', parent=None)
-        self.text_hud.font_size = 8
+        # font size
+        qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            fsize = qsettings.value('hud_font_size', type=int)
+        else:
+            fsize = 8
+
+        # units
         units = self.fcapp.defaults["units"].lower()
+
+        # coordinates and anchors
+        height = fsize * 11     # 90. Constant 11 is something that works
+        width = height * 2      # width is double the height = it is something that works
+        center_x = (width / 2) + 5
+        center_y = (height / 2) + 5
+
+        # text
+        self.text_hud = Text('', color=self.text_hud_color, pos=(10, center_y), method='gpu', anchor_x='left',
+                             parent=None)
+        self.text_hud.font_size = fsize
         self.text_hud.text = 'Dx:\t%s [%s]\nDy:\t%s [%s]\n\nX:  \t%s [%s]\nY:  \t%s [%s]' % \
                              ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
 
+        # rectangle
+        self.rect_hud = Rectangle(center=(center_x, center_y), width=width, height=height, radius=[5, 5, 5, 5],
+                                  border_color=self.rect_hud_color, color=self.rect_hud_color, parent=None)
+        self.rect_hud.set_gl_state(depth_test=False)
+
+        # enable the HUD if it is activated in FlatCAM Preferences
         if self.fcapp.defaults['global_hud'] is True:
             self.on_toggle_hud(state=True)
 

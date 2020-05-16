@@ -1478,7 +1478,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ncc_method_combo = FCComboBox()
         self.ncc_method_combo.addItems(
-            [_("Standard"), _("Seed"), _("Lines")]
+            [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
         self.ncc_method_combo.setObjectName("gdb_n_method")
 

@@ -978,6 +978,10 @@ class PreferencesUIManager:
         tb_fsize = self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
         settgs.setValue('textbox_font_size', tb_fsize)
 
+        # save the HUD font size
+        hud_fsize = self.ui.general_defaults_form.general_app_set_group.hud_font_size_spinner.get_value()
+        settgs.setValue('hud_font_size', hud_fsize)
+
         settgs.setValue(
             'machinist',
             1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0

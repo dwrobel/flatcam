@@ -3589,6 +3589,11 @@ class App(QtCore.QObject):
                 'textbox_font_size',
                 self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
             )
+            stgs.setValue(
+                'hud_font_size',
+                self.ui.general_defaults_form.general_app_set_group.hud_font_size_spinner.get_value()
+            )
+
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
             stgs.setValue(
                 'machinist',
@@ -6519,10 +6524,7 @@ class App(QtCore.QObject):
                 self.inform.emit('')
 
     def grid_status(self):
-        if self.ui.grid_snap_btn.isChecked():
-            return True
-        else:
-            return False
+        return True if self.ui.grid_snap_btn.isChecked() else False
 
     def populate_cmenu_grids(self):
         units = self.defaults['units'].lower()
@@ -6578,14 +6580,11 @@ class App(QtCore.QObject):
             else:
                 if val not in self.defaults["global_grid_context_menu"][str(units)]:
                     self.defaults["global_grid_context_menu"][str(units)].append(val)
-                    self.inform.emit('[success] %s...' %
-                                     _("New Grid added"))
+                    self.inform.emit('[success] %s...' % _("New Grid added"))
                 else:
-                    self.inform.emit('[WARNING_NOTCL] %s...' %
-                                     _("Grid already exists"))
+                    self.inform.emit('[WARNING_NOTCL] %s...' % _("Grid already exists"))
         else:
-            self.inform.emit('[WARNING_NOTCL] %s...' %
-                             _("Adding New Grid cancelled"))
+            self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding New Grid cancelled"))
 
     def on_grid_delete(self):
         # ## Current application units in lower Case
@@ -6606,14 +6605,11 @@ class App(QtCore.QObject):
                 try:
                     self.defaults["global_grid_context_menu"][str(units)].remove(val)
                 except ValueError:
-                    self.inform.emit('[ERROR_NOTCL]%s...' %
-                                     _(" Grid Value does not exist"))
+                    self.inform.emit('[ERROR_NOTCL]%s...' % _(" Grid Value does not exist"))
                     return
-                self.inform.emit('[success] %s...' %
-                                 _("Grid Value deleted"))
+                self.inform.emit('[success] %s...' % _("Grid Value deleted"))
         else:
-            self.inform.emit('[WARNING_NOTCL] %s...' %
-                             _("Delete Grid value cancelled"))
+            self.inform.emit('[WARNING_NOTCL] %s...' % _("Delete Grid value cancelled"))
 
     def on_shortcut_list(self):
         self.defaults.report_usage("on_shortcut_list()")

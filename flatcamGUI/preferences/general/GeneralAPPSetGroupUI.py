@@ -257,10 +257,29 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.textbox_font_size_label, 13, 0)
         grid0.addWidget(self.textbox_font_size_spinner, 13, 1)
 
+        # HUD Font Size
+        self.hud_font_size_label = QtWidgets.QLabel('%s:' % _('HUD'))
+        self.hud_font_size_label.setToolTip(
+            _("This sets the font size for the Heads Up Display.")
+        )
+
+        self.hud_font_size_spinner = FCSpinner()
+        self.hud_font_size_spinner.set_range(8, 40)
+        self.hud_font_size_spinner.setWrapping(True)
+
+        qsettings = QSettings("Open Source", "FlatCAM")
+        if qsettings.contains("hud_font_size"):
+            self.hud_font_size_spinner.set_value(settings.value('hud_font_size', type=int))
+        else:
+            self.hud_font_size_spinner.set_value(8)
+
+        grid0.addWidget(self.hud_font_size_label, 14, 0)
+        grid0.addWidget(self.hud_font_size_spinner, 14, 1)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 2)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # -----------------------------------------------------------
         # -------------- MOUSE SETTINGS -----------------------------

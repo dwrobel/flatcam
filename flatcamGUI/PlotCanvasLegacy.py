@@ -343,7 +343,16 @@ class PlotCanvasLegacy(QtCore.QObject):
             self._text = 'Dx:    %s [%s]\nDy:    %s [%s]\n\nX:      %s [%s]\nY:      %s [%s]' % \
                          ('0.0000', units, '0.0000', units, '0.0000', units, '0.0000', units)
 
-            self.hud_holder = AnchoredText(self._text, prop=dict(size=20), frameon=True, loc='upper left')
+            # set font size
+            qsettings = QtCore.QSettings("Open Source", "FlatCAM")
+            if qsettings.contains("hud_font_size"):
+                # I multiply with 2.5 because this seems to be the difference between the value taken by the VisPy (3D)
+                # and Matplotlib (Legacy2D FlatCAM graphic engine)
+                fsize = int(qsettings.value('hud_font_size', type=int) * 2.5)
+            else:
+                fsize = 20
+
+            self.hud_holder = AnchoredText(self._text, prop=dict(size=fsize), frameon=True, loc='upper left')
             self.hud_holder.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
 
             fc_color = self.p.rect_hud_color[:-2]

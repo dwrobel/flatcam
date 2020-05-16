@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.05.2020
+
+- worked on the NCC Tool; added a new clear method named 'Combo' which will go through all methods until the clear is done
+- added a Preferences parameter for font size used in HUD
+
 13.05.2020
 
 - updated the French translation strings, made by @micmac (Michel)

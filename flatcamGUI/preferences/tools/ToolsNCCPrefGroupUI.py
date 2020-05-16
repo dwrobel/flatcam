@@ -227,7 +227,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # ], orientation='vertical', stretch=False)
         self.ncc_method_combo = FCComboBox()
         self.ncc_method_combo.addItems(
-            [_("Standard"), _("Seed"), _("Lines")]
+            [_("Standard"), _("Seed"), _("Lines"), _("Combo")]
         )
 
         grid0.addWidget(methodlabel, 12, 0)
