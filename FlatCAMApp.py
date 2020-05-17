@@ -2506,10 +2506,13 @@ class App(QtCore.QObject):
         else:
             self.ui.grb_edit_toolbar.setVisible(False)
 
-        if tb & 128:
-            self.ui.snap_toolbar.setVisible(True)
-        else:
-            self.ui.snap_toolbar.setVisible(False)
+        # if tb & 128:
+        #     self.ui.snap_toolbar.setVisible(True)
+        # else:
+        #     self.ui.snap_toolbar.setVisible(False)
+
+        # Grid Toolbar is always active now
+        self.ui.snap_toolbar.setVisible(True)
 
         if tb & 256:
             self.ui.toolbarshell.setVisible(True)
