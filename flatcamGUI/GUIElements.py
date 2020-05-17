@@ -684,6 +684,8 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+        self.setSizePolicy(sizePolicy)
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
@@ -816,6 +818,8 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+        self.setSizePolicy(sizePolicy)
 
     def on_edit_finished(self):
         self.clearFocus()
