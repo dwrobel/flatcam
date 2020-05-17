@@ -486,6 +486,7 @@ class Distance(FlatCAMTool):
             self.calculate_distance(pos=pos)
         elif event.button == right_button and event_is_dragging is False:
             self.deactivate_measure_tool()
+            self.app.inform.emit(_("Distance Tool cancelled."))
 
     def calculate_distance(self, pos):
         if len(self.points) == 1:

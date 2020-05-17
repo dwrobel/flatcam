@@ -4888,8 +4888,8 @@ class App(QtCore.QObject):
 
     def on_workspace_modified(self):
         # self.save_defaults(silent=True)
-        if self.is_legacy is True:
-            self.plotcanvas.delete_workspace()
+
+        self.plotcanvas.delete_workspace()
         self.preferencesUiManager.defaults_read_form()
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
@@ -4907,6 +4907,7 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
+
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()

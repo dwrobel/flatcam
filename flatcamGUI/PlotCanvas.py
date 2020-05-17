@@ -235,17 +235,24 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         a = np.array([(0, 0), (dims[0], 0), (dims[0], dims[1]), (0, dims[1])])
 
-        if not self.workspace_line:
-            self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 0.7),
-                                       antialias=True, method='agg', parent=self.view.scene)
-        else:
-            self.workspace_line.parent = self.view.scene
+        # if not self.workspace_line:
+        #     self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 0.7),
+        #                                antialias=True, method='agg', parent=self.view.scene)
+        # else:
+        #     self.workspace_line.parent = self.view.scene
+        self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 0.7),
+                                   antialias=True, method='agg', parent=self.view.scene)
+
+        self.fcapp.ui.wplace_label.set_value(workspace_size[:3])
+        self.fcapp.ui.wplace_label.setToolTip(workspace_size)
+        self.fcapp.ui.wplace_label.show()
 
     def delete_workspace(self):
         try:
             self.workspace_line.parent = None
         except Exception:
             pass
+        self.fcapp.ui.wplace_label.hide()
 
     # redraw the workspace lines on the plot by re adding them to the parent view.scene
     def restore_workspace(self):

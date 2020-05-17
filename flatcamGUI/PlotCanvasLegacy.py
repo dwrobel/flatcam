@@ -417,12 +417,17 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.axes.add_line(self.workspace_line)
             self.canvas.draw()
 
+        self.app.ui.wplace_label.set_value(workspace_size[:3])
+        self.app.ui.wplace_label.setToolTip(workspace_size)
+        self.app.ui.wplace_label.show()
+
     def delete_workspace(self):
         try:
             self.axes.lines.remove(self.workspace_line)
             self.canvas.draw()
         except Exception:
             pass
+        self.app.ui.wplace_label.hide()
 
     def graph_event_connect(self, event_name, callback):
         """

@@ -2326,7 +2326,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.snap_toolbar)
 
-        self.units_label = QtWidgets.QLabel("[in]")
+        self.wplace_label = FCLabel("A4")
+        self.wplace_label.setMargin(2)
+        self.infobar.addWidget(self.wplace_label)
+        self.wplace_label.hide()
+
+        self.units_label = QtWidgets.QLabel("[mm]")
         self.units_label.setMargin(2)
         self.infobar.addWidget(self.units_label)
 

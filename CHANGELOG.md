@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - added new FlatCAM Tool: Corner Markers Tool which will add line markers in the selected corners of the bounding box of the targeted Gerber object
 - added a menu entry in Menu -> View for Toggle HUD
 - solved the issue with the GUI in the Notebook being expanded too much in width due of the FCDoubleSpinner and FCSpinner sizeHint by setting the sizePolicy to Ignored value
+- fixed the workspace being always A4
+- added a label in the status bar to show if the workplace is active and what size it is
 
 16.05.2020
 
