@@ -903,6 +903,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_grid_lines.triggered.connect(self.on_toggle_grid_lines)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
+        self.ui.menuview_toggle_hud.triggered.connect(self.on_toggle_hud)
 
         self.ui.menutoolshell.triggered.connect(self.toggle_shell)
 
@@ -4584,6 +4585,9 @@ class App(QtCore.QObject):
                     self.plotcanvas.axes.lines.remove(self.plotcanvas.v_line)
                     self.plotcanvas.canvas.draw()
             self.toggle_axis = False
+
+    def on_toggle_hud(self):
+        self.plotcanvas.on_toggle_hud(state=False if self.plotcanvas.hud_enabled else True)
 
     def on_toggle_grid(self):
         self.defaults.report_usage("on_toggle_grid()")

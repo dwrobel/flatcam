@@ -493,6 +493,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tShift+G"))
         self.menuview_toggle_workspace = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
+        self.menuview_toggle_hud = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+M"))
 
         # ########################################################################
         # ########################## Objects # ###################################
@@ -2924,9 +2926,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Toggle HUD (Heads-Up Display)
                 if key == QtCore.Qt.Key_H:
-                    state = False if self.app.plotcanvas.hud_enabled else True
-                    self.app.plotcanvas.on_toggle_hud(state=state)
-
+                    self.app.on_toggle_hud()
                 # Locate in Object
                 if key == QtCore.Qt.Key_J:
                     self.app.on_locate(obj=self.app.collection.get_active())

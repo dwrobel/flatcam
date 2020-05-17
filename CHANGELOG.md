@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 17.05.2020
 
 - added new FlatCAM Tool: Corner Markers Tool which will add line markers in the selected corners of the bounding box of the targeted Gerber object
+- added a menu entry in Menu -> View for Toggle HUD
 
 16.05.2020
 
