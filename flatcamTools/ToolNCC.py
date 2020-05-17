@@ -2093,75 +2093,77 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     isolated_geo = self.generate_envelope(tool_iso / 2, 0)
 
                 if isolated_geo == 'fail':
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
-                else:
-                    if ncc_margin < tool_iso:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
-                                                                      "than isolation tool diameter."))
-                    try:
-                        for geo_elem in isolated_geo:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s' %
+                                         (_("Isolation geometry could not be generated."), str(tool_iso)))
+                    continue
 
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
+                if ncc_margin < tool_iso:
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
+                                                                  "than isolation tool diameter."))
+                try:
+                    for geo_elem in isolated_geo:
+                        # provide the app with a way to process the GUI events when in a blocking loop
+                        QtWidgets.QApplication.processEvents()
 
-                            if isinstance(geo_elem, Polygon):
-                                for ring in self.poly2rings(geo_elem):
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        if isinstance(geo_elem, Polygon):
+                            for ring in self.poly2rings(geo_elem):
+                                new_geo = ring.intersection(bounding_box)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiPolygon):
+                            for poly in geo_elem:
+                                for ring in self.poly2rings(poly):
                                     new_geo = ring.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
-                            elif isinstance(geo_elem, MultiPolygon):
-                                for poly in geo_elem:
-                                    for ring in self.poly2rings(poly):
-                                        new_geo = ring.intersection(bounding_box)
-                                        if new_geo and not new_geo.is_empty:
-                                            new_geometry.append(new_geo)
-                            elif isinstance(geo_elem, LineString):
-                                new_geo = geo_elem.intersection(bounding_box)
-                                if new_geo:
-                                    if not new_geo.is_empty:
-                                        new_geometry.append(new_geo)
-                            elif isinstance(geo_elem, MultiLineString):
-                                for line_elem in geo_elem:
-                                    new_geo = line_elem.intersection(bounding_box)
-                                    if new_geo and not new_geo.is_empty:
-                                        new_geometry.append(new_geo)
-                    except TypeError:
-                        if isinstance(isolated_geo, Polygon):
-                            for ring in self.poly2rings(isolated_geo):
-                                new_geo = ring.intersection(bounding_box)
-                                if new_geo:
-                                    if not new_geo.is_empty:
-                                        new_geometry.append(new_geo)
-                        elif isinstance(isolated_geo, LineString):
-                            new_geo = isolated_geo.intersection(bounding_box)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                        elif isinstance(isolated_geo, MultiLineString):
-                            for line_elem in isolated_geo:
+                        elif isinstance(geo_elem, LineString):
+                            new_geo = geo_elem.intersection(bounding_box)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiLineString):
+                            for line_elem in geo_elem:
                                 new_geo = line_elem.intersection(bounding_box)
                                 if new_geo and not new_geo.is_empty:
                                     new_geometry.append(new_geo)
+                except TypeError:
+                    if isinstance(isolated_geo, Polygon):
+                        for ring in self.poly2rings(isolated_geo):
+                            new_geo = ring.intersection(bounding_box)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                    elif isinstance(isolated_geo, LineString):
+                        new_geo = isolated_geo.intersection(bounding_box)
+                        if new_geo and not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+                    elif isinstance(isolated_geo, MultiLineString):
+                        for line_elem in isolated_geo:
+                            new_geo = line_elem.intersection(bounding_box)
+                            if new_geo and not new_geo.is_empty:
+                                new_geometry.append(new_geo)
 
-                    # a MultiLineString geometry element will show that the isolation is broken for this tool
-                    for geo_e in new_geometry:
-                        if type(geo_e) == MultiLineString:
-                            warning_flag += 1
-                            break
+                # a MultiLineString geometry element will show that the isolation is broken for this tool
+                for geo_e in new_geometry:
+                    if type(geo_e) == MultiLineString:
+                        warning_flag += 1
+                        break
 
-                    current_uid = 0
-                    for k, v in tools_storage.items():
-                        if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
-                                                                                            tool_iso)):
-                            current_uid = int(k)
-                            # add the solid_geometry to the current too in self.paint_tools dictionary
-                            # and then reset the temporary list that stored that solid_geometry
-                            v['solid_geometry'] = deepcopy(new_geometry)
-                            v['data']['name'] = name
-                            break
-                    geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                current_uid = 0
+                for k, v in tools_storage.items():
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                        tool_iso)):
+                        current_uid = int(k)
+                        # add the solid_geometry to the current too in self.paint_tools dictionary
+                        # and then reset the temporary list that stored that solid_geometry
+                        v['solid_geometry'] = deepcopy(new_geometry)
+                        v['data']['name'] = name
+                        break
+                geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
 
             sol_geo = cascaded_union(isolated_geo)
             if has_offset is True:

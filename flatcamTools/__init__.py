@@ -1,4 +1,3 @@
-import sys
 
 from flatcamTools.ToolCalculators import ToolCalculator
 from flatcamTools.ToolCalibration import ToolCalibration
@@ -41,3 +40,4 @@ from flatcamTools.ToolTransform import ToolTransform
 from flatcamTools.ToolPunchGerber import ToolPunchGerber
 
 from flatcamTools.ToolInvertGerber import ToolInvertGerber
+from flatcamTools.ToolCorners import ToolCorners

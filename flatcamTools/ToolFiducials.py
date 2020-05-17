@@ -234,7 +234,7 @@ class ToolFiducials(FlatCAMTool):
         # Line Thickness #
         self.line_thickness_label = QtWidgets.QLabel('%s:' % _("Line thickness"))
         self.line_thickness_label.setToolTip(
-            _("Bounding box margin.")
+            _("Thickness of the line that makes the fiducial.")
         )
         self.line_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.line_thickness_entry.set_range(0.00001, 9999.9999)
@@ -353,7 +353,8 @@ class ToolFiducials(FlatCAMTool):
 
         self.margin_val = None
         self.sec_position = None
-        self.geo_steps_per_circle = 128
+
+        self.grb_steps_per_circle = self.app.defaults["gerber_circle_steps"]
 
         self.click_points = []
 
@@ -471,7 +472,7 @@ class ToolFiducials(FlatCAMTool):
         if self.mode_method == 'auto':
             xmin, ymin, xmax, ymax = self.grb_object.bounds()
             bbox = box(xmin, ymin, xmax, ymax)
-            buf_bbox = bbox.buffer(self.margin_val, join_style=2)
+            buf_bbox = bbox.buffer(self.margin_val, self.grb_steps_per_circle, join_style=2)
             x0, y0, x1, y1 = buf_bbox.bounds
 
             self.click_points.append(
@@ -539,7 +540,7 @@ class ToolFiducials(FlatCAMTool):
         radius = fid_size / 2.0
 
         if fid_type == 'circular':
-            geo_list = [Point(pt).buffer(radius) for pt in points_list]
+            geo_list = [Point(pt).buffer(radius, self.grb_steps_per_circle) for pt in points_list]
 
             aperture_found = None
             for ap_id, ap_val in g_obj.apertures.items():
@@ -604,8 +605,8 @@ class ToolFiducials(FlatCAMTool):
             geo_buff_list = []
             if aperture_found:
                 for geo in geo_list:
-                    geo_buff_h = geo[0].buffer(line_thickness / 2.0)
-                    geo_buff_v = geo[1].buffer(line_thickness / 2.0)
+                    geo_buff_h = geo[0].buffer(line_thickness / 2.0, self.grb_steps_per_circle)
+                    geo_buff_v = geo[1].buffer(line_thickness / 2.0, self.grb_steps_per_circle)
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 
@@ -629,8 +630,8 @@ class ToolFiducials(FlatCAMTool):
                 g_obj.apertures[new_apid]['geometry'] = []
 
                 for geo in geo_list:
-                    geo_buff_h = geo[0].buffer(line_thickness / 2.0)
-                    geo_buff_v = geo[1].buffer(line_thickness / 2.0)
+                    geo_buff_h = geo[0].buffer(line_thickness / 2.0, self.grb_steps_per_circle)
+                    geo_buff_v = geo[1].buffer(line_thickness / 2.0, self.grb_steps_per_circle)
                     geo_buff_list.append(geo_buff_h)
                     geo_buff_list.append(geo_buff_v)
 

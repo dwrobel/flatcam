@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.05.2020
+
+- added new FlatCAM Tool: Corner Markers Tool which will add line markers in the selected corners of the bounding box of the targeted Gerber object
+
 16.05.2020
 
 - worked on the NCC Tool; added a new clear method named 'Combo' which will go through all methods until the clear is done

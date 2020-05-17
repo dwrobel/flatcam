@@ -3,6 +3,7 @@ from PyQt5.QtCore import QSettings
 
 from flatcamGUI.preferences.tools.ToolsSubPrefGroupUI import ToolsSubPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsSolderpastePrefGroupUI import ToolsSolderpastePrefGroupUI
+from flatcamGUI.preferences.tools.ToolsCornersPrefGroupUI import ToolsCornersPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsTransformPrefGroupUI import ToolsTransformPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsCalculatorsPrefGroupUI import ToolsCalculatorsPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsPanelizePrefGroupUI import ToolsPanelizePrefGroupUI
@@ -62,6 +63,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals)
         self.tools_solderpaste_group.setMinimumWidth(200)
 
+        self.tools_corners_group = ToolsCornersPrefGroupUI(decimals=self.decimals)
+        self.tools_corners_group.setMinimumWidth(200)
+
         self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals)
         self.tools_sub_group.setMinimumWidth(200)
 
@@ -84,6 +88,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay4 = QtWidgets.QVBoxLayout()
         self.vlay4.addWidget(self.tools_solderpaste_group)
+        self.vlay4.addWidget(self.tools_corners_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)

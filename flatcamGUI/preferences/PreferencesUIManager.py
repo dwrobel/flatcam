@@ -467,6 +467,12 @@ class PreferencesUIManager:
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
 
+            # Corner Markers Tool
+
+            "tools_corners_thickness": self.ui.tools_defaults_form.tools_corners_group.thick_entry,
+            "tools_corners_length": self.ui.tools_defaults_form.tools_corners_group.l_entry,
+            "tools_corners_margin": self.ui.tools_defaults_form.tools_corners_group.margin_entry,
+
             # #######################################################################################################
             # ########################################## TOOLS 2 ####################################################
             # #######################################################################################################

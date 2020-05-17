@@ -954,6 +954,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
         self.invert_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
+        self.corners_tool_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -1613,6 +1615,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>Alt+M</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Alt+N</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1742,7 +1748,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
-                _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
+                _("Film PCB Tool"), _("Corner Markers Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
                 _("View File Source"),
                 _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
@@ -2633,6 +2639,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
         self.invert_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
+        self.corners_tool_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
 
         # ########################################################################
         # ## Excellon Editor Toolbar # ##
@@ -3020,6 +3028,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Film Tool
                 if key == QtCore.Qt.Key_L:
                     self.app.film_tool.run(toggle=True)
+                    return
+
+                # Corner Markers Tool
+                if key == QtCore.Qt.Key_M:
+                    self.app.corners_tool.run(toggle=True)
                     return
 
                 # Non-Copper Clear Tool
