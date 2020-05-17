@@ -284,6 +284,27 @@ class DocumentObject(FlatCAMObj):
         self.ui.sel_color_entry.set_value(new_val)
         self.app.defaults['document_sel_color'] = new_val
 
+    def mirror(self, axis, point):
+        pass
+
+    def offset(self, vect):
+        pass
+
+    def rotate(self, angle, point):
+        pass
+
+    def scale(self, xfactor, yfactor=None, point=None):
+        pass
+
+    def skew(self, angle_x, angle_y, point):
+        pass
+
+    def buffer(self, distance, join, factor=None):
+        pass
+
+    def bounds(self, flatten=False):
+        return None, None, None, None
+
     def to_dict(self):
         """
         Returns a representation of the object as a dictionary.

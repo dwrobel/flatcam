@@ -3080,7 +3080,10 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        xmin, ymin, xmax, ymax = obj.bounds()
+        try:
+            xmin, ymin, xmax, ymax = obj.bounds()
+        except TypeError:
+            return
         obj.options['xmin'] = xmin
         obj.options['ymin'] = ymin
         obj.options['xmax'] = xmax
