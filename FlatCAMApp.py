@@ -2134,7 +2134,7 @@ class App(QtCore.QObject):
 
     def object2editor(self):
         """
-        Send the current Geometry or Excellon object (if any) into the it's editor.
+        Send the current Geometry, Gerber, Excellon object or CNCJob (if any) into the it's editor.
 
         :return: None
         """
@@ -2146,10 +2146,10 @@ class App(QtCore.QObject):
         edited_object = self.collection.get_active()
 
         if isinstance(edited_object, GerberObject) or isinstance(edited_object, GeometryObject) or \
-                isinstance(edited_object, ExcellonObject):
+                isinstance(edited_object, ExcellonObject) or isinstance(edited_object, CNCJobObject):
             pass
         else:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber or Excellon Object to edit."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber, Excellon or CNCJob Object to edit."))
             return
 
         if isinstance(edited_object, GeometryObject):
@@ -2212,6 +2212,14 @@ class App(QtCore.QObject):
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
             edited_object.build_aperture_storage = False
+
+        elif isinstance(edited_object, CNCJobObject):
+
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+
+            edited_object.on_edit_code_click()
+            return
 
         # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)

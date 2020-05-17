@@ -382,8 +382,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
                 if type(obj) != GeometryObject:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
-                if type(obj) != GeometryObject and type(obj) != ExcellonObject and type(obj) != GerberObject:
-                    self.app.ui.menuprojectedit.setVisible(False)
+                # if type(obj) != GeometryObject and type(obj) != ExcellonObject and type(obj) != GerberObject or \
+                #         type(obj) != CNCJobObject:
+                #     self.app.ui.menuprojectedit.setVisible(False)
                 if type(obj) != GerberObject and type(obj) != ExcellonObject and type(obj) != CNCJobObject:
                     self.app.ui.menuprojectviewsource.setVisible(False)
                 if type(obj) != GerberObject and type(obj) != GeometryObject and type(obj) != ExcellonObject and \
