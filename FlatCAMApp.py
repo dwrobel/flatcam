@@ -5219,7 +5219,7 @@ class App(QtCore.QObject):
             self.should_we_save = True
             return
 
-        if event.button == 1:
+        if event is not None and event.button == 1:
             if self.is_legacy is False:
                 event_pos = event.pos
             else:

@@ -593,16 +593,22 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # always open the notebook on object added to collection
             self.app.ui.splitter.setSizes([1, 1])
 
-    def get_names(self):
+    def get_names(self, sel_all=None):
         """
         Gets a list of the names of all objects in the collection.
 
-        :return: List of names.
-        :rtype: list
+        :param sel_all:     Will return all objects if True. If False or None all except Script and Document
+        :return:            List of names.
+        :rtype:             list
         """
 
         # log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
-        return [x.options['name'] for x in self.get_list()]
+        if sel_all is None or sel_all is False:
+            names_list = [x.options['name'] for x in self.get_list()]
+        else:
+            names_list = [x.options['name'] for x in self.get_list(sel_all=sel_all)]
+
+        return names_list
 
     def get_bounds(self):
         """
@@ -984,15 +990,20 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
                 raise
 
-    def get_list(self):
+    def get_list(self, sel_all=None):
         """
-        Will return a list of all objects currently opened.
+        Will return a list of all objects currently opened. Except FlatCAMScript and FlatCAMDocuments
 
+        :param sel_all:     Will return all objects if True. If False or None all except Script and Document
         :return:
         """
         obj_list = []
         for group in self.root_item.child_items:
             for item in group.child_items:
+                kind = item.obj.kind
+                if sel_all is None or sel_all is False:
+                    if kind == 'document' or kind == 'script':
+                        continue
                 obj_list.append(item.obj)
 
         return obj_list

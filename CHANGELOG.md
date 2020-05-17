@@ -15,7 +15,7 @@ CHANGELOG for FlatCAM beta
 - fixed the workspace being always A4
 - added a label in the status bar to show if the workplace is active and what size it is
 - now the Edit command (either from Menu Edit ->Edit Object) or through the shortcut key (E key) or project tab context menu works also for the CNCJob objects (will open a text Editor with the GCode)
-- grid snap toolbar is now always active
+- fixed the object collection methods that return a list of objects or names of objects such that they have a parameter now to allow adding to those lists (or not) for the objects of type Script or Document. Thus fixing some of the Tcl commands such Set Origin
 
 16.05.2020
 
