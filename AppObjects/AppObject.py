@@ -48,6 +48,7 @@ class AppObject(QtCore.QObject):
     def __init__(self, app):
         super(AppObject, self).__init__()
         self.app = app
+        self.inform = app.inform
 
         # signals that are emitted when object state changes
         self.object_created.connect(self.on_object_created)
@@ -127,7 +128,7 @@ class AppObject(QtCore.QObject):
         t1 = time.time()
         log.debug("%f seconds before initialize()." % (t1 - t0))
         try:
-            return_value = initialize(obj, self)
+            return_value = initialize(obj, self.app)
         except Exception as e:
             msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
             msg += _("Object ({kind}) failed because: {error} \n\n").format(kind=kind, error=str(e))
@@ -347,7 +348,7 @@ class AppObject(QtCore.QObject):
         def task(t_obj):
             with self.app.proc_container.new(_("Plotting")):
                 if t_obj.kind == 'cncjob':
-                    t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
+                    t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
                 else:
                     t_obj.plot()
 

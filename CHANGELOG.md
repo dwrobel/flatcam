@@ -28,6 +28,7 @@ CHANGELOG for FlatCAM beta
 - moved more methods out of App_Main class
 - added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
 - added icon in status bar for HUD; clicking on it will toggle the HUD (heads up display)
+- fixes due of recent changes
 
 17.05.2020
 

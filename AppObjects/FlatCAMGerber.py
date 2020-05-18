@@ -968,7 +968,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     else:
                         iso_name = outname
 
-                def iso_init(geo_obj, app_obj):
+                def iso_init(geo_obj, fc_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
                     if self.ui.tool_type_radio.get_value() == 'v':
@@ -983,7 +983,7 @@ class GerberObject(FlatCAMObj, Gerber):
                                                   nr_passes=i)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        fc_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
@@ -1060,7 +1060,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     if empty_cnt == len(geo_obj.solid_geometry):
                         raise ValidationError("Empty Geometry", None)
                     else:
-                        app_obj.inform.emit('[success] %s: %s' %
+                        fc_obj.inform.emit('[success] %s: %s' %
                                             (_("Isolation geometry created"), geo_obj.options["name"]))
                     geo_obj.multigeo = False
 
