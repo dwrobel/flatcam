@@ -292,7 +292,7 @@ class AppObject(QtCore.QObject):
         self.app.collection.append(obj)
 
         # after adding the object to the collection always update the list of objects that are in the collection
-        self.all_objects_list = self.app.collection.get_list()
+        self.app.all_objects_list = self.app.collection.get_list()
 
         # self.app.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
@@ -358,7 +358,7 @@ class AppObject(QtCore.QObject):
         # Send to worker
         # self.worker.add_task(worker_task, [self])
         if plot is True:
-            self.worker_task.emit({'fcn': task, 'params': [obj]})
+            self.app.worker_task.emit({'fcn': task, 'params': [obj]})
 
     def on_object_changed(self, obj):
         """
@@ -390,4 +390,4 @@ class AppObject(QtCore.QObject):
 
         :return: None
         """
-        self.app.on_zoom_fit(None)
+        self.app.on_zoom_fit()

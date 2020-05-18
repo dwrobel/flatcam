@@ -647,7 +647,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # first remove the toolbars:
         try:
             self.app.ui.removeToolBar(self.app.ui.toolbarfile)
-            self.app.ui.removeToolBar(self.app.ui.toolbargeo)
+            self.app.ui.removeToolBar(self.app.ui.toolbaredit)
             self.app.ui.removeToolBar(self.app.ui.toolbarview)
             self.app.ui.removeToolBar(self.app.ui.toolbarshell)
             self.app.ui.removeToolBar(self.app.ui.toolbartools)
@@ -664,9 +664,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.toolbarfile.setObjectName('File_TB')
             self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarfile)
 
-            self.app.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.app.ui.toolbargeo.setObjectName('Edit_TB')
-            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbargeo)
+            self.app.ui.toolbaredit = QtWidgets.QToolBar('Edit Toolbar')
+            self.app.ui.toolbaredit.setObjectName('Edit_TB')
+            self.app.ui.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbaredit)
 
             self.app.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
             self.app.ui.toolbarshell.setObjectName('Shell_TB')
@@ -702,9 +702,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.app.ui.toolbarfile.setObjectName('File_TB')
             self.app.ui.addToolBar(self.app.ui.toolbarfile)
 
-            self.app.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.app.ui.toolbargeo.setObjectName('Edit_TB')
-            self.app.ui.addToolBar(self.app.ui.toolbargeo)
+            self.app.ui.toolbaredit = QtWidgets.QToolBar('Edit Toolbar')
+            self.app.ui.toolbaredit.setObjectName('Edit_TB')
+            self.app.ui.addToolBar(self.app.ui.toolbaredit)
 
             self.app.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
             self.app.ui.toolbarview.setObjectName('View_TB')

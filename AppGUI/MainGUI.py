@@ -581,7 +581,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath16.png'), _('Cut Path\tX'))
         # self.move_menuitem = self.menu.addAction(
-        #   QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move AppObjects 'm'")
+        #   QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
         self.geo_copy_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy16.png'), _("Copy Geom\tC"))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
@@ -789,9 +789,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
 
-        self.toolbargeo = QtWidgets.QToolBar(_('Edit Toolbar'))
-        self.toolbargeo.setObjectName('Edit_TB')
-        self.addToolBar(self.toolbargeo)
+        self.toolbaredit = QtWidgets.QToolBar(_('Edit Toolbar'))
+        self.toolbaredit.setObjectName('Edit_TB')
+        self.addToolBar(self.toolbaredit)
 
         self.toolbarview = QtWidgets.QToolBar(_('View Toolbar'))
         self.toolbarview.setObjectName('View_TB')
@@ -845,37 +845,30 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
         # ########################################################################
-        self.newgeo_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_grb32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_exc32.png'), _("New Blank Excellon"))
-        self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(
+        self.editgeo_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit_file32.png'), _("Editor"))
-        self.update_obj_btn = self.toolbargeo.addAction(
+        self.update_obj_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
-        self.toolbargeo.addSeparator()
-        self.copy_btn = self.toolbargeo.addAction(
+        self.toolbaredit.addSeparator()
+        self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
-        self.delete_btn = self.toolbargeo.addAction(
+        self.delete_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
-        self.toolbargeo.addSeparator()
-        self.distance_btn = self.toolbargeo.addAction(
+        self.toolbaredit.addSeparator()
+        self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbargeo.addAction(
+        self.distance_min_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
-        self.origin_btn = self.toolbargeo.addAction(
+        self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
-        self.move2origin_btn = self.toolbargeo.addAction(
+        self.move2origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
 
-        self.jmp_btn = self.toolbargeo.addAction(
+        self.jmp_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
-        self.locate_btn = self.toolbargeo.addAction(
+        self.locate_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
         # ########################################################################
@@ -912,7 +905,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align AppObjects Tool"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
 
@@ -1035,7 +1028,7 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move AppObjects "))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects "))
 
         # ########################################################################
         # ########################## Gerber Editor Toolbar# ######################
@@ -1374,11 +1367,11 @@ class MainGUI(QtWidgets.QMainWindow):
         self.cmenu_newmenu = self.popMenu.addMenu(
             QtGui.QIcon(self.app.resource_location + '/file32.png'), _("New"))
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_geo32_bis.png'), _("Geometry"))
+            QtGui.QIcon(self.app.resource_location + '/new_file_geo16.png'), _("Geometry"))
         self.popmenu_new_grb = self.cmenu_newmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), "Gerber")
+            QtGui.QIcon(self.app.resource_location + '/new_file_grb16.png'), "Gerber")
         self.popmenu_new_exc = self.cmenu_newmenu.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_exc32.png'), _("Excellon"))
+            QtGui.QIcon(self.app.resource_location + '/new_file_exc16.png'), _("Excellon"))
         self.cmenu_newmenu.addSeparator()
         self.popmenu_new_prj = self.cmenu_newmenu.addAction(
             QtGui.QIcon(self.app.resource_location + '/file16.png'), _("Project"))
@@ -1694,9 +1687,9 @@ class MainGUI(QtWidgets.QMainWindow):
             self.toolbarfile.setVisible(False)
 
         if tb & 2:
-            self.toolbargeo.setVisible(True)
+            self.toolbaredit.setVisible(True)
         else:
-            self.toolbargeo.setVisible(False)
+            self.toolbaredit.setVisible(False)
 
         if tb & 4:
             self.toolbarview.setVisible(True)
@@ -1816,37 +1809,30 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ## Edit Toolbar # ##
         # ########################################################################
-        self.newgeo_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_grb32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(
-            QtGui.QIcon(self.app.resource_location + '/new_file_exc32.png'), _("New Blank Excellon"))
-        self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(
+        self.editgeo_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Editor"))
-        self.update_obj_btn = self.toolbargeo.addAction(
+        self.update_obj_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'),
             _("Save Object and close the Editor")
         )
 
-        self.toolbargeo.addSeparator()
-        self.copy_btn = self.toolbargeo.addAction(
+        self.toolbaredit.addSeparator()
+        self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
-        self.delete_btn = self.toolbargeo.addAction(
+        self.delete_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
-        self.toolbargeo.addSeparator()
-        self.distance_btn = self.toolbargeo.addAction(
+        self.toolbaredit.addSeparator()
+        self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbargeo.addAction(
+        self.distance_min_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
-        self.origin_btn = self.toolbargeo.addAction(
+        self.origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
-        self.move2origin_btn = self.toolbargeo.addAction(
+        self.move2origin_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
-        self.jmp_btn = self.toolbargeo.addAction(
+        self.jmp_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
-        self.locate_btn = self.toolbargeo.addAction(
+        self.locate_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
         # ########################################################################
@@ -1881,7 +1867,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
         self.align_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align AppObjects Tool"))
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
         self.extract_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
 
@@ -1996,7 +1982,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _('Cut Path'))
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy AppObjects"))
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Objects"))
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(
@@ -2004,7 +1990,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move AppObjects"))
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
         # ########################################################################
         # ## Gerber Editor Toolbar # ##
@@ -2547,7 +2533,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V:
-                    self.app.on_zoom_fit(None)
+                    self.app.on_zoom_fit()
 
                 # Mirror on X the selected object(s)
                 if key == QtCore.Qt.Key_X:
@@ -2726,7 +2712,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.on_corner_snap()
 
                 if key == QtCore.Qt.Key_V or key == 'V':
-                    self.app.on_zoom_fit(None)
+                    self.app.on_zoom_fit()
 
                 # we do this so we can reuse the following keys while inside a Tool
                 # the above keys are general enough so were left outside
@@ -3180,7 +3166,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.on_zoom_fit(None)
+                    self.app.on_zoom_fit()
                     return
 
                 # Add Slot Hole Tool
@@ -4010,7 +3996,7 @@ class ShortcutsTab(QtWidgets.QWidget):
                 _("Skew on Y axis"),
 
                 # ALT section
-                _("Align AppObjects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Corner Markers Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),

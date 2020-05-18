@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
@@ -62,7 +62,7 @@ class ToolSub(AppTool):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("Gerber AppObjects"))
+        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("Gerber Objects"))
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
@@ -117,7 +117,7 @@ class ToolSub(AppTool):
         form_geo_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_geo_layout)
 
-        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("Geometry AppObjects"))
+        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("Geometry Objects"))
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object

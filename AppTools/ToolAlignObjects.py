@@ -5,8 +5,8 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTool import AppTool
+from PyQt5 import QtWidgets, QtCore
+from AppTools.AppTool import AppTool
 
 from AppGUI.GUIElements import FCComboBox, RadioSet
 
@@ -29,7 +29,7 @@ log = logging.getLogger('base')
 
 class AlignObjects(AppTool):
 
-    toolName = _("Align AppObjects")
+    toolName = _("Align Objects")
 
     def __init__(self, app):
         AppTool.__init__(self, app)

@@ -636,7 +636,7 @@ class FlatCAMDefaults:
         "tools_punch_rectangular": False,
         "tools_punch_others": False,
 
-        # Align AppObjects Tool
+        # Align Objects Tool
         "tools_align_objects_align_type": 'sp',
 
         # Invert Gerber Tool

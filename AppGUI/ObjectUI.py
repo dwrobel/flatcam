@@ -1272,7 +1272,7 @@ class ExcellonObjectUI(ObjectUI):
         pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor E"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
-              "Gcode output for Excellon AppObjects.")
+              "Gcode output for Excellon Objects.")
         )
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -1284,7 +1284,7 @@ class ExcellonObjectUI(ObjectUI):
         pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor G"))
         pp_geo_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
-              "Gcode output for Geometry (Milling) AppObjects.")
+              "Gcode output for Geometry (Milling) Objects.")
         )
         self.pp_geo_name_cb = FCComboBox()
         self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)

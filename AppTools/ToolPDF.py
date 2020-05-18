@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from Common import GracefulException as grace
 from AppParsers.ParsePDF import PdfParser
 from shapely.geometry import Point, MultiPolygon

@@ -45,7 +45,7 @@ class GerberObject(FlatCAMObj, Gerber):
         Merges the geometry of objects in geo_list into
         the geometry of geo_final.
 
-        :param grb_list: List of GerberObject AppObjects to join.
+        :param grb_list: List of GerberObject Objects to join.
         :param grb_final: Destination GeometryObject object.
         :return: None
         """

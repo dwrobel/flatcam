@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 
 from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
 from Common import GracefulException as grace

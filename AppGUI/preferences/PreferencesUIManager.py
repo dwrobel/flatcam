@@ -1093,7 +1093,7 @@ class PreferencesUIManager:
         if self.ui.toolbarfile.isVisible():
             tb_status += 1
 
-        if self.ui.toolbargeo.isVisible():
+        if self.ui.toolbaredit.isVisible():
             tb_status += 2
 
         if self.ui.toolbarview.isVisible():

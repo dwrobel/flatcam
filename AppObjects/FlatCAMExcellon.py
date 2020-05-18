@@ -146,7 +146,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         If only one object is in exc_list parameter then this function will copy that object in the exc_final
 
-        :param exc_list: List or one object of ExcellonObject AppObjects to join.
+        :param exc_list: List or one object of ExcellonObject Objects to join.
         :param exc_final: Destination ExcellonObject object.
         :return: None
         """

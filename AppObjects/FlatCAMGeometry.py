@@ -2738,7 +2738,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         """
         Merges the geometry of objects in grb_list into the geometry of geo_final.
 
-        :param geo_list: List of GerberObject AppObjects to join.
+        :param geo_list: List of GerberObject Objects to join.
         :param geo_final: Destination GerberObject object.
         :param multigeo: if the merged geometry objects are of type MultiGeo
         :return: None

@@ -14,15 +14,13 @@ import shapely.affinity as affinity
 
 from vispy.geometry import Rect
 
-import threading
-import time
 from copy import copy, deepcopy
 import logging
 
 from camlib import distance, arc, three_point_circle
 from AppGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm

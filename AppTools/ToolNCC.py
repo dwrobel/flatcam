@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
     FCComboBox, OptionalInputSection
 from AppParsers.ParseGerber import Gerber

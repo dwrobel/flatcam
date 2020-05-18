@@ -5,9 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
     OptionalHideInputSection, OptionalInputSection, FCComboBox, FCFileSaveDialog
 

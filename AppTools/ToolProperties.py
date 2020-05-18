@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCTree
 
 from shapely.geometry import MultiPolygon, Polygon

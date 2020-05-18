@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
 from Common import GracefulException as grace
 

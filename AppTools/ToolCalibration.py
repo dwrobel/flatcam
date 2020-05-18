@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry
 from AppGUI.GUIElements import FCTable, FCComboBox, RadioSet
 from AppEditors.FlatCAMTextEditor import TextEditor
@@ -620,7 +620,7 @@ class ToolCalibration(AppTool):
         grid_lay.addWidget(QtWidgets.QLabel(''), 44, 0, 1, 3)
 
         # STEP 5 #
-        step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM AppObjects"))
+        step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
         step_5.setToolTip(
             _("Adjust the FlatCAM objects\n"
               "with the factors determined and verified above.")
@@ -656,7 +656,7 @@ class ToolCalibration(AppTool):
         grid_lay.addWidget(self.adj_object_label, 48, 0, 1, 3)
         grid_lay.addWidget(self.adj_object_combo, 49, 0, 1, 3)
 
-        # ## Adjust AppObjects Button
+        # ## Adjust Objects Button
         self.cal_button = QtWidgets.QPushButton(_("Calibrate"))
         self.cal_button.setToolTip(
             _("Adjust (scale and/or skew) the objects\n"

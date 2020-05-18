@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from Common import GracefulException as grace
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base
@@ -493,7 +493,7 @@ class ToolCopperThieving(AppTool):
                         """)
         self.layout.addWidget(self.reset_button)
 
-        # AppObjects involved in Copper thieving
+        # Objects involved in Copper thieving
         self.grb_object = None
         self.ref_obj = None
         self.sel_rect = []

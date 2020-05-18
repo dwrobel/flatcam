@@ -15,7 +15,7 @@ from PyQt5 import QtCore
 from shapely.geometry import Polygon, MultiPolygon
 
 from AppGUI.VisPyVisuals import ShapeCollection
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 
 import numpy as np
 

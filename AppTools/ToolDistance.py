@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.VisPyVisuals import *
 from AppGUI.GUIElements import FCEntry, FCButton, FCCheckBox
 

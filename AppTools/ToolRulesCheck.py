@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox
 from copy import deepcopy
 
@@ -196,7 +196,7 @@ class RulesCheck(AppTool):
 
         self.grid_layout.addWidget(QtWidgets.QLabel(""), 8, 0, 1, 3)
 
-        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon AppObjects"))
+        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon Objects"))
         self.excellon_title_lbl.setToolTip(
             _("Excellon objects for which to check rules.")
         )

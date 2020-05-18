@@ -1010,7 +1010,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def on_row_selected(self, obj_name):
         """
-        This is a special string; when received it will make all Menu -> AppObjects entries unchecked
+        This is a special string; when received it will make all Menu -> Objects entries unchecked
         It mean we clicked outside of the items and deselected all
 
         :param obj_name:
@@ -1194,6 +1194,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     pass
 
             if obj_list:
-                self.app.inform.emit('%s' % _("AppObjects selection is cleared."))
+                self.app.inform.emit('%s' % _("Objects selection is cleared."))
             else:
                 self.app.inform.emit('')

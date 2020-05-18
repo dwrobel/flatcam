@@ -50,7 +50,7 @@ from AppDatabase import ToolsDB2
 from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
-# FlatCAM AppObjects
+# FlatCAM Objects
 from defaults import FlatCAMDefaults
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from AppGUI.preferences.PreferencesUIManager import PreferencesUIManager
@@ -1896,7 +1896,7 @@ class App(QtCore.QObject):
         self.calculator_tool = ToolCalculator(self)
         self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator16.png'), separator=True)
 
-        self.sub_tool = ToolSub(app=self)
+        self.sub_tool = ToolSub(self)
         self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
                               pos=self.ui.menutool, separator=True)
 
@@ -2049,9 +2049,6 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        self.ui.newgeo_btn.triggered.connect(self.app_obj.new_geometry_object)
-        self.ui.newgrb_btn.triggered.connect(self.app_obj.new_gerber_object)
-        self.ui.newexc_btn.triggered.connect(self.app_obj.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.copy_btn.triggered.connect(self.on_copy_command)
@@ -3586,7 +3583,7 @@ class App(QtCore.QObject):
 
         if len(objs) < 2:
             self.inform.emit('[ERROR_NOTCL] %s: %d' %
-                             (_("At least two objects are required for join. AppObjects currently selected"), len(objs)))
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
             return 'fail'
 
         for obj in objs:
@@ -3645,7 +3642,7 @@ class App(QtCore.QObject):
 
         if len(objs) < 2:
             self.inform.emit('[ERROR_NOTCL] %s: %d' %
-                             (_("At least two objects are required for join. AppObjects currently selected"), len(objs)))
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
             return 'fail'
 
         def initialize(exc_obj, app):
@@ -3673,7 +3670,7 @@ class App(QtCore.QObject):
 
         if len(objs) < 2:
             self.inform.emit('[ERROR_NOTCL] %s: %d' %
-                             (_("At least two objects are required for join. AppObjects currently selected"), len(objs)))
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
             return 'fail'
 
         def initialize(grb_obj, app):
@@ -5793,7 +5790,7 @@ class App(QtCore.QObject):
         else:
             self.plotcanvas.auto_adjust_axes()
 
-        self.on_zoom_fit(None)
+        self.on_zoom_fit()
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
 
@@ -6285,7 +6282,7 @@ class App(QtCore.QObject):
 
         for obj in self.all_objects_list:
             # ScriptObject and DocumentObject objects can't be selected
-            if isinstance(obj, ScriptObject) or isinstance(obj, DocumentObject):
+            if obj.kind == 'script' or obj.kind == 'document':
                 continue
 
             if key == 'multisel' and obj.options['name'] in self.objects_under_the_click_list:
@@ -7596,8 +7593,6 @@ class App(QtCore.QObject):
         Will create a new script file and open it in the Code Editor
 
         :param silent:  if True will not display status messages
-        :param name:    if specified will be the name of the new script
-        :param text:    pass a source file to the newly created script to be loaded in it
         :return:        None
         """
         if silent is False:
@@ -9465,8 +9460,8 @@ class App(QtCore.QObject):
             # no_stats dict; just so it won't break things on website
             no_ststs_dict = {}
             no_ststs_dict["global_ststs"] = {}
-            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version) + \
-                       "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
+            full_url = App.version_url + "?s=" + str(self.defaults['global_serial']) + "&v=" + str(self.version)
+            full_url += "&os=" + str(self.os) + "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
         App.log.debug("Checking for updates @ %s" % full_url)
         # ## Get the data
@@ -9569,13 +9564,12 @@ class App(QtCore.QObject):
             # will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
-    def on_zoom_fit(self, event):
+    def on_zoom_fit(self):
         """
         Callback for zoom-fit request. This can be either from the corresponding
         toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
         with axes limits from the geometry bounds of all objects.
 
-        :param event:   Ignored.
         :return:        None
         """
         if self.is_legacy is False:
@@ -9644,7 +9638,7 @@ class App(QtCore.QObject):
         """
         Enable plots
 
-        :param objects: list of AppObjects to be enabled
+        :param objects: list of Objects to be enabled
         :return:
         """
         log.debug("Enabling plots ...")
@@ -9685,7 +9679,7 @@ class App(QtCore.QObject):
         """
         Disables plots
 
-        :param objects: list of AppObjects to be disabled
+        :param objects: list of Objects to be disabled
         :return:
         """
 
@@ -9734,7 +9728,7 @@ class App(QtCore.QObject):
         """
         Toggle plots visibility
 
-        :param objects:     list of AppObjects for which to be toggled the visibility
+        :param objects:     list of Objects for which to be toggled the visibility
         :return:            None
         """
 

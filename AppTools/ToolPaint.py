@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from copy import deepcopy
 # from ObjectCollection import *
 from AppParsers.ParseGerber import Gerber

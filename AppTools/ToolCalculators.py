@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCEntry
 import math
 

@@ -6,8 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
-from AppTool import AppTool
-from AppGUI.VisPyVisuals import *
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCEntry
 
 from shapely.ops import nearest_points
@@ -291,7 +290,7 @@ class DistanceMin(AppTool):
             )
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' %
-                                 (_("AppObjects intersects or touch at"),
+                                 (_("Objects intersects or touch at"),
                                   "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])))
 
     def on_jump_to_half_point(self):

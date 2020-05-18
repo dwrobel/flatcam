@@ -1,7 +1,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
 
 from numpy import Inf
@@ -48,9 +48,9 @@ class DblSidedTool(AppTool):
         grid_lay.setColumnStretch(1, 0)
         self.layout.addLayout(grid_lay)
 
-        # AppObjects to be mirrored
+        # Objects to be mirrored
         self.m_objects_label = QtWidgets.QLabel("<b>%s:</b>" % _("Mirror Operation"))
-        self.m_objects_label.setToolTip('%s.' % _("AppObjects to be mirrored"))
+        self.m_objects_label.setToolTip('%s.' % _("Objects to be mirrored"))
 
         grid_lay.addWidget(self.m_objects_label, 0, 0, 1, 2)
 
@@ -154,7 +154,7 @@ class DblSidedTool(AppTool):
         grid_lay1.setColumnStretch(1, 1)
         self.layout.addLayout(grid_lay1)
 
-        # AppObjects to be mirrored
+        # Objects to be mirrored
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Mirror Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for the mirror operation"))
 

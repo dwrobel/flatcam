@@ -6,8 +6,7 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
-from PyQt5 import QtGui, QtCore, QtWidgets, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtCore, QtWidgets
 
 from shapely.geometry import Polygon, LineString
 
@@ -27,15 +26,16 @@ class AppTool(QtWidgets.QWidget):
     def __init__(self, app, parent=None):
         """
 
-        :param app: The application this tool will run in.
-        :type app: AppMain
-        :param parent: Qt Parent
-        :return: AppTool
+        :param app:         The application this tool will run in.
+        :type app:          App.App
+        :param parent:      Qt Parent
+        :return:            AppTool
         """
-        self.app = app
-        self.decimals = app.decimals
-
         QtWidgets.QWidget.__init__(self, parent)
+
+        self.app = app
+        self.decimals = self.app.decimals
+
         # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         self.layout = QtWidgets.QVBoxLayout()

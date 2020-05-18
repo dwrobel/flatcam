@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable, FCComboBox
 
 from shapely.geometry import Point, Polygon, MultiPolygon, LineString
@@ -327,7 +327,7 @@ class ToolFiducials(AppTool):
                         """)
         self.layout.addWidget(self.reset_button)
 
-        # AppObjects involved in Copper thieving
+        # Objects involved in Copper thieving
         self.grb_object = None
         self.sm_object = None
 

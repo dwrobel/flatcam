@@ -7,7 +7,7 @@
 
 from PyQt5 import QtGui, QtWidgets
 
-from AppTool import AppTool
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 
 import gettext

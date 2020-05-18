@@ -15,10 +15,9 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
-from AppTool import AppTool
-from AppGUI.ObjectUI import RadioSet
+from AppTools.AppTool import AppTool
 from AppGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
-    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
+    FCDoubleSpinner, FCButton, FCInputDialog, FCTree
 from AppParsers.ParseFont import *
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon

@@ -6418,7 +6418,7 @@ def distance_euclidian(x1, y1, x2, y2):
 class FlatCAMRTree(object):
     """
     Indexes geometry (Any object with "cooords" property containing
-    a list of tuples with x, y values). AppObjects are indexed by
+    a list of tuples with x, y values). Objects are indexed by
     all their points by default. To index by arbitrary points,
     override self.points2obj.
     """
