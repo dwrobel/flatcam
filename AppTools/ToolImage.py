@@ -293,5 +293,5 @@ class ToolImage(AppTool):
             # Register recent file
             self.app.file_opened.emit("image", filename)
 
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Opened"), filename))

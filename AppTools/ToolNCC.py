@@ -620,7 +620,7 @@ class NonCopperClear(AppTool, Gerber):
                         }
                         """)
         self.tools_box.addWidget(self.reset_button)
-        # ############################ FINSIHED AppGUI ###################################
+        # ############################ FINSIHED GUI ###################################
         # #############################################################################
 
         # #############################################################################
@@ -825,7 +825,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def form_to_storage(self):
         if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             return
 
         self.blockSignals(True)
@@ -853,7 +853,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def on_apply_param_to_all_clicked(self):
         if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -1860,7 +1860,7 @@ class NonCopperClear(AppTool, Gerber):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
             key = event
-        # events from the AppGUI are of type QKeyEvent
+        # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
@@ -2102,7 +2102,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                   "than isolation tool diameter."))
                 try:
                     for geo_elem in isolated_geo:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
 
                         if self.app.abort_flag:
@@ -2295,7 +2295,7 @@ class NonCopperClear(AppTool, Gerber):
                                 Usage of the different one is related to when this function is called
                                 from a TcL command.
 
-        :param run_threaded:    If True the method will be run in a threaded way suitable for AppGUI usage; if False
+        :param run_threaded:    If True the method will be run in a threaded way suitable for GUI usage; if False
                                 it will run non-threaded for TclShell usage
         :return:
         """
@@ -2353,7 +2353,7 @@ class NonCopperClear(AppTool, Gerber):
             log.debug("NCC Tool. Normal copper clearing task started.")
             self.app.inform.emit(_("NCC Tool. Finished non-copper polygons. Normal copper clearing task started."))
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
                 QtWidgets.QApplication.processEvents()
 
@@ -2397,7 +2397,7 @@ class NonCopperClear(AppTool, Gerber):
                     # graceful abort requested by the user
                     raise grace
 
-                # provide the app with a way to process the AppGUI events when in a blocking loop
+                # provide the app with a way to process the GUI events when in a blocking loop
                 if not run_threaded:
                     QtWidgets.QApplication.processEvents()
 
@@ -2455,7 +2455,7 @@ class NonCopperClear(AppTool, Gerber):
                     if len(area.geoms) > 0:
                         pol_nr = 0
                         for p in area.geoms:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             if not run_threaded:
                                 QtWidgets.QApplication.processEvents()
 
@@ -2606,7 +2606,7 @@ class NonCopperClear(AppTool, Gerber):
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
                 QtWidgets.QApplication.processEvents()
 
@@ -2648,7 +2648,7 @@ class NonCopperClear(AppTool, Gerber):
                     # graceful abort requested by the user
                     raise grace
 
-                # provide the app with a way to process the AppGUI events when in a blocking loop
+                # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
                 app_obj.inform.emit('[success] %s = %s%s %s' % (
@@ -2690,7 +2690,7 @@ class NonCopperClear(AppTool, Gerber):
 
                 # Area to clear
                 for poly in cleared_by_last_tool:
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     if self.app.abort_flag:
@@ -2731,7 +2731,7 @@ class NonCopperClear(AppTool, Gerber):
                             p = p.buffer(0)
 
                             if p is not None and p.is_valid:
-                                # provide the app with a way to process the AppGUI events when in a blocking loop
+                                # provide the app with a way to process the GUI events when in a blocking loop
                                 QtWidgets.QApplication.processEvents()
 
                                 if isinstance(p, Polygon):
@@ -2763,7 +2763,7 @@ class NonCopperClear(AppTool, Gerber):
                                 elif isinstance(p, MultiPolygon):
                                     for poly in p:
                                         if poly is not None:
-                                            # provide the app with a way to process the AppGUI events when
+                                            # provide the app with a way to process the GUI events when
                                             # in a blocking loop
                                             QtWidgets.QApplication.processEvents()
 
@@ -2954,7 +2954,7 @@ class NonCopperClear(AppTool, Gerber):
         :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :param plot: if True after the job is finished the result will be plotted, else it will not.
-        :param run_threaded: If True the method will be run in a threaded way suitable for AppGUI usage; if False it will
+        :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
         run non-threaded for TclShell usage
         :return:
         """
@@ -3098,7 +3098,7 @@ class NonCopperClear(AppTool, Gerber):
             assert geo_obj.kind == 'geometry', \
                 "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
                 QtWidgets.QApplication.processEvents()
 
@@ -3187,7 +3187,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                          "than isolation tool diameter."))
                         try:
                             for geo_elem in isolated_geo:
-                                # provide the app with a way to process the AppGUI events when in a blocking loop
+                                # provide the app with a way to process the GUI events when in a blocking loop
                                 QtWidgets.QApplication.processEvents()
 
                                 if self.app.abort_flag:
@@ -3295,7 +3295,7 @@ class NonCopperClear(AppTool, Gerber):
                     # graceful abort requested by the user
                     raise grace
 
-                # provide the app with a way to process the AppGUI events when in a blocking loop
+                # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
                 app_obj.inform.emit('[success] %s = %s%s %s' % (
@@ -3329,7 +3329,7 @@ class NonCopperClear(AppTool, Gerber):
                     if len(area.geoms) > 0:
                         pol_nr = 0
                         for p in area.geoms:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
 
                             if self.app.abort_flag:
@@ -3502,7 +3502,7 @@ class NonCopperClear(AppTool, Gerber):
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             if not run_threaded:
                 QtWidgets.QApplication.processEvents()
 
@@ -3566,7 +3566,7 @@ class NonCopperClear(AppTool, Gerber):
 
                         try:
                             for geo_elem in isolated_geo:
-                                # provide the app with a way to process the AppGUI events when in a blocking loop
+                                # provide the app with a way to process the GUI events when in a blocking loop
                                 QtWidgets.QApplication.processEvents()
 
                                 if self.app.abort_flag:
@@ -3694,7 +3694,7 @@ class NonCopperClear(AppTool, Gerber):
 
                 # Area to clear
                 for poly_r in cleared_by_last_tool:
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     if self.app.abort_flag:
@@ -3735,7 +3735,7 @@ class NonCopperClear(AppTool, Gerber):
                             p = p.buffer(0)
 
                             if p is not None and p.is_valid:
-                                # provide the app with a way to process the AppGUI events when in a blocking loop
+                                # provide the app with a way to process the GUI events when in a blocking loop
                                 QtWidgets.QApplication.processEvents()
 
                                 if isinstance(p, Polygon):
@@ -3764,7 +3764,7 @@ class NonCopperClear(AppTool, Gerber):
                                 elif isinstance(p, MultiPolygon):
                                     for poly_p in p:
                                         if poly_p is not None:
-                                            # provide the app with a way to process the AppGUI events when
+                                            # provide the app with a way to process the GUI events when
                                             # in a blocking loop
                                             QtWidgets.QApplication.processEvents()
 
@@ -3939,7 +3939,7 @@ class NonCopperClear(AppTool, Gerber):
         except Exception:
             try:
                 for el in target:
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
                     if self.app.abort_flag:
                         # graceful abort requested by the user

@@ -1239,7 +1239,7 @@ class CutOut(AppTool):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
             key = event
-        # events from the AppGUI are of type QKeyEvent
+        # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest

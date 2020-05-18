@@ -1416,7 +1416,7 @@ class Gerber(Geometry):
                 # ######### Line did not match any pattern. Warn user.  ##########
                 # ################################################################
                 log.warning("Line ignored (%d): %s" % (line_num, gline))
-                # provide the app with a way to process the AppGUI events when in a blocking loop
+                # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
             try:

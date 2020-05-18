@@ -179,10 +179,10 @@ class GerberObject(FlatCAMObj, Gerber):
 
     def set_ui(self, ui):
         """
-        Maps options with AppGUI inputs.
-        Connects AppGUI events to methods.
+        Maps options with GUI inputs.
+        Connects GUI events to methods.
 
-        :param ui: AppGUI object.
+        :param ui: GUI object.
         :type ui: GerberObjectUI
         :return: None
         """
@@ -243,7 +243,7 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
         self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
-        # establish visibility for the AppGUI elements found in the slot function
+        # establish visibility for the GUI elements found in the slot function
         self.ui.tool_type_radio.activated_custom.emit(self.options['tool_type'])
 
         # Show/Hide Advanced Options

@@ -3298,9 +3298,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
         self.apertures_table.clearSelection()
 
-        # Remove anything else in the AppGUI Selected Tab
+        # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the AppGUI Selected Tab
+        # Put ourselves in the GUI Selected Tab
         self.app.ui.selected_scroll_area.setWidget(self.grb_edit_widget)
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
@@ -4039,7 +4039,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #     else:
         #         raise AttributeError
         # except AttributeError:
-        #     # now that we have data (empty data actually), create the AppGUI interface and add it to the Tool Tab
+        #     # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
         #     self.build_ui(first_run=True)
         #     # and add the first aperture to have something to play with
         #     self.on_aperture_add('10')
@@ -4913,7 +4913,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     # def setup_ui_after_delayed_plot(self):
     #     self.plot_finished.disconnect()
     #
-    #     # now that we have data, create the AppGUI interface and add it to the Tool Tab
+    #     # now that we have data, create the GUI interface and add it to the Tool Tab
     #     self.build_ui(first_run=True)
     #     self.plot_all()
     #

@@ -211,7 +211,7 @@ class ToolPDF(AppTool):
                 return
             # Register recent file
             self.app.file_opened.emit("excellon", filename)
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Rendered"),  outname))
 
     def layer_rendering_as_gerber(self, filename, ap_dict, layer_nr):
@@ -284,7 +284,7 @@ class ToolPDF(AppTool):
                 return
             # Register recent file
             self.app.file_opened.emit('gerber', filename)
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit('[success] %s: %s' % (_("Rendered"), outname))
 
     def periodic_check(self, check_period):

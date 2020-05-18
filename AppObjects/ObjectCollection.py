@@ -324,7 +324,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         font.setFamily("Seagoe UI")
         self.view.setFont(font)
 
-        # ## AppGUI Events
+        # ## GUI Events
         self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
         # self.view.activated.connect(self.on_item_activated)
         self.view.keyPressed.connect(self.app.ui.keyPressEvent)
@@ -334,6 +334,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.click_modifier = None
 
         self.update_list_signal.connect(self.on_update_list_signal)
+        self.view.activated.connect(self.on_row_activated)
+        self.item_selected.connect(self.on_row_selected)
 
     def promise(self, obj_name):
         log.debug("Object %s has been promised." % obj_name)
@@ -999,3 +1001,199 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def update_view(self):
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+
+    def on_row_activated(self, index):
+        if index.isValid():
+            if index.internalPointer().parent_item != self.root_item:
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        self.on_item_activated(index)
+
+    def on_row_selected(self, obj_name):
+        """
+        This is a special string; when received it will make all Menu -> AppObjects entries unchecked
+        It mean we clicked outside of the items and deselected all
+
+        :param obj_name:
+        :return:
+        """
+        if obj_name == 'none':
+            for act in self.app.ui.menuobjects.actions():
+                act.setChecked(False)
+            return
+
+        # get the name of the selected objects and add them to a list
+        name_list = []
+        for obj in self.get_selected():
+            name_list.append(obj.options['name'])
+
+        # set all actions as unchecked but the ones selected make them checked
+        for act in self.app.ui.menuobjects.actions():
+            act.setChecked(False)
+            if act.text() in name_list:
+                act.setChecked(True)
+
+    def on_collection_updated(self, obj, state, old_name):
+        """
+        Create a menu from the object loaded in the collection.
+
+        :param obj:         object that was changed (added, deleted, renamed)
+        :param state:       what was done with the object. Can be: added, deleted, delete_all, renamed
+        :param old_name:    the old name of the object before the action that triggered this slot happened
+        :return:            None
+        """
+        icon_files = {
+            "gerber": self.app.resource_location + "/flatcam_icon16.png",
+            "excellon": self.app.resource_location + "/drill16.png",
+            "cncjob": self.app.resource_location + "/cnc16.png",
+            "geometry": self.app.resource_location + "/geometry16.png",
+            "script": self.app.resource_location + "/script_new16.png",
+            "document": self.app.resource_location + "/notes16_1.png"
+        }
+
+        if state == 'append':
+            for act in self.app.ui.menuobjects.actions():
+                try:
+                    act.triggered.disconnect()
+                except TypeError:
+                    pass
+            self.app.ui.menuobjects.clear()
+
+            gerber_list = []
+            exc_list = []
+            cncjob_list = []
+            geo_list = []
+            script_list = []
+            doc_list = []
+
+            for name in self.get_names():
+                obj_named = self.get_by_name(name)
+                if obj_named.kind == 'gerber':
+                    gerber_list.append(name)
+                elif obj_named.kind == 'excellon':
+                    exc_list.append(name)
+                elif obj_named.kind == 'cncjob':
+                    cncjob_list.append(name)
+                elif obj_named.kind == 'geometry':
+                    geo_list.append(name)
+                elif obj_named.kind == 'script':
+                    script_list.append(name)
+                elif obj_named.kind == 'document':
+                    doc_list.append(name)
+
+            def add_act(o_name):
+                obj_for_icon = self.get_by_name(o_name)
+                add_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
+                add_action.setCheckable(True)
+                add_action.setText(o_name)
+                add_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
+                add_action.triggered.connect(
+                    lambda: self.set_active(o_name) if add_action.isChecked() is True else
+                    self.set_inactive(o_name))
+                self.app.ui.menuobjects.addAction(add_action)
+
+            for name in gerber_list:
+                add_act(name)
+            self.app.ui.menuobjects.addSeparator()
+
+            for name in exc_list:
+                add_act(name)
+            self.app.ui.menuobjects.addSeparator()
+
+            for name in cncjob_list:
+                add_act(name)
+            self.app.ui.menuobjects.addSeparator()
+
+            for name in geo_list:
+                add_act(name)
+            self.app.ui.menuobjects.addSeparator()
+
+            for name in script_list:
+                add_act(name)
+            self.app.ui.menuobjects.addSeparator()
+
+            for name in doc_list:
+                add_act(name)
+
+            self.app.ui.menuobjects.addSeparator()
+            self.app.ui.menuobjects_selall = self.app.ui.menuobjects.addAction(
+                QtGui.QIcon(self.app.resource_location + '/select_all.png'),
+                _('Select All')
+            )
+            self.app.ui.menuobjects_unselall = self.app.ui.menuobjects.addAction(
+                QtGui.QIcon(self.app.resource_location + '/deselect_all32.png'),
+                _('Deselect All')
+            )
+            self.app.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
+            self.app.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
+
+        elif state == 'delete':
+            for act in self.app.ui.menuobjects.actions():
+                if act.text() == obj.options['name']:
+                    try:
+                        act.triggered.disconnect()
+                    except TypeError:
+                        pass
+                    self.app.ui.menuobjects.removeAction(act)
+                    break
+        elif state == 'rename':
+            for act in self.app.ui.menuobjects.actions():
+                if act.text() == old_name:
+                    add_action = QtWidgets.QAction(parent=self.app.ui.menuobjects)
+                    add_action.setText(obj.options['name'])
+                    add_action.setIcon(QtGui.QIcon(icon_files[obj.kind]))
+                    add_action.triggered.connect(
+                        lambda: self.set_active(obj.options['name']) if add_action.isChecked() is True else
+                        self.set_inactive(obj.options['name']))
+
+                    self.app.ui.menuobjects.insertAction(act, add_action)
+
+                    try:
+                        act.triggered.disconnect()
+                    except TypeError:
+                        pass
+                    self.app.ui.menuobjects.removeAction(act)
+                    break
+        elif state == 'delete_all':
+            for act in self.app.ui.menuobjects.actions():
+                try:
+                    act.triggered.disconnect()
+                except TypeError:
+                    pass
+            self.app.ui.menuobjects.clear()
+
+            self.app.ui.menuobjects.addSeparator()
+            self.app.ui.menuobjects_selall = self.app.ui.menuobjects.addAction(
+                QtGui.QIcon(self.app.resource_location + '/select_all.png'),
+                _('Select All')
+            )
+            self.app.ui.menuobjects_unselall = self.app.ui.menuobjects.addAction(
+                QtGui.QIcon(self.app.resource_location + '/deselect_all32.png'),
+                _('Deselect All')
+            )
+            self.app.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
+            self.app.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
+
+    def on_objects_selection(self, on_off):
+        obj_list = self.get_names()
+
+        if on_off is True:
+            self.set_all_active()
+            for act in self.app.ui.menuobjects.actions():
+                try:
+                    act.setChecked(True)
+                except Exception:
+                    pass
+            if obj_list:
+                self.app.inform.emit('[selected] %s' % _("All objects are selected."))
+        else:
+            self.set_all_inactive()
+            for act in self.app.ui.menuobjects.actions():
+                try:
+                    act.setChecked(False)
+                except Exception:
+                    pass
+
+            if obj_list:
+                self.app.inform.emit('%s' % _("AppObjects selection is cleared."))
+            else:
+                self.app.inform.emit('')

@@ -257,7 +257,7 @@ class TermWidget(QWidget):
 class FCShell(TermWidget):
     def __init__(self, app, version, *args):
         """
-        Initialize the TCL Shell. A dock widget that holds the AppGUI interface to the FlatCAM command line.
+        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
 
         :param app:    When instantiated the sysShell will be actually the FlatCAMApp.App() class
         :param version:     FlatCAM version string

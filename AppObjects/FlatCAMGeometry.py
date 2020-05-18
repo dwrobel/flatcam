@@ -1320,7 +1320,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.geo_tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
@@ -1383,7 +1383,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def gui_form_to_storage(self):
         if self.ui.geo_tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 

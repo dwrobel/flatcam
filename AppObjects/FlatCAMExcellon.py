@@ -389,7 +389,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
             drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            # if the slot number is zero is better to not clutter the AppGUI with zero's so we print a space
+            # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -855,7 +855,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def form_to_storage(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             return
 
         self.ui_disconnect()
@@ -1778,7 +1778,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def on_apply_param_to_all_clicked(self):
         if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("ExcellonObject.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 

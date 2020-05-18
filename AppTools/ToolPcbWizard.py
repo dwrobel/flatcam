@@ -460,7 +460,7 @@ class PcbWizard(AppTool):
                         # Register recent file
                     self.app.file_opened.emit("excellon", name)
 
-                    # AppGUI feedback
+                    # GUI feedback
                     self.app.inform.emit('[success] %s: %s' % (_("Imported"), name))
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             else:

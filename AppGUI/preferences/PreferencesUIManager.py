@@ -29,8 +29,8 @@ class PreferencesUIManager:
 
         :param defaults:    a dictionary storage where all the application settings are stored
         :param data_path:   a path to the file where all the preferences are stored for persistence
-        :param ui:          reference to the FlatCAMGUI class which constructs the UI
-        :param inform:      a pyqtSignal used to display information's in the StatusBar of the AppGUI
+        :param ui:          reference to the MainGUI class which constructs the UI
+        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
         """
 
         self.defaults = defaults
@@ -73,7 +73,7 @@ class PreferencesUIManager:
             "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
             "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
 
-            # General AppGUI Preferences
+            # General GUI Preferences
             "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
             "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
             "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
@@ -91,7 +91,7 @@ class PreferencesUIManager:
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
             "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
-            # General AppGUI Settings
+            # General GUI Settings
             "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
             "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
@@ -595,7 +595,7 @@ class PreferencesUIManager:
 
     def defaults_read_form(self):
         """
-        Will read all the values in the Preferences AppGUI and update the defaults dictionary.
+        Will read all the values in the Preferences GUI and update the defaults dictionary.
 
         :return: None
         """
@@ -607,10 +607,10 @@ class PreferencesUIManager:
 
     def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """
-        Will set the values for all the AppGUI elements in Preferences AppGUI based on the values found in the
+        Will set the values for all the GUI elements in Preferences GUI based on the values found in the
         self.defaults dictionary.
 
-        :param factor: will apply a factor to the values that written in the AppGUI elements
+        :param factor: will apply a factor to the values that written in the GUI elements
         :param fl_units: current measuring units in FlatCAM: Metric or Inch
         :param source_dict: the repository of options, usually is the self.defaults
         :return: None
@@ -628,11 +628,11 @@ class PreferencesUIManager:
         """
         Basically it is the worker in the self.defaults_write_form()
 
-        :param field: the AppGUI element in Preferences AppGUI to be updated
+        :param field: the GUI element in Preferences GUI to be updated
         :param factor: factor to be applied to the field parameter
         :param units: current FlatCAM measuring units
         :param defaults_dict: the defaults storage
-        :return: None, it updates AppGUI elements
+        :return: None, it updates GUI elements
         """
 
         def_dict = self.defaults if defaults_dict is None else defaults_dict
@@ -734,7 +734,7 @@ class PreferencesUIManager:
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
 
-        log.debug("Finished Preferences AppGUI form initialization.")
+        log.debug("Finished Preferences GUI form initialization.")
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors

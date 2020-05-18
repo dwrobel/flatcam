@@ -565,7 +565,7 @@ class ToolPaint(AppTool, Gerber):
                         """)
         self.tools_box.addWidget(self.reset_button)
 
-        # #################################### FINSIHED AppGUI ###########################
+        # #################################### FINSIHED GUI ###########################
         # #############################################################################
 
         # #############################################################################
@@ -790,7 +790,7 @@ class ToolPaint(AppTool, Gerber):
 
     def form_to_storage(self):
         if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             return
 
         self.blockSignals(True)
@@ -818,7 +818,7 @@ class ToolPaint(AppTool, Gerber):
 
     def on_apply_param_to_all_clicked(self):
         if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the AppGUI elements values to storage
+            # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
@@ -1028,7 +1028,7 @@ class ToolPaint(AppTool, Gerber):
             "tools_paintrest": self.app.defaults["tools_paintrest"],
         })
 
-        # ## Init the AppGUI interface
+        # ## Init the GUI interface
         self.order_radio.set_value(self.app.defaults["tools_paintorder"])
         self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
         self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
@@ -1758,7 +1758,7 @@ class ToolPaint(AppTool, Gerber):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
             key = event
-        # events from the AppGUI are of type QKeyEvent
+        # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
@@ -1928,7 +1928,7 @@ class ToolPaint(AppTool, Gerber):
 
                 # process the flashes found in the selected polygon with the 'lines' method for rectangular
                 # flashes and with _("Seed") for oblong and circular flashes
-                # and pads (flahes) need the contour therefore I override the AppGUI settings with always True
+                # and pads (flahes) need the contour therefore I override the GUI settings with always True
                 for ap_type in flash_el_dict:
                     for elem in flash_el_dict[ap_type]:
                         if 'solid' in elem:
@@ -2206,7 +2206,7 @@ class ToolPaint(AppTool, Gerber):
                 cp = []
                 try:
                     for pp in poly_buf:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
@@ -2224,7 +2224,7 @@ class ToolPaint(AppTool, Gerber):
                             self.app.proc_container.update_view_text(' %d%%' % disp_number)
                             old_disp_number = disp_number
                 except TypeError:
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
                     if self.app.abort_flag:
                         # graceful abort requested by the user
@@ -2524,7 +2524,7 @@ class ToolPaint(AppTool, Gerber):
                     cp = []
                     try:
                         for pp in poly_buf:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
@@ -2549,7 +2549,7 @@ class ToolPaint(AppTool, Gerber):
                                 # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                     except TypeError:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
@@ -2712,7 +2712,7 @@ class ToolPaint(AppTool, Gerber):
                     cp = []
                     try:
                         for pp in poly_buf:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
@@ -2730,7 +2730,7 @@ class ToolPaint(AppTool, Gerber):
                                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                 old_disp_number = disp_number
                     except TypeError:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
@@ -3022,7 +3022,7 @@ class ToolPaint(AppTool, Gerber):
                 try:
                     try:
                         for pp in poly_buf:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
@@ -3047,7 +3047,7 @@ class ToolPaint(AppTool, Gerber):
                                 # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                     except TypeError:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user
@@ -3200,7 +3200,7 @@ class ToolPaint(AppTool, Gerber):
                 try:
                     try:
                         for pp in poly_buf:
-                            # provide the app with a way to process the AppGUI events when in a blocking loop
+                            # provide the app with a way to process the GUI events when in a blocking loop
                             QtWidgets.QApplication.processEvents()
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
@@ -3225,7 +3225,7 @@ class ToolPaint(AppTool, Gerber):
                                 # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                     except TypeError:
-                        # provide the app with a way to process the AppGUI events when in a blocking loop
+                        # provide the app with a way to process the GUI events when in a blocking loop
                         QtWidgets.QApplication.processEvents()
                         if self.app.abort_flag:
                             # graceful abort requested by the user

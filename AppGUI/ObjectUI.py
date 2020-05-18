@@ -2305,7 +2305,7 @@ class CNCObjectUI(ObjectUI):
 
     def __init__(self, app, parent=None):
         """
-        Creates the user interface for CNCJob objects. AppGUI elements should
+        Creates the user interface for CNCJob objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
 
@@ -2638,7 +2638,7 @@ class ScriptObjectUI(ObjectUI):
 
     def __init__(self, app, parent=None):
         """
-        Creates the user interface for Script objects. AppGUI elements should
+        Creates the user interface for Script objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
 
@@ -2705,7 +2705,7 @@ class DocumentObjectUI(ObjectUI):
 
     def __init__(self, app, parent=None):
         """
-        Creates the user interface for Notes objects. AppGUI elements should
+        Creates the user interface for Notes objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
 

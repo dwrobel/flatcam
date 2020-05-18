@@ -64,7 +64,7 @@ class FlatCAMDefaults:
 
         "global_machinist_setting": False,
 
-        # Global AppGUI Preferences
+        # Global GUI Preferences
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -125,7 +125,7 @@ class FlatCAMDefaults:
 
         "global_tcl_path": '',
 
-        # General AppGUI Settings
+        # General GUI Settings
         "global_theme": 'white',
         "global_gray_icons": False,
         "global_hover": False,

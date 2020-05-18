@@ -462,7 +462,7 @@ class ToolSub(AppTool):
                                      _('Generating new object failed.'))
                 return
 
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit('[success] %s: %s' %
                                  (_("Created"), outname))
 
@@ -666,7 +666,7 @@ class ToolSub(AppTool):
                 return
             # Register recent file
             self.app.file_opened.emit('geometry', outname)
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit('[success] %s: %s' %
                                  (_("Created"), outname))
 

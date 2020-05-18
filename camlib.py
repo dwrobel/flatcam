@@ -1267,7 +1267,7 @@ class Geometry(object):
                 # graceful abort requested by the user
                 raise grace
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
             # Can only result in a Polygon or MultiPolygon
@@ -1359,7 +1359,7 @@ class Geometry(object):
                 # graceful abort requested by the user
                 raise grace
 
-            # provide the app with a way to process the AppGUI events when in a blocking loop
+            # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
             path = Point(seedpoint).buffer(radius, int(steps_per_circle)).exterior
@@ -1473,7 +1473,7 @@ class Geometry(object):
                         # graceful abort requested by the user
                         raise grace
 
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     line = LineString([(left, y), (right, y)])
@@ -1510,7 +1510,7 @@ class Geometry(object):
                         # graceful abort requested by the user
                         raise grace
 
-                    # provide the app with a way to process the AppGUI events when in a blocking loop
+                    # provide the app with a way to process the GUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     line = LineString([(x, top), (x, bot)])
@@ -1641,7 +1641,7 @@ class Geometry(object):
                     # graceful abort requested by the user
                     raise grace
 
-                # provide the app with a way to process the AppGUI events when in a blocking loop
+                # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
                 new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))

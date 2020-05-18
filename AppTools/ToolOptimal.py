@@ -42,7 +42,7 @@ class ToolOptimal(AppTool):
         self.decimals = self.app.decimals
 
         # ############################################################################
-        # ############################ AppGUI creation ##################################
+        # ############################ GUI creation ##################################
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet(
@@ -248,7 +248,7 @@ class ToolOptimal(AppTool):
 
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
         self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
-        # ################## Finished AppGUI creation ###################################
+        # ################## Finished GUI creation ###################################
         # ############################################################################
 
         # this is the line selected in the textbox with the locations of the minimum

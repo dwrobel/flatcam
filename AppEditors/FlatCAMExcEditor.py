@@ -2415,7 +2415,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             drill_count = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
             drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            # if the slot number is zero is better to not clutter the AppGUI with zero's so we print a space
+            # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             if slot_cnt > 0:
                 slot_count = QtWidgets.QTableWidgetItem('%d' % slot_cnt)
             else:
@@ -2532,9 +2532,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
         self.tools_table_exc.clearSelection()
 
-        # Remove anything else in the AppGUI Selected Tab
+        # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourself in the AppGUI Selected Tab
+        # Put ourself in the GUI Selected Tab
         self.app.ui.selected_scroll_area.setWidget(self.exc_edit_widget)
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)

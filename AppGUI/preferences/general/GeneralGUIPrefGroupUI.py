@@ -23,7 +23,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self, parent=parent)
 
-        self.setTitle(str(_("AppGUI Preferences")))
+        self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
 
         # Create a grid layout for the Application general settings
@@ -382,7 +382,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
         # #############################################################################
-        # ############################# AppGUI COLORS SIGNALS ############################
+        # ############################# GUI COLORS SIGNALS ############################
         # #############################################################################
 
         # Setting selection (left - right) colors signals

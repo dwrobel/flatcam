@@ -70,7 +70,7 @@ from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 # FlatCAM AppGUI
 from AppGUI.PlotCanvas import *
 from AppGUI.PlotCanvasLegacy import *
-from AppGUI.FlatCAMGUI import *
+from AppGUI.MainGUI import *
 from AppGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray
 
 # FlatCAM Pre-processors
@@ -417,7 +417,7 @@ class App(QtCore.QObject):
             fp.close()
 
         # Application directory. CHDIR to it. Otherwise, trying to load
-        # AppGUI icons will fail as their path is relative.
+        # GUI icons will fail as their path is relative.
         # This will fail under cx_freeze ...
         self.app_home = os.path.dirname(os.path.realpath(__file__))
 
@@ -496,7 +496,7 @@ class App(QtCore.QObject):
             show_splash = 0
 
         # ###########################################################################################################
-        # ######################################### Initialize AppGUI ##################################################
+        # ######################################### Initialize GUI ##################################################
         # ###########################################################################################################
 
         # FlatCAM colors used in plotting
@@ -505,7 +505,7 @@ class App(QtCore.QObject):
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
 
-        self.ui = FlatCAMGUI(self)
+        self.ui = MainGUI(self)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -581,14 +581,14 @@ class App(QtCore.QObject):
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         # ###########################################################################################################
-        # ##################################### UPDATE PREFERENCES AppGUI FORMS ########################################
+        # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
         # ###########################################################################################################
 
         self.preferencesUiManager = PreferencesUIManager(defaults=self.defaults, data_path=self.data_path, ui=self.ui,
                                                          inform=self.inform)
         self.preferencesUiManager.defaults_write_form()
 
-        # When the self.defaults dictionary changes will update the Preferences AppGUI forms
+        # When the self.defaults dictionary changes will update the Preferences GUI forms
         self.defaults.set_change_callback(self.on_defaults_dict_change)
 
         # ###########################################################################################################
@@ -596,7 +596,7 @@ class App(QtCore.QObject):
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
-            # ONLY AT FIRST STARTUP INIT THE AppGUI LAYOUT TO 'COMPACT'
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'minimal'
             self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
@@ -957,7 +957,7 @@ class App(QtCore.QObject):
             act.triggered.connect(self.on_set_color_action_triggered)
 
         # ###########################################################################################################
-        # #################################### AppGUI PREFERENCES SIGNALS ##############################################
+        # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
 
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
@@ -973,7 +973,7 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         # ###########################################################################################################
-        # ######################################## AppGUI SETTINGS SIGNALS #############################################
+        # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
         self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
@@ -998,10 +998,7 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
 
         # Object list
-        self.collection.view.activated.connect(self.on_row_activated)
-        self.collection.item_selected.connect(self.on_row_selected)
-
-        self.object_status_changed.connect(self.on_collection_updated)
+        self.object_status_changed.connect(self.collection.on_collection_updated)
 
         # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
         # Export Excellon parameters.
@@ -1606,7 +1603,7 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
         # ###########################################################################################################
-        # ########################################## SHOW AppGUI #######################################################
+        # ########################################## SHOW GUI #######################################################
         # ###########################################################################################################
 
         # if the app is not started as headless, show it
@@ -2267,7 +2264,7 @@ class App(QtCore.QObject):
 
                         self.geo_editor.deactivate()
 
-                        # restore AppGUI to the Selected TAB
+                        # restore GUI to the Selected TAB
                         # Remove anything else in the AppGUI
                         self.ui.tool_scroll_area.takeWidget()
 
@@ -2306,7 +2303,7 @@ class App(QtCore.QObject):
 
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
-                        # restore AppGUI to the Selected TAB
+                        # restore GUI to the Selected TAB
                         # Remove anything else in the AppGUI
                         self.ui.selected_scroll_area.takeWidget()
 
@@ -2318,7 +2315,7 @@ class App(QtCore.QObject):
 
                         self.exc_editor.deactivate()
 
-                        # restore AppGUI to the Selected TAB
+                        # restore GUI to the Selected TAB
                         # Remove anything else in the AppGUI
                         self.ui.tool_scroll_area.takeWidget()
 
@@ -2671,7 +2668,7 @@ class App(QtCore.QObject):
     def new_object(self, kind, name, initialize, plot=True, autoselected=True):
         """
         Creates a new specialized FlatCAMObj and attaches it to the application,
-        this is, updates the AppGUI accordingly, any other records and plots it.
+        this is, updates the GUI accordingly, any other records and plots it.
         This method is thread-safe.
 
         Notes:
@@ -3568,7 +3565,7 @@ class App(QtCore.QObject):
 
     def on_portable_checked(self, state):
         """
-        Callback called when the checkbox in Preferences AppGUI is checked.
+        Callback called when the checkbox in Preferences GUI is checked.
         It will set the application as portable by creating the preferences and recent files in the
         'config' folder found in the FlatCAM installation folder.
 
@@ -4125,7 +4122,7 @@ class App(QtCore.QObject):
 
     def on_defaults_dict_change(self, field):
         """
-        Called whenever a key changed in the self.defaults dictionary. It will set the required AppGUI element in the
+        Called whenever a key changed in the self.defaults dictionary. It will set the required GUI element in the
         Edit -> Preferences tab window.
 
         :param field: the key of the self.defaults dictionary that was changed.
@@ -4401,7 +4398,7 @@ class App(QtCore.QObject):
         self.preferencesUiManager.defaults_read_form()
 
         # the self.preferencesUiManager.defaults_read_form() will update all defaults values
-        # in self.defaults from the AppGUI elements but
+        # in self.defaults from the GUI elements but
         # I don't want it for the grid values, so I update them here
         self.defaults['global_gridx'] = val_x
         self.defaults['global_gridy'] = val_y
@@ -6068,8 +6065,7 @@ class App(QtCore.QObject):
                         sel_obj.rotate(-float(num), point=(px, py))
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
-                    self.inform.emit('[success] %s' %
-                                     _("Rotation done."))
+                    self.inform.emit('[success] %s' % _("Rotation done."))
                 except Exception as e:
                     self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation movement was not executed."), str(e)))
                     return
@@ -6088,8 +6084,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected to Skew/Shear on X axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Skew/Shear on X axis."))
         else:
             skewxbox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
@@ -6110,8 +6105,7 @@ class App(QtCore.QObject):
                     obj.skew(num, 0, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit('[success] %s' %
-                                 _("Skew on X axis done."))
+                self.inform.emit('[success] %s' % _("Skew on X axis done."))
 
     def on_skewy(self):
         """
@@ -6127,8 +6121,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected to Skew/Shear on Y axis."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected to Skew/Shear on Y axis."))
         else:
             skewybox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
@@ -6149,8 +6142,7 @@ class App(QtCore.QObject):
                     obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit('[success] %s' %
-                                 _("Skew on Y axis done."))
+                self.inform.emit('[success] %s' % _("Skew on Y axis done."))
 
     def on_plots_updated(self):
         """
@@ -6185,202 +6177,6 @@ class App(QtCore.QObject):
             pass
 
         self.plot_all()
-
-    def on_row_activated(self, index):
-        if index.isValid():
-            if index.internalPointer().parent_item != self.collection.root_item:
-                self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-        self.collection.on_item_activated(index)
-
-    def on_row_selected(self, obj_name):
-        """
-        This is a special string; when received it will make all Menu -> AppObjects entries unchecked
-        It mean we clicked outside of the items and deselected all
-
-        :param obj_name:
-        :return:
-        """
-        if obj_name == 'none':
-            for act in self.ui.menuobjects.actions():
-                act.setChecked(False)
-            return
-
-        # get the name of the selected objects and add them to a list
-        name_list = []
-        for obj in self.collection.get_selected():
-            name_list.append(obj.options['name'])
-
-        # set all actions as unchecked but the ones selected make them checked
-        for act in self.ui.menuobjects.actions():
-            act.setChecked(False)
-            if act.text() in name_list:
-                act.setChecked(True)
-
-    def on_collection_updated(self, obj, state, old_name):
-        """
-        Create a menu from the object loaded in the collection.
-
-        :param obj:         object that was changed (added, deleted, renamed)
-        :param state:       what was done with the object. Can be: added, deleted, delete_all, renamed
-        :param old_name:    the old name of the object before the action that triggered this slot happened
-        :return:            None
-        """
-        icon_files = {
-            "gerber": self.resource_location + "/flatcam_icon16.png",
-            "excellon": self.resource_location + "/drill16.png",
-            "cncjob": self.resource_location + "/cnc16.png",
-            "geometry": self.resource_location + "/geometry16.png",
-            "script": self.resource_location + "/script_new16.png",
-            "document": self.resource_location + "/notes16_1.png"
-        }
-
-        if state == 'append':
-            for act in self.ui.menuobjects.actions():
-                try:
-                    act.triggered.disconnect()
-                except TypeError:
-                    pass
-            self.ui.menuobjects.clear()
-
-            gerber_list = []
-            exc_list = []
-            cncjob_list = []
-            geo_list = []
-            script_list = []
-            doc_list = []
-
-            for name in self.collection.get_names():
-                obj_named = self.collection.get_by_name(name)
-                if obj_named.kind == 'gerber':
-                    gerber_list.append(name)
-                elif obj_named.kind == 'excellon':
-                    exc_list.append(name)
-                elif obj_named.kind == 'cncjob':
-                    cncjob_list.append(name)
-                elif obj_named.kind == 'geometry':
-                    geo_list.append(name)
-                elif obj_named.kind == 'script':
-                    script_list.append(name)
-                elif obj_named.kind == 'document':
-                    doc_list.append(name)
-
-            def add_act(o_name):
-                obj_for_icon = self.collection.get_by_name(o_name)
-                add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
-                add_action.setCheckable(True)
-                add_action.setText(o_name)
-                add_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
-                add_action.triggered.connect(
-                    lambda: self.collection.set_active(o_name) if add_action.isChecked() is True else
-                    self.collection.set_inactive(o_name))
-                self.ui.menuobjects.addAction(add_action)
-
-            for name in gerber_list:
-                add_act(name)
-            self.ui.menuobjects.addSeparator()
-
-            for name in exc_list:
-                add_act(name)
-            self.ui.menuobjects.addSeparator()
-
-            for name in cncjob_list:
-                add_act(name)
-            self.ui.menuobjects.addSeparator()
-
-            for name in geo_list:
-                add_act(name)
-            self.ui.menuobjects.addSeparator()
-
-            for name in script_list:
-                add_act(name)
-            self.ui.menuobjects.addSeparator()
-
-            for name in doc_list:
-                add_act(name)
-
-            self.ui.menuobjects.addSeparator()
-            self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
-                QtGui.QIcon(self.resource_location + '/select_all.png'),
-                _('Select All')
-            )
-            self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
-                QtGui.QIcon(self.resource_location + '/deselect_all32.png'),
-                _('Deselect All')
-            )
-            self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
-            self.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
-
-        elif state == 'delete':
-            for act in self.ui.menuobjects.actions():
-                if act.text() == obj.options['name']:
-                    try:
-                        act.triggered.disconnect()
-                    except TypeError:
-                        pass
-                    self.ui.menuobjects.removeAction(act)
-                    break
-        elif state == 'rename':
-            for act in self.ui.menuobjects.actions():
-                if act.text() == old_name:
-                    add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
-                    add_action.setText(obj.options['name'])
-                    add_action.setIcon(QtGui.QIcon(icon_files[obj.kind]))
-                    add_action.triggered.connect(
-                        lambda: self.collection.set_active(obj.options['name']) if add_action.isChecked() is True else
-                        self.collection.set_inactive(obj.options['name']))
-
-                    self.ui.menuobjects.insertAction(act, add_action)
-
-                    try:
-                        act.triggered.disconnect()
-                    except TypeError:
-                        pass
-                    self.ui.menuobjects.removeAction(act)
-                    break
-        elif state == 'delete_all':
-            for act in self.ui.menuobjects.actions():
-                try:
-                    act.triggered.disconnect()
-                except TypeError:
-                    pass
-            self.ui.menuobjects.clear()
-
-            self.ui.menuobjects.addSeparator()
-            self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
-                QtGui.QIcon(self.resource_location + '/select_all.png'),
-                _('Select All')
-            )
-            self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
-                QtGui.QIcon(self.resource_location + '/deselect_all32.png'),
-                _('Deselect All')
-            )
-            self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
-            self.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
-
-    def on_objects_selection(self, on_off):
-        obj_list = self.collection.get_names()
-
-        if on_off is True:
-            self.collection.set_all_active()
-            for act in self.ui.menuobjects.actions():
-                try:
-                    act.setChecked(True)
-                except Exception:
-                    pass
-            if obj_list:
-                self.inform.emit('[selected] %s' % _("All objects are selected."))
-        else:
-            self.collection.set_all_inactive()
-            for act in self.ui.menuobjects.actions():
-                try:
-                    act.setChecked(False)
-                except Exception:
-                    pass
-
-            if obj_list:
-                self.inform.emit('%s' % _("AppObjects selection is cleared."))
-            else:
-                self.inform.emit('')
 
     def grid_status(self):
         return True if self.ui.grid_snap_btn.isChecked() else False
@@ -6881,7 +6677,7 @@ class App(QtCore.QObject):
                             curr_sel_obj.selection_shape_drawn = True
 
                     elif curr_sel_obj.options['name'] not in self.objects_under_the_click_list:
-                        self.on_objects_selection(False)
+                        self.collection.on_objects_selection(False)
                         self.delete_selection_shape()
                         curr_sel_obj.selection_shape_drawn = False
 
@@ -6899,7 +6695,7 @@ class App(QtCore.QObject):
                             self.draw_selection_shape(curr_sel_obj)
                             curr_sel_obj.selection_shape_drawn = True
                     else:
-                        self.on_objects_selection(False)
+                        self.collection.on_objects_selection(False)
                         self.delete_selection_shape()
 
                         if self.call_source != 'app':
@@ -6941,7 +6737,7 @@ class App(QtCore.QObject):
 
             else:
                 # deselect everything
-                self.on_objects_selection(False)
+                self.collection.on_objects_selection(False)
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
 

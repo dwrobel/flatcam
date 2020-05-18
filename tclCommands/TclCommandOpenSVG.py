@@ -89,5 +89,5 @@ class TclCommandOpenSVG(TclCommandSignaled):
             # Register recent file
             self.app.file_opened.emit("svg", filename)
 
-            # AppGUI feedback
+            # GUI feedback
             self.app.inform.emit("Opened: " + filename)

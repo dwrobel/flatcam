@@ -3463,7 +3463,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             """
 
             :param opt:     A option from the self.options dictionary
-            :param entry:   A AppGUI element which text value is used
+            :param entry:   A GUI element which text value is used
             :return:
             """
             try:
@@ -3480,7 +3480,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             """
 
             :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
-            :param gentry:      A AppGUI element which text value is read and used
+            :param gentry:      A GUI element which text value is read and used
             :return:
             """
             if goption not in ['global_gridx', 'global_gridy']:
@@ -3567,7 +3567,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
 
-        # Remove anything else in the AppGUI Selected Tab
+        # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
         # Put ourselves in the AppGUI Selected Tab
         self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)

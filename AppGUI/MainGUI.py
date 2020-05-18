@@ -41,13 +41,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class FlatCAMGUI(QtWidgets.QMainWindow):
+class MainGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
 
     def __init__(self, app):
-        super(FlatCAMGUI, self).__init__()
+        super(MainGUI, self).__init__()
 
         self.app = app
         self.decimals = self.app.decimals
@@ -55,7 +55,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Divine icon pack by Ipapun @ finicons.com
 
         # #######################################################################
-        # ############ BUILDING THE AppGUI IS EXECUTED HERE ########################
+        # ############ BUILDING THE GUI IS EXECUTED HERE ########################
         # #######################################################################
 
         # #######################################################################
@@ -497,9 +497,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+M"))
 
         # ########################################################################
-        # ########################## AppObjects # ###################################
+        # ########################## Objects # ###################################
         # ########################################################################
-        self.menuobjects = self.menu.addMenu(_('AppObjects'))
+        self.menuobjects = self.menu.addMenu(_('Objects'))
         self.menuobjects.addSeparator()
         self.menuobjects_selall = self.menuobjects.addAction(
             QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('Select All'))
@@ -763,7 +763,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
 
         # IMPORTANT #
-        # The order: SPLITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the AppGUI will not be initialized as
+        # The order: SPLITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
         # desired.
         self.splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.splitter)
@@ -1319,11 +1319,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_1.addWidget(self.pref_open_button)
 
         # Clear Settings
-        self.clear_btn = FCButton('%s' % _('Clear AppGUI Settings'))
+        self.clear_btn = FCButton('%s' % _('Clear GUI Settings'))
         self.clear_btn.setMinimumWidth(130)
 
         self.clear_btn.setToolTip(
-            _("Clear the AppGUI settings for FlatCAM,\n"
+            _("Clear the GUI settings for FlatCAM,\n"
               "such as: layout, gui state, style, hdpi support etc.")
         )
 
@@ -1539,7 +1539,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # infobar.addWidget(self.progress_bar)
 
         # ########################################################################
-        # ########################## SET AppGUI Elements # ##########################
+        # ########################## SET GUI Elements # ##########################
         # ########################################################################
         self.app_icon = QtGui.QIcon()
         self.app_icon.addFile(self.app.resource_location + '/flatcam_icon16.png', QtCore.QSize(16, 16))
@@ -1562,7 +1562,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.setAcceptDrops(True)
 
         # ########################################################################
-        # ########################## Build AppGUI # #################################
+        # ########################## Build GUI # #################################
         # ########################################################################
         self.grid_snap_btn.setCheckable(True)
         self.corner_snap_btn.setCheckable(True)
@@ -1595,7 +1595,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if flat_settings.contains("saved_gui_state"):
             saved_gui_state = flat_settings.value('saved_gui_state')
             self.restoreState(saved_gui_state)
-            log.debug("FlatCAMGUI.__init__() --> UI state restored from QSettings.")
+            log.debug("MainGUI.__init__() --> UI state restored from QSettings.")
 
         self.corner_snap_btn.setVisible(False)
         self.snap_magnet.setVisible(False)
@@ -1606,7 +1606,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.geo_edit_toolbar.setDisabled(True)
             self.grb_edit_toolbar.setDisabled(True)
 
-            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
+            log.debug("MainGUI.__init__() --> UI layout restored from QSettings. Layout = %s" % str(layout))
         else:
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setDisabled(True)
@@ -1615,7 +1615,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             flat_settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
             del flat_settings
-            log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
+            log.debug("MainGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
 
         # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
         self.lock_action = QtWidgets.QAction()
@@ -1655,11 +1655,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # restore the toolbar view
         self.restore_toolbar_view()
 
-        # restore the AppGUI geometry
+        # restore the GUI geometry
         self.restore_main_win_geom()
 
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        # %%%%%%%%%%%%%%%%% AppGUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # Variable to store the status of the fullscreen event
@@ -1677,7 +1677,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                              self.app.defaults["global_def_win_h"])
             self.splitter.setSizes([self.app.defaults["global_def_notebook_width"], 0])
         except KeyError as e:
-            log.debug("AppGUI.FlatCAMGUI.restore_main_win_geom() --> %s" % str(e))
+            log.debug("AppGUI.MainGUI.restore_main_win_geom() --> %s" % str(e))
 
     def restore_toolbar_view(self):
         """
@@ -1776,8 +1776,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         resource_loc = self.app.resource_location
 
         msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("Are you sure you want to delete the AppGUI Settings? \n"))
-        msgbox.setWindowTitle(_("Clear AppGUI Settings"))
+        msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
+        msgbox.setWindowTitle(_("Clear GUI Settings"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -2082,7 +2082,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
             key = event
-        # events from the AppGUI are of type QKeyEvent
+        # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
