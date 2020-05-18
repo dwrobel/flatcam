@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - moved all the parsing out of the PDF Tool to a new file ParsePDF in the flatcamParsers folder
 - trying to fix the pixmap load crash when running a FlatCAMScript
 - made the workspace label in the status bar clickable and also added a status bar message on status toggle for workspace
+- modified the GUI for Film and Panelize Tools
+
 
 17.05.2020
 

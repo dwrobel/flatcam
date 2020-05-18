@@ -49,8 +49,6 @@ class Panelize(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        self.layout.addWidget(QtWidgets.QLabel(''))
-
         self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip(
             _("Specify the type of object to be panelized\n"
@@ -90,7 +88,6 @@ class Panelize(FlatCAMTool):
               "be duplicated in an array of rows and columns.")
         )
         form_layout_0.addRow(self.object_combo)
-        form_layout_0.addRow(QtWidgets.QLabel(""))
 
         # Form Layout
         form_layout = QtWidgets.QFormLayout()
@@ -142,7 +139,11 @@ class Panelize(FlatCAMTool):
               "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo)
-        form_layout.addRow(QtWidgets.QLabel(""))
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form_layout.addRow(separator_line)
 
         panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
         panel_data_label.setToolTip(
@@ -198,7 +199,11 @@ class Panelize(FlatCAMTool):
             _("Number of rows of the desired panel")
         )
         form_layout.addRow(self.rows_label, self.rows)
-        form_layout.addRow(QtWidgets.QLabel(""))
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form_layout.addRow(separator_line)
 
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
@@ -247,6 +252,11 @@ class Panelize(FlatCAMTool):
 
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form_layout.addRow(separator_line)
 
         # Buttons
         self.panelize_object_button = QtWidgets.QPushButton(_("Panelize Object"))

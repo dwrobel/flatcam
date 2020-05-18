@@ -65,13 +65,8 @@ class Film(FlatCAMTool):
         grid0.setColumnStretch(1, 1)
 
         # Type of object for which to create the film
-        self.tf_type_obj_combo = FCComboBox()
-        self.tf_type_obj_combo.addItems([_("Gerber"), _("Geometry")])
-
-        # we get rid of item1 ("Excellon") as it is not suitable for creating film
-        # self.tf_type_obj_combo.view().setRowHidden(1, True)
-        self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
+                                           {'label': _('Geometry'), 'value': 'geo'}])
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
@@ -89,26 +84,12 @@ class Film(FlatCAMTool):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_object_combo.is_last = True
 
-        self.tf_object_label = QtWidgets.QLabel('%s:' % _("Film Object"))
-        self.tf_object_label.setToolTip(
-            _("Object for which to create the film.")
-        )
-        grid0.addWidget(self.tf_object_label, 1, 0)
-        grid0.addWidget(self.tf_object_combo, 1, 1)
+        grid0.addWidget(self.tf_object_combo, 1, 0, 1, 2)
 
         # Type of Box Object to be used as an envelope for film creation
         # Within this we can create negative
-        self.tf_type_box_combo = FCComboBox()
-        self.tf_type_box_combo.addItems([_("Gerber"), _("Geometry")])
-
-        # self.tf_type_box_combo.addItem("Gerber")
-        # self.tf_type_box_combo.addItem("Excellon")
-        # self.tf_type_box_combo.addItem("Geometry")
-
-        # we get rid of item1 ("Excellon") as it is not suitable for box when creating film
-        # self.tf_type_box_combo.view().setRowHidden(1, True)
-        self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.tf_type_box_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        self.tf_type_box_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
+                                           {'label': _('Geometry'), 'value': 'geo'}])
 
         self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
@@ -126,17 +107,19 @@ class Film(FlatCAMTool):
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_box_combo.is_last = True
 
-        self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
-        self.tf_box_combo_label.setToolTip(
-            _("The actual object that is used as container for the\n "
-              "selected object for which we create the film.\n"
-              "Usually it is the PCB outline but it can be also the\n"
-              "same object for which the film is created.")
-        )
-        grid0.addWidget(self.tf_box_combo_label, 3, 0)
-        grid0.addWidget(self.tf_box_combo, 3, 1)
+        # self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
+        # self.tf_box_combo_label.setToolTip(
+        #     _("The actual object that is used as container for the\n "
+        #       "selected object for which we create the film.\n"
+        #       "Usually it is the PCB outline but it can be also the\n"
+        #       "same object for which the film is created.")
+        # )
+        grid0.addWidget(self.tf_box_combo, 3, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 4, 0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         self.film_adj_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Adjustments"))
         self.film_adj_label.setToolTip(
@@ -533,28 +516,28 @@ class Film(FlatCAMTool):
 
         # ## Signals
         self.film_object_button.clicked.connect(self.on_film_creation)
-        self.tf_type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.tf_type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
+        self.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+        self.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
 
         self.film_type.activated_custom.connect(self.on_film_type)
         self.source_punch.activated_custom.connect(self.on_punch_source)
         self.file_type_radio.activated_custom.connect(self.on_file_type)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self):
-        obj_type = self.tf_type_obj_combo.currentIndex()
+    def on_type_obj_index_changed(self, val):
+        obj_type = 2 if val == 'geo' else 0
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(0)
         self.tf_object_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+            "grb": "gerber", "geo": "geometry"
         }[self.tf_type_obj_combo.get_value()]
 
-    def on_type_box_index_changed(self):
-        obj_type = self.tf_type_box_combo.currentIndex()
+    def on_type_box_index_changed(self, val):
+        obj_type = 2 if val == 'geo' else 0
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.tf_box_combo.setCurrentIndex(0)
         self.tf_box_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
+            "grb": "gerber", "geo": "geometry"
         }[self.tf_type_obj_combo.get_value()]
 
     def run(self, toggle=True):
@@ -618,9 +601,11 @@ class Film(FlatCAMTool):
         self.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
         self.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
 
+        self.tf_type_obj_combo.set_value('grb')
+        self.tf_type_box_combo.set_value('grb')
         # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
-        self.on_type_obj_index_changed()
-        self.on_type_box_index_changed()
+        self.on_type_obj_index_changed(val='grb')
+        self.on_type_box_index_changed(val='grb')
 
     def on_film_type(self, val):
         type_of_film = val
@@ -659,7 +644,7 @@ class Film(FlatCAMTool):
             self.exc_label.show()
             self.exc_combo.show()
 
-        if val == 'pad' and self.tf_type_obj_combo.currentText() == 'Geometry':
+        if val == 'pad' and self.tf_type_obj_combo.get_value() == 'geo':
             self.source_punch.set_value('exc')
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Using the Pad center does not work on Geometry objects. "
                                                           "Only a Gerber object has pads."))
