@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.05.2020
+
+- updated the Italian language (translation incomplete)
+
 18.05.2020
 
 - fixed the PDF Tool when importing as Gerber objects
