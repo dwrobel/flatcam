@@ -9,7 +9,7 @@
 from AppPreProcessor import *
 
 
-class Toolchange_Manual(FlatCAMPostProc):
+class Toolchange_Manual(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

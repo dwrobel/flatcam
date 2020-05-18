@@ -1,7 +1,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
 
 from numpy import Inf
@@ -21,12 +21,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class DblSidedTool(FlatCAMTool):
+class DblSidedTool(AppTool):
 
     toolName = _("2-Sided PCB")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         self.decimals = self.app.decimals
 
         # ## Title
@@ -511,7 +511,7 @@ class DblSidedTool(FlatCAMTool):
         self.drill_values = ""
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("Tool2Sided()")
@@ -535,7 +535,7 @@ class DblSidedTool(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("2-Sided Tool"))

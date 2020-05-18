@@ -2630,12 +2630,12 @@ msgstr "Enregistrez les informations de la base de données des outils."
 msgid "processes running."
 msgstr "processus en cours d'exécution."
 
-#: FlatCAMTool.py:245 FlatCAMTool.py:252 flatcamGUI/ObjectUI.py:157
+#: AppTool.py:245 AppTool.py:252 flatcamGUI/ObjectUI.py:157
 #: flatcamGUI/ObjectUI.py:164
 msgid "Edited value is out of range"
 msgstr "La valeur modifiée est hors limites"
 
-#: FlatCAMTool.py:247 FlatCAMTool.py:254 flatcamGUI/ObjectUI.py:159
+#: AppTool.py:247 AppTool.py:254 flatcamGUI/ObjectUI.py:159
 #: flatcamGUI/ObjectUI.py:166
 msgid "Edited value is within limits."
 msgstr "La valeur modifiée est dans les limites."

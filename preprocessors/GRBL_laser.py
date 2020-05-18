@@ -12,7 +12,7 @@ from AppPreProcessor import *
 # is compatible with almost any version of Grbl.
 
 
-class GRBL_laser(FlatCAMPostProc):
+class GRBL_laser(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 
 from shapely.geometry import Point
@@ -24,12 +24,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolExtractDrills(FlatCAMTool):
+class ToolExtractDrills(AppTool):
 
     toolName = _("Extract Drills")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         self.decimals = self.app.decimals
 
         # ## Title
@@ -363,7 +363,7 @@ class ToolExtractDrills(FlatCAMTool):
         )
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("Extract Drills()")
@@ -387,7 +387,7 @@ class ToolExtractDrills(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Extract Drills Tool"))

@@ -2607,12 +2607,12 @@ msgstr "Salva le informazioni del Databse utensili."
 msgid "processes running."
 msgstr "processi in esecuzione."
 
-#: FlatCAMTool.py:245 FlatCAMTool.py:252 flatcamGUI/ObjectUI.py:157
+#: AppTool.py:245 AppTool.py:252 flatcamGUI/ObjectUI.py:157
 #: flatcamGUI/ObjectUI.py:164
 msgid "Edited value is out of range"
 msgstr "Il valore modificato è fuori range"
 
-#: FlatCAMTool.py:247 FlatCAMTool.py:254 flatcamGUI/ObjectUI.py:159
+#: AppTool.py:247 AppTool.py:254 flatcamGUI/ObjectUI.py:159
 #: flatcamGUI/ObjectUI.py:166
 msgid "Edited value is within limits."
 msgstr "Il valore editato è entro i limiti."

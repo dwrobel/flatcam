@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCEntry
 import math
 
@@ -19,7 +19,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class ToolCalculator(FlatCAMTool):
+class ToolCalculator(AppTool):
 
     toolName = _("Calculators")
     v_shapeName = _("V-Shape Tool Calculator")
@@ -27,7 +27,7 @@ class ToolCalculator(FlatCAMTool):
     eplateName = _("ElectroPlating Calculator")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = self.app.decimals
@@ -292,14 +292,14 @@ class ToolCalculator(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

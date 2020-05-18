@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from Common import LoudDict
 from AppGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
@@ -33,11 +33,11 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class SolderPaste(FlatCAMTool):
+class SolderPaste(AppTool):
     toolName = _("Solder Paste Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
         self.decimals = self.app.decimals
@@ -546,14 +546,14 @@ class SolderPaste(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
         self.build_ui()
 
         self.app.ui.notebook.setTabText(2, _("SolderPaste Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+K', **kwargs)
 
     def on_add_tool_by_key(self):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),

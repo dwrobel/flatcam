@@ -15,7 +15,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.ObjectUI import RadioSet
 from AppGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
     FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
@@ -42,7 +42,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class BufferSelectionTool(FlatCAMTool):
+class BufferSelectionTool(AppTool):
     """
     Simple input for buffer distance.
     """
@@ -50,7 +50,7 @@ class BufferSelectionTool(FlatCAMTool):
     toolName = "Buffer Selection"
 
     def __init__(self, app, draw_app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.draw_app = draw_app
         self.decimals = app.decimals
@@ -123,7 +123,7 @@ class BufferSelectionTool(FlatCAMTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor ToolBuffer()")
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
@@ -187,7 +187,7 @@ class BufferSelectionTool(FlatCAMTool):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
 
-class TextInputTool(FlatCAMTool):
+class TextInputTool(AppTool):
     """
     Simple input for buffer distance.
     """
@@ -195,7 +195,7 @@ class TextInputTool(FlatCAMTool):
     toolName = "Text Input Tool"
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.text_path = []
@@ -340,7 +340,7 @@ class TextInputTool(FlatCAMTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor TextInputTool()")
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
@@ -405,7 +405,7 @@ class TextInputTool(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Tool"))
 
 
-class PaintOptionsTool(FlatCAMTool):
+class PaintOptionsTool(AppTool):
     """
     Inputs to specify how to paint the selected polygons.
     """
@@ -413,7 +413,7 @@ class PaintOptionsTool(FlatCAMTool):
     toolName = "Paint Tool"
 
     def __init__(self, app, fcdraw):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.fcdraw = fcdraw
@@ -538,7 +538,7 @@ class PaintOptionsTool(FlatCAMTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor ToolPaint()")
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         # if the splitter us hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
@@ -599,7 +599,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.app.ui.splitter.setSizes([0, 1])
 
 
-class TransformEditorTool(FlatCAMTool):
+class TransformEditorTool(AppTool):
     """
     Inputs to specify how to paint the selected polygons.
     """
@@ -612,7 +612,7 @@ class TransformEditorTool(FlatCAMTool):
     offsetName = _("Offset")
 
     def __init__(self, app, draw_app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.draw_app = draw_app
@@ -981,7 +981,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def run(self):
         self.app.defaults.report_usage("Geo Editor Transform Tool()")
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         # if the splitter us hidden, display it
@@ -991,7 +991,7 @@ class TransformEditorTool(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
     def set_tool_ui(self):
         # Initialize form

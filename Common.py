@@ -15,7 +15,7 @@ from PyQt5 import QtCore
 from shapely.geometry import Polygon, MultiPolygon
 
 from AppGUI.VisPyVisuals import ShapeCollection
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 
 import numpy as np
 
@@ -287,7 +287,7 @@ class ExclusionAreas(QtCore.QObject):
                         face_color = "#FF7400BF"
 
                     # add a temporary shape on canvas
-                    FlatCAMTool.draw_tool_selection_shape(
+                    AppTool.draw_tool_selection_shape(
                         self, old_coords=(x0, y0), coords=(x1, y1),
                         color=color,
                         face_color=face_color,
@@ -322,7 +322,7 @@ class ExclusionAreas(QtCore.QObject):
 
                     # we need to add a Polygon and a Polygon can be made only from at least 3 points
                     if len(self.points) > 2:
-                        FlatCAMTool.delete_moving_selection_shape(self)
+                        AppTool.delete_moving_selection_shape(self)
                         pol = Polygon(self.points)
                         # do not add invalid polygons even if they are drawn by utility geometry
                         if pol.is_valid:
@@ -347,7 +347,7 @@ class ExclusionAreas(QtCore.QObject):
                                 color = "#098a8f"
                                 face_color = "#FF7400BF"
 
-                            FlatCAMTool.draw_selection_shape_polygon(
+                            AppTool.draw_selection_shape_polygon(
                                 self, points=self.points,
                                 color=color,
                                 face_color=face_color,
@@ -359,7 +359,7 @@ class ExclusionAreas(QtCore.QObject):
                     self.poly_drawn = False
                     return
 
-            # FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+            # AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
@@ -428,8 +428,8 @@ class ExclusionAreas(QtCore.QObject):
         self.poly_drawn = False
         self.exclusion_areas_storage = []
 
-        FlatCAMTool.delete_moving_selection_shape(self)
-        # FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        AppTool.delete_moving_selection_shape(self)
+        # AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
         self.app.call_source = "app"
         self.app.inform.emit("[WARNING_NOTCL] %s" % _("Cancelled. Area exclusion drawing was interrupted."))
@@ -498,8 +498,8 @@ class ExclusionAreas(QtCore.QObject):
                                                      face_color=face_color,
                                                      coords=(curr_pos[0], curr_pos[1]))
         else:
-            FlatCAMTool.delete_moving_selection_shape(self)
-            FlatCAMTool.draw_moving_selection_shape_poly(
+            AppTool.delete_moving_selection_shape(self)
+            AppTool.draw_moving_selection_shape_poly(
                 self, points=self.points,
                 color=color,
                 face_color=face_color,
@@ -521,9 +521,9 @@ class ExclusionAreas(QtCore.QObject):
 
     def clear_shapes(self):
         self.exclusion_areas_storage.clear()
-        FlatCAMTool.delete_moving_selection_shape(self)
+        AppTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
-        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
         self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
 
     def delete_sel_shapes(self, idxs):
@@ -534,7 +534,7 @@ class ExclusionAreas(QtCore.QObject):
         """
 
         # delete all plotted shapes
-        FlatCAMTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
+        AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
 
         # delete shapes
         for idx in sorted(idxs, reverse=True):

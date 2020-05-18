@@ -7,7 +7,7 @@
 
 from PyQt5 import QtGui, QtWidgets
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 
 import gettext
@@ -19,12 +19,12 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class ToolImage(FlatCAMTool):
+class ToolImage(AppTool):
 
     toolName = _("Image as Object")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = self.app.decimals
@@ -176,13 +176,13 @@ class ToolImage(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Image Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, **kwargs)
+        AppTool.install(self, icon, separator, **kwargs)
 
     def set_tool_ui(self):
         # ## Initialize form

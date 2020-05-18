@@ -9,7 +9,7 @@
 from AppPreProcessor import *
 
 
-class Marlin_laser_Spindle_pin(FlatCAMPostProc):
+class Marlin_laser_Spindle_pin(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

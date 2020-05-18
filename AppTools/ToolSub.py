@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
@@ -28,7 +28,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolSub(FlatCAMTool):
+class ToolSub(AppTool):
 
     job_finished = QtCore.pyqtSignal(bool)
 
@@ -38,7 +38,7 @@ class ToolSub(FlatCAMTool):
         self.app = app
         self.decimals = self.app.decimals
 
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.tools_frame = QtWidgets.QFrame()
         self.tools_frame.setContentsMargins(0, 0, 0, 0)
@@ -233,7 +233,7 @@ class ToolSub(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolSub()")
@@ -257,7 +257,7 @@ class ToolSub(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Sub Tool"))

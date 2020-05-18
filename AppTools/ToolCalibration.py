@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry
 from AppGUI.GUIElements import FCTable, FCComboBox, RadioSet
 from AppEditors.FlatCAMTextEditor import TextEditor
@@ -32,12 +32,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCalibration(FlatCAMTool):
+class ToolCalibration(AppTool):
 
     toolName = _("Calibration Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -752,14 +752,14 @@ class ToolCalibration(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Calibration Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+E', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+E', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()

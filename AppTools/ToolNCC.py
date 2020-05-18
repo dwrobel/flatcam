@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
     FCComboBox, OptionalInputSection
 from AppParsers.ParseGerber import Gerber
@@ -37,7 +37,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class NonCopperClear(FlatCAMTool, Gerber):
+class NonCopperClear(AppTool, Gerber):
 
     toolName = _("Non-Copper Clearing")
 
@@ -45,7 +45,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app = app
         self.decimals = self.app.decimals
 
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
 
         self.tools_frame = QtWidgets.QFrame()
@@ -936,7 +936,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+N', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+N', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolNonCopperClear()")
@@ -961,7 +961,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         # reset those objects on a new run

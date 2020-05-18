@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 
 from AppGUI.GUIElements import FCComboBox, RadioSet
 
@@ -27,12 +27,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class AlignObjects(FlatCAMTool):
+class AlignObjects(AppTool):
 
     toolName = _("Align AppObjects")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = app.decimals
@@ -238,13 +238,13 @@ class AlignObjects(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Align Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+A', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+A', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

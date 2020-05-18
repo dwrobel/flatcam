@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
 from Common import GracefulException as grace
 
@@ -28,7 +28,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolOptimal(FlatCAMTool):
+class ToolOptimal(AppTool):
 
     toolName = _("Optimal Tool")
 
@@ -36,7 +36,7 @@ class ToolOptimal(FlatCAMTool):
     update_sec_distances = QtCore.pyqtSignal(dict)
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
@@ -277,7 +277,7 @@ class ToolOptimal(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+O', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolOptimal()")
@@ -301,7 +301,7 @@ class ToolOptimal(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))

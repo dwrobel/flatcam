@@ -2631,12 +2631,12 @@ msgstr "Salvați informațiile din DB de Unelte."
 msgid "processes running."
 msgstr "procesele care rulează."
 
-#: FlatCAMTool.py:245 FlatCAMTool.py:252 flatcamGUI/ObjectUI.py:157
+#: AppTool.py:245 AppTool.py:252 flatcamGUI/ObjectUI.py:157
 #: flatcamGUI/ObjectUI.py:164
 msgid "Edited value is out of range"
 msgstr "Valoarea editată este in afara limitelor"
 
-#: FlatCAMTool.py:247 FlatCAMTool.py:254 flatcamGUI/ObjectUI.py:159
+#: AppTool.py:247 AppTool.py:254 flatcamGUI/ObjectUI.py:159
 #: flatcamGUI/ObjectUI.py:166
 msgid "Edited value is within limits."
 msgstr "Valoarea editată este in limite."

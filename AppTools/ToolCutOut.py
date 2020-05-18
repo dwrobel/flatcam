@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing
@@ -36,12 +36,12 @@ else:
     machinist_setting = 0
 
 
-class CutOut(FlatCAMTool):
+class CutOut(AppTool):
 
     toolName = _("Cutout PCB")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.canvas = app.plotcanvas
@@ -434,13 +434,13 @@ class CutOut(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Cutout Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+X', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+X', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

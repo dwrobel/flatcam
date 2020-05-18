@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCEntry
 
 import gettext
@@ -18,7 +18,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class ToolTransform(FlatCAMTool):
+class ToolTransform(AppTool):
 
     toolName = _("Object Transform")
     rotateName = _("Rotate")
@@ -29,7 +29,7 @@ class ToolTransform(FlatCAMTool):
     bufferName = _("Buffer")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         self.decimals = self.app.decimals
 
         # ## Title
@@ -454,13 +454,13 @@ class ToolTransform(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
     def set_tool_ui(self):
         self.rotate_button.set_value(_("Rotate"))

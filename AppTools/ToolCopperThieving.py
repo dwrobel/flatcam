@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from Common import GracefulException as grace
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base
@@ -33,13 +33,13 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCopperThieving(FlatCAMTool):
+class ToolCopperThieving(AppTool):
     work_finished = QtCore.pyqtSignal()
 
     toolName = _("Copper Thieving Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -561,14 +561,14 @@ class ToolCopperThieving(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

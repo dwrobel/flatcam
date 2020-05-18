@@ -20,7 +20,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class FlatCAMTool(QtWidgets.QWidget):
+class AppTool(QtWidgets.QWidget):
 
     toolName = "FlatCAM Generic Tool"
 
@@ -30,7 +30,7 @@ class FlatCAMTool(QtWidgets.QWidget):
         :param app: The application this tool will run in.
         :type app: App
         :param parent: Qt Parent
-        :return: FlatCAMTool
+        :return: AppTool
         """
         self.app = app
         self.decimals = app.decimals
@@ -294,5 +294,5 @@ class FlatCAMTool(QtWidgets.QWidget):
         I've overloaded this just in case I will need to make changes in the future to enforce dimensions
         :return:
         """
-        default_hint_size = super(FlatCAMTool, self).sizeHint()
+        default_hint_size = super(AppTool, self).sizeHint()
         return QtCore.QSize(default_hint_size.width(), default_hint_size.height())

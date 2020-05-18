@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.VisPyVisuals import *
 
 from copy import copy
@@ -22,13 +22,13 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolMove(FlatCAMTool):
+class ToolMove(AppTool):
 
     toolName = _("Move")
     replot_signal = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         self.app = app
         self.decimals = self.app.decimals
 
@@ -60,7 +60,7 @@ class ToolMove(FlatCAMTool):
         self.replot_signal[list].connect(self.replot)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='M', **kwargs)
 
     def run(self, toggle):
         self.app.defaults.report_usage("ToolMove()")

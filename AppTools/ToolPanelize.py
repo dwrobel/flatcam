@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 
 from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
 from Common import GracefulException as grace
@@ -29,14 +29,14 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class Panelize(FlatCAMTool):
+class Panelize(AppTool):
 
     toolName = _("Panelize PCB")
 
     def __init__(self, app):
         self.decimals = app.decimals
 
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -326,13 +326,13 @@ class Panelize(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Panel. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+Z', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+Z', **kwargs)
 
     def set_tool_ui(self):
         self.reset_fields()

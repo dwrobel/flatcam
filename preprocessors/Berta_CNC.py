@@ -13,7 +13,7 @@
 from AppPreProcessor import *
 
 
-class Berta_CNC(FlatCAMPostProc):
+class Berta_CNC(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

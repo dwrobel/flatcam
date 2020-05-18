@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog
 from AppParsers.ParseSVG import *
 
@@ -38,12 +38,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class QRCode(FlatCAMTool):
+class QRCode(AppTool):
 
     toolName = _("QRCode Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -375,14 +375,14 @@ class QRCode(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
 
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("QRCode Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+Q', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

@@ -19,10 +19,10 @@ log = logging.getLogger('base')
 preprocessors = {}
 
 
-class ABCPostProcRegister(ABCMeta):
+class ABCPreProcRegister(ABCMeta):
     # handles preprocessors registration on instantiation
     def __new__(cls, clsname, bases, attrs):
-        newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
+        newclass = super(ABCPreProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:
             if newclass.__name__ in preprocessors:
                 log.warning('Preprocessor %s has been overriden' % newclass.__name__)
@@ -30,7 +30,7 @@ class ABCPostProcRegister(ABCMeta):
         return newclass
 
 
-class FlatCAMPostProc(object, metaclass=ABCPostProcRegister):
+class PreProc(object, metaclass=ABCPreProcRegister):
     @abstractmethod
     def start_code(self, p):
         pass
@@ -76,7 +76,7 @@ class FlatCAMPostProc(object, metaclass=ABCPostProcRegister):
         pass
 
 
-class FlatCAMPostProc_Tools(object, metaclass=ABCPostProcRegister):
+class AppPreProcTools(object, metaclass=ABCPreProcRegister):
     @abstractmethod
     def start_code(self, p):
         pass

@@ -22,7 +22,7 @@ import logging
 from camlib import distance, arc, three_point_circle
 from AppGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm
@@ -5278,7 +5278,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
 
-class TransformEditorTool(FlatCAMTool):
+class TransformEditorTool(AppTool):
     """
     Inputs to specify how to paint the selected polygons.
     """
@@ -5291,7 +5291,7 @@ class TransformEditorTool(FlatCAMTool):
     offsetName = _("Offset")
 
     def __init__(self, app, draw_app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.draw_app = draw_app
@@ -5677,13 +5677,13 @@ class TransformEditorTool(FlatCAMTool):
             except AttributeError:
                 pass
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
     def set_tool_ui(self):
         # Initialize form

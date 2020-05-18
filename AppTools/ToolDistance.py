@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.VisPyVisuals import *
 from AppGUI.GUIElements import FCEntry, FCButton, FCCheckBox
 
@@ -30,12 +30,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class Distance(FlatCAMTool):
+class Distance(AppTool):
 
     toolName = _("Distance Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = self.app.decimals
@@ -208,7 +208,7 @@ class Distance(FlatCAMTool):
             self.deactivate_measure_tool()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Ctrl+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the AppGUI

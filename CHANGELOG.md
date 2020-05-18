@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - moved some of the GUI related methods from FlatCAMApp.App to the flatcamGUI.FlatCAMGUI class
 - moved Shortcuts Tab creation in it's own class
 - renamed classes to have shorter names and grouped
+- removed reference to postprocessors and replaced it with preprocessors
 
 17.05.2020
 

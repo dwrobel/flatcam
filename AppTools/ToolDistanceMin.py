@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.VisPyVisuals import *
 from AppGUI.GUIElements import FCEntry
 
@@ -27,12 +27,12 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class DistanceMin(FlatCAMTool):
+class DistanceMin(AppTool):
 
     toolName = _("Minimum Distance Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -155,7 +155,7 @@ class DistanceMin(FlatCAMTool):
                              _("Select two objects and no more, to measure the distance between them ..."))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Shift+M', **kwargs)
 
     def set_tool_ui(self):
         # Remove anything else in the AppGUI

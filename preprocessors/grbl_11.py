@@ -9,7 +9,7 @@
 from AppPreProcessor import *
 
 
-class grbl_11(FlatCAMPostProc):
+class grbl_11(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

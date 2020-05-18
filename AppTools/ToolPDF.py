@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from Common import GracefulException as grace
 from AppParsers.ParsePDF import PdfParser
 from shapely.geometry import Point, MultiPolygon
@@ -32,7 +32,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolPDF(FlatCAMTool):
+class ToolPDF(AppTool):
     """
     Parse a PDF file.
     Reference here: https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf
@@ -41,7 +41,7 @@ class ToolPDF(FlatCAMTool):
     toolName = _("PDF Import Tool")
 
     def __init__(self, app):
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         self.app = app
         self.decimals = self.app.decimals
 
@@ -69,7 +69,7 @@ class ToolPDF(FlatCAMTool):
         self.on_open_pdf_click()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Ctrl+Q', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Ctrl+Q', **kwargs)
 
     def set_tool_ui(self):
         pass

@@ -9,7 +9,7 @@
 from AppPreProcessor import *
 
 
-class Repetier(FlatCAMPostProc):
+class Repetier(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

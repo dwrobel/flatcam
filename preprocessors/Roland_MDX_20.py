@@ -11,7 +11,7 @@ from AppPreProcessor import *
 
 # for Roland Preprocessors it is mandatory for the preprocessor name (python file and class name, both of them must be
 # the same) to contain the following keyword, case-sensitive: 'Roland' without the quotes.
-class Roland_MDX_20(FlatCAMPostProc):
+class Roland_MDX_20(PreProc):
 
     include_header = False
     coordinate_format = "%.1f"

@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from copy import deepcopy
 # from ObjectCollection import *
 from AppParsers.ParseGerber import Gerber
@@ -38,7 +38,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolPaint(FlatCAMTool, Gerber):
+class ToolPaint(AppTool, Gerber):
 
     toolName = _("Paint Tool")
 
@@ -46,7 +46,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app = app
         self.decimals = self.app.decimals
 
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
 
         # ## Title
@@ -707,7 +707,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         }[self.reference_type_combo.get_value()]
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+P', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolPaint()")
@@ -732,7 +732,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))

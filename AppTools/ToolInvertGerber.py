@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTool import FlatCAMTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox
 
 from shapely.geometry import box
@@ -26,7 +26,7 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolInvertGerber(FlatCAMTool):
+class ToolInvertGerber(AppTool):
 
     toolName = _("Invert Gerber Tool")
 
@@ -34,7 +34,7 @@ class ToolInvertGerber(FlatCAMTool):
         self.app = app
         self.decimals = self.app.decimals
 
-        FlatCAMTool.__init__(self, app)
+        AppTool.__init__(self, app)
 
         self.tools_frame = QtWidgets.QFrame()
         self.tools_frame.setContentsMargins(0, 0, 0, 0)
@@ -153,7 +153,7 @@ class ToolInvertGerber(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='', **kwargs)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolInvertGerber()")
@@ -178,7 +178,7 @@ class ToolInvertGerber(FlatCAMTool):
             if self.app.ui.splitter.sizes()[0] == 0:
                 self.app.ui.splitter.setSizes([1, 1])
 
-        FlatCAMTool.run(self)
+        AppTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Invert Tool"))
