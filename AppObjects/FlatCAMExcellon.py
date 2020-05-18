@@ -1258,7 +1258,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
-            assert geo_obj.kind == 'geometry' "Initializer expected a GeometryObject, got %s" % type(geo_obj)
+            assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # ## Add properties to the object
 

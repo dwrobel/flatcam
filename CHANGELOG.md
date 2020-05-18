@@ -29,6 +29,7 @@ CHANGELOG for FlatCAM beta
 - added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
 - added icon in status bar for HUD; clicking on it will toggle the HUD (heads up display)
 - fixes due of recent changes
+- fixed issue #417
 
 17.05.2020
 
