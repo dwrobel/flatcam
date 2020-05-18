@@ -490,8 +490,6 @@ class App(QtCore.QObject):
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
 
-        self.ui = MainGUI(self)
-
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
             theme = theme_settings.value('theme', type=str)
@@ -509,8 +507,7 @@ class App(QtCore.QObject):
         # update the defaults dict with the setting in QSetting
         self.defaults['global_theme'] = theme
 
-        self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
-        self.ui.final_save.connect(self.final_save)
+        self.ui = MainGUI(self)
 
         # set FlatCAM units in the Status bar
         self.set_screen_units(self.defaults['units'])
@@ -2549,26 +2546,6 @@ class App(QtCore.QObject):
 
         self.inform.emit('[success] %s: %s' % (_("Exported file to"), filename))
 
-    def save_geometry(self, x, y, width, height, notebook_width):
-        """
-        Will save the application geometry and positions in the defaults discitionary to be restored at the next
-        launch of the application.
-
-        :param x: X position of the main window
-        :param y: Y position of the main window
-        :param width: width of the main window
-        :param height: height of the main window
-        :param notebook_width: the notebook width is adjustable so it get saved here, too.
-
-        :return: None
-        """
-        self.defaults["global_def_win_x"] = x
-        self.defaults["global_def_win_y"] = y
-        self.defaults["global_def_win_w"] = width
-        self.defaults["global_def_win_h"] = height
-        self.defaults["global_def_notebook_width"] = notebook_width
-        self.preferencesUiManager.save_defaults()
-
     def register_recent(self, kind, filename):
         """
         Will register the files opened into record dictionaries. The FlatCAM projects has it's own
@@ -4039,7 +4016,7 @@ class App(QtCore.QObject):
                     self.plotcanvas.h_line = self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                     self.plotcanvas.v_line = self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
                     self.plotcanvas.canvas.draw()
-
+            self.inform.emit(_("Axis enabled."))
             self.toggle_axis = True
         else:
             if self.is_legacy is False:
@@ -4051,10 +4028,17 @@ class App(QtCore.QObject):
                     self.plotcanvas.axes.lines.remove(self.plotcanvas.h_line)
                     self.plotcanvas.axes.lines.remove(self.plotcanvas.v_line)
                     self.plotcanvas.canvas.draw()
+            self.inform.emit(_("Axis disabled."))
             self.toggle_axis = False
 
     def on_toggle_hud(self):
-        self.plotcanvas.on_toggle_hud(state=False if self.plotcanvas.hud_enabled else True)
+        new_state = False if self.plotcanvas.hud_enabled else True
+
+        self.plotcanvas.on_toggle_hud(state=new_state)
+        if new_state is False:
+            self.inform.emit(_("HUD disabled."))
+        else:
+            self.inform.emit(_("HUD enabled."))
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -4078,6 +4062,7 @@ class App(QtCore.QObject):
                 except IndexError:
                     pass
                 pass
+            self.inform.emit(_("Grid enabled."))
             self.toggle_grid_lines = True
         else:
             if self.is_legacy is False:
@@ -4092,6 +4077,7 @@ class App(QtCore.QObject):
                 except IndexError:
                     pass
             self.toggle_grid_lines = False
+            self.inform.emit(_("Grid disabled."))
 
         if self.is_legacy is False:
             # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen

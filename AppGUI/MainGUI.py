@@ -1664,6 +1664,29 @@ class MainGUI(QtWidgets.QMainWindow):
         self.width = None
         self.height = None
 
+        self.geom_update[int, int, int, int, int].connect(self.save_geometry)
+        self.final_save.connect(self.app.final_save)
+
+    def save_geometry(self, x, y, width, height, notebook_width):
+        """
+        Will save the application geometry and positions in the defaults dicitionary to be restored at the next
+        launch of the application.
+
+        :param x:               X position of the main window
+        :param y:               Y position of the main window
+        :param width:           width of the main window
+        :param height:          height of the main window
+        :param notebook_width:  the notebook width is adjustable so it get saved here, too.
+
+        :return: None
+        """
+        self.app.defaults["global_def_win_x"] = x
+        self.app.defaults["global_def_win_y"] = y
+        self.app.defaults["global_def_win_w"] = width
+        self.app.defaults["global_def_win_h"] = height
+        self.app.defaults["global_def_notebook_width"] = notebook_width
+        self.app.preferencesUiManager.save_defaults()
+
     def restore_main_win_geom(self):
         try:
             self.setGeometry(self.app.defaults["global_def_win_x"],

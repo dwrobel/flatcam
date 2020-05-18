@@ -26,6 +26,7 @@ CHANGELOG for FlatCAM beta
 - updated the language translation files to the latest changes (no translation)
 - working on a new Tool: Etch Compensation Tool -> installed the tool and created the GUI and class template
 - moved more methods out of App_Main class
+- added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
 
 17.05.2020
 
