@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
 class ISEL_ICP_CNC(FlatCAMPostProc):

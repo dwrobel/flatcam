@@ -81,5 +81,5 @@ class TclCommandImportSvg(TclCommandSignaled):
             # Register recent file
             self.app.file_opened.emit("svg", filename)
 
-            # GUI feedback
+            # AppGUI feedback
             self.app.inform.emit("Opened: " + filename)

@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - modified the GUI for Film and Panelize Tools
 - moved some of the GUI related methods from FlatCAMApp.App to the flatcamGUI.FlatCAMGUI class
 - moved Shortcuts Tab creation in it's own class
+- renamed classes to have shorter names and grouped
 
 17.05.2020
 

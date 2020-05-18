@@ -10,7 +10,7 @@
 # MIT Licence                                                #
 ##############################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
 class Berta_CNC(FlatCAMPostProc):
@@ -102,7 +102,7 @@ class Berta_CNC(FlatCAMPostProc):
         gcode += '(Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
 
         gcode += (
-            # This line allow you to sets the machine to METRIC / INCH in the GUI
+            # This line allow you to sets the machine to METRIC / INCH in the AppGUI
             'G20\n' if p.units.upper() == 'IN' else 'G21\n') + '\n'
         #        gcode += 'G21\n' # This line sets the machine to METRIC ONLY
         #        gcode += 'G20\n' # This line sets the machine to INCH ONLY

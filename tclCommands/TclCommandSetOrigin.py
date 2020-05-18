@@ -13,7 +13,7 @@ from camlib import get_bounds
 
 import logging
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

@@ -6,7 +6,7 @@
 # License:      MIT Licence                                #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
 class Marlin_laser_Spindle_pin(FlatCAMPostProc):

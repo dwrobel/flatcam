@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
 class Toolchange_Probe_MACH3(FlatCAMPostProc):

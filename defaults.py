@@ -2,16 +2,16 @@ import os
 import stat
 import sys
 from copy import deepcopy
-from FlatCAMCommon import LoudDict
+from Common import LoudDict
 from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
-from flatcamParsers.ParseExcellon import Excellon
-from flatcamParsers.ParseGerber import Gerber
+from AppParsers.ParseExcellon import Excellon
+from AppParsers.ParseGerber import Gerber
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -64,7 +64,7 @@ class FlatCAMDefaults:
 
         "global_machinist_setting": False,
 
-        # Global GUI Preferences
+        # Global AppGUI Preferences
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -125,7 +125,7 @@ class FlatCAMDefaults:
 
         "global_tcl_path": '',
 
-        # General GUI Settings
+        # General AppGUI Settings
         "global_theme": 'white',
         "global_gray_icons": False,
         "global_hover": False,
@@ -636,7 +636,7 @@ class FlatCAMDefaults:
         "tools_punch_rectangular": False,
         "tools_punch_others": False,
 
-        # Align Objects Tool
+        # Align AppObjects Tool
         "tools_align_objects_align_type": 'sp',
 
         # Invert Gerber Tool

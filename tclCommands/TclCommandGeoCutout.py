@@ -7,7 +7,7 @@ from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
 
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 log = logging.getLogger('base')

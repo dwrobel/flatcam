@@ -90,5 +90,5 @@ class TclCommandOpenDXF(TclCommandSignaled):
             # Register recent file
             self.app.file_opened.emit("dxf", filename)
 
-            # GUI feedback
+            # AppGUI feedback
             self.app.inform.emit("Opened: " + filename)

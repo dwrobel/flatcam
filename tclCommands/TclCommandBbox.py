@@ -4,7 +4,7 @@ from tclCommands.TclCommand import TclCommand
 from shapely.ops import cascaded_union
 
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

@@ -46,14 +46,14 @@ import rasterio
 from rasterio.features import shapes
 import ezdxf
 
-from FlatCAMCommon import GracefulException as grace
+from Common import GracefulException as grace
 
 # TODO: Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
 # from scipy.spatial import Delaunay
 
-from flatcamParsers.ParseSVG import *
-from flatcamParsers.ParseDXF import *
+from AppParsers.ParseSVG import *
+from AppParsers.ParseDXF import *
 
 if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import pywrapcp
@@ -62,7 +62,7 @@ if platform.architecture()[0] == '64bit':
 import logging
 
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -502,7 +502,7 @@ class Geometry(object):
         if self.app.is_legacy is False:
             self.temp_shapes = self.app.plotcanvas.new_shape_group()
         else:
-            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            from AppGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
     def plot_temp_shapes(self, element, color='red'):
@@ -1267,7 +1267,7 @@ class Geometry(object):
                 # graceful abort requested by the user
                 raise grace
 
-            # provide the app with a way to process the GUI events when in a blocking loop
+            # provide the app with a way to process the AppGUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
             # Can only result in a Polygon or MultiPolygon
@@ -1359,7 +1359,7 @@ class Geometry(object):
                 # graceful abort requested by the user
                 raise grace
 
-            # provide the app with a way to process the GUI events when in a blocking loop
+            # provide the app with a way to process the AppGUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
             path = Point(seedpoint).buffer(radius, int(steps_per_circle)).exterior
@@ -1473,7 +1473,7 @@ class Geometry(object):
                         # graceful abort requested by the user
                         raise grace
 
-                    # provide the app with a way to process the GUI events when in a blocking loop
+                    # provide the app with a way to process the AppGUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     line = LineString([(left, y), (right, y)])
@@ -1510,7 +1510,7 @@ class Geometry(object):
                         # graceful abort requested by the user
                         raise grace
 
-                    # provide the app with a way to process the GUI events when in a blocking loop
+                    # provide the app with a way to process the AppGUI events when in a blocking loop
                     QtWidgets.QApplication.processEvents()
 
                     line = LineString([(x, top), (x, bot)])
@@ -1641,7 +1641,7 @@ class Geometry(object):
                     # graceful abort requested by the user
                     raise grace
 
-                # provide the app with a way to process the GUI events when in a blocking loop
+                # provide the app with a way to process the AppGUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
                 new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
@@ -3016,7 +3016,7 @@ class CNCjob(Geometry):
                             )
 
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
+                            # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
@@ -3235,7 +3235,7 @@ class CNCjob(Geometry):
                             )
 
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the GUI, for TclCommand this will create an error
+                            # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
@@ -3399,7 +3399,7 @@ class CNCjob(Geometry):
                         )
 
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        # APPLY Offset only when using the GUI, for TclCommand this will create an error
+                        # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         try:
@@ -6418,7 +6418,7 @@ def distance_euclidian(x1, y1, x2, y2):
 class FlatCAMRTree(object):
     """
     Indexes geometry (Any object with "cooords" property containing
-    a list of tuples with x, y values). Objects are indexed by
+    a list of tuples with x, y values). AppObjects are indexed by
     all their points by default. To index by arbitrary points,
     override self.points2obj.
     """

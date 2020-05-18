@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 # This post processor is configured to output code that
 # is compatible with almost any version of Grbl.

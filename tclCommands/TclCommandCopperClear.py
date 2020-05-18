@@ -4,7 +4,7 @@ import collections
 import logging
 
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

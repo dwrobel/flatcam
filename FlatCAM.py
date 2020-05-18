@@ -3,8 +3,8 @@ import os
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
-from FlatCAMApp import App
-from flatcamGUI import VisPyPatches
+from App import App
+from AppGUI import VisPyPatches
 
 from multiprocessing import freeze_support
 # import copyreg
@@ -31,7 +31,7 @@ def debug_trace():
 if __name__ == '__main__':
     # All X11 calling should be thread safe otherwise we have strange issues
     # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
-    # NOTE: Never talk to the GUI from threads! This is why I commented the above.
+    # NOTE: Never talk to the AppGUI from threads! This is why I commented the above.
     freeze_support()
 
     major_v = sys.version_info.major
