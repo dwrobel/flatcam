@@ -23,6 +23,7 @@ CHANGELOG for FlatCAM beta
 - moved all the new_object related methods in their own class AppObjects.AppObject
 - more refactoring; solved some issues introduced by the refactoring
 - solved a circular import
+- updated the language translation files to the latest changes (no translation)
 
 17.05.2020
 
