@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 
 from AppGUI.GUIElements import FCComboBox, RadioSet
 

@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - moved some of the methods from the App class to the ObjectCollection class
 - moved all the new_object related methods in their own class AppObjects.AppObject
 - more refactoring; solved some issues introduced by the refactoring
+- solved a circular import
 
 17.05.2020
 

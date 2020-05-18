@@ -7,9 +7,9 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
-from Common import GracefulException as grace
+from camlib import grace
 
 from shapely.geometry import MultiPolygon
 from shapely.ops import nearest_points

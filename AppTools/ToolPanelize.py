@@ -6,10 +6,11 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 
 from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection, FCComboBox
-from Common import GracefulException as grace
+from camlib import grace
+
 from copy import deepcopy
 import numpy as np
 

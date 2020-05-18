@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from Common import LoudDict
 from AppGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
-from App import log
+from App_Main import log
 from camlib import distance
 from AppEditors.FlatCAMTextEditor import TextEditor
 

@@ -7,12 +7,12 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
     FCComboBox, OptionalInputSection
 from AppParsers.ParseGerber import Gerber
 
-from Common import GracefulException as grace
+from camlib import grace
 
 from copy import deepcopy
 

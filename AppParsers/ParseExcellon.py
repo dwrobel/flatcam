@@ -6,7 +6,7 @@
 # MIT Licence                                                 #
 # ########################################################## ##
 
-from camlib import Geometry
+from camlib import Geometry, grace
 
 import shapely.affinity as affinity
 from shapely.geometry import Point, LineString
@@ -17,8 +17,7 @@ import logging
 import traceback
 from copy import deepcopy
 
-import AppTranslation as fcTranslate
-from Common import GracefulException as grace
+# import AppTranslation as fcTranslate
 
 import gettext
 import builtins

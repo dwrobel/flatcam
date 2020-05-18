@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCComboBox
 from copy import deepcopy
 

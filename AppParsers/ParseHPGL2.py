@@ -6,7 +6,7 @@
 # MIT Licence                                                #
 # ############################################################
 
-from camlib import arc, three_point_circle
+from camlib import arc, three_point_circle, grace
 
 import numpy as np
 import re
@@ -18,8 +18,7 @@ import sys
 from shapely.ops import unary_union
 from shapely.geometry import LineString, Point
 
-from Common import GracefulException as grace
-import AppTranslation as fcTranslate
+# import AppTranslation as fcTranslate
 import gettext
 import builtins
 

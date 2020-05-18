@@ -8,13 +8,12 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from copy import deepcopy
 # from ObjectCollection import *
 from AppParsers.ParseGerber import Gerber
-from camlib import Geometry, FlatCAMRTreeStorage
+from camlib import Geometry, FlatCAMRTreeStorage, grace
 from AppGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox
-from Common import GracefulException as grace
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import cascaded_union, unary_union, linemerge

@@ -39,7 +39,6 @@ from shapely.geometry import shape
 from descartes.patch import PolygonPatch
 # ---------------------------------------
 
-import collections
 from collections import Iterable
 
 import rasterio
@@ -48,7 +47,7 @@ import ezdxf
 
 from Common import GracefulException as grace
 
-# TODO: Commented for FlatCAM packaging with cx_freeze
+# Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
 # from scipy.spatial import Delaunay
 

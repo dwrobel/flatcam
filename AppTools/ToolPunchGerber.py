@@ -7,7 +7,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
 
 from copy import deepcopy

@@ -27,7 +27,7 @@ class AppTool(QtWidgets.QWidget):
         """
 
         :param app:         The application this tool will run in.
-        :type app:          App.App
+        :type app:          App_Main.App
         :param parent:      Qt Parent
         :return:            AppTool
         """
@@ -284,8 +284,7 @@ class AppTool(QtWidgets.QWidget):
 
     def confirmation_message_int(self, accepted, minval, maxval):
         if accepted is False:
-            self.app.inform.emit('[WARNING_NOTCL] %s: [%d, %d]' %
-                                 (_("Edited value is out of range"), minval, maxval))
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%d, %d]' % (_("Edited value is out of range"), minval, maxval))
         else:
             self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
 

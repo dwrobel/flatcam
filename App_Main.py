@@ -43,7 +43,10 @@ import socket
 # ####################################################################################################################
 
 # Diverse
-from Common import LoudDict, color_variant, ExclusionAreas
+from Common import LoudDict
+from Common import color_variant
+from Common import ExclusionAreas
+
 from Bookmark import BookmarkManager
 from AppDatabase import ToolsDB2
 

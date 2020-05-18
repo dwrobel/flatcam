@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, FCComboBox, FCFileSaveDialog
 from AppParsers.ParseSVG import *
 

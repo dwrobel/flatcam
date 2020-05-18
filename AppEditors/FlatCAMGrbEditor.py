@@ -20,7 +20,7 @@ import logging
 from camlib import distance, arc, three_point_circle
 from AppGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 
 import numpy as np
 from numpy.linalg import norm as numpy_norm

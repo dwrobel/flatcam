@@ -7,8 +7,8 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from Common import GracefulException as grace
-from AppTools.AppTool import AppTool
+from camlib import grace
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base

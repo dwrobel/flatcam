@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from camlib import Geometry, arc, arc_angle, ApertureMacro
+from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
 import re
@@ -15,7 +15,6 @@ from shapely.geometry import box as shply_box, Polygon, LineString, Point, Multi
 
 from lxml import etree as ET
 from AppParsers.ParseSVG import svgparselength, getsvggeo
-from Common import GracefulException as grace
 import AppTranslation as fcTranslate
 
 import gettext

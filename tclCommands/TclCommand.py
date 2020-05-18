@@ -1,6 +1,6 @@
 import sys
 import re
-import App
+import App_Main
 import abc
 import collections
 from PyQt5 import QtCore
@@ -53,7 +53,7 @@ class TclCommand(object):
         if self.app is None:
             raise TypeError('Expected app to be FlatCAMApp instance.')
 
-        if not isinstance(self.app, App.App):
+        if not isinstance(self.app, App_Main.App):
             raise TypeError('Expected FlatCAMApp, got %s.' % type(app))
 
         self.log = self.app.log

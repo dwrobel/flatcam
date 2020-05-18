@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry
 from AppGUI.GUIElements import FCTable, FCComboBox, RadioSet
 from AppEditors.FlatCAMTextEditor import TextEditor

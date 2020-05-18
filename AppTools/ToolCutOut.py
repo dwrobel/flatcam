@@ -6,7 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from AppTools.AppTool import AppTool
+from AppTool import AppTool
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing

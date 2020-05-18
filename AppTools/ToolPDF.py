@@ -7,9 +7,9 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-from AppTools.AppTool import AppTool
-from Common import GracefulException as grace
-from AppParsers.ParsePDF import PdfParser
+from AppTool import AppTool
+
+from AppParsers.ParsePDF import PdfParser, grace
 from shapely.geometry import Point, MultiPolygon
 from shapely.ops import unary_union
 
