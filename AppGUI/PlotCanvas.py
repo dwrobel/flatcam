@@ -208,12 +208,20 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.text_hud.parent = self.view
 
             self.fcapp.defaults['global_hud'] = True
+            self.fcapp.ui.hud_label.setStyleSheet("""
+                            QLabel
+                            {
+                                color: black;
+                                background-color: lightblue;
+                            }
+                            """)
         else:
             self.hud_enabled = False
             self.rect_hud.parent = None
             self.text_hud.parent = None
 
             self.fcapp.defaults['global_hud'] = False
+            self.fcapp.ui.hud_label.setStyleSheet("")
 
     def draw_workspace(self, workspace_size):
         """

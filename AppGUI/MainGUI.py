@@ -1519,6 +1519,11 @@ class MainGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.snap_toolbar)
 
+        self.hud_label = FCLabel("H")
+        self.hud_label.setToolTip(_("HUD (Heads up display)"))
+        self.hud_label.setMargin(2)
+        self.infobar.addWidget(self.hud_label)
+
         self.wplace_label = FCLabel("A4")
         self.wplace_label.setMargin(2)
         self.infobar.addWidget(self.wplace_label)
@@ -1642,6 +1647,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.clear_btn.clicked.connect(self.on_gui_clear)
 
         self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
+        self.hud_label.clicked.connect(self.app.on_toggle_hud)
 
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))

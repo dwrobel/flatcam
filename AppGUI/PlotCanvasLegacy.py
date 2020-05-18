@@ -324,11 +324,19 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.text_hud.add_artist()
 
             self.app.defaults['global_hud'] = True
+            self.fcapp.ui.hud_label.setStyleSheet("""
+                            QLabel
+                            {
+                                color: black;
+                                background-color: lightblue;
+                            }
+                            """)
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
 
             self.app.defaults['global_hud'] = False
+            self.fcapp.ui.hud_label.setStyleSheet("")
 
         self.canvas.draw()
 

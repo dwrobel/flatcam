@@ -27,6 +27,7 @@ CHANGELOG for FlatCAM beta
 - working on a new Tool: Etch Compensation Tool -> installed the tool and created the GUI and class template
 - moved more methods out of App_Main class
 - added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
+- added icon in status bar for HUD; clicking on it will toggle the HUD (heads up display)
 
 17.05.2020
 
