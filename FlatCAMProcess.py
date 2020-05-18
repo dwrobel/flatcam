@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from flatcamGUI.FlatCAMGUI import FlatCAMActivityView
+from flatcamGUI.GUIElements import FlatCAMActivityView
 from PyQt5 import QtCore
 import weakref
 

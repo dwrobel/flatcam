@@ -20,7 +20,6 @@ import time
 import ctypes
 import traceback
 
-from PyQt5.QtCore import pyqtSlot, Qt
 from shapely.geometry import Point, MultiPolygon
 from io import StringIO
 
@@ -72,7 +71,7 @@ from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
-from flatcamGUI.GUIElements import FCFileSaveDialog
+from flatcamGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray
 
 # FlatCAM Pre-processors
 from FlatCAMPostProc import load_preprocessors
@@ -528,12 +527,6 @@ class App(QtCore.QObject):
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
-        # restore the toolbar view
-        self.restore_toolbar_view()
-
-        # restore the GUI geometry
-        self.restore_main_win_geom()
-
         # set FlatCAM units in the Status bar
         self.set_screen_units(self.defaults['units'])
 
@@ -783,7 +776,7 @@ class App(QtCore.QObject):
         self.inform.connect(self.info)
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
-        self.message.connect(self.message_dialog)
+        self.message.connect(lambda: message_dialog(parent=self.ui))
         # self.progress.connect(self.set_progress_bar)
 
         # signals that are emitted when object state changes
@@ -895,17 +888,17 @@ class App(QtCore.QObject):
         self.ui.menuview_replot.triggered.connect(self.plot_all)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
-        self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
-        self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
-        self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
-        self.ui.menu_toggle_nb.triggered.connect(self.on_toggle_notebook)
-        self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
+        self.ui.menuview_toggle_fscreen.triggered.connect(self.ui.on_fullscreen)
+        self.ui.menuview_toggle_parea.triggered.connect(self.ui.on_toggle_plotarea)
+        self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
+        self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
+        self.ui.menuview_toggle_grid.triggered.connect(self.ui.on_toggle_grid)
         self.ui.menuview_toggle_grid_lines.triggered.connect(self.on_toggle_grid_lines)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
         self.ui.menuview_toggle_hud.triggered.connect(self.on_toggle_hud)
 
-        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
@@ -940,7 +933,7 @@ class App(QtCore.QObject):
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
-        self.ui.popmenu_panel_toggle.triggered.connect(self.on_toggle_notebook)
+        self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_grb.triggered.connect(self.new_gerber_object)
@@ -1496,9 +1489,6 @@ class App(QtCore.QObject):
         # Variable to hold the status of the grid lines
         self.toggle_grid_lines = True
 
-        # Variable to store the status of the fullscreen event
-        self.toggle_fscreen = False
-
         # Variable to store the status of the code editor
         self.toggle_codeeditor = False
 
@@ -2045,7 +2035,7 @@ class App(QtCore.QObject):
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
         self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
                                                            '&Command Line\tS')
-        self.ui.menutoolshell.triggered.connect(self.toggle_shell)
+        self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
         # third install all of them
         try:
@@ -2101,7 +2091,7 @@ class App(QtCore.QObject):
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         # Scripting Toolbar Signals
-        self.ui.shell_btn.triggered.connect(self.toggle_shell)
+        self.ui.shell_btn.triggered.connect(self.ui.toggle_shell_ui)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
         self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
         self.ui.run_script_btn.triggered.connect(self.on_filerunscript)
@@ -2462,63 +2452,6 @@ class App(QtCore.QObject):
             if msg != '':
                 self.shell_message(msg)
 
-    def restore_toolbar_view(self):
-        """
-        Some toolbars may be hidden by user and here we restore the state of the toolbars visibility that
-        was saved in the defaults dictionary.
-
-        :return: None
-        """
-        tb = self.defaults["global_toolbar_view"]
-
-        if tb & 1:
-            self.ui.toolbarfile.setVisible(True)
-        else:
-            self.ui.toolbarfile.setVisible(False)
-
-        if tb & 2:
-            self.ui.toolbargeo.setVisible(True)
-        else:
-            self.ui.toolbargeo.setVisible(False)
-
-        if tb & 4:
-            self.ui.toolbarview.setVisible(True)
-        else:
-            self.ui.toolbarview.setVisible(False)
-
-        if tb & 8:
-            self.ui.toolbartools.setVisible(True)
-        else:
-            self.ui.toolbartools.setVisible(False)
-
-        if tb & 16:
-            self.ui.exc_edit_toolbar.setVisible(True)
-        else:
-            self.ui.exc_edit_toolbar.setVisible(False)
-
-        if tb & 32:
-            self.ui.geo_edit_toolbar.setVisible(True)
-        else:
-            self.ui.geo_edit_toolbar.setVisible(False)
-
-        if tb & 64:
-            self.ui.grb_edit_toolbar.setVisible(True)
-        else:
-            self.ui.grb_edit_toolbar.setVisible(False)
-
-        # if tb & 128:
-        #     self.ui.snap_toolbar.setVisible(True)
-        # else:
-        #     self.ui.snap_toolbar.setVisible(False)
-
-        # Grid Toolbar is always active now
-        self.ui.snap_toolbar.setVisible(True)
-
-        if tb & 256:
-            self.ui.toolbarshell.setVisible(True)
-        else:
-            self.ui.toolbarshell.setVisible(False)
-
     def on_import_preferences(self):
         """
         Loads the application default settings from a saved file into
@@ -2679,32 +2612,6 @@ class App(QtCore.QObject):
         self.defaults["global_def_win_h"] = height
         self.defaults["global_def_notebook_width"] = notebook_width
         self.preferencesUiManager.save_defaults()
-
-    def restore_main_win_geom(self):
-        try:
-            self.ui.setGeometry(self.defaults["global_def_win_x"],
-                                self.defaults["global_def_win_y"],
-                                self.defaults["global_def_win_w"],
-                                self.defaults["global_def_win_h"])
-            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
-        except KeyError as e:
-            log.debug("App.restore_main_win_geom() --> %s" % str(e))
-
-    def message_dialog(self, title, message, kind="info"):
-        """
-        Builds and show a custom QMessageBox to be used in FlatCAM.
-
-        :param title: title of the QMessageBox
-        :param message: message to be displayed
-        :param kind: type of QMessageBox; will display a specific icon.
-        :return:
-        """
-        icon = {"info": QtWidgets.QMessageBox.Information,
-                "warning": QtWidgets.QMessageBox.Warning,
-                "error": QtWidgets.QMessageBox.Critical}[str(kind)]
-        dlg = QtWidgets.QMessageBox(icon, title, message, parent=self.ui)
-        dlg.setText(message)
-        dlg.exec_()
 
     def register_recent(self, kind, filename):
         """
@@ -4501,75 +4408,6 @@ class App(QtCore.QObject):
         self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
-    def on_fullscreen(self, disable=False):
-        self.defaults.report_usage("on_fullscreen()")
-
-        flags = self.ui.windowFlags()
-        if self.toggle_fscreen is False and disable is False:
-            # self.ui.showFullScreen()
-            self.ui.setWindowFlags(flags | Qt.FramelessWindowHint)
-            a = self.ui.geometry()
-            self.x_pos = a.x()
-            self.y_pos = a.y()
-            self.width = a.width()
-            self.height = a.height()
-
-            # set new geometry to full desktop rect
-            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
-            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
-            # everything else will not work without this hack. This happen in Windows.
-            # https://bugreports.qt.io/browse/QTBUG-41309
-            desktop = QtWidgets.QApplication.desktop()
-            screen = desktop.screenNumber(QtGui.QCursor.pos())
-
-            rec = desktop.screenGeometry(screen)
-            x = rec.x() - 1
-            y = rec.y() - 1
-            h = rec.height() + 2
-            w = rec.width() + 2
-            self.ui.setGeometry(x, y, w, h)
-            self.ui.show()
-
-            for tb in self.ui.findChildren(QtWidgets.QToolBar):
-                tb.setVisible(False)
-            self.ui.snap_toolbar.setVisible(True)   # This is always visible
-            # self.ui.splitter_left.setVisible(False)
-            self.ui.splitter.setSizes([0, 1])
-            self.toggle_fscreen = True
-        elif self.toggle_fscreen is True or disable is True:
-            self.ui.setWindowFlags(flags & ~Qt.FramelessWindowHint)
-            self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
-            self.ui.showNormal()
-            self.restore_toolbar_view()
-            # self.ui.splitter_left.setVisible(True)
-            self.toggle_fscreen = False
-
-    def on_toggle_plotarea(self):
-        self.defaults.report_usage("on_toggle_plotarea()")
-
-        try:
-            name = self.ui.plot_tab_area.widget(0).objectName()
-        except AttributeError:
-            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
-            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
-            self.ui.plot_tab_area.protectTab(0)
-            return
-
-        if name != 'plotarea_tab':
-            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
-            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
-            self.ui.plot_tab_area.protectTab(0)
-        else:
-            self.ui.plot_tab_area.closeTab(0)
-
-    def on_toggle_notebook(self):
-        if self.ui.splitter.sizes()[0] == 0:
-            self.ui.splitter.setSizes([1, 1])
-            self.ui.menu_toggle_nb.setChecked(True)
-        else:
-            self.ui.splitter.setSizes([0, 1])
-            self.ui.menu_toggle_nb.setChecked(False)
-
     def on_toggle_axis(self):
         self.defaults.report_usage("on_toggle_axis()")
 
@@ -4602,11 +4440,6 @@ class App(QtCore.QObject):
 
     def on_toggle_hud(self):
         self.plotcanvas.on_toggle_hud(state=False if self.plotcanvas.hud_enabled else True)
-
-    def on_toggle_grid(self):
-        self.defaults.report_usage("on_toggle_grid()")
-
-        self.ui.grid_snap_btn.trigger()
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -10788,34 +10621,6 @@ class App(QtCore.QObject):
 
         self.preferencesUiManager.defaults_read_form()
         self.options.update(self.defaults)
-
-    def toggle_shell(self):
-        """
-        Toggle shell: if is visible close it, if it is closed then open it
-        :return: None
-        """
-
-        self.defaults.report_usage("toggle_shell()")
-
-        if self.ui.shell_dock.isVisible():
-            self.ui.shell_dock.hide()
-            self.plotcanvas.native.setFocus()
-        else:
-            self.ui.shell_dock.show()
-
-            # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
-            # self.shell._edit.setFocus()
-            QtCore.QTimer.singleShot(0, lambda: self.ui.shell_dock.widget()._edit.setFocus())
-
-            # HACK - simulate a mouse click - alternative
-            # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.NoModifier)    # no KB modifier
-            # pos = QtCore.QPoint((self.shell._edit.width() - 40), (self.shell._edit.height() - 2))
-            # e = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonPress, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
-            #                       no_km)
-            # QtWidgets.qApp.sendEvent(self.shell._edit, e)
-            # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
-            #                       no_km)
-            # QtWidgets.qApp.sendEvent(self.shell._edit, f)
 
     def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """

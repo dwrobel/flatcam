@@ -380,11 +380,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
     def on_toggle_shell_from_settings(self, state):
         """
-        Toggle shell: if is visible close it, if it is closed then open it
+        Toggle shell ui: if is visible close it, if it is closed then open it
+
         :return: None
         """
-
-        self.app.defaults.report_usage("on_toggle_shell_from_settings()")
 
         if state is True:
             if not self.app.ui.shell_dock.isVisible():

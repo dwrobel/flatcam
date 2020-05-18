@@ -14,7 +14,8 @@ CHANGELOG for FlatCAM beta
 - trying to fix the pixmap load crash when running a FlatCAMScript
 - made the workspace label in the status bar clickable and also added a status bar message on status toggle for workspace
 - modified the GUI for Film and Panelize Tools
-
+- moved some of the GUI related methods from FlatCAMApp.App to the flatcamGUI.FlatCAMGUI class
+- moved Shortcuts Tab creation in it's own class
 
 17.05.2020
 

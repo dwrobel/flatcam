@@ -2475,7 +2475,8 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
 
-    def setDecimals(self, spinbox, digits):
+    @staticmethod
+    def setDecimals(spinbox, digits):
         spinbox.setDecimals(digits)
 
 
@@ -2940,6 +2941,207 @@ class FCFileSaveDialog(QtWidgets.QFileDialog):
         else:
             filename += extension
             return filename, _filter
+
+
+class FlatCAMActivityView(QtWidgets.QWidget):
+    """
+    This class create and control the activity icon displayed in the App status bar
+    """
+
+    def __init__(self, app, parent=None):
+        super().__init__(parent=parent)
+
+        self.app = app
+
+        if self.app.defaults["global_activity_icon"] == "Ball green":
+            icon = self.app.resource_location + '/active_2_static.png'
+            movie = self.app.resource_location + "/active_2.gif"
+        elif self.app.defaults["global_activity_icon"] == "Ball black":
+            icon = self.app.resource_location + '/active_static.png'
+            movie = self.app.resource_location + "/active.gif"
+        elif self.app.defaults["global_activity_icon"] == "Arrow green":
+            icon = self.app.resource_location + '/active_3_static.png'
+            movie = self.app.resource_location + "/active_3.gif"
+        elif self.app.defaults["global_activity_icon"] == "Eclipse green":
+            icon = self.app.resource_location + '/active_4_static.png'
+            movie = self.app.resource_location + "/active_4.gif"
+        else:
+            icon = self.app.resource_location + '/active_static.png'
+            movie = self.app.resource_location + "/active.gif"
+
+        self.setMinimumWidth(200)
+        self.movie_path = movie
+        self.icon_path = icon
+
+        self.icon = QtWidgets.QLabel(self)
+        self.icon.setGeometry(0, 0, 16, 12)
+        self.movie = QtGui.QMovie(self.movie_path)
+
+        self.icon.setMovie(self.movie)
+        # self.movie.start()
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.setContentsMargins(5, 0, 5, 0)
+        layout.setAlignment(QtCore.Qt.AlignLeft)
+        self.setLayout(layout)
+
+        layout.addWidget(self.icon)
+        self.text = QtWidgets.QLabel(self)
+        self.text.setText(_("Idle."))
+        self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
+
+        layout.addWidget(self.text)
+
+    def set_idle(self):
+        self.movie.stop()
+        self.text.setText(_("Idle."))
+
+    def set_busy(self, msg, no_movie=None):
+        if no_movie is not True:
+            self.icon.setMovie(self.movie)
+            self.movie.start()
+        self.text.setText(msg)
+
+
+class FlatCAMInfoBar(QtWidgets.QWidget):
+    """
+    This class create a place to display the App messages in the Status Bar
+    """
+
+    def __init__(self, parent=None, app=None):
+        super(FlatCAMInfoBar, self).__init__(parent=parent)
+
+        self.app = app
+
+        self.icon = QtWidgets.QLabel(self)
+        self.icon.setGeometry(0, 0, 12, 12)
+        self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
+        self.icon.setPixmap(self.pmap)
+
+        self.lock_pmaps = False
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.setContentsMargins(5, 0, 5, 0)
+        self.setLayout(layout)
+
+        layout.addWidget(self.icon)
+
+        self.text = QtWidgets.QLabel(self)
+        self.text.setText(_("Application started ..."))
+        self.text.setToolTip(_("Hello!"))
+
+        layout.addWidget(self.text)
+        layout.addStretch()
+
+    def set_text_(self, text, color=None):
+        self.text.setText(text)
+        self.text.setToolTip(text)
+        if color:
+            self.text.setStyleSheet('color: %s' % str(color))
+
+    def set_status(self, text, level="info"):
+        level = str(level)
+
+        if self.lock_pmaps is not True:
+            self.pmap.fill()
+            if level == "ERROR" or level == "ERROR_NOTCL":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
+            elif level.lower() == "success":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
+            elif level == "WARNING" or level == "WARNING_NOTCL":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
+            elif level.lower() == "selected":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
+            else:
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
+
+        try:
+            self.set_text_(text)
+            self.icon.setPixmap(self.pmap)
+        except Exception as e:
+            log.debug("FlatCAMInfoBar.set_status() --> %s" % str(e))
+
+
+class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
+    """
+    This class create the Sys Tray icon for the app
+    """
+
+    def __init__(self, app, icon, headless=None, parent=None):
+        # QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
+        super().__init__(icon, parent=parent)
+        self.app = app
+
+        menu = QtWidgets.QMenu(parent)
+
+        menu_runscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
+                                           '%s' % _('Run Script ...'), self)
+        menu_runscript.setToolTip(
+            _("Will run the opened Tcl Script thus\n"
+              "enabling the automation of certain\n"
+              "functions of FlatCAM.")
+        )
+        menu.addAction(menu_runscript)
+
+        menu.addSeparator()
+
+        if headless is None:
+            self.menu_open = menu.addMenu(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
+
+            # Open Project ...
+            menu_openproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
+                                                 _('Open Project ...'), self)
+            self.menu_open.addAction(menu_openproject)
+            self.menu_open.addSeparator()
+
+            # Open Gerber ...
+            menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
+                                                _('Open &Gerber ...\tCtrl+G'), self)
+            self.menu_open.addAction(menu_opengerber)
+
+            # Open Excellon ...
+            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
+                                                  _('Open &Excellon ...\tCtrl+E'), self)
+            self.menu_open.addAction(menu_openexcellon)
+
+            # Open G-Code ...
+            menu_opengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
+                                               _('Open G-&Code ...'), self)
+            self.menu_open.addAction(menu_opengcode)
+
+            self.menu_open.addSeparator()
+
+            menu_openproject.triggered.connect(self.app.on_file_openproject)
+            menu_opengerber.triggered.connect(self.app.on_fileopengerber)
+            menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
+            menu_opengcode.triggered.connect(self.app.on_fileopengcode)
+
+        exitAction = menu.addAction(_("Exit"))
+        exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.setContextMenu(menu)
+
+        menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
+            silent=True if self.app.cmd_line_headless == 1 else False))
+
+        exitAction.triggered.connect(self.app.final_save)
+
+
+def message_dialog(title, message, kind="info", parent=None):
+    """
+    Builds and show a custom QMessageBox to be used in FlatCAM.
+
+    :param title:       title of the QMessageBox
+    :param message:     message to be displayed
+    :param kind:        type of QMessageBox; will display a specific icon.
+    :param parent:      parent
+    :return:            None
+    """
+    icon = {"info": QtWidgets.QMessageBox.Information,
+            "warning": QtWidgets.QMessageBox.Warning,
+            "error": QtWidgets.QMessageBox.Critical}[str(kind)]
+    dlg = QtWidgets.QMessageBox(icon, title, message, parent=parent)
+    dlg.setText(message)
+    dlg.exec_()
 
 
 def rreplace(s, old, new, occurrence):
