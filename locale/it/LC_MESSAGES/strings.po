@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-05-19 02:03+0300\n"
-"PO-Revision-Date: 2020-05-19 02:03+0300\n"
+"POT-Creation-Date: 2020-05-19 02:26+0300\n"
+"PO-Revision-Date: 2020-05-19 02:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -15813,7 +15813,7 @@ msgstr "Strumento punzone"
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "Il valore di diametro fisso è 0.0. Annullamento."
 
-#: AppTools/ToolPunchGerber.py:607 AppTools/ToolPunchGerber.py:619
+#: AppTools/ToolPunchGerber.py:602
 msgid ""
 "Could not generate punched hole Gerber because the punch hole size is bigger "
 "than some of the apertures in the Gerber object."
@@ -15821,7 +15821,7 @@ msgstr ""
 "Impossibile generare fori punzonati nel Gerber perché la dimensione del foro "
 "del punzone è maggiore di alcune delle aperture nell'oggetto Gerber."
 
-#: AppTools/ToolPunchGerber.py:656
+#: AppTools/ToolPunchGerber.py:665
 msgid ""
 "Could not generate punched hole Gerber because the newly created object "
 "geometry is the same as the one in the source object geometry..."

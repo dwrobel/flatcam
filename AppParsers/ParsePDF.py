@@ -171,7 +171,7 @@ class PdfParser(QtCore.QObject):
             if match:
                 color = [float(match.group(1)), float(match.group(2)), float(match.group(3))]
                 log.debug(
-                    "ToolPDF.parse_pdf() --> STROKE Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
+                    "parse_pdf() --> STROKE Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
                     (line_nr, color[0], color[1], color[2]))
 
                 if color[0] == old_color[0] and color[1] == old_color[1] and color[2] == old_color[2]:
@@ -194,7 +194,7 @@ class PdfParser(QtCore.QObject):
             if match:
                 fill_color = [float(match.group(1)), float(match.group(2)), float(match.group(3))]
                 log.debug(
-                    "ToolPDF.parse_pdf() --> FILL Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
+                    "parse_pdf() --> FILL Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
                     (line_nr, fill_color[0], fill_color[1], fill_color[2]))
                 # if the color is white we are seeing 'clear_geometry' that can't be seen. It may be that those
                 # geometries are actually holes from which we can make an Excellon file
@@ -213,7 +213,7 @@ class PdfParser(QtCore.QObject):
                 # sometimes they combine save_to_graphics_stack with the transformation on the same line
                 if match.group(1) == 'q':
                     log.debug(
-                        "ToolPDF.parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
+                        "parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
                         (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
 
                     self.gs['transform'].append(deepcopy([offset_geo, scale_geo]))
@@ -223,7 +223,7 @@ class PdfParser(QtCore.QObject):
                 if (float(match.group(3)) == 0 and float(match.group(4)) == 0) and \
                         (float(match.group(6)) != 0 or float(match.group(7)) != 0):
                     log.debug(
-                        "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
+                        "parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
 
                     offset_geo[0] += float(match.group(6))
                     offset_geo[1] += float(match.group(7))
@@ -232,7 +232,7 @@ class PdfParser(QtCore.QObject):
                 # transformation = SCALING
                 if float(match.group(2)) != 1 and float(match.group(5)) != 1:
                     log.debug(
-                        "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
+                        "parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
 
                     scale_geo[0] *= float(match.group(2))
                     scale_geo[1] *= float(match.group(5))
@@ -244,7 +244,7 @@ class PdfParser(QtCore.QObject):
             match = self.save_gs_re.search(pline)
             if match:
                 log.debug(
-                    "ToolPDF.parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
+                    "parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
                     (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
                 self.gs['transform'].append(deepcopy([offset_geo, scale_geo]))
                 self.gs['line_width'].append(deepcopy(size))
@@ -258,18 +258,18 @@ class PdfParser(QtCore.QObject):
                     scale_geo = restored_transform[1]
                 except IndexError:
                     # nothing to remove
-                    log.debug("ToolPDF.parse_pdf() --> Nothing to restore")
+                    log.debug("parse_pdf() --> Nothing to restore")
                     pass
 
                 try:
                     size = self.gs['line_width'].pop(-1)
                 except IndexError:
-                    log.debug("ToolPDF.parse_pdf() --> Nothing to restore")
+                    log.debug("parse_pdf() --> Nothing to restore")
                     # nothing to remove
                     pass
 
                 log.debug(
-                    "ToolPDF.parse_pdf() --> Restore from GS found on line: %s --> "
+                    "parse_pdf() --> Restore from GS found on line: %s --> "
                     "restored_offset=[%f, %f] ||| restored_scale=[%f, %f]" %
                     (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
                 # log.debug("Restored Offset= [%f, %f]" % (offset_geo[0], offset_geo[1]))

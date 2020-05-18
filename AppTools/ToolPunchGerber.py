@@ -599,32 +599,31 @@ class ToolPunchGerber(AppTool):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("The value of the fixed diameter is 0.0. Aborting."))
                 return 'fail'
 
+            fail_msg = _("Could not generate punched hole Gerber because the punch hole size is bigger than"
+                         " some of the apertures in the Gerber object.")
+
             punching_geo = []
             for apid in grb_obj.apertures:
                 if grb_obj.apertures[apid]['type'] == 'C' and self.circular_cb.get_value():
-                    if punch_size >= float(grb_obj.apertures[apid]['size']):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not generate punched hole Gerber because the punch hole size"
-                                               " is bigger than some of the apertures in the Gerber object."))
-                        return 'fail'
-                    else:
-                        for elem in grb_obj.apertures[apid]['geometry']:
-                            if 'follow' in elem:
-                                if isinstance(elem['follow'], Point):
-                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                    for elem in grb_obj.apertures[apid]['geometry']:
+                        if 'follow' in elem:
+                            if isinstance(elem['follow'], Point):
+                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                    self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                                    return 'fail'
+                                punching_geo.append(elem['follow'].buffer(punch_size / 2))
                 elif grb_obj.apertures[apid]['type'] == 'R':
-                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
-                            punch_size >= float(grb_obj.apertures[apid]['height']):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not generate punched hole Gerber because the punch hole size"
-                                               " is bigger than some of the apertures in the Gerber object."))
-                        return 'fail'
-                    elif round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
+
+                    if round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
                             round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
                             self.square_cb.get_value():
                         for elem in grb_obj.apertures[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
+                                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
+                                            punch_size >= float(grb_obj.apertures[apid]['height']):
+                                        self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                                        return 'fail'
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
                     elif round(float(grb_obj.apertures[apid]['width']), self.decimals) != \
                             round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
@@ -632,16 +631,26 @@ class ToolPunchGerber(AppTool):
                         for elem in grb_obj.apertures[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
+                                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
+                                            punch_size >= float(grb_obj.apertures[apid]['height']):
+                                        self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                                        return 'fail'
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
                 elif grb_obj.apertures[apid]['type'] == 'O' and self.oblong_cb.get_value():
                     for elem in grb_obj.apertures[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
+                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                    self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                                    return 'fail'
                                 punching_geo.append(elem['follow'].buffer(punch_size / 2))
                 elif grb_obj.apertures[apid]['type'] not in ['C', 'R', 'O'] and self.other_cb.get_value():
                     for elem in grb_obj.apertures[apid]['geometry']:
                         if 'follow' in elem:
                             if isinstance(elem['follow'], Point):
+                                if punch_size >= float(grb_obj.apertures[apid]['size']):
+                                    self.app.inform.emit('[ERROR_NOTCL] %s' % fail_msg)
+                                    return 'fail'
                                 punching_geo.append(elem['follow'].buffer(punch_size / 2))
 
             punching_geo = MultiPolygon(punching_geo)

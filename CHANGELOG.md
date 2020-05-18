@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 19.05.2020
 
 - updated the Italian language (translation incomplete)
+- updated all the language strings to the latest changes; updated the POT file
+- fixed a possible malfunction in Tool Punch Gerber
 
 18.05.2020
 
