@@ -9810,16 +9810,18 @@ class App(QtCore.QObject):
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
-    def plot_all(self, fit_view=True, use_thread=True):
+    def plot_all(self, fit_view=True, muted=False, use_thread=True):
         """
         Re-generates all plots from all objects.
 
         :param fit_view:    if True will plot the objects and will adjust the zoom to fit all plotted objects into view
+        :param muted:       if True don't print messages
         :param use_thread:  if True will use threading for plotting the objects
         :return:            None
         """
         self.log.debug("Plot_all()")
-        self.inform.emit('[success] %s...' % _("Redrawing all objects"))
+        if muted is not True:
+            self.inform.emit('[success] %s...' % _("Redrawing all objects"))
 
         for plot_obj in self.collection.get_list():
             def worker_task(obj):

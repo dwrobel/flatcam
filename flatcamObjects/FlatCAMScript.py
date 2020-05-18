@@ -183,7 +183,13 @@ class ScriptObject(FlatCAMObj):
         if self.app.ui.shell_dock.isHidden():
             self.app.ui.shell_dock.show()
 
-        self.script_code = deepcopy(self.script_editor_tab.code_editor.toPlainText())
+        self.app.shell.open_processing()  # Disables input box.
+
+        # make sure that the pixmaps are not updated when running this as they will crash
+        # TODO find why the pixmaps load crash when run from this object (perhaps another thread?)
+        self.app.ui.fcinfo.lock_pmaps = True
+
+        self.script_code = self.script_editor_tab.code_editor.toPlainText()
 
         old_line = ''
         for tcl_command_line in self.script_code.splitlines():
@@ -202,8 +208,6 @@ class ScriptObject(FlatCAMObj):
 
                 # execute the actual Tcl command
                 try:
-                    self.app.shell.open_processing()  # Disables input box.
-
                     result = self.app.shell.tcl.eval(str(new_command))
                     if result != 'None':
                         self.app.shell.append_output(result + '\n')
@@ -220,6 +224,7 @@ class ScriptObject(FlatCAMObj):
             log.error("Exec command Exception: %s\n" % result)
             self.app.shell.append_error('ERROR: %s\n '% result)
 
+        self.app.ui.fcinfo.lock_pmaps = False
         self.app.shell.close_processing()
 
     def on_autocomplete_changed(self, state):

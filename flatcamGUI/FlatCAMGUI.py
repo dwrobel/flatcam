@@ -4300,6 +4300,8 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
         self.icon.setPixmap(self.pmap)
 
+        self.lock_pmaps = False
+
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(5, 0, 5, 0)
         self.setLayout(layout)
@@ -4311,7 +4313,6 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         self.text.setToolTip(_("Hello!"))
 
         layout.addWidget(self.text)
-
         layout.addStretch()
 
     def set_text_(self, text, color=None):
@@ -4323,17 +4324,18 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
     def set_status(self, text, level="info"):
         level = str(level)
 
-        self.pmap.fill()
-        if level == "ERROR" or level == "ERROR_NOTCL":
-            self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
-        elif level.lower() == "success":
-            self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
-        elif level == "WARNING" or level == "WARNING_NOTCL":
-            self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
-        elif level.lower() == "selected":
-            self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
-        else:
-            self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
+        if self.lock_pmaps is not True:
+            self.pmap.fill()
+            if level == "ERROR" or level == "ERROR_NOTCL":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
+            elif level.lower() == "success":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
+            elif level == "WARNING" or level == "WARNING_NOTCL":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
+            elif level.lower() == "selected":
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
+            else:
+                self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
         try:
             self.set_text_(text)

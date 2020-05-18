@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.05.2020
+
+- fixed the PDF Tool when importing as Gerber objects
+- moved all the parsing out of the PDF Tool to a new file ParsePDF in the flatcamParsers folder
+- trying to fix the pixmap load crash when running a FlatCAMScript
+
 17.05.2020
 
 - added new FlatCAM Tool: Corner Markers Tool which will add line markers in the selected corners of the bounding box of the targeted Gerber object
