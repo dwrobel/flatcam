@@ -2329,7 +2329,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.wplace_label = FCLabel("A4")
         self.wplace_label.setMargin(2)
         self.infobar.addWidget(self.wplace_label)
-        self.wplace_label.hide()
 
         self.units_label = QtWidgets.QLabel("[mm]")
         self.units_label.setMargin(2)
@@ -2448,6 +2447,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
         self.clear_btn.clicked.connect(self.on_gui_clear)
+
+        self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
 
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))

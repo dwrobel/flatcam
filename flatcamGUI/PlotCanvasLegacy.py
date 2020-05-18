@@ -419,7 +419,13 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.app.ui.wplace_label.set_value(workspace_size[:3])
         self.app.ui.wplace_label.setToolTip(workspace_size)
-        self.app.ui.wplace_label.show()
+        self.fcapp.ui.wplace_label.setStyleSheet("""
+                        QLabel
+                        {
+                            color: black;
+                            background-color: lightgreen;
+                        }
+                        """)
 
     def delete_workspace(self):
         try:
@@ -427,7 +433,7 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.canvas.draw()
         except Exception:
             pass
-        self.app.ui.wplace_label.hide()
+        self.fcapp.ui.wplace_label.setStyleSheet("")
 
     def graph_event_connect(self, event_name, callback):
         """

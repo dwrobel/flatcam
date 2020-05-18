@@ -4910,8 +4910,10 @@ class App(QtCore.QObject):
     def on_workspace(self):
         if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
+            self.inform.emit(_("Workspace enabled."))
         else:
             self.plotcanvas.delete_workspace()
+            self.inform.emit(_("Workspace disabled."))
         self.preferencesUiManager.defaults_read_form()
         # self.save_defaults(silent=True)
 
