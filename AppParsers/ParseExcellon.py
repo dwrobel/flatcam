@@ -1069,7 +1069,7 @@ class Excellon(Geometry):
         This function first convert to the the units found in the Excellon file but it converts tools that
         are not there yet so it has no effect other than it signal that the units are the ones in the file.
 
-        On object creation, in new_object(), true conversion is done because this is done at the end of the
+        On object creation, in app_obj.new_object(), true conversion is done because this is done at the end of the
         Excellon file parsing, the tools are inside and self.tools is really converted from the units found
         inside the file to the FlatCAM units.
 

@@ -3552,7 +3552,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
-        log.debug("Initialization of the FlatCAM Geometry Editor is finished ...")
+        log.debug("Initialization of the Geometry Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool

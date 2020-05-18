@@ -1196,8 +1196,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                             Point(hole['point']).buffer(buffer_value).exterior)
 
         if use_thread:
-            def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname, geo_init, plot=plot)
+            def geo_thread(a_obj):
+                a_obj.app_obj.new_object("geometry", outname, geo_init, plot=plot)
 
             # Create a promise with the new name
             self.app.collection.promise(outname)
@@ -1205,7 +1205,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname, geo_init, plot=plot)
+            self.app.app_obj.new_object("geometry", outname, geo_init, plot=plot)
 
         return True, ""
 
@@ -1300,8 +1300,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                         geo_obj.solid_geometry.append(poly)
 
         if use_thread:
-            def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
+            def geo_thread(a_obj):
+                a_obj.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
 
             # Create a promise with the new name
             self.app.collection.promise(outname)
@@ -1309,7 +1309,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname + '_slot', geo_init, plot=plot)
+            self.app.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
 
         return True, ""
 
@@ -1443,7 +1443,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         job_name = self.options["name"] + "_cnc"
         pp_excellon_name = self.options["ppname_e"]
 
-        # Object initialization function for app.new_object()
+        # Object initialization function for app.app_obj.new_object()
         def job_init(job_obj, app_obj):
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
 
@@ -1506,9 +1506,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             job_obj.create_geometry()
 
         # To be run in separate thread
-        def job_thread(app_obj):
+        def job_thread(a_obj):
             with self.app.proc_container.new(_("Generating CNC Code")):
-                app_obj.new_object("cncjob", job_name, job_init)
+                a_obj.app_obj.new_object("cncjob", job_name, job_init)
 
         # Create promise for the new name.
         self.app.collection.promise(job_name)

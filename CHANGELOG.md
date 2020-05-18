@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - removed reference to postprocessors and replaced it with preprocessors
 - more refactoring class names
 - moved some of the methods from the App class to the ObjectCollection class
+- moved all the new_object related methods in their own class AppObjects.AppObject
 
 17.05.2020
 
@@ -4239,7 +4240,7 @@ still copper leftovers.
 - modified generate_milling method which had issues from the Python3 port (it could not sort the tools due of dict to dict comparison no longer possible).
 - modified the 'default' preprocessor in order to include a space between the value of Xcoord and the following Y
 - made optional the using of threads for the milling command; by default it is OFF (False) because in the current configuration it creates issues when it is using threads
-- modified the Panelize function and Tcl command Panelize. It was having issues due to multithreading (kept trying to modify a dictionary in redraw() method)and automatically selecting the last created object (feature introduced by me). I've added a parameter to the new_object method, named autoselected (by default it is True) and in the panelize method I initialized it with False.
+- modified the Panelize function and Tcl command Panelize. It was having issues due to multithreading (kept trying to modify a dictionary in redraw() method)and automatically selecting the last created object (feature introduced by me). I've added a parameter to the app_obj.new_object method, named autoselected (by default it is True) and in the panelize method I initialized it with False.
 By initializing the plot parameter with False for the temporary objects, I have increased dramatically the  generation speed of the panel because now the temporary object are no longer ploted which consumed time.
 - replaced log.warn() with log.warning() in camlib.py. Reason: deprecated
 - fixed the issue that the "Defaults" button was having no effect when clicked and Options Combo was in Project Options

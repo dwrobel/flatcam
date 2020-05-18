@@ -1625,7 +1625,7 @@ class RulesCheck(AppTool):
             new_obj.source_file = txt
             new_obj.read_only = True
 
-        self.app.new_object('document', name='Rules Check results', initialize=init, plot=False)
+        self.app.app_obj.new_object('document', name='Rules Check results', initialize=init, plot=False)
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -2315,7 +2315,7 @@ class ToolPaint(AppTool, Gerber):
 
         def job_thread(app_obj):
             try:
-                ret = app_obj.new_object("geometry", name, job_init, plot=plot)
+                ret = app_obj.app_obj.new_object("geometry", name, job_init, plot=plot)
             except grace:
                 proc.done()
                 return
@@ -2823,9 +2823,9 @@ class ToolPaint(AppTool, Gerber):
         def job_thread(app_obj):
             try:
                 if self.rest_cb.isChecked():
-                    ret = app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
-                    ret = app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
             except grace:
                 proc.done()
                 return
@@ -3320,9 +3320,9 @@ class ToolPaint(AppTool, Gerber):
         def job_thread(app_obj):
             try:
                 if self.rest_cb.isChecked():
-                    ret = app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
-                    ret = app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
+                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
             except grace:
                 proc.done()
                 return

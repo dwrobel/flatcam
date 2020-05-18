@@ -530,7 +530,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 return "fail"
             geo_obj.solid_geometry = non_copper
 
-        self.app.new_object("geometry", name, geo_init)
+        self.app.app_obj.new_object("geometry", name, geo_init)
 
     def on_generatebb_button_click(self, *args):
         self.app.defaults.report_usage("gerber_on_generatebb_button")
@@ -556,7 +556,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 return "fail"
             geo_obj.solid_geometry = bounding_box
 
-        self.app.new_object("geometry", name, geo_init)
+        self.app.app_obj.new_object("geometry", name, geo_init)
 
     def on_iso_button_click(self, *args):
 
@@ -605,7 +605,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # TODO: Do something if this is None. Offer changing name?
         try:
-            self.app.new_object("geometry", follow_name, follow_init)
+            self.app.app_obj.new_object("geometry", follow_name, follow_init)
         except Exception as e:
             return "Operation failed: %s" % str(e)
 
@@ -942,7 +942,7 @@ class GerberObject(FlatCAMObj, Gerber):
                     geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
-            self.app.new_object("geometry", iso_name, iso_init, plot=plot)
+            self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
         else:
             for i in range(passes):
 
@@ -1072,7 +1072,7 @@ class GerberObject(FlatCAMObj, Gerber):
                         geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
-                self.app.new_object("geometry", iso_name, iso_init, plot=plot)
+                self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
     def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
         # isolation_geometry produces an envelope that is going on the left of the geometry

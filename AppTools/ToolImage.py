@@ -288,7 +288,7 @@ class ToolImage(AppTool):
             name = outname or filename.split('/')[-1].split('\\')[-1]
             units = self.app.defaults['units']
 
-            self.app.new_object(obj_type, name, obj_init)
+            self.app.app_obj.new_object(obj_type, name, obj_init)
 
             # Register recent file
             self.app.file_opened.emit("image", filename)

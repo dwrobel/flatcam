@@ -48,9 +48,9 @@ class CanvasCache(QtCore.QObject):
     Case story #1:
 
     1) No objects in the project.
-    2) Object is created (new_object() emits object_created(obj)).
+    2) Object is created (app_obj.new_object() emits object_created(obj)).
        on_object_created() adds (i) object to collection and emits
-       (ii) new_object_available() then calls (iii) object.plot()
+       (ii) app_obj.new_object_available() then calls (iii) object.plot()
     3) object.plot() creates axes if necessary on
        app.collection.figure. Then plots on it.
     4) Plots on a cache-size canvas (in background).
@@ -116,7 +116,7 @@ class CanvasCache(QtCore.QObject):
 
         # Continue to update the cache.
 
-    # def on_new_object_available(self):
+    # def on_app_obj.new_object_available(self):
     #
     #     log.debug("A new object is available. Should plot it!")
 

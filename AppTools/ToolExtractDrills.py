@@ -655,7 +655,7 @@ class ToolExtractDrills(AppTool):
             obj_inst.source_file = self.app.export_excellon(obj_name=outname, local_use=obj_inst, filename=None,
                                                             use_thread=False)
 
-        self.app.new_object("excellon", outname, obj_init)
+        self.app.app_obj.new_object("excellon", outname, obj_init)
 
     def on_hole_size_toggle(self, val):
         if val == "fixed":

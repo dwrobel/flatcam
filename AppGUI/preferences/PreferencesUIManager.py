@@ -43,7 +43,7 @@ class PreferencesUIManager:
         self.preferences_changed_flag = False
 
         # when adding entries here read the comments in the  method found below named:
-        # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
+        # def app_obj.new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
             # General App
             "decimals_inch": self.ui.general_defaults_form.general_app_group.precision_inch_entry,

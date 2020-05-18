@@ -205,7 +205,7 @@ class ToolPDF(AppTool):
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
-            ret_val = self.app.new_object("excellon", outname, obj_init, autoselected=False)
+            ret_val = self.app.app_obj.new_object("excellon", outname, obj_init, autoselected=False)
             if ret_val == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Open PDF file failed.'))
                 return
@@ -278,7 +278,7 @@ class ToolPDF(AppTool):
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
-            ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
+            ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _('Open PDF file failed.'))
                 return

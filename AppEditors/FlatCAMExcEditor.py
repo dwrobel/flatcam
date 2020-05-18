@@ -2239,7 +2239,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
-        log.debug("Initialization of the FlatCAM Excellon Editor is finished ...")
+        log.debug("Initialization of the Excellon Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3336,7 +3336,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         with self.app.proc_container.new(_("Creating Excellon.")):
 
             try:
-                edited_obj = self.app.new_object("excellon", outname, obj_init)
+                edited_obj = self.app.app_obj.new_object("excellon", outname, obj_init)
                 edited_obj.source_file = self.app.export_excellon(obj_name=edited_obj.options['name'],
                                                                   local_use=edited_obj,
                                                                   filename=None,

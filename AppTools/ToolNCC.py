@@ -2881,12 +2881,12 @@ class NonCopperClear(AppTool, Gerber):
         # ###########################################################################################
         # Create the Job function and send it to the worker to be processed in another thread #######
         # ###########################################################################################
-        def job_thread(app_obj):
+        def job_thread(a_obj):
             try:
                 if rest_machining_choice is True:
-                    app_obj.new_object("geometry", name, gen_clear_area_rest)
+                    a_obj.app_obj.new_object("geometry", name, gen_clear_area_rest)
                 else:
-                    app_obj.new_object("geometry", name, gen_clear_area)
+                    a_obj.app_obj.new_object("geometry", name, gen_clear_area)
             except grace:
                 if run_threaded:
                     proc.done()
@@ -3881,9 +3881,9 @@ class NonCopperClear(AppTool, Gerber):
         def job_thread(app_obj):
             try:
                 if rest_machining_choice is True:
-                    app_obj.new_object("geometry", name, gen_clear_area_rest, plot=plot)
+                    app_obj.app_obj.new_object("geometry", name, gen_clear_area_rest, plot=plot)
                 else:
-                    app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
+                    app_obj.app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
             except grace:
                 if run_threaded:
                     proc.done()

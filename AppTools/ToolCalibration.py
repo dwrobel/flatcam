@@ -1352,11 +1352,11 @@ class ToolCalibration(AppTool):
 
         try:
             if obj.kind.lower() == 'excellon':
-                self.app.new_object("excellon", str(obj_name), initialize_excellon)
+                self.app.app_obj.new_object("excellon", str(obj_name), initialize_excellon)
             elif obj.kind.lower() == 'gerber':
-                self.app.new_object("gerber", str(obj_name), initialize_gerber)
+                self.app.app_obj.new_object("gerber", str(obj_name), initialize_gerber)
             elif obj.kind.lower() == 'geometry':
-                self.app.new_object("geometry", str(obj_name), initialize_geometry)
+                self.app.app_obj.new_object("geometry", str(obj_name), initialize_geometry)
         except Exception as e:
             log.debug("ToolCalibration.new_calibrated_object() --> %s" % str(e))
             return "Operation failed: %s" % str(e)

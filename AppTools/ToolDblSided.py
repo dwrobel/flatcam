@@ -643,7 +643,7 @@ class DblSidedTool(AppTool):
             obj_inst.source_file = app_inst.export_excellon(obj_name=obj_inst.options['name'], local_use=obj_inst,
                                                             filename=None, use_thread=False)
 
-        self.app.new_object("excellon", "Alignment Drills", obj_init)
+        self.app.app_obj.new_object("excellon", "Alignment Drills", obj_init)
         self.drill_values = ''
         self.app.inform.emit('[success] %s' % _("Excellon object with alignment drills created..."))
 
@@ -686,7 +686,7 @@ class DblSidedTool(AppTool):
             py = 0.5 * (ymin + ymax)
 
         fcobj.mirror(axis, [px, py])
-        self.app.object_changed.emit(fcobj)
+        self.app.app_obj.object_changed.emit(fcobj)
         fcobj.plot()
         self.app.inform.emit('[success] Gerber %s %s...' % (str(fcobj.options['name']), _("was mirrored")))
 
@@ -730,7 +730,7 @@ class DblSidedTool(AppTool):
             py = 0.5 * (ymin + ymax)
 
         fcobj.mirror(axis, [px, py])
-        self.app.object_changed.emit(fcobj)
+        self.app.app_obj.object_changed.emit(fcobj)
         fcobj.plot()
         self.app.inform.emit('[success] Excellon %s %s...' % (str(fcobj.options['name']), _("was mirrored")))
 
@@ -767,7 +767,7 @@ class DblSidedTool(AppTool):
             py = 0.5 * (ymin + ymax)
 
         fcobj.mirror(axis, [px, py])
-        self.app.object_changed.emit(fcobj)
+        self.app.app_obj.object_changed.emit(fcobj)
         fcobj.plot()
         self.app.inform.emit('[success] Geometry %s %s...' % (str(fcobj.options['name']), _("was mirrored")))
 

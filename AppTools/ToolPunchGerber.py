@@ -591,7 +591,7 @@ class ToolPunchGerber(AppTool):
                 new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
                                                              local_use=new_obj, use_thread=False)
 
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
         elif punch_method == 'fixed':
             punch_size = float(self.dia_entry.get_value())
 
@@ -705,7 +705,7 @@ class ToolPunchGerber(AppTool):
                 new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
                                                              local_use=new_obj, use_thread=False)
 
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
         elif punch_method == 'ring':
             circ_r_val = self.circular_ring_entry.get_value()
             oblong_r_val = self.oblong_ring_entry.get_value()
@@ -847,7 +847,7 @@ class ToolPunchGerber(AppTool):
                 new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
                                                              local_use=new_obj, use_thread=False)
 
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
 
         elif punch_method == 'prop':
             prop_factor = self.factor_entry.get_value() / 100.0
@@ -986,7 +986,7 @@ class ToolPunchGerber(AppTool):
                 new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
                                                              local_use=new_obj, use_thread=False)
 
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

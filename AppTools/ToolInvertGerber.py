@@ -293,7 +293,7 @@ class ToolInvertGerber(AppTool):
             new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
                                                          local_use=new_obj, use_thread=False)
 
-        self.app.new_object('gerber', outname, init_func)
+        self.app.app_obj.new_object('gerber', outname, init_func)
 
     def reset_fields(self):
         self.gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

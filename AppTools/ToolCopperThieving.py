@@ -1474,7 +1474,7 @@ class ToolCopperThieving(AppTool):
         obj_name, separatpr, obj_extension = self.sm_object.options['name'].rpartition('.')
         name = '%s_%s.%s' % (obj_name, 'plating_mask', obj_extension)
 
-        self.app.new_object('gerber', name, obj_init, autoselected=False)
+        self.app.app_obj.new_object('gerber', name, obj_init, autoselected=False)
 
         # Register recent file
         self.app.file_opened.emit("gerber", name)

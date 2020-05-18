@@ -343,4 +343,4 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.gcode_parse()
             job_obj.create_geometry()
 
-        self.app.new_object("cncjob", args['outname'], job_init, plot=False)
+        self.app.app_obj.new_object("cncjob", args['outname'], job_init, plot=False)

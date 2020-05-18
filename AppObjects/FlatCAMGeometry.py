@@ -1778,7 +1778,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.app.inform.emit(msg)
             return
 
-        # Object initialization function for app.new_object()
+        # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
             log.debug("Creating a CNCJob out of a single-geometry")
@@ -1918,7 +1918,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 })
                 dia_cnc_dict.clear()
 
-        # Object initialization function for app.new_object()
+        # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_multi_geometry(job_obj, app_obj):
             log.debug("Creating a CNCJob out of a multi-geometry")
@@ -2072,15 +2072,15 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         if use_thread:
             # To be run in separate thread
-            def job_thread(app_obj):
+            def job_thread(a_obj):
                 if self.multigeo is False:
                     with self.app.proc_container.new(_("Generating CNC Code")):
-                        if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
-                            app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
+                        if a_obj.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
+                            a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
                 else:
                     with self.app.proc_container.new(_("Generating CNC Code")):
-                        if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
-                            app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
+                        if a_obj.app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
+                            a_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
             # Create a promise with the name
             self.app.collection.promise(outname)
@@ -2088,9 +2088,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             if self.solid_geometry:
-                self.app.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
+                self.app.app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
             else:
-                self.app.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
+                self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
     def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None,
             feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
@@ -2181,7 +2181,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         ppname_g = pp if pp else self.options["ppname_g"]
 
-        # Object initialization function for app.new_object()
+        # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init(job_obj, app_obj):
             assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
@@ -2230,7 +2230,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # To be run in separate thread
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
-                    app_obj.new_object("cncjob", outname, job_init, plot=plot)
+                    app_obj.app_obj.new_object("cncjob", outname, job_init, plot=plot)
                     app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created")), outname)
 
             # Create a promise with the name
@@ -2238,7 +2238,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("cncjob", outname, job_init, plot=plot)
+            self.app.app_obj.new_object("cncjob", outname, job_init, plot=plot)
 
     # def on_plot_cb_click(self, *args):
     #     if self.muted_ui:

@@ -456,7 +456,7 @@ class ToolSub(AppTool):
             grb_obj.follow_geometry = deepcopy(follow_buff)
 
         with self.app.proc_container.new(_("Generating new object ...")):
-            ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
+            ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _('Generating new object failed.'))
@@ -659,7 +659,7 @@ class ToolSub(AppTool):
                 geo_obj.multigeo = False
 
         with self.app.proc_container.new(_("Generating new object ...")):
-            ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
+            ret = self.app.app_obj.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _('Generating new object failed.'))

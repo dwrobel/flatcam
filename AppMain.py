@@ -4,6 +4,7 @@
 # Author: Juan Pablo Caram (c)                              #
 # Date: 2/5/2014                                            #
 # MIT Licence                                               #
+# Modified by Marius Stanciu (2019)                         #
 # ###########################################################
 
 import urllib.request
@@ -55,12 +56,7 @@ from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from AppGUI.preferences.PreferencesUIManager import PreferencesUIManager
 from AppObjects.ObjectCollection import *
 from AppObjects.FlatCAMObj import FlatCAMObj
-from AppObjects.FlatCAMCNCJob import CNCJobObject
-from AppObjects.FlatCAMDocument import DocumentObject
-from AppObjects.FlatCAMExcellon import ExcellonObject
-from AppObjects.FlatCAMGeometry import GeometryObject
-from AppObjects.FlatCAMGerber import GerberObject
-from AppObjects.FlatCAMScript import ScriptObject
+from AppObjects.AppObject import AppObject
 
 # FlatCAM Parsing files
 from AppParsers.ParseExcellon import Excellon
@@ -225,20 +221,6 @@ class App(QtCore.QObject):
 
     # Percentage of progress
     progress = QtCore.pyqtSignal(int)
-
-    plots_updated = QtCore.pyqtSignal()
-
-    # Emitted by new_object() and passes the new object as argument, plot flag.
-    # on_object_created() adds the object to the collection, plots on appropriate flag
-    # and emits new_object_available.
-    object_created = QtCore.pyqtSignal(object, bool, bool)
-
-    # Emitted when a object has been changed (like scaled, mirrored)
-    object_changed = QtCore.pyqtSignal(object)
-
-    # Emitted after object has been plotted.
-    # Calls 'on_zoom_fit' method to fit object in scene view in main thread to prevent drawing glitches.
-    object_plotted = QtCore.pyqtSignal(object)
 
     # Emitted when a new object has been added or deleted from/to the collection
     object_status_changed = QtCore.pyqtSignal(object, str, str)
@@ -674,8 +656,10 @@ class App(QtCore.QObject):
         # #################################### SETUP OBJECT COLLECTION ##############################################
         # ###########################################################################################################
 
-        self.collection = ObjectCollection(self)
+        self.collection = ObjectCollection(app=self)
         self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        self.app_obj = AppObject(app=self)
 
         # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
@@ -779,12 +763,6 @@ class App(QtCore.QObject):
         self.message.connect(lambda: message_dialog(parent=self.ui))
         # self.progress.connect(self.set_progress_bar)
 
-        # signals that are emitted when object state changes
-        self.object_created.connect(self.on_object_created)
-        self.object_changed.connect(self.on_object_changed)
-        self.object_plotted.connect(self.on_object_plotted)
-        self.plots_updated.connect(self.on_plots_updated)
-
         # signals emitted when file state change
         self.file_opened.connect(self.register_recent)
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
@@ -793,10 +771,10 @@ class App(QtCore.QObject):
         # ########################################## Standard signals ###############################################
         # ### Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
-        self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
-        self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
-        self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
-        self.ui.menufilenewdoc.triggered.connect(self.new_document_object)
+        self.ui.menufilenewgeo.triggered.connect(self.app_obj.new_geometry_object)
+        self.ui.menufilenewgrb.triggered.connect(self.app_obj.new_gerber_object)
+        self.ui.menufilenewexc.triggered.connect(self.app_obj.new_excellon_object)
+        self.ui.menufilenewdoc.triggered.connect(self.app_obj.new_document_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
@@ -935,9 +913,9 @@ class App(QtCore.QObject):
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
 
-        self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
-        self.ui.popmenu_new_grb.triggered.connect(self.new_gerber_object)
-        self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
+        self.ui.popmenu_new_geo.triggered.connect(self.app_obj.new_geometry_object)
+        self.ui.popmenu_new_grb.triggered.connect(self.app_obj.new_gerber_object)
+        self.ui.popmenu_new_exc.triggered.connect(self.app_obj.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
@@ -1918,7 +1896,7 @@ class App(QtCore.QObject):
         self.calculator_tool = ToolCalculator(self)
         self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator16.png'), separator=True)
 
-        self.sub_tool = ToolSub(self)
+        self.sub_tool = ToolSub(app=self)
         self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
                               pos=self.ui.menutool, separator=True)
 
@@ -2071,9 +2049,9 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
-        self.ui.newgrb_btn.triggered.connect(self.new_gerber_object)
-        self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
+        self.ui.newgeo_btn.triggered.connect(self.app_obj.new_geometry_object)
+        self.ui.newgrb_btn.triggered.connect(self.app_obj.new_gerber_object)
+        self.ui.newexc_btn.triggered.connect(self.app_obj.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.copy_btn.triggered.connect(self.on_copy_command)
@@ -2664,347 +2642,6 @@ class App(QtCore.QObject):
 
         # Re-build the recent items menu
         self.setup_recent_items()
-
-    def new_object(self, kind, name, initialize, plot=True, autoselected=True):
-        """
-        Creates a new specialized FlatCAMObj and attaches it to the application,
-        this is, updates the GUI accordingly, any other records and plots it.
-        This method is thread-safe.
-
-        Notes:
-            * If the name is in use, the self.collection will modify it
-              when appending it to the collection. There is no need to handle
-              name conflicts here.
-
-        :param kind: The kind of object to create. One of 'gerber', 'excellon', 'cncjob' and 'geometry'.
-        :type kind: str
-        :param name: Name for the object.
-        :type name: str
-        :param initialize: Function to run after creation of the object but before it is attached to the application.
-        The function is called with 2 parameters: the new object and the App instance.
-        :type initialize: function
-        :param plot: If to plot the resulting object
-        :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
-        self.collection
-        :return: None
-        :rtype: None
-        """
-
-        App.log.debug("new_object()")
-        obj_plot = plot
-        obj_autoselected = autoselected
-
-        t0 = time.time()  # Debug
-
-        # ## Create object
-        classdict = {
-            "gerber": GerberObject,
-            "excellon": ExcellonObject,
-            "cncjob": CNCJobObject,
-            "geometry": GeometryObject,
-            "script": ScriptObject,
-            "document": DocumentObject
-        }
-
-        App.log.debug("Calling object constructor...")
-
-        # Object creation/instantiation
-        obj = classdict[kind](name)
-
-        obj.units = self.options["units"]
-
-        # IMPORTANT
-        # The key names in defaults and options dictionary's are not random:
-        # they have to have in name first the type of the object (geometry, excellon, cncjob and gerber) or how it's
-        # called here, the 'kind' followed by an underline. Above the App default values from self.defaults are
-        # copied to self.options. After that, below, depending on the type of
-        # object that is created, it will strip the name of the object and the underline (if the original key was
-        # let's say "excellon_toolchange", it will strip the excellon_) and to the obj.options the key will become
-        # "toolchange"
-
-        for option in self.options:
-            if option.find(kind + "_") == 0:
-                oname = option[len(kind) + 1:]
-                obj.options[oname] = self.options[option]
-
-        obj.isHovering = False
-        obj.notHovering = True
-
-        # Initialize as per user request
-        # User must take care to implement initialize
-        # in a thread-safe way as is is likely that we
-        # have been invoked in a separate thread.
-        t1 = time.time()
-        self.log.debug("%f seconds before initialize()." % (t1 - t0))
-        try:
-            return_value = initialize(obj, self)
-        except Exception as e:
-            msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
-            msg += _("Object ({kind}) failed because: {error} \n\n").format(kind=kind, error=str(e))
-            msg += traceback.format_exc()
-            self.inform.emit(msg)
-            return "fail"
-
-        t2 = time.time()
-        self.log.debug("%f seconds executing initialize()." % (t2 - t1))
-
-        if return_value == 'fail':
-            log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
-            return "fail"
-
-        # Check units and convert if necessary
-        # This condition CAN be true because initialize() can change obj.units
-        if self.options["units"].upper() != obj.units.upper():
-            self.inform.emit('%s: %s' % (_("Converting units to "), self.options["units"]))
-            obj.convert_units(self.options["units"])
-            t3 = time.time()
-            self.log.debug("%f seconds converting units." % (t3 - t2))
-
-        # Create the bounding box for the object and then add the results to the obj.options
-        # But not for Scripts or for Documents
-        if kind != 'document' and kind != 'script':
-            try:
-                xmin, ymin, xmax, ymax = obj.bounds()
-                obj.options['xmin'] = xmin
-                obj.options['ymin'] = ymin
-                obj.options['xmax'] = xmax
-                obj.options['ymax'] = ymax
-            except Exception as e:
-                log.warning("App.new_object() -> The object has no bounds properties. %s" % str(e))
-                return "fail"
-
-            try:
-                if kind == 'excellon':
-                    obj.fill_color = self.defaults["excellon_plot_fill"]
-                    obj.outline_color = self.defaults["excellon_plot_line"]
-
-                if kind == 'gerber':
-                    obj.fill_color = self.defaults["gerber_plot_fill"]
-                    obj.outline_color = self.defaults["gerber_plot_line"]
-            except Exception as e:
-                log.warning("App.new_object() -> setting colors error. %s" % str(e))
-
-        # update the KeyWords list with the name of the file
-        self.myKeywords.append(obj.options['name'])
-
-        log.debug("Moving new object back to main thread.")
-
-        # Move the object to the main thread and let the app know that it is available.
-        obj.moveToThread(self.main_thread)
-        self.object_created.emit(obj, obj_plot, obj_autoselected)
-
-        return obj
-
-    def new_excellon_object(self):
-        """
-        Creates a new, blank Excellon object.
-
-        :return: None
-        """
-        self.defaults.report_usage("new_excellon_object()")
-
-        self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
-
-    def new_geometry_object(self):
-        """
-        Creates a new, blank and single-tool Geometry object.
-
-        :return: None
-        """
-        self.defaults.report_usage("new_geometry_object()")
-
-        def initialize(obj, app):
-            obj.multitool = False
-
-        self.new_object('geometry', 'new_geo', initialize, plot=False)
-
-    def new_gerber_object(self):
-        """
-        Creates a new, blank Gerber object.
-
-        :return: None
-        """
-        self.defaults.report_usage("new_gerber_object()")
-
-        def initialize(grb_obj, app):
-            grb_obj.multitool = False
-            grb_obj.source_file = []
-            grb_obj.multigeo = False
-            grb_obj.follow = False
-            grb_obj.apertures = {}
-            grb_obj.solid_geometry = []
-
-            try:
-                grb_obj.options['xmin'] = 0
-                grb_obj.options['ymin'] = 0
-                grb_obj.options['xmax'] = 0
-                grb_obj.options['ymax'] = 0
-            except KeyError:
-                pass
-
-        self.new_object('gerber', 'new_grb', initialize, plot=False)
-
-    def new_script_object(self):
-        """
-        Creates a new, blank TCL Script object.
-
-        :return: None
-        """
-        self.defaults.report_usage("new_script_object()")
-
-        # commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
-        #                 "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n" \
-        #                 "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-        #                 "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n" \
-        #                 "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
-        #                 "ListSys, MillDrills,\n" \
-        #                 "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
-        #                 "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n" \
-        #                 "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
-        #                 "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
-        #                 "# SubtractRectangle, Version, WriteGCode\n"
-
-        new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
-                          '# %s:\n' % _('TCL Tutorial is here') + \
-                          '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
-                          '# %s:\n' % _("FlatCAM commands list")
-        new_source_file += '# %s\n\n' % _("Type >help< followed by Run Code for a list of FlatCAM Tcl Commands "
-                                          "(displayed in Tcl Shell).")
-
-        def initialize(obj, app):
-            obj.source_file = deepcopy(new_source_file)
-
-        outname = 'new_script'
-        self.new_object('script', outname, initialize, plot=False)
-
-    def new_document_object(self):
-        """
-        Creates a new, blank Document object.
-
-        :return: None
-        """
-        self.defaults.report_usage("new_document_object()")
-
-        def initialize(obj, app):
-            obj.source_file = ""
-
-        self.new_object('document', 'new_document', initialize, plot=False)
-
-    def on_object_created(self, obj, plot, auto_select):
-        """
-        Event callback for object creation.
-        It will add the new object to the collection. After that it will plot the object in a threaded way
-
-        :param obj: The newly created FlatCAM object.
-        :param plot: if the newly create object t obe plotted
-        :param auto_select: if the newly created object to be autoselected after creation
-        :return: None
-        """
-        t0 = time.time()  # DEBUG
-        self.log.debug("on_object_created()")
-
-        # The Collection might change the name if there is a collision
-        self.collection.append(obj)
-
-        # after adding the object to the collection always update the list of objects that are in the collection
-        self.all_objects_list = self.collection.get_list()
-
-        # self.inform.emit('[selected] %s created & selected: %s' %
-        #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
-        if obj.kind == 'gerber':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='green',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-        elif obj.kind == 'excellon':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='brown',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-        elif obj.kind == 'cncjob':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='blue',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-        elif obj.kind == 'geometry':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='red',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-        elif obj.kind == 'script':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='orange',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-        elif obj.kind == 'document':
-            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
-                kind=obj.kind.capitalize(),
-                color='darkCyan',
-                name=str(obj.options['name']), tx=_("created/selected"))
-            )
-
-        # update the SHELL auto-completer model with the name of the new object
-        self.shell._edit.set_model_data(self.myKeywords)
-
-        if auto_select:
-            # select the just opened object but deselect the previous ones
-            self.collection.set_all_inactive()
-            self.collection.set_active(obj.options["name"])
-        else:
-            self.collection.set_all_inactive()
-
-        # here it is done the object plotting
-        def worker_task(t_obj):
-            with self.proc_container.new(_("Plotting")):
-                if isinstance(t_obj, CNCJobObject):
-                    t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
-                else:
-                    t_obj.plot()
-                t1 = time.time()  # DEBUG
-                self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
-                self.object_plotted.emit(t_obj)
-
-        # Send to worker
-        # self.worker.add_task(worker_task, [self])
-        if plot is True:
-            self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
-
-    def on_object_changed(self, obj):
-        """
-        Called whenever the geometry of the object was changed in some way.
-        This require the update of it's bounding values so it can be the selected on canvas.
-        Update the bounding box data from obj.options
-
-        :param obj: the object that was changed
-        :return: None
-        """
-
-        try:
-            xmin, ymin, xmax, ymax = obj.bounds()
-        except TypeError:
-            return
-        obj.options['xmin'] = xmin
-        obj.options['ymin'] = ymin
-        obj.options['xmax'] = xmax
-        obj.options['ymax'] = ymax
-
-        log.debug("Object changed, updating the bounding box data on self.options")
-        # delete the old selection shape
-        self.delete_selection_shape()
-        self.should_we_save = True
-
-    def on_object_plotted(self):
-        """
-        Callback called whenever the plotted object needs to be fit into the viewport (canvas)
-
-        :return: None
-        """
-        self.on_zoom_fit(None)
 
     def on_about(self):
         """
@@ -3976,7 +3613,7 @@ class App(QtCore.QObject):
                 for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_multi
 
-            self.new_object("geometry", obj_name_multi, initialize)
+            self.app_obj.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
                 GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=False)
@@ -3986,7 +3623,7 @@ class App(QtCore.QObject):
                 for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_single
 
-            self.new_object("geometry", obj_name_single, initialize)
+            self.app_obj.new_object("geometry", obj_name_single, initialize)
 
         self.should_we_save = True
 
@@ -4015,7 +3652,7 @@ class App(QtCore.QObject):
             ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
-        self.new_object("excellon", 'Combo_Excellon', initialize)
+        self.app_obj.new_object("excellon", 'Combo_Excellon', initialize)
         self.should_we_save = True
 
     def on_edit_join_grb(self):
@@ -4043,7 +3680,7 @@ class App(QtCore.QObject):
             GerberObject.merge(grb_list=objs, grb_final=grb_obj)
             app.inform.emit('[success] %s.' % _("Gerber merging finished"))
 
-        self.new_object("gerber", 'Combo_Gerber', initialize)
+        self.app_obj.new_object("gerber", 'Combo_Gerber', initialize)
         self.should_we_save = True
 
     def on_convert_singlegeo_to_multigeo(self):
@@ -4352,7 +3989,7 @@ class App(QtCore.QObject):
                 obj.convert_units(new_units)
 
                 # make that the properties stored in the object are also updated
-                self.object_changed.emit(obj)
+                self.app_obj.object_changed.emit(obj)
                 # rebuild the object UI
                 obj.build_ui()
 
@@ -5017,7 +4654,7 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.offset((x, y))
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
@@ -5105,7 +4742,7 @@ class App(QtCore.QObject):
 
                 for obj in obj_list:
                     obj.offset((-x, -y))
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
 
                     # Update the object bounding box options
                     a, b, c, d = obj.bounds()
@@ -5468,15 +5105,15 @@ class App(QtCore.QObject):
 
             try:
                 if isinstance(obj, ExcellonObject):
-                    self.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
+                    self.app_obj.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
                 elif isinstance(obj, GerberObject):
-                    self.new_object("gerber", str(obj_name) + "_copy", initialize)
+                    self.app_obj.new_object("gerber", str(obj_name) + "_copy", initialize)
                 elif isinstance(obj, GeometryObject):
-                    self.new_object("geometry", str(obj_name) + "_copy", initialize)
+                    self.app_obj.new_object("geometry", str(obj_name) + "_copy", initialize)
                 elif isinstance(obj, ScriptObject):
-                    self.new_object("script", str(obj_name) + "_copy", initialize_script)
+                    self.app_obj.new_object("script", str(obj_name) + "_copy", initialize_script)
                 elif isinstance(obj, DocumentObject):
-                    self.new_object("document", str(obj_name) + "_copy", initialize_document)
+                    self.app_obj.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
@@ -5517,11 +5154,11 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
             try:
                 if isinstance(obj, ExcellonObject):
-                    self.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
+                    self.app_obj.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
                 elif isinstance(obj, GerberObject):
-                    self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
+                    self.app_obj.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
                 elif isinstance(obj, GeometryObject):
-                    self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
+                    self.app_obj.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
             except Exception as er:
                 return "Operation failed: %s" % str(er)
 
@@ -5588,9 +5225,9 @@ class App(QtCore.QObject):
 
             try:
                 if isinstance(obj, ExcellonObject):
-                    self.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
+                    self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
-                    self.new_object("geometry", str(obj_name) + "_conv", initialize)
+                    self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
@@ -5666,9 +5303,9 @@ class App(QtCore.QObject):
 
             try:
                 if isinstance(obj, ExcellonObject):
-                    self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                    self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
                 elif isinstance(obj, GeometryObject):
-                    self.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
+                    self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
                     log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
 
@@ -5960,7 +5597,7 @@ class App(QtCore.QObject):
                 for obj in obj_list:
                     obj.mirror('X', [px, py])
                     obj.plot()
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' %
                                  _("Flip on Y axis done."))
             except Exception as e:
@@ -6008,7 +5645,7 @@ class App(QtCore.QObject):
                 for obj in obj_list:
                     obj.mirror('Y', [px, py])
                     obj.plot()
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' %
                                  _("Flip on X axis done."))
             except Exception as e:
@@ -6064,7 +5701,7 @@ class App(QtCore.QObject):
                     for sel_obj in obj_list:
                         sel_obj.rotate(-float(num), point=(px, py))
                         sel_obj.plot()
-                        self.object_changed.emit(sel_obj)
+                        self.app_obj.object_changed.emit(sel_obj)
                     self.inform.emit('[success] %s' % _("Rotation done."))
                 except Exception as e:
                     self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation movement was not executed."), str(e)))
@@ -6104,7 +5741,7 @@ class App(QtCore.QObject):
                 for obj in obj_list:
                     obj.skew(num, 0, point=(xminimal, yminimal))
                     obj.plot()
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' % _("Skew on X axis done."))
 
     def on_skewy(self):
@@ -6141,7 +5778,7 @@ class App(QtCore.QObject):
                 for obj in obj_list:
                     obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
-                    self.object_changed.emit(obj)
+                    self.app_obj.object_changed.emit(obj)
                 self.inform.emit('[success] %s' % _("Skew on Y axis done."))
 
     def on_plots_updated(self):
@@ -7970,7 +7607,7 @@ class App(QtCore.QObject):
         self.ui.position_label.setText("")
         # self.ui.rel_position_label.setText("")
 
-        self.new_script_object()
+        self.app_obj.new_script_object()
 
         # script_text = script_obj.source_file
         #
@@ -8891,7 +8528,7 @@ class App(QtCore.QObject):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            ret = self.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
+            ret = self.app_obj.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
 
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL]%s' % _('Import failed.'))
@@ -8937,7 +8574,7 @@ class App(QtCore.QObject):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            ret = self.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
+            ret = self.app_obj.new_object(obj_type, name, obj_init, autoselected=False, plot=plot)
 
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL]%s' % _('Import failed.'))
@@ -8998,11 +8635,11 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # # ## Object creation # ##
-            ret_val = self.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
+            ret_val = self.app_obj.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
                 if from_tcl:
                     filename = self.defaults['global_tcl_path'] + '/' + name
-                    ret_val = self.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
+                    ret_val = self.app_obj.new_object("gerber", name, obj_init, autoselected=False, plot=plot)
                 if ret_val == 'fail':
                     self.inform.emit('[ERROR_NOTCL]%s' % _('Open Gerber failed. Probable not a Gerber file.'))
                     return 'fail'
@@ -9064,11 +8701,11 @@ class App(QtCore.QObject):
         with self.proc_container.new(_("Opening Excellon.")):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
+            ret_val = self.app_obj.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
                 if from_tcl:
                     filename = self.defaults['global_tcl_path'] + '/' + name
-                    ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
+                    ret_val = self.app_obj.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
                 if ret_val == 'fail':
                     self.inform.emit('[ERROR_NOTCL] %s' %
                                      _('Open Excellon file failed. Probable not an Excellon file.'))
@@ -9127,11 +8764,11 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # New object creation and file processing
-            ret_val = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
+            ret_val = self.app_obj.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
                 if from_tcl:
                     filename = self.defaults['global_tcl_path'] + '/' + name
-                    ret_val = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
+                    ret_val = self.app_obj.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
                 if ret_val == 'fail':
                     self.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Failed to create CNCJob Object. Probable not a GCode file. "
@@ -9200,7 +8837,7 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # # ## Object creation # ##
-            ret = self.new_object("geometry", name, obj_init, autoselected=False)
+            ret = self.app_obj.new_object("geometry", name, obj_init, autoselected=False)
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL]%s' % _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
                 return 'fail'
@@ -9254,10 +8891,10 @@ class App(QtCore.QObject):
             script_name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # Object creation
-            ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+            ret_val = self.app_obj.new_object("script", script_name, obj_init, autoselected=False, plot=False)
             if ret_val == 'fail':
                 filename = self.defaults['global_tcl_path'] + '/' + script_name
-                ret_val = self.new_object("script", script_name, obj_init, autoselected=False, plot=False)
+                ret_val = self.app_obj.new_object("script", script_name, obj_init, autoselected=False, plot=False)
                 if ret_val == 'fail':
                     self.inform.emit('[ERROR_NOTCL]%s' % _('Failed to open TCL Script.'))
                     return 'fail'
@@ -9320,7 +8957,7 @@ class App(QtCore.QObject):
         2) Registers the file as recently opened.
         3) Calls on_file_new()
         4) Updates options
-        5) Calls new_object() with the object's from_dict() as init method.
+        5) Calls app_obj.new_object() with the object's from_dict() as init method.
         6) Calls plot_all() if plot=True
 
         :param filename:        Name of the file from which to load.
@@ -9422,7 +9059,7 @@ class App(QtCore.QObject):
                                                               )
                                       )
 
-                self.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
+                self.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
             except Exception as e:
                 print('App.open_project() --> ' + str(e))
 
@@ -9459,7 +9096,7 @@ class App(QtCore.QObject):
                 with self.proc_container.new("Plotting"):
                     obj.plot(kind=self.defaults["cncjob_plot_kind"])
                     if fit_view is True:
-                        self.object_plotted.emit(obj)
+                        self.app_obj.object_plotted.emit(obj)
 
             if use_thread is True:
                 # Send to worker
@@ -10044,8 +9681,6 @@ class App(QtCore.QObject):
 
         self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
-        # self.plots_updated.emit()
-
     def disable_plots(self, objects):
         """
         Disables plots
@@ -10084,7 +9719,6 @@ class App(QtCore.QObject):
         except Exception as e:
             log.debug("App.disable_plots() --> %s" % str(e))
 
-        # self.plots_updated.emit()
         def worker_task(objs):
             with self.proc_container.new(_("Disabling plots ...")):
                 for plot_obj in objs:
@@ -10115,7 +9749,7 @@ class App(QtCore.QObject):
                 obj.options['plot'] = True
             else:
                 obj.options['plot'] = False
-        self.plots_updated.emit()
+        self.app_obj.plots_updated.emit()
 
     def clear_plots(self):
         """

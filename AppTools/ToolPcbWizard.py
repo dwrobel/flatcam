@@ -452,7 +452,7 @@ class PcbWizard(AppTool):
                     # Object name
                     name = self.outname
 
-                    ret_val = self.app.new_object("excellon", name, obj_init, autoselected=False)
+                    ret_val = self.app.app_obj.new_object("excellon", name, obj_init, autoselected=False)
                     if ret_val == 'fail':
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _('Import Excellon file failed.'))
                         return

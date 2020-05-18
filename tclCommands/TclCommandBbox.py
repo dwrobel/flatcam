@@ -100,6 +100,6 @@ class TclCommandBbox(TclCommand):
                     bounding_box = bounding_box.envelope
                 geo_obj.solid_geometry = bounding_box
 
-            self.app.new_object("geometry", args['outname'], geo_init, plot=False)
+            self.app.app_obj.new_object("geometry", args['outname'], geo_init, plot=False)
         except Exception as e:
             return "Operation failed: %s" % str(e)

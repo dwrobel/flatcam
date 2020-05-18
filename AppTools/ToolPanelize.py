@@ -794,9 +794,9 @@ class Panelize(AppTool):
 
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
                 if panel_source_obj.kind == 'excellon':
-                    self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
+                    self.app.app_obj.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
-                    self.app.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
+                    self.app.app_obj.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
 
         if self.constrain_flag is False:
             self.app.inform.emit('[success] %s' % _("Panel done..."))

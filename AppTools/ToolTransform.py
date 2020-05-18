@@ -702,7 +702,7 @@ class ToolTransform(AppTool):
                             self.app.inform.emit(_("CNCJob objects can't be rotated."))
                         else:
                             sel_obj.rotate(-num, point=(px, py))
-                            self.app.object_changed.emit(sel_obj)
+                            self.app.app_obj.object_changed.emit(sel_obj)
 
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
@@ -776,7 +776,7 @@ class ToolTransform(AppTool):
                                 else:
                                     sel_obj.options['mirror_x'] = True
                                 self.app.inform.emit('[success] %s...' % _('Flip on the X axis done'))
-                            self.app.object_changed.emit(sel_obj)
+                            self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
@@ -825,7 +825,7 @@ class ToolTransform(AppTool):
                                 sel_obj.skew(0, num, point=(xminimal, yminimal))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['skew_y'] = num
-                            self.app.object_changed.emit(sel_obj)
+                            self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
                 except Exception as e:
@@ -878,7 +878,7 @@ class ToolTransform(AppTool):
                             # add information to the object that it was changed and how much
                             sel_obj.options['scale_x'] = xfactor
                             sel_obj.options['scale_y'] = yfactor
-                            self.app.object_changed.emit(sel_obj)
+                            self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Scale on the'), str(axis), _('axis done')))
@@ -908,7 +908,7 @@ class ToolTransform(AppTool):
                                 sel_obj.offset((0, num))
                                 # add information to the object that it was changed and how much
                                 sel_obj.options['offset_y'] = num
-                            self.app.object_changed.emit(sel_obj)
+                            self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
                     self.app.inform.emit('[success] %s %s %s...' % (_('Offset on the'), str(axis), _('axis done')))
@@ -942,7 +942,7 @@ class ToolTransform(AppTool):
                         elif sel_obj.kind.lower() == 'geometry':
                             sel_obj.buffer(value, join, factor)
 
-                        self.app.object_changed.emit(sel_obj)
+                        self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
                     self.app.inform.emit('[success] %s...' % _('Buffer done'))

@@ -67,4 +67,4 @@ class TclCommandInteriors(TclCommandSignaled):
             geo_obj.solid_geometry = obj_interiors
 
         obj_interiors = obj.get_interiors()
-        self.app.new_object('geometry', outname, geo_init)
+        self.app.app_obj.new_object('geometry', outname, geo_init)

@@ -553,7 +553,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         while name in self.get_names():
             # ## Create a new name
             # Ends with number?
-            log.debug("new_object(): Object name (%s) exists, changing." % name)
+            log.debug("app_obj.new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
             if match:  # Yes: Increment the number!
                 base = match.group(1) or ''

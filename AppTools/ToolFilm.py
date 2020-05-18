@@ -775,7 +775,7 @@ class Film(AppTool):
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
 
             outname = name + "_punched"
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
 
             self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
         else:
@@ -826,7 +826,7 @@ class Film(AppTool):
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
 
             outname = name + "_punched"
-            self.app.new_object('gerber', outname, init_func)
+            self.app.app_obj.new_object('gerber', outname, init_func)
 
             self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
 

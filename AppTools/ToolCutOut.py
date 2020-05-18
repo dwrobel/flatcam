@@ -700,7 +700,7 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
-        self.app.new_object('geometry', outname, geo_init)
+        self.app.app_obj.new_object('geometry', outname, geo_init)
 
         cutout_obj.plot()
         self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
@@ -896,7 +896,7 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
-        ret = self.app.new_object('geometry', outname, geo_init)
+        ret = self.app.app_obj.new_object('geometry', outname, geo_init)
 
         if ret != 'fail':
             # cutout_obj.plot()
@@ -1056,7 +1056,7 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
-        self.app.new_object('geometry', outname, geo_init)
+        self.app.app_obj.new_object('geometry', outname, geo_init)
 
     def cutting_geo(self, pos):
         self.cutting_dia = float(self.dia.get_value())

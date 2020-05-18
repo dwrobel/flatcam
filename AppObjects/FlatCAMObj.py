@@ -245,7 +245,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.proc_container.update_view_text('')
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
-            self.app.object_changed.emit(self)
+            self.app.app_obj.object_changed.emit(self)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
@@ -276,7 +276,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.proc_container.update_view_text('')
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
-            self.app.object_changed.emit(self)
+            self.app.app_obj.object_changed.emit(self)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
@@ -292,7 +292,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.proc_container.update_view_text('')
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
-            self.app.object_changed.emit(self)
+            self.app.app_obj.object_changed.emit(self)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
@@ -372,7 +372,7 @@ class FlatCAMObj(QtCore.QObject):
         def plot_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
-            self.app.object_changed.emit(self)
+            self.app.app_obj.object_changed.emit(self)
 
         self.app.worker_task.emit({'fcn': plot_task, 'params': []})
 

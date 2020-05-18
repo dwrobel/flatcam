@@ -9,7 +9,7 @@ from AppTool import AppTool
 from Common import LoudDict
 from AppGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
-from App import log
+from AppMain import log
 from camlib import distance
 from AppEditors.FlatCAMTextEditor import TextEditor
 
@@ -1257,7 +1257,7 @@ class SolderPaste(AppTool):
         if use_thread:
             def job_thread(app_obj):
                 try:
-                    app_obj.new_object("geometry", name + "_solderpaste", geo_init)
+                    app_obj.app_obj.new_object("geometry", name + "_solderpaste", geo_init)
                 except Exception as e:
                     log.error("SolderPaste.on_create_geo() --> %s" % str(e))
                     proc.done()
@@ -1271,7 +1271,7 @@ class SolderPaste(AppTool):
             # Background
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", name + "_solderpaste", geo_init)
+            self.app.app_obj.new_object("geometry", name + "_solderpaste", geo_init)
 
     def on_create_gcode_click(self, signal):
         """
@@ -1331,7 +1331,7 @@ class SolderPaste(AppTool):
             self.app.inform.emit(msg)
             return
 
-        # Object initialization function for app.new_object()
+        # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init(job_obj):
             assert job_obj.kind == 'cncjob', \
@@ -1388,7 +1388,7 @@ class SolderPaste(AppTool):
             # To be run in separate thread
             def job_thread(app_obj):
                 with self.app.proc_container.new("Generating CNC Code"):
-                    if app_obj.new_object("cncjob", name, job_init) != 'fail':
+                    if app_obj.app_obj.new_object("cncjob", name, job_init) != 'fail':
                         app_obj.inform.emit('[success] [success] %s: %s' %
                                             (_("ToolSolderPaste CNCjob created"), name))
             # Create a promise with the name
@@ -1396,7 +1396,7 @@ class SolderPaste(AppTool):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("cncjob", name, job_init)
+            self.app.app_obj.new_object("cncjob", name, job_init)
 
     def on_view_gcode(self):
         """

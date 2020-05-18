@@ -167,19 +167,19 @@ class TclCommandPanelize(TclCommand):
         #             for col in range(columns):
         #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
         #                 if isinstance(obj, ExcellonObject):
-        #                     self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
+        #                     self.app.app_obj.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
         #                                         autoselected=False)
         #                 else:
-        #                     self.app.new_object("geometry", local_outname, initialize_local, plot=False,
+        #                     self.app.app_obj.new_object("geometry", local_outname, initialize_local, plot=False,
         #                                         autoselected=False)
         #
         #                 currentx += lenghtx
         #             currenty += lenghty
         #
         #         if isinstance(obj, ExcellonObject):
-        #             self.app.new_object("excellon", outname, initialize_excellon)
+        #             self.app.app_obj.new_object("excellon", outname, initialize_excellon)
         #         else:
-        #             self.app.new_object("geometry", outname, initialize_geometry)
+        #             self.app.app_obj.new_object("geometry", outname, initialize_geometry)
         #
         #         # deselect all  to avoid  delete selected object when run  delete  from  shell
         #         self.app.collection.set_all_inactive()
@@ -287,9 +287,9 @@ class TclCommandPanelize(TclCommand):
                         currenty += lenghty
 
                 if obj.kind == 'excellon':
-                    self.app.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
+                    self.app.app_obj.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
                 else:
-                    self.app.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
+                    self.app.app_obj.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
         if threaded is True:
             proc = self.app.proc_container.new("Generating panel ... Please wait.")

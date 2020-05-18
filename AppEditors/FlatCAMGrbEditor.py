@@ -3110,7 +3110,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.complete = True
 
         self.set_ui()
-        log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
+        log.debug("Initialization of the Gerber Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -4346,7 +4346,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         with self.app.proc_container.new(_("Creating Gerber.")):
             try:
-                self.app.new_object("gerber", outname, obj_init)
+                self.app.app_obj.new_object("gerber", outname, obj_init)
             except Exception as e:
                 log.error("Error on Edited object creation: %s" % str(e))
                 # make sure to clean the previous results

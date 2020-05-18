@@ -2477,7 +2477,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # New Geometry
                 if key == QtCore.Qt.Key_B:
-                    self.app.new_gerber_object()
+                    self.app.app_obj.new_gerber_object()
 
                 # New Geometry
                 if key == QtCore.Qt.Key_D:
@@ -2497,7 +2497,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # New Excellon
                 if key == QtCore.Qt.Key_L:
-                    self.app.new_excellon_object()
+                    self.app.app_obj.new_excellon_object()
 
                 # Move tool toggle
                 if key == QtCore.Qt.Key_M:
@@ -2505,7 +2505,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # New Geometry
                 if key == QtCore.Qt.Key_N:
-                    self.app.new_geometry_object()
+                    self.app.app_obj.new_geometry_object()
 
                 # Set Origin
                 if key == QtCore.Qt.Key_O:
