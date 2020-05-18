@@ -951,6 +951,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
         self.corners_tool_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
+        self.etch_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -1913,6 +1915,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
         self.corners_tool_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/corners_32.png'), _("Corner Markers Tool"))
+        self.etch_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/etch_32.png'), _("Etch Compensation Tool"))
 
         # ########################################################################
         # ## Excellon Editor Toolbar # ##

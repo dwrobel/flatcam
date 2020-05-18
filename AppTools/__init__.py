@@ -41,3 +41,4 @@ from AppTools.ToolPunchGerber import ToolPunchGerber
 
 from AppTools.ToolInvertGerber import ToolInvertGerber
 from AppTools.ToolCorners import ToolCorners
+from AppTools.ToolEtchCompensation import ToolEtchCompensation

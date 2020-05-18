@@ -52,7 +52,7 @@ class ToolCorners(AppTool):
         self.layout.addWidget(QtWidgets.QLabel(''))
 
         # Gerber object #
-        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Gerber Object"))
+        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
         self.object_label.setToolTip(
             _("The Gerber object that to which will be added corner markers.")
         )

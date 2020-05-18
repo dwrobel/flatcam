@@ -1360,6 +1360,7 @@ class App(QtCore.QObject):
         self.punch_tool = None
         self.invert_tool = None
         self.corners_tool = None
+        self.etch_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
@@ -1948,6 +1949,9 @@ class App(QtCore.QObject):
         self.corners_tool = ToolCorners(self)
         self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'), pos=self.ui.menutool)
 
+        self.etch_tool = ToolEtchCompensation(self)
+        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etcg_32.png'), pos=self.ui.menutool)
+
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
                                     pos=self.ui.menuoptions, separator=True)
@@ -2096,6 +2100,7 @@ class App(QtCore.QObject):
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
         self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
         self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
+        self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
 
     def object2editor(self):
         """
