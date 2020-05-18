@@ -84,55 +84,51 @@ class ToolEtchCompensation(AppTool):
 
         grid0.addWidget(self.param_label, 4, 0, 1, 2)
 
-        # Margin
-        self.margin_label = QtWidgets.QLabel('%s:' % _('Margin'))
-        self.margin_label.setToolTip(
-            _("Distance by which to avoid\n"
-              "the edges of the Gerber object.")
+        # Thickness
+        self.thick_label = QtWidgets.QLabel('%s:' % _('Copper Thickness'))
+        self.thick_label.setToolTip(
+            _("The thickness of the copper foil.\n"
+              "In microns [um].")
         )
-        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin_entry.set_precision(self.decimals)
-        self.margin_entry.set_range(0.0000, 9999.9999)
-        self.margin_entry.setObjectName(_("Margin"))
+        self.thick_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.thick_entry.set_precision(self.decimals)
+        self.thick_entry.set_range(0.0000, 9999.9999)
+        self.thick_entry.setObjectName(_("Thickness"))
 
-        grid0.addWidget(self.margin_label, 5, 0, 1, 2)
-        grid0.addWidget(self.margin_entry, 6, 0, 1, 2)
+        grid0.addWidget(self.thick_label, 5, 0, 1, 2)
+        grid0.addWidget(self.thick_entry, 6, 0, 1, 2)
 
-        self.join_label = QtWidgets.QLabel('%s:' % _("Lines Join Style"))
-        self.join_label.setToolTip(
-            _("The way that the lines in the object outline will be joined.\n"
+        self.ratio_label = QtWidgets.QLabel('%s:' % _("Ratio"))
+        self.ratio_label.setToolTip(
+            _("The ratio of lateral etch versus depth etch.\n"
               "Can be:\n"
-              "- rounded -> an arc is added between two joining lines\n"
-              "- square -> the lines meet in 90 degrees angle\n"
-              "- bevel -> the lines are joined by a third line")
+              "- custom -> the user will enter a custom value\n"
+              "- preselection -> value which depends on a selection of etchants")
         )
-        self.join_radio = RadioSet([
-            {'label': 'Rounded', 'value': 'r'},
-            {'label': 'Square', 'value': 's'},
-            {'label': 'Bevel', 'value': 'b'}
-        ], orientation='vertical', stretch=False)
+        self.ratio_radio = RadioSet([
+            {'label': _('PreSelection'), 'value': 'p'},
+            {'label': _('Custom'), 'value': 'c'}
+        ])
 
-        grid0.addWidget(self.join_label, 7, 0, 1, 2)
-        grid0.addWidget(self.join_radio, 8, 0, 1, 2)
+        grid0.addWidget(self.ratio_label, 7, 0, 1, 2)
+        grid0.addWidget(self.ratio_radio, 8, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
-        self.invert_btn = FCButton(_('Invert Gerber'))
-        self.invert_btn.setToolTip(
-            _("Will invert the Gerber object: areas that have copper\n"
-              "will be empty of copper and previous empty area will be\n"
-              "filled with copper.")
+        self.compensate_btn = FCButton(_('Compensate'))
+        self.compensate_btn.setToolTip(
+            _("Will increase the copper features thickness to compensate the lateral etch.")
         )
-        self.invert_btn.setStyleSheet("""
+        self.compensate_btn.setStyleSheet("""
                         QPushButton
                         {
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.invert_btn, 10, 0, 1, 2)
+        grid0.addWidget(self.compensate_btn, 10, 0, 1, 2)
 
         self.tools_box.addStretch()
 
@@ -149,8 +145,9 @@ class ToolEtchCompensation(AppTool):
                         """)
         self.tools_box.addWidget(self.reset_button)
 
-        self.invert_btn.clicked.connect(self.on_grb_invert)
+        self.compensate_btn.clicked.connect(self.on_grb_invert)
         self.reset_button.clicked.connect(self.set_tool_ui)
+        self.ratio_radio.activated_custom.connect(self.on_ratio_change)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -184,8 +181,11 @@ class ToolEtchCompensation(AppTool):
         self.app.ui.notebook.setTabText(2, _("Invert Tool"))
 
     def set_tool_ui(self):
-        self.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
-        self.join_radio.set_value(self.app.defaults["tools_invert_join_style"])
+        self.thick_entry.set_value(18)
+        self.ratio_radio.set_value('p')
+
+    def on_ratio_change(self, val):
+        pass
 
     def on_grb_invert(self):
         margin = self.margin_entry.get_value()

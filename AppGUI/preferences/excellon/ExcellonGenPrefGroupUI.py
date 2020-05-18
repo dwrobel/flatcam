@@ -341,6 +341,12 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
         self.excellon_defaults_button.clicked.connect(self.on_excellon_defaults_button)
+        # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
+        # Export Excellon parameters.
+        self.update_excellon_cb.stateChanged.connect(self.on_update_exc_export)
+
+        # call it once to make sure it is updated at startup
+        self.on_update_exc_export(state=self.app.defaults["excellon_update"])
 
     def optimization_selection(self):
         if self.excellon_optimization_radio.get_value() == 'M':
@@ -413,3 +419,105 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.app.preferencesUiManager.defaults_form_fields["excellon_format_upper_mm"].set_value('3')
         self.app.preferencesUiManager.defaults_form_fields["excellon_zeros"].set_value('L')
         self.app.preferencesUiManager.defaults_form_fields["excellon_units"].set_value('INCH')
+
+    def on_update_exc_export(self, state):
+        """
+        This is handling the update of Excellon Export parameters based on the ones in the Excellon General but only
+        if the update_excellon_cb checkbox is checked
+
+        :param state: state of the checkbox whose signals is tied to his slot
+        :return:
+        """
+        if state:
+            # first try to disconnect
+            try:
+                self.excellon_format_upper_in_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_lower_in_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_upper_mm_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_lower_mm_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.excellon_zeros_radio.activated_custom.disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_units_radio.activated_custom.disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+
+            # the connect them
+            self.excellon_format_upper_in_entry.returnPressed.connect(self.on_excellon_format_changed)
+            self.excellon_format_lower_in_entry.returnPressed.connect(self.on_excellon_format_changed)
+            self.excellon_format_upper_mm_entry.returnPressed.connect(self.on_excellon_format_changed)
+            self.excellon_format_lower_mm_entry.returnPressed.connect(self.on_excellon_format_changed)
+            self.excellon_zeros_radio.activated_custom.connect(self.on_excellon_zeros_changed)
+            self.excellon_units_radio.activated_custom.connect(self.on_excellon_units_changed)
+        else:
+            # disconnect the signals
+            try:
+                self.excellon_format_upper_in_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_lower_in_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_upper_mm_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_format_lower_mm_entry.returnPressed.disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.excellon_zeros_radio.activated_custom.disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.excellon_units_radio.activated_custom.disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+
+    def on_excellon_format_changed(self):
+        """
+        Slot activated when the user changes the Excellon format values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        if self.excellon_units_radio.get_value().upper() == 'METRIC':
+            self.app.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.excellon_format_upper_mm_entry.get_value())
+            self.app.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.excellon_format_lower_mm_entry.get_value())
+        else:
+            self.app.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.excellon_format_upper_in_entry.get_value())
+            self.app.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.excellon_format_lower_in_entry.get_value())
+
+    def on_excellon_zeros_changed(self, val):
+        """
+        Slot activated when the user changes the Excellon zeros values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.app.ui.excellon_defaults_form.excellon_exp_group.zeros_radio.set_value(val + 'Z')
+
+    def on_excellon_units_changed(self, val):
+        """
+        Slot activated when the user changes the Excellon unit values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.app.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio.set_value(val)
+        self.on_excellon_format_changed()

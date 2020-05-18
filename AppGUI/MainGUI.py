@@ -3593,7 +3593,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
             # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
             # self.shell._edit.setFocus()
-            QtCore.QTimer.singleShot(0, lambda: self.ui.shell_dock.widget()._edit.setFocus())
+            QtCore.QTimer.singleShot(0, lambda: self.shell_dock.widget()._edit.setFocus())
 
             # HACK - simulate a mouse click - alternative
             # no_km = QtCore.Qt.KeyboardModifier(QtCore.Qt.NoModifier)    # no KB modifier

@@ -25,6 +25,7 @@ CHANGELOG for FlatCAM beta
 - solved a circular import
 - updated the language translation files to the latest changes (no translation)
 - working on a new Tool: Etch Compensation Tool -> installed the tool and created the GUI and class template
+- moved more methods out of App_Main class
 
 17.05.2020
 
