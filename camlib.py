@@ -2630,16 +2630,17 @@ class CNCjob(Geometry):
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", use_ui=False):
         """
-        Creates gcode for this object from an Excellon object
+        Creates Gcode for this object from an Excellon object
         for the specified tools.
 
-        :param exobj: Excellon object to process
-        :type exobj: Excellon
-        :param tools: Comma separated tool names
-        :type: tools: str
-        :param use_ui: Bool, if True the method will use parameters set in UI
-        :return: None
-        :rtype: None
+        :param exobj:   Excellon object to process
+        :type exobj:    Excellon
+        :param tools:   Comma separated tool names
+        :type tools:    str
+        :param use_ui:  if True the method will use parameters set in UI
+        :type use_ui:   bool
+        :return:        None
+        :rtype:         None
         """
 
         # create a local copy of the exobj.drills so it can be used for creating drill CCode geometry
@@ -2780,7 +2781,7 @@ class CNCjob(Geometry):
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
-        # Points (Group by tool)
+        # Points (Group by tool): a dictionary of shapely Point geo elements grouped by tool number
         points = {}
         for drill in exobj.drills:
             if self.app.abort_flag:
@@ -2795,6 +2796,17 @@ class CNCjob(Geometry):
 
         # log.debug("Found %d drills." % len(points))
 
+        # check if there are drill points in the exclusion areas.
+        # If we find any within the exclusion areas return 'fail'
+        for tool in points:
+            for pt in points[tool]:
+                for area in self.app.exc_areas.exclusion_areas_storage:
+                    pt_buf = pt.buffer(exobj.tools[tool]['C'] / 2.0)
+                    if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
+                        self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
+                        return 'fail'
+
+        # this holds the resulting GCode
         self.gcode = []
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
@@ -3042,7 +3054,41 @@ class CNCjob(Geometry):
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                                                                                    end_point=(locx, locy),
+                                                                                    tooldia=current_tooldia)
+                                    prev_z = None
+                                    for travel in travels:
+                                        locx = travel[1][0]
+                                        locy = travel[1][1]
+
+                                        if travel[0] is not None:
+                                            # move to next point
+                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                            # raise to safe Z (travel[0]) each time because safe Z may be different
+                                            self.z_move = travel[0]
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                                            # restore z_move
+                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                        else:
+                                            if prev_z is not None:
+                                                # move to next point
+                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                                # we assume that previously the z_move was altered therefore raise to
+                                                # the travel_z (z_move)
+                                                self.z_move = exobj.tools[tool]['data']['travelz']
+                                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                            else:
+                                                # move to next point
+                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                        # store prev_z
+                                        prev_z = travel[0]
+
+                                    # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                                     if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
                                         doc = deepcopy(self.z_cut)
@@ -3260,7 +3306,41 @@ class CNCjob(Geometry):
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                                                                                    end_point=(locx, locy),
+                                                                                    tooldia=current_tooldia)
+                                    prev_z = None
+                                    for travel in travels:
+                                        locx = travel[1][0]
+                                        locy = travel[1][1]
+
+                                        if travel[0] is not None:
+                                            # move to next point
+                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                            # raise to safe Z (travel[0]) each time because safe Z may be different
+                                            self.z_move = travel[0]
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                                            # restore z_move
+                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                        else:
+                                            if prev_z is not None:
+                                                # move to next point
+                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                                # we assume that previously the z_move was altered therefore raise to
+                                                # the travel_z (z_move)
+                                                self.z_move = exobj.tools[tool]['data']['travelz']
+                                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                            else:
+                                                # move to next point
+                                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                        # store prev_z
+                                        prev_z = travel[0]
+
+                                    # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                                     if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
                                         doc = deepcopy(self.z_cut)
@@ -3429,7 +3509,41 @@ class CNCjob(Geometry):
                                 locx = point[0]
                                 locy = point[1]
 
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                                                                                end_point=(locx, locy),
+                                                                                tooldia=current_tooldia)
+                                prev_z = None
+                                for travel in travels:
+                                    locx = travel[1][0]
+                                    locy = travel[1][1]
+
+                                    if travel[0] is not None:
+                                        # move to next point
+                                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                        # raise to safe Z (travel[0]) each time because safe Z may be different
+                                        self.z_move = travel[0]
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                                        # restore z_move
+                                        self.z_move = exobj.tools[tool]['data']['travelz']
+                                    else:
+                                        if prev_z is not None:
+                                            # move to next point
+                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                            # we assume that previously the z_move was altered therefore raise to
+                                            # the travel_z (z_move)
+                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                        else:
+                                            # move to next point
+                                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                                    # store prev_z
+                                    prev_z = travel[0]
+
+                                # gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
                                 if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
                                     doc = deepcopy(self.z_cut)
@@ -4827,14 +4941,27 @@ class CNCjob(Geometry):
                     # plot the geometry of Excellon objects
                     if self.origin_kind == 'excellon':
                         try:
-                            poly = Polygon(geo['geom'])
-                        except ValueError:
-                            # if the geos are travel lines it will enter into Exception
-                            poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                            if geo['kind'][0] == 'T':
+                                # if the geos are travel lines it will enter into Exception
+                                poly = geo['geom'].buffer(distance=(tooldia / 1.99999999),
+                                                          resolution=self.steps_per_circle)
+                            else:
+                                poly = Polygon(geo['geom'])
+
                             poly = poly.simplify(tool_tolerance)
                         except Exception:
                             # deal here with unexpected plot errors due of LineStrings not valid
                             continue
+
+                        # try:
+                        #     poly = Polygon(geo['geom'])
+                        # except ValueError:
+                        #     # if the geos are travel lines it will enter into Exception
+                        #     poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        #     poly = poly.simplify(tool_tolerance)
+                        # except Exception:
+                        #     # deal here with unexpected plot errors due of LineStrings not valid
+                        #     continue
                     else:
                         # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)

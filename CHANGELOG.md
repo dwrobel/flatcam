@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.05.2020
+
+- added the Exclusion zones processing to Excellon GCode generation
+- fixed a non frequent plotting problem for CNCJob objects made out of Excellon objects
+
 19.05.2020
 
 - updated the Italian language (translation incomplete)

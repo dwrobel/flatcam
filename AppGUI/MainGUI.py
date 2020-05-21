@@ -3404,7 +3404,8 @@ class MainGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.NoModifier:
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     sel_obj = self.app.collection.get_active()
-                    assert sel_obj.kind == 'geometry', "Expected a Geometry Object, got %s" % type(sel_obj)
+                    assert sel_obj.kind == 'geometry' or sel_obj.kind == 'excellon', \
+                        "Expected a Geometry or Excellon Object, got %s" % type(sel_obj)
 
                     sel_obj.area_disconnect()
                     return

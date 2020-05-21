@@ -12,10 +12,12 @@
 # ##########################################################
 from PyQt5 import QtCore
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, Point, LineString
 
 from AppGUI.VisPyVisuals import ShapeCollection
 from AppTool import AppTool
+
+from copy import deepcopy
 
 import numpy as np
 
@@ -167,8 +169,8 @@ class ExclusionAreas(QtCore.QObject):
         {
             "obj_type":   string ("excellon" or "geometry")   <- self.obj_type
             "shape":      Shapely polygon
-            "strategy":   string ("over" or "around")         <- self.strategy
-            "overz":      float                               <- self.over_z
+            "strategy":   string ("over" or "around")         <- self.strategy_button
+            "overz":      float                               <- self.over_z_button
         }
         '''
         self.exclusion_areas_storage = []
@@ -178,9 +180,9 @@ class ExclusionAreas(QtCore.QObject):
         self.solid_geometry = []
         self.obj_type = None
 
-        self.shape_type = 'square'  # TODO use the self.app.defaults when made general (not in Geo object Pref UI)
-        self.over_z = 0.1
-        self.strategy = None
+        self.shape_type_button = None
+        self.over_z_button = None
+        self.strategy_button = None
         self.cnc_button = None
 
     def on_add_area_click(self, shape_button, overz_button, strategy_radio, cnc_button, solid_geo, obj_type):
@@ -188,21 +190,25 @@ class ExclusionAreas(QtCore.QObject):
 
         :param shape_button:    a FCButton that has the value for the shape
         :param overz_button:    a FCDoubleSpinner that holds the Over Z value
-        :param strategy_radio:  a RadioSet button with the strategy value
+        :param strategy_radio:  a RadioSet button with the strategy_button value
         :param cnc_button:      a FCButton in Object UI that when clicked the CNCJob is created
                                 We have a reference here so we can change the color signifying that exclusion areas are
                                 available.
         :param solid_geo:       reference to the object solid geometry for which we add exclusion areas
-        :param obj_type:        Type of FlatCAM object that called this method
-        :type obj_type:         String: "excellon" or "geometry"
-        :return:
+        :param obj_type:        Type of FlatCAM object that called this method. String: "excellon" or "geometry"
+        :type obj_type:         str
+        :return:                None
         """
         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
         self.app.call_source = 'geometry'
 
-        self.shape_type = shape_button.get_value()
-        self.over_z = overz_button.get_value()
-        self.strategy = strategy_radio.get_value()
+        self.shape_type_button = shape_button
+
+        # TODO use the self.app.defaults when made general (not in Geo object Pref UI)
+        # self.shape_type_button.set_value('square')
+
+        self.over_z_button = overz_button
+        self.strategy_button = strategy_radio
         self.cnc_button = cnc_button
 
         self.solid_geometry = solid_geo
@@ -240,11 +246,11 @@ class ExclusionAreas(QtCore.QObject):
 
         x1, y1 = curr_pos[0], curr_pos[1]
 
-        # shape_type = self.ui.area_shape_radio.get_value()
+        # shape_type_button = self.ui.area_shape_radio.get_value()
 
         # do clear area only for left mouse clicks
         if event.button == 1:
-            if self.shape_type == "square":
+            if self.shape_type_button.get_value() == "square":
                 if self.first_click is False:
                     self.first_click = True
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the area."))
@@ -268,14 +274,14 @@ class ExclusionAreas(QtCore.QObject):
                     # {
                     #     "obj_type":   string("excellon" or "geometry") < - self.obj_type
                     #     "shape":      Shapely polygon
-                    #     "strategy":   string("over" or "around") < - self.strategy
-                    #     "overz":      float < - self.over_z
+                    #     "strategy_button":   string("over" or "around") < - self.strategy_button
+                    #     "overz":      float < - self.over_z_button
                     # }
                     new_el = {
                         "obj_type":     self.obj_type,
                         "shape":        new_rectangle,
-                        "strategy":     self.strategy,
-                        "overz":        self.over_z
+                        "strategy":     self.strategy_button.get_value(),
+                        "overz":        self.over_z_button.get_value()
                     }
                     self.exclusion_areas_storage.append(new_el)
 
@@ -305,7 +311,7 @@ class ExclusionAreas(QtCore.QObject):
                 return ""
         elif event.button == right_button and self.mouse_is_dragging is False:
 
-            shape_type = self.shape_type
+            shape_type = self.shape_type_button.get_value()
 
             if shape_type == "square":
                 self.first_click = False
@@ -326,17 +332,19 @@ class ExclusionAreas(QtCore.QObject):
                         pol = Polygon(self.points)
                         # do not add invalid polygons even if they are drawn by utility geometry
                         if pol.is_valid:
-                            # {
-                            #     "obj_type":   string("excellon" or "geometry") < - self.obj_type
-                            #     "shape":      Shapely polygon
-                            #     "strategy":   string("over" or "around") < - self.strategy
-                            #     "overz":      float < - self.over_z
-                            # }
+                            """
+                            {
+                                "obj_type":   string("excellon" or "geometry") < - self.obj_type
+                                "shape":      Shapely polygon
+                                "strategy":   string("over" or "around") < - self.strategy_button
+                                "overz":      float < - self.over_z_button
+                            }
+                            """
                             new_el = {
                                 "obj_type": self.obj_type,
                                 "shape": pol,
-                                "strategy": self.strategy,
-                                "overz": self.over_z
+                                "strategy": self.strategy_button.get_value(),
+                                "overz": self.over_z_button.get_value()
                             }
                             self.exclusion_areas_storage.append(new_el)
 
@@ -382,9 +390,9 @@ class ExclusionAreas(QtCore.QObject):
             if len(self.exclusion_areas_storage) == 0:
                 return
 
-            self.app.inform.emit(
-                "[success] %s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
-
+            # since the exclusion areas should apply to all objects in the app collection, this check is limited to
+            # only the current object therefore it will not guarantee success
+            self.app.inform.emit("%s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
             for el in self.exclusion_areas_storage:
                 if el["shape"].intersects(MultiPolygon(self.solid_geometry)):
                     self.on_clear_area_click()
@@ -406,8 +414,6 @@ class ExclusionAreas(QtCore.QObject):
             )
 
             self.e_shape_modified.emit()
-            for k in self.exclusion_areas_storage:
-                print(k)
 
     def area_disconnect(self):
         if self.app.is_legacy is False:
@@ -436,7 +442,7 @@ class ExclusionAreas(QtCore.QObject):
 
     # called on mouse move
     def on_mouse_move(self, event):
-        shape_type = self.shape_type
+        shape_type = self.shape_type_button.get_value()
 
         if self.app.is_legacy is False:
             event_pos = event.pos
@@ -573,3 +579,194 @@ class ExclusionAreas(QtCore.QObject):
             self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
             self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
+
+    def travel_coordinates(self, start_point, end_point, tooldia):
+        """
+        WIll create a path the go around the exclusion areas on the shortest path
+
+        :param start_point:     X,Y coordinates for the start point of the travel line
+        :type start_point:      tuple
+        :param end_point:       X,Y coordinates for the destination point of the travel line
+        :type end_point:        tuple
+        :param tooldia:         THe tool diameter used and which generates the travel lines
+        :type tooldia           float
+        :return:                A list of x,y tuples that describe the avoiding path
+        :rtype:                 list
+        """
+
+        ret_list = []
+
+        # Travel lines: rapids. Should not pass through Exclusion areas
+        travel_line = LineString([start_point, end_point])
+        origin_point = Point(start_point)
+
+        buffered_storage = []
+        # add a little something to the half diameter, to make sure that we really don't enter in the exclusion zones
+        buffered_distance = (tooldia / 2.0) + (0.1 if self.app.defaults['units'] == 'MM' else 0.00393701)
+
+        for area in self.exclusion_areas_storage:
+            new_area = deepcopy(area)
+            new_area['shape'] = area['shape'].buffer(buffered_distance, join_style=2)
+            buffered_storage.append(new_area)
+
+        # sort the Exclusion areas from the closest to the start_point to the farthest
+        tmp = []
+        for area in buffered_storage:
+            dist = Point(start_point).distance(area['shape'])
+            tmp.append((dist, area))
+        tmp.sort(key=lambda k: k[0])
+
+        sorted_area_storage = [k[1] for k in tmp]
+
+        # process the ordered exclusion areas list
+        for area in sorted_area_storage:
+            outline = area['shape'].exterior
+            if travel_line.intersects(outline):
+                intersection_pts = travel_line.intersection(outline)
+
+                if isinstance(intersection_pts, Point):
+                    # it's just a touch, continue
+                    continue
+
+                entry_pt = nearest_point(origin_point, intersection_pts)
+                exit_pt = farthest_point(origin_point, intersection_pts)
+
+                if area['strategy'] == 'around':
+                    full_vertex_points = [Point(x) for x in list(outline.coords)]
+
+                    # the last coordinate in outline, a LinearRing, is the closing one
+                    # therefore a duplicate of the first one; discard it
+                    vertex_points = full_vertex_points[:-1]
+
+                    # dist_from_entry = [(entry_pt.distance(vt), vertex_points.index(vt)) for vt in vertex_points]
+                    # closest_point_entry = nsmallest(1, dist_from_entry, key=lambda x: x[0])
+                    # start_idx = closest_point_entry[0][1]
+                    #
+                    # dist_from_exit = [(exit_pt.distance(vt), vertex_points.index(vt)) for vt in vertex_points]
+                    # closest_point_exit = nsmallest(1, dist_from_exit, key=lambda x: x[0])
+                    # end_idx = closest_point_exit[0][1]
+
+                    pts_line_entry = None
+                    pts_line_exit = None
+                    for i in range(len(full_vertex_points) - 1):
+                        line = LineString(
+                            [
+                                (full_vertex_points[i].x, full_vertex_points[i].y),
+                                (full_vertex_points[i + 1].x, full_vertex_points[i + 1].y)
+                            ]
+                        )
+                        if entry_pt.intersects(line) or entry_pt.almost_equals(Point(line.coords[0]), decimal=3) or \
+                                entry_pt.almost_equals(Point(line.coords[1]), decimal=3):
+                            pts_line_entry = [Point(x) for x in line.coords]
+
+                        if exit_pt.intersects(line) or exit_pt.almost_equals(Point(line.coords[0]), decimal=3) or \
+                                exit_pt.almost_equals(Point(line.coords[1]), decimal=3):
+                            pts_line_exit = [Point(x) for x in line.coords]
+
+                    closest_point_entry = nearest_point(entry_pt, pts_line_entry)
+                    start_idx = vertex_points.index(closest_point_entry)
+
+                    closest_point_exit = nearest_point(exit_pt, pts_line_exit)
+                    end_idx = vertex_points.index(closest_point_exit)
+
+                    # calculate possible paths: one clockwise the other counterclockwise on the exterior of the
+                    # exclusion area outline (Polygon.exterior)
+                    vp_len = len(vertex_points)
+                    if end_idx > start_idx:
+                        path_1 = vertex_points[start_idx:(end_idx + 1)]
+                        path_2 = [vertex_points[start_idx]]
+                        idx = start_idx
+                        for __ in range(vp_len):
+                            idx = idx - 1 if idx > 0 else (vp_len - 1)
+                            path_2.append(vertex_points[idx])
+                            if idx == end_idx:
+                                break
+                    else:
+                        path_1 = vertex_points[end_idx:(start_idx + 1)]
+                        path_2 = [vertex_points[end_idx]]
+                        idx = end_idx
+                        for __ in range(vp_len):
+                            idx = idx - 1 if idx > 0 else (vp_len - 1)
+                            path_2.append(vertex_points[idx])
+                            if idx == start_idx:
+                                break
+                        path_1.reverse()
+                        path_2.reverse()
+
+                    # choose the one with the lesser length
+                    length_path_1 = 0
+                    for i in range(len(path_1)):
+                        try:
+                            length_path_1 += path_1[i].distance(path_1[i + 1])
+                        except IndexError:
+                            pass
+
+                    length_path_2 = 0
+                    for i in range(len(path_2)):
+                        try:
+                            length_path_2 += path_2[i].distance(path_2[i + 1])
+                        except IndexError:
+                            pass
+
+                    path = path_1 if length_path_1 < length_path_2 else path_2
+
+                    # transform the list of Points into a list of Points coordinates
+                    path_coords = [[None, (p.x, p.y)] for p in path]
+                    ret_list += path_coords
+
+                else:
+                    path_coords = [[float(area['overz']), (entry_pt.x, entry_pt.y)], [None, (exit_pt.x, exit_pt.y)]]
+                    ret_list += path_coords
+
+                # create a new LineString to test again for possible other Exclusion zones
+                last_pt_in_path = path_coords[-1][1]
+                travel_line = LineString([last_pt_in_path, end_point])
+
+        ret_list.append([None, end_point])
+        return ret_list
+
+
+def farthest_point(origin, points_list):
+    """
+    Calculate the farthest Point in a list from another Point
+
+    :param origin:      Reference Point
+    :type origin:       Point
+    :param points_list: List of Points or a MultiPoint
+    :type points_list:  list
+    :return:            Farthest Point
+    :rtype:             Point
+    """
+    old_dist = 0
+    fartherst_pt = None
+
+    for pt in points_list:
+        dist = abs(origin.distance(pt))
+        if dist >= old_dist:
+            fartherst_pt = pt
+            old_dist = dist
+
+    return fartherst_pt
+
+
+def nearest_point(origin, points_list):
+    """
+    Calculate the nearest Point in a list from another Point
+
+    :param origin:      Reference Point
+    :type origin:       Point
+    :param points_list: List of Points or a MultiPoint
+    :type points_list:  list
+    :return:            Nearest Point
+    :rtype:             Point
+    """
+    old_dist = np.Inf
+    nearest_pt = None
+
+    for pt in points_list:
+        dist = abs(origin.distance(pt))
+        if dist <= old_dist:
+            nearest_pt = pt
+            old_dist = dist
+
+    return nearest_pt
