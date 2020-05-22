@@ -646,27 +646,65 @@ class ExclusionAreas(QtCore.QObject):
                     # closest_point_exit = nsmallest(1, dist_from_exit, key=lambda x: x[0])
                     # end_idx = closest_point_exit[0][1]
 
-                    pts_line_entry = None
-                    pts_line_exit = None
-                    for i in range(len(full_vertex_points) - 1):
-                        line = LineString(
-                            [
-                                (full_vertex_points[i].x, full_vertex_points[i].y),
-                                (full_vertex_points[i + 1].x, full_vertex_points[i + 1].y)
-                            ]
-                        )
-                        if entry_pt.intersects(line) or entry_pt.almost_equals(Point(line.coords[0]), decimal=3) or \
-                                entry_pt.almost_equals(Point(line.coords[1]), decimal=3):
-                            pts_line_entry = [Point(x) for x in line.coords]
+                    # pts_line_entry = None
+                    # pts_line_exit = None
+                    # for i in range(len(full_vertex_points)):
+                    #     try:
+                    #         line = LineString(
+                    #             [
+                    #                 (full_vertex_points[i].x, full_vertex_points[i].y),
+                    #                 (full_vertex_points[i + 1].x, full_vertex_points[i + 1].y)
+                    #             ]
+                    #         )
+                    #     except IndexError:
+                    #         continue
+                    #
+                    #     if entry_pt.within(line) or entry_pt.equals(Point(line.coords[0])) or \
+                    #             entry_pt.equals(Point(line.coords[1])):
+                    #         pts_line_entry = [Point(x) for x in line.coords]
+                    #
+                    #     if exit_pt.within(line) or exit_pt.equals(Point(line.coords[0])) or \
+                    #             exit_pt.equals(Point(line.coords[1])):
+                    #         pts_line_exit = [Point(x) for x in line.coords]
+                    #
+                    # closest_point_entry = nearest_point(entry_pt, pts_line_entry)
+                    # start_idx = vertex_points.index(closest_point_entry)
+                    #
+                    # closest_point_exit = nearest_point(exit_pt, pts_line_exit)
+                    # end_idx = vertex_points.index(closest_point_exit)
 
-                        if exit_pt.intersects(line) or exit_pt.almost_equals(Point(line.coords[0]), decimal=3) or \
-                                exit_pt.almost_equals(Point(line.coords[1]), decimal=3):
-                            pts_line_exit = [Point(x) for x in line.coords]
+                    # find all vertexes for which a line from start_point does not cross the Exclusion area polygon
+                    # the same for end_point
+                    # we don't need closest points for which the path leads to crosses of the Exclusion area
 
-                    closest_point_entry = nearest_point(entry_pt, pts_line_entry)
+                    close_start_points = []
+                    close_end_points = []
+                    for i in range(len(vertex_points)):
+                        try:
+                            start_line = LineString(
+                                [
+                                    start_point,
+                                    (vertex_points[i].x, vertex_points[i].y)
+                                ]
+                            )
+                            end_line = LineString(
+                                [
+                                    end_point,
+                                    (vertex_points[i].x, vertex_points[i].y)
+                                ]
+                            )
+                        except IndexError:
+                            continue
+
+                        if not start_line.crosses(area['shape']):
+                            close_start_points.append(vertex_points[i])
+                        if not end_line.crosses(area['shape']):
+                            close_end_points.append(vertex_points[i])
+
+                    closest_point_entry = nearest_point(entry_pt, close_start_points)
+                    closest_point_exit = nearest_point(exit_pt, close_end_points)
+
                     start_idx = vertex_points.index(closest_point_entry)
-
-                    closest_point_exit = nearest_point(exit_pt, pts_line_exit)
                     end_idx = vertex_points.index(closest_point_exit)
 
                     # calculate possible paths: one clockwise the other counterclockwise on the exterior of the
