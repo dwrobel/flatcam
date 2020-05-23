@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.05.2020
+
+- fixed a issue when testing for Exclusion areas overlap over the Geometry object solid_geometry
+
 22.05.2020
 
 - fixed the algorithm for calculating closest points in the Exclusion areas

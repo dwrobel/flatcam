@@ -13,6 +13,7 @@
 from PyQt5 import QtCore
 
 from shapely.geometry import Polygon, MultiPolygon, Point, LineString
+from shapely.ops import unary_union
 
 from AppGUI.VisPyVisuals import ShapeCollection
 from AppTool import AppTool
@@ -394,7 +395,7 @@ class ExclusionAreas(QtCore.QObject):
             # only the current object therefore it will not guarantee success
             self.app.inform.emit("%s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
             for el in self.exclusion_areas_storage:
-                if el["shape"].intersects(MultiPolygon(self.solid_geometry)):
+                if el["shape"].intersects(unary_union(self.solid_geometry)):
                     self.on_clear_area_click()
                     self.app.inform.emit(
                         "[ERROR_NOTCL] %s" % _("Failed. Exclusion areas intersects the object geometry ..."))
