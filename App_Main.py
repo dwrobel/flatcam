@@ -14,8 +14,8 @@ import urllib.error
 import getopt
 import random
 import simplejson as json
-import lzma
 import shutil
+import lzma
 from datetime import datetime
 import time
 import ctypes

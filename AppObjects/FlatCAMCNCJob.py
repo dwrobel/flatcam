@@ -989,7 +989,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 for key in self.cnc_tools:
                     ppg = self.cnc_tools[key]['data']['ppname_g']
                     if 'toolchange_custom' not in str(ppg).lower():
-                        print(ppg)
                         if self.ui.toolchange_cb.get_value():
                             self.ui.toolchange_cb.set_value(False)
                             self.app.inform.emit('[WARNING_NOTCL] %s' %
@@ -1107,7 +1106,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 except ValueError:
                     # we may have a tuple with only one element and a comma
                     dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
-                self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
+                self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
                 if self.cnc_tools:
@@ -1117,12 +1116,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
                 # TODO: until the gcode parsed will be stored on each Excellon tool this will not get executed
-                if self.exc_cnc_tools:
-                    for tooldia_key in self.exc_cnc_tools:
-                        tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
-                        # gcode_parsed = self.cnc_tools[tooldia_key]['gcode_parsed']
-                        gcode_parsed = self.gcode_parsed
-                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                # I do this so the travel lines thickness will reflect the tool diameter
+                # may work only for objects created within the app and not Gcode imported from elsewhere for which we
+                # don't know the origin
+                if self.origin_kind == "excellon":
+                    if self.exc_cnc_tools:
+                        for tooldia_key in self.exc_cnc_tools:
+                            tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
+                            # gcode_parsed = self.exc_cnc_tools[tooldia_key]['gcode_parsed']
+                            gcode_parsed = self.gcode_parsed
+                            self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):

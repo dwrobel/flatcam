@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 22.05.2020
 
 - fixed the algorithm for calculating closest points in the Exclusion areas
+- added the Exclusion zones processing to Geometry GCode generation
 
 21.05.2020
 

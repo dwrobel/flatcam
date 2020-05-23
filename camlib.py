@@ -1103,15 +1103,17 @@ class Geometry(object):
         """
         Imports shapes from an IMAGE file into the object's geometry.
 
-        :param filename: Path to the IMAGE file.
-        :type filename: str
-        :param flip: Flip the object vertically.
-        :type flip: bool
-        :param units: FlatCAM units
-        :param dpi: dots per inch on the imported image
-        :param mode: how to import the image: as 'black' or 'color'
-        :param mask: level of detail for the import
-        :return: None
+        :param filename:    Path to the IMAGE file.
+        :type filename:     str
+        :param flip:        Flip the object vertically.
+        :type flip:         bool
+        :param units:       FlatCAM units
+        :type units:        str
+        :param dpi:         dots per inch on the imported image
+        :param mode:        how to import the image: as 'black' or 'color'
+        :type mode:         str
+        :param mask:        level of detail for the import
+        :return:            None
         """
         if mask is None:
             mask = [128, 128, 128, 128]
@@ -1985,7 +1987,7 @@ class Geometry(object):
         it again in descendents.
 
         :param obj_units:   "IN" or "MM"
-        :type units:        str
+        :type obj_units:    str
         :return:            Scaling factor resulting from unit change.
         :rtype:             float
         """
@@ -2550,9 +2552,23 @@ class CNCjob(Geometry):
 
     @property
     def postdata(self):
+        """
+        This will return all the attributes of the class in the form of a dictionary
+
+        :return:    Class attributes
+        :rtype:     dict
+        """
         return self.__dict__
 
     def convert_units(self, units):
+        """
+        Will convert the parameters in the class that are relevant, from metric to imperial and reverse
+
+        :param units:   FlatCAM units
+        :type units:    str
+        :return:        conversion factor
+        :rtype:         float
+        """
         log.debug("camlib.CNCJob.convert_units()")
 
         factor = Geometry.convert_units(self, units)
@@ -2573,6 +2589,17 @@ class CNCjob(Geometry):
         return self.doformat2(fun, **kwargs) + "\n"
 
     def doformat2(self, fun, **kwargs):
+        """
+        This method will call one of the current preprocessor methods having as parameters all the attributes of
+        current class to which will add the kwargs parameters
+
+        :param fun:     One of the methods inside the preprocessor classes which get loaded here in the 'p' object
+        :type fun:      class 'function'
+        :param kwargs:  keyword args which will update attributes of the current class
+        :type kwargs:   dict
+        :return:        Gcode line
+        :rtype:         str
+        """
         attributes = AttrDict()
         attributes.update(self.postdata)
         attributes.update(kwargs)
@@ -2584,6 +2611,16 @@ class CNCjob(Geometry):
             return ''
 
     def parse_custom_toolchange_code(self, data):
+        """
+        Will parse a text and get a toolchange sequence in text format suitable to be included in a Gcode file.
+        The '%' symbol is used to surround class variables name and must be removed in the returned string.
+        After that, the class variables (attributes) are replaced with the current values. The result is returned.
+
+        :param data:    Toolchange sequence
+        :type data:     str
+        :return:        Processed toolchange sequence
+        :rtype:         str
+        """
         text = data
         match_list = self.re_toolchange_custom.findall(text)
 
@@ -2615,6 +2652,13 @@ class CNCjob(Geometry):
         [2, 3], [2, 4], [3, 4], [3, 3], [3, 2], [3, 1], [3, 0], [4, 0], [4, 1], [4, 2], [4, 3], [4, 4]]
         >>> optimized_travelling_salesman([[0,0],[10,0],[6,0]])
         [[0, 0], [6, 0], [10, 0]]
+
+        :param points:  List of tuples with x, y coordinates
+        :type points:   list
+        :param start:   a tuple with a x,y coordinates of the start point
+        :type start:    tuple
+        :return:        List of points ordered in a optimized way
+        :rtype:         list
         """
 
         if start is None:
@@ -3899,7 +3943,9 @@ class CNCjob(Geometry):
                     # calculate the cut distance
                     total_cut = total_cut + geo.length
 
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_single_pass(geo, current_tooldia, extracut, extracut_length,
+                                                                tolerance,
+                                                                z_move=z_move, postproc=p,
                                                                 old_point=current_pt)
 
                 # --------- Multi-pass ---------
@@ -3914,8 +3960,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
-                                                               postproc=p, old_point=current_pt)
+                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
+                                                               tolerance,
+                                                               z_move=z_move, postproc=p,
+                                                               old_point=current_pt)
 
                 # calculate the total distance
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
@@ -4216,20 +4264,24 @@ class CNCjob(Geometry):
 
         # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
+        # this is a fancy way of adding a class attribute (which should be added in the __init__ method) without doing
+        # it there :)
         self.postdata['toolC'] = self.tooldia
 
         # Initial G-Code
         self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
+
+        # the 'p' local attribute is a reference to the current preprocessor class
         p = self.pp_geometry
 
         self.oldx = 0.0
         self.oldy = 0.0
 
         self.gcode = self.doformat(p.start_code)
-
         self.gcode += self.doformat(p.feedrate_code)  # sets the feed rate
 
         if toolchange is False:
+            # all the x and y parameters in self.doformat() are used only by some preprocessors not by all
             self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
             self.gcode += self.doformat(p.startz_code, x=self.oldx, y=self.oldy)
 
@@ -4277,6 +4329,9 @@ class CNCjob(Geometry):
         path_count = 0
         current_pt = (0, 0)
         pt, geo = storage.nearest(current_pt)
+
+        # when nothing is left in the storage a StopIteration exception will be raised therefore stopping
+        # the whole process including the infinite loop while True below.
         try:
             while True:
                 if self.app.abort_flag:
@@ -4297,7 +4352,9 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, self.extracut_length, tolerance,
+                    self.gcode += self.create_gcode_single_pass(geo, current_tooldia, extracut, self.extracut_length,
+                                                                tolerance,
+                                                                z_move=z_move, postproc=p,
                                                                 old_point=current_pt)
 
                 # --------- Multi-pass ---------
@@ -4312,8 +4369,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, self.extracut_length, tolerance,
-                                                               postproc=p, old_point=current_pt)
+                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
+                                                               tolerance,
+                                                               z_move=z_move,_postproc=p,
+                                                               old_point=current_pt)
 
                 # calculate the travel distance
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
@@ -4321,6 +4380,7 @@ class CNCjob(Geometry):
 
                 pt, geo = storage.nearest(current_pt)  # Next
 
+                # update the activity counter (lower left side of the app, status bar)
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -4535,27 +4595,76 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code)
         return gcode
 
-    def create_gcode_single_pass(self, geometry, extracut, extracut_length, tolerance, old_point=(0, 0)):
+    def create_gcode_single_pass(self, geometry, cdia, extracut, extracut_length, tolerance, z_move, postproc,
+                                 old_point=(0, 0)):
+        """
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
+
+        :param geometry:            A Shapely Geometry (LineString or LinearRing) which is the path to be cut
+        :type geometry:             LineString, LinearRing
+        :param cdia:                Tool diameter
+        :type cdia:                 float
+        :param extracut:            Will add an extra cut over the point where start of the cut is met with the end cut
+        :type extracut:             bool
+        :param extracut_length:     The length of the extra cut: half before the meeting point, half after
+        :type extracut_length:      float
+        :param tolerance:           Tolerance used to simplify the paths (making them mre rough)
+        :type tolerance:            float
+        :param z_move:              Travel Z
+        :type z_move:               float
+        :param postproc:            Preprocessor class
+        :type postproc:             class
+        :param old_point:           Previous point
+        :type old_point:            tuple
+        :return:                    Gcode
+        :rtype:                     str
+        """
+        # p = postproc
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
-                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
+                gcode_single_pass = self.linear2gcode(geometry, z_move=z_move, dia=cdia, tolerance=tolerance,
+                                                      old_point=old_point)
             else:
                 if geometry.is_ring:
                     gcode_single_pass = self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
+                                                                z_move=z_move, dia=cdia,
                                                                 old_point=old_point)
                 else:
-                    gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
+                    gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, z_move=z_move, dia=cdia,
+                                                          old_point=old_point)
         elif type(geometry) == Point:
-            gcode_single_pass = self.point2gcode(geometry)
+            gcode_single_pass = self.point2gcode(geometry, dia=cdia, z_move=z_move, old_point=old_point)
         else:
             log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
             return
 
         return gcode_single_pass
 
-    def create_gcode_multi_pass(self, geometry, extracut, extracut_length, tolerance, postproc, old_point=(0, 0)):
+    def create_gcode_multi_pass(self, geometry, cdia, extracut, extracut_length, tolerance, postproc, z_move,
+                                old_point=(0, 0)):
+        """
+
+        :param geometry:            A Shapely Geometry (LineString or LinearRing) which is the path to be cut
+        :type geometry:             LineString, LinearRing
+        :param cdia:                Tool diameter
+        :type cdia:                 float
+        :param extracut:            Will add an extra cut over the point where start of the cut is met with the end cut
+        :type extracut:             bool
+        :param extracut_length:     The length of the extra cut: half before the meeting point, half after
+        :type extracut_length:      float
+        :param tolerance:           Tolerance used to simplify the paths (making them mre rough)
+        :type tolerance:            float
+        :param postproc:            Preprocessor class
+        :type postproc:             class
+        :param z_move:              Travel Z
+        :type z_move:               float
+        :param old_point:           Previous point
+        :type old_point:            tuple
+        :return:                    Gcode
+        :rtype:                     str
+        """
+        p = postproc
 
         gcode_multi_pass = ''
 
@@ -4585,18 +4694,20 @@ class CNCjob(Geometry):
             if type(geometry) == LineString or type(geometry) == LinearRing:
                 if extracut is False:
                     gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
-                                                          old_point=old_point)
+                                                          z_move=z_move, dia=cdia, old_point=old_point)
                 else:
                     if geometry.is_ring:
                         gcode_multi_pass += self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
-                                                                    z_cut=depth, up=False, old_point=old_point)
+                                                                    dia=cdia, z_move=z_move, z_cut=depth, up=False,
+                                                                    old_point=old_point)
                     else:
                         gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
+                                                              dia=cdia, z_move=z_move,
                                                               old_point=old_point)
 
             # Ignore multi-pass for points.
             elif type(geometry) == Point:
-                gcode_multi_pass += self.point2gcode(geometry, old_point=old_point)
+                gcode_multi_pass += self.point2gcode(geometry, dia=cdia, z_move=z_move, old_point=old_point)
                 break  # Ignoring ...
             else:
                 log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
@@ -4612,7 +4723,7 @@ class CNCjob(Geometry):
                 geometry.coords = list(geometry.coords)[::-1]
 
         # Lift the tool
-        gcode_multi_pass += self.doformat(postproc.lift_code, x=old_point[0], y=old_point[1])
+        gcode_multi_pass += self.doformat(p.lift_code, x=old_point[0], y=old_point[1])
         return gcode_multi_pass
 
     def codes_split(self, gline):
@@ -4620,8 +4731,10 @@ class CNCjob(Geometry):
         Parses a line of G-Code such as "G01 X1234 Y987" into
         a dictionary: {'G': 1.0, 'X': 1234.0, 'Y': 987.0}
 
-        :param gline: G-Code line string
-        :return: Dictionary with parsed line.
+        :param gline:       G-Code line string
+        :type gline:        str
+        :return:            Dictionary with parsed line.
+        :rtype:             dict
         """
 
         command = {}
@@ -4690,6 +4803,18 @@ class CNCjob(Geometry):
         G-Code parser (from self.gcode). Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
+
+        Will return a dict in the format:
+        {
+            "geom": LineString(path),
+            "kind": kind
+        }
+        where kind can be either ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
+
+        :param force_parsing:
+        :type force_parsing:
+        :return:
+        :rtype:                 dict
         """
 
         kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
@@ -4879,16 +5004,28 @@ class CNCjob(Geometry):
         """
         Plots the G-code job onto the given axes.
 
-        :param tooldia: Tool diameter.
-        :param dpi: Not used!
-        :param margin: Not used!
-        :param color: Color specification.
-        :param alpha: Transparency specification.
-        :param tool_tolerance: Tolerance when drawing the toolshape.
-        :param obj
-        :param visible
-        :param kind
-        :return: None
+        :param tooldia:             Tool diameter.
+        :type tooldia:              float
+        :param dpi:                 Not used!
+        :type dpi:                  float
+        :param margin:              Not used!
+        :type margin:               float
+        :param gcode_parsed:        Parsed Gcode
+        :type gcode_parsed:         str
+        :param color:               Color specification.
+        :type color:                str
+        :param alpha:               Transparency specification.
+        :type alpha:                dict
+        :param tool_tolerance:      Tolerance when drawing the toolshape.
+        :type tool_tolerance:       float
+        :param obj:                 The object for whih to plot
+        :type obj:                  class
+        :param visible:             Visibility status
+        :type visible:              bool
+        :param kind:                Can be: "travel", "cut", "all"
+        :type kind:                 str
+        :return:                    None
+        :rtype:
         """
         # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -5045,9 +5182,17 @@ class CNCjob(Geometry):
                 log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
 
     def create_geometry(self):
-        self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
-                                         str(len(self.gcode_parsed))))
+        """
+        It is used by the Excellon objects. Will create the solid_geometry which will be an attribute of the
+        Excellon object class.
+
+        :return:    List of Shapely geometry elements
+        :rtype:     list
+        """
+
         # TODO: This takes forever. Too much data?
+        # self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
+        #                                  str(len(self.gcode_parsed))))
         # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
 
         # This is much faster but not so nice to look at as you can see different segments of the geometry
@@ -5055,10 +5200,15 @@ class CNCjob(Geometry):
 
         return self.solid_geometry
 
-    # code snippet added by Lei Zheng in a rejected pull request on FlatCAM https://bitbucket.org/realthunder/
     def segment(self, coords):
         """
-        break long linear lines to make it more auto level friendly
+        Break long linear lines to make it more auto level friendly.
+        Code snippet added by Lei Zheng in a rejected pull request on FlatCAM https://bitbucket.org/realthunder/
+
+        :param coords:  List of coordinates tuples
+        :type coords:   list
+        :return:        A path; list with the multiple coordinates breaking a line.
+        :rtype:         list
         """
 
         if len(coords) < 2 or self.segx <= 0 and self.segy <= 0:
@@ -5110,7 +5260,7 @@ class CNCjob(Geometry):
 
         return path
 
-    def linear2gcode(self, linear, tolerance=0, down=True, up=True, z_cut=None, z_move=None, zdownrate=None,
+    def linear2gcode(self, linear, dia, tolerance=0, down=True, up=True, z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
 
@@ -5118,6 +5268,8 @@ class CNCjob(Geometry):
 
         :param linear:          The path to cut along.
         :type:                  Shapely.LinearRing or Shapely.Linear String
+        :param dia:             The tool diameter that is going on the path
+        :type dia:              float
         :param tolerance:       All points in the simplified object will be within the
                                 tolerance distance of the original geometry.
         :type tolerance:        float
@@ -5177,7 +5329,42 @@ class CNCjob(Geometry):
 
         # Move fast to 1st point
         if not cont:
-            gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
+            current_tooldia = dia
+            travels = self.app.exc_areas.travel_coordinates(start_point=(old_point[0], old_point[1]),
+                                                            end_point=(first_x, first_y),
+                                                            tooldia=current_tooldia)
+            prev_z = None
+            for travel in travels:
+                locx = travel[1][0]
+                locy = travel[1][1]
+
+                if travel[0] is not None:
+                    # move to next point
+                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                    # raise to safe Z (travel[0]) each time because safe Z may be different
+                    self.z_move = travel[0]
+                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                    # restore z_move
+                    self.z_move = z_move
+                else:
+                    if prev_z is not None:
+                        # move to next point
+                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                        # we assume that previously the z_move was altered therefore raise to
+                        # the travel_z (z_move)
+                        self.z_move = z_move
+                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                    else:
+                        # move to next point
+                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                # store prev_z
+                prev_z = travel[0]
+
+            # gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
         # Move down to cutting depth
         if down:
@@ -5216,7 +5403,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # Stop cutting
         return gcode
 
-    def linear2gcode_extra(self, linear, extracut_length, tolerance=0, down=True, up=True,
+    def linear2gcode_extra(self, linear, dia, extracut_length, tolerance=0, down=True, up=True,
                            z_cut=None, z_move=None, zdownrate=None,
                            feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
@@ -5225,6 +5412,8 @@ class CNCjob(Geometry):
 
         :param linear:              The path to cut along.
         :type:                      Shapely.LinearRing or Shapely.Linear String
+        :param dia:                 The tool diameter that is going on the path
+        :type dia:                  float
         :param extracut_length:     how much to cut extra over the first point at the end of the path
         :param tolerance:           All points in the simplified object will be within the
                                     tolerance distance of the original geometry.
@@ -5284,7 +5473,42 @@ class CNCjob(Geometry):
 
         # Move fast to 1st point
         if not cont:
-            gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
+            current_tooldia = dia
+            travels = self.app.exc_areas.travel_coordinates(start_point=(old_point[0], old_point[1]),
+                                                            end_point=(first_x, first_y),
+                                                            tooldia=current_tooldia)
+            prev_z = None
+            for travel in travels:
+                locx = travel[1][0]
+                locy = travel[1][1]
+
+                if travel[0] is not None:
+                    # move to next point
+                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                    # raise to safe Z (travel[0]) each time because safe Z may be different
+                    self.z_move = travel[0]
+                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                    # restore z_move
+                    self.z_move = z_move
+                else:
+                    if prev_z is not None:
+                        # move to next point
+                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                        # we assume that previously the z_move was altered therefore raise to
+                        # the travel_z (z_move)
+                        self.z_move = z_move
+                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                    else:
+                        # move to next point
+                        gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                # store prev_z
+                prev_z = travel[0]
+
+            # gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
         # Move down to cutting depth
         if down:
@@ -5450,7 +5674,20 @@ class CNCjob(Geometry):
 
         return gcode
 
-    def point2gcode(self, point, old_point=(0, 0)):
+    def point2gcode(self, point, dia, z_move=None, old_point=(0, 0)):
+        """
+
+        :param point:               A Shapely Point
+        :type point:                Point
+        :param dia:                 The tool diameter that is going on the path
+        :type dia:                  float
+        :param z_move:              Travel Z
+        :type z_move:               float
+        :param old_point:           Old point coordinates from which we moved to the 'point'
+        :type old_point:            tuple
+        :return:                    G-code to cut on the Point feature.
+        :rtype:                     str
+        """
         gcode = ""
 
         if self.app.abort_flag:
@@ -5474,7 +5711,42 @@ class CNCjob(Geometry):
             first_x = path[0][0]
             first_y = path[0][1]
 
-        gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
+        current_tooldia = dia
+        travels = self.app.exc_areas.travel_coordinates(start_point=(old_point[0], old_point[1]),
+                                                        end_point=(first_x, first_y),
+                                                        tooldia=current_tooldia)
+        prev_z = None
+        for travel in travels:
+            locx = travel[1][0]
+            locy = travel[1][1]
+
+            if travel[0] is not None:
+                # move to next point
+                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                # raise to safe Z (travel[0]) each time because safe Z may be different
+                self.z_move = travel[0]
+                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                # restore z_move
+                self.z_move = z_move
+            else:
+                if prev_z is not None:
+                    # move to next point
+                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+                    # we assume that previously the z_move was altered therefore raise to
+                    # the travel_z (z_move)
+                    self.z_move = z_move
+                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                else:
+                    # move to next point
+                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+
+            # store prev_z
+            prev_z = travel[0]
+
+        # gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
 
         if self.z_feedrate is not None:
             gcode += self.doformat(p.z_feedrate_code)
@@ -5490,8 +5762,10 @@ class CNCjob(Geometry):
         """
         Exports the CNC Job as a SVG Element
 
-        :scale_factor: float
-        :return: SVG Element string
+        :param scale_stroke_factor:     A factor to scale the SVG geometry
+        :type scale_stroke_factor:      float
+        :return:                        SVG Element string
+        :rtype:                         str
         """
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
         # If not specified then try and use the tool diameter
@@ -5511,6 +5785,9 @@ class CNCjob(Geometry):
         # This way we can add different formatting / colors to both
         cuts = []
         travels = []
+        cutsgeom = ''
+        travelsgeom = ''
+
         for g in self.gcode_parsed:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -5548,10 +5825,12 @@ class CNCjob(Geometry):
 
     def bounds(self, flatten=None):
         """
-        Returns coordinates of rectangular bounds
-        of geometry: (xmin, ymin, xmax, ymax).
+        Returns coordinates of rectangular bounds of geometry: (xmin, ymin, xmax, ymax).
 
         :param flatten:     Not used, it is here for compatibility with base class method
+        :type flatten:      bool
+        :return:            Bounding values in format (xmin, ymin, xmax, ymax)
+        :rtype:             tuple
         """
 
         log.debug("camlib.CNCJob.bounds()")
