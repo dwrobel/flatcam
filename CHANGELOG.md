@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - changes some icons
 - added a new GUI element which is a evaluated LineEdit that accepts only float numbers and /,*,+,-,% chars
 - finished the Etch Compensation Tool
+- fixed unreliable work of Gerber Editor and optimized the App.editor2object() method
+
 
 23.05.2020
 

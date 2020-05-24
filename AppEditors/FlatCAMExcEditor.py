@@ -3342,9 +3342,11 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                                   filename=None,
                                                                   use_thread=False)
             except Exception as e:
+                self.deactivate()
                 log.error("Error on Edited object creation: %s" % str(e))
                 return
 
+            self.deactivate()
             self.app.inform.emit('[success] %s' % _("Excellon editing finished."))
 
     def on_tool_select(self, tool):

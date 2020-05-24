@@ -1198,7 +1198,6 @@ class FCTrack(FCRegion):
         self.complete = True
 
         self.draw_app.app.jump_signal.disconnect()
-
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
@@ -1221,12 +1220,10 @@ class FCTrack(FCRegion):
         new_geo_el = {}
 
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
-                                                                 resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle / 4))
             new_geo_el['follow'] = Point(self.temp_points)
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
-                                                                      resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle / 4))
             new_geo_el['follow'] = LineString(self.temp_points)
 
         self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
@@ -4219,6 +4216,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             new_grb_name = self.edited_obj_name + "_edit"
 
         self.app.worker_task.emit({'fcn': self.new_edited_gerber, 'params': [new_grb_name, self.storage_dict]})
+        # self.new_edited_gerber(new_grb_name, self.storage_dict)
 
     @staticmethod
     def update_options(obj):
@@ -4240,9 +4238,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         """
         Creates a new Gerber object for the edited Gerber. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the name to be that of the file.
-        :type outname: str
-        :param aperture_storage: a dictionary that holds all the objects geometry
+        :param outname:             Name of the resulting object. None causes the name to be that of the file.
+        :type outname:              str
+        :param aperture_storage:    a dictionary that holds all the objects geometry
+        :type aperture_storage:     dict
         :return: None
         """
 
@@ -4334,11 +4333,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Aperture definitions in the file. Aborting Gerber creation."))
             except Exception:
-                msg = '[ERROR] %s' % \
-                      _("An internal error has occurred. See shell.\n")
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
+
             grb_obj.source_file = self.app.export_gerber(obj_name=out_name, filename=None,
                                                          local_use=grb_obj, use_thread=False)
 
@@ -4351,9 +4350,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.results = []
                 return
 
-            self.app.inform.emit('[success] %s' % _("Done. Gerber editing finished."))
             # make sure to clean the previous results
             self.results = []
+            self.deactivate_grb_editor()
+            self.app.inform.emit('[success] %s' % _("Done. Gerber editing finished."))
 
     def on_tool_select(self, tool):
         """

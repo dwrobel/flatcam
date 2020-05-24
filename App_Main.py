@@ -2214,11 +2214,8 @@ class App(QtCore.QObject):
 
                     if isinstance(edited_obj, GeometryObject):
                         obj_type = "Geometry"
-                        if cleanup is None:
-                            self.geo_editor.update_fcgeometry(edited_obj)
-                            # self.geo_editor.update_options(edited_obj)
-
-                        self.geo_editor.deactivate()
+                        self.geo_editor.update_fcgeometry(edited_obj)
+                        # self.geo_editor.update_options(edited_obj)
 
                         # restore GUI to the Selected TAB
                         # Remove anything else in the AppGUI
@@ -2240,17 +2237,14 @@ class App(QtCore.QObject):
 
                     elif isinstance(edited_obj, GerberObject):
                         obj_type = "Gerber"
-                        if cleanup is None:
-                            self.grb_editor.update_fcgerber()
-                            self.grb_editor.update_options(edited_obj)
-                        self.grb_editor.deactivate_grb_editor()
+                        self.grb_editor.update_fcgerber()
+                        # self.grb_editor.update_options(edited_obj)
 
                         # delete the old object (the source object) if it was an empty one
                         try:
                             if len(edited_obj.solid_geometry) == 0:
                                 old_name = edited_obj.options['name']
-                                self.collection.set_active(old_name)
-                                self.collection.delete_active()
+                                self.collection.delete_by_name(old_name)
                         except TypeError:
                             # if the solid_geometry is a single Polygon the len() will not work
                             # in any case, falling here means that we have something in the solid_geometry, even if only
@@ -2265,11 +2259,8 @@ class App(QtCore.QObject):
 
                     elif isinstance(edited_obj, ExcellonObject):
                         obj_type = "Excellon"
-                        if cleanup is None:
-                            self.exc_editor.update_fcexcellon(edited_obj)
-                            # self.exc_editor.update_options(edited_obj)
-
-                        self.exc_editor.deactivate()
+                        self.exc_editor.update_fcexcellon(edited_obj)
+                        # self.exc_editor.update_options(edited_obj)
 
                         # restore GUI to the Selected TAB
                         # Remove anything else in the AppGUI
@@ -2314,7 +2305,7 @@ class App(QtCore.QObject):
                 # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
                 # edited_obj.build_ui()
                 # Switch notebook to Selected page
-                self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                # self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
                 if isinstance(edited_obj, GeometryObject):
                     self.geo_editor.deactivate()
@@ -2334,7 +2325,7 @@ class App(QtCore.QObject):
             # restore the call_source to app
             self.call_source = 'app'
 
-            edited_obj.plot()
+            # edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, "Plot Area")
             self.ui.plot_tab_area.protectTab(0)
 

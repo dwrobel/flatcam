@@ -4744,8 +4744,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         Transfers the geometry tool shape buffer to the selected geometry
         object. The geometry already in the object are removed.
 
-        :param fcgeometry: GeometryObject
-        :return: None
+        :param fcgeometry:  GeometryObject
+        :return:            None
         """
         if self.multigeo_tool:
             fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
@@ -4769,6 +4769,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             if isinstance(new_geo, MultiLineString):
                 new_geo = linemerge(new_geo)
             fcgeometry.solid_geometry.append(new_geo)
+
+        self.deactivate()
 
     def update_options(self, obj):
         if self.paint_tooldia:
