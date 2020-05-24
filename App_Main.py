@@ -42,7 +42,7 @@ import socket
 # ###################################      Imports part of FlatCAM       #############################################
 # ####################################################################################################################
 
-# Diverse
+# Various
 from Common import LoudDict
 from Common import color_variant
 from Common import ExclusionAreas
@@ -53,8 +53,10 @@ from AppDatabase import ToolsDB2
 from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
-# FlatCAM Objects
+# FlatCAM defaults (preferences)
 from defaults import FlatCAMDefaults
+
+# FlatCAM Objects
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 from AppGUI.preferences.PreferencesUIManager import PreferencesUIManager
 from AppObjects.ObjectCollection import *
@@ -105,7 +107,7 @@ if '_' not in builtins.__dict__:
 
 class App(QtCore.QObject):
     """
-    The main application class. The constructor starts the AppGUI.
+    The main application class. The constructor starts the GUI and all other classes used by the program.
     """
 
     # ###############################################################################################################
@@ -289,7 +291,7 @@ class App(QtCore.QObject):
             self.new_launch.start.emit()
 
         # ############################################################################################################
-        # # ######################################## OS-specific #####################################################
+        # ########################################## OS-specific #####################################################
         # ############################################################################################################
         portable = False
 
@@ -401,13 +403,12 @@ class App(QtCore.QObject):
             json.dump([], fp)
             fp.close()
 
-        # Application directory. CHDIR to it. Otherwise, trying to load
-        # GUI icons will fail as their path is relative.
+        # Application directory. CHDIR to it. Otherwise, trying to load GUI icons will fail as their path is relative.
         # This will fail under cx_freeze ...
         self.app_home = os.path.dirname(os.path.realpath(__file__))
 
-        App.log.debug("Application path is " + self.app_home)
-        App.log.debug("Started in " + os.getcwd())
+        log.debug("Application path is " + self.app_home)
+        log.debug("Started in " + os.getcwd())
 
         # cx_freeze workaround
         if os.path.isfile(self.app_home):
@@ -451,7 +452,6 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ###################################### Setting the Splash Screen ##########################################
         # ###########################################################################################################
-
         splash_settings = QSettings("Open Source", "FlatCAM")
         if splash_settings.contains("splash_screen"):
             show_splash = splash_settings.value("splash_screen")
@@ -1923,7 +1923,7 @@ class App(QtCore.QObject):
         self.corners_tool.install(icon=QtGui.QIcon(self.resource_location + '/corners_32.png'), pos=self.ui.menutool)
 
         self.etch_tool = ToolEtchCompensation(self)
-        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etcg_32.png'), pos=self.ui.menutool)
+        self.etch_tool.install(icon=QtGui.QIcon(self.resource_location + '/etch_32.png'), pos=self.ui.menutool)
 
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
@@ -4811,6 +4811,16 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_copy_command()")
 
         def initialize(obj_init, app):
+            """
+
+            :param obj_init:    the new object
+            :type obj_init:     class
+            :param app:         An instance of the App class
+            :type app:          App
+            :return:            None
+            :rtype:
+            """
+
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)

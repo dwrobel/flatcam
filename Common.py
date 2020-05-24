@@ -12,7 +12,7 @@
 # ##########################################################
 from PyQt5 import QtCore
 
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString
+from shapely.geometry import Polygon, Point, LineString
 from shapely.ops import unary_union
 
 from AppGUI.VisPyVisuals import ShapeCollection
@@ -32,7 +32,9 @@ if '_' not in builtins.__dict__:
 
 
 class GracefulException(Exception):
-    # Graceful Exception raised when the user is requesting to cancel the current threaded task
+    """
+    Graceful Exception raised when the user is requesting to cancel the current threaded task
+    """
     def __init__(self):
         super().__init__()
 
@@ -107,8 +109,11 @@ def color_variant(hex_color, bright_factor=1):
     Takes a color in HEX format #FF00FF and produces a lighter or darker variant
 
     :param hex_color:           color to change
-    :param bright_factor:   factor to change the color brightness [0 ... 1]
-    :return:                    modified color
+    :type hex_color:            str
+    :param bright_factor:       factor to change the color brightness [0 ... 1]
+    :type bright_factor:        float
+    :return:                    Modified color
+    :rtype:                     str
     """
 
     if len(hex_color) != 7:
@@ -133,7 +138,9 @@ def color_variant(hex_color, bright_factor=1):
 
 
 class ExclusionAreas(QtCore.QObject):
-
+    """
+    Functionality for adding Exclusion Areas for the Excellon and Geometry FlatCAM Objects
+    """
     e_shape_modified = QtCore.pyqtSignal()
 
     def __init__(self, app):
@@ -230,6 +237,14 @@ class ExclusionAreas(QtCore.QObject):
 
     # To be called after clicking on the plot.
     def on_mouse_release(self, event):
+        """
+        Called on mouse click release.
+
+        :param event:   Mouse event
+        :type event:
+        :return:        None
+        :rtype:
+        """
         if self.app.is_legacy is False:
             event_pos = event.pos
             # event_is_dragging = event.is_dragging
@@ -417,6 +432,13 @@ class ExclusionAreas(QtCore.QObject):
             self.e_shape_modified.emit()
 
     def area_disconnect(self):
+        """
+        Will do the cleanup. Will disconnect the mouse events for the custom handlers in this class and initialize
+        certain class attributes.
+
+        :return:    None
+        :rtype:
+        """
         if self.app.is_legacy is False:
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
@@ -441,8 +463,15 @@ class ExclusionAreas(QtCore.QObject):
         self.app.call_source = "app"
         self.app.inform.emit("[WARNING_NOTCL] %s" % _("Cancelled. Area exclusion drawing was interrupted."))
 
-    # called on mouse move
     def on_mouse_move(self, event):
+        """
+        Called on mouse move
+
+        :param event:   mouse event
+        :type event:
+        :return:        None
+        :rtype:
+        """
         shape_type = self.shape_type_button.get_value()
 
         if self.app.is_legacy is False:
@@ -513,6 +542,12 @@ class ExclusionAreas(QtCore.QObject):
                 data=(curr_pos[0], curr_pos[1]))
 
     def on_clear_area_click(self):
+        """
+        Slot for clicking the button for Deleting all the Exclusion areas.
+
+        :return:    None
+        :rtype:
+        """
         self.clear_shapes()
 
         # restore the default StyleSheet
@@ -527,6 +562,12 @@ class ExclusionAreas(QtCore.QObject):
         self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
     def clear_shapes(self):
+        """
+        Will delete all the Exclusion areas; will delete on canvas any possible selection box for the Exclusion areas.
+
+        :return:    None
+        :rtype:
+        """
         self.exclusion_areas_storage.clear()
         AppTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
@@ -536,8 +577,9 @@ class ExclusionAreas(QtCore.QObject):
     def delete_sel_shapes(self, idxs):
         """
 
-        :param idxs: list of indexes in self.exclusion_areas_storage list to be deleted
-        :return:
+        :param idxs:    list of indexes in self.exclusion_areas_storage list to be deleted
+        :type idxs:     list
+        :return:        None
         """
 
         # delete all plotted shapes
@@ -583,7 +625,8 @@ class ExclusionAreas(QtCore.QObject):
 
     def travel_coordinates(self, start_point, end_point, tooldia):
         """
-        WIll create a path the go around the exclusion areas on the shortest path
+        WIll create a path the go around the exclusion areas on the shortest path when travelling (at a Z above the
+        material).
 
         :param start_point:     X,Y coordinates for the start point of the travel line
         :type start_point:      tuple

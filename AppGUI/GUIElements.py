@@ -573,6 +573,7 @@ class EvalEntry(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
+
         self.editingFinished.connect(self.on_edit_finished)
 
     def on_edit_finished(self):
@@ -599,7 +600,6 @@ class EvalEntry(QtWidgets.QLineEdit):
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
-        evaled = 0.0
         try:
             evaled = eval(raw)
         except Exception as e:
@@ -655,6 +655,17 @@ class EvalEntry2(QtWidgets.QLineEdit):
         default_hint_size = super(EvalEntry2, self).sizeHint()
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
+
+class NumericalEvalEntry(EvalEntry):
+    """
+    Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
+    """
+    def __init__(self):
+        super().__init__()
+
+        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s]*")
+        validator = QtGui.QRegExpValidator(regex, self)
+        self.setValidator(validator)
 
 class FCSpinner(QtWidgets.QSpinBox):
 

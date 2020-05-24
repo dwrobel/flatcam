@@ -31,7 +31,7 @@ if '_' not in builtins.__dict__:
 
 class ExcellonObject(FlatCAMObj, Excellon):
     """
-    Represents Excellon/Drill code.
+    Represents Excellon/Drill code. An object stored in the FlatCAM objects collection (a dict)
     """
 
     ui_type = ExcellonObjectUI
@@ -146,9 +146,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         If only one object is in exc_list parameter then this function will copy that object in the exc_final
 
-        :param exc_list: List or one object of ExcellonObject Objects to join.
-        :param exc_final: Destination ExcellonObject object.
-        :return: None
+        :param exc_list:    List or one object of ExcellonObject Objects to join.
+        :type exc_list:     list
+        :param exc_final:   Destination ExcellonObject object.
+        :type exc_final:    class
+        :return:            None
         """
 
         if decimals is None:
@@ -316,6 +318,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
         exc_final.create_geometry()
 
     def build_ui(self):
+        """
+        Will (re)build the Excellon UI updating it (the tool table)
+
+        :return:    None
+        :rtype:
+        """
         FlatCAMObj.build_ui(self)
 
         # Area Exception - exclusion shape added signal
@@ -586,9 +594,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         Configures the user interface for this object.
         Connects options to form fields.
 
-        :param ui: User interface object.
-        :type ui: ExcellonObjectUI
-        :return: None
+        :param ui:  User interface object.
+        :type ui:   ExcellonObjectUI
+        :return:    None
         """
         FlatCAMObj.set_ui(self, ui)
 
@@ -729,6 +737,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.operation_radio.setEnabled(False)
 
     def ui_connect(self):
+        """
+        Will connect all signals in the Excellon UI that needs to be connected
+
+        :return:    None
+        :rtype:
+        """
 
         # selective plotting
         for row in range(self.ui.tools_table.rowCount() - 2):
@@ -751,6 +765,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 current_widget.returnPressed.connect(self.form_to_storage)
 
     def ui_disconnect(self):
+        """
+        Will disconnect all signals in the Excellon UI that needs to be disconnected
+
+        :return:    None
+        :rtype:
+        """
         # selective plotting
         for row in range(self.ui.tools_table.rowCount()):
             try:
@@ -793,6 +813,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     pass
 
     def on_row_selection_change(self):
+        """
+        Called when the user clicks on a row in Tools Table
+
+        :return:    None
+        :rtype:
+        """
         self.ui_disconnect()
 
         sel_rows = []
@@ -843,6 +869,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui_connect()
 
     def storage_to_form(self, dict_storage):
+        """
+        Will update the GUI with data from the "storage" in this case the dict self.tools
+
+        :param dict_storage:    A dictionary holding the data relevant for gnerating Gcode from Excellon
+        :type dict_storage:     dict
+        :return:                None
+        :rtype:
+        """
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key and form_key not in \
@@ -854,6 +888,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
                         pass
 
     def form_to_storage(self):
+        """
+        Will update the 'storage' attribute which is the dict self.tools with data collected from GUI
+
+        :return:    None
+        :rtype:
+        """
         if self.ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             return
@@ -882,6 +922,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui_connect()
 
     def on_operation_type(self, val):
+        """
+        Called by a RadioSet activated_custom signal
+
+        :param val:     Parameter passes by the signal that called this method
+        :type val:      str
+        :return:        None
+        :rtype:
+        """
         if val == 'mill':
             self.ui.mill_type_label.show()
             self.ui.milling_type_radio.show()
@@ -912,8 +960,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         Returns the keys to the self.tools dictionary corresponding
         to the selections on the tool list in the AppGUI.
 
-        :return: List of tools.
-        :rtype: list
+        :return:    List of tools.
+        :rtype:     list
         """
 
         return [str(x.text()) for x in self.ui.tools_table.selectedItems()]
@@ -922,8 +970,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         """
         Returns a list of lists, each list in the list is made out of row elements
 
-        :return: List of table_tools items.
-        :rtype: list
+        :return:    List of table_tools items.
+        :rtype:     list
         """
         table_tools_items = []
         for x in self.ui.tools_table.selectedItems():
@@ -951,7 +999,21 @@ class ExcellonObject(FlatCAMObj, Excellon):
     def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
-        :return: has_slots and Excellon_code
+
+        :param whole:       Integer part digits
+        :type whole:        int
+        :param fract:       Fractional part digits
+        :type fract:        int
+        :param e_zeros:     Excellon zeros suppression: LZ or TZ
+        :type e_zeros:      str
+        :param form:        Excellon format: 'dec',
+        :type form:         str
+        :param factor:      Conversion factor
+        :type factor:       float
+        :param slot_type:   How to treat slots: "routing" or "drilling"
+        :type slot_type:    str
+        :return:            A tuple: (has_slots, Excellon_code) -> (bool, str)
+        :rtype:             tuple
         """
 
         excellon_code = ''
@@ -1123,8 +1185,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
-        :return: Success/failure condition tuple (bool, str).
-        :rtype: tuple
+        :return:    Success/failure condition tuple (bool, str).
+        :rtype:     tuple
         """
 
         # Get the tools from the list. These are keys
@@ -1167,6 +1229,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
+            """
+
+            :param geo_obj:     New object
+            :type geo_obj:      GeometryObject
+            :param app_obj:     App
+            :type app_obj:      FlatCAMApp.App
+            :return:
+            :rtype:
+            """
             assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
 
             # ## Add properties to the object

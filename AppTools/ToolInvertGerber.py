@@ -278,9 +278,6 @@ class ToolInvertGerber(AppTool):
             new_el['follow'] = new_solid_geometry.exterior
             new_apertures['0']['geometry'].append(new_el)
 
-        for td in new_apertures:
-            print(td, new_apertures[td])
-
         def init_func(new_obj, app_obj):
             new_obj.options.update(new_options)
             new_obj.options['name'] = outname

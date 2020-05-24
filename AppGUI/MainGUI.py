@@ -855,7 +855,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
         self.delete_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("&Delete"))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
@@ -1851,7 +1851,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.copy_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
         self.delete_btn = self.toolbaredit.addAction(
-            QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("&Delete"))
         self.toolbaredit.addSeparator()
         self.distance_btn = self.toolbaredit.addAction(
             QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))

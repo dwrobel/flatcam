@@ -896,7 +896,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 })
 
                 for nr_pass in range(passes):
-                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
+                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
@@ -945,8 +945,7 @@ class GerberObject(FlatCAMObj, Gerber):
             self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
         else:
             for i in range(passes):
-
-                offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+                offset = dia * ((2 * i + 1) / 2.0000001) - (i * overlap * dia)
                 if passes > 1:
                     if outname is None:
                         if self.iso_type == 0:

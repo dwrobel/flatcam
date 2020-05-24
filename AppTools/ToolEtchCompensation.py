@@ -8,9 +8,9 @@
 from PyQt5 import QtWidgets, QtCore
 
 from AppTool import AppTool
-from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox
+from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry
 
-from shapely.geometry import box
+from shapely.ops import unary_union
 
 from copy import deepcopy
 
@@ -95,8 +95,8 @@ class ToolEtchCompensation(AppTool):
         self.thick_entry.set_range(0.0000, 9999.9999)
         self.thick_entry.setObjectName(_("Thickness"))
 
-        grid0.addWidget(self.thick_label, 5, 0, 1, 2)
-        grid0.addWidget(self.thick_entry, 6, 0, 1, 2)
+        grid0.addWidget(self.thick_label, 5, 0)
+        grid0.addWidget(self.thick_entry, 5, 1)
 
         self.ratio_label = QtWidgets.QLabel('%s:' % _("Ratio"))
         self.ratio_label.setToolTip(
@@ -106,17 +106,48 @@ class ToolEtchCompensation(AppTool):
               "- preselection -> value which depends on a selection of etchants")
         )
         self.ratio_radio = RadioSet([
-            {'label': _('PreSelection'), 'value': 'p'},
-            {'label': _('Custom'), 'value': 'c'}
-        ])
+            {'label': _('Custom'), 'value': 'c'},
+            {'label': _('PreSelection'), 'value': 'p'}
+        ], orientation='vertical', stretch=False)
 
         grid0.addWidget(self.ratio_label, 7, 0, 1, 2)
         grid0.addWidget(self.ratio_radio, 8, 0, 1, 2)
 
+        # Etchants
+        self.etchants_label = QtWidgets.QLabel('%s:' % _('Etchants'))
+        self.etchants_label.setToolTip(
+            _("A list of etchants.")
+        )
+        self.etchants_combo = FCComboBox(callback=self.confirmation_message)
+        self.etchants_combo.setObjectName(_("Etchants"))
+        self.etchants_combo.addItems(["CuCl2", "FeCl3"])
+
+        grid0.addWidget(self.etchants_label, 9, 0)
+        grid0.addWidget(self.etchants_combo, 9, 1)
+
+        # Etch Factor
+        self.factor_label = QtWidgets.QLabel('%s:' % _('Etch factor'))
+        self.factor_label.setToolTip(
+            _("The ratio between depth etch and lateral etch .\n"
+              "Accepts real numbers and formulas using the operators: /,*,+,-,%")
+        )
+        self.factor_entry = NumericalEvalEntry()
+        self.factor_entry.setPlaceholderText(_("Real number or formula"))
+        self.factor_entry.setObjectName(_("Etch_factor"))
+
+        # Hide the Etchants and Etch factor
+        self.etchants_label.hide()
+        self.etchants_combo.hide()
+        self.factor_label.hide()
+        self.factor_entry.hide()
+
+        grid0.addWidget(self.factor_label, 10, 0)
+        grid0.addWidget(self.factor_entry, 10, 1)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 2)
+        grid0.addWidget(separator_line, 13, 0, 1, 2)
 
         self.compensate_btn = FCButton(_('Compensate'))
         self.compensate_btn.setToolTip(
@@ -128,7 +159,7 @@ class ToolEtchCompensation(AppTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.compensate_btn, 10, 0, 1, 2)
+        grid0.addWidget(self.compensate_btn, 14, 0, 1, 2)
 
         self.tools_box.addStretch()
 
@@ -145,7 +176,7 @@ class ToolEtchCompensation(AppTool):
                         """)
         self.tools_box.addWidget(self.reset_button)
 
-        self.compensate_btn.clicked.connect(self.on_grb_invert)
+        self.compensate_btn.clicked.connect(self.on_compensate)
         self.reset_button.clicked.connect(self.set_tool_ui)
         self.ratio_radio.activated_custom.connect(self.on_ratio_change)
 
@@ -153,8 +184,8 @@ class ToolEtchCompensation(AppTool):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
 
     def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolInvertGerber()")
-        log.debug("ToolInvertGerber() is running ...")
+        self.app.defaults.report_usage("ToolEtchCompensation()")
+        log.debug("ToolEtchCompensation() is running ...")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -178,28 +209,40 @@ class ToolEtchCompensation(AppTool):
         AppTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Invert Tool"))
+        self.app.ui.notebook.setTabText(2, _("Etch Compensation Tool"))
 
     def set_tool_ui(self):
-        self.thick_entry.set_value(18)
-        self.ratio_radio.set_value('p')
+        self.thick_entry.set_value(18.0)
+        self.ratio_radio.set_value('c')
 
     def on_ratio_change(self, val):
-        pass
+        """
+        Called on activated_custom signal of the RadioSet GUI element self.radio_ratio
 
-    def on_grb_invert(self):
-        margin = self.margin_entry.get_value()
-        if round(margin, self.decimals) == 0.0:
-            margin = 1E-10
+        :param val:     'c' or 'p': 'c' means custom factor and 'p' means preselected etchants
+        :type val:      str
+        :return:        None
+        :rtype:
+        """
+        if val == 'c':
+            self.etchants_label.hide()
+            self.etchants_combo.hide()
+            self.factor_label.show()
+            self.factor_entry.show()
+        else:
+            self.etchants_label.show()
+            self.etchants_combo.show()
+            self.factor_label.hide()
+            self.factor_entry.hide()
 
-        join_style = {'r': 1, 'b': 3, 's': 2}[self.join_radio.get_value()]
-        if join_style is None:
-            join_style = 'r'
+    def on_compensate(self):
+        ratio_type = self.ratio_radio.get_value()
+        thickness = self.thick_entry.get_value() / 1000     # in microns
 
         grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
         obj_name = self.gerber_combo.currentText()
 
-        outname = obj_name + "_inverted"
+        outname = obj_name + "_comp"
 
         # Get source object.
         try:
@@ -214,74 +257,51 @@ class ToolEtchCompensation(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        xmin, ymin, xmax, ymax = grb_obj.bounds()
-
-        grb_box = box(xmin, ymin, xmax, ymax).buffer(margin, resolution=grb_circle_steps, join_style=join_style)
+        if ratio_type == 'c':
+            etch_factor = 1 / self.factor_entry.get_value()
+        else:
+            etchant = self.etchants_combo.get_value()
+            if etchant == "CuCl2":
+                etch_factor = 0.33
+            else:
+                etch_factor = 0.25
+        offset = thickness / etch_factor
 
         try:
             __ = iter(grb_obj.solid_geometry)
         except TypeError:
             grb_obj.solid_geometry = list(grb_obj.solid_geometry)
 
-        new_solid_geometry = deepcopy(grb_box)
+        new_solid_geometry = []
 
         for poly in grb_obj.solid_geometry:
-            new_solid_geometry = new_solid_geometry.difference(poly)
+            new_solid_geometry.append(poly.buffer(offset, int(grb_circle_steps)))
+        new_solid_geometry = unary_union(new_solid_geometry)
 
         new_options = {}
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])
 
-        new_apertures = {}
+        new_apertures = deepcopy(grb_obj.apertures)
 
-        # for apid, val in grb_obj.apertures.items():
-        #     new_apertures[apid] = {}
-        #     for key in val:
-        #         if key == 'geometry':
-        #             new_apertures[apid]['geometry'] = []
-        #             for elem in val['geometry']:
-        #                 geo_elem = {}
-        #                 if 'follow' in elem:
-        #                     try:
-        #                         geo_elem['clear'] = elem['follow'].buffer(val['size'] / 2.0).exterior
-        #                     except AttributeError:
-        #                         # TODO should test if width or height is bigger
-        #                         geo_elem['clear'] = elem['follow'].buffer(val['width'] / 2.0).exterior
-        #                 if 'clear' in elem:
-        #                     if isinstance(elem['clear'], Polygon):
-        #                         try:
-        #                             geo_elem['solid'] = elem['clear'].buffer(val['size'] / 2.0, grb_circle_steps)
-        #                         except AttributeError:
-        #                             # TODO should test if width or height is bigger
-        #                             geo_elem['solid'] = elem['clear'].buffer(val['width'] / 2.0, grb_circle_steps)
-        #                     else:
-        #                         geo_elem['follow'] = elem['clear']
-        #                 new_apertures[apid]['geometry'].append(deepcopy(geo_elem))
-        #         else:
-        #             new_apertures[apid][key] = deepcopy(val[key])
-
-        if '0' not in new_apertures:
-            new_apertures['0'] = {}
-            new_apertures['0']['type'] = 'C'
-            new_apertures['0']['size'] = 0.0
-            new_apertures['0']['geometry'] = []
-
-        try:
-            for poly in new_solid_geometry:
-                new_el = {}
-                new_el['solid'] = poly
-                new_el['follow'] = poly.exterior
-                new_apertures['0']['geometry'].append(new_el)
-        except TypeError:
-            new_el = {}
-            new_el['solid'] = new_solid_geometry
-            new_el['follow'] = new_solid_geometry.exterior
-            new_apertures['0']['geometry'].append(new_el)
-
-        for td in new_apertures:
-            print(td, new_apertures[td])
+        for ap in new_apertures:
+            for k in ap:
+                if k == 'geometry':
+                    for geo_el in new_apertures[ap]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = geo_el['solid'].buffer(offset, int(grb_circle_steps))
 
         def init_func(new_obj, app_obj):
+            """
+            Init a new object in FlatCAM Object collection
+
+            :param new_obj:     New object
+            :type new_obj:      ObjectCollection
+            :param app_obj:     App
+            :type app_obj:      App_Main.App
+            :return:            None
+            :rtype:
+            """
             new_obj.options.update(new_options)
             new_obj.options['name'] = outname
             new_obj.fill_color = deepcopy(grb_obj.fill_color)

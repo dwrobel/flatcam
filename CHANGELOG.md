@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.05.2020
+
+- changes some icons
+- added a new GUI element which is a evaluated LineEdit that accepts only float numbers and /,*,+,-,% chars
+- finished the Etch Compensation Tool
+
 23.05.2020
 
 - fixed a issue when testing for Exclusion areas overlap over the Geometry object solid_geometry

@@ -964,6 +964,8 @@ class Geometry(object):
                     corner_type = 1 if corner is None else corner
                     geo_iso.append(pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
                 pol_nr += 1
+
+                # activity view update
                 disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
                 if old_disp_number < disp_number <= 100:
