@@ -228,6 +228,11 @@ class ToolInvertGerber(AppTool):
         for poly in grb_obj.solid_geometry:
             new_solid_geometry = new_solid_geometry.difference(poly)
 
+        try:
+            __ = iter(new_solid_geometry)
+        except TypeError:
+            new_solid_geometry = [new_solid_geometry]
+
         new_options = {}
         for opt in grb_obj.options:
             new_options[opt] = deepcopy(grb_obj.options[opt])

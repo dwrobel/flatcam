@@ -586,7 +586,8 @@ class Geometry(object):
             return
 
     def is_empty(self):
-        if isinstance(self.solid_geometry, BaseGeometry):
+        if isinstance(self.solid_geometry, BaseGeometry) or isinstance(self.solid_geometry, Polygon) or \
+                isinstance(self.solid_geometry, MultiPolygon):
             return self.solid_geometry.is_empty
 
         if isinstance(self.solid_geometry, list):

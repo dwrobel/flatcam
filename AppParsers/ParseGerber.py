@@ -1476,7 +1476,7 @@ class Gerber(Geometry):
                 sol_geo_length = 1
 
             try:
-                if buff_length == 0 and sol_geo_length in [0, 1]:
+                if buff_length == 0 and sol_geo_length in [0, 1] and self.solid_geometry.area == 0:
                     log.error("Object is not Gerber file or empty. Aborting Object creation.")
                     return 'fail'
             except TypeError as e:
