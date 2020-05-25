@@ -50,7 +50,8 @@ class KeySensitiveListView(QtWidgets.QTreeView):
     def __init__(self, app, parent=None):
         super(KeySensitiveListView, self).__init__(parent)
         self.setHeaderHidden(True)
-        self.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)
+        # self.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)     # allow Edit on Tree
+        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
 
         # self.setRootIsDecorated(False)
         # self.setExpandsOnDoubleClick(False)
