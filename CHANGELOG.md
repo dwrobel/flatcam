@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - changed and added some icons
 - fixed the Shortcuts Tab to reflect the actual current shortcut keys
 - started to work on moving the Isolation Routing from the Gerber Object UI to it's own tool
+- created a new tool: Isolation Routing Tool: work in progress
+- some fixes in NCC Tool
 
 24.05.2020
 

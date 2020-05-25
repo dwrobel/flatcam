@@ -224,8 +224,12 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
         self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
+
+        # Tools
+        self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
         self.ui.generate_ncc_button.clicked.connect(self.app.ncclear_tool.run)
         self.ui.generate_cutout_button.clicked.connect(self.app.cutout_tool.run)
+
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)

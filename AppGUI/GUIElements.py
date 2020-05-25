@@ -2224,11 +2224,14 @@ class OptionalHideInputSection:
         """
         Associates the a checkbox with a set of inputs.
 
-        :param cb: Checkbox that enables the optional inputs.
-        :param optinputs: List of widgets that are optional.
-        :param logic: When True the logic is normal, when False the logic is in reverse
-        It means that for logic=True, when the checkbox is checked the widgets are Enabled, and
-        for logic=False, when the checkbox is checked the widgets are Disabled
+        :param cb:          Checkbox that enables the optional inputs.
+        :type cb:           QtWidgets.QCheckBox
+        :param optinputs:   List of widgets that are optional.
+        :type optinputs:    list
+        :param logic:       When True the logic is normal, when False the logic is in reverse
+                            It means that for logic=True, when the checkbox is checked the widgets are Enabled, and
+                            for logic=False, when the checkbox is checked the widgets are Disabled
+        :type logic:        bool
         :return:
         """
         assert isinstance(cb, FCCheckBox), \

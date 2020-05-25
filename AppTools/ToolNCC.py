@@ -2340,6 +2340,9 @@ class NonCopperClear(AppTool, Gerber):
                 if self.ncc_tools[tooluid]['data']['tools_nccoperation'] == 'clear':
                     sorted_clear_tools.append(self.ncc_tools[tooluid]['tooldia'])
 
+        if not sorted_clear_tools:
+            return 'fail'
+
         # ########################################################################################################
         # set the name for the future Geometry object
         # I do it here because it is also stored inside the gen_clear_area() and gen_clear_area_rest() methods
@@ -2360,6 +2363,8 @@ class NonCopperClear(AppTool, Gerber):
             # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
             # will store the number of tools for which the isolation is broken
             warning_flag = 0
+
+            tool = None
 
             if order == 'fwd':
                 sorted_clear_tools.sort(reverse=False)
@@ -2900,7 +2905,7 @@ class NonCopperClear(AppTool, Gerber):
             if run_threaded:
                 proc.done()
             else:
-                app_obj.proc_container.view.set_idle()
+                a_obj.proc_container.view.set_idle()
 
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
@@ -2914,48 +2919,34 @@ class NonCopperClear(AppTool, Gerber):
         else:
             job_thread(app_obj=self.app)
 
-    def clear_copper_tcl(self, ncc_obj,
-                         sel_obj=None,
-                         ncctooldia=None,
-                         isotooldia=None,
-                         margin=None,
-                         has_offset=None,
-                         offset=None,
-                         select_method=None,
-                         outname=None,
-                         overlap=None,
-                         connect=None,
-                         contour=None,
-                         order=None,
-                         method=None,
-                         rest=None,
-                         tools_storage=None,
-                         plot=True,
-                         run_threaded=False):
+    def clear_copper_tcl(self, ncc_obj, sel_obj=None, ncctooldia=None, isotooldia=None, margin=None, has_offset=None,
+                         offset=None, select_method=None, outname=None, overlap=None, connect=None, contour=None,
+                         order=None, method=None, rest=None, tools_storage=None, plot=True, run_threaded=False):
         """
         Clear the excess copper from the entire object. To be used only in a TCL command.
 
-        :param ncc_obj: ncc cleared object
+        :param ncc_obj:         ncc cleared object
         :param sel_obj:
-        :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
-        :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
-        :param overlap: value by which the paths will overlap
-        :param order: if the tools are ordered and how
-        :param select_method: if to do ncc on the whole object, on an defined area or on an area defined by
-        another object
-        :param has_offset: True if an offset is needed
-        :param offset: distance from the copper features where the copper clearing is stopping
-        :param margin: a border around cleared area
-        :param outname: name of the resulting object
-        :param connect: Connect lines to avoid tool lifts.
-        :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
-        :param rest: True if to use rest-machining
-        :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
-        Usage of the different one is related to when this function is called from a TcL command.
-        :param plot: if True after the job is finished the result will be plotted, else it will not.
-        :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
-        run non-threaded for TclShell usage
+        :param ncctooldia:      a tuple or single element made out of diameters of the tools to be used to ncc clear
+        :param isotooldia:      a tuple or single element made out of diameters of the tools to be used for isolation
+        :param overlap:         value by which the paths will overlap
+        :param order:           if the tools are ordered and how
+        :param select_method:   if to do ncc on the whole object, on an defined area or on an area defined by
+                                another object
+        :param has_offset:      True if an offset is needed
+        :param offset:          distance from the copper features where the copper clearing is stopping
+        :param margin:          a border around cleared area
+        :param outname:         name of the resulting object
+        :param connect:         Connect lines to avoid tool lifts.
+        :param contour:         Clear around the edges.
+        :param method:          choice out of 'seed', 'normal', 'lines'
+        :param rest:            True if to use rest-machining
+        :param tools_storage:   whether to use the current tools_storage self.ncc_tools or a different one.
+                                Usage of the different one is related to when this function is called from a
+                                TcL command.
+        :param plot:            if True after the job is finished the result will be plotted, else it will not.
+        :param run_threaded:    If True the method will be run in a threaded way suitable for GUI usage;
+                                if False it will run non-threaded for TclShell usage
         :return:
         """
         if run_threaded:
@@ -3002,6 +2993,9 @@ class NonCopperClear(AppTool, Gerber):
                 sorted_tools = [float(ncctooldia)]
             else:
                 sorted_tools = ncctooldia
+
+        if not sorted_tools:
+            return 'fail'
 
         # ##############################################################################################################
         # Prepare non-copper polygons. Create the bounding box area from which the copper features will be subtracted ##
