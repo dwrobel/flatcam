@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from AppTool import AppTool
-from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry
+from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, NumericalEvalEntry, FCEntry
 
 from shapely.ops import unary_union
 
@@ -79,10 +79,59 @@ class ToolEtchCompensation(AppTool):
 
         grid0.addWidget(QtWidgets.QLabel(""), 3, 0, 1, 2)
 
+        self.util_label = QtWidgets.QLabel("<b>%s:</b>" % _("Utilities"))
+        self.util_label.setToolTip('%s.' % _("Conversion utilities"))
+
+        grid0.addWidget(self.util_label, 4, 0, 1, 2)
+
+        # Oz to um conversion
+        self.oz_um_label = QtWidgets.QLabel('%s:' % _('Oz to Microns'))
+        self.oz_um_label.setToolTip(
+            _("Will convert from oz thickness to microns [um].\n"
+              "Can use formulas with operators: /, *, +, -, %, .\n"
+              "The real numbers use the dot decimals separator.")
+        )
+        grid0.addWidget(self.oz_um_label, 5, 0, 1, 2)
+
+        hlay_1 = QtWidgets.QHBoxLayout()
+
+        self.oz_entry = NumericalEvalEntry()
+        self.oz_entry.setPlaceholderText(_("Oz value"))
+        self.oz_to_um_entry = FCEntry()
+        self.oz_to_um_entry.setPlaceholderText(_("Microns value"))
+        self.oz_to_um_entry.setReadOnly(True)
+
+        hlay_1.addWidget(self.oz_entry)
+        hlay_1.addWidget(self.oz_to_um_entry)
+        grid0.addLayout(hlay_1, 6, 0, 1, 2)
+
+        # Mils to um conversion
+        self.mils_um_label = QtWidgets.QLabel('%s:' % _('Mils to Microns'))
+        self.mils_um_label.setToolTip(
+            _("Will convert from mils to microns [um].\n"
+              "Can use formulas with operators: /, *, +, -, %, .\n"
+              "The real numbers use the dot decimals separator.")
+        )
+        grid0.addWidget(self.mils_um_label, 7, 0, 1, 2)
+
+        hlay_2 = QtWidgets.QHBoxLayout()
+
+        self.mils_entry = NumericalEvalEntry()
+        self.mils_entry.setPlaceholderText(_("Mils value"))
+        self.mils_to_um_entry = FCEntry()
+        self.mils_to_um_entry.setPlaceholderText(_("Microns value"))
+        self.mils_to_um_entry.setReadOnly(True)
+
+        hlay_2.addWidget(self.mils_entry)
+        hlay_2.addWidget(self.mils_to_um_entry)
+        grid0.addLayout(hlay_2, 8, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(""), 9, 0, 1, 2)
+
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
 
-        grid0.addWidget(self.param_label, 4, 0, 1, 2)
+        grid0.addWidget(self.param_label, 10, 0, 1, 2)
 
         # Thickness
         self.thick_label = QtWidgets.QLabel('%s:' % _('Copper Thickness'))
@@ -95,8 +144,8 @@ class ToolEtchCompensation(AppTool):
         self.thick_entry.set_range(0.0000, 9999.9999)
         self.thick_entry.setObjectName(_("Thickness"))
 
-        grid0.addWidget(self.thick_label, 5, 0)
-        grid0.addWidget(self.thick_entry, 5, 1)
+        grid0.addWidget(self.thick_label, 12, 0)
+        grid0.addWidget(self.thick_entry, 12, 1)
 
         self.ratio_label = QtWidgets.QLabel('%s:' % _("Ratio"))
         self.ratio_label.setToolTip(
@@ -110,8 +159,8 @@ class ToolEtchCompensation(AppTool):
             {'label': _('PreSelection'), 'value': 'p'}
         ], orientation='vertical', stretch=False)
 
-        grid0.addWidget(self.ratio_label, 7, 0, 1, 2)
-        grid0.addWidget(self.ratio_radio, 8, 0, 1, 2)
+        grid0.addWidget(self.ratio_label, 14, 0, 1, 2)
+        grid0.addWidget(self.ratio_radio, 16, 0, 1, 2)
 
         # Etchants
         self.etchants_label = QtWidgets.QLabel('%s:' % _('Etchants'))
@@ -122,8 +171,8 @@ class ToolEtchCompensation(AppTool):
         self.etchants_combo.setObjectName(_("Etchants"))
         self.etchants_combo.addItems(["CuCl2", "FeCl3"])
 
-        grid0.addWidget(self.etchants_label, 9, 0)
-        grid0.addWidget(self.etchants_combo, 9, 1)
+        grid0.addWidget(self.etchants_label, 18, 0)
+        grid0.addWidget(self.etchants_combo, 18, 1)
 
         # Etch Factor
         self.factor_label = QtWidgets.QLabel('%s:' % _('Etch factor'))
@@ -141,13 +190,13 @@ class ToolEtchCompensation(AppTool):
         self.factor_label.hide()
         self.factor_entry.hide()
 
-        grid0.addWidget(self.factor_label, 10, 0)
-        grid0.addWidget(self.factor_entry, 10, 1)
+        grid0.addWidget(self.factor_label, 20, 0)
+        grid0.addWidget(self.factor_entry, 20, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 13, 0, 1, 2)
+        grid0.addWidget(separator_line, 22, 0, 1, 2)
 
         self.compensate_btn = FCButton(_('Compensate'))
         self.compensate_btn.setToolTip(
@@ -159,7 +208,7 @@ class ToolEtchCompensation(AppTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.compensate_btn, 14, 0, 1, 2)
+        grid0.addWidget(self.compensate_btn, 24, 0, 1, 2)
 
         self.tools_box.addStretch()
 
@@ -179,6 +228,9 @@ class ToolEtchCompensation(AppTool):
         self.compensate_btn.clicked.connect(self.on_compensate)
         self.reset_button.clicked.connect(self.set_tool_ui)
         self.ratio_radio.activated_custom.connect(self.on_ratio_change)
+
+        self.oz_entry.textChanged.connect(self.on_oz_conversion)
+        self.mils_entry.textChanged.connect(self.on_mils_conversion)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='', **kwargs)
@@ -234,6 +286,24 @@ class ToolEtchCompensation(AppTool):
             self.etchants_combo.show()
             self.factor_label.hide()
             self.factor_entry.hide()
+
+    def on_oz_conversion(self, txt):
+        try:
+            val = eval(txt)
+            # oz thickness to mils by multiplying with 1.37
+            # mils to microns by multiplying with 25.4
+            val *= 34.798
+        except Exception:
+            return
+        self.oz_to_um_entry.set_value(val, self.decimals)
+
+    def on_mils_conversion(self, txt):
+        try:
+            val = eval(txt)
+            val *= 25.4
+        except Exception:
+            return
+        self.mils_to_um_entry.set_value(val, self.decimals)
 
     def on_compensate(self):
         ratio_type = self.ratio_radio.get_value()

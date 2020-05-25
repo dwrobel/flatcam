@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 25.05.2020
 
 - updated the GUI fields for the Scale and Offset in the Object UI to allow only numeric values and operators in the list [/,*,+,-], spaces, dots and comma
+- modified the Etch Compensation Tool and added conversion utilities from Oz thickenss and mils to microns
 
 24.05.2020
 
