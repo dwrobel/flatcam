@@ -915,6 +915,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
+        self.isolation_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(
@@ -1908,6 +1910,8 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
+        self.isolation_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(
@@ -2295,14 +2299,15 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Calibration  Tool
+                # Extract Drills  Tool
                 if key == QtCore.Qt.Key_E:
-                    self.app.cal_exc_tool.run(toggle=True)
+                    # self.app.cal_exc_tool.run(toggle=True)
+                    self.app.edrills_tool.run(toggle=True)
                     return
 
-                # Copper Thieving Tool
+                # Fiducials Tool
                 if key == QtCore.Qt.Key_F:
-                    self.app.copper_thieving_tool.run(toggle=True)
+                    self.app.fiducial_tool.run(toggle=True)
                     return
 
                 # Toggle Grid lines
@@ -2310,17 +2315,17 @@ class MainGUI(QtWidgets.QMainWindow):
                     self.app.on_toggle_grid_lines()
                     return
 
-                # Align in Object Tool
+                # Punch Gerber Tool
                 if key == QtCore.Qt.Key_H:
                     self.app.punch_tool.run(toggle=True)
 
-                # Extract Drills Tool
+                # Isolation Tool
                 if key == QtCore.Qt.Key_I:
-                    self.app.edrills_tool.run(toggle=True)
+                    self.app.isolation_tool.run(toggle=True)
 
-                # Fiducials Tool
+                # Copper Thieving Tool
                 if key == QtCore.Qt.Key_J:
-                    self.app.fiducial_tool.run(toggle=True)
+                    self.app.copper_thieving_tool.run(toggle=True)
                     return
 
                 # Solder Paste Dispensing Tool
@@ -3879,6 +3884,16 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td height="20"><strong>Alt+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+F</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+G</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
                     <tr height="20">
                         <td height="20"><strong>Alt+H</strong></td>
                         <td>&nbsp;%s</td>
@@ -3928,7 +3943,19 @@ class ShortcutsTab(QtWidgets.QWidget):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>Alt+U</strong></td>
+                        <td height="20"><strong>Alt+T</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+W</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+X</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Alt+Z</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -4030,13 +4057,15 @@ class ShortcutsTab(QtWidgets.QWidget):
                 _("Skew on Y axis"),
 
                 # ALT section
-                _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
-                _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
+                _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Extract Drills Tool"),
+                _("Fiducials Tool"), _("Toggle Grid Lines"),
+                _("Punch Gerber Tool"), _("Isolation Tool"), _("Copper Thieving Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Corner Markers Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
-                _("View File Source"),
-                _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
+                _("View File Source"), _("Transformations Tool"),
+                _("Subtract Tool"), _("Cutout PCB Tool"), _("Panelize PCB"),
+                _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
                 _("Toggle Full Screen"),
 
                 # CTRL + ALT section

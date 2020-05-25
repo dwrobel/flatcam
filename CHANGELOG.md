@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - modified the Etch Compensation Tool and added conversion utilities from Oz thickenss and mils to microns
 - added a Toggle All checkbox to Corner Markers Tool
 - added an Icon to the MessageBox that asks for saving if the user try to close the app and there is some unsaved work 
+- changed and added some icons
+- fixed the Shortcuts Tab to reflect the actual current shortcut keys
+- started to work on moving the Isolation Routing from the Gerber Object UI to it's own tool
 
 24.05.2020
 

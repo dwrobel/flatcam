@@ -568,7 +568,7 @@ class ToolCopperThieving(AppTool):
         self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+J', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']

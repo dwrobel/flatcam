@@ -1315,10 +1315,13 @@ class App(QtCore.QObject):
         self.rules_tool = None
         self.sub_tool = None
         self.move_tool = None
+
         self.cutout_tool = None
         self.ncclear_tool = None
-        self.optimal_tool = None
         self.paint_tool = None
+        self.isolation_tool = None
+
+        self.optimal_tool = None
         self.transform_tool = None
         self.properties_tool = None
         self.pdf_tool = None
@@ -1901,6 +1904,10 @@ class App(QtCore.QObject):
         self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint16.png'), pos=self.ui.menutool,
                                 before=self.sub_tool.menuAction, separator=True)
 
+        self.isolation_tool = ToolIsolation(self)
+        self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menutool,
+                                    before=self.sub_tool.menuAction, separator=True)
+
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
                                           pos=self.ui.menutool)
@@ -2057,6 +2064,7 @@ class App(QtCore.QObject):
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
+        self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
 
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))

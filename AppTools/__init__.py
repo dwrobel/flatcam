@@ -1,7 +1,6 @@
 
 from AppTools.ToolCalculators import ToolCalculator
 from AppTools.ToolCalibration import ToolCalibration
-from AppTools.ToolCutOut import CutOut
 
 from AppTools.ToolDblSided import DblSidedTool
 from AppTools.ToolExtractDrills import ToolExtractDrills
@@ -16,8 +15,10 @@ from AppTools.ToolDistanceMin import DistanceMin
 
 from AppTools.ToolMove import ToolMove
 
+from AppTools.ToolCutOut import CutOut
 from AppTools.ToolNCC import NonCopperClear
 from AppTools.ToolPaint import ToolPaint
+from AppTools.ToolIsolation import ToolIsolation
 
 from AppTools.ToolOptimal import ToolOptimal
 

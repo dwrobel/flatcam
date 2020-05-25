@@ -396,7 +396,7 @@ class ToolFiducials(AppTool):
         self.app.ui.notebook.setTabText(2, _("Fiducials Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+J', **kwargs)
+        AppTool.install(self, icon, separator, shortcut='Alt+F', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
