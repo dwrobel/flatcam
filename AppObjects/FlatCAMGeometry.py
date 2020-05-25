@@ -304,25 +304,9 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.set_tool_offset_visibility(selected_row)
 
-        # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
-        # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
-        self.ui.name_entry.set_value(self.options['name'])
-        self.ui_connect()
-
-        self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
-            self.ui.e_cut_entry.setDisabled(True)
-
-        # set the text on tool_data_label after loading the object
-        sel_rows = []
-        sel_items = self.ui.geo_tools_table.selectedItems()
-        for it in sel_items:
-            sel_rows.append(it.row())
-        if len(sel_rows) > 1:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
-
+        # -----------------------------
         # Build Exclusion Areas section
+        # -----------------------------
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
         self.ui.exclusion_table.setRowCount(e_len)
 
@@ -373,6 +357,27 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
         self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
+
+        # End Build Exclusion Areas
+        # -----------------------------
+
+        # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
+        # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
+        self.ui.name_entry.set_value(self.options['name'])
+        self.ui_connect()
+
+        self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
+            self.ui.e_cut_entry.setDisabled(True)
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = []
+        sel_items = self.ui.geo_tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -652,8 +657,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                                 self.ui.tool_offset_entry.get_value().replace(',', '.')
                             )
                         except ValueError:
-                            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                 _("Wrong value format entered, use a number."))
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                             return
 
     def ui_connect(self):
@@ -661,6 +665,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # changes in geometry UI
         for i in self.param_fields:
             current_widget = self.param_fields[i]
+
             if isinstance(current_widget, FCCheckBox):
                 current_widget.stateChanged.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FCComboBox):
@@ -1382,16 +1387,18 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_connect()
 
     def gui_form_to_storage(self):
+        self.ui_disconnect()
+
         if self.ui.geo_tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("GeometryObject.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
-        self.ui_disconnect()
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
-        except Exception:
+        except Exception as e:
+            log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
             return
 
         # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z

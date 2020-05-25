@@ -1084,15 +1084,6 @@ class FCRegion(FCShapeTool):
 
         self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
-    def clean_up(self):
-        self.draw_app.selected = []
-        self.draw_app.apertures_table.clearSelection()
-        self.draw_app.plot_all()
-        try:
-            self.draw_app.app.jump_signal.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
     def on_key(self, key):
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
@@ -1158,16 +1149,36 @@ class FCRegion(FCShapeTool):
 
             return msg
 
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
-class FCTrack(FCRegion):
+
+class FCTrack(FCShapeTool):
     """
     Resulting type: Polygon
     """
     def __init__(self, draw_app):
-        FCRegion.__init__(self, draw_app)
+        DrawTool.__init__(self, draw_app)
         self.name = 'track'
         self.draw_app = draw_app
 
+        self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
+
+        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+
+        self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
+        self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
+
+        self.temp_points = []
+
+        self. final_click = False
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1181,49 +1192,23 @@ class FCTrack(FCRegion):
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
-    def make(self):
-        new_geo_el = {}
-        if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
-                                                                 resolution=int(self.steps_per_circle / 4))
-            new_geo_el['follow'] = Point(self.temp_points)
-        else:
-            new_geo_el['solid'] = (LineString(self.temp_points).buffer(
-                self.buf_val, resolution=int(self.steps_per_circle / 4))).buffer(0)
-            new_geo_el['follow'] = LineString(self.temp_points)
-
-        self.geometry = DrawToolShape(new_geo_el)
-
-        self.draw_app.in_action = False
-        self.complete = True
-
-        self.draw_app.app.jump_signal.disconnect()
-        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
-
-    def clean_up(self):
-        self.draw_app.selected = []
-        self.draw_app.apertures_table.clearSelection()
-        self.draw_app.plot_all()
-        try:
-            self.draw_app.app.jump_signal.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
     def click(self, point):
         self.draw_app.in_action = True
-        try:
-            if point != self.points[-1]:
-                self.points.append(point)
-        except IndexError:
+
+        if not self.points:
             self.points.append(point)
+        elif point != self.points[-1]:
+            self.points.append(point)
+        else:
+            return
 
         new_geo_el = {}
 
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
             new_geo_el['follow'] = Point(self.temp_points)
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
             new_geo_el['follow'] = LineString(self.temp_points)
 
         self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
@@ -1236,22 +1221,24 @@ class FCTrack(FCRegion):
 
         return ""
 
+    def update_grid_info(self):
+        self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
+        self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
+
     def utility_geometry(self, data=None):
         self.update_grid_info()
         new_geo_el = {}
 
-        if len(self.points) == 0:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val,
-                                                     resolution=int(self.steps_per_circle / 4))
-
+        if not self.points:
+            new_geo_el['solid'] = Point(data).buffer(self.buf_val, int(self.steps_per_circle))
             return DrawToolUtilityShape(new_geo_el)
-        elif len(self.points) > 0:
-
-            self.temp_points = [self.points[-1]]
+        else:
             old_x = self.points[-1][0]
             old_y = self.points[-1][1]
             x = data[0]
             y = data[1]
+
+            self.temp_points = [self.points[-1]]
 
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
@@ -1300,13 +1287,29 @@ class FCTrack(FCRegion):
 
             self.temp_points.append(data)
             if len(self.temp_points) == 1:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
-                                                                     resolution=int(self.steps_per_circle / 4))
+                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
                 return DrawToolUtilityShape(new_geo_el)
 
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
-                                                                      resolution=int(self.steps_per_circle / 4))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
             return DrawToolUtilityShape(new_geo_el)
+
+    def make(self):
+        new_geo_el = {}
+        if len(self.temp_points) == 1:
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+            new_geo_el['follow'] = Point(self.temp_points)
+        else:
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, int(self.steps_per_circle))
+            new_geo_el['solid'] = new_geo_el['solid'].buffer(0)     # try to clean the geometry
+            new_geo_el['follow'] = LineString(self.temp_points)
+
+        self.geometry = DrawToolShape(new_geo_el)
+
+        self.draw_app.in_action = False
+        self.complete = True
+
+        self.draw_app.app.jump_signal.disconnect()
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
@@ -1399,6 +1402,15 @@ class FCTrack(FCRegion):
             self.draw_app.draw_utility_geometry(geo=geo)
 
             return msg
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCDisc(FCShapeTool):
@@ -4535,6 +4547,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if self.current_storage is not None:
                         self.on_grb_shape_complete(self.current_storage)
                         self.build_ui()
+
                     # MS: always return to the Select Tool if modifier key is not pressed
                     # else return to the current tool
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -4542,6 +4555,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         modifier_to_use = Qt.ControlModifier
                     else:
                         modifier_to_use = Qt.ShiftModifier
+
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
                     if key_modifier == modifier_to_use:
@@ -4602,12 +4616,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
                         # right mouse click will finish the action
                         if isinstance(self.active_tool, FCShapeTool):
-                            self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
-                            self.active_tool.make()
+                            if isinstance(self.active_tool, FCTrack):
+                                self.active_tool.make()
+                            else:
+                                self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
+                                self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_grb_shape_complete()
-                                self.app.inform.emit('[success] %s' %
-                                                     _("Done."))
+                                self.app.inform.emit('[success] %s' % _("Done."))
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool but not for FCTrack

@@ -1754,10 +1754,10 @@ class GeometryObjectUI(ObjectUI):
         # ################# GRID LAYOUT 3   ###############################
         # #################################################################
 
-        grid3 = QtWidgets.QGridLayout()
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
-        self.geo_param_box.addLayout(grid3)
+        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3.setColumnStretch(0, 0)
+        self.grid3.setColumnStretch(1, 1)
+        self.geo_param_box.addLayout(self.grid3)
 
         # ### Tools Data ## ##
         self.tool_data_label = QtWidgets.QLabel(
@@ -1768,7 +1768,7 @@ class GeometryObjectUI(ObjectUI):
                 "Each tool store it's own set of such data."
             )
         )
-        grid3.addWidget(self.tool_data_label, 0, 0, 1, 2)
+        self.grid3.addWidget(self.tool_data_label, 0, 0, 1, 2)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
@@ -1782,8 +1782,8 @@ class GeometryObjectUI(ObjectUI):
         self.tipdia_entry.set_range(0.00001, 9999.9999)
         self.tipdia_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.tipdialabel, 1, 0)
-        grid3.addWidget(self.tipdia_entry, 1, 1)
+        self.grid3.addWidget(self.tipdialabel, 1, 0)
+        self.grid3.addWidget(self.tipdia_entry, 1, 1)
 
         # Tip Angle
         self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
@@ -1798,8 +1798,8 @@ class GeometryObjectUI(ObjectUI):
         self.tipangle_entry.set_range(1.0, 180.0)
         self.tipangle_entry.setSingleStep(1)
 
-        grid3.addWidget(self.tipanglelabel, 2, 0)
-        grid3.addWidget(self.tipangle_entry, 2, 1)
+        self.grid3.addWidget(self.tipanglelabel, 2, 0)
+        self.grid3.addWidget(self.tipangle_entry, 2, 1)
 
         # Cut Z
         self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -1819,8 +1819,8 @@ class GeometryObjectUI(ObjectUI):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.cutzlabel, 3, 0)
-        grid3.addWidget(self.cutz_entry, 3, 1)
+        self.grid3.addWidget(self.cutzlabel, 3, 0)
+        self.grid3.addWidget(self.cutz_entry, 3, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -1845,8 +1845,8 @@ class GeometryObjectUI(ObjectUI):
         )
         self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        grid3.addWidget(self.mpass_cb, 4, 0)
-        grid3.addWidget(self.maxdepth_entry, 4, 1)
+        self.grid3.addWidget(self.mpass_cb, 4, 0)
+        self.grid3.addWidget(self.maxdepth_entry, 4, 1)
 
         # Travel Z
         self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
@@ -1864,8 +1864,8 @@ class GeometryObjectUI(ObjectUI):
 
         self.travelz_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.travelzlabel, 5, 0)
-        grid3.addWidget(self.travelz_entry, 5, 1)
+        self.grid3.addWidget(self.travelzlabel, 5, 0)
+        self.grid3.addWidget(self.travelz_entry, 5, 1)
 
         # Feedrate X-Y
         self.frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
@@ -1878,8 +1878,8 @@ class GeometryObjectUI(ObjectUI):
         self.cncfeedrate_entry.set_range(0, 99999.9999)
         self.cncfeedrate_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.frlabel, 10, 0)
-        grid3.addWidget(self.cncfeedrate_entry, 10, 1)
+        self.grid3.addWidget(self.frlabel, 10, 0)
+        self.grid3.addWidget(self.cncfeedrate_entry, 10, 1)
 
         # Feedrate Z (Plunge)
         self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -1893,8 +1893,8 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_z_entry.set_range(0, 99999.9999)
         self.feedrate_z_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.frzlabel, 11, 0)
-        grid3.addWidget(self.feedrate_z_entry, 11, 1)
+        self.grid3.addWidget(self.frzlabel, 11, 0)
+        self.grid3.addWidget(self.feedrate_z_entry, 11, 1)
 
         # Feedrate rapids
         self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
@@ -1910,8 +1910,8 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_rapid_entry.set_range(0, 99999.9999)
         self.feedrate_rapid_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.fr_rapidlabel, 12, 0)
-        grid3.addWidget(self.feedrate_rapid_entry, 12, 1)
+        self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
+        self.grid3.addWidget(self.feedrate_rapid_entry, 12, 1)
         # default values is to hide
         self.fr_rapidlabel.hide()
         self.feedrate_rapid_entry.hide()
@@ -1936,8 +1936,8 @@ class GeometryObjectUI(ObjectUI):
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
-        grid3.addWidget(self.extracut_cb, 13, 0)
-        grid3.addWidget(self.e_cut_entry, 13, 1)
+        self.grid3.addWidget(self.extracut_cb, 13, 0)
+        self.grid3.addWidget(self.e_cut_entry, 13, 1)
 
         # Spindlespeed
         self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
@@ -1952,8 +1952,8 @@ class GeometryObjectUI(ObjectUI):
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.set_step(100)
 
-        grid3.addWidget(self.spindle_label, 14, 0)
-        grid3.addWidget(self.cncspindlespeed_entry, 14, 1)
+        self.grid3.addWidget(self.spindle_label, 14, 0)
+        self.grid3.addWidget(self.cncspindlespeed_entry, 14, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
@@ -1973,8 +1973,8 @@ class GeometryObjectUI(ObjectUI):
         )
         self.ois_dwell_geo = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        grid3.addWidget(self.dwell_cb, 15, 0)
-        grid3.addWidget(self.dwelltime_entry, 15, 1)
+        self.grid3.addWidget(self.dwell_cb, 15, 0)
+        self.grid3.addWidget(self.dwelltime_entry, 15, 1)
 
         # Probe depth
         self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
@@ -1987,8 +1987,8 @@ class GeometryObjectUI(ObjectUI):
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.pdepth_label, 17, 0)
-        grid3.addWidget(self.pdepth_entry, 17, 1)
+        self.grid3.addWidget(self.pdepth_label, 17, 0)
+        self.grid3.addWidget(self.pdepth_entry, 17, 1)
 
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
@@ -2003,8 +2003,8 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_probe_entry.set_range(0.0, 9999.9999)
         self.feedrate_probe_entry.setSingleStep(0.1)
 
-        grid3.addWidget(self.feedrate_probe_label, 18, 0)
-        grid3.addWidget(self.feedrate_probe_entry, 18, 1)
+        self.grid3.addWidget(self.feedrate_probe_label, 18, 0)
+        self.grid3.addWidget(self.feedrate_probe_entry, 18, 1)
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
