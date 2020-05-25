@@ -543,6 +543,12 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/shortcuts24.png'), _('Shortcuts List\tF3'))
         self.menuhelp_videohelp = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/youtube32.png'), _('YouTube Channel\tF4'))
+
+        self.menuhelp.addSeparator()
+
+        self.menuhelp_readme = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/warning.png'), _('ReadMe?'))
+
         self.menuhelp_about = self.menuhelp.addAction(
             QtGui.QIcon(self.app.resource_location + '/about32.png'), _('About FlatCAM'))
 

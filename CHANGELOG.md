@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - started to work on moving the Isolation Routing from the Gerber Object UI to it's own tool
 - created a new tool: Isolation Routing Tool: work in progress
 - some fixes in NCC Tool
+- added a dialog in Menu -> Help -> ReadMe?
 
 24.05.2020
 

@@ -879,6 +879,7 @@ class App(QtCore.QObject):
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
+        self.ui.menuhelp_readme.triggered.connect(self.on_readme)
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
         self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
@@ -2912,6 +2913,83 @@ class App(QtCore.QObject):
 
                 layout3.addStretch()
                 layout3.addWidget(closebtn)
+
+                closebtn.clicked.connect(self.accept)
+
+        AboutDialog(app=self, parent=self.ui).exec_()
+
+    def on_readme(self):
+        class AboutDialog(QtWidgets.QDialog):
+            def __init__(self, app, parent=None):
+                QtWidgets.QDialog.__init__(self, parent)
+
+                self.app = app
+
+                open_source_link = "<a href = 'https://opensource.org/'<b>Open Source</b></a>"
+                new_features_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/pull-requests/'" \
+                                    "<b>new features</b></a>"
+
+                bugs_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/issues/new'<b>report bugs</b></a>"
+                donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
+                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>donation</b></a>"
+
+                # Icon and title
+                self.setWindowIcon(parent.app_icon)
+                self.setWindowTitle(_("Important Information's"))
+                self.resize(720, 330)
+
+                logo = QtWidgets.QLabel()
+                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
+
+                content = QtWidgets.QLabel(
+                    "This program is %s and free in a very wide meaning of the word.<br>"
+                    "Yet it cannot evolve without <b>contributions</b>.<br><br>"
+                    "If you want to see this application evolve and grow, or if you make money with it,<br>"
+                    "you can <b>contribute</b> to the development yourself by:<br>"
+                    "<ul>"
+                    "<li>adding %s through a Pull Request on the Bitbucket repository</li>"
+                    "<li>%s by providing the steps required to reproduce the bug</li>"
+                    "<li>or by making a %s.</li>"
+                    "</ul>"
+                    "There are no strings attached.<br>"
+                    "You don't have to make a %s, and it is totally optional but:"
+                    "<ul>"
+                    "<li>it will be welcomed with joy &#128077;</li>"
+                    "<li>it will give me a reason to continue &#128513;</li>"
+                    "</ul>" %
+                    (open_source_link, new_features_link, bugs_link, donation_link, donation_link)
+                )
+                content.setOpenExternalLinks(True)
+                closebtn = QtWidgets.QPushButton(_("Close"))
+
+                # layouts
+                layout1 = QtWidgets.QVBoxLayout()
+                self.setLayout(layout1)
+
+                pal = QtGui.QPalette()
+                pal.setColor(QtGui.QPalette.Background, Qt.white)
+
+                self.grid_lay = QtWidgets.QGridLayout()
+                self.grid_lay.setHorizontalSpacing(20)
+                self.grid_lay.setColumnStretch(0, 0)
+                self.grid_lay.setColumnStretch(1, 1)
+
+                content_widget = QtWidgets.QWidget()
+                content_widget.setLayout(self.grid_lay)
+                scroll_area = QtWidgets.QScrollArea()
+                scroll_area.setWidget(content_widget)
+                scroll_area.setWidgetResizable(True)
+                scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                scroll_area.setPalette(pal)
+
+                self.grid_lay.addWidget(logo, 0, 0)
+                self.grid_lay.addWidget(content, 0, 1)
+                layout1.addWidget(scroll_area)
+
+                layout2 = QtWidgets.QHBoxLayout()
+                layout1.addLayout(layout2)
+                layout2.addStretch()
+                layout2.addWidget(closebtn)
 
                 closebtn.clicked.connect(self.accept)
 
