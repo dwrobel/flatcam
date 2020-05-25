@@ -114,7 +114,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.transform_label, 2, 0, 1, 2)
 
             # ### Scale ####
-            self.scale_entry = FCEntry()
+            self.scale_entry = NumericalEvalEntry()
             self.scale_entry.set_value(1.0)
             self.scale_entry.setToolTip(
                 _("Factor by which to multiply\n"
@@ -132,7 +132,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.scale_button, 3, 1)
 
             # ### Offset ####
-            self.offsetvector_entry = EvalEntry2()
+            self.offsetvector_entry = NumericalEvalTupleEntry()
             self.offsetvector_entry.setText("(0.0, 0.0)")
             self.offsetvector_entry.setToolTip(
                 _("Amount by which to move the object\n"

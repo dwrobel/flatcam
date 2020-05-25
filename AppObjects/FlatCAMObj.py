@@ -252,7 +252,7 @@ class FlatCAMObj(QtCore.QObject):
     def on_scale_button_click(self):
         self.read_form()
         try:
-            factor = float(eval(self.ui.scale_entry.get_value()))
+            factor = float(self.ui.scale_entry.get_value())
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
             log.debug("FlatCAMObj.on_scale_button_click() -- %s" % str(e))

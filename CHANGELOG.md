@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.05.2020
+
+- updated the GUI fields for the Scale and Offset in the Object UI to allow only numeric values and operators in the list [/,*,+,-], spaces, dots and comma
+
 24.05.2020
 
 - changes some icons

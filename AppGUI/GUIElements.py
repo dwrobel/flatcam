@@ -667,6 +667,19 @@ class NumericalEvalEntry(EvalEntry):
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
 
+
+class NumericalEvalTupleEntry(EvalEntry):
+    """
+    Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
+    """
+    def __init__(self):
+        super().__init__()
+
+        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,]*")
+        validator = QtGui.QRegExpValidator(regex, self)
+        self.setValidator(validator)
+
+
 class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
