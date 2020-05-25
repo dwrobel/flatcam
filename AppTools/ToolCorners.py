@@ -97,6 +97,15 @@ class ToolCorners(AppTool):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(separator_line)
 
+        # Toggle ALL
+        self.toggle_all_cb = FCCheckBox(_("Toggle ALL"))
+        self.layout.addWidget(self.toggle_all_cb)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
+
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay)
@@ -195,6 +204,7 @@ class ToolCorners(AppTool):
 
         # SIGNALS
         self.add_marker_button.clicked.connect(self.add_markers)
+        self.toggle_all_cb.toggled.connect(self.on_toggle_all)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCorners()")
@@ -232,6 +242,13 @@ class ToolCorners(AppTool):
         self.thick_entry.set_value(self.app.defaults["tools_corners_thickness"])
         self.l_entry.set_value(float(self.app.defaults["tools_corners_length"]))
         self.margin_entry.set_value(float(self.app.defaults["tools_corners_margin"]))
+        self.toggle_all_cb.set_value(False)
+
+    def on_toggle_all(self, val):
+        self.bl_cb.set_value(val)
+        self.br_cb.set_value(val)
+        self.tl_cb.set_value(val)
+        self.tr_cb.set_value(val)
 
     def add_markers(self):
         self.app.call_source = "corners_tool"
@@ -367,7 +384,7 @@ class ToolCorners(AppTool):
             g_obj.apertures[new_apid]['geometry'] = []
 
             for geo in geo_list:
-                geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=2)
+                geo_buff = geo.buffer(line_thickness / 2.0, resolution=self.grb_steps_per_circle, join_style=3)
                 geo_buff_list.append(geo_buff)
 
                 dict_el = {}

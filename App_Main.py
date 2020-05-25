@@ -3040,6 +3040,8 @@ class App(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
