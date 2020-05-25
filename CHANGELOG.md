@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.05.2020
+
+- working on Isolation Tool: made to work the tool parameters data to GUI and GUI to data
+- Isolation Tool: reworked the GUI
+- if there is a Gerber object selected then in Isolation Tool the Gerber object combobox will show that object name as current
+
 25.05.2020
 
 - updated the GUI fields for the Scale and Offset in the Object UI to allow only numeric values and operators in the list [/,*,+,-], spaces, dots and comma

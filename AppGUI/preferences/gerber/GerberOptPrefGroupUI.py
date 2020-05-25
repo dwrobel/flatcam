@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox
+from AppGUI.GUIElements import FCDoubleSpinner, FCSpinner, RadioSet, FCCheckBox, FCComboBox
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -79,17 +79,20 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Isolation Scope
-        self.iso_scope_label = QtWidgets.QLabel('%s:' % _('Scope'))
-        self.iso_scope_label.setToolTip(
+        self.select_label = QtWidgets.QLabel('%s:' % _('Selection'))
+        self.select_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Selection' -> Isolate a selection of polygons.")
+              "- 'Selection' -> Isolate a selection of polygons.\n"
+              "- 'Reference Object' - will process the area specified by another object.")
         )
-        self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
-                                         {'label': _('Selection'), 'value': 'single'}])
+        self.select_combo = FCComboBox()
+        self.select_combo.addItems(
+            [_("All"), _("Area Selection"), _("Reference Object")]
+        )
 
-        grid0.addWidget(self.iso_scope_label, 3, 0)
-        grid0.addWidget(self.iso_scope_radio, 3, 1, 1, 2)
+        grid0.addWidget(self.select_label, 3, 0)
+        grid0.addWidget(self.select_combo, 3, 1, 1, 2)
 
         # Milling Type
         milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))

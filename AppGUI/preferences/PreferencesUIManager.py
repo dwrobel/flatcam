@@ -131,7 +131,7 @@ class PreferencesUIManager:
             "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
             "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
             "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
-            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.iso_scope_radio,
+            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.select_combo,
             "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
             "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
             "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,

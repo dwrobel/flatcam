@@ -370,22 +370,21 @@ class ToolIsolation(AppTool, Gerber):
         self.grid3.addWidget(self.milling_type_label, 15, 0)
         self.grid3.addWidget(self.milling_type_radio, 15, 1)
 
-        # Combine All Passes
-        self.combine_passes_cb = FCCheckBox(label=_('Combine'))
-        self.combine_passes_cb.setToolTip(
-            _("Combine all passes into one object")
-        )
-        self.combine_passes_cb.setObjectName("i_combine")
-
-        self.grid3.addWidget(self.combine_passes_cb, 16, 0)
-
         # Follow
-        self.follow_cb = FCCheckBox(label=_('"Follow"'))
+        self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
+        self.follow_label.setToolTip(
+            _("Generate a 'Follow' geometry.\n"
+              "This means that it will cut through\n"
+              "the middle of the trace.")
+        )
+
+        self.follow_cb = FCCheckBox()
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
         self.follow_cb.setObjectName("i_follow")
 
+        self.grid3.addWidget(self.follow_label, 16, 0)
         self.grid3.addWidget(self.follow_cb, 16, 1)
 
         # Isolation Type
@@ -435,7 +434,6 @@ class ToolIsolation(AppTool, Gerber):
         # Rest Machining
         self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
         self.rest_cb.setObjectName("i_rest_machining")
-
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -447,6 +445,57 @@ class ToolIsolation(AppTool, Gerber):
         )
 
         self.grid3.addWidget(self.rest_cb, 25, 0, 1, 2)
+
+        # Combine All Passes
+        self.combine_passes_cb = FCCheckBox(label=_('Combine'))
+        self.combine_passes_cb.setToolTip(
+            _("Combine all passes into one object")
+        )
+        self.combine_passes_cb.setObjectName("i_combine")
+
+        self.grid3.addWidget(self.combine_passes_cb, 26, 0, 1, 2)
+
+        # Exception Areas
+        self.except_cb = FCCheckBox(label=_('Except'))
+        self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
+                                    "by checking this, the area of the object below\n"
+                                    "will be subtracted from the isolation geometry."))
+        self.except_cb.setObjectName("i_except")
+        self.grid3.addWidget(self.except_cb, 27, 0, 1, 2)
+
+        # Type of object to be excepted
+        self.type_excobj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_excobj_combo_label.setToolTip(
+            _("Specify the type of object to be excepted from isolation.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
+        )
+
+        self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
+                                           {'label': _("Gerber"), 'value': 'gerber'}])
+
+        self.grid3.addWidget(self.type_excobj_combo_label, 28, 0)
+        self.grid3.addWidget(self.type_excobj_radio, 28, 1)
+
+        # The object to be excepted
+        self.exc_obj_combo = FCComboBox()
+        self.exc_obj_combo.setToolTip(_("Object whose area will be removed from isolation geometry."))
+
+        # set the model for the Area Exception comboboxes
+        self.exc_obj_combo.setModel(self.app.collection)
+        self.exc_obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.exc_obj_combo.is_last = True
+        self.exc_obj_combo.obj_type = self.type_excobj_radio.get_value()
+
+        self.grid3.addWidget(self.exc_obj_combo, 29, 0, 1, 2)
+
+        self.e_ois = OptionalHideInputSection(self.except_cb,
+                                              [
+                                                  self.type_excobj_combo_label,
+                                                  self.type_excobj_radio,
+                                                  self.exc_obj_combo
+                                              ])
 
         # Isolation Scope
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
@@ -462,8 +511,8 @@ class ToolIsolation(AppTool, Gerber):
         )
         self.select_combo.setObjectName("i_selection")
 
-        self.grid3.addWidget(self.select_label, 26, 0)
-        self.grid3.addWidget(self.select_combo, 26, 1)
+        self.grid3.addWidget(self.select_label, 30, 0)
+        self.grid3.addWidget(self.select_combo, 30, 1)
 
         self.reference_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
@@ -473,8 +522,8 @@ class ToolIsolation(AppTool, Gerber):
         self.reference_combo_type = FCComboBox()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.grid3.addWidget(self.reference_combo_type_label, 27, 0)
-        self.grid3.addWidget(self.reference_combo_type, 27, 1)
+        self.grid3.addWidget(self.reference_combo_type_label, 31, 0)
+        self.grid3.addWidget(self.reference_combo_type, 31, 1)
 
         self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
@@ -485,8 +534,8 @@ class ToolIsolation(AppTool, Gerber):
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo_label, 28, 0)
-        self.grid3.addWidget(self.reference_combo, 28, 1)
+        self.grid3.addWidget(self.reference_combo_label, 32, 0)
+        self.grid3.addWidget(self.reference_combo, 32, 1)
 
         self.reference_combo.hide()
         self.reference_combo_label.hide()
@@ -502,58 +551,16 @@ class ToolIsolation(AppTool, Gerber):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 29, 0)
-        self.grid3.addWidget(self.area_shape_radio, 29, 1)
+        self.grid3.addWidget(self.area_shape_label, 33, 0)
+        self.grid3.addWidget(self.area_shape_radio, 33, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
-        # Exception Areas
-        self.except_cb = FCCheckBox(label=_('Except'))
-        self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
-                                    "by checking this, the area of the object below\n"
-                                    "will be subtracted from the isolation geometry."))
-        self.except_cb.setObjectName("i_except")
-        self.grid3.addWidget(self.except_cb, 30, 0)
-
-        # Type of object to be excepted
-        self.type_excobj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
-        self.type_excobj_combo_label.setToolTip(
-            _("Specify the type of object to be excepted from isolation.\n"
-              "It can be of type: Gerber or Geometry.\n"
-              "What is selected here will dictate the kind\n"
-              "of objects that will populate the 'Object' combobox.")
-        )
-
-        self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
-                                           {'label': _("Gerber"), 'value': 'gerber'}])
-
-        self.grid3.addWidget(self.type_excobj_combo_label, 31, 0)
-        self.grid3.addWidget(self.type_excobj_radio, 31, 1)
-
-        # The object to be excepted
-        self.exc_obj_combo = FCComboBox()
-        self.exc_obj_combo.setToolTip(_("Object whose area will be removed from isolation geometry."))
-
-        # set the model for the Area Exception comboboxes
-        self.exc_obj_combo.setModel(self.app.collection)
-        self.exc_obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.exc_obj_combo.is_last = True
-        self.exc_obj_combo.obj_type = self.type_excobj_radio.get_value()
-
-        self.grid3.addWidget(self.exc_obj_combo, 32, 0, 1, 2)
-
-        self.e_ois = OptionalHideInputSection(self.except_cb,
-                                              [
-                                                  self.type_excobj_combo_label,
-                                                  self.type_excobj_radio,
-                                                  self.exc_obj_combo
-                                              ])
-
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 33, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 34, 0, 1, 2)
 
         self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
         self.generate_iso_button.setStyleSheet("""
@@ -947,6 +954,13 @@ class ToolIsolation(AppTool, Gerber):
         self.units = self.app.defaults['units'].upper()
         self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
 
+        # try to select in the Gerber combobox the active object
+        try:
+            current_name = self.app.collection.get_active().options['name']
+            self.object_combo.set_value(current_name)
+        except Exception:
+            pass
+
         app_mode = self.app.defaults["global_app_level"]
 
         # Show/Hide Advanced Options
@@ -954,7 +968,7 @@ class ToolIsolation(AppTool, Gerber):
             self.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
-            self.tool_type_radio.set_value('circular')
+            self.tool_type_radio.set_value('C1')
             self.tool_type_label.hide()
             self.tool_type_radio.hide()
 
@@ -967,10 +981,39 @@ class ToolIsolation(AppTool, Gerber):
 
             self.follow_cb.setChecked(False)
             self.follow_cb.hide()
+            self.follow_label.hide()
+            self.rest_cb.setChecked(False)
+            self.rest_cb.hide()
             self.except_cb.setChecked(False)
             self.except_cb.hide()
+            self.select_combo.setCurrentIndex(0)
+            self.select_combo.hide()
+            self.select_label.hide()
         else:
             self.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+
+            # TODO remember to set the GUI elements to values from app.defaults dict
+            self.tool_type_radio.set_value(self.app.defaults["gerber_tool_type"])
+            self.tool_type_label.show()
+            self.tool_type_radio.show()
+
+            self.milling_type_label.show()
+            self.milling_type_radio.show()
+
+            self.iso_type_label.show()
+            self.iso_type_radio.set_value(self.app.defaults["gerber_iso_type"])
+            self.iso_type_radio.show()
+
+            self.follow_cb.setChecked(False)
+            self.follow_cb.show()
+            self.follow_label.show()
+            self.rest_cb.setChecked(False)
+            self.rest_cb.show()
+            self.except_cb.setChecked(False)
+            self.except_cb.show()
+            self.select_combo.setCurrentIndex(0)
+            self.select_combo.show()
+            self.select_label.show()
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.create_buffer_button.show()
@@ -992,15 +1035,15 @@ class ToolIsolation(AppTool, Gerber):
         self.on_reference_combo_changed()
 
         self.order_radio.set_value(self.app.defaults["tools_nccorder"])
-        self.passes_entry.set_value(1)
-        self.iso_overlap_entry.set_value(10)
-        self.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
-        self.combine_passes_cb.set_value(True)
-        self.follow_cb.set_value(False)
+        self.passes_entry.set_value(self.app.defaults["gerber_isopasses"])
+        self.iso_overlap_entry.set_value(self.app.defaults["gerber_isooverlap"])
+        self.milling_type_radio.set_value(self.app.defaults["gerber_milling_type"])
+        self.combine_passes_cb.set_value(self.app.defaults["gerber_combine_passes"])
+        self.follow_cb.set_value(self.app.defaults["gerber_follow"])
         self.except_cb.set_value(False)
-        self.iso_type_radio.set_value('full')
+        self.iso_type_radio.set_value(self.app.defaults["gerber_iso_type"])
         self.rest_cb.set_value(False)
-        self.select_combo.set_value(_("All"))
+        self.select_combo.set_value(self.app.defaults["gerber_iso_scope"])
         self.area_shape_radio.set_value('square')
 
         self.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
@@ -1046,23 +1089,24 @@ class ToolIsolation(AppTool, Gerber):
             "area_strategy": self.app.defaults["geometry_area_strategy"],
             "area_overz": float(self.app.defaults["geometry_area_overz"]),
 
-            "tools_nccoperation": self.app.defaults["tools_nccoperation"],
-            "tools_nccmargin": self.app.defaults["tools_nccmargin"],
-            "tools_nccmethod": self.app.defaults["tools_nccmethod"],
-            "tools_nccconnect": self.app.defaults["tools_nccconnect"],
-            "tools_ncccontour": self.app.defaults["tools_ncccontour"],
-            "tools_nccoverlap": self.app.defaults["tools_nccoverlap"],
+            "tools_iso_passes": self.app.defaults["gerber_isopasses"],
+            "tools_iso_overlap": self.app.defaults["gerber_isooverlap"],
+            "tools_iso_milling_type": self.app.defaults["gerber_milling_type"],
+            "tools_iso_combine": self.app.defaults["gerber_combine_passes"],
+            "tools_iso_follow": self.app.defaults["gerber_follow"],
+            "tools_iso_type": self.app.defaults["gerber_iso_type"],
+
             "nccrest": self.app.defaults["tools_nccrest"],
-            "nccref": self.app.defaults["tools_nccref"],
-            "tools_ncc_offset_choice": self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value": self.app.defaults["tools_ncc_offset_value"],
-            "tools_nccmilling_type": self.app.defaults["tools_nccmilling_type"],
+            "nccref": self.app.defaults["gerber_iso_scope"],
+
+            "tools_iso_exclusion": True,
+
         }
 
         try:
-            dias = [float(self.app.defaults["tools_ncctools"])]
+            dias = [float(self.app.defaults["gerber_isotooldia"])]
         except (ValueError, TypeError):
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
+            dias = [float(eval(dia)) for dia in self.app.defaults["gerber_isotooldia"].split(",") if dia != '']
 
         if not dias:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> Isolation Tools.")
@@ -1219,7 +1263,7 @@ class ToolIsolation(AppTool, Gerber):
                 current_widget.stateChanged.connect(self.form_to_storage)
             if isinstance(current_widget, RadioSet):
                 current_widget.activated_custom.connect(self.form_to_storage)
-            elif isinstance(current_widget, FCDoubleSpinner):
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
@@ -1260,7 +1304,7 @@ class ToolIsolation(AppTool, Gerber):
                     current_widget.activated_custom.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
-            elif isinstance(current_widget, FCDoubleSpinner):
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
                 try:
                     current_widget.returnPressed.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):

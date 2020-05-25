@@ -2939,7 +2939,7 @@ class App(QtCore.QObject):
                 self.resize(720, 330)
 
                 logo = QtWidgets.QLabel()
-                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
+                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/contribute256.png'))
 
                 content = QtWidgets.QLabel(
                     "This program is %s and free in a very wide meaning of the word.<br>"

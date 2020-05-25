@@ -130,7 +130,7 @@ class ToolPDF(AppTool):
                     raise grace
 
                 stream_nr += 1
-                log.debug(" PDF STREAM: %d\n" % stream_nr)
+                log.debug("PDF STREAM: %d\n" % stream_nr)
                 s = s.strip(b'\r\n')
                 try:
                     self.pdf_decompressed[short_name] += (zlib.decompress(s).decode('UTF-8') + '\r\n')
