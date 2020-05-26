@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool: reworked the GUI
 - if there is a Gerber object selected then in Isolation Tool the Gerber object combobox will show that object name as current
 - made the Project Tree items not editable by clicking on selected Tree items (the object rename can still be done in the Selected tab)
+- working on Isolation Tool: added a Preferences section in Edit -> Preferences and updated their usage within the Isolation tool
 
 25.05.2020
 

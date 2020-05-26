@@ -3855,9 +3855,9 @@ class App(QtCore.QObject):
             return
 
         # Keys in self.defaults for which to scale their values
-        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "gerber_vtipdia",
-                      "gerber_vcutz", "gerber_editor_newdim", "gerber_editor_ma_low",
+        dimensions = ['tools_iso_tooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "tools_iso_tool_vtipdia",
+                      "tools_iso_tool_cutz", "gerber_editor_newdim", "gerber_editor_ma_low",
                       "gerber_editor_ma_high",
 
                       'excellon_cutz', 'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',

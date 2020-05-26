@@ -436,11 +436,11 @@ class ToolIsolation(AppTool, Gerber):
         self.rest_cb.setObjectName("i_rest_machining")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
+              "Basically it will isolate outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
+              "from bigger to smaller, to isolate the copper features that\n"
               "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n"
+              "no more copper features to isolate or there are no more tools.\n"
               "If not checked, use the standard algorithm.")
         )
 
@@ -628,7 +628,7 @@ class ToolIsolation(AppTool, Gerber):
         # ########################## VARIABLES ########################################
         # #############################################################################
         self.units = ''
-        self.ncc_tools = {}
+        self.iso_tools = {}
         self.tooluid = 0
 
         # store here the default data for Geometry Data
@@ -682,7 +682,7 @@ class ToolIsolation(AppTool, Gerber):
             "tools_iso_milling_type": self.milling_type_radio,
             "tools_iso_combine": self.combine_passes_cb,
             "tools_iso_follow": self.follow_cb,
-            "tools_iso_type": self.iso_type_radio
+            "tools_iso_isotype": self.iso_type_radio
         }
 
         self.name2option = {
@@ -691,7 +691,7 @@ class ToolIsolation(AppTool, Gerber):
             "i_milling_type": "tools_iso_milling_type",
             "i_combine": "tools_iso_combine",
             "i_follow": "tools_iso_follow",
-            "i_type": "tools_iso_type"
+            "i_type": "tools_iso_isotype"
         }
 
         self.old_tool_dia = None
@@ -742,7 +742,7 @@ class ToolIsolation(AppTool, Gerber):
         current_row = self.tools_table.currentRow()
         try:
             current_uid = int(self.tools_table.item(current_row, 3).text())
-            self.ncc_tools[current_uid]['data']['tools_nccoperation'] = val
+            self.iso_tools[current_uid]['data']['tools_nccoperation'] = val
         except AttributeError:
             return
 
@@ -775,7 +775,7 @@ class ToolIsolation(AppTool, Gerber):
                 )
                 try:
                     # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.ncc_tools.items()):
+                    for tooluid_key, tooluid_value in list(self.iso_tools.items()):
                         if int(tooluid_key) == tooluid:
                             for key, value in tooluid_value.items():
                                 if key == 'data':
@@ -818,7 +818,7 @@ class ToolIsolation(AppTool, Gerber):
                 row = 0
             tooluid_item = int(self.tools_table.item(row, 3).text())
 
-            for tooluid_key, tooluid_val in self.ncc_tools.items():
+            for tooluid_key, tooluid_val in self.iso_tools.items():
                 if int(tooluid_key) == tooluid_item:
                     new_option_value = self.form_fields[option_changed].get_value()
                     if option_changed in tooluid_val:
@@ -843,14 +843,14 @@ class ToolIsolation(AppTool, Gerber):
         tooluid_item = int(self.tools_table.item(row, 3).text())
         temp_tool_data = {}
 
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
+        for tooluid_key, tooluid_val in self.iso_tools.items():
             if int(tooluid_key) == tooluid_item:
                 # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
                 # the current row in the tool table
                 temp_tool_data = tooluid_val['data']
                 break
 
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
+        for tooluid_key, tooluid_val in self.iso_tools.items():
             tooluid_val['data'] = deepcopy(temp_tool_data)
 
         # store all the data associated with the row parameter to the self.tools storage
@@ -866,7 +866,7 @@ class ToolIsolation(AppTool, Gerber):
         # temp_dia = {}
         # temp_data = {}
         #
-        # for tooluid_key, tooluid_value in self.ncc_tools.items():
+        # for tooluid_key, tooluid_value in self.iso_tools.items():
         #     for key, value in tooluid_value.items():
         #         if key == 'data':
         #             # update the 'data' section
@@ -888,8 +888,8 @@ class ToolIsolation(AppTool, Gerber):
         #
         #         temp_tools[tooluid_key] = deepcopy(temp_dia)
         #
-        # self.ncc_tools.clear()
-        # self.ncc_tools = deepcopy(temp_tools)
+        # self.iso_tools.clear()
+        # self.iso_tools = deepcopy(temp_tools)
         # temp_tools.clear()
 
         self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
@@ -952,7 +952,7 @@ class ToolIsolation(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
-        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
+        self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
         # try to select in the Gerber combobox the active object
         try:
@@ -982,10 +982,13 @@ class ToolIsolation(AppTool, Gerber):
             self.follow_cb.setChecked(False)
             self.follow_cb.hide()
             self.follow_label.hide()
+
             self.rest_cb.setChecked(False)
             self.rest_cb.hide()
+
             self.except_cb.setChecked(False)
             self.except_cb.hide()
+
             self.select_combo.setCurrentIndex(0)
             self.select_combo.hide()
             self.select_label.hide()
@@ -993,7 +996,7 @@ class ToolIsolation(AppTool, Gerber):
             self.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
             # TODO remember to set the GUI elements to values from app.defaults dict
-            self.tool_type_radio.set_value(self.app.defaults["gerber_tool_type"])
+            self.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
             self.tool_type_label.show()
             self.tool_type_radio.show()
 
@@ -1001,17 +1004,20 @@ class ToolIsolation(AppTool, Gerber):
             self.milling_type_radio.show()
 
             self.iso_type_label.show()
-            self.iso_type_radio.set_value(self.app.defaults["gerber_iso_type"])
+            self.iso_type_radio.set_value(self.app.defaults["tools_iso_isotype"])
             self.iso_type_radio.show()
 
-            self.follow_cb.setChecked(False)
+            self.follow_cb.setChecked(self.app.defaults["tools_iso_follow"])
             self.follow_cb.show()
             self.follow_label.show()
-            self.rest_cb.setChecked(False)
+
+            self.rest_cb.setChecked(self.app.defaults["tools_iso_rest"])
             self.rest_cb.show()
-            self.except_cb.setChecked(False)
+
+            self.except_cb.setChecked(self.app.defaults["tools_iso_isoexcept"])
             self.except_cb.show()
-            self.select_combo.setCurrentIndex(0)
+
+            self.select_combo.setCurrentIndex(self.app.defaults["tools_iso_selection"])
             self.select_combo.show()
             self.select_label.show()
 
@@ -1034,25 +1040,18 @@ class ToolIsolation(AppTool, Gerber):
         self.on_type_excobj_index_changed(val="gerber")
         self.on_reference_combo_changed()
 
-        self.order_radio.set_value(self.app.defaults["tools_nccorder"])
-        self.passes_entry.set_value(self.app.defaults["gerber_isopasses"])
-        self.iso_overlap_entry.set_value(self.app.defaults["gerber_isooverlap"])
-        self.milling_type_radio.set_value(self.app.defaults["gerber_milling_type"])
-        self.combine_passes_cb.set_value(self.app.defaults["gerber_combine_passes"])
-        self.follow_cb.set_value(self.app.defaults["gerber_follow"])
-        self.except_cb.set_value(False)
-        self.iso_type_radio.set_value(self.app.defaults["gerber_iso_type"])
-        self.rest_cb.set_value(False)
-        self.select_combo.set_value(self.app.defaults["gerber_iso_scope"])
-        self.area_shape_radio.set_value('square')
+        self.order_radio.set_value(self.app.defaults["tools_iso_order"])
+        self.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
+        self.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
+        self.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
+        self.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
+        self.area_shape_radio.set_value(self.app.defaults["tools_iso_combine_passes"])
 
-        self.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
-        self.tool_type_radio.set_value(self.app.defaults["tools_ncctool_type"])
-        self.tipdia_entry.set_value(self.app.defaults["tools_ncctipdia"])
-        self.tipangle_entry.set_value(self.app.defaults["tools_ncctipangle"])
-        self.addtool_entry.set_value(self.app.defaults["tools_nccnewdia"])
-
-        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
+        self.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
+        self.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
+        self.tipdia_entry.set_value(self.app.defaults["tools_iso_tool_vtipdia"])
+        self.tipangle_entry.set_value(self.app.defaults["tools_iso_tool_vtipangle"])
+        self.addtool_entry.set_value(self.app.defaults["tools_iso_newdia"])
 
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
@@ -1089,24 +1088,23 @@ class ToolIsolation(AppTool, Gerber):
             "area_strategy": self.app.defaults["geometry_area_strategy"],
             "area_overz": float(self.app.defaults["geometry_area_overz"]),
 
-            "tools_iso_passes": self.app.defaults["gerber_isopasses"],
-            "tools_iso_overlap": self.app.defaults["gerber_isooverlap"],
-            "tools_iso_milling_type": self.app.defaults["gerber_milling_type"],
-            "tools_iso_combine": self.app.defaults["gerber_combine_passes"],
-            "tools_iso_follow": self.app.defaults["gerber_follow"],
-            "tools_iso_type": self.app.defaults["gerber_iso_type"],
+            "tools_iso_passes": self.app.defaults["tools_iso_passes"],
+            "tools_iso_overlap": self.app.defaults["tools_iso_overlap"],
+            "tools_iso_milling_type": self.app.defaults["tools_iso_milling_type"],
+            "tools_iso_follow": self.app.defaults["tools_iso_follow"],
+            "tools_iso_isotype": self.app.defaults["tools_iso_isotype"],
 
-            "nccrest": self.app.defaults["tools_nccrest"],
-            "nccref": self.app.defaults["gerber_iso_scope"],
-
-            "tools_iso_exclusion": True,
-
+            "tools_iso_rest": self.app.defaults["tools_iso_rest"],
+            "tools_iso_combine_passes": self.app.defaults["tools_iso_combine_passes"],
+            "tools_iso_isoexcept": self.app.defaults["tools_iso_isoexcept"],
+            "tools_iso_selection": self.app.defaults["tools_iso_selection"],
+            "tools_iso_area_shape": self.app.defaults["tools_iso_area_shape"]
         }
 
         try:
-            dias = [float(self.app.defaults["gerber_isotooldia"])]
+            dias = [float(self.app.defaults["tools_iso_tooldia"])]
         except (ValueError, TypeError):
-            dias = [float(eval(dia)) for dia in self.app.defaults["gerber_isotooldia"].split(",") if dia != '']
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_iso_tooldia"].split(",") if dia != '']
 
         if not dias:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> Isolation Tools.")
@@ -1114,10 +1112,10 @@ class ToolIsolation(AppTool, Gerber):
 
         self.tooluid = 0
 
-        self.ncc_tools.clear()
+        self.iso_tools.clear()
         for tool_dia in dias:
             self.tooluid += 1
-            self.ncc_tools.update({
+            self.iso_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
@@ -1144,7 +1142,7 @@ class ToolIsolation(AppTool, Gerber):
         self.units = self.app.defaults['units'].upper()
 
         sorted_tools = []
-        for k, v in self.ncc_tools.items():
+        for k, v in self.iso_tools.items():
             if self.units == "IN":
                 sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
             else:
@@ -1163,7 +1161,7 @@ class ToolIsolation(AppTool, Gerber):
         tool_id = 0
 
         for tool_sorted in sorted_tools:
-            for tooluid_key, tooluid_value in self.ncc_tools.items():
+            for tooluid_key, tooluid_value in self.iso_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
@@ -1410,7 +1408,7 @@ class ToolIsolation(AppTool, Gerber):
             tt = cw.currentText()
             typ = 'Iso' if tt == 'V' else "Rough"
 
-            self.ncc_tools[current_uid].update({
+            self.iso_tools[current_uid].update({
                 'type': typ,
                 'tool_type': tt,
             })
@@ -1445,7 +1443,7 @@ class ToolIsolation(AppTool, Gerber):
             # calculated tool diameter so the cut_z parameter is obeyed
             tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(tip_angle)))
 
-            # update the default_data so it is used in the ncc_tools dict
+            # update the default_data so it is used in the iso_tools dict
             self.default_data.update({
                 "vtipdia": tip_dia,
                 "vtipangle": (tip_angle * 2),
@@ -1480,7 +1478,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # construct a list of all 'tooluid' in the self.tools
         tool_uid_list = []
-        for tooluid_key in self.ncc_tools:
+        for tooluid_key in self.iso_tools:
             tool_uid_item = int(tooluid_key)
             tool_uid_list.append(tool_uid_item)
 
@@ -1492,7 +1490,7 @@ class ToolIsolation(AppTool, Gerber):
         self.tooluid = int(max_uid + 1)
 
         tool_dias = []
-        for k, v in self.ncc_tools.items():
+        for k, v in self.iso_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
@@ -1507,7 +1505,7 @@ class ToolIsolation(AppTool, Gerber):
         else:
             if muted is None:
                 self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
-            self.ncc_tools.update({
+            self.iso_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
@@ -1527,7 +1525,7 @@ class ToolIsolation(AppTool, Gerber):
 
         old_tool_dia = ''
         tool_dias = []
-        for k, v in self.ncc_tools.items():
+        for k, v in self.iso_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
@@ -1549,14 +1547,14 @@ class ToolIsolation(AppTool, Gerber):
 
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
-                self.ncc_tools[tooluid]['tooldia'] = new_tool_dia
+                self.iso_tools[tooluid]['tooldia'] = new_tool_dia
                 self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
                 self.blockSignals(False)
                 self.build_ui()
                 return
             else:
                 # identify the old tool_dia and restore the text in tool table
-                for k, v in self.ncc_tools.items():
+                for k, v in self.iso_tools.items():
                     if k == tooluid:
                         old_tool_dia = v['tooldia']
                         break
@@ -1580,7 +1578,7 @@ class ToolIsolation(AppTool, Gerber):
         deleted_tools_list = []
 
         if all_tools:
-            self.ncc_tools.clear()
+            self.iso_tools.clear()
             self.blockSignals(False)
             self.build_ui()
             return
@@ -1595,7 +1593,7 @@ class ToolIsolation(AppTool, Gerber):
                 deleted_tools_list.append(tooluid_del)
 
             for t in deleted_tools_list:
-                self.ncc_tools.pop(t, None)
+                self.iso_tools.pop(t, None)
 
             self.blockSignals(False)
             self.build_ui()
@@ -1611,7 +1609,7 @@ class ToolIsolation(AppTool, Gerber):
                     deleted_tools_list.append(tooluid_del)
 
                 for t in deleted_tools_list:
-                    self.ncc_tools.pop(t, None)
+                    self.iso_tools.pop(t, None)
 
         except AttributeError:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
@@ -2140,7 +2138,7 @@ class ToolIsolation(AppTool, Gerber):
         :param isotooldia:      a tuple or single element made out of diameters of the tools to be used for isolation
         :param outname:         name of the resulting object
         :param order:           Tools order
-        :param tools_storage:   whether to use the current tools_storage self.ncc_tools or a different one.
+        :param tools_storage:   whether to use the current tools_storage self.iso_tools or a different one.
                                 Usage of the different one is related to when this function is called
                                 from a TcL command.
 
@@ -2167,7 +2165,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # determine if to use the progressive plotting
         prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
-        tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
+        tools_storage = tools_storage if tools_storage is not None else self.iso_tools
 
         # ######################################################################################################
         # # Read the tooldia parameter and create a sorted list out them - they may be more than one diameter ##
@@ -2185,9 +2183,9 @@ class ToolIsolation(AppTool, Gerber):
             # for row in range(self.tools_table.rowCount()):
             #     if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
             #         sorted_clear_tools.append(float(self.tools_table.item(row, 1).text()))
-            for tooluid in self.ncc_tools:
-                if self.ncc_tools[tooluid]['data']['tools_nccoperation'] == 'clear':
-                    sorted_clear_tools.append(self.ncc_tools[tooluid]['tooldia'])
+            for tooluid in self.iso_tools:
+                if self.iso_tools[tooluid]['data']['tools_nccoperation'] == 'clear':
+                    sorted_clear_tools.append(self.iso_tools[tooluid]['tooldia'])
 
         # ########################################################################################################
         # set the name for the future Geometry object
@@ -2256,19 +2254,19 @@ class ToolIsolation(AppTool, Gerber):
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 tool_uid = 0  # find the current tool_uid
-                for k, v in self.ncc_tools.items():
+                for k, v in self.iso_tools.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool)):
                         tool_uid = int(k)
                         break
 
                 # parameters that are particular to the current tool
-                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tool_uid]["data"]["tools_nccmargin"])
-                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
-                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_nccconnect"]
-                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncccontour"]
-                has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
-                ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
+                ncc_overlap = float(self.iso_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.iso_tools[tool_uid]["data"]["tools_nccmargin"])
+                ncc_method = self.iso_tools[tool_uid]["data"]["tools_nccmethod"]
+                ncc_connect = self.iso_tools[tool_uid]["data"]["tools_nccconnect"]
+                ncc_contour = self.iso_tools[tool_uid]["data"]["tools_ncccontour"]
+                has_offset = self.iso_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.iso_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 # Get remaining tools offset
                 offset -= (tool - 1e-12)
@@ -2508,18 +2506,18 @@ class ToolIsolation(AppTool, Gerber):
                 tool = sorted_clear_tools.pop(0)
 
                 tool_uid = 0
-                for k, v in self.ncc_tools.items():
+                for k, v in self.iso_tools.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool)):
                         tool_uid = int(k)
                         break
 
-                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_margin = float(self.ncc_tools[tool_uid]["data"]["tools_nccmargin"])
-                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
-                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_nccconnect"]
-                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncccontour"]
-                has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
-                ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
+                ncc_overlap = float(self.iso_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
+                ncc_margin = float(self.iso_tools[tool_uid]["data"]["tools_nccmargin"])
+                ncc_method = self.iso_tools[tool_uid]["data"]["tools_nccmethod"]
+                ncc_connect = self.iso_tools[tool_uid]["data"]["tools_nccconnect"]
+                ncc_contour = self.iso_tools[tool_uid]["data"]["tools_ncccontour"]
+                has_offset = self.iso_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
+                ncc_offset = float(self.iso_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
                 tool_used = tool - 1e-12
                 cleared_geo[:] = []
@@ -2844,7 +2842,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # construct a list of all 'tooluid' in the self.tools
         tool_uid_list = []
-        for tooluid_key in self.ncc_tools:
+        for tooluid_key in self.iso_tools:
             tool_uid_item = int(tooluid_key)
             tool_uid_list.append(tool_uid_item)
 
@@ -2858,7 +2856,7 @@ class ToolIsolation(AppTool, Gerber):
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
         tool_dias = []
-        for k, v in self.ncc_tools.items():
+        for k, v in self.iso_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
@@ -2868,7 +2866,7 @@ class ToolIsolation(AppTool, Gerber):
             self.ui_connect()
             return 'fail'
 
-        self.ncc_tools.update({
+        self.iso_tools.update({
             tooluid: {
                 'tooldia': float('%.*f' % (self.decimals, tooldia)),
                 'offset': tool['offset'],
@@ -2879,7 +2877,7 @@ class ToolIsolation(AppTool, Gerber):
                 'solid_geometry': []
             }
         })
-        self.ncc_tools[tooluid]['data']['name'] = '_ncc'
+        self.iso_tools[tooluid]['data']['name'] = '_ncc'
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
 

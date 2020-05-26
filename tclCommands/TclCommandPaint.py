@@ -159,7 +159,7 @@ class TclCommandPaint(TclCommand):
 
         # used only to have correct information's in the obj.tools[tool]['data'] dict
         if "all" in args:
-            select = _("All Polygons")
+            select = _("All")
         elif "single" in args:
             select = _("Polygon Selection")
         else:

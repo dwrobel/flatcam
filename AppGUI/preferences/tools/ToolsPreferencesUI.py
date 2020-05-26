@@ -8,10 +8,12 @@ from AppGUI.preferences.tools.ToolsTransformPrefGroupUI import ToolsTransformPre
 from AppGUI.preferences.tools.ToolsCalculatorsPrefGroupUI import ToolsCalculatorsPrefGroupUI
 from AppGUI.preferences.tools.ToolsPanelizePrefGroupUI import ToolsPanelizePrefGroupUI
 from AppGUI.preferences.tools.ToolsFilmPrefGroupUI import ToolsFilmPrefGroupUI
-from AppGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGroupUI
 from AppGUI.preferences.tools.Tools2sidedPrefGroupUI import Tools2sidedPrefGroupUI
+
 from AppGUI.preferences.tools.ToolsCutoutPrefGroupUI import ToolsCutoutPrefGroupUI
 from AppGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
+from AppGUI.preferences.tools.ToolsPaintPrefGroupUI import ToolsPaintPrefGroupUI
+from AppGUI.preferences.tools.ToolsISOPrefGroupUI import ToolsISOPrefGroupUI
 
 import gettext
 import AppTranslation as fcTranslate
@@ -35,6 +37,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
         self.decimals = decimals
+
+        self.tools_iso_group = ToolsISOPrefGroupUI(decimals=self.decimals)
+        self.tools_iso_group.setMinimumWidth(220)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
         self.tools_ncc_group.setMinimumWidth(220)
@@ -75,7 +80,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools_paint_group)
-        self.vlay1.addWidget(self.tools_panelize_group)
+        self.vlay1.addWidget(self.tools_iso_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_transform_group)
@@ -89,6 +94,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay4 = QtWidgets.QVBoxLayout()
         self.vlay4.addWidget(self.tools_solderpaste_group)
         self.vlay4.addWidget(self.tools_corners_group)
+        self.vlay4.addWidget(self.tools_panelize_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)

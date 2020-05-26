@@ -340,8 +340,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
                                             {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("NCC Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
-              "- 'Progressive' - after each shape is generated it will be plotted.")
+            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+              "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 21, 0)
         grid0.addWidget(self.ncc_plotting_radio, 21, 1)

@@ -172,12 +172,6 @@ class FlatCAMDefaults:
                                "All Files (*.*)",
 
         # Gerber Options
-        "gerber_isotooldia": 0.1,
-        "gerber_isopasses": 1,
-        "gerber_isooverlap": 10,
-        "gerber_milling_type": "cl",
-        "gerber_combine_passes": False,
-        "gerber_iso_scope": _("All"),
         "gerber_noncoppermargin": 0.1,
         "gerber_noncopperrounded": False,
         "gerber_bboxmargin": 0.1,
@@ -188,11 +182,6 @@ class FlatCAMDefaults:
         "gerber_aperture_scale_factor": 1.0,
         "gerber_aperture_buffer_factor": 0.0,
         "gerber_follow": False,
-        "gerber_tool_type": 'C1',
-        "gerber_vtipdia": 0.1,
-        "gerber_vtipangle": 30,
-        "gerber_vcutz": -0.05,
-        "gerber_iso_type": "full",
         "gerber_buffering": "full",
         "gerber_simplification": False,
         "gerber_simp_tolerance": 0.0005,
@@ -391,6 +380,27 @@ class FlatCAMDefaults:
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
 
+        # Isolation Routing Tool
+        "tools_iso_tooldia": "0.1",
+        "tools_iso_order": 'rev',
+        "tools_iso_tool_type": 'C1',
+        "tools_iso_tool_vtipdia": 0.1,
+        "tools_iso_tool_vtipangle": 30,
+        "tools_iso_tool_cutz": -0.05,
+        "tools_iso_newdia": 0.1,
+
+        "tools_iso_passes": 1,
+        "tools_iso_overlap": 10,
+        "tools_iso_milling_type": "cl",
+        "tools_iso_follow": False,
+        "tools_iso_isotype": "full",
+
+        "tools_iso_rest": False,
+        "tools_iso_combine_passes": False,
+        "tools_iso_isoexcept": False,
+        "tools_iso_selection": _("All"),
+        "tools_iso_area_shape": "square",
+
         # NCC Tool
         "tools_ncctools": "1.0, 0.5",
         "tools_nccorder": 'rev',
@@ -430,7 +440,7 @@ class FlatCAMDefaults:
         "tools_paintoverlap": 20,
         "tools_paintmargin": 0.0,
         "tools_paintmethod": _("Seed"),
-        "tools_selectmethod": _("All Polygons"),
+        "tools_selectmethod": _("All"),
         "tools_paint_area_shape": "square",
         "tools_pathconnect": True,
         "tools_paintcontour": True,

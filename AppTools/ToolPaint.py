@@ -482,7 +482,7 @@ class ToolPaint(AppTool, Gerber):
 
         self.selectmethod_combo = FCComboBox()
         self.selectmethod_combo.addItems(
-            [_("Polygon Selection"), _("Area Selection"), _("All Polygons"), _("Reference Object")]
+            [_("Polygon Selection"), _("Area Selection"), _("All"), _("Reference Object")]
         )
         self.selectmethod_combo.setObjectName('p_selection')
 
@@ -1423,7 +1423,7 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
 
-        if self.select_method == _("All Polygons"):
+        if self.select_method == _("All"):
             self.paint_poly_all(self.paint_obj,
                                 tooldia=self.tooldia_list,
                                 outname=self.o_name)

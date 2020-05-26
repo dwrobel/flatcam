@@ -277,7 +277,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # )
         self.selectmethod_combo = FCComboBox()
         self.selectmethod_combo.addItems(
-            [_("Polygon Selection"), _("Area Selection"), _("All Polygons"), _("Reference Object")]
+            [_("Polygon Selection"), _("Area Selection"), _("All"), _("Reference Object")]
         )
 
         grid0.addWidget(selectlabel, 15, 0)
@@ -304,8 +304,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
                                               {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Paint Plotting"))
         plotting_label.setToolTip(
-            _("- 'Normal' -  normal plotting, done at the end of the Paint job\n"
-              "- 'Progressive' - after each shape is generated it will be plotted.")
+            _("- 'Normal' -  normal plotting, done at the end of the job\n"
+              "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 20, 0)
         grid0.addWidget(self.paint_plotting_radio, 20, 1)
