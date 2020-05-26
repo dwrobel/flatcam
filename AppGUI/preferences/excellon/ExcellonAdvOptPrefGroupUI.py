@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCDoubleSpinner, FCEntry, FloatEntry, RadioSet, FCCheckBox
+from AppGUI.GUIElements import FCDoubleSpinner, RadioSet, FCCheckBox, NumericalEvalTupleEntry, NumericalEvalEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -60,7 +60,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
-        self.toolchangexy_entry = FCEntry()
+        self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
         grid1.addWidget(toolchange_xy_label, 1, 0)
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
@@ -71,7 +71,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
             _("Height of the tool just after start.\n"
               "Delete the value if you don't need this feature.")
         )
-        self.estartz_entry = FloatEntry()
+        self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
 
         grid1.addWidget(startzlabel, 2, 0)
         grid1.addWidget(self.estartz_entry, 2, 1)

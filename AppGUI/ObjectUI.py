@@ -114,7 +114,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.transform_label, 2, 0, 1, 2)
 
             # ### Scale ####
-            self.scale_entry = NumericalEvalEntry()
+            self.scale_entry = NumericalEvalEntry(border_color='#0069A9')
             self.scale_entry.set_value(1.0)
             self.scale_entry.setToolTip(
                 _("Factor by which to multiply\n"
@@ -132,7 +132,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.scale_button, 3, 1)
 
             # ### Offset ####
-            self.offsetvector_entry = NumericalEvalTupleEntry()
+            self.offsetvector_entry = NumericalEvalTupleEntry(border_color='#0069A9')
             self.offsetvector_entry.setText("(0.0, 0.0)")
             self.offsetvector_entry.setToolTip(
                 _("Amount by which to move the object\n"
@@ -206,15 +206,17 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # Plot CB
-        self.plot_cb = FCCheckBox('%s' % _("Plot"))
-        # self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.plot_cb.setToolTip(_("Plot (show) this object."))
+        self.plot_lbl = FCLabel('%s' % _("Plot"))
+        self.plot_lbl.setToolTip(_("Plot (show) this object."))
+        self.plot_cb = FCCheckBox()
 
-        grid0.addWidget(self.plot_cb, 1, 0, 1, 2)
+        grid0.addWidget(self.plot_lbl, 1, 0)
+        grid0.addWidget(self.plot_cb, 1, 1)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
+
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -225,7 +227,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(hlay_plot)
 
         # ### Gerber Apertures ####
-        self.apertures_table_label = QtWidgets.QLabel('<b>%s:</b>' % _('Apertures'))
+        self.apertures_table_label = QtWidgets.QLabel('%s:' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
@@ -282,253 +284,21 @@ class GerberObjectUI(ObjectUI):
         # start with apertures table hidden
         self.apertures_table.setVisible(False)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.custom_box.addWidget(separator_line)
-
-        # Isolation Routing
-        self.isolation_routing_label = QtWidgets.QLabel("<b>%s</b>" % _("Isolation Routing"))
-        self.isolation_routing_label.setToolTip(
-            _("Create a Geometry object with\n"
-              "toolpaths to cut outside polygons.")
-        )
-        self.custom_box.addWidget(self.isolation_routing_label)
-
-        # ###########################################
-        # ########## NEW GRID #######################
-        # ###########################################
-
-        grid1 = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
-        grid1.setColumnStretch(2, 1)
-
-        # Tool Type
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Choose which tool to use for Gerber isolation:\n"
-              "'Circular' or 'V-shape'.\n"
-              "When the 'V-shape' is selected then the tool\n"
-              "diameter will depend on the chosen cut depth.")
-        )
-        self.tool_type_radio = RadioSet([{'label': _('Circular'), 'value': 'circular'},
-                                         {'label': _('V-Shape'), 'value': 'v'}])
-
-        grid1.addWidget(self.tool_type_label, 0, 0)
-        grid1.addWidget(self.tool_type_radio, 0, 1, 1, 2)
-
-        # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
-        self.tipdialabel.setToolTip(
-            _("The tip diameter for V-Shape Tool")
-        )
-        self.tipdia_spinner = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipdia_spinner.set_range(-99.9999, 99.9999)
-        self.tipdia_spinner.set_precision(self.decimals)
-        self.tipdia_spinner.setSingleStep(0.1)
-        self.tipdia_spinner.setWrapping(True)
-        grid1.addWidget(self.tipdialabel, 1, 0)
-        grid1.addWidget(self.tipdia_spinner, 1, 1, 1, 2)
-
-        # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
-        self.tipanglelabel.setToolTip(
-            _("The tip angle for V-Shape Tool.\n"
-              "In degree.")
-        )
-        self.tipangle_spinner = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipangle_spinner.set_range(1, 180)
-        self.tipangle_spinner.set_precision(self.decimals)
-        self.tipangle_spinner.setSingleStep(5)
-        self.tipangle_spinner.setWrapping(True)
-        grid1.addWidget(self.tipanglelabel, 2, 0)
-        grid1.addWidget(self.tipangle_spinner, 2, 1, 1, 2)
-
-        # Cut Z
-        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        self.cutzlabel.setToolTip(
-            _("Cutting depth (negative)\n"
-              "below the copper surface.")
-        )
-        self.cutz_spinner = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_spinner.set_range(-9999.9999, 0.0000)
-        self.cutz_spinner.set_precision(self.decimals)
-        self.cutz_spinner.setSingleStep(0.1)
-        self.cutz_spinner.setWrapping(True)
-        grid1.addWidget(self.cutzlabel, 3, 0)
-        grid1.addWidget(self.cutz_spinner, 3, 1, 1, 2)
-
-        # Tool diameter
-        tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
-        tdlabel.setToolTip(
-            _("Diameter of the cutting tool.\n"
-              "If you want to have an isolation path\n"
-              "inside the actual shape of the Gerber\n"
-              "feature, use a negative value for\n"
-              "this parameter.")
-        )
-        tdlabel.setMinimumWidth(90)
-        self.iso_tool_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.iso_tool_dia_entry.set_range(-9999.9999, 9999.9999)
-        self.iso_tool_dia_entry.set_precision(self.decimals)
-        self.iso_tool_dia_entry.setSingleStep(0.1)
-
-        grid1.addWidget(tdlabel, 4, 0)
-        grid1.addWidget(self.iso_tool_dia_entry, 4, 1, 1, 2)
-
-        # Number of Passes
-        passlabel = QtWidgets.QLabel('%s:' % _('# Passes'))
-        passlabel.setToolTip(
-            _("Width of the isolation gap in\n"
-              "number (integer) of tool widths.")
-        )
-        passlabel.setMinimumWidth(90)
-        self.iso_width_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.iso_width_entry.set_range(1, 999)
-
-        grid1.addWidget(passlabel, 5, 0)
-        grid1.addWidget(self.iso_width_entry, 5, 1, 1, 2)
-
-        # Pass overlap
-        overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
-        overlabel.setToolTip(
-            _("How much (percentage) of the tool width to overlap each tool pass.")
-        )
-        overlabel.setMinimumWidth(90)
-        self.iso_overlap_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
-        self.iso_overlap_entry.set_precision(self.decimals)
-        self.iso_overlap_entry.setWrapping(True)
-        self.iso_overlap_entry.set_range(0.0000, 99.9999)
-        self.iso_overlap_entry.setSingleStep(0.1)
-        grid1.addWidget(overlabel, 6, 0)
-        grid1.addWidget(self.iso_overlap_entry, 6, 1, 1, 2)
-
-        # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
-        self.milling_type_label.setToolTip(
-            _("Milling type:\n"
-              "- climb / best for precision milling and to reduce tool usage\n"
-              "- conventional / useful when there is no backlash compensation")
-        )
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
-        grid1.addWidget(self.milling_type_label, 7, 0)
-        grid1.addWidget(self.milling_type_radio, 7, 1, 1, 2)
-
-        # combine all passes CB
-        self.combine_passes_cb = FCCheckBox(label=_('Combine'))
-        self.combine_passes_cb.setToolTip(
-            _("Combine all passes into one object")
-        )
-
         # generate follow
-        self.follow_cb = FCCheckBox(label=_('"Follow"'))
-        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                    "This means that it will cut through\n"
-                                    "the middle of the trace."))
+        self.follow_lbl = FCLabel('%s:' % _("Follow"))
+        self.follow_lbl.setToolTip(_("Generate a 'Follow' geometry.\n"
+                                     "This means that it will cut through\n"
+                                     "the middle of the trace."))
+        self.follow_lbl.setMinimumWidth(90)
+        self.follow_cb = FCCheckBox()
 
-        # avoid an area from isolation
-        self.except_cb = FCCheckBox(label=_('Except'))
-        self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
-                                    "by checking this, the area of the object below\n"
-                                    "will be subtracted from the isolation geometry."))
-        grid1.addWidget(self.combine_passes_cb, 8, 0)
-        grid1.addWidget(self.follow_cb, 8, 1)
-        grid1.addWidget(self.except_cb, 8, 2)
+        hf_lay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hf_lay)
+        hf_lay.addWidget(self.follow_lbl)
+        hf_lay.addWidget(self.follow_cb)
+        hf_lay.addStretch()
 
-        # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        grid1.addLayout(form_layout, 9, 0, 1, 3)
-
-        # ################################################
-        # ##### Type of object to be excepted ############
-        # ################################################
-        self.type_obj_combo = FCComboBox()
-        self.type_obj_combo.addItems([_("Gerber"), _("Geometry")])
-
-        # we get rid of item1 ("Excellon") as it is not suitable
-        # self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.resource_loc + "/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.resource_loc + "/geometry16.png"))
-
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
-        self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be excepted from isolation.\n"
-              "It can be of type: Gerber or Geometry.\n"
-              "What is selected here will dictate the kind\n"
-              "of objects that will populate the 'Object' combobox.")
-        )
-        # self.type_obj_combo_label.setMinimumWidth(60)
-        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
-
-        # ################################################
-        # ##### The object to be excepted ################
-        # ################################################
-        self.obj_combo = FCComboBox()
-
-        self.obj_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.obj_label.setToolTip(_("Object whose area will be removed from isolation geometry."))
-
-        form_layout.addRow(self.obj_label, self.obj_combo)
-
-        # ---------------------------------------------- #
-        # --------- Isolation scope -------------------- #
-        # ---------------------------------------------- #
-        self.iso_scope_label = QtWidgets.QLabel('<b>%s:</b>' % _('Scope'))
-        self.iso_scope_label.setToolTip(
-            _("Isolation scope. Choose what to isolate:\n"
-              "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Selection' -> Isolate a selection of polygons.")
-        )
-        self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
-                                         {'label': _('Selection'), 'value': 'single'}])
-
-        grid1.addWidget(self.iso_scope_label, 10, 0)
-        grid1.addWidget(self.iso_scope_radio, 10, 1, 1, 2)
-
-        # ---------------------------------------------- #
-        # --------- Isolation type  -------------------- #
-        # ---------------------------------------------- #
-        self.iso_type_label = QtWidgets.QLabel('<b>%s:</b>' % _('Isolation Type'))
-        self.iso_type_label.setToolTip(
-            _("Choose how the isolation will be executed:\n"
-              "- 'Full' -> complete isolation of polygons\n"
-              "- 'Ext' -> will isolate only on the outside\n"
-              "- 'Int' -> will isolate only on the inside\n"
-              "'Exterior' isolation is almost always possible\n"
-              "(with the right tool) but 'Interior'\n"
-              "isolation can be done only when there is an opening\n"
-              "inside of the polygon (e.g polygon is a 'doughnut' shape).")
-        )
-        self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
-                                        {'label': _('Ext'), 'value': 'ext'},
-                                        {'label': _('Int'), 'value': 'int'}])
-
-        grid1.addWidget(self.iso_type_label, 11, 0)
-        grid1.addWidget(self.iso_type_radio, 11, 1, 1, 2)
-
-        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
-        self.generate_iso_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.generate_iso_button.setToolTip(
-            _("Create a Geometry object with toolpaths to cut \n"
-              "isolation outside, inside or on both sides of the\n"
-              "object. For a Gerber object outside means outside\n"
-              "of the Gerber feature and inside means inside of\n"
-              "the Gerber feature, if possible at all. This means\n"
-              "that only if the Gerber feature has openings inside, they\n"
-              "will be isolated. If what is wanted is to cut isolation\n"
-              "inside the actual Gerber feature, use a negative tool\n"
-              "diameter above.")
-        )
-        grid1.addWidget(self.generate_iso_button, 12, 0, 1, 3)
-
+        # Buffer Geometry
         self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
             _("This button is shown only when the Gerber file\n"
@@ -536,19 +306,12 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid1.addWidget(self.create_buffer_button, 13, 0, 1, 3)
+        self.custom_box.addWidget(self.create_buffer_button)
 
-        self.ohis_iso = OptionalHideInputSection(
-            self.except_cb,
-            [self.type_obj_combo, self.type_obj_combo_label, self.obj_combo, self.obj_label],
-            logic=True
-        )
-
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid1.addWidget(separator_line2, 14, 0, 1, 3)
-        # grid1.addWidget(QtWidgets.QLabel(''), 15, 0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
 
         # ###########################################
         # ########## NEW GRID #######################

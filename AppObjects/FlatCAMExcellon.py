@@ -1180,13 +1180,25 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
+        Will generate an Geometry Object allowing to cut a drill hole instead of drilling it.
+
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
-        :return:    Success/failure condition tuple (bool, str).
-        :rtype:     tuple
+        :param tools:       A list of tools where the drills are to be milled or a string: "all"
+        :type tools:
+        :param outname:     the name of the resulting Geometry object
+        :type outname:      str
+        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
+        :type tooldia:      float
+        :param plot:        if to plot the resulting object
+        :type plot:         bool
+        :param use_thread:  if to use threading for creation of the Geometry object
+        :type use_thread:   bool
+        :return:            Success/failure condition tuple (bool, str).
+        :rtype:             tuple
         """
 
         # Get the tools from the list. These are keys
@@ -1250,7 +1262,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-
+            geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1280,15 +1292,27 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         return True, ""
 
-    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=True, use_thread=False):
+    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
+        Will generate an Geometry Object allowing to cut/mill a slot hole.
+
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
-        :return: Success/failure condition tuple (bool, str).
-        :rtype: tuple
+        :param tools:       A list of tools where the drills are to be milled or a string: "all"
+        :type tools:
+        :param outname:     the name of the resulting Geometry object
+        :type outname:      str
+        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
+        :type tooldia:      float
+        :param plot:        if to plot the resulting object
+        :type plot:         bool
+        :param use_thread:  if to use threading for creation of the Geometry object
+        :type use_thread:   bool
+        :return:            Success/failure condition tuple (bool, str).
+        :rtype:             tuple
         """
 
         # Get the tools from the list. These are keys
@@ -1341,7 +1365,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-
+            geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1388,13 +1412,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.app.defaults.report_usage("excellon_on_create_milling_drills button")
         self.read_form()
 
-        self.generate_milling_drills(use_thread=False)
+        self.generate_milling_drills(use_thread=False, plot=True)
 
     def on_generate_milling_slots_button_click(self, *args):
         self.app.defaults.report_usage("excellon_on_create_milling_slots_button")
         self.read_form()
 
-        self.generate_milling_slots(use_thread=False)
+        self.generate_milling_slots(use_thread=False, plot=True)
 
     def on_pp_changed(self):
         current_pp = self.ui.pp_excellon_name_cb.get_value()

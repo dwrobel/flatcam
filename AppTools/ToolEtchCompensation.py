@@ -95,7 +95,7 @@ class ToolEtchCompensation(AppTool):
 
         hlay_1 = QtWidgets.QHBoxLayout()
 
-        self.oz_entry = NumericalEvalEntry()
+        self.oz_entry = NumericalEvalEntry(border_color='#0069A9')
         self.oz_entry.setPlaceholderText(_("Oz value"))
         self.oz_to_um_entry = FCEntry()
         self.oz_to_um_entry.setPlaceholderText(_("Microns value"))
@@ -116,7 +116,7 @@ class ToolEtchCompensation(AppTool):
 
         hlay_2 = QtWidgets.QHBoxLayout()
 
-        self.mils_entry = NumericalEvalEntry()
+        self.mils_entry = NumericalEvalEntry(border_color='#0069A9')
         self.mils_entry.setPlaceholderText(_("Mils value"))
         self.mils_to_um_entry = FCEntry()
         self.mils_to_um_entry.setPlaceholderText(_("Microns value"))
@@ -180,7 +180,7 @@ class ToolEtchCompensation(AppTool):
             _("The ratio between depth etch and lateral etch .\n"
               "Accepts real numbers and formulas using the operators: /,*,+,-,%")
         )
-        self.factor_entry = NumericalEvalEntry()
+        self.factor_entry = NumericalEvalEntry(border_color='#0069A9')
         self.factor_entry.setPlaceholderText(_("Real number or formula"))
         self.factor_entry.setObjectName(_("Etch_factor"))
 

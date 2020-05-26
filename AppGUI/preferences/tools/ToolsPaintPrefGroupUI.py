@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCEntry, RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox
+from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -53,7 +53,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(ptdlabel, 0, 0)
 
-        self.painttooldia_entry = FCEntry(border_color='#0069A9')
+        self.painttooldia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.painttooldia_entry.setPlaceholderText(_("Comma separated values"))
 
         grid0.addWidget(self.painttooldia_entry, 0, 1)
@@ -241,8 +241,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 13, 0, 1, 2)
 
-        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
-        self.rest_cb.setObjectName(_("Rest Machining"))
+        self.rest_cb = FCCheckBox('%s' % _("Rest"))
+        self.rest_cb.setObjectName(_("Rest"))
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -302,7 +302,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
                                               {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("Paint Plotting"))
+        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' -  normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")

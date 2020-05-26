@@ -509,7 +509,7 @@ class NonCopperClear(AppTool, Gerber):
         self.grid3.addWidget(self.gen_param_label, 24, 0, 1, 2)
 
         # Rest Machining
-        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest"))
         self.ncc_rest_cb.setObjectName("n_rest_machining")
 
         self.ncc_rest_cb.setToolTip(

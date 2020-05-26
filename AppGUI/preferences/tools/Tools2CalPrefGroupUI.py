@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCEntry
+from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -116,7 +116,7 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
               "(x, y) point will be used,")
         )
 
-        self.toolchange_xy_entry = FCEntry()
+        self.toolchange_xy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
         grid_lay.addWidget(toolchangexy_lbl, 7, 0)
         grid_lay.addWidget(self.toolchange_xy_entry, 7, 1, 1, 2)

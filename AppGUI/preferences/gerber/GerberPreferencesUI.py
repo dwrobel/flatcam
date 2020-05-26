@@ -44,6 +44,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.gerber_opt_group)
         self.vlay.addWidget(self.gerber_exp_group)
+        self.vlay.addStretch()
 
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addLayout(self.vlay)

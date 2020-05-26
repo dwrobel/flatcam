@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCEntry, FCDoubleSpinner, FCSpinner, FCComboBox
+from AppGUI.GUIElements import FCDoubleSpinner, FCSpinner, FCComboBox, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -45,7 +45,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
-        self.nozzle_tool_dia_entry = FCEntry()
+        self.nozzle_tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
         grid0.addWidget(nozzletdlabel, 0, 0)
         grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
@@ -130,7 +130,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_toolchange_entry, 6, 1)
 
         # X,Y Toolchange location
-        self.xy_toolchange_entry = FCEntry()
+        self.xy_toolchange_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.xy_toolchange_label = QtWidgets.QLabel('%s:' % _("Toolchange X-Y"))
         self.xy_toolchange_label.setToolTip(
             _("The X,Y location for tool (nozzle) change.\n"

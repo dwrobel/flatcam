@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCEntry, RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner
+from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -32,7 +32,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
         )
-        self.layout.addWidget(self.clearcopper_label)
+        self.layout.addWidget(self.iso_label)
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
@@ -44,11 +44,11 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
-        self.tool_dia_entry = FCEntry(border_color='#0069A9')
+        self.tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.tool_dia_entry.setPlaceholderText(_("Comma separated values"))
 
         grid0.addWidget(isotdlabel, 0, 0)
-        grid0.addWidget(self.tool_dia_entry, 0, 1)
+        grid0.addWidget(self.tool_dia_entry, 0, 1, 1, 2)
 
         # Tool order Radio Button
         self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
@@ -64,7 +64,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                      {'label': _('Reverse'), 'value': 'rev'}])
 
         grid0.addWidget(self.order_label, 1, 0)
-        grid0.addWidget(self.order_radio, 1, 1)
+        grid0.addWidget(self.order_radio, 1, 1, 1, 2)
 
         # Tool Type Radio Button
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
@@ -83,7 +83,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
 
         grid0.addWidget(self.tool_type_label, 2, 0)
-        grid0.addWidget(self.tool_type_radio, 2, 1)
+        grid0.addWidget(self.tool_type_radio, 2, 1, 1, 2)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
@@ -95,7 +95,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.tipdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.tipdialabel, 3, 0)
-        grid0.addWidget(self.tipdia_entry, 3, 1)
+        grid0.addWidget(self.tipdia_entry, 3, 1, 1, 2)
 
         # Tip Angle
         self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
@@ -109,7 +109,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.tipangle_entry.setWrapping(True)
 
         grid0.addWidget(self.tipanglelabel, 4, 0)
-        grid0.addWidget(self.tipangle_entry, 4, 1)
+        grid0.addWidget(self.tipangle_entry, 4, 1, 1, 2)
 
         # Cut Z entry
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -128,7 +128,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
 
         grid0.addWidget(cutzlabel, 5, 0)
-        grid0.addWidget(self.cutz_entry, 5, 1)
+        grid0.addWidget(self.cutz_entry, 5, 1, 1, 2)
 
         # New Diameter
         self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
@@ -143,12 +143,12 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.newdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.newdialabel, 6, 0)
-        grid0.addWidget(self.newdia_entry, 6, 1)
+        grid0.addWidget(self.newdia_entry, 6, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 7, 0, 1, 2)
+        grid0.addWidget(separator_line, 7, 0, 1, 3)
 
         # Passes
         passlabel = QtWidgets.QLabel('%s:' % _('Passes'))
@@ -161,7 +161,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.passes_entry.setObjectName("i_passes")
 
         grid0.addWidget(passlabel, 8, 0)
-        grid0.addWidget(self.passes_entry, 8, 1)
+        grid0.addWidget(self.passes_entry, 8, 1, 1, 2)
 
         # Overlap Entry
         overlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
@@ -176,7 +176,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.overlap_entry.setObjectName("i_overlap")
 
         grid0.addWidget(overlabel, 9, 0)
-        grid0.addWidget(self.overlap_entry, 9, 1)
+        grid0.addWidget(self.overlap_entry, 9, 1, 1, 2)
 
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
@@ -195,7 +195,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
 
         grid0.addWidget(self.milling_type_label, 10, 0)
-        grid0.addWidget(self.milling_type_radio, 10, 1)
+        grid0.addWidget(self.milling_type_radio, 10, 1, 1, 2)
 
         # Follow
         self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
@@ -212,7 +212,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.follow_cb.setObjectName("i_follow")
 
         grid0.addWidget(self.follow_label, 11, 0)
-        grid0.addWidget(self.follow_cb, 11, 1)
+        grid0.addWidget(self.follow_cb, 11, 1, 1, 2)
 
         # Isolation Type
         self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
@@ -232,15 +232,15 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.iso_type_radio.setObjectName("i_type")
 
         grid0.addWidget(self.iso_type_label, 12, 0)
-        grid0.addWidget(self.iso_type_radio, 12, 1)
+        grid0.addWidget(self.iso_type_radio, 12, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 13, 0, 1, 2)
+        grid0.addWidget(separator_line, 13, 0, 1, 3)
 
         # Rest machining CheckBox
-        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb = FCCheckBox('%s' % _("Rest"))
         self.rest_cb.setObjectName("i_rest_machining")
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
@@ -252,7 +252,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
               "If not checked, use the standard algorithm.")
         )
 
-        grid0.addWidget(self.ncc_rest_cb, 17, 0, 1, 2)
+        grid0.addWidget(self.rest_cb, 17, 0)
 
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
@@ -261,7 +261,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
         self.combine_passes_cb.setObjectName("i_combine")
 
-        grid0.addWidget(self.combine_passes_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.combine_passes_cb, 17, 1)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
@@ -269,7 +269,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        grid0.addWidget(self.except_cb, 19, 0, 1, 2)
+        grid0.addWidget(self.except_cb, 17, 2)
 
         # Isolation Scope
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
@@ -286,7 +286,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.select_combo.setObjectName("i_selection")
 
         grid0.addWidget(self.select_label, 20, 0)
-        grid0.addWidget(self.select_combo, 20, 1)
+        grid0.addWidget(self.select_combo, 20, 1, 1, 2)
 
         # Area Shape
         self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
@@ -298,22 +298,22 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
         grid0.addWidget(self.area_shape_label, 21, 0)
-        grid0.addWidget(self.area_shape_radio, 21, 1)
+        grid0.addWidget(self.area_shape_radio, 21, 1, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 2)
+        grid0.addWidget(separator_line, 22, 0, 1, 3)
 
         # ## Plotting type
-        self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                            {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("ISO Plotting"))
+        self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
+                                        {"label": _("Progressive"), "value": "progressive"}])
+        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' -  normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        grid0.addWidget(plotting_label, 21, 0)
-        grid0.addWidget(self.ncc_plotting_radio, 21, 1)
+        grid0.addWidget(plotting_label, 23, 0)
+        grid0.addWidget(self.plotting_radio, 23, 1, 1, 2)
 
         self.layout.addStretch()

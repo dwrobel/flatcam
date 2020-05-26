@@ -570,9 +570,12 @@ class FCEntry3(FCEntry):
 
 
 class EvalEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, border_color=None, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
+
+        if border_color:
+            self.setStyleSheet("QLineEdit {border: 1px solid %s;}" % border_color)
 
         self.editingFinished.connect(self.on_edit_finished)
 
@@ -639,7 +642,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
-        evaled = 0.0
+
         try:
             evaled = eval(raw)
         except Exception as e:
@@ -660,8 +663,8 @@ class NumericalEvalEntry(EvalEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, border_color=None):
+        super().__init__(border_color=border_color)
 
         regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s]*")
         validator = QtGui.QRegExpValidator(regex, self)
@@ -672,8 +675,8 @@ class NumericalEvalTupleEntry(EvalEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, border_color=None):
+        super().__init__(border_color=border_color)
 
         regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,]*")
         validator = QtGui.QRegExpValidator(regex, self)

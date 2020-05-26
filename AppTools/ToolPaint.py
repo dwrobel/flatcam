@@ -438,7 +438,7 @@ class ToolPaint(AppTool, Gerber):
         )
         grid4.addWidget(self.gen_param_label, 15, 0, 1, 2)
 
-        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb = FCCheckBox('%s' % _("Rest"))
         self.rest_cb.setObjectName('p_rest_machining')
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"

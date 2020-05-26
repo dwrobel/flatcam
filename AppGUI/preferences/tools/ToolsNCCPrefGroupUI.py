@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCEntry, RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox
+from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -45,7 +45,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ncctdlabel, 0, 0)
-        self.ncc_tool_dia_entry = FCEntry(border_color='#0069A9')
+        self.ncc_tool_dia_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.ncc_tool_dia_entry.setPlaceholderText(_("Comma separated values"))
         grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
@@ -285,7 +285,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Rest machining CheckBox
-        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest"))
         self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -336,14 +336,14 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         # ## Plotting type
-        self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                            {"label": _("Progressive"), "value": "progressive"}])
-        plotting_label = QtWidgets.QLabel('%s:' % _("NCC Plotting"))
+        self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
+                                        {"label": _("Progressive"), "value": "progressive"}])
+        plotting_label = QtWidgets.QLabel('%s:' % _("Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' -  normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
         grid0.addWidget(plotting_label, 21, 0)
-        grid0.addWidget(self.ncc_plotting_radio, 21, 1)
+        grid0.addWidget(self.plotting_radio, 21, 1)
 
         self.layout.addStretch()

@@ -330,9 +330,9 @@ class PreferencesUIManager:
             "tools_iso_tooldia":        self.ui.tools_defaults_form.tools_iso_group.tool_dia_entry,
             "tools_iso_order":          self.ui.tools_defaults_form.tools_iso_group.order_radio,
             "tools_iso_tool_type":      self.ui.tools_defaults_form.tools_iso_group.tool_type_radio,
-            "tools_iso_tool_vtipdia":   self.ui.tools_defaults_form.tools_iso_group.tipdia_spinner,
-            "tools_iso_tool_vtipangle": self.ui.tools_defaults_form.tools_iso_group.tipangle_spinner,
-            "tools_iso_tool_cutz":      self.ui.tools_defaults_form.tools_iso_group.cutz_spinner,
+            "tools_iso_tool_vtipdia":   self.ui.tools_defaults_form.tools_iso_group.tipdia_entry,
+            "tools_iso_tool_vtipangle": self.ui.tools_defaults_form.tools_iso_group.tipangle_entry,
+            "tools_iso_tool_cutz":      self.ui.tools_defaults_form.tools_iso_group.cutz_entry,
             "tools_iso_newdia":         self.ui.tools_defaults_form.tools_iso_group.newdia_entry,
 
             "tools_iso_passes":         self.ui.tools_defaults_form.tools_iso_group.passes_entry,
@@ -346,6 +346,7 @@ class PreferencesUIManager:
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
+            "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
 
             # NCC Tool
             "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
@@ -360,13 +361,13 @@ class PreferencesUIManager:
             "tools_ncc_offset_value":   self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
             "tools_nccref":             self.ui.tools_defaults_form.tools_ncc_group.select_combo,
             "tools_ncc_area_shape":     self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
-            "tools_ncc_plotting":       self.ui.tools_defaults_form.tools_ncc_group.ncc_plotting_radio,
             "tools_nccmilling_type":    self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
             "tools_ncctool_type":       self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
             "tools_ncccutz":            self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
             "tools_ncctipdia":          self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
             "tools_ncctipangle":        self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
             "tools_nccnewdia":          self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
+            "tools_ncc_plotting":       self.ui.tools_defaults_form.tools_ncc_group.plotting_radio,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,

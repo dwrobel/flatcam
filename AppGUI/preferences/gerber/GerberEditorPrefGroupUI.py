@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCEntry, RadioSet
+from AppGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCEntry, RadioSet, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -109,8 +109,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
               "The value of the diameter has to use the dot decimals separator.\n"
               "Valid values: 0.3, 1.0")
         )
+        self.adddim_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+
         grid0.addWidget(self.adddim_label, 5, 0)
-        self.adddim_entry = FCEntry()
         grid0.addWidget(self.adddim_entry, 5, 1)
 
         self.grb_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Pad Array'))

@@ -4374,7 +4374,7 @@ class CNCjob(Geometry):
 
                     self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
                                                                tolerance,
-                                                               z_move=z_move,_postproc=p,
+                                                               z_move=z_move, postproc=p,
                                                                old_point=current_pt)
 
                 # calculate the travel distance

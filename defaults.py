@@ -395,11 +395,12 @@ class FlatCAMDefaults:
         "tools_iso_follow": False,
         "tools_iso_isotype": "full",
 
-        "tools_iso_rest": False,
+        "tools_iso_rest":           False,
         "tools_iso_combine_passes": False,
-        "tools_iso_isoexcept": False,
-        "tools_iso_selection": _("All"),
-        "tools_iso_area_shape": "square",
+        "tools_iso_isoexcept":      False,
+        "tools_iso_selection":      _("All"),
+        "tools_iso_area_shape":     "square",
+        "tools_iso_plotting":       'normal',
 
         # NCC Tool
         "tools_ncctools": "1.0, 0.5",
@@ -415,13 +416,13 @@ class FlatCAMDefaults:
         "tools_ncc_offset_value": 0.0000,
         "tools_nccref": _('Itself'),
         "tools_ncc_area_shape": "square",
-        "tools_ncc_plotting": 'normal',
         "tools_nccmilling_type": 'cl',
         "tools_ncctool_type": 'C1',
         "tools_ncccutz": -0.05,
         "tools_ncctipdia": 0.1,
         "tools_ncctipangle": 30,
         "tools_nccnewdia": 0.1,
+        "tools_ncc_plotting": 'normal',
 
         # Cutout Tool
         "tools_cutouttooldia": 2.4,
