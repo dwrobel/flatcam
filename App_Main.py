@@ -2206,6 +2206,7 @@ class App(QtCore.QObject):
                 msgbox.setText(_("Do you want to save the edited object?"))
                 msgbox.setWindowTitle(_("Close Editor"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -3092,6 +3093,8 @@ class App(QtCore.QObject):
 
         msgbox.setWindowTitle(_("Alternative website"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
@@ -4000,6 +4003,8 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         msgbox.setText(_("Changing the units of the project\n"
                          "will scale all objects.\n\n"
                          "Do you want to continue?"))
@@ -4277,6 +4282,8 @@ class App(QtCore.QObject):
                                      "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
+                    msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
@@ -4351,6 +4358,8 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
                 # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
@@ -5361,6 +5370,7 @@ class App(QtCore.QObject):
                                  "Do you want to update the Tools Database?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -6422,6 +6432,8 @@ class App(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
@@ -6807,6 +6819,8 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -6821,6 +6835,8 @@ class App(QtCore.QObject):
             msg = '[ERROR_NOTCL] %s' % \
                   _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -7154,6 +7170,8 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -7164,6 +7182,8 @@ class App(QtCore.QObject):
         if not isinstance(obj, GeometryObject):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)

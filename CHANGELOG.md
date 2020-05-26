@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - all tuple entries in the Preferences UI are now protected against letter entry
 - all entries in the Preferences UI that have numerical entry are protected now against letters
 - cleaned the Preferences UI in the Gerber area
+- minor UI changes
 
 25.05.2020
 

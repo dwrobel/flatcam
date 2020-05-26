@@ -1811,6 +1811,8 @@ class MainGUI(QtWidgets.QMainWindow):
         msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
         msgbox.setWindowTitle(_("Clear GUI Settings"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
@@ -2627,6 +2629,8 @@ class MainGUI(QtWidgets.QMainWindow):
                         messagebox.setText(msg)
                         messagebox.setWindowTitle(_("Warning"))
                         messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                        messagebox.setIcon(QtWidgets.QMessageBox.Question)
+
                         messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
@@ -2789,6 +2793,8 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
@@ -2834,6 +2840,8 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
@@ -2854,6 +2862,8 @@ class MainGUI(QtWidgets.QMainWindow):
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
                             messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
+                            messagebox.setIcon(QtWidgets.QMessageBox.Warning)
+
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()

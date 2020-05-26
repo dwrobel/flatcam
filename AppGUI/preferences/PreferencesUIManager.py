@@ -947,6 +947,7 @@ class PreferencesUIManager:
             msgbox.setText(_("Are you sure you want to continue?"))
             msgbox.setWindowTitle(_("Application restart"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
@@ -1185,6 +1186,7 @@ class PreferencesUIManager:
                              "Do you want to save the Preferences?"))
             msgbox.setWindowTitle(_("Save Preferences"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
