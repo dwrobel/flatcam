@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.05.2020
+
+- made the visibility change (when using the Spacebar key in Project Tab) to be not threaded and to use the enabled property of the ShapesCollection which should be faster
+
 27.05.2020
 
 - working on Isolation Tool: made to work the Isolation with multiple tools without rest machining

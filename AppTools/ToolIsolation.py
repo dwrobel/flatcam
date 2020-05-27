@@ -1004,7 +1004,11 @@ class ToolIsolation(AppTool, Gerber):
 
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
-        outname = self.app.collection.get_by_name(self.object_combo.get_value()).options['name']
+        loaded_obj = self.app.collection.get_by_name(self.object_combo.get_value())
+        if loaded_obj:
+            outname = loaded_obj.options['name']
+        else:
+            outname = ''
 
         # init the working variables
         self.default_data.clear()
@@ -2030,9 +2034,9 @@ class ToolIsolation(AppTool, Gerber):
                     # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in
                     # Gerber UI
                     if tool_type.lower() == 'v':
-                        new_cutz = self.ui.cutz_spinner.get_value()
-                        new_vtipdia = self.ui.tipdia_spinner.get_value()
-                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        new_cutz = self.cutz_entry.get_value()
+                        new_vtipdia = self.tipdia_entry.get_value()
+                        new_vtipangle = self.tipangle_entry.get_value()
                         tool_type = 'V'
                         tool_data.update({
                             "name": iso_name,
