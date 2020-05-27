@@ -3446,7 +3446,7 @@ class ToolIsolation(AppTool, Gerber):
                 return 'fail'
         return geom
 
-    def on_tool_add_from_db_executed(self, tool):
+    def on_iso_tool_add_from_db_executed(self, tool):
         """
         Here add the tool from DB  in the selected geometry object
         :return:
@@ -3543,7 +3543,7 @@ class ToolIsolation(AppTool, Gerber):
             if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
                 break
-        self.app.on_tools_database(source='ncc')
+        self.app.on_tools_database(source='iso')
         self.app.tools_db_tab.ok_to_add = True
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()
