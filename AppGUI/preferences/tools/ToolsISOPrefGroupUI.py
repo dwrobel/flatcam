@@ -281,7 +281,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         )
         self.select_combo = FCComboBox()
         self.select_combo.addItems(
-            [_("All"), _("Area Selection"), _("Reference Object")]
+            [_("All"), _("Area Selection"), _("Polygon Selection"), _("Reference Object")]
         )
         self.select_combo.setObjectName("i_selection")
 

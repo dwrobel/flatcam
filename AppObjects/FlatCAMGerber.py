@@ -491,6 +491,29 @@ class GerberObject(FlatCAMObj, Gerber):
                 return 'fail'
         return geom
 
+    def follow_geo(self, outname=None):
+        """
+        Creates a geometry object "following" the gerber paths.
+
+        :return: None
+        """
+
+        if outname is None:
+            follow_name = self.options["name"] + "_follow"
+        else:
+            follow_name = outname
+
+        def follow_init(follow_obj, app):
+            # Propagate options
+            follow_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+            follow_obj.solid_geometry = self.follow_geometry
+
+        # TODO: Do something if this is None. Offer changing name?
+        try:
+            self.app.app_obj.new_object("geometry", follow_name, follow_init)
+        except Exception as e:
+            return "Operation failed: %s" % str(e)
+
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return

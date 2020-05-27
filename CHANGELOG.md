@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.05.2020
+
+- working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
+
 26.05.2020
 
 - working on Isolation Tool: made to work the tool parameters data to GUI and GUI to data
