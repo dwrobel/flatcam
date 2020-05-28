@@ -32,6 +32,11 @@ class ToolSub(AppTool):
 
     job_finished = QtCore.pyqtSignal(bool)
 
+    # the string param is the outname and the list is a list of tuples each being formed from the new_aperture_geometry
+    # list and the second element is also a list with possible geometry that needs to be added to the '0' aperture
+    # meaning geometry that was deformed
+    aperture_processing_finished = QtCore.pyqtSignal(str, list)
+
     toolName = _("Subtract Tool")
 
     def __init__(self, app):
@@ -218,18 +223,14 @@ class ToolSub(AppTool):
 
         self.sub_union = []
 
-        try:
-            self.intersect_btn.clicked.disconnect(self.on_grb_intersection_click)
-        except (TypeError, AttributeError):
-            pass
-        self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
+        # multiprocessing
+        self.pool = self.app.pool
+        self.results = []
 
-        try:
-            self.intersect_geo_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
         self.job_finished.connect(self.on_job_finished)
+        self.aperture_processing_finished.connect(self.new_gerber_object)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -310,138 +311,141 @@ class ToolSub(AppTool):
         # crate the new_apertures dict structure
         for apid in self.target_grb_obj.apertures:
             self.new_apertures[apid] = {}
-            self.new_apertures[apid]['type'] = 'C'
-            self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['geometry'] = []
+            for key in self.target_grb_obj.apertures[apid]:
+                if key == 'geometry':
+                    self.new_apertures[apid]['geometry'] = []
+                else:
+                    self.new_apertures[apid][key] = self.target_grb_obj.apertures[apid][key]
 
-        geo_solid_union_list = []
-        geo_follow_union_list = []
-        geo_clear_union_list = []
+        def worker_job(app_obj):
+            for apid in self.target_grb_obj.apertures:
+                target_geo = self.target_grb_obj.apertures[apid]['geometry']
 
-        for apid1 in self.sub_grb_obj.apertures:
-            if 'geometry' in self.sub_grb_obj.apertures[apid1]:
-                for elem in self.sub_grb_obj.apertures[apid1]['geometry']:
-                    if 'solid' in elem:
-                        geo_solid_union_list.append(elem['solid'])
-                    if 'follow' in elem:
-                        geo_follow_union_list.append(elem['follow'])
-                    if 'clear' in elem:
-                        geo_clear_union_list.append(elem['clear'])
+                sub_geometry = {}
+                sub_geometry['solid'] = []
+                sub_geometry['clear'] = []
+                for s_apid in self.sub_grb_obj.apertures:
+                    for s_el in self.sub_grb_obj.apertures[s_apid]['geometry']:
+                        if "solid" in s_el:
+                            sub_geometry['solid'].append(s_el["solid"])
+                        if "clear" in s_el:
+                            sub_geometry['clear'].append(s_el["clear"])
 
-        self.app.inform.emit('%s' % _("Processing geometry from Subtractor Gerber object."))
-        self.sub_solid_union = cascaded_union(geo_solid_union_list)
-        self.sub_follow_union = cascaded_union(geo_follow_union_list)
-        self.sub_clear_union = cascaded_union(geo_clear_union_list)
+                self.results.append(
+                    self.pool.apply_async(self.aperture_intersection, args=(apid, target_geo, sub_geometry))
+                )
 
-        # add the promises
-        for apid in self.target_grb_obj.apertures:
-            self.promises.append(apid)
+            output = []
+            for p in self.results:
+                res = p.get()
+                output.append(res)
+                app_obj.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(res[0])))
 
-        # start the QTimer to check for promises with 0.5 second period check
-        self.periodic_check(500, reset=True)
+            app_obj.inform.emit("%s" % _("Subtraction aperture processing finished."))
 
-        for apid in self.target_grb_obj.apertures:
-            geo = self.target_grb_obj.apertures[apid]['geometry']
-            self.app.worker_task.emit({'fcn': self.aperture_intersection, 'params': [apid, geo]})
+            outname = self.target_gerber_combo.currentText() + '_sub'
+            self.aperture_processing_finished.emit(outname, output)
 
-    def aperture_intersection(self, apid, geo):
-        new_geometry = []
+        self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
 
-        log.debug("Working on promise: %s" % str(apid))
+    @staticmethod
+    def aperture_intersection(apid, target_geo, sub_geometry):
+        """
 
-        with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture"), str(apid))):
+        :param apid:            the aperture id for which we process geometry
+        :type apid:             str
+        :param target_geo:      the geometry list that holds the geometry from which we subtract
+        :type target_geo:       list
+        :param sub_geometry:    the apertures dict that holds all the geometry that is subtracted
+        :type sub_geometry:     dict
+        :return:                (apid, unaffected_geometry lsit, affected_geometry list)
+        :rtype:                 tuple
+        """
 
-            for geo_el in geo:
-                new_el = {}
+        unafected_geo = []
+        affected_geo = []
 
-                if 'solid' in geo_el:
-                    work_geo = geo_el['solid']
-                    if self.sub_solid_union:
-                        if work_geo.intersects(self.sub_solid_union):
-                            new_geo = work_geo.difference(self.sub_solid_union)
-                            new_geo = new_geo.buffer(0)
-                            if new_geo:
-                                if not new_geo.is_empty:
-                                    new_el['solid'] = new_geo
-                                else:
-                                    new_el['solid'] = work_geo
-                            else:
-                                new_el['solid'] = work_geo
-                        else:
-                            new_el['solid'] = work_geo
-                    else:
-                        new_el['solid'] = work_geo
+        is_modified = False
+        for geo_el in target_geo:
+            new_geo_el = {}
+            if "solid" in geo_el:
+                for sub_solid_geo in sub_geometry["solid"]:
+                    if geo_el["solid"].intersects(sub_solid_geo):
+                        new_geo = geo_el["solid"].difference(sub_solid_geo)
+                        if not new_geo.is_empty:
+                            geo_el["solid"] = new_geo
+                            is_modified = True
 
-                if 'follow' in geo_el:
-                    work_geo = geo_el['follow']
-                    if self.sub_follow_union:
-                        if work_geo.intersects(self.sub_follow_union):
-                            new_geo = work_geo.difference(self.sub_follow_union)
-                            new_geo = new_geo.buffer(0)
-                            if new_geo:
-                                if not new_geo.is_empty:
-                                    new_el['follow'] = new_geo
-                                else:
-                                    new_el['follow'] = work_geo
-                            else:
-                                new_el['follow'] = work_geo
-                        else:
-                            new_el['follow'] = work_geo
-                    else:
-                        new_el['follow'] = work_geo
+                new_geo_el["solid"] = deepcopy(geo_el["solid"])
 
-                if 'clear' in geo_el:
-                    work_geo = geo_el['clear']
-                    if self.sub_clear_union:
-                        if work_geo.intersects(self.sub_clear_union):
-                            new_geo = work_geo.difference(self.sub_clear_union)
-                            new_geo = new_geo.buffer(0)
-                            if new_geo:
-                                if not new_geo.is_empty:
-                                    new_el['clear'] = new_geo
-                                else:
-                                    new_el['clear'] = work_geo
-                            else:
-                                new_el['clear'] = work_geo
-                        else:
-                            new_el['clear'] = work_geo
-                    else:
-                        new_el['clear'] = work_geo
+            if "clear" in geo_el:
+                for sub_solid_geo in sub_geometry["clear"]:
+                    if geo_el["clear"].intersects(sub_solid_geo):
+                        new_geo = geo_el["clear"].difference(sub_solid_geo)
+                        if not new_geo.is_empty:
+                            geo_el["clear"] = new_geo
+                            is_modified = True
 
-                new_geometry.append(deepcopy(new_el))
+                new_geo_el["clear"] = deepcopy(geo_el["clear"])
 
-        self.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(apid)))
+            if is_modified:
+                affected_geo.append(new_geo_el)
+            else:
+                unafected_geo.append(geo_el)
 
-        if new_geometry:
-            while not self.new_apertures[apid]['geometry']:
-                self.new_apertures[apid]['geometry'] = deepcopy(new_geometry)
-                time.sleep(0.5)
+        return apid, unafected_geo, affected_geo
 
-        while True:
-            # removal from list is done in a multithreaded way therefore not always the removal can be done
-            # so we keep trying until it's done
-            if apid not in self.promises:
-                break
+    def new_gerber_object(self, outname, output):
+        """
 
-            self.promises.remove(apid)
-            time.sleep(0.5)
-
-        log.debug("Promise fulfilled: %s" % str(apid))
-
-    def new_gerber_object(self, outname):
+        :param outname:     name for the new Gerber object
+        :type outname:      str
+        :param output:      a list made of tuples in format:
+                            (aperture id in the target Gerber, unaffected_geometry list, affected_geometry list)
+        :type output:       list
+        :return:
+        :rtype:
+        """
 
         def obj_init(grb_obj, app_obj):
 
             grb_obj.apertures = deepcopy(self.new_apertures)
 
+            if '0' not in grb_obj.apertures:
+                grb_obj.apertures['0'] = {}
+                grb_obj.apertures['0']['type'] = 'REG'
+                grb_obj.apertures['0']['size'] = 0.0
+                grb_obj.apertures['0']['geometry'] = []
+
+            for apid, apid_val in list(grb_obj.apertures.items()):
+                for t in output:
+                    new_apid = t[0]
+                    if apid == new_apid:
+                        surving_geo = t[1]
+                        modified_geo = t[2]
+                        if surving_geo:
+                            apid_val['geometry'] = deepcopy(surving_geo)
+                        else:
+                            grb_obj.apertures.pop(apid, None)
+
+                        if modified_geo:
+                            grb_obj.apertures['0']['geometry'] += modified_geo
+
+            # delete the '0' aperture if it has no geometry
+            if not grb_obj.apertures['0']['geometry']:
+                grb_obj.apertures.pop('0', None)
+
             poly_buff = []
             follow_buff = []
-            for ap in self.new_apertures:
-                for elem in self.new_apertures[ap]['geometry']:
-                    poly_buff.append(elem['solid'])
-                    follow_buff.append(elem['follow'])
+            for ap in grb_obj.apertures:
+                for elem in grb_obj.apertures[ap]['geometry']:
+                    if 'solid' in elem:
+                        solid_geo = elem['solid']
+                        poly_buff.append(solid_geo)
+                    if 'follow' in elem:
+                        follow_buff.append(elem['follow'])
 
-            work_poly_buff = cascaded_union(poly_buff)
+            work_poly_buff = MultiPolygon(poly_buff)
             try:
                 poly_buff = work_poly_buff.buffer(0.0000001)
             except ValueError:
@@ -454,25 +458,22 @@ class ToolSub(AppTool):
 
             grb_obj.solid_geometry = deepcopy(poly_buff)
             grb_obj.follow_geometry = deepcopy(follow_buff)
+            grb_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
+                                                         local_use=grb_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.app_obj.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('Generating new object failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
                 return
 
             # GUI feedback
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Created"), outname))
+            self.app.inform.emit('[success] %s: %s' % (_("Created"), outname))
 
             # cleanup
             self.new_apertures.clear()
             self.new_solid_geometry[:] = []
-            try:
-                self.sub_union[:] = []
-            except TypeError:
-                self.sub_union = []
+            self.results = []
 
     def on_geo_intersection_click(self):
         # reset previous values
@@ -739,11 +740,9 @@ class ToolSub(AppTool):
                 outname = self.target_geo_combo.currentText() + '_sub'
 
                 # intersection jobs finished, start the creation of solid_geometry
-                self.app.worker_task.emit({'fcn': self.new_geo_object,
-                                           'params': [outname]})
+                self.app.worker_task.emit({'fcn': self.new_geo_object, 'params': [outname]})
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _('Generating new object failed.'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
 
     def reset_fields(self):
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -951,7 +951,7 @@ class RulesCheck(AppTool):
                                 geo = geo_el['solid']
                                 pt = geo.representative_point()
                                 points_list.append((pt.x, pt.y))
-                except Exception as e:
+                except Exception:
                     # An exception  will be raised for the 'size' key in case of apertures of type AM (macro) which does
                     # not have the size key
                     pass
@@ -1137,7 +1137,7 @@ class RulesCheck(AppTool):
                     copper_list.append(elem_dict)
 
                 copper_name_2 = self.copper_b_object.currentText()
-                if copper_name_2 !='' and self.copper_b_cb.get_value():
+                if copper_name_2 != '' and self.copper_b_cb.get_value():
                     elem_dict = {}
                     elem_dict['name'] = deepcopy(copper_name_2)
                     elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_2).apertures)
@@ -1363,12 +1363,12 @@ class RulesCheck(AppTool):
                     top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
 
                 silk_bottom = self.ss_b_object.currentText()
-                if silk_bottom !=  '' and self.ss_b_cb.get_value():
+                if silk_bottom != '' and self.ss_b_cb.get_value():
                     bottom_dict['name'] = deepcopy(silk_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
 
                 copper_outline = self.outline_object.currentText()
-                if copper_outline !=  '' and self.out_cb.get_value():
+                if copper_outline != '' and self.out_cb.get_value():
                     outline_dict['name'] = deepcopy(copper_outline)
                     outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
 
@@ -1421,7 +1421,7 @@ class RulesCheck(AppTool):
 
                 if self.sm_t_cb.get_value():
                     solder_obj = self.sm_t_object.currentText()
-                    if solder_obj !=  '':
+                    if solder_obj != '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1431,7 +1431,7 @@ class RulesCheck(AppTool):
                                                                         _("TOP -> Minimum Solder Mask Sliver"))))
                 if self.sm_b_cb.get_value():
                     solder_obj = self.sm_b_object.currentText()
-                    if solder_obj !=  '':
+                    if solder_obj != '':
                         sm_dict['name'] = deepcopy(solder_obj)
                         sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
 
@@ -1625,7 +1625,7 @@ class RulesCheck(AppTool):
             new_obj.source_file = txt
             new_obj.read_only = True
 
-        self.app.app_obj.new_object('document', name='Rules Check results', initialize=init, plot=False)
+        self.app.app_obj.new_object('document', name='Rules_check_results', initialize=init, plot=False)
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

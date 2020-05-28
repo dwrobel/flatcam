@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - updated the Tool Database class to have the Isolation Tool data
 - Isolation Tool - made to work the adding of tools from database
 - fixed some issues related to using the new Numerical... GUI elements
+- fixed issues in the Tool Subtract
+- remade Tool Subtract to use multiprocessing when processing geometry
+- the resulting Gerber file from Tool Subtract has now the attribute source_file populated
 
 27.05.2020
 
