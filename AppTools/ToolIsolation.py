@@ -1,8 +1,8 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# File Modified by: Marius Adrian Stanciu (c)              #
-# Date: 3/10/2019                                          #
-# MIT Licence                                              #
+# File by:  Marius Adrian Stanciu (c)                      #
+# Date:     5/25/2020                                      #
+# License:  MIT Licence                                    #
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore, QtGui

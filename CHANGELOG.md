@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - made the visibility change (when using the Spacebar key in Project Tab) to be not threaded and to use the enabled property of the ShapesCollection which should be faster
 - updated the Tool Database class to have the Isolation Tool data
 - Isolation Tool - made to work the adding of tools from database
+- fixed some issues related to using the new Numerical... GUI elements
 
 27.05.2020
 

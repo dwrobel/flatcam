@@ -671,7 +671,7 @@ class NumericalEvalEntry(EvalEntry):
         self.setValidator(validator)
 
 
-class NumericalEvalTupleEntry(EvalEntry):
+class NumericalEvalTupleEntry(FCEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
