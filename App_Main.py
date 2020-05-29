@@ -6803,8 +6803,9 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
+        data = None
         if self.is_legacy is False:
-            image = _screenshot()
+            image = _screenshot(alpha=None)
             data = np.asarray(image)
             if not data.ndim == 3 and data.shape[-1] in (3, 4):
                 self.inform.emit('[[WARNING_NOTCL]] %s' % _('Data must be a 3D array with last dimension 3 or 4'))
@@ -6944,7 +6945,8 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/' + name,
                 ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), ext_filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"),
+                                                               ext_filter=_filter)
 
         filename = str(filename)
 

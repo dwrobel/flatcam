@@ -19,6 +19,8 @@ CHANGELOG for FlatCAM beta
 - refactored some methods from App class and moved them to plotcanvas (plotcanvaslegacy) class
 - added an label with icon in the status bar, clicking it will toggle (show status) of the X-Y axis on cavnas
 - optimized the UI, added to status bar an icon to toggle the axis 
+- updated the Etch Compensation Tool by adding a new possibility to compensate the lateral etch (manual value)
+- updated the Etch Compensation Tool such that the resulting Gerber object will have the apertures attributes ('size', 'width', 'height') updated to the changes
 
 28.05.2020
 
