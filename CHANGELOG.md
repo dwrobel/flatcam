@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.05.2020
+
+- fixed the Tool Isolation when using the 'follow' parameter
+- in Isolation Tool when the Rest machining is checked the combine parameter is set True automatically because the rest machining concept make sense only when all tools are used together
+
 28.05.2020
 
 - made the visibility change (when using the Spacebar key in Project Tab) to be not threaded and to use the enabled property of the ShapesCollection which should be faster

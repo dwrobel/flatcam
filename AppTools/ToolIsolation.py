@@ -636,31 +636,19 @@ class ToolIsolation(AppTool, Gerber):
 
         self.sel_rect = []
 
-        self.bound_obj_name = ""
-        self.bound_obj = None
-
-        self.ncc_dia_list = []
-        self.iso_dia_list = []
-        self.has_offset = None
-        self.o_name = None
-        self.overlap = None
-        self.connect = None
-        self.contour = None
-        self.rest = None
-
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
         # store here the points for the "Polygon" area selection shape
         self.points = []
+
         # set this as True when in middle of drawing a "Polygon" area selection shape
         # it is made False by first click to signify that the shape is complete
         self.poly_drawn = False
 
         self.mm = None
         self.mr = None
-
         self.kp = None
 
         # store geometry from Polygon selection
@@ -668,15 +656,22 @@ class ToolIsolation(AppTool, Gerber):
 
         self.grid_status_memory = self.app.ui.grid_snap_btn.isChecked()
 
+        # store here the state of the combine_cb GUI element
+        # used when the rest machining is toggled
+        self.old_combine_state = None
+
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
 
-        self.select_method = None
         self.tool_type_item_options = []
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         self.tooldia = None
+
+        # multiprocessing
+        self.pool = self.app.pool
+        self.results = []
 
         self.form_fields = {
             "tools_iso_passes":         self.passes_entry,
@@ -890,9 +885,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # reset those objects on a new run
         self.grb_obj = None
-        self.bound_obj = None
         self.obj_name = ''
-        self.bound_obj_name = ''
 
         self.build_ui()
         self.app.ui.notebook.setTabText(2, _("Isolation Tool"))
@@ -1081,8 +1074,6 @@ class ToolIsolation(AppTool, Gerber):
 
         self.obj_name = ""
         self.grb_obj = None
-        self.bound_obj_name = ""
-        self.bound_obj = None
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
         self.units = self.app.defaults['units'].upper()
@@ -1338,9 +1329,16 @@ class ToolIsolation(AppTool, Gerber):
             self.order_radio.set_value('rev')
             self.ncc_order_label.setDisabled(True)
             self.order_radio.setDisabled(True)
+
+            self.old_combine_state = self.combine_passes_cb.get_value()
+            self.combine_passes_cb.set_value(True)
+            self.combine_passes_cb.setDisabled(True)
         else:
             self.ncc_order_label.setDisabled(False)
             self.order_radio.setDisabled(False)
+
+            self.combine_passes_cb.set_value(self.old_combine_state)
+            self.combine_passes_cb.setDisabled(False)
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
@@ -1600,7 +1598,7 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
 
-    def on_iso_button_click(self, *args):
+    def on_iso_button_click(self):
 
         self.obj_name = self.object_combo.currentText()
 
@@ -1666,8 +1664,7 @@ class ToolIsolation(AppTool, Gerber):
         selection = self.select_combo.get_value()
 
         if selection == _("All"):
-            full_geo = isolated_obj.solid_geometry
-            self.isolate(isolated_obj=isolated_obj, geometry=full_geo)
+            self.isolate(isolated_obj=isolated_obj)
         elif selection == _("Area Selection"):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
@@ -1716,149 +1713,23 @@ class ToolIsolation(AppTool, Gerber):
         :type isolated_obj:     AppObjects.FlatCAMGerber.GerberObject
         :param geometry:        specific geometry to isolate
         :type geometry:         List of Shapely polygon
-        :param limited_area:    if not None clear only this area
+        :param limited_area:    if not None isolate only this area
         :type limited_area:     Shapely Polygon or a list of them
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :return: None
         """
 
-        iso_name = isolated_obj.options["name"]
         combine = self.combine_passes_cb.get_value()
         tools_storage = self.iso_tools
 
         if combine:
-            total_solid_geometry = []
-
-            for tool in tools_storage:
-                tool_dia = tools_storage[tool]['tooldia']
-                tool_type = tools_storage[tool]['tool_type']
-                tool_data = tools_storage[tool]['data']
-
-                to_follow = tool_data['tools_iso_follow']
-
-                work_geo = geometry
-                if work_geo is None:
-                    work_geo = isolated_obj.follow_geometry if to_follow else isolated_obj.solid_geometry
-
-                iso_t = {
-                    'ext': 0,
-                    'int': 1,
-                    'full': 2
-                }[tool_data['tools_iso_isotype']]
-
-                passes = tool_data['tools_iso_passes']
-                overlap = tool_data['tools_iso_overlap']
-                overlap /= 100.0
-
-                milling_type = tool_data['tools_iso_milling_type']
-
-                iso_except = tool_data['tools_iso_isoexcept']
-
-                outname = "%s_%.*f" % (isolated_obj.options["name"], self.decimals, float(tool_dia))
-
-                iso_name = outname + "_iso"
-                if iso_t == 0:
-                    iso_name = outname + "_ext_iso"
-                elif iso_t == 1:
-                    iso_name = outname + "_int_iso"
-
-                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                if tool_type.lower() == 'v':
-                    new_cutz = self.ui.cutz_spinner.get_value()
-                    new_vtipdia = self.ui.tipdia_spinner.get_value()
-                    new_vtipangle = self.ui.tipangle_spinner.get_value()
-                    tool_type = 'V'
-                    tool_data.update({
-                        "name": iso_name,
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                    })
-                else:
-                    tool_data.update({
-                        "name": iso_name,
-                    })
-                    tool_type = 'C1'
-
-                solid_geo = []
-                for nr_pass in range(passes):
-                    iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
-
-                    # if milling type is climb then the move is counter-clockwise around features
-                    mill_dir = 1 if milling_type == 'cl' else 0
-
-                    iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                     follow=to_follow, nr_passes=nr_pass)
-                    if iso_geo == 'fail':
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
-                        continue
-                    try:
-                        for geo in iso_geo:
-                            solid_geo.append(geo)
-                    except TypeError:
-                        solid_geo.append(iso_geo)
-
-                    # ############################################################
-                    # ########## AREA SUBTRACTION ################################
-                    # ############################################################
-                    if iso_except:
-                        self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                        solid_geo = self.area_subtraction(solid_geo)
-
-                    if limited_area:
-                        self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
-                        solid_geo = self.area_intersection(solid_geo, intersection_geo=limited_area)
-
-                tools_storage.update({
-                    tool: {
-                        'tooldia': float(tool_dia),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': tool_type,
-                        'data': tool_data,
-                        'solid_geometry': deepcopy(solid_geo)
-                    }
-                })
-
-                total_solid_geometry += solid_geo
-
-            def iso_init(geo_obj, app_obj):
-                geo_obj.options["cnctooldia"] = str(tool_dia)
-
-                geo_obj.tools = dict(tools_storage)
-                geo_obj.solid_geometry = total_solid_geometry
-                # even if combine is checked, one pass is still single-geo
-
-                if len(self.iso_tools) > 1:
-                    geo_obj.multigeo = True
-                else:
-                    passes_no = float(self.iso_tools[0]['data']['tools_iso_passes'])
-                    geo_obj.multigeo = True if passes_no > 1 else False
-
-                # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                # or just looking in the lists (they are one level depth) and if any is not empty
-                # proceed with object creation, if there are empty and the number of them is the length
-                # of the list then we have an empty solid_geometry which should raise a Custom Exception
-                empty_cnt = 0
-                if not isinstance(geo_obj.solid_geometry, list) and \
-                        not isinstance(geo_obj.solid_geometry, MultiPolygon):
-                    geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
-                for g in geo_obj.solid_geometry:
-                    if g:
-                        break
-                    else:
-                        empty_cnt += 1
-
-                if empty_cnt == len(geo_obj.solid_geometry):
-                    app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"]))
-                    return 'fail'
-                else:
-                    app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
-
-            self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+            if self.rest_cb.get_value():
+                self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
+                                   lim_area=limited_area, plot=plot)
+            else:
+                self.combined_normal(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
+                                     lim_area=limited_area, plot=plot)
 
         else:
             for tool in tools_storage:
@@ -1992,8 +1863,320 @@ class ToolIsolation(AppTool, Gerber):
                                                (_("Isolation geometry created"), geo_obj.options["name"]))
                         geo_obj.multigeo = False
 
-                    # TODO: Do something if this is None. Offer changing name?
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+
+    def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
+        """
+
+        :param iso_obj:         the isolated Gerber object
+        :type iso_obj:          AppObjects.FlatCAMGerber.GerberObject
+        :param iso2geo:         specific geometry to isolate
+        :type iso2geo:          list of Shapely Polygon
+        :param tools_storage:   a dictionary that holds the tools and geometry
+        :type tools_storage:    dict
+        :param lim_area:        if not None restrict isolation to this area
+        :type lim_area:         Shapely Polygon or a list of them
+        :param plot:            if to plot the resulting geometry object
+        :type plot:             bool
+        :return:                Isolated solid geometry
+        :rtype:
+        """
+
+        log.debug("ToolIsolation.combine_rest()")
+
+        total_solid_geometry = []
+
+        iso_name = iso_obj.options["name"]
+        geometry = iso2geo
+
+        for tool in tools_storage:
+            tool_dia = tools_storage[tool]['tooldia']
+            tool_type = tools_storage[tool]['tool_type']
+            tool_data = tools_storage[tool]['data']
+
+            to_follow = tool_data['tools_iso_follow']
+
+            work_geo = geometry
+            if work_geo is None:
+                work_geo = iso_obj.follow_geometry if to_follow else iso_obj.solid_geometry
+
+            iso_t = {
+                'ext': 0,
+                'int': 1,
+                'full': 2
+            }[tool_data['tools_iso_isotype']]
+
+            passes = tool_data['tools_iso_passes']
+            overlap = tool_data['tools_iso_overlap']
+            overlap /= 100.0
+
+            milling_type = tool_data['tools_iso_milling_type']
+
+            iso_except = tool_data['tools_iso_isoexcept']
+
+            outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
+
+            iso_name = outname + "_iso"
+            if iso_t == 0:
+                iso_name = outname + "_ext_iso"
+            elif iso_t == 1:
+                iso_name = outname + "_int_iso"
+
+            # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+            if tool_type.lower() == 'v':
+                new_cutz = self.ui.cutz_spinner.get_value()
+                new_vtipdia = self.ui.tipdia_spinner.get_value()
+                new_vtipangle = self.ui.tipangle_spinner.get_value()
+                tool_type = 'V'
+                tool_data.update({
+                    "name": iso_name,
+                    "cutz": new_cutz,
+                    "vtipdia": new_vtipdia,
+                    "vtipangle": new_vtipangle,
+                })
+            else:
+                tool_data.update({
+                    "name": iso_name,
+                })
+                tool_type = 'C1'
+
+            solid_geo = []
+            for nr_pass in range(passes):
+                iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
+
+                # if milling type is climb then the move is counter-clockwise around features
+                mill_dir = 1 if milling_type == 'cl' else 0
+
+                iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
+                                                 follow=to_follow, nr_passes=nr_pass)
+                if iso_geo == 'fail':
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                    continue
+                try:
+                    for geo in iso_geo:
+                        solid_geo.append(geo)
+                except TypeError:
+                    solid_geo.append(iso_geo)
+
+                # ############################################################
+                # ########## AREA SUBTRACTION ################################
+                # ############################################################
+                if iso_except:
+                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                    solid_geo = self.area_subtraction(solid_geo)
+
+                if lim_area:
+                    self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
+                    solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
+
+            tools_storage.update({
+                tool: {
+                    'tooldia': float(tool_dia),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': tool_type,
+                    'data': tool_data,
+                    'solid_geometry': deepcopy(solid_geo)
+                }
+            })
+
+            total_solid_geometry += solid_geo
+
+        def iso_init(geo_obj, app_obj):
+            geo_obj.options["cnctooldia"] = str(tool_dia)
+
+            geo_obj.tools = dict(tools_storage)
+            geo_obj.solid_geometry = total_solid_geometry
+            # even if combine is checked, one pass is still single-geo
+
+            if len(tools_storage) > 1:
+                geo_obj.multigeo = True
+            else:
+                if to_follow:
+                    passes_no = 1
+                else:
+                    passes_no = float(tools_storage[0]['data']['tools_iso_passes'])
+                geo_obj.multigeo = True if passes_no > 1 else False
+
+            # detect if solid_geometry is empty and this require list flattening which is "heavy"
+            # or just looking in the lists (they are one level depth) and if any is not empty
+            # proceed with object creation, if there are empty and the number of them is the length
+            # of the list then we have an empty solid_geometry which should raise a Custom Exception
+            empty_cnt = 0
+            if not isinstance(geo_obj.solid_geometry, list) and \
+                    not isinstance(geo_obj.solid_geometry, MultiPolygon):
+                geo_obj.solid_geometry = [geo_obj.solid_geometry]
+
+            for g in geo_obj.solid_geometry:
+                if g:
+                    break
+                else:
+                    empty_cnt += 1
+
+            if empty_cnt == len(geo_obj.solid_geometry):
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"]))
+                return 'fail'
+            else:
+                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+
+        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+
+    def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
+        """
+
+        :param iso_obj:         the isolated Gerber object
+        :type iso_obj:          AppObjects.FlatCAMGerber.GerberObject
+        :param iso2geo:         specific geometry to isolate
+        :type iso2geo:          list of Shapely Polygon
+        :param tools_storage:   a dictionary that holds the tools and geometry
+        :type tools_storage:    dict
+        :param lim_area:        if not None restrict isolation to this area
+        :type lim_area:         Shapely Polygon or a list of them
+        :param plot:            if to plot the resulting geometry object
+        :type plot:             bool
+        :return:                Isolated solid geometry
+        :rtype:
+        """
+        log.debug("ToolIsolation.combined_normal()")
+
+        total_solid_geometry = []
+
+        iso_name = iso_obj.options["name"]
+        geometry = iso2geo
+
+        for tool in tools_storage:
+            tool_dia = tools_storage[tool]['tooldia']
+            tool_type = tools_storage[tool]['tool_type']
+            tool_data = tools_storage[tool]['data']
+
+            to_follow = tool_data['tools_iso_follow']
+
+            work_geo = geometry
+            if work_geo is None:
+                work_geo = iso_obj.follow_geometry if to_follow else iso_obj.solid_geometry
+
+            iso_t = {
+                'ext': 0,
+                'int': 1,
+                'full': 2
+            }[tool_data['tools_iso_isotype']]
+
+            passes = tool_data['tools_iso_passes']
+            overlap = tool_data['tools_iso_overlap']
+            overlap /= 100.0
+
+            milling_type = tool_data['tools_iso_milling_type']
+
+            iso_except = tool_data['tools_iso_isoexcept']
+
+            outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
+
+            iso_name = outname + "_iso"
+            if iso_t == 0:
+                iso_name = outname + "_ext_iso"
+            elif iso_t == 1:
+                iso_name = outname + "_int_iso"
+
+            # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+            if tool_type.lower() == 'v':
+                new_cutz = self.ui.cutz_spinner.get_value()
+                new_vtipdia = self.ui.tipdia_spinner.get_value()
+                new_vtipangle = self.ui.tipangle_spinner.get_value()
+                tool_type = 'V'
+                tool_data.update({
+                    "name": iso_name,
+                    "cutz": new_cutz,
+                    "vtipdia": new_vtipdia,
+                    "vtipangle": new_vtipangle,
+                })
+            else:
+                tool_data.update({
+                    "name": iso_name,
+                })
+                tool_type = 'C1'
+
+            solid_geo = []
+            for nr_pass in range(passes):
+                iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
+
+                # if milling type is climb then the move is counter-clockwise around features
+                mill_dir = 1 if milling_type == 'cl' else 0
+
+                iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
+                                                 follow=to_follow, nr_passes=nr_pass)
+                if iso_geo == 'fail':
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                    continue
+                try:
+                    for geo in iso_geo:
+                        solid_geo.append(geo)
+                except TypeError:
+                    solid_geo.append(iso_geo)
+
+                # ############################################################
+                # ########## AREA SUBTRACTION ################################
+                # ############################################################
+                if iso_except:
+                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                    solid_geo = self.area_subtraction(solid_geo)
+
+                if lim_area:
+                    self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
+                    solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
+
+            tools_storage.update({
+                tool: {
+                    'tooldia': float(tool_dia),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': tool_type,
+                    'data': tool_data,
+                    'solid_geometry': deepcopy(solid_geo)
+                }
+            })
+
+            total_solid_geometry += solid_geo
+
+        def iso_init(geo_obj, app_obj):
+            geo_obj.options["cnctooldia"] = str(tool_dia)
+
+            geo_obj.tools = dict(tools_storage)
+            geo_obj.solid_geometry = total_solid_geometry
+            # even if combine is checked, one pass is still single-geo
+
+            if len(tools_storage) > 1:
+                geo_obj.multigeo = True
+            else:
+                if to_follow:
+                    passes_no = 1
+                else:
+                    passes_no = float(tools_storage[0]['data']['tools_iso_passes'])
+                geo_obj.multigeo = True if passes_no > 1 else False
+
+            # detect if solid_geometry is empty and this require list flattening which is "heavy"
+            # or just looking in the lists (they are one level depth) and if any is not empty
+            # proceed with object creation, if there are empty and the number of them is the length
+            # of the list then we have an empty solid_geometry which should raise a Custom Exception
+            empty_cnt = 0
+            if not isinstance(geo_obj.solid_geometry, list) and \
+                    not isinstance(geo_obj.solid_geometry, MultiPolygon):
+                geo_obj.solid_geometry = [geo_obj.solid_geometry]
+
+            for g in geo_obj.solid_geometry:
+                if g:
+                    break
+                else:
+                    empty_cnt += 1
+
+            if empty_cnt == len(geo_obj.solid_geometry):
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Empty Geometry in"), geo_obj.options["name"]))
+                return 'fail'
+            else:
+                app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+
+        self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
     def area_subtraction(self, geo, subtractor_geo):
         """
@@ -2521,12 +2704,13 @@ class ToolIsolation(AppTool, Gerber):
 
         if follow:
             geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow)
+            return geom
         else:
             try:
                 geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
                                                        passes=nr_passes)
             except Exception as e:
-                log.debug('ToolIsolation.isolate().generate_envelope() --> %s' % str(e))
+                log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
                 return 'fail'
 
         if invert:
@@ -2661,7 +2845,6 @@ class ToolIsolation(AppTool, Gerber):
     def reset_usage(self):
         self.obj_name = ""
         self.grb_obj = None
-        self.bound_obj = None
 
         self.first_click = False
         self.cursor_pos = None

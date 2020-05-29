@@ -205,23 +205,37 @@ class GerberObjectUI(ObjectUI):
         self.multicolored_cb.setMinimumWidth(55)
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
-        # Plot CB
-        self.plot_lbl = FCLabel('%s' % _("Plot"))
-        self.plot_lbl.setToolTip(_("Plot (show) this object."))
-        self.plot_cb = FCCheckBox()
-
-        grid0.addWidget(self.plot_lbl, 1, 0)
-        grid0.addWidget(self.plot_cb, 1, 1)
-
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(self.name_hlay)
+        grid0.addLayout(self.name_hlay, 1, 0, 1, 3)
 
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
+
+        # Plot CB
+        self.plot_lbl = FCLabel('%s' % _("Plot"))
+        self.plot_lbl.setToolTip(_("Plot (show) this object."))
+        self.plot_cb = FCCheckBox()
+
+        grid0.addWidget(self.plot_lbl, 2, 0)
+        grid0.addWidget(self.plot_cb, 2, 1)
+
+        # generate follow
+        self.follow_lbl = FCLabel('%s:' % _("Follow"))
+        self.follow_lbl.setToolTip(_("Generate a 'Follow' geometry.\n"
+                                     "This means that it will cut through\n"
+                                     "the middle of the trace."))
+        self.follow_lbl.setMinimumWidth(90)
+        self.follow_cb = FCCheckBox()
+
+        hf_lay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hf_lay)
+        hf_lay.addWidget(self.follow_lbl)
+        hf_lay.addWidget(self.follow_cb)
+        hf_lay.addStretch()
 
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
@@ -283,20 +297,6 @@ class GerberObjectUI(ObjectUI):
 
         # start with apertures table hidden
         self.apertures_table.setVisible(False)
-
-        # generate follow
-        self.follow_lbl = FCLabel('%s:' % _("Follow"))
-        self.follow_lbl.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                     "This means that it will cut through\n"
-                                     "the middle of the trace."))
-        self.follow_lbl.setMinimumWidth(90)
-        self.follow_cb = FCCheckBox()
-
-        hf_lay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hf_lay)
-        hf_lay.addWidget(self.follow_lbl)
-        hf_lay.addWidget(self.follow_cb)
-        hf_lay.addStretch()
 
         # Buffer Geometry
         self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
