@@ -873,10 +873,11 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
         self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
         self.ui.menuview_toggle_grid.triggered.connect(self.ui.on_toggle_grid)
-        self.ui.menuview_toggle_grid_lines.triggered.connect(self.on_toggle_grid_lines)
-        self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
-        self.ui.menuview_toggle_hud.triggered.connect(self.on_toggle_hud)
+
+        self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
+        self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
+        self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
 
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
@@ -1021,6 +1022,15 @@ class App(QtCore.QObject):
         self.ui.util_defaults_form.kw_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='keyword'))
 
+        # ###########################################################################################################
+        # ########################################### GUI SIGNALS ###################################################
+        # ###########################################################################################################
+        self.ui.hud_label.clicked.connect(self.plotcanvas.on_toggle_hud)
+        self.ui.axis_status_label.clicked.connect(self.plotcanvas.on_toggle_axis)
+
+        # ###########################################################################################################
+        # ####################################### VARIOUS SIGNALS ###################################################
+        # ###########################################################################################################
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
 
@@ -1345,7 +1355,7 @@ class App(QtCore.QObject):
         try:
             self.install_tools()
         except AttributeError as e:
-            log.debug("App.__init__() install tools() --> %s" % str(e))
+            log.debug("App.__init__() install_tools() --> %s" % str(e))
 
         # ###########################################################################################################
         # ############################################ SETUP RECENT ITEMS ###########################################
@@ -1440,12 +1450,6 @@ class App(QtCore.QObject):
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
-
-        # Variable to hold the status of the axis
-        self.toggle_axis = True
-
-        # Variable to hold the status of the grid lines
-        self.toggle_grid_lines = True
 
         # Variable to store the status of the code editor
         self.toggle_codeeditor = False
@@ -2371,7 +2375,10 @@ class App(QtCore.QObject):
         Informs the user. Normally on the status bar, optionally
         also on the shell.
 
-        :param msg: Text to write.
+        :param msg:         Text to write.
+        :type msg:          str
+        :param shell_echo:  Control if to display the message msg in the Shell
+        :type shell_echo:   bool
         :return: None
         """
 
@@ -2462,10 +2469,11 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + date,
-                filter=filter__
+                ext_filter=filter__
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Preferences"), filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export FlatCAM Preferences"), ext_filter=filter__)
         filename = str(filename)
         if filename == "":
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -2507,10 +2515,10 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save to file"),
                 directory=path_to_save + '/file_' + self.date,
-                filter=filter__
+                ext_filter=filter__
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), ext_filter=filter__)
 
         filename = str(filename)
 
@@ -3864,7 +3872,8 @@ class App(QtCore.QObject):
 
         # Keys in self.defaults for which to scale their values
         dimensions = ['tools_iso_tooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "tools_iso_tool_vtipdia",
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
+                      "tools_iso_tool_vtipdia",
                       "tools_iso_tool_cutz", "gerber_editor_newdim", "gerber_editor_ma_low",
                       "gerber_editor_ma_high",
 
@@ -4088,95 +4097,6 @@ class App(QtCore.QObject):
         self.defaults['global_gridy'] = val_y
         self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
-
-    def on_toggle_axis(self):
-        self.defaults.report_usage("on_toggle_axis()")
-
-        if self.toggle_axis is False:
-            if self.is_legacy is False:
-                self.plotcanvas.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
-                                                      parent=self.plotcanvas.view.scene)
-
-                self.plotcanvas.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
-                                                      parent=self.plotcanvas.view.scene)
-            else:
-                if self.plotcanvas.h_line not in self.plotcanvas.axes.lines and \
-                        self.plotcanvas.v_line not in self.plotcanvas.axes.lines:
-                    self.plotcanvas.h_line = self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-                    self.plotcanvas.v_line = self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
-                    self.plotcanvas.canvas.draw()
-            self.inform.emit(_("Axis enabled."))
-            self.toggle_axis = True
-        else:
-            if self.is_legacy is False:
-                self.plotcanvas.v_line.parent = None
-                self.plotcanvas.h_line.parent = None
-            else:
-                if self.plotcanvas.h_line in self.plotcanvas.axes.lines and \
-                        self.plotcanvas.v_line in self.plotcanvas.axes.lines:
-                    self.plotcanvas.axes.lines.remove(self.plotcanvas.h_line)
-                    self.plotcanvas.axes.lines.remove(self.plotcanvas.v_line)
-                    self.plotcanvas.canvas.draw()
-            self.inform.emit(_("Axis disabled."))
-            self.toggle_axis = False
-
-    def on_toggle_hud(self):
-        new_state = False if self.plotcanvas.hud_enabled else True
-
-        self.plotcanvas.on_toggle_hud(state=new_state)
-        if new_state is False:
-            self.inform[str, bool].emit(_("HUD disabled."), False)
-        else:
-            self.inform[str, bool].emit(_("HUD enabled."), False)
-
-    def on_toggle_grid_lines(self):
-        self.defaults.report_usage("on_toggle_grd_lines()")
-
-        tt_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if tt_settings.contains("theme"):
-            theme = tt_settings.value('theme', type=str)
-        else:
-            theme = 'white'
-
-        if self.toggle_grid_lines is False:
-            if self.is_legacy is False:
-                if theme == 'white':
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
-                else:
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#dededeff').rgba
-            else:
-                self.plotcanvas.axes.grid(True)
-                try:
-                    self.plotcanvas.canvas.draw()
-                except IndexError:
-                    pass
-                pass
-            self.inform.emit(_("Grid enabled."))
-            self.toggle_grid_lines = True
-        else:
-            if self.is_legacy is False:
-                if theme == 'white':
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#ffffffff').rgba
-                else:
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#000000FF').rgba
-            else:
-                self.plotcanvas.axes.grid(False)
-                try:
-                    self.plotcanvas.canvas.draw()
-                except IndexError:
-                    pass
-            self.toggle_grid_lines = False
-            self.inform.emit(_("Grid disabled."))
-
-        if self.is_legacy is False:
-            # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
-            # - perhaps is a bug in VisPy implementation
-            if self.grid_status():
-                self.app_cursor.enabled = False
-                self.app_cursor.enabled = True
-            else:
-                self.app_cursor.enabled = True
-                self.app_cursor.enabled = False
 
     def on_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
@@ -6860,9 +6780,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -6895,9 +6815,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG Image"),
                 directory=self.get_last_save_folder() + '/png_' + self.date,
-                filter=filter_)
+                ext_filter=filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), ext_filter=filter_)
 
         filename = str(filename)
 
@@ -6940,9 +6860,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -6981,9 +6901,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Script source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7022,9 +6942,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Document source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7063,9 +6983,10 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Excellon source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Excellon source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7104,9 +7025,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7148,9 +7069,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Gerber"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter_)
+                ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -7208,9 +7129,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter_)
+                ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -7660,10 +7581,10 @@ class App(QtCore.QObject):
                 caption=_("Save Project As ..."),
                 directory='{l_save}/{proj}_{date}'.format(l_save=str(self.get_last_save_folder()), date=self.date,
                                                           proj=_("Project")),
-                filter=filter_
+                ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), ext_filter=filter_)
 
         filename = str(filename)
 
@@ -7715,10 +7636,10 @@ class App(QtCore.QObject):
                 directory='{l_save}/{obj_name}_{date}'.format(l_save=str(self.get_last_save_folder()),
                                                               obj_name=obj_name,
                                                               date=self.date),
-                filter=filter_
+                ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), ext_filter=filter_)
 
         filename = str(filename)
 

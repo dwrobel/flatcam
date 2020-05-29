@@ -1122,7 +1122,7 @@ class PreferencesUIManager:
         if self.ui.grb_edit_toolbar.isVisible():
             tb_status += 64
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.status_toolbar.isVisible():
             tb_status += 128
 
         if self.ui.toolbarshell.isVisible():

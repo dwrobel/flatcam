@@ -506,10 +506,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Machine Code ..."),
                 directory=dir_file_to_save,
-                filter=_filter_
+                ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Machine Code ..."), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Machine Code ..."), ext_filter=_filter_)
 
         filename = str(filename)
 

@@ -2554,7 +2554,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
         :param title: string with the window title
         :param label: string with the message inside the dialog box
         """
-        super(DialogBoxRadio, self).__init__()
+        super(DialogBoxRadio, self).__init__(parent=parent)
         if initial_text is None:
             self.location = str((0, 0))
         else:
@@ -2797,9 +2797,12 @@ class MyCompleter(QCompleter):
     insertText = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
-        QCompleter.__init__(self)
+        QCompleter.__init__(self, parent=parent)
         self.setCompletionMode(QCompleter.PopupCompletion)
         self.highlighted.connect(self.setHighlighted)
+
+        self.lastSelected = ''
+
         # self.popup().installEventFilter(self)
 
     # def eventFilter(self, obj, event):
@@ -2955,9 +2958,9 @@ class FCFileSaveDialog(QtWidgets.QFileDialog):
         super(FCFileSaveDialog, self).__init__(*args)
 
     @staticmethod
-    def get_saved_filename(parent=None, caption='', directory='', filter='', initialFilter=''):
+    def get_saved_filename(parent=None, caption='', directory='', ext_filter='', initialFilter=''):
         filename, _filter = QtWidgets.QFileDialog.getSaveFileName(parent=parent, caption=caption,
-                                                                  directory=directory, filter=filter,
+                                                                  directory=directory, filter=ext_filter,
                                                                   initialFilter=initialFilter)
 
         filename = str(filename)
@@ -2971,6 +2974,17 @@ class FCFileSaveDialog(QtWidgets.QFileDialog):
         else:
             filename += extension
             return filename, _filter
+
+
+class FCDock(QtWidgets.QDockWidget):
+
+    def __init__(self, *args, **kwargs):
+        super(FCDock, self).__init__(*args)
+        self.close_callback = kwargs["close_callback"] if "close_callback" in kwargs else None
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        self.close_callback()
+        super().closeEvent(event)
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):

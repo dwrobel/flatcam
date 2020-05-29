@@ -655,7 +655,7 @@ class ToolsDB(QtWidgets.QWidget):
                                                                l_save=str(self.app.get_last_save_folder()),
                                                                n=_("Tools_Database"),
                                                                date=date),
-                                                           filter=filter__)
+                                                           ext_filter=filter__)
 
         filename = str(filename)
 
@@ -2252,7 +2252,7 @@ class ToolsDB2(QtWidgets.QWidget):
                                                                 l_save=str(self.app.get_last_save_folder()),
                                                                 n=_("Tools_Database"),
                                                                 date=date),
-                                                           filter=filter__)
+                                                           ext_filter=filter__)
 
         filename = str(filename)
 

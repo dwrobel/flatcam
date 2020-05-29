@@ -3665,7 +3665,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_edit_toolbar.setDisabled(False)
         self.app.ui.geo_edit_toolbar.setVisible(True)
 
-        self.app.ui.snap_toolbar.setDisabled(False)
+        self.app.ui.status_toolbar.setDisabled(False)
 
         self.app.ui.popmenu_disable.setVisible(False)
         self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
@@ -4135,11 +4135,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # make sure that the cursor shape is enabled/disabled, too
         if self.options['grid_snap'] is True:
-            self.app.inform.emit(_("Grid snap enabled."))
+            self.app.inform[str, bool].emit(_("Grid Snap enabled."), False)
             self.app.app_cursor.enabled = True
         else:
             self.app.app_cursor.enabled = False
-            self.app.inform.emit(_("Grid snap disabled."))
+            self.app.inform[str, bool].emit(_("Grid Snap disabled."), False)
 
     def on_canvas_click(self, event):
         """

@@ -12,8 +12,16 @@ from AppGUI.VisPyCanvas import VisPyCanvas, Color
 from AppGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line, Rectangle, Text
 
+import gettext
+import AppTranslation as fcTranslate
+import builtins
+
 import numpy as np
 from vispy.geometry import Rect
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 log = logging.getLogger('base')
 
@@ -133,11 +141,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=False,
                                    parent=self.view.scene)
 
-        # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
-        # all CNC have a limited workspace
-        if self.fcapp.defaults['global_workspace'] is True:
-            self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
-
         self.line_parent = None
         if self.fcapp.defaults["global_cursor_color_enabled"]:
             c_color = Color(self.fcapp.defaults["global_cursor_color"]).rgba
@@ -149,9 +152,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
-
-        # HUD Display
-        self.hud_enabled = False
 
         # font size
         qsettings = QtCore.QSettings("Open Source", "FlatCAM")
@@ -181,9 +181,26 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                                   border_color=self.rect_hud_color, color=self.rect_hud_color, parent=None)
         self.rect_hud.set_gl_state(depth_test=False)
 
+        # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
+        # all CNC have a limited workspace
+        if self.fcapp.defaults['global_workspace'] is True:
+            self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
+
+        # HUD Display
+        self.hud_enabled = False
+
         # enable the HUD if it is activated in FlatCAM Preferences
         if self.fcapp.defaults['global_hud'] is True:
             self.on_toggle_hud(state=True)
+
+        # Axis Display
+        self.axis_enabled = True
+
+        # enable Axis
+        self.on_toggle_axis(state=True)
+
+        # enable Grid lines
+        self.grid_lines_enabled = True
 
         self.shape_collections = []
 
@@ -201,27 +218,75 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
-    def on_toggle_hud(self, state):
+    def on_toggle_axis(self, signal=None, state=None):
+        if state is None:
+            state = not self.axis_enabled
+
+        if state:
+            self.axis_enabled = True
+            self.v_line.parent = self.view.scene
+            self.h_line.parent = self.view.scene
+            self.fcapp.ui.axis_status_label.setStyleSheet("""
+                                                          QLabel
+                                                          {
+                                                              color: black;
+                                                              background-color: peachpuff;
+                                                          }
+                                                          """)
+            self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
+        else:
+            self.axis_enabled = False
+            self.v_line.parent = None
+            self.h_line.parent = None
+            self.fcapp.ui.axis_status_label.setStyleSheet("")
+            self.fcapp.inform[str, bool].emit(_("Axis disabled."), False)
+
+    def on_toggle_hud(self, signal=None, state=None):
+        if state is None:
+            state = not self.hud_enabled
+
         if state:
             self.hud_enabled = True
             self.rect_hud.parent = self.view
             self.text_hud.parent = self.view
-
             self.fcapp.defaults['global_hud'] = True
             self.fcapp.ui.hud_label.setStyleSheet("""
-                            QLabel
-                            {
-                                color: black;
-                                background-color: lightblue;
-                            }
-                            """)
+                                                  QLabel
+                                                  {
+                                                      color: black;
+                                                      background-color: lightblue;
+                                                  }
+                                                  """)
+            self.fcapp.inform[str, bool].emit(_("HUD enabled."), False)
+
         else:
             self.hud_enabled = False
             self.rect_hud.parent = None
             self.text_hud.parent = None
-
             self.fcapp.defaults['global_hud'] = False
             self.fcapp.ui.hud_label.setStyleSheet("")
+            self.fcapp.inform[str, bool].emit(_("HUD disabled."), False)
+
+    def on_toggle_grid_lines(self):
+        state = not self.grid_lines_enabled
+
+        if state:
+            self.grid_lines_enabled = True
+            self.grid.parent = self.view.scene
+            self.fcapp.inform[str, bool].emit(_("Grid enabled."), False)
+        else:
+            self.grid_lines_enabled = False
+            self.grid.parent = None
+            self.fcapp.inform[str, bool].emit(_("Grid disabled."), False)
+
+        # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
+        # - perhaps is a bug in VisPy implementation
+        if self.fcapp.grid_status():
+            self.fcapp.app_cursor.enabled = False
+            self.fcapp.app_cursor.enabled = True
+        else:
+            self.fcapp.app_cursor.enabled = True
+            self.fcapp.app_cursor.enabled = False
 
     def draw_workspace(self, workspace_size):
         """

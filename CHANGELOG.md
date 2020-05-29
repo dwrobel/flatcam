@@ -15,6 +15,10 @@ CHANGELOG for FlatCAM beta
 - clicking on the activity icon will replot all objects
 - optimized UI in Tool Isolation
 - overloaded the App inform signal to allow not printing to shell if a second bool parameter is given; modified some GUI messages to use this feature
+- fixed the shell status label status on shell dock close from close button
+- refactored some methods from App class and moved them to plotcanvas (plotcanvaslegacy) class
+- added an label with icon in the status bar, clicking it will toggle (show status) of the X-Y axis on cavnas
+- optimized the UI, added to status bar an icon to toggle the axis 
 
 28.05.2020
 

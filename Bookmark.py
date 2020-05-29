@@ -292,7 +292,7 @@ class BookmarkManager(QtWidgets.QWidget):
                                                                 l_save=str(self.app.get_last_save_folder()),
                                                                 n=_("Bookmarks"),
                                                                 date=date),
-                                                           filter=filter__)
+                                                           ext_filter=filter__)
 
         filename = str(filename)
 
