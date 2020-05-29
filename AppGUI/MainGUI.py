@@ -488,7 +488,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_grid = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Snap\tG"))
         self.menuview_toggle_grid_lines = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tAlt+G"))
+            QtGui.QIcon(self.app.resource_location + '/grid_lines32.png'), _("&Toggle Grid Lines\tAlt+G"))
         self.menuview_toggle_axis = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tShift+G"))
         self.menuview_toggle_workspace = self.menuview.addAction(
@@ -1095,17 +1095,21 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
         self.snap_toolbar.addWidget(self.grid_gap_x_entry)
 
+        self.snap_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_gap_link_cb = FCCheckBox()
+        self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n"
+                                           "is copied to the Grid_Y value."))
+        self.snap_toolbar.addWidget(self.grid_gap_link_cb)
+        self.snap_toolbar.addWidget(QtWidgets.QLabel(" "))
+
         self.grid_gap_y_entry = FCEntry2()
         self.grid_gap_y_entry.setMaximumWidth(70)
         self.grid_gap_y_entry.setToolTip(_("Grid Y snapping distance"))
         self.snap_toolbar.addWidget(self.grid_gap_y_entry)
 
-        self.grid_space_label = QtWidgets.QLabel("  ")
-        self.snap_toolbar.addWidget(self.grid_space_label)
-        self.grid_gap_link_cb = FCCheckBox()
-        self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n"
-                                         "is copied to the Grid_Y value."))
-        self.snap_toolbar.addWidget(self.grid_gap_link_cb)
+        self.shell_status_label = FCLabel()
+        self.shell_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/shell20.png'))
+        self.snap_toolbar.addWidget(self.shell_status_label)
 
         self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
 
@@ -1656,7 +1660,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.wplace_label.clicked.connect(self.app.on_workspace_toggle)
         self.hud_label.clicked.connect(self.app.on_toggle_hud)
-
+        self.shell_status_label.clicked.connect(self.toggle_shell_ui)
         # to be used in the future
         # self.plot_tab_area.tab_attached.connect(lambda x: print(x))
         # self.plot_tab_area.tab_detached.connect(lambda x: print(x))
@@ -3639,8 +3643,18 @@ class MainGUI(QtWidgets.QMainWindow):
         if self.shell_dock.isVisible():
             self.shell_dock.hide()
             self.app.plotcanvas.native.setFocus()
+            self.shell_status_label.setStyleSheet("")
+            self.app.inform.emit(_("Shell disabled."))
         else:
             self.shell_dock.show()
+            self.shell_status_label.setStyleSheet("""
+                                                  QLabel
+                                                  {
+                                                      color: black;
+                                                      background-color: lightcoral;
+                                                  }
+                                                  """)
+            self.app.inform.emit(_("Shell enabled."))
 
             # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
             # self.shell._edit.setFocus()

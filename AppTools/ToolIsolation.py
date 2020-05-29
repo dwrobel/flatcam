@@ -2052,6 +2052,8 @@ class ToolIsolation(AppTool, Gerber):
 
             to_follow = tool_data['tools_iso_follow']
 
+            # TODO what to do when the iso2geo param is not None but the Follow cb is checked
+            # for the case when limited area is used .... the follow geo should be clipped too
             work_geo = geometry
             if work_geo is None:
                 work_geo = iso_obj.follow_geometry if to_follow else iso_obj.solid_geometry
