@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed the Tool Isolation when using the 'follow' parameter
 - in Isolation Tool when the Rest machining is checked the combine parameter is set True automatically because the rest machining concept make sense only when all tools are used together
 - some changes in the UI; added in the status bar an icon to control the Shell Dock
+- clicking on the activity icon will replot all objects
 
 28.05.2020
 

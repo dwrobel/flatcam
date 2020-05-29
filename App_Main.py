@@ -5659,7 +5659,6 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.defaults.report_usage("on_toolbar_replot")
         self.log.debug("on_toolbar_replot()")
 
         try:

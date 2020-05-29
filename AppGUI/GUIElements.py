@@ -3003,7 +3003,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.movie_path = movie
         self.icon_path = icon
 
-        self.icon = QtWidgets.QLabel(self)
+        self.icon = FCLabel(self)
         self.icon.setGeometry(0, 0, 16, 12)
         self.movie = QtGui.QMovie(self.movie_path)
 
@@ -3021,6 +3021,8 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
 
         layout.addWidget(self.text)
+
+        self.icon.clicked.connect(self.app.on_toolbar_replot)
 
     def set_idle(self):
         self.movie.stop()
