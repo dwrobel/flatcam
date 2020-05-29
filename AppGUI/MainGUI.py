@@ -3644,6 +3644,7 @@ class MainGUI(QtWidgets.QMainWindow):
             self.shell_dock.hide()
             self.app.plotcanvas.native.setFocus()
             self.shell_status_label.setStyleSheet("")
+            self.app.inform[str, bool].emit(_("Shell disabled."), False)
         else:
             self.shell_dock.show()
             self.shell_status_label.setStyleSheet("""
@@ -3653,6 +3654,7 @@ class MainGUI(QtWidgets.QMainWindow):
                                                       background-color: lightcoral;
                                                   }
                                                   """)
+            self.app.inform[str, bool].emit(_("Shell enabled."), False)
 
             # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
             # self.shell._edit.setFocus()

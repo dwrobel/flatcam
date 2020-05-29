@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - some changes in the UI; added in the status bar an icon to control the Shell Dock
 - clicking on the activity icon will replot all objects
 - optimized UI in Tool Isolation
+- overloaded the App inform signal to allow not printing to shell if a second bool parameter is given; modified some GUI messages to use this feature
 
 28.05.2020
 

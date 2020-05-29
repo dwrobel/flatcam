@@ -204,7 +204,7 @@ class App(QtCore.QObject):
     # Inform the user
     # Handled by:
     #  * App.info() --> Print on the status bar
-    inform = QtCore.pyqtSignal(str)
+    inform = QtCore.pyqtSignal([str], [str, bool])
 
     app_quit = QtCore.pyqtSignal()
 
@@ -757,7 +757,9 @@ class App(QtCore.QObject):
 
         # ########################################## Custom signals  ################################################
         # signal for displaying messages in status bar
-        self.inform.connect(self.info)
+        self.inform[str].connect(self.info)
+        self.inform[str, bool].connect(self.info)
+
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
         self.message.connect(lambda: message_dialog(parent=self.ui))
@@ -2362,7 +2364,9 @@ class App(QtCore.QObject):
             loc = os.path.dirname(__file__)
         return loc
 
-    def info(self, msg):
+    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot(str, bool)
+    def info(self, msg, shell_echo=True):
         """
         Informs the user. Normally on the status bar, optionally
         also on the shell.
@@ -2378,32 +2382,33 @@ class App(QtCore.QObject):
             msg_ = match.group(2)
             self.ui.fcinfo.set_status(str(msg_), level=level)
 
-            if level.lower() == "error":
-                self.shell_message(msg, error=True, show=True)
-            elif level.lower() == "warning":
-                self.shell_message(msg, warning=True, show=True)
+            if shell_echo is True:
+                if level.lower() == "error":
+                    self.shell_message(msg, error=True, show=True)
+                elif level.lower() == "warning":
+                    self.shell_message(msg, warning=True, show=True)
 
-            elif level.lower() == "error_notcl":
-                self.shell_message(msg, error=True, show=False)
+                elif level.lower() == "error_notcl":
+                    self.shell_message(msg, error=True, show=False)
 
-            elif level.lower() == "warning_notcl":
-                self.shell_message(msg, warning=True, show=False)
+                elif level.lower() == "warning_notcl":
+                    self.shell_message(msg, warning=True, show=False)
 
-            elif level.lower() == "success":
-                self.shell_message(msg, success=True, show=False)
+                elif level.lower() == "success":
+                    self.shell_message(msg, success=True, show=False)
 
-            elif level.lower() == "selected":
-                self.shell_message(msg, selected=True, show=False)
+                elif level.lower() == "selected":
+                    self.shell_message(msg, selected=True, show=False)
 
-            else:
-                self.shell_message(msg, show=False)
+                else:
+                    self.shell_message(msg, show=False)
 
         else:
             self.ui.fcinfo.set_status(str(msg), level="info")
 
             # make sure that if the message is to clear the infobar with a space
             # is not printed over and over on the shell
-            if msg != '':
+            if msg != '' and shell_echo is True:
                 self.shell_message(msg)
 
     def on_import_preferences(self):
@@ -4120,9 +4125,9 @@ class App(QtCore.QObject):
 
         self.plotcanvas.on_toggle_hud(state=new_state)
         if new_state is False:
-            self.inform.emit(_("HUD disabled."))
+            self.inform[str, bool].emit(_("HUD disabled."), False)
         else:
-            self.inform.emit(_("HUD enabled."))
+            self.inform[str, bool].emit(_("HUD enabled."), False)
 
     def on_toggle_grid_lines(self):
         self.defaults.report_usage("on_toggle_grd_lines()")
@@ -4211,10 +4216,10 @@ class App(QtCore.QObject):
     def on_workspace(self):
         if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
-            self.inform.emit(_("Workspace enabled."))
+            self.inform[str, bool].emit(_("Workspace enabled."), False)
         else:
             self.plotcanvas.delete_workspace()
-            self.inform.emit(_("Workspace disabled."))
+            self.inform[str, bool].emit(_("Workspace disabled."), False)
         self.preferencesUiManager.defaults_read_form()
         # self.save_defaults(silent=True)
 
@@ -4399,13 +4404,13 @@ class App(QtCore.QObject):
                     while self.collection.get_selected():
                         self.delete_first_selected()
 
-                    self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
 
                     # if there are no longer objects delete also the exclusion areas shapes
                     if not self.collection.get_list():
                         self.exc_areas.clear_shapes()
+                    self.inform.emit('%s...' % _("Object(s) deleted"))
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:

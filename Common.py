@@ -572,7 +572,7 @@ class ExclusionAreas(QtCore.QObject):
         AppTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
-        self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
+        self.app.inform.emit('%s' % _("All exclusion zones deleted."))
 
     def delete_sel_shapes(self, idxs):
         """
@@ -621,7 +621,7 @@ class ExclusionAreas(QtCore.QObject):
                                             """)
             self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
-            self.app.inform.emit('[success] %s' % _("All exclusion zones deleted."))
+            self.app.inform.emit('%s' % _("All exclusion zones deleted."))
 
     def travel_coordinates(self, start_point, end_point, tooldia):
         """
