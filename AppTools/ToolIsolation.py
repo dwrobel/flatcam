@@ -441,7 +441,7 @@ class ToolIsolation(AppTool, Gerber):
               "If not checked, use the standard algorithm.")
         )
 
-        self.grid3.addWidget(self.rest_cb, 25, 0, 1, 2)
+        self.grid3.addWidget(self.rest_cb, 25, 0)
 
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
@@ -450,7 +450,7 @@ class ToolIsolation(AppTool, Gerber):
         )
         self.combine_passes_cb.setObjectName("i_combine")
 
-        self.grid3.addWidget(self.combine_passes_cb, 26, 0, 1, 2)
+        self.grid3.addWidget(self.combine_passes_cb, 25, 1)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
@@ -458,22 +458,19 @@ class ToolIsolation(AppTool, Gerber):
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        self.grid3.addWidget(self.except_cb, 27, 0, 1, 2)
+        self.grid3.addWidget(self.except_cb, 27, 0)
 
         # Type of object to be excepted
-        self.type_excobj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
-        self.type_excobj_combo_label.setToolTip(
+        self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
+                                           {'label': _("Gerber"), 'value': 'gerber'}])
+        self.type_excobj_radio.setToolTip(
             _("Specify the type of object to be excepted from isolation.\n"
               "It can be of type: Gerber or Geometry.\n"
               "What is selected here will dictate the kind\n"
               "of objects that will populate the 'Object' combobox.")
         )
 
-        self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
-                                           {'label': _("Gerber"), 'value': 'gerber'}])
-
-        self.grid3.addWidget(self.type_excobj_combo_label, 28, 0)
-        self.grid3.addWidget(self.type_excobj_radio, 28, 1)
+        self.grid3.addWidget(self.type_excobj_radio, 27, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -489,7 +486,6 @@ class ToolIsolation(AppTool, Gerber):
 
         self.e_ois = OptionalHideInputSection(self.except_cb,
                                               [
-                                                  self.type_excobj_combo_label,
                                                   self.type_excobj_radio,
                                                   self.exc_obj_combo
                                               ])
