@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - In Tool Isolation made sure that the use of ESC key while some processes are active will disconnect the mouse events that may be connected, correctly
 - optimized the Gerber UI
 - added a Multi-color checkbox for the Geometry UI (will color differently tool geometry when the geometry is multitool)
+- added a Multi-color checkbox for the Excellon UI (this way colors for each tool are easier to differentiate especially when the diameter is close)
 
 29.05.2020
 

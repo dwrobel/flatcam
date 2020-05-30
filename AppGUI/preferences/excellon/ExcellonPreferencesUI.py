@@ -31,7 +31,7 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.decimals = decimals
 
         self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals)
-        self.excellon_gen_group.setMinimumWidth(220)
+        self.excellon_gen_group.setMinimumWidth(240)
         self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
         self.excellon_opt_group.setMinimumWidth(290)
         self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)

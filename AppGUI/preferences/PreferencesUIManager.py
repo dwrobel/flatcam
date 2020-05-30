@@ -168,6 +168,7 @@ class PreferencesUIManager:
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
+            "excellon_multicolored": self.ui.excellon_defaults_form.excellon_gen_group.multicolored_cb,
             "excellon_format_upper_in":
                 self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
             "excellon_format_lower_in":

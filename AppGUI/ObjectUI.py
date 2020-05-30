@@ -480,22 +480,38 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
-        # ### Plot options ####
-        hlay_plot = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hlay_plot)
+        # Plot options
+        grid_h = QtWidgets.QGridLayout()
+        grid_h.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.custom_box.addLayout(grid_h)
+        grid_h.setColumnStretch(0, 0)
+        grid_h.setColumnStretch(1, 1)
 
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.plot_options_label.setMinimumWidth(90)
+
+        grid_h.addWidget(self.plot_options_label, 0, 0)
+
+        # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             _("Solid circles.")
         )
-        hlay_plot.addWidget(self.plot_options_label)
-        hlay_plot.addStretch()
-        hlay_plot.addWidget(self.solid_cb)
+        self.solid_cb.setMinimumWidth(50)
+        grid_h.addWidget(self.solid_cb, 0, 1)
+
+        # Multicolored CB
+        self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
+        self.multicolored_cb.setToolTip(
+            _("Draw polygons in different colors.")
+        )
+        self.multicolored_cb.setMinimumWidth(55)
+        grid_h.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(self.name_hlay)
+        grid_h.addLayout(self.name_hlay, 1, 0, 1, 3)
+
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)

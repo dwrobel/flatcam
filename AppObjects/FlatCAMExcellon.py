@@ -19,6 +19,7 @@ from AppParsers.ParseExcellon import Excellon
 from AppObjects.FlatCAMObj import *
 
 import itertools
+import numpy as np
 
 import gettext
 import AppTranslation as fcTranslate
@@ -50,6 +51,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.options.update({
             "plot": True,
             "solid": False,
+            "multicolored": False,
 
             "operation": "drill",
             "milling_type": "drills",
@@ -607,6 +609,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
+            "multicolored": self.ui.multicolored_cb,
 
             "operation": self.ui.operation_radio,
             "milling_type": self.ui.milling_type_radio,
@@ -708,6 +711,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
+        self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
         self.ui.generate_cnc_button.clicked.connect(self.on_create_cncjob_button_click)
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
@@ -1751,6 +1756,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.read_form_item('solid')
         self.plot()
 
+    def on_multicolored_cb_click(self, *args):
+        if self.muted_ui:
+            return
+        self.read_form_item('multicolored')
+        self.plot()
+
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
@@ -1824,6 +1835,27 @@ class ExcellonObject(FlatCAMObj, Excellon):
         if not FlatCAMObj.plot(self):
             return
 
+        if self.app.is_legacy is False:
+            def random_color():
+                r_color = np.random.rand(4)
+                r_color[3] = 1
+                return r_color
+        else:
+            def random_color():
+                while True:
+                    r_color = np.random.rand(4)
+                    r_color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(r_color)):
+                        new_color += '%x' % int(r_color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
+
         # try:
         #     # Plot Excellon (All polygons?)
         #     if self.options["solid"]:
@@ -1855,12 +1887,26 @@ class ExcellonObject(FlatCAMObj, Excellon):
         try:
             # Plot Excellon (All polygons?)
             if self.options["solid"]:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo,
-                                   color=self.outline_color,
-                                   face_color=self.fill_color,
-                                   visible=visible,
-                                   layer=2)
+                # for geo in self.solid_geometry:
+                #     self.add_shape(shape=geo,
+                #                    color=self.outline_color,
+                #                    face_color=random_color() if self.options['multicolored'] else self.fill_color,
+                #                    visible=visible,
+                #                    layer=2)
+
+                # plot polygons for each tool separately
+                for tool in self.tools:
+                    # set the color here so we have one color for each tool
+                    geo_color = random_color()
+
+                    # tool is a dict also
+                    for geo in self.tools[tool]["solid_geometry"]:
+                        self.add_shape(shape=geo,
+                                       color=geo_color if self.options['multicolored'] else self.outline_color,
+                                       face_color=geo_color if self.options['multicolored'] else self.fill_color,
+                                       visible=visible,
+                                       layer=2)
+
             else:
                 for geo in self.solid_geometry:
                     self.add_shape(shape=geo.exterior, color='red', visible=visible)
