@@ -32,7 +32,7 @@ class OptionsGroupUI(QtWidgets.QGroupBox):
 
     def __init__(self, title, parent=None):
         # QtGui.QGroupBox.__init__(self, title, parent=parent)
-        super(OptionsGroupUI, self).__init__(title=title, parent=parent)
+        super(OptionsGroupUI, self).__init__()
         self.setStyleSheet("""
         QGroupBox
         {
