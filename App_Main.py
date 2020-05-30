@@ -4257,6 +4257,10 @@ class App(QtCore.QObject):
             # and only if the tool is Solder Paste Dispensing Tool
             elif tool_widget == self.paste_tool.toolName:
                 self.paste_tool.on_tool_delete()
+
+            # and only if the tool is Isolation Tool
+            elif tool_widget == self.isolation_tool.toolName:
+                self.isolation_tool.on_tool_delete()
         else:
             self.on_delete()
 
@@ -4312,7 +4316,7 @@ class App(QtCore.QObject):
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
-                        elif isinstance(obj_active, CNCJobObject):
+                        elif obj_active.kind == 'cncjob':
                             try:
                                 obj_active.text_col.enabled = False
                                 del obj_active.text_col

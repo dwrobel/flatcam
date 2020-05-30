@@ -669,6 +669,10 @@ class ToolIsolation(AppTool, Gerber):
         self.pool = self.app.pool
         self.results = []
 
+        # disconnect flags
+        self.area_sel_disconnect_flag = False
+        self.poly_sel_disconnect_flag = False
+
         self.form_fields = {
             "tools_iso_passes":         self.passes_entry,
             "tools_iso_overlap":        self.iso_overlap_entry,
@@ -1676,6 +1680,9 @@ class ToolIsolation(AppTool, Gerber):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
+            # disconnect flags
+            self.area_sel_disconnect_flag = True
+
         elif selection == _("Polygon Selection"):
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
@@ -1692,6 +1699,9 @@ class ToolIsolation(AppTool, Gerber):
                                                            self.app.on_mouse_click_release_over_plot)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            # disconnect flags
+            self.poly_sel_disconnect_flag = True
 
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to isolate it."))
         elif selection == _("Reference Object"):
@@ -1800,24 +1810,9 @@ class ToolIsolation(AppTool, Gerber):
                         self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
                         iso_geo = self.area_intersection(iso_geo, intersection_geo=limited_area)
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in
-                    # Gerber UI
-                    if tool_type.lower() == 'v':
-                        new_cutz = self.cutz_entry.get_value()
-                        new_vtipdia = self.tipdia_entry.get_value()
-                        new_vtipangle = self.tipangle_entry.get_value()
-                        tool_type = 'V'
-                        tool_data.update({
-                            "name": iso_name,
-                            "cutz": new_cutz,
-                            "vtipdia": new_vtipdia,
-                            "vtipangle": new_vtipangle,
-                        })
-                    else:
-                        tool_data.update({
-                            "name": iso_name,
-                        })
-                        tool_type = 'C1'
+                    tool_data.update({
+                        "name": iso_name,
+                    })
 
                     def iso_init(geo_obj, fc_obj):
                         # Propagate options
@@ -2148,10 +2143,14 @@ class ToolIsolation(AppTool, Gerber):
                 geo_obj.multigeo = True
             else:
                 if to_follow:
-                    passes_no = 1
+                    geo_obj.multigeo = False
                 else:
-                    passes_no = float(tools_storage[0]['data']['tools_iso_passes'])
-                geo_obj.multigeo = True if passes_no > 1 else False
+                    passes_no = 1
+                    for ky in tools_storage.keys():
+                        passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
+                        geo_obj.multigeo = True if passes_no > 1 else False
+                        break
+                    geo_obj.multigeo = True if passes_no > 1 else False
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
             # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2361,6 +2360,9 @@ class ToolIsolation(AppTool, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
+            # disconnect flags
+            self.poly_sel_disconnect_flag = False
+
             self.app.tool_shapes.clear(update=True)
 
             if self.poly_dict:
@@ -2547,6 +2549,9 @@ class ToolIsolation(AppTool, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
+            # disconnect flags
+            self.area_sel_disconnect_flag = False
+
             if len(self.sel_rect) == 0:
                 return
 
@@ -2651,21 +2656,39 @@ class ToolIsolation(AppTool, Gerber):
             key = event.key
 
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-                self.app.plotcanvas.graph_event_disconnect(self.mm)
-                self.app.plotcanvas.graph_event_disconnect(self.kp)
 
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
+            if self.area_sel_disconnect_flag is True:
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.mm)
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
+                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                      self.app.on_mouse_move_over_plot)
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+
+            if self.poly_sel_disconnect_flag is False:
+                # restore the Grid snapping if it was active before
+                if self.grid_status_memory is True:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_poly_mouse_click_release)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_pres)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+
             self.points = []
             self.poly_drawn = False
             self.delete_moving_selection_shape()
@@ -2909,6 +2932,7 @@ class ToolIsolation(AppTool, Gerber):
                 'solid_geometry': []
             }
         })
+
         self.iso_tools[tooluid]['data']['name'] = '_iso'
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))

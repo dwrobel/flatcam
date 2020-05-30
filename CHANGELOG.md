@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool: updated the tools dict with the common parameters value on isolating
 - Fixed a recent change that made the edited Geometry objects in the Geometry Editor not to be plotted after saving changes
 - modified the Tool Database such that when a tool shape is selected as 'V' any change in the Vdia or Vangle or CutZ parameters will update the tool diameter value
+- In Tool Isolation made sure that the use of ESC key while some processes are active will disconnect the mouse events that may be connected, correctly
 
 29.05.2020
 
