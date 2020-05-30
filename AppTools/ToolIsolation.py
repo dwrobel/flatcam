@@ -271,7 +271,7 @@ class ToolIsolation(AppTool, Gerber):
         self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
         self.grid3.addWidget(self.addtool_entry, 6, 1)
 
-        hlay = QtWidgets.QHBoxLayout()
+        bhlay = QtWidgets.QHBoxLayout()
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
         self.addtool_btn.setToolTip(
@@ -285,10 +285,10 @@ class ToolIsolation(AppTool, Gerber):
               "from the Tool DataBase.")
         )
 
-        hlay.addWidget(self.addtool_btn)
-        hlay.addWidget(self.addtool_from_db_btn)
+        bhlay.addWidget(self.addtool_btn)
+        bhlay.addWidget(self.addtool_from_db_btn)
 
-        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+        self.grid3.addLayout(bhlay, 7, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

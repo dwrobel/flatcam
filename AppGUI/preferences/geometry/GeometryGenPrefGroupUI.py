@@ -31,12 +31,22 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
+        plot_hlay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout((plot_hlay))
+
         # Plot CB
         self.plot_cb = FCCheckBox(label=_('Plot'))
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.layout.addWidget(self.plot_cb)
+        plot_hlay.addWidget(self.plot_cb)
+
+        # Multicolored CB
+        self.multicolored_cb = FCCheckBox(label=_('M-Color'))
+        self.multicolored_cb.setToolTip(
+            _("Draw polygons in different colors.")
+        )
+        plot_hlay.addWidget(self.multicolored_cb)
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)

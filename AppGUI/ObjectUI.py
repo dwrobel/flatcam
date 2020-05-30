@@ -219,7 +219,7 @@ class GerberObjectUI(ObjectUI):
         self.name_hlay.addWidget(self.name_entry)
 
         # Plot CB
-        self.plot_lbl = FCLabel('%s' % _("Plot"))
+        self.plot_lbl = FCLabel('%s:' % _("Plot"))
         self.plot_lbl.setToolTip(_("Plot (show) this object."))
         self.plot_cb = FCCheckBox()
 
@@ -227,18 +227,12 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.plot_cb, 2, 1)
 
         # generate follow
-        self.follow_lbl = FCLabel('%s:' % _("Follow"))
-        self.follow_lbl.setToolTip(_("Generate a 'Follow' geometry.\n"
-                                     "This means that it will cut through\n"
-                                     "the middle of the trace."))
-        self.follow_lbl.setMinimumWidth(90)
-        self.follow_cb = FCCheckBox()
-
-        hf_lay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hf_lay)
-        hf_lay.addWidget(self.follow_lbl)
-        hf_lay.addWidget(self.follow_cb)
-        hf_lay.addStretch()
+        self.follow_cb = FCCheckBox('%s' % _("Follow"))
+        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
+                                    "This means that it will cut through\n"
+                                    "the middle of the trace."))
+        self.follow_cb.setMinimumWidth(55)
+        grid0.addWidget(self.follow_cb, 2, 2)
 
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
@@ -328,14 +322,7 @@ class GerberObjectUI(ObjectUI):
         self.tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("TOOLS"))
         grid2.addWidget(self.tool_lbl, 0, 0, 1, 2)
 
-        # ## Isolation Routing
-        self.iso_label = QtWidgets.QLabel("%s" % _("Isolation"))
-        self.iso_label.setToolTip(
-            _("Create a Geometry object with\n"
-              "toolpaths to cut around polygons.")
-        )
-        self.iso_label.setMinimumWidth(90)
-
+        # Isolation Tool - will create isolation paths around the copper features
         self.iso_button = QtWidgets.QPushButton(_('Isolation Routing'))
         self.iso_button.setToolTip(
             _("Create a Geometry object with\n"
@@ -347,17 +334,9 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid2.addWidget(self.iso_label, 1, 0)
-        grid2.addWidget(self.iso_button, 1, 1)
+        grid2.addWidget(self.iso_button, 1, 0, 1, 2)
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel("%s" % _("Clear N-copper"))
-        self.clearcopper_label.setToolTip(
-            _("Create a Geometry object with\n"
-              "toolpaths to cut all non-copper regions.")
-        )
-        self.clearcopper_label.setMinimumWidth(90)
-
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
@@ -369,17 +348,9 @@ class GerberObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid2.addWidget(self.clearcopper_label, 2, 0)
-        grid2.addWidget(self.generate_ncc_button, 2, 1)
+        grid2.addWidget(self.generate_ncc_button, 2, 0, 1, 2)
 
         # ## Board cutout
-        self.board_cutout_label = QtWidgets.QLabel("%s" % _("Board cutout"))
-        self.board_cutout_label.setToolTip(
-            _("Create toolpaths to cut around\n"
-              "the PCB and separate it from\n"
-              "the original board.")
-        )
-
         self.generate_cutout_button = QtWidgets.QPushButton(_('Cutout Tool'))
         self.generate_cutout_button.setToolTip(
             _("Generate the geometry for\n"
@@ -391,8 +362,7 @@ class GerberObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid2.addWidget(self.board_cutout_label, 3, 0)
-        grid2.addWidget(self.generate_cutout_button, 3, 1)
+        grid2.addWidget(self.generate_cutout_button, 3, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1312,12 +1282,28 @@ class GeometryObjectUI(ObjectUI):
         )
 
         # Plot options
+        grid_header = QtWidgets.QGridLayout()
+        grid_header.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.custom_box.addLayout(grid_header)
+        grid_header.setColumnStretch(0, 0)
+        grid_header.setColumnStretch(1, 1)
+
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
-        self.custom_box.addWidget(self.plot_options_label)
+        self.plot_options_label.setMinimumWidth(90)
+
+        grid_header.addWidget(self.plot_options_label, 0, 0)
+
+        # Multicolored CB
+        self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
+        self.multicolored_cb.setToolTip(
+            _("Draw polygons in different colors.")
+        )
+        self.multicolored_cb.setMinimumWidth(55)
+        grid_header.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(self.name_hlay)
+        grid_header.addLayout(self.name_hlay, 1, 0, 1, 3)
 
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
@@ -1481,19 +1467,24 @@ class GeometryObjectUI(ObjectUI):
         grid1.addWidget(self.addtool_entry_lbl, 3, 0)
         grid1.addWidget(self.addtool_entry, 3, 1)
 
+        bhlay = QtWidgets.QHBoxLayout()
+
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "with the specified diameter.")
+              "with the diameter specified above.")
         )
-        grid1.addWidget(self.addtool_btn, 4, 0, 1, 2)
 
         self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool DataBase.")
         )
-        grid1.addWidget(self.addtool_from_db_btn, 7, 0, 1, 2)
+
+        bhlay.addWidget(self.addtool_btn)
+        bhlay.addWidget(self.addtool_from_db_btn)
+
+        grid1.addLayout(bhlay, 5, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

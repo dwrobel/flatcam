@@ -259,6 +259,7 @@ class PreferencesUIManager:
 
             # Geometry General
             "geometry_plot":            self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
+            "geometry_multicolored":    self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
             "geometry_circle_steps":    self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
             "geometry_cnctooldia":      self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_plot_line":       self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,

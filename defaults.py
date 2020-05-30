@@ -300,6 +300,7 @@ class FlatCAMDefaults:
 
         # Geometry General
         "geometry_plot": True,
+        "geometry_multicolored": False,
         "geometry_circle_steps": 64,
         "geometry_cnctooldia": "2.4",
         "geometry_plot_line": "#FF0000",

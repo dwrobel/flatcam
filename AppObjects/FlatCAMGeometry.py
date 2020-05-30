@@ -52,6 +52,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.options.update({
             "plot": True,
+            "multicolored": False,
             "cutz": -0.002,
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -396,6 +397,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
+            "multicolored": self.ui.multicolored_cb,
             "cutz": self.ui.cutz_entry,
             "vtipdia": self.ui.tipdia_entry,
             "vtipangle": self.ui.tipangle_entry,
@@ -591,6 +593,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
+        self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
@@ -2665,6 +2669,27 @@ class GeometryObject(FlatCAMObj, Geometry):
         if not FlatCAMObj.plot(self):
             return
 
+        if self.app.is_legacy is False:
+            def random_color():
+                r_color = np.random.rand(4)
+                r_color[3] = 1
+                return r_color
+        else:
+            def random_color():
+                while True:
+                    r_color = np.random.rand(4)
+                    r_color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(r_color)):
+                        new_color += '%x' % int(r_color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
+
         try:
             # plot solid geometries found as members of self.tools attribute dict
             # for MultiGeo
@@ -2672,7 +2697,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
                     self.plot_element(solid_geometry, visible=visible,
-                                      color=self.app.defaults["geometry_plot_line"])
+                                      color=random_color() if self.options['multicolored']
+                                      else self.app.defaults["geometry_plot_line"])
             else:
                 # plot solid geometry that may be an direct attribute of the geometry object
                 # for SingleGeo
@@ -2739,6 +2765,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
+
+    def on_multicolored_cb_click(self, *args):
+        if self.muted_ui:
+            return
+        self.read_form_item('multicolored')
+        self.plot()
 
     @staticmethod
     def merge(geo_list, geo_final, multigeo=None):

@@ -34,26 +34,26 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
 
+        # Plot CB
+        self.plot_cb = FCCheckBox(label='%s' % _('Plot'))
+        self.plot_options_label.setToolTip(
+            _("Plot (show) this object.")
+        )
+        grid0.addWidget(self.plot_cb, 0, 0)
+
         # Solid CB
         self.solid_cb = FCCheckBox(label='%s' % _('Solid'))
         self.solid_cb.setToolTip(
             _("Solid color polygons.")
         )
-        grid0.addWidget(self.solid_cb, 0, 0)
+        grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label='%s' % _('M-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        grid0.addWidget(self.multicolored_cb, 0, 1)
-
-        # Plot CB
-        self.plot_cb = FCCheckBox(label='%s' % _('Plot'))
-        self.plot_options_label.setToolTip(
-            _("Plot (show) this object.")
-        )
-        grid0.addWidget(self.plot_cb, 0, 2)
+        grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = QtWidgets.QLabel('%s:' % _("Circle Steps"))
