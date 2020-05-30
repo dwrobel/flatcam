@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.05.2020
+
+- structural changes in Preferences from David Robertson
+
 30.05.2020
 
 - made confirmation messages for the values that are modified not to be printed in the Shell

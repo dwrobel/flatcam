@@ -535,7 +535,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.app.defaults["global_open_style"] is False:
             self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
-        self.app.inform.emit('[success] %s: %s' % (_("Machine Code file saved to"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
     def on_edit_code_click(self, *args):
         """
