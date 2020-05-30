@@ -2249,6 +2249,7 @@ class App(QtCore.QObject):
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 
                         edited_obj.build_ui()
+                        edited_obj.plot()
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     elif isinstance(edited_obj, GerberObject):
@@ -2305,6 +2306,7 @@ class App(QtCore.QObject):
                     if isinstance(edited_obj, GeometryObject):
                         self.geo_editor.deactivate()
                         edited_obj.build_ui()
+                        edited_obj.plot()
                     elif isinstance(edited_obj, GerberObject):
                         self.grb_editor.deactivate_grb_editor()
                         edited_obj.build_ui()

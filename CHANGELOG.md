@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool: working on the Rest machining: almost there, perhaps I will use multiprocessing
 - Isolation Tool: removed the tools that have empty geometry in case of rest machining
 - Isolation Tool: solved some naming issues
+- Isolation Tool: updated the tools dict with the common parameters value on isolating
+- Fixed a recent change that made the edited Geometry objects in the Geometry Editor not to be plotted after saving changes
 
 29.05.2020
 

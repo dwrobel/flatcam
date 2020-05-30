@@ -875,47 +875,47 @@ class ToolIsolation(AppTool, Gerber):
         # init the working variables
         self.default_data.clear()
         self.default_data = {
-            "name": outname + '_iso',
-            "plot": self.app.defaults["geometry_plot"],
-            "cutz": float(self.cutz_entry.get_value()),
-            "vtipdia": float(self.tipdia_entry.get_value()),
-            "vtipangle": float(self.tipangle_entry.get_value()),
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
-            "endxy": self.app.defaults["geometry_endxy"],
+            "name":                     outname + '_iso',
+            "plot":                     self.app.defaults["geometry_plot"],
+            "cutz":                     float(self.cutz_entry.get_value()),
+            "vtipdia":                  float(self.tipdia_entry.get_value()),
+            "vtipangle":                float(self.tipangle_entry.get_value()),
+            "travelz":                  self.app.defaults["geometry_travelz"],
+            "feedrate":                 self.app.defaults["geometry_feedrate"],
+            "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
+            "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
+            "dwell":                    self.app.defaults["geometry_dwell"],
+            "dwelltime":                self.app.defaults["geometry_dwelltime"],
+            "multidepth":               self.app.defaults["geometry_multidepth"],
+            "ppname_g":                 self.app.defaults["geometry_ppname_g"],
+            "depthperpass":             self.app.defaults["geometry_depthperpass"],
+            "extracut":                 self.app.defaults["geometry_extracut"],
+            "extracut_length":          self.app.defaults["geometry_extracut_length"],
+            "toolchange":               self.app.defaults["geometry_toolchange"],
+            "toolchangez":              self.app.defaults["geometry_toolchangez"],
+            "endz":                     self.app.defaults["geometry_endz"],
+            "endxy":                    self.app.defaults["geometry_endxy"],
 
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
+            "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
+            "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
+            "startz":                   self.app.defaults["geometry_startz"],
 
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
+            "area_shape":               self.app.defaults["geometry_area_shape"],
+            "area_strategy":            self.app.defaults["geometry_area_strategy"],
+            "area_overz":               float(self.app.defaults["geometry_area_overz"]),
 
-            "tools_iso_passes": self.app.defaults["tools_iso_passes"],
-            "tools_iso_overlap": self.app.defaults["tools_iso_overlap"],
-            "tools_iso_milling_type": self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_follow": self.app.defaults["tools_iso_follow"],
-            "tools_iso_isotype": self.app.defaults["tools_iso_isotype"],
+            "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
+            "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
+            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
+            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
+            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
 
-            "tools_iso_rest": self.app.defaults["tools_iso_rest"],
+            "tools_iso_rest":           self.app.defaults["tools_iso_rest"],
             "tools_iso_combine_passes": self.app.defaults["tools_iso_combine_passes"],
-            "tools_iso_isoexcept": self.app.defaults["tools_iso_isoexcept"],
-            "tools_iso_selection": self.app.defaults["tools_iso_selection"],
-            "tools_iso_area_shape": self.app.defaults["tools_iso_area_shape"]
+            "tools_iso_isoexcept":      self.app.defaults["tools_iso_isoexcept"],
+            "tools_iso_selection":      self.app.defaults["tools_iso_selection"],
+            "tools_iso_area_shape":     self.app.defaults["tools_iso_area_shape"]
         }
 
         try:
@@ -1718,6 +1718,16 @@ class ToolIsolation(AppTool, Gerber):
         combine = self.combine_passes_cb.get_value()
         tools_storage = self.iso_tools
 
+        # update the Common Parameters valuse in the self.iso_tools
+        for tool_iso in self.iso_tools:
+            for key in self.iso_tools[tool_iso]:
+                if key == 'data':
+                    self.iso_tools[tool_iso][key]["tools_iso_rest"] = self.rest_cb.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_combine_passes"] = combine
+                    self.iso_tools[tool_iso][key]["tools_iso_isoexcept"] = self.except_cb.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.select_combo.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.area_shape_radio.get_value()
+
         if combine:
             if self.rest_cb.get_value():
                 self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
@@ -1747,7 +1757,7 @@ class ToolIsolation(AppTool, Gerber):
 
                 milling_type = tool_data['tools_iso_milling_type']
 
-                iso_except = tool_data['tools_iso_isoexcept']
+                iso_except = self.except_cb.get_value()
 
                 for i in range(passes):
                     tool_dia = tools_storage[tool]['tooldia']
@@ -1918,7 +1928,7 @@ class ToolIsolation(AppTool, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = True if milling_type == 'cl' else False
 
-                    iso_except = tool_data['tools_iso_isoexcept']
+                    iso_except = self.except_cb.get_value()
 
                     outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
@@ -1928,23 +1938,9 @@ class ToolIsolation(AppTool, Gerber):
                     elif iso_t == 1:
                         internal_name = outname + "_int_iso"
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    if tool_type.lower() == 'v':
-                        new_cutz = self.ui.cutz_spinner.get_value()
-                        new_vtipdia = self.ui.tipdia_spinner.get_value()
-                        new_vtipangle = self.ui.tipangle_spinner.get_value()
-                        tool_type = 'V'
-                        tool_data.update({
-                            "name": internal_name,
-                            "cutz": new_cutz,
-                            "vtipdia": new_vtipdia,
-                            "vtipangle": new_vtipangle,
-                        })
-                    else:
-                        tool_data.update({
-                            "name": internal_name,
-                        })
-                        tool_type = 'C1'
+                    tool_data.update({
+                        "name": internal_name,
+                    })
 
                     solid_geo, work_geo = self.generate_rest_geometry(geometry=work_geo, tooldia=tool_dia,
                                                                       passes=passes, overlap=overlap, invert=mill_dir,
@@ -2084,7 +2080,7 @@ class ToolIsolation(AppTool, Gerber):
 
             milling_type = tool_data['tools_iso_milling_type']
 
-            iso_except = tool_data['tools_iso_isoexcept']
+            iso_except = self.except_cb.get_value()
 
             outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
@@ -2094,23 +2090,9 @@ class ToolIsolation(AppTool, Gerber):
             elif iso_t == 1:
                 internal_name = outname + "_int_iso"
 
-            # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-            if tool_type.lower() == 'v':
-                new_cutz = self.ui.cutz_spinner.get_value()
-                new_vtipdia = self.ui.tipdia_spinner.get_value()
-                new_vtipangle = self.ui.tipangle_spinner.get_value()
-                tool_type = 'V'
-                tool_data.update({
-                    "name": internal_name,
-                    "cutz": new_cutz,
-                    "vtipdia": new_vtipdia,
-                    "vtipangle": new_vtipangle,
-                })
-            else:
-                tool_data.update({
-                    "name": internal_name,
-                })
-                tool_type = 'C1'
+            tool_data.update({
+                "name": internal_name,
+            })
 
             solid_geo = []
             for nr_pass in range(passes):
@@ -2194,7 +2176,7 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
-    def area_subtraction(self, geo, subtraction_geo):
+    def area_subtraction(self, geo, subtraction_geo=None):
         """
         Subtracts the subtraction_geo (if present else self.solid_geometry) from the geo
 
