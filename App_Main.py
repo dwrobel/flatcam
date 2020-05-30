@@ -9845,12 +9845,12 @@ class App(QtCore.QObject):
         """
         Shows a message on the FlatCAM Shell
 
-        :param msg: Message to display.
-        :param show: Opens the shell.
-        :param error: Shows the message as an error.
-        :param warning: Shows the message as an warning.
-        :param success: Shows the message as an success.
-        :param selected: Indicate that something was selected on canvas
+        :param msg:         Message to display.
+        :param show:        Opens the shell.
+        :param error:       Shows the message as an error.
+        :param warning:     Shows the message as an warning.
+        :param success:     Shows the message as an success.
+        :param selected:    Indicate that something was selected on canvas
         :return: None
         """
         if show:

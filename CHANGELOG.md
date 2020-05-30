@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.05.2020
+
+- made confirmation messages for the values that are modified not to be printed in the Shell
+- Isolation Tool: working on the Rest machining: almost there, perhaps I will use multiprocessing
+
 29.05.2020
 
 - fixed the Tool Isolation when using the 'follow' parameter

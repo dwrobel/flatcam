@@ -136,7 +136,7 @@ class ToolIsolation(AppTool, Gerber):
             _("This is the Tool Number.\n"
               "Non copper clearing will start with the tool with the biggest \n"
               "diameter, continuing until there are no more tools.\n"
-              "Only tools that create NCC clearing geometry will still be present\n"
+              "Only tools that create Isolation geometry will still be present\n"
               "in the resulting geometry. This is because with some tools\n"
               "this function will not be able to create painting geometry.")
         )
@@ -163,19 +163,19 @@ class ToolIsolation(AppTool, Gerber):
         self.tools_box.addLayout(grid1)
 
         # Tool order
-        self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
-        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                          "'No' --> means that the used order is the one in the tool table\n"
-                                          "'Forward' --> means that the tools will be ordered from small to big\n"
-                                          "'Reverse' --> means that the tools will ordered from big to small\n\n"
-                                          "WARNING: using rest machining will automatically set the order\n"
-                                          "in reverse and disable this control."))
+        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Forward' --> means that the tools will be ordered from small to big\n"
+                                      "'Reverse' --> means that the tools will ordered from big to small\n\n"
+                                      "WARNING: using rest machining will automatically set the order\n"
+                                      "in reverse and disable this control."))
 
         self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
                                      {'label': _('Forward'), 'value': 'fwd'},
                                      {'label': _('Reverse'), 'value': 'rev'}])
 
-        grid1.addWidget(self.ncc_order_label, 1, 0)
+        grid1.addWidget(self.order_label, 1, 0)
         grid1.addWidget(self.order_radio, 1, 1)
 
         separator_line = QtWidgets.QFrame()
@@ -1082,10 +1082,7 @@ class ToolIsolation(AppTool, Gerber):
 
         sorted_tools = []
         for k, v in self.iso_tools.items():
-            if self.units == "IN":
-                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
-            else:
-                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         order = self.order_radio.get_value()
         if order == 'fwd':
@@ -1323,14 +1320,14 @@ class ToolIsolation(AppTool, Gerber):
     def on_rest_machining_check(self, state):
         if state:
             self.order_radio.set_value('rev')
-            self.ncc_order_label.setDisabled(True)
+            self.order_label.setDisabled(True)
             self.order_radio.setDisabled(True)
 
             self.old_combine_state = self.combine_passes_cb.get_value()
             self.combine_passes_cb.set_value(True)
             self.combine_passes_cb.setDisabled(True)
         else:
-            self.ncc_order_label.setDisabled(False)
+            self.order_label.setDisabled(False)
             self.order_radio.setDisabled(False)
 
             self.combine_passes_cb.set_value(self.old_combine_state)
@@ -1883,101 +1880,102 @@ class ToolIsolation(AppTool, Gerber):
         total_solid_geometry = []
 
         iso_name = iso_obj.options["name"]
-        geometry = iso2geo
+        work_geo = iso_obj.solid_geometry if iso2geo is None else iso2geo
 
-        for tool in tools_storage:
-            tool_dia = tools_storage[tool]['tooldia']
-            tool_type = tools_storage[tool]['tool_type']
-            tool_data = tools_storage[tool]['data']
+        sorted_tools = []
+        for k, v in self.iso_tools.items():
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
-            to_follow = tool_data['tools_iso_follow']
+        order = self.order_radio.get_value()
+        if order == 'fwd':
+            sorted_tools.sort(reverse=False)
+        elif order == 'rev':
+            sorted_tools.sort(reverse=True)
+        else:
+            pass
 
-            work_geo = geometry
-            if work_geo is None:
-                work_geo = iso_obj.follow_geometry if to_follow else iso_obj.solid_geometry
+        for sorted_tool in sorted_tools:
+            for tool in tools_storage:
+                if float('%.*f' % (self.decimals, tools_storage[tool]['tooldia'])) == sorted_tool:
 
-            iso_t = {
-                'ext': 0,
-                'int': 1,
-                'full': 2
-            }[tool_data['tools_iso_isotype']]
+                    tool_dia = tools_storage[tool]['tooldia']
+                    tool_type = tools_storage[tool]['tool_type']
+                    tool_data = tools_storage[tool]['data']
 
-            passes = tool_data['tools_iso_passes']
-            overlap = tool_data['tools_iso_overlap']
-            overlap /= 100.0
+                    iso_t = {
+                        'ext': 0,
+                        'int': 1,
+                        'full': 2
+                    }[tool_data['tools_iso_isotype']]
 
-            milling_type = tool_data['tools_iso_milling_type']
+                    passes = tool_data['tools_iso_passes']
+                    overlap = tool_data['tools_iso_overlap']
+                    overlap /= 100.0
 
-            iso_except = tool_data['tools_iso_isoexcept']
+                    milling_type = tool_data['tools_iso_milling_type']
+                    # if milling type is climb then the move is counter-clockwise around features
+                    mill_dir = True if milling_type == 'cl' else False
 
-            outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
+                    iso_except = tool_data['tools_iso_isoexcept']
 
-            iso_name = outname + "_iso"
-            if iso_t == 0:
-                iso_name = outname + "_ext_iso"
-            elif iso_t == 1:
-                iso_name = outname + "_int_iso"
+                    outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
-            # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-            if tool_type.lower() == 'v':
-                new_cutz = self.ui.cutz_spinner.get_value()
-                new_vtipdia = self.ui.tipdia_spinner.get_value()
-                new_vtipangle = self.ui.tipangle_spinner.get_value()
-                tool_type = 'V'
-                tool_data.update({
-                    "name": iso_name,
-                    "cutz": new_cutz,
-                    "vtipdia": new_vtipdia,
-                    "vtipangle": new_vtipangle,
-                })
-            else:
-                tool_data.update({
-                    "name": iso_name,
-                })
-                tool_type = 'C1'
+                    iso_name = outname + "_iso"
+                    if iso_t == 0:
+                        iso_name = outname + "_ext_iso"
+                    elif iso_t == 1:
+                        iso_name = outname + "_int_iso"
 
-            solid_geo = []
-            for nr_pass in range(passes):
-                iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    if tool_type.lower() == 'v':
+                        new_cutz = self.ui.cutz_spinner.get_value()
+                        new_vtipdia = self.ui.tipdia_spinner.get_value()
+                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        tool_type = 'V'
+                        tool_data.update({
+                            "name": iso_name,
+                            "cutz": new_cutz,
+                            "vtipdia": new_vtipdia,
+                            "vtipangle": new_vtipangle,
+                        })
+                    else:
+                        tool_data.update({
+                            "name": iso_name,
+                        })
+                        tool_type = 'C1'
 
-                # if milling type is climb then the move is counter-clockwise around features
-                mill_dir = 1 if milling_type == 'cl' else 0
+                    solid_geo, work_geo = self.generate_rest_geometry(geometry=work_geo, tooldia=tool_dia,
+                                                                      passes=passes, overlap=overlap, invert=mill_dir,
+                                                                      env_iso_type=iso_t)
 
-                iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                 follow=to_follow, nr_passes=nr_pass)
-                if iso_geo == 'fail':
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
-                    continue
-                try:
-                    for geo in iso_geo:
-                        solid_geo.append(geo)
-                except TypeError:
-                    solid_geo.append(iso_geo)
+                    # ############################################################
+                    # ########## AREA SUBTRACTION ################################
+                    # ############################################################
+                    if iso_except:
+                        self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                        solid_geo = self.area_subtraction(solid_geo)
 
-                # ############################################################
-                # ########## AREA SUBTRACTION ################################
-                # ############################################################
-                if iso_except:
-                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                    solid_geo = self.area_subtraction(solid_geo)
+                    if lim_area:
+                        self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
+                        solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
-                if lim_area:
-                    self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
-                    solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
+                    tools_storage.update({
+                        tool: {
+                            'tooldia': float(tool_dia),
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': tool_type,
+                            'data': tool_data,
+                            'solid_geometry': deepcopy(solid_geo)
+                        }
+                    })
 
-            tools_storage.update({
-                tool: {
-                    'tooldia': float(tool_dia),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': _('Rough'),
-                    'tool_type': tool_type,
-                    'data': tool_data,
-                    'solid_geometry': deepcopy(solid_geo)
-                }
-            })
+                    total_solid_geometry += solid_geo
 
-            total_solid_geometry += solid_geo
+                    # if the geometry is all isolated
+                    if not work_geo:
+                        break
 
         def iso_init(geo_obj, app_obj):
             geo_obj.options["cnctooldia"] = str(tool_dia)
@@ -1989,11 +1987,12 @@ class ToolIsolation(AppTool, Gerber):
             if len(tools_storage) > 1:
                 geo_obj.multigeo = True
             else:
-                if to_follow:
-                    passes_no = 1
-                else:
+                try:
                     passes_no = float(tools_storage[0]['data']['tools_iso_passes'])
-                geo_obj.multigeo = True if passes_no > 1 else False
+                    geo_obj.multigeo = True if passes_no > 1 else False
+                except KeyError as e:
+                    log.debug("ToolIsolation.combined_rest.iso_init() --> KeyError: %s" % str(e))
+                    geo_obj.multogeo = False
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
             # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2017,6 +2016,20 @@ class ToolIsolation(AppTool, Gerber):
                 app_obj.inform.emit('[success] %s: %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
 
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+
+        # the tools are finished but the isolation is not finished therefore it failed
+        if work_geo:
+            self.app.inform.emit("[WARNING] %s" % _("Partial failure. The geometry was processed with all tools.\n"
+                                                    "But there are still un-isolated geometry elements. "
+                                                    "Try to include a tool with smaller diameter."))
+            self.app.shell_message(msg=_("The following are coordinates for the copper features "
+                                         "that could not be isolated:"))
+            msg = ''
+            for geo in work_geo:
+                pt = geo.representative_point()
+                coords = '(%s, %s), ' % (str(pt.x), str(pt.y))
+                msg += coords
+            self.app.shell_message(msg=msg)
 
     def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
         """
@@ -2112,16 +2125,16 @@ class ToolIsolation(AppTool, Gerber):
                 except TypeError:
                     solid_geo.append(iso_geo)
 
-                # ############################################################
-                # ########## AREA SUBTRACTION ################################
-                # ############################################################
-                if iso_except:
-                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                    solid_geo = self.area_subtraction(solid_geo)
+            # ############################################################
+            # ########## AREA SUBTRACTION ################################
+            # ############################################################
+            if iso_except:
+                self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                solid_geo = self.area_subtraction(solid_geo)
 
-                if lim_area:
-                    self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
-                    solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
+            if lim_area:
+                self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
+                solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
             tools_storage.update({
                 tool: {
@@ -2675,6 +2688,14 @@ class ToolIsolation(AppTool, Gerber):
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]
 
+    @staticmethod
+    def poly2ext(poly):
+        return [poly.exterior]
+
+    @staticmethod
+    def poly2ints(poly):
+        return [interior for interior in poly.interiors]
+
     def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
         """
         Isolation_geometry produces an envelope that is going on the left of the geometry
@@ -2733,6 +2754,98 @@ class ToolIsolation(AppTool, Gerber):
                 log.debug("ToolIsolation.generate_envelope() Error --> %s" % str(e))
                 return 'fail'
         return geom
+
+    @staticmethod
+    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2):
+        """
+        Will try to isolate the geometry and return a tuple made of list of paths made through isolation
+        and a list of Shapely Polygons that could not be isolated
+
+        :param geometry:        A list of Shapely Polygons to be isolated
+        :type geometry:         list
+        :param tooldia:         The tool diameter used to do the isolation
+        :type tooldia:          float
+        :param passes:          Number of passes that will made the isolation
+        :type passes:           int
+        :param overlap:         How much to overlap the previous pass; in percentage [0.00, 99.99]%
+        :type overlap:          float
+        :param invert:          If to invert the direction of the resulting isolated geometries
+        :type invert:           bool
+        :param env_iso_type:    can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
+        :type env_iso_type:     int
+        :return:                Tuple made from list of isolating paths and list of not isolated Polygons
+        :rtype:                 tuple
+        """
+
+        isolated_geo = []
+        not_isolated_geo = []
+
+        work_geo = []
+
+        for idx, geo in enumerate(geometry):
+            good_pass_iso = []
+            start_idx = idx + 1
+
+            for nr_pass in range(passes):
+                iso_offset = tooldia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * tooldia)
+                buf_chek = iso_offset * 2
+                check_geo = geo.buffer(buf_chek)
+
+                intersect_flag = False
+                # find if current pass for current geo is valid (no intersection with other geos))
+                for geo_search_idx in range(idx):
+                    if check_geo.intersects(geometry[geo_search_idx]):
+                        intersect_flag = True
+                        break
+
+                if intersect_flag == False:
+                    for geo_search_idx in range(start_idx, len(geometry)):
+                        if check_geo.intersects(geometry[geo_search_idx]):
+                            intersect_flag = True
+                            break
+
+                # if we had an intersection do nothing, else add the geo to the good pass isolations
+                if intersect_flag is False:
+                    good_pass_iso.append(geo.buffer(iso_offset))
+
+            if good_pass_iso:
+                work_geo += good_pass_iso
+            else:
+                not_isolated_geo.append(geo)
+
+        if invert:
+            try:
+                pl = []
+                for p in work_geo:
+                    if p is not None:
+                        if isinstance(p, Polygon):
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        elif isinstance(p, LinearRing):
+                            pl.append(Polygon(p.coords[::-1]))
+                work_geo = MultiPolygon(pl)
+            except TypeError:
+                if isinstance(work_geo, Polygon) and work_geo is not None:
+                    work_geo = [Polygon(work_geo.exterior.coords[::-1], work_geo.interiors)]
+                elif isinstance(work_geo, LinearRing) and work_geo is not None:
+                    work_geo = [Polygon(work_geo.coords[::-1])]
+                else:
+                    log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
+                              type(work_geo))
+            except Exception as e:
+                log.debug("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
+                return 'fail', 'fail'
+
+        if env_iso_type == 0:  # exterior
+            for geo in work_geo:
+                isolated_geo.append(geo.exterior)
+        elif env_iso_type == 1:  # interiors
+            for geo in work_geo:
+                isolated_geo += [interior for interior in geo.interiors]
+        else:  # exterior + interiors
+            for geo in work_geo:
+                isolated_geo += [geo.exterior] + [interior for interior in geo.interiors]
+
+        return isolated_geo, not_isolated_geo
 
     def on_iso_tool_add_from_db_executed(self, tool):
         """
@@ -2809,7 +2922,7 @@ class ToolIsolation(AppTool, Gerber):
                 'solid_geometry': []
             }
         })
-        self.iso_tools[tooluid]['data']['name'] = '_ncc'
+        self.iso_tools[tooluid]['data']['name'] = '_iso'
 
         self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
 
