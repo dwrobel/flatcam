@@ -5,7 +5,7 @@ from shapely.ops import cascaded_union
 import collections
 
 import gettext
-import FlatCAMTranslation as fcTranslate
+import AppTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -100,7 +100,7 @@ class TclCommandNregions(TclCommand):
                 non_copper = bounding_box.difference(geo)
                 geo_obj.solid_geometry = non_copper
 
-            self.app.new_object("geometry", args['outname'], geo_init, plot=False)
+            self.app.app_obj.new_object("geometry", args['outname'], geo_init, plot=False)
         except Exception as e:
             return "Operation failed: %s" % str(e)
 

@@ -66,4 +66,4 @@ class TclCommandExteriors(TclCommandSignaled):
             geo_obj.solid_geometry = obj_exteriors
 
         obj_exteriors = obj.get_exteriors()
-        self.app.new_object('geometry', outname, geo_init, plot=False)
+        self.app.app_obj.new_object('geometry', outname, geo_init, plot=False)

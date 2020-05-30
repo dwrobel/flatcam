@@ -137,7 +137,7 @@ class TclCommandCutout(TclCommand):
             geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
 
         try:
-            self.app.new_object("geometry", outname, geo_init_me, plot=False)
+            self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)
             self.app.inform.emit("[success] Rectangular-form Cutout operation finished.")
         except Exception as e:
             return "Operation failed: %s" % str(e)
