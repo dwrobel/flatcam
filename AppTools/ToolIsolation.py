@@ -724,132 +724,6 @@ class ToolIsolation(AppTool, Gerber):
             "gerber": "Gerber", "geometry": "Geometry"
         }[self.type_excobj_radio.get_value()]
 
-    def on_row_selection_change(self):
-        self.blockSignals(True)
-
-        sel_rows = [it.row() for it in self.tools_table.selectedItems()]
-        # sel_rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
-
-        if not sel_rows:
-            sel_rows = [0]
-
-        for current_row in sel_rows:
-            # populate the form with the data from the tool associated with the row parameter
-            try:
-                item = self.tools_table.item(current_row, 3)
-                if item is not None:
-                    tooluid = int(item.text())
-                else:
-                    return
-            except Exception as e:
-                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
-                return
-
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            if len(sel_rows) == 1:
-                cr = current_row + 1
-                self.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
-                )
-                try:
-                    # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.iso_tools.items()):
-                        if int(tooluid_key) == tooluid:
-                            for key, value in tooluid_value.items():
-                                if key == 'data':
-                                    form_value_storage = tooluid_value[key]
-                                    self.storage_to_form(form_value_storage)
-                except Exception as e:
-                    log.debug("ToolIsolation ---> update_ui() " + str(e))
-            else:
-                self.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-                )
-
-        self.blockSignals(False)
-
-    def storage_to_form(self, dict_storage):
-        for form_key in self.form_fields:
-            for storage_key in dict_storage:
-                if form_key == storage_key:
-                    try:
-                        self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception as e:
-                        log.debug("ToolIsolation.storage_to_form() --> %s" % str(e))
-                        pass
-
-    def form_to_storage(self):
-        if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            return
-
-        self.blockSignals(True)
-
-        widget_changed = self.sender()
-        wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
-
-        # row = self.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
-        for row in rows:
-            if row < 0:
-                row = 0
-            tooluid_item = int(self.tools_table.item(row, 3).text())
-
-            for tooluid_key, tooluid_val in self.iso_tools.items():
-                if int(tooluid_key) == tooluid_item:
-                    new_option_value = self.form_fields[option_changed].get_value()
-                    if option_changed in tooluid_val:
-                        tooluid_val[option_changed] = new_option_value
-                    if option_changed in tooluid_val['data']:
-                        tooluid_val['data'][option_changed] = new_option_value
-
-        self.blockSignals(False)
-
-    def on_apply_param_to_all_clicked(self):
-        if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("ToolIsolation.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
-            return
-
-        self.blockSignals(True)
-
-        row = self.tools_table.currentRow()
-        if row < 0:
-            row = 0
-
-        tooluid_item = int(self.tools_table.item(row, 3).text())
-        temp_tool_data = {}
-
-        for tooluid_key, tooluid_val in self.iso_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
-                # the current row in the tool table
-                temp_tool_data = tooluid_val['data']
-                break
-
-        for tooluid_key, tooluid_val in self.iso_tools.items():
-            tooluid_val['data'] = deepcopy(temp_tool_data)
-
-        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
-        self.blockSignals(False)
-
-    def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0001, max=9999.9999, decimals=self.decimals)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
-
-        val, ok = tool_add_popup.get_value()
-        if ok:
-            if float(val) == 0:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter with non-zero value, in Float format."))
-                return
-            self.on_tool_add(dia=float(val))
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
-
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+I', **kwargs)
 
@@ -892,8 +766,10 @@ class ToolIsolation(AppTool, Gerber):
 
         # try to select in the Gerber combobox the active object
         try:
-            current_name = self.app.collection.get_active().options['name']
-            self.object_combo.set_value(current_name)
+            selected_obj = self.app.collection.get_active()
+            if selected_obj.kind == 'gerber':
+                current_name = selected_obj.options['name']
+                self.object_combo.set_value(current_name)
         except Exception:
             pass
 
@@ -1259,6 +1135,132 @@ class ToolIsolation(AppTool, Gerber):
         except (TypeError, AttributeError):
             pass
 
+    def on_row_selection_change(self):
+        self.blockSignals(True)
+
+        sel_rows = [it.row() for it in self.tools_table.selectedItems()]
+        # sel_rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        for current_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.tools_table.item(current_row, 3)
+                if item is not None:
+                    tooluid = int(item.text())
+                else:
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+                return
+
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                cr = current_row + 1
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
+                )
+                try:
+                    # set the form with data from the newly selected tool
+                    for tooluid_key, tooluid_value in list(self.iso_tools.items()):
+                        if int(tooluid_key) == tooluid:
+                            for key, value in tooluid_value.items():
+                                if key == 'data':
+                                    form_value_storage = tooluid_value[key]
+                                    self.storage_to_form(form_value_storage)
+                except Exception as e:
+                    log.debug("ToolIsolation ---> update_ui() " + str(e))
+            else:
+                self.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
+
+        self.blockSignals(False)
+
+    def storage_to_form(self, dict_storage):
+        for form_key in self.form_fields:
+            for storage_key in dict_storage:
+                if form_key == storage_key:
+                    try:
+                        self.form_fields[form_key].set_value(dict_storage[form_key])
+                    except Exception as e:
+                        log.debug("ToolIsolation.storage_to_form() --> %s" % str(e))
+                        pass
+
+    def form_to_storage(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        # row = self.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.tools_table.selectedIndexes()))
+        for row in rows:
+            if row < 0:
+                row = 0
+            tooluid_item = int(self.tools_table.item(row, 3).text())
+
+            for tooluid_key, tooluid_val in self.iso_tools.items():
+                if int(tooluid_key) == tooluid_item:
+                    new_option_value = self.form_fields[option_changed].get_value()
+                    if option_changed in tooluid_val:
+                        tooluid_val[option_changed] = new_option_value
+                    if option_changed in tooluid_val['data']:
+                        tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("ToolIsolation.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.blockSignals(True)
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+        temp_tool_data = {}
+
+        for tooluid_key, tooluid_val in self.iso_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
+                # the current row in the tool table
+                temp_tool_data = tooluid_val['data']
+                break
+
+        for tooluid_key, tooluid_val in self.iso_tools.items():
+            tooluid_val['data'] = deepcopy(temp_tool_data)
+
+        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
+        self.blockSignals(False)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0001, max=9999.9999, decimals=self.decimals)
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+
     def on_tooldia_updated(self):
         if self.tool_type_radio.get_value() == 'C1':
             self.old_tool_dia = self.addtool_entry.get_value()
@@ -1606,11 +1608,11 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
-        def worker_task(iso_obj, app_obj):
+        def worker_task(iso_obj):
             with self.app.proc_container.new(_("Isolating...")):
                 self.isolate_handler(iso_obj)
 
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [self.grb_obj, self.app]})
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [self.grb_obj]})
 
     def follow_geo(self, followed_obj, outname):
         """
@@ -1623,7 +1625,7 @@ class ToolIsolation(AppTool, Gerber):
         :return: None
         """
 
-        def follow_init(follow_obj, app):
+        def follow_init(follow_obj, app_obj):
             # Propagate options
             follow_obj.options["cnctooldia"] = str(tooldia)
             follow_obj.solid_geometry = self.grb_obj.follow_geometry
@@ -1879,7 +1881,7 @@ class ToolIsolation(AppTool, Gerber):
 
         total_solid_geometry = []
 
-        iso_name = iso_obj.options["name"]
+        iso_name = iso_obj.options["name"] + '_iso_rest'
         work_geo = iso_obj.solid_geometry if iso2geo is None else iso2geo
 
         sorted_tools = []
@@ -1920,11 +1922,11 @@ class ToolIsolation(AppTool, Gerber):
 
                     outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
-                    iso_name = outname + "_iso"
+                    internal_name = outname + "_iso"
                     if iso_t == 0:
-                        iso_name = outname + "_ext_iso"
+                        internal_name = outname + "_ext_iso"
                     elif iso_t == 1:
-                        iso_name = outname + "_int_iso"
+                        internal_name = outname + "_int_iso"
 
                     # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
                     if tool_type.lower() == 'v':
@@ -1933,14 +1935,14 @@ class ToolIsolation(AppTool, Gerber):
                         new_vtipangle = self.ui.tipangle_spinner.get_value()
                         tool_type = 'V'
                         tool_data.update({
-                            "name": iso_name,
+                            "name": internal_name,
                             "cutz": new_cutz,
                             "vtipdia": new_vtipdia,
                             "vtipangle": new_vtipangle,
                         })
                     else:
                         tool_data.update({
-                            "name": iso_name,
+                            "name": internal_name,
                         })
                         tool_type = 'C1'
 
@@ -1984,15 +1986,18 @@ class ToolIsolation(AppTool, Gerber):
             geo_obj.solid_geometry = total_solid_geometry
             # even if combine is checked, one pass is still single-geo
 
+            # remove the tools that have no geometry
+            for geo_tool in list(geo_obj.tools.keys()):
+                if not geo_obj.tools[geo_tool]['solid_geometry']:
+                    geo_obj.tools.pop(geo_tool, None)
+
             if len(tools_storage) > 1:
                 geo_obj.multigeo = True
             else:
-                try:
-                    passes_no = float(tools_storage[0]['data']['tools_iso_passes'])
+                for ky in tools_storage.keys():
+                    passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
                     geo_obj.multigeo = True if passes_no > 1 else False
-                except KeyError as e:
-                    log.debug("ToolIsolation.combined_rest.iso_init() --> KeyError: %s" % str(e))
-                    geo_obj.multogeo = False
+                    break
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
             # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2051,7 +2056,7 @@ class ToolIsolation(AppTool, Gerber):
 
         total_solid_geometry = []
 
-        iso_name = iso_obj.options["name"]
+        iso_name = iso_obj.options["name"] + '_iso_combined'
         geometry = iso2geo
 
         for tool in tools_storage:
@@ -2083,11 +2088,11 @@ class ToolIsolation(AppTool, Gerber):
 
             outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
-            iso_name = outname + "_iso"
+            internal_name = outname + "_iso"
             if iso_t == 0:
-                iso_name = outname + "_ext_iso"
+                internal_name = outname + "_ext_iso"
             elif iso_t == 1:
-                iso_name = outname + "_int_iso"
+                internal_name = outname + "_int_iso"
 
             # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
             if tool_type.lower() == 'v':
@@ -2096,14 +2101,14 @@ class ToolIsolation(AppTool, Gerber):
                 new_vtipangle = self.ui.tipangle_spinner.get_value()
                 tool_type = 'V'
                 tool_data.update({
-                    "name": iso_name,
+                    "name": internal_name,
                     "cutz": new_cutz,
                     "vtipdia": new_vtipdia,
                     "vtipangle": new_vtipangle,
                 })
             else:
                 tool_data.update({
-                    "name": iso_name,
+                    "name": internal_name,
                 })
                 tool_type = 'C1'
 
@@ -2189,19 +2194,19 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
-    def area_subtraction(self, geo, subtractor_geo):
+    def area_subtraction(self, geo, subtraction_geo):
         """
-        Subtracts the subtractor_geo (if present else self.solid_geometry) from the geo
+        Subtracts the subtraction_geo (if present else self.solid_geometry) from the geo
 
-        :param geo:             target geometry from which to subtract
-        :param subtractor_geo:  geometry that acts as subtractor
+        :param geo:                 target geometry from which to subtract
+        :param subtraction_geo:     geometry that acts as subtraction geo
         :return:
         """
         new_geometry = []
         target_geo = geo
 
-        if subtractor_geo:
-            sub_union = cascaded_union(subtractor_geo)
+        if subtraction_geo:
+            sub_union = cascaded_union(subtraction_geo)
         else:
             name = self.exc_obj_combo.currentText()
             subtractor_obj = self.app.collection.get_by_name(name)
@@ -2220,7 +2225,7 @@ class ToolIsolation(AppTool, Gerber):
                             new_geo = ring.difference(sub_union)
                             if new_geo and not new_geo.is_empty:
                                 new_geometry.append(new_geo)
-                elif isinstance(geo_elem, LineString):
+                elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
                     new_geo = geo_elem.difference(sub_union)
                     if new_geo:
                         if not new_geo.is_empty:
@@ -2237,7 +2242,7 @@ class ToolIsolation(AppTool, Gerber):
                     if new_geo:
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
-            elif isinstance(target_geo, LineString):
+            elif isinstance(target_geo, LineString) or isinstance(target_geo, LinearRing):
                 new_geo = target_geo.difference(sub_union)
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
@@ -2274,7 +2279,7 @@ class ToolIsolation(AppTool, Gerber):
                             new_geo = ring.intersection(intersect_union)
                             if new_geo and not new_geo.is_empty:
                                 new_geometry.append(new_geo)
-                elif isinstance(geo_elem, LineString):
+                elif isinstance(geo_elem, LineString) or isinstance(geo_elem, LinearRing):
                     new_geo = geo_elem.intersection(intersect_union)
                     if new_geo:
                         if not new_geo.is_empty:
@@ -2291,7 +2296,7 @@ class ToolIsolation(AppTool, Gerber):
                     if new_geo:
                         if not new_geo.is_empty:
                             new_geometry.append(new_geo)
-            elif isinstance(target_geo, LineString):
+            elif isinstance(target_geo, LineString) or isinstance(target_geo, LinearRing):
                 new_geo = target_geo.intersection(intersect_union)
                 if new_geo and not new_geo.is_empty:
                     new_geometry.append(new_geo)
@@ -2798,7 +2803,7 @@ class ToolIsolation(AppTool, Gerber):
                         intersect_flag = True
                         break
 
-                if intersect_flag == False:
+                if intersect_flag is False:
                     for geo_search_idx in range(start_idx, len(geometry)):
                         if check_geo.intersects(geometry[geo_search_idx]):
                             intersect_flag = True

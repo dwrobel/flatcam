@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - made confirmation messages for the values that are modified not to be printed in the Shell
 - Isolation Tool: working on the Rest machining: almost there, perhaps I will use multiprocessing
+- Isolation Tool: removed the tools that have empty geometry in case of rest machining
+- Isolation Tool: solved some naming issues
 
 29.05.2020
 
