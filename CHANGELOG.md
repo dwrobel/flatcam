@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - added a Multi-color checkbox for the Geometry UI (will color differently tool geometry when the geometry is multitool)
 - added a Multi-color checkbox for the Excellon UI (this way colors for each tool are easier to differentiate especially when the diameter is close)
 - made the Shell Dock always show docked
+- fixed NCC Tool behavior when selecting tools for Isolation operation
 
 29.05.2020
 

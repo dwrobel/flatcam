@@ -1621,10 +1621,12 @@ class NonCopperClear(AppTool, Gerber):
                                                                     "use a number."))
                         continue
 
-                if self.op_radio.get_value() == _("Isolation"):
-                    self.iso_dia_list.append(self.tooldia)
-                else:
-                    self.ncc_dia_list.append(self.tooldia)
+                for uid_k, uid_v in self.ncc_tools.items():
+                    if round(uid_v['tooldia'], self.decimals) == round(self.tooldia, self.decimals):
+                        if uid_v['data']['tools_nccoperation'] == "iso":
+                            self.iso_dia_list.append(self.tooldia)
+                        else:
+                            self.ncc_dia_list.append(self.tooldia)
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
