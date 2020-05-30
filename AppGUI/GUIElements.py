@@ -2986,6 +2986,11 @@ class FCDock(QtWidgets.QDockWidget):
         self.close_callback()
         super().closeEvent(event)
 
+    def show(self) -> None:
+        if self.isFloating():
+            self.setFloating(False)
+        super().show()
+
 
 class FlatCAMActivityView(QtWidgets.QWidget):
     """
