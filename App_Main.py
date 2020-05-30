@@ -5252,7 +5252,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.inform.emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."))
+        self.inform[str, bool].emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."), False)
 
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
@@ -5270,8 +5270,18 @@ class App(QtCore.QObject):
         tool_from_db = deepcopy(tool)
 
         obj = self.collection.get_active()
-        if isinstance(obj, GeometryObject):
+        if obj.kind == 'geometry':
             obj.on_tool_from_db_inserted(tool=tool_from_db)
+
+            # close the tab and delete it
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.ui.plot_tab_area.removeTab(idx)
+            self.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
+        elif obj.kind == 'gerber':
+            self.isolation_tool.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):

@@ -8,6 +8,8 @@ import json
 
 from copy import deepcopy
 from datetime import datetime
+import math
+
 import gettext
 import AppTranslation as fcTranslate
 import builtins
@@ -2353,6 +2355,18 @@ class ToolsDB2(QtWidgets.QWidget):
         self.app.tools_db_changed_flag = False
         self.on_save_tools_db()
 
+    def on_calculate_tooldia(self):
+        if self.shape_combo.get_value() == 'V':
+            tip_dia = float(self.vdia_entry.get_value())
+            half_tip_angle = float(self.vangle_entry.get_value()) / 2.0
+            cut_z = float(self.cutz_entry.get_value())
+            cut_z = -cut_z if cut_z < 0 else cut_z
+
+            # calculated tool diameter so the cut_z parameter is obeyed
+            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(half_tip_angle)))
+
+            self.dia_entry.set_value(tool_dia)
+
     def ui_connect(self):
         # make sure that we don't make multiple connections to the widgets
         self.ui_disconnect()
@@ -2382,9 +2396,37 @@ class ToolsDB2(QtWidgets.QWidget):
             if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
                 wdg.valueChanged.connect(self.update_storage)
 
+        # connect the calculate tooldia method to the controls
+        # if the tool shape is 'V' the tool dia will be calculated to obey Cut Z parameter
+        self.shape_combo.currentIndexChanged.connect(self.on_calculate_tooldia)
+        self.cutz_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.vdia_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.vangle_entry.valueChanged.connect(self.on_calculate_tooldia)
+
+
     def ui_disconnect(self):
         try:
             self.name_entry.editingFinished.disconnect(self.update_tree_name)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.shape_combo.currentIndexChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.cutz_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.vdia_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.vangle_entry.valueChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
