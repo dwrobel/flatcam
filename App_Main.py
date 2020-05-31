@@ -1488,6 +1488,11 @@ class App(QtCore.QObject):
         self.prj_list = ['flatprj']
         self.conf_list = ['flatconfig']
 
+        # last used filters
+        self.last_op_gerber_filter = None
+        self.last_op_excellon_filter = None
+        self.last_op_gcode_filter = None
+
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
         # flag for polygons not cleared
         self.poly_not_cleared = False
@@ -4088,7 +4093,7 @@ class App(QtCore.QObject):
             val_x = float(self.defaults['global_gridx'])
             val_y = float(self.defaults['global_gridy'])
 
-            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
         self.preferencesUiManager.defaults_read_form()
 
@@ -5735,7 +5740,7 @@ class App(QtCore.QObject):
             name = obj.options["name"]
         except AttributeError:
             log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit('[WARNING_NOTCL]%s' %
+            self.inform.emit('[WARNING_NOTCL] %s' %
                              _(" No object selected to copy it's name"))
             return
 
@@ -6559,11 +6564,13 @@ class App(QtCore.QObject):
             try:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
                                                                        directory=self.get_last_folder(),
-                                                                       filter=_filter_)
+                                                                       filter=_filter_,
+                                                                       initialFilter=self.last_op_gerber_filter)
             except TypeError:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
 
             filenames = [str(filename) for filename in filenames]
+            self.last_op_gerber_filter = _f
         else:
             filenames = [name]
             self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
@@ -6597,10 +6604,12 @@ class App(QtCore.QObject):
             try:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
                                                                        directory=self.get_last_folder(),
-                                                                       filter=_filter_)
+                                                                       filter=_filter_,
+                                                                       initialFilter=self.last_op_excellon_filter)
             except TypeError:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
             filenames = [str(filename) for filename in filenames]
+            self.last_op_excellon_filter = _f
         else:
             filenames = [str(name)]
             self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
@@ -6610,7 +6619,7 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
-            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -6638,11 +6647,13 @@ class App(QtCore.QObject):
             try:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
                                                                        directory=self.get_last_folder(),
-                                                                       filter=_filter_)
+                                                                       filter=_filter_,
+                                                                       initialFilter=self.last_op_gcode_filter)
             except TypeError:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
 
             filenames = [str(filename) for filename in filenames]
+            self.last_op_gcode_filter = _f
         else:
             filenames = [name]
             self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
@@ -6803,7 +6814,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.export_svg(name, filename)

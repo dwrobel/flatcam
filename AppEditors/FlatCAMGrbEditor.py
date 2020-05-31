@@ -3435,7 +3435,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 if len(self.apertures_table.selectionModel().selectedRows()) == 0:
-                    self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Select an aperture in Aperture Table"))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _(" Select an aperture in Aperture Table"))
                     return
 
                 deleted_apcode_list = []

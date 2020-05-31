@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 31.05.2020
 
 - structural changes in Preferences from David Robertson
+- made last filter selected for open file to be used next time when opening files (for Excellon, GCode and Gerber files, for now)
 
 30.05.2020
 

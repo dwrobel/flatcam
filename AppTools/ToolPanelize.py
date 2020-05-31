@@ -438,7 +438,7 @@ class Panelize(AppTool):
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit('[WARNING_NOTCL]%s: %s' % (_("No object Box. Using instead"), panel_source_obj))
+            self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), panel_source_obj))
             self.reference_radio.set_value('bbox')
 
         if self.reference_radio.get_value() == 'bbox':

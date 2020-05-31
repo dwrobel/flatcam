@@ -788,7 +788,7 @@ class QRCode(AppTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.app.worker_task.emit({'fcn': job_thread_qr_png, 'params': [self.app, filename]})
@@ -835,7 +835,7 @@ class QRCode(AppTool):
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL]%s' % _("Cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
             return
         else:
             self.app.worker_task.emit({'fcn': job_thread_qr_svg, 'params': [self.app, filename]})
