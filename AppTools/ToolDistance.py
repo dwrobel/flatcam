@@ -511,12 +511,13 @@ class Distance(AppTool):
             self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
             self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
 
-            if dx != 0.0:
-                try:
-                    angle = math.degrees(math.atan(dy / dx))
-                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
-                except Exception:
-                    pass
+            try:
+                angle = math.degrees(math.atan2(dy, dx))
+                if angle < 0:
+                    angle += 360
+                self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+            except Exception:
+                pass
 
             self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
             # self.app.ui.rel_position_label.setText(
@@ -582,13 +583,14 @@ class Distance(AppTool):
             if len(self.points) == 1:
                 self.utility_geometry(pos=pos)
                 # and display the temporary angle
-                if dx != 0.0:
-                    try:
-                        angle = math.degrees(math.atan(dy / dx))
-                        self.angle_entry.set_value('%.*f' % (self.decimals, angle))
-                    except Exception as e:
-                        log.debug("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
-                        pass
+                try:
+                    angle = math.degrees(math.atan2(dy, dx))
+                    if angle < 0:
+                        angle += 360
+                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+                except Exception as e:
+                    log.debug("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
+                    pass
 
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.06.2020
+
+- made the Distance Tool display the angle in values between 0 and 359.9999 degrees
+- changed some strings
+
 31.05.2020
 
 - structural changes in Preferences from David Robertson

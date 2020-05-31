@@ -35,7 +35,7 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, app, icon_file='assets/resources/flatcam_icon32.png', title=_('FlatCAM Object'),
+    def __init__(self, app, icon_file='assets/resources/flatcam_icon32.png', title=_('App Object'),
                  parent=None, common=True):
         QtWidgets.QWidget.__init__(self, parent=parent)
 

@@ -35,7 +35,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Theme selection
         self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
         self.theme_label.setToolTip(
-            _("Select a theme for FlatCAM.\n"
+            _("Select a theme for the application.\n"
               "It will theme the plot area.")
         )
 
@@ -72,7 +72,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Layout selection
         self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
         self.layout_label.setToolTip(
-            _("Select an layout for FlatCAM.\n"
+            _("Select an layout for the application.\n"
               "It is applied immediately.")
         )
         self.layout_combo = FCComboBox()
@@ -94,7 +94,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Style selection
         self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
         self.style_label.setToolTip(
-            _("Select an style for FlatCAM.\n"
+            _("Select an style for the application.\n"
               "It will be applied at the next app start.")
         )
         self.style_combo = FCComboBox()
@@ -110,7 +110,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Enable High DPI Support
         self.hdpi_cb = FCCheckBox('%s' % _('Activate HDPI Support'))
         self.hdpi_cb.setToolTip(
-            _("Enable High DPI support for FlatCAM.\n"
+            _("Enable High DPI support for the application.\n"
               "It will be applied at the next app start.")
         )
 
@@ -126,7 +126,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Enable Hover box
         self.hover_cb = FCCheckBox('%s' % _('Display Hover Shape'))
         self.hover_cb.setToolTip(
-            _("Enable display of a hover shape for FlatCAM objects.\n"
+            _("Enable display of a hover shape for the application objects.\n"
               "It is displayed whenever the mouse cursor is hovering\n"
               "over any kind of not-selected object.")
         )
@@ -135,7 +135,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Enable Selection box
         self.selection_cb = FCCheckBox('%s' % _('Display Selection Shape'))
         self.selection_cb.setToolTip(
-            _("Enable the display of a selection shape for FlatCAM objects.\n"
+            _("Enable the display of a selection shape for the application objects.\n"
               "It is displayed whenever the mouse selects an object\n"
               "either by clicking or dragging mouse from left to right or\n"
               "right to left.")

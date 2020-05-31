@@ -315,7 +315,7 @@ class ToolsDB(QtWidgets.QWidget):
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             return
 
-        self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
 
         self.build_db_ui()
 
@@ -726,7 +726,7 @@ class ToolsDB(QtWidgets.QWidget):
                 self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
                 return
 
-            self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
             self.build_db_ui()
             self.callback_on_edited()
 
@@ -2034,7 +2034,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             return
 
-        self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
 
         self.build_db_ui()
 
@@ -2323,7 +2323,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
                 return
 
-            self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
             self.build_db_ui()
             self.update_storage()
 

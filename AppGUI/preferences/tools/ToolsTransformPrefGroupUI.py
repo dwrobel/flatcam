@@ -31,7 +31,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.transform_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.transform_label.setToolTip(
             _("Various transformations that can be applied\n"
-              "on a FlatCAM object.")
+              "on a application object.")
         )
         self.layout.addWidget(self.transform_label)
 
