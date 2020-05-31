@@ -115,23 +115,12 @@ class GerberObject(FlatCAMObj, Gerber):
             "plot": True,
             "multicolored": False,
             "solid": False,
-            "tool_type": 'circular',
-            "vtipdia": 0.1,
-            "vtipangle": 30,
-            "vcutz": -0.05,
-            "isotooldia": 0.016,
-            "isopasses": 1,
-            "isooverlap": 15,
-            "milling_type": "cl",
-            "combine_passes": True,
             "noncoppermargin": 0.0,
             "noncopperrounded": False,
             "bboxmargin": 0.0,
             "bboxrounded": False,
             "aperture_display": False,
             "follow": False,
-            "iso_scope": 'all',
-            "iso_type": 'full'
         })
 
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
@@ -197,33 +186,22 @@ class GerberObject(FlatCAMObj, Gerber):
             "plot": self.ui.plot_cb,
             "multicolored": self.ui.multicolored_cb,
             "solid": self.ui.solid_cb,
-            "tool_type": self.ui.tool_type_radio,
-            "vtipdia": self.ui.tipdia_spinner,
-            "vtipangle": self.ui.tipangle_spinner,
-            "vcutz": self.ui.cutz_spinner,
-            "isotooldia": self.ui.iso_tool_dia_entry,
-            "isopasses": self.ui.iso_width_entry,
-            "isooverlap": self.ui.iso_overlap_entry,
-            "milling_type": self.ui.milling_type_radio,
-            "combine_passes": self.ui.combine_passes_cb,
             "noncoppermargin": self.ui.noncopper_margin_entry,
             "noncopperrounded": self.ui.noncopper_rounded_cb,
             "bboxmargin": self.ui.bbmargin_entry,
             "bboxrounded": self.ui.bbrounded_cb,
             "aperture_display": self.ui.aperture_table_visibility_cb,
-            "follow": self.ui.follow_cb,
-            "iso_scope": self.ui.iso_scope_radio,
-            "iso_type": self.ui.iso_type_radio
+            "follow": self.ui.follow_cb
         })
 
         # Fill form fields only on object create
         self.to_form()
 
         assert isinstance(self.ui, GerberObjectUI)
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
-        self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
 
         # Tools
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
@@ -235,54 +213,17 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
 
-        # set the model for the Area Exception comboboxes
-        self.ui.obj_combo.setModel(self.app.collection)
-        self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ui.obj_combo.is_last = True
-        self.ui.obj_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Geometry"): "Geometry"
-        }[self.ui.type_obj_combo.get_value()]
-        self.on_type_obj_index_changed()
-
-        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-
-        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
-        # establish visibility for the GUI elements found in the slot function
-        self.ui.tool_type_radio.activated_custom.emit(self.options['tool_type'])
-
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-            self.options['tool_type'] = 'circular'
-
-            self.ui.tool_type_label.hide()
-            self.ui.tool_type_radio.hide()
-
-            # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
-            self.ui.tool_type_radio.set_value('circular')
-
-            self.ui.tipdialabel.hide()
-            self.ui.tipdia_spinner.hide()
-            self.ui.tipanglelabel.hide()
-            self.ui.tipangle_spinner.hide()
-            self.ui.cutzlabel.hide()
-            self.ui.cutz_spinner.hide()
 
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
-            self.ui.milling_type_label.hide()
-            self.ui.milling_type_radio.hide()
-            self.ui.iso_type_label.hide()
-            self.ui.iso_type_radio.hide()
 
             self.ui.follow_cb.hide()
-            self.ui.except_cb.setChecked(False)
-            self.ui.except_cb.hide()
+
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-            self.ui.tipdia_spinner.valueChanged.connect(self.on_calculate_tooldia)
-            self.ui.tipangle_spinner.valueChanged.connect(self.on_calculate_tooldia)
-            self.ui.cutz_spinner.valueChanged.connect(self.on_calculate_tooldia)
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -299,58 +240,6 @@ class GerberObject(FlatCAMObj, Gerber):
 
         self.build_ui()
         self.units_found = self.app.defaults['units']
-
-    def on_calculate_tooldia(self):
-        try:
-            tdia = float(self.ui.tipdia_spinner.get_value())
-        except Exception:
-            return
-        try:
-            dang = float(self.ui.tipangle_spinner.get_value())
-        except Exception:
-            return
-        try:
-            cutz = float(self.ui.cutz_spinner.get_value())
-        except Exception:
-            return
-
-        cutz *= -1
-        if cutz < 0:
-            cutz *= -1
-
-        half_tip_angle = dang / 2
-
-        tool_diameter = tdia + (2 * cutz * math.tan(math.radians(half_tip_angle)))
-        self.ui.iso_tool_dia_entry.set_value(tool_diameter)
-
-    def on_type_obj_index_changed(self):
-        val = self.ui.type_obj_combo.get_value()
-        obj_type = {"Gerber": 0, "Geometry": 2}[val]
-        self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.ui.obj_combo.setCurrentIndex(0)
-        self.ui.obj_combo.obj_type = {_("Gerber"): "Gerber", _("Geometry"): "Geometry"}[val]
-
-    def on_tool_type_change(self, state):
-        if state == 'circular':
-            self.ui.tipdialabel.hide()
-            self.ui.tipdia_spinner.hide()
-            self.ui.tipanglelabel.hide()
-            self.ui.tipangle_spinner.hide()
-            self.ui.cutzlabel.hide()
-            self.ui.cutz_spinner.hide()
-            self.ui.iso_tool_dia_entry.setDisabled(False)
-            # update the value in the self.iso_tool_dia_entry once this is selected
-            self.ui.iso_tool_dia_entry.set_value(self.options['isotooldia'])
-        else:
-            self.ui.tipdialabel.show()
-            self.ui.tipdia_spinner.show()
-            self.ui.tipanglelabel.show()
-            self.ui.tipangle_spinner.show()
-            self.ui.cutzlabel.show()
-            self.ui.cutz_spinner.show()
-            self.ui.iso_tool_dia_entry.setDisabled(True)
-            # update the value in the self.iso_tool_dia_entry once this is selected
-            self.on_calculate_tooldia()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
@@ -562,521 +451,6 @@ class GerberObject(FlatCAMObj, Gerber):
 
         self.app.app_obj.new_object("geometry", name, geo_init)
 
-    def on_iso_button_click(self, *args):
-
-        obj = self.app.collection.get_active()
-
-        self.iso_type = 2
-        if self.ui.iso_type_radio.get_value() == 'ext':
-            self.iso_type = 0
-        if self.ui.iso_type_radio.get_value() == 'int':
-            self.iso_type = 1
-
-        def worker_task(iso_obj, app_obj):
-            with self.app.proc_container.new(_("Isolating...")):
-                if self.ui.follow_cb.get_value() is True:
-                    iso_obj.follow_geo()
-                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
-                    iso_obj.ui.plot_cb.toggle()
-                else:
-                    app_obj.defaults.report_usage("gerber_on_iso_button")
-                    self.read_form()
-
-                    iso_scope = 'all' if self.ui.iso_scope_radio.get_value() == 'all' else 'single'
-                    self.isolate_handler(iso_type=self.iso_type, iso_scope=iso_scope)
-
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
-
-    def follow_geo(self, outname=None):
-        """
-        Creates a geometry object "following" the gerber paths.
-
-        :return: None
-        """
-
-        # default_name = self.options["name"] + "_follow"
-        # follow_name = outname or default_name
-
-        if outname is None:
-            follow_name = self.options["name"] + "_follow"
-        else:
-            follow_name = outname
-
-        def follow_init(follow_obj, app):
-            # Propagate options
-            follow_obj.options["cnctooldia"] = str(self.options["isotooldia"])
-            follow_obj.solid_geometry = self.follow_geometry
-
-        # TODO: Do something if this is None. Offer changing name?
-        try:
-            self.app.app_obj.new_object("geometry", follow_name, follow_init)
-        except Exception as e:
-            return "Operation failed: %s" % str(e)
-
-    def isolate_handler(self, iso_type, iso_scope):
-
-        if iso_scope == 'all':
-            self.isolate(iso_type=iso_type)
-        else:
-            # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
-            if self.app.ui.grid_snap_btn.isChecked():
-                self.grid_status_memory = True
-                self.app.ui.grid_snap_btn.trigger()
-            else:
-                self.grid_status_memory = False
-
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
-
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
-
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to isolate it."))
-
-    def on_mouse_click_release(self, event):
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-            right_button = 2
-            self.app.event_is_dragging = self.app.event_is_dragging
-        else:
-            event_pos = (event.xdata, event.ydata)
-            right_button = 3
-            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
-
-        try:
-            x = float(event_pos[0])
-            y = float(event_pos[1])
-        except TypeError:
-            return
-
-        event_pos = (x, y)
-        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-        if self.app.grid_status():
-            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-        else:
-            curr_pos = (curr_pos[0], curr_pos[1])
-
-        if event.button == 1:
-            clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
-
-            if self.app.selection_type is not None:
-                self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
-                self.app.selection_type = None
-            elif clicked_poly:
-                if clicked_poly not in self.poly_dict.values():
-                    shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=clicked_poly,
-                                                        color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                        face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                        visible=True)
-                    self.poly_dict[shape_id] = clicked_poly
-                    self.app.inform.emit(
-                        '%s: %d. %s' % (_("Added polygon"), int(len(self.poly_dict)),
-                                        _("Click to add next polygon or right click to start isolation."))
-                    )
-                else:
-                    try:
-                        for k, v in list(self.poly_dict.items()):
-                            if v == clicked_poly:
-                                self.app.tool_shapes.remove(k)
-                                self.poly_dict.pop(k)
-                                break
-                    except TypeError:
-                        return
-                    self.app.inform.emit(
-                        '%s. %s' % (_("Removed polygon"),
-                                    _("Click to add/remove next polygon or right click to start isolation."))
-                    )
-
-                self.app.tool_shapes.redraw()
-            else:
-                self.app.inform.emit(_("No polygon detected under click position."))
-        elif event.button == right_button and self.app.event_is_dragging is False:
-            # restore the Grid snapping if it was active before
-            if self.grid_status_memory is True:
-                self.app.ui.grid_snap_btn.trigger()
-
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
-
-            self.app.tool_shapes.clear(update=True)
-
-            if self.poly_dict:
-                poly_list = deepcopy(list(self.poly_dict.values()))
-                self.isolate(iso_type=self.iso_type, geometry=poly_list)
-                self.poly_dict.clear()
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
-
-    def selection_area_handler(self, start_pos, end_pos, sel_type):
-        """
-        :param start_pos: mouse position when the selection LMB click was done
-        :param end_pos: mouse position when the left mouse button is released
-        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :return:
-        """
-        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-
-        # delete previous selection shape
-        self.app.delete_selection_shape()
-
-        added_poly_count = 0
-        try:
-            for geo in self.solid_geometry:
-                if geo not in self.poly_dict.values():
-                    if sel_type is True:
-                        if geo.within(poly_selection):
-                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
-                                                                shape=geo,
-                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                                face_color=self.app.defaults[
-                                                                               'global_sel_draw_color'] + 'AF',
-                                                                visible=True)
-                            self.poly_dict[shape_id] = geo
-                            added_poly_count += 1
-                    else:
-                        if poly_selection.intersects(geo):
-                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
-                                                                shape=geo,
-                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                                face_color=self.app.defaults[
-                                                                               'global_sel_draw_color'] + 'AF',
-                                                                visible=True)
-                            self.poly_dict[shape_id] = geo
-                            added_poly_count += 1
-        except TypeError:
-            if self.solid_geometry not in self.poly_dict.values():
-                if sel_type is True:
-                    if self.solid_geometry.within(poly_selection):
-                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
-                                                            shape=self.solid_geometry,
-                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                            face_color=self.app.defaults[
-                                                                           'global_sel_draw_color'] + 'AF',
-                                                            visible=True)
-                        self.poly_dict[shape_id] = self.solid_geometry
-                        added_poly_count += 1
-                else:
-                    if poly_selection.intersects(self.solid_geometry):
-                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
-                                                            shape=self.solid_geometry,
-                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                                            face_color=self.app.defaults[
-                                                                           'global_sel_draw_color'] + 'AF',
-                                                            visible=True)
-                        self.poly_dict[shape_id] = self.solid_geometry
-                        added_poly_count += 1
-
-        if added_poly_count > 0:
-            self.app.tool_shapes.redraw()
-            self.app.inform.emit(
-                '%s: %d. %s' % (_("Added polygon"),
-                                int(added_poly_count),
-                                _("Click to add next polygon or right click to start isolation."))
-            )
-        else:
-            self.app.inform.emit(_("No polygon in selection."))
-
-    def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
-                milling_type=None, follow=None, plot=True):
-        """
-        Creates an isolation routing geometry object in the project.
-
-        :param iso_type: type of isolation to be done: 0 = exteriors, 1 = interiors and 2 = both
-        :param geometry: specific geometry to isolate
-        :param dia: Tool diameter
-        :param passes: Number of tool widths to cut
-        :param overlap: Overlap between passes in fraction of tool diameter
-        :param outname: Base name of the output object
-        :param combine: Boolean: if to combine passes in one resulting object in case of multiple passes
-        :param milling_type: type of milling: conventional or climbing
-        :param follow: Boolean: if to generate a 'follow' geometry
-        :param plot: Boolean: if to plot the resulting geometry object
-        :return: None
-        """
-
-        if geometry is None:
-            work_geo = self.follow_geometry if follow is True else self.solid_geometry
-        else:
-            work_geo = geometry
-
-        if dia is None:
-            dia = float(self.options["isotooldia"])
-
-        if passes is None:
-            passes = int(self.options["isopasses"])
-
-        if overlap is None:
-            overlap = float(self.options["isooverlap"])
-
-        overlap /= 100.0
-
-        combine = self.options["combine_passes"] if combine is None else bool(combine)
-
-        if milling_type is None:
-            milling_type = self.options["milling_type"]
-
-        if iso_type is None:
-            iso_t = 2
-        else:
-            iso_t = iso_type
-
-        base_name = self.options["name"]
-
-        if combine:
-            if outname is None:
-                if self.iso_type == 0:
-                    iso_name = base_name + "_ext_iso"
-                elif self.iso_type == 1:
-                    iso_name = base_name + "_int_iso"
-                else:
-                    iso_name = base_name + "_iso"
-            else:
-                iso_name = outname
-
-            def iso_init(geo_obj, app_obj):
-                # Propagate options
-                geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
-                geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
-
-                geo_obj.solid_geometry = []
-
-                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                if self.ui.tool_type_radio.get_value() == 'v':
-                    new_cutz = self.ui.cutz_spinner.get_value()
-                    new_vtipdia = self.ui.tipdia_spinner.get_value()
-                    new_vtipangle = self.ui.tipangle_spinner.get_value()
-                    tool_type = 'V'
-                else:
-                    new_cutz = self.app.defaults['geometry_cutz']
-                    new_vtipdia = self.app.defaults['geometry_vtipdia']
-                    new_vtipangle = self.app.defaults['geometry_vtipangle']
-                    tool_type = 'C1'
-
-                # store here the default data for Geometry Data
-                default_data = {}
-                default_data.update({
-                    "name": iso_name,
-                    "plot": self.app.defaults['geometry_plot'],
-                    "cutz": new_cutz,
-                    "vtipdia": new_vtipdia,
-                    "vtipangle": new_vtipangle,
-                    "travelz": self.app.defaults['geometry_travelz'],
-                    "feedrate": self.app.defaults['geometry_feedrate'],
-                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                    "dwell": self.app.defaults['geometry_dwell'],
-                    "dwelltime": self.app.defaults['geometry_dwelltime'],
-                    "multidepth": self.app.defaults['geometry_multidepth'],
-                    "ppname_g": self.app.defaults['geometry_ppname_g'],
-                    "depthperpass": self.app.defaults['geometry_depthperpass'],
-                    "extracut": self.app.defaults['geometry_extracut'],
-                    "extracut_length": self.app.defaults['geometry_extracut_length'],
-                    "toolchange": self.app.defaults['geometry_toolchange'],
-                    "toolchangez": self.app.defaults['geometry_toolchangez'],
-                    "endz": self.app.defaults['geometry_endz'],
-                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                    "startz": self.app.defaults['geometry_startz']
-                })
-
-                geo_obj.tools = {}
-                geo_obj.tools['1'] = {}
-                geo_obj.tools.update({
-                    '1': {
-                        'tooldia': float(self.options["isotooldia"]),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': tool_type,
-                        'data': default_data,
-                        'solid_geometry': geo_obj.solid_geometry
-                    }
-                })
-
-                for nr_pass in range(passes):
-                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * dia)
-
-                    # if milling type is climb then the move is counter-clockwise around features
-                    mill_dir = 1 if milling_type == 'cl' else 0
-                    geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow, nr_passes=nr_pass)
-
-                    if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
-                        return 'fail'
-                    geo_obj.solid_geometry.append(geom)
-
-                    # update the geometry in the tools
-                    geo_obj.tools['1']['solid_geometry'] = geo_obj.solid_geometry
-
-                # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                # or just looking in the lists (they are one level depth) and if any is not empty
-                # proceed with object creation, if there are empty and the number of them is the length
-                # of the list then we have an empty solid_geometry which should raise a Custom Exception
-                empty_cnt = 0
-                if not isinstance(geo_obj.solid_geometry, list) and \
-                        not isinstance(geo_obj.solid_geometry, MultiPolygon):
-                    geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
-                for g in geo_obj.solid_geometry:
-                    if g:
-                        break
-                    else:
-                        empty_cnt += 1
-
-                if empty_cnt == len(geo_obj.solid_geometry):
-                    raise ValidationError("Empty Geometry", None)
-                else:
-                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
-
-                # even if combine is checked, one pass is still single-geo
-                geo_obj.multigeo = True if passes > 1 else False
-
-                # ############################################################
-                # ########## AREA SUBTRACTION ################################
-                # ############################################################
-                if self.ui.except_cb.get_value():
-                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                    geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
-
-            # TODO: Do something if this is None. Offer changing name?
-            self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
-        else:
-            for i in range(passes):
-                offset = dia * ((2 * i + 1) / 2.0000001) - (i * overlap * dia)
-                if passes > 1:
-                    if outname is None:
-                        if self.iso_type == 0:
-                            iso_name = base_name + "_ext_iso" + str(i + 1)
-                        elif self.iso_type == 1:
-                            iso_name = base_name + "_int_iso" + str(i + 1)
-                        else:
-                            iso_name = base_name + "_iso" + str(i + 1)
-                    else:
-                        iso_name = outname
-                else:
-                    if outname is None:
-                        if self.iso_type == 0:
-                            iso_name = base_name + "_ext_iso"
-                        elif self.iso_type == 1:
-                            iso_name = base_name + "_int_iso"
-                        else:
-                            iso_name = base_name + "_iso"
-                    else:
-                        iso_name = outname
-
-                def iso_init(geo_obj, fc_obj):
-                    # Propagate options
-                    geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
-                    if self.ui.tool_type_radio.get_value() == 'v':
-                        geo_obj.tool_type = 'V'
-                    else:
-                        geo_obj.tool_type = 'C1'
-
-                    # if milling type is climb then the move is counter-clockwise around features
-                    mill_dir = 1 if milling_type == 'cl' else 0
-                    geom = self.generate_envelope(offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow,
-                                                  nr_passes=i)
-
-                    if geom == 'fail':
-                        fc_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
-                        return 'fail'
-
-                    geo_obj.solid_geometry = geom
-
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
-                    # required to be transfered to the Geometry object
-                    if self.ui.tool_type_radio.get_value() == 'v':
-                        new_cutz = self.ui.cutz_spinner.get_value()
-                        new_vtipdia = self.ui.tipdia_spinner.get_value()
-                        new_vtipangle = self.ui.tipangle_spinner.get_value()
-                        tool_type = 'V'
-                    else:
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['geometry_vtipdia']
-                        new_vtipangle = self.app.defaults['geometry_vtipangle']
-                        tool_type = 'C1'
-
-                    # store here the default data for Geometry Data
-                    default_data = {}
-                    default_data.update({
-                        "name": iso_name,
-                        "plot": self.app.defaults['geometry_plot'],
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                        "travelz": self.app.defaults['geometry_travelz'],
-                        "feedrate": self.app.defaults['geometry_feedrate'],
-                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                        "dwell": self.app.defaults['geometry_dwell'],
-                        "dwelltime": self.app.defaults['geometry_dwelltime'],
-                        "multidepth": self.app.defaults['geometry_multidepth'],
-                        "ppname_g": self.app.defaults['geometry_ppname_g'],
-                        "depthperpass": self.app.defaults['geometry_depthperpass'],
-                        "extracut": self.app.defaults['geometry_extracut'],
-                        "extracut_length": self.app.defaults['geometry_extracut_length'],
-                        "toolchange": self.app.defaults['geometry_toolchange'],
-                        "toolchangez": self.app.defaults['geometry_toolchangez'],
-                        "endz": self.app.defaults['geometry_endz'],
-                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                        "startz": self.app.defaults['geometry_startz']
-                    })
-
-                    geo_obj.tools = {}
-                    geo_obj.tools['1'] = {}
-                    geo_obj.tools.update({
-                        '1': {
-                            'tooldia': float(self.options["isotooldia"]),
-                            'offset': 'Path',
-                            'offset_value': 0.0,
-                            'type': _('Rough'),
-                            'tool_type': tool_type,
-                            'data': default_data,
-                            'solid_geometry': geo_obj.solid_geometry
-                        }
-                    })
-
-                    # detect if solid_geometry is empty and this require list flattening which is "heavy"
-                    # or just looking in the lists (they are one level depth) and if any is not empty
-                    # proceed with object creation, if there are empty and the number of them is the length
-                    # of the list then we have an empty solid_geometry which should raise a Custom Exception
-                    empty_cnt = 0
-                    if not isinstance(geo_obj.solid_geometry, list):
-                        geo_obj.solid_geometry = [geo_obj.solid_geometry]
-
-                    for g in geo_obj.solid_geometry:
-                        if g:
-                            break
-                        else:
-                            empty_cnt += 1
-
-                    if empty_cnt == len(geo_obj.solid_geometry):
-                        raise ValidationError("Empty Geometry", None)
-                    else:
-                        fc_obj.inform.emit('[success] %s: %s' %
-                                            (_("Isolation geometry created"), geo_obj.options["name"]))
-                    geo_obj.multigeo = False
-
-                    # ############################################################
-                    # ########## AREA SUBTRACTION ################################
-                    # ############################################################
-                    if self.ui.except_cb.get_value():
-                        self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                        geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
-
-                # TODO: Do something if this is None. Offer changing name?
-                self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
-
     def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
         # isolation_geometry produces an envelope that is going on the left of the geometry
         # (the copper features). To leave the least amount of burrs on the features
@@ -1117,64 +491,28 @@ class GerberObject(FlatCAMObj, Gerber):
                 return 'fail'
         return geom
 
-    def area_subtraction(self, geo, subtractor_geo=None):
+    def follow_geo(self, outname=None):
         """
-        Subtracts the subtractor_geo (if present else self.solid_geometry) from the geo
+        Creates a geometry object "following" the gerber paths.
 
-        :param geo: target geometry from which to subtract
-        :param subtractor_geo: geometry that acts as subtractor
-        :return:
+        :return: None
         """
-        new_geometry = []
-        target_geo = geo
 
-        if subtractor_geo:
-            sub_union = cascaded_union(subtractor_geo)
+        if outname is None:
+            follow_name = self.options["name"] + "_follow"
         else:
-            name = self.ui.obj_combo.currentText()
-            subtractor_obj = self.app.collection.get_by_name(name)
-            sub_union = cascaded_union(subtractor_obj.solid_geometry)
+            follow_name = outname
 
+        def follow_init(follow_obj, app):
+            # Propagate options
+            follow_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+            follow_obj.solid_geometry = self.follow_geometry
+
+        # TODO: Do something if this is None. Offer changing name?
         try:
-            for geo_elem in target_geo:
-                if isinstance(geo_elem, Polygon):
-                    for ring in self.poly2rings(geo_elem):
-                        new_geo = ring.difference(sub_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiPolygon):
-                    for poly in geo_elem:
-                        for ring in self.poly2rings(poly):
-                            new_geo = ring.difference(sub_union)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                elif isinstance(geo_elem, LineString):
-                    new_geo = geo_elem.difference(sub_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                elif isinstance(geo_elem, MultiLineString):
-                    for line_elem in geo_elem:
-                        new_geo = line_elem.difference(sub_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-        except TypeError:
-            if isinstance(target_geo, Polygon):
-                for ring in self.poly2rings(target_geo):
-                    new_geo = ring.difference(sub_union)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-            elif isinstance(target_geo, LineString):
-                new_geo = target_geo.difference(sub_union)
-                if new_geo and not new_geo.is_empty:
-                    new_geometry.append(new_geo)
-            elif isinstance(target_geo, MultiLineString):
-                for line_elem in target_geo:
-                    new_geo = line_elem.difference(sub_union)
-                    if new_geo and not new_geo.is_empty:
-                        new_geometry.append(new_geo)
-        return new_geometry
+            self.app.app_obj.new_object("geometry", follow_name, follow_init)
+        except Exception as e:
+            return "Operation failed: %s" % str(e)
 
     def on_plot_cb_click(self, *args):
         if self.muted_ui:

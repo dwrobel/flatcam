@@ -106,6 +106,8 @@ def on_language_apply_click(app, restart=False):
                                   (_("Are you sure do you want to change the current language to"), name.capitalize()))
         msgbox.setWindowTitle(_("Apply Language ..."))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/language32.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
 
@@ -203,6 +205,8 @@ def restart_program(app, ask=None):
                          "Do you want to Save the project?"))
         msgbox.setWindowTitle(_("Save changes"))
         msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/save_as.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 

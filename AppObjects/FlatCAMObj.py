@@ -459,20 +459,20 @@ class FlatCAMObj(QtCore.QObject):
     def visible(self, value, threaded=True):
         log.debug("FlatCAMObj.visible()")
 
-        def worker_task(app_obj):
-            self.shapes.visible = value
-
-            if self.app.is_legacy is False:
-                # Not all object types has annotations
-                try:
-                    self.annotation.visible = value
-                except Exception:
-                    pass
-
-        if threaded is False:
-            worker_task(app_obj=self.app)
+        # self.shapes.visible = value   # maybe this is slower in VisPy? use enabled property?
+        if self.shapes.visible is True:
+            if value is False:
+                self.shapes.visible = False
         else:
-            self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
+            if value is True:
+                self.shapes.visible = True
+
+        if self.app.is_legacy is False:
+            # Not all object types has annotations
+            try:
+                self.annotation.visible = value
+            except Exception:
+                pass
 
     @property
     def drawing_tolerance(self):

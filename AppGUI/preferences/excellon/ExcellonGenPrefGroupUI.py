@@ -36,22 +36,31 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
 
+        # Plot CB
         self.plot_cb = FCCheckBox(label=_('Plot'))
         self.plot_cb.setToolTip(
             "Plot (show) this object."
         )
         grid1.addWidget(self.plot_cb, 0, 0)
 
+        # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             "Plot as solid circles."
         )
         grid1.addWidget(self.solid_cb, 0, 1)
 
+        # Multicolored CB
+        self.multicolored_cb = FCCheckBox(label='%s' % _('M-Color'))
+        self.multicolored_cb.setToolTip(
+            _("Draw polygons in different colors.")
+        )
+        grid1.addWidget(self.multicolored_cb, 0, 2)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid1.addWidget(separator_line, 1, 0, 1, 2)
+        grid1.addWidget(separator_line, 1, 0, 1, 3)
 
         grid2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid2)

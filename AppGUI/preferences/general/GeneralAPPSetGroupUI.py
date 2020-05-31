@@ -177,14 +177,6 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
                                               {'label': _('Landscape'), 'value': 'l'},
                                               ], stretch=False)
 
-        self.wks = OptionalInputSection(self.workspace_cb,
-                                        [
-                                            self.workspace_type_lbl,
-                                            self.wk_cb,
-                                            self.wk_orientation_label,
-                                            self.wk_orientation_radio
-                                        ])
-
         grid0.addWidget(self.wk_orientation_label, 8, 0)
         grid0.addWidget(self.wk_orientation_radio, 8, 1)
 

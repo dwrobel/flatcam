@@ -38,7 +38,6 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-
 log = logging.getLogger('base')
 
 
@@ -310,6 +309,9 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.hud_enabled = False
         self.text_hud = self.Thud(plotcanvas=self)
 
+        # enable Grid lines
+        self.grid_lines_enabled = True
+
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
         if self.app.defaults['global_workspace'] is True:
@@ -318,25 +320,62 @@ class PlotCanvasLegacy(QtCore.QObject):
         if self.app.defaults['global_hud'] is True:
             self.on_toggle_hud(state=True)
 
-    def on_toggle_hud(self, state):
+        # Axis Display
+        self.axis_enabled = True
+
+        # enable Axis
+        self.on_toggle_axis(state=True)
+
+    def on_toggle_axis(self, signal=None, state=None):
+        if state is None:
+            state = not self.axis_enabled
+
+        if state:
+            self.axis_enabled = True
+            if self.h_line not in self.axes.lines and self.v_line not in self.axes.lines:
+                self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.app.ui.axis_status_label.setStyleSheet("""
+                                                            QLabel
+                                                            {
+                                                                color: black;
+                                                                background-color: peachpuff;
+                                                            }
+                                                            """)
+                self.app.inform[str, bool].emit(_("Axis enabled."), False)
+        else:
+            self.axis_enabled = False
+            if self.h_line in self.axes.lines and self.v_line in self.axes.lines:
+                self.axes.lines.remove(self.h_line)
+                self.axes.lines.remove(self.v_line)
+                self.app.ui.axis_status_label.setStyleSheet("")
+                self.app.inform[str, bool].emit(_("Axis disabled."), False)
+
+        self.canvas.draw()
+
+    def on_toggle_hud(self, signal=None, state=None):
+        if state is None:
+            state = not self.hud_enabled
+
         if state:
             self.hud_enabled = True
             self.text_hud.add_artist()
-
             self.app.defaults['global_hud'] = True
-            self.fcapp.ui.hud_label.setStyleSheet("""
-                            QLabel
-                            {
-                                color: black;
-                                background-color: lightblue;
-                            }
-                            """)
+
+            self.app.ui.hud_label.setStyleSheet("""
+                                                QLabel
+                                                {
+                                                    color: black;
+                                                    background-color: lightblue;
+                                                }
+                                                """)
+            self.app.inform[str, bool].emit(_("HUD enabled."), False)
         else:
             self.hud_enabled = False
             self.text_hud.remove_artist()
-
             self.app.defaults['global_hud'] = False
-            self.fcapp.ui.hud_label.setStyleSheet("")
+            self.app.ui.hud_label.setStyleSheet("")
+            self.app.inform[str, bool].emit(_("HUD disabled."), False)
 
         self.canvas.draw()
 
@@ -398,6 +437,26 @@ class PlotCanvasLegacy(QtCore.QObject):
         def remove_artist(self):
             if self.hud_holder in self.p.axes.artists:
                 self.p.axes.artists.remove(self.hud_holder)
+
+    def on_toggle_grid_lines(self):
+        state = not self.grid_lines_enabled
+
+        if state:
+            self.grid_lines_enabled = True
+            self.axes.grid(True)
+            try:
+                self.canvas.draw()
+            except IndexError:
+                pass
+            self.app.inform[str, bool].emit(_("Grid enabled."), False)
+        else:
+            self.grid_lines_enabled = False
+            self.axes.grid(False)
+            try:
+                self.canvas.draw()
+            except IndexError:
+                pass
+            self.app.inform[str, bool].emit(_("Grid disabled."), False)
 
     def draw_workspace(self, workspace_size):
         """

@@ -127,12 +127,6 @@ class PreferencesUIManager:
             "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
 
             # Gerber Options
-            "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
-            "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
-            "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
-            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.select_combo,
-            "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
             "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
             "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
             "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
@@ -143,12 +137,6 @@ class PreferencesUIManager:
             # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
             # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
-            "gerber_tool_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.tool_type_radio,
-            "gerber_vtipdia": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipdia_spinner,
-            "gerber_vtipangle": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipangle_spinner,
-            "gerber_vcutz": self.ui.gerber_defaults_form.gerber_adv_opt_group.cutz_spinner,
-            "gerber_iso_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.iso_type_radio,
-
             "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
             "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
             "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
@@ -180,6 +168,7 @@ class PreferencesUIManager:
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
+            "excellon_multicolored": self.ui.excellon_defaults_form.excellon_gen_group.multicolored_cb,
             "excellon_format_upper_in":
                 self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
             "excellon_format_lower_in":
@@ -221,31 +210,31 @@ class PreferencesUIManager:
             "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
             # Excellon Advanced Options
-            "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
+            "excellon_offset":          self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
+            "excellon_toolchangexy":    self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
+            "excellon_startz":          self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
+            "excellon_feedrate_rapid":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
+            "excellon_z_pdepth":        self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
+            "excellon_feedrate_probe":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
+            "excellon_spindledir":      self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
+            "excellon_f_plunge":        self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
+            "excellon_f_retract":       self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
 
             # Excellon Export
-            "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
-            "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
-            "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
-            "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
-            "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
-            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
+            "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
+            "excellon_exp_format":      self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
+            "excellon_exp_integer":     self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
+            "excellon_exp_decimals":    self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
+            "excellon_exp_zeros":       self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
+            "excellon_exp_slot_type":   self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
 
             # Excellon Editor
-            "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
-            "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
-            "excellon_editor_array_size": self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
-            "excellon_editor_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
-            "excellon_editor_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
-            "excellon_editor_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
+            "excellon_editor_sel_limit":    self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
+            "excellon_editor_newdia":       self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
+            "excellon_editor_array_size":   self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
+            "excellon_editor_lin_dir":      self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
+            "excellon_editor_lin_pitch":    self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
+            "excellon_editor_lin_angle":    self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
             "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
             "excellon_editor_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
@@ -270,94 +259,117 @@ class PreferencesUIManager:
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
             # Geometry General
-            "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_plot_line": self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
+            "geometry_plot":            self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
+            "geometry_multicolored":    self.ui.geometry_defaults_form.geometry_gen_group.multicolored_cb,
+            "geometry_circle_steps":    self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
+            "geometry_cnctooldia":      self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_plot_line":       self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
 
             # Geometry Options
-            "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
-            "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
-            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
-            "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
+            "geometry_cutz":            self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
+            "geometry_travelz":         self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
+            "geometry_feedrate":        self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
+            "geometry_feedrate_z":      self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
+            "geometry_spindlespeed":    self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_dwell":           self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
+            "geometry_dwelltime":       self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
+            "geometry_ppname_g":        self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_toolchange":      self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
+            "geometry_toolchangez":     self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
+            "geometry_endz":            self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
+            "geometry_endxy":           self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
+            "geometry_depthperpass":    self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
+            "geometry_multidepth":      self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             # Geometry Advanced Options
-            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
-            "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
+            "geometry_toolchangexy":    self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
+            "geometry_startz":          self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
+            "geometry_feedrate_rapid":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
+            "geometry_extracut":        self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
             "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
-            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
-            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
-            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
-            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
-            "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
-            "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
-            "geometry_area_exclusion": self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
-            "geometry_area_shape": self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
-            "geometry_area_strategy": self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
-            "geometry_area_overz": self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
+            "geometry_z_pdepth":        self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
+            "geometry_feedrate_probe":  self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
+            "geometry_spindledir":      self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
+            "geometry_f_plunge":        self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
+            "geometry_segx":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
+            "geometry_segy":            self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
+            "geometry_area_exclusion":  self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
+            "geometry_area_shape":      self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
+            "geometry_area_strategy":   self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
+            "geometry_area_overz":      self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
 
             # Geometry Editor
-            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
-            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
+            "geometry_editor_sel_limit":        self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
+            "geometry_editor_milling_type":     self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
 
             # CNCJob General
-            "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
+            "cncjob_plot":              self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
+            "cncjob_plot_kind":         self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
+            "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
 
-            "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
-            "cncjob_coords_type": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
-            "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
-            "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
-            "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
-            "cncjob_line_ending": self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
-            "cncjob_plot_line": self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
-            "cncjob_plot_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
-            "cncjob_travel_line": self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
-            "cncjob_travel_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
+            "cncjob_tooldia":           self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
+            "cncjob_coords_type":       self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
+            "cncjob_coords_decimals":   self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
+            "cncjob_fr_decimals":       self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
+            "cncjob_steps_per_circle":  self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
+            "cncjob_line_ending":       self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
+            "cncjob_plot_line":         self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
+            "cncjob_plot_fill":         self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
+            "cncjob_travel_line":       self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
+            "cncjob_travel_fill":       self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
 
             # CNC Job Options
-            "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
+            "cncjob_prepend":   self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
+            "cncjob_append":    self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
 
             # CNC Job Advanced Options
-            "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
-            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
+            "cncjob_toolchange_macro":          self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
+            "cncjob_toolchange_macro_enable":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
+            "cncjob_annotation_fontsize":  self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
 
+            # Isolation Routing Tool
+            "tools_iso_tooldia":        self.ui.tools_defaults_form.tools_iso_group.tool_dia_entry,
+            "tools_iso_order":          self.ui.tools_defaults_form.tools_iso_group.order_radio,
+            "tools_iso_tool_type":      self.ui.tools_defaults_form.tools_iso_group.tool_type_radio,
+            "tools_iso_tool_vtipdia":   self.ui.tools_defaults_form.tools_iso_group.tipdia_entry,
+            "tools_iso_tool_vtipangle": self.ui.tools_defaults_form.tools_iso_group.tipangle_entry,
+            "tools_iso_tool_cutz":      self.ui.tools_defaults_form.tools_iso_group.cutz_entry,
+            "tools_iso_newdia":         self.ui.tools_defaults_form.tools_iso_group.newdia_entry,
+
+            "tools_iso_passes":         self.ui.tools_defaults_form.tools_iso_group.passes_entry,
+            "tools_iso_overlap":        self.ui.tools_defaults_form.tools_iso_group.overlap_entry,
+            "tools_iso_milling_type":   self.ui.tools_defaults_form.tools_iso_group.milling_type_radio,
+            "tools_iso_follow":         self.ui.tools_defaults_form.tools_iso_group.follow_cb,
+            "tools_iso_isotype":        self.ui.tools_defaults_form.tools_iso_group.iso_type_radio,
+
+            "tools_iso_rest":           self.ui.tools_defaults_form.tools_iso_group.rest_cb,
+            "tools_iso_combine_passes": self.ui.tools_defaults_form.tools_iso_group.combine_passes_cb,
+            "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
+            "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
+            "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
+            "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
+
             # NCC Tool
-            "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
-            "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
-            "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
-            "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
-            "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
-            "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
-            "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
-            "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
-            "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
-            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.select_combo,
-            "tools_ncc_area_shape": self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
-            "tools_ncc_plotting": self.ui.tools_defaults_form.tools_ncc_group.ncc_plotting_radio,
-            "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
-            "tools_ncctool_type": self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
-            "tools_ncccutz": self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
-            "tools_ncctipdia": self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
-            "tools_ncctipangle": self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
-            "tools_nccnewdia": self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
+            "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccorder":           self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
+            "tools_nccoverlap":         self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_nccmargin":          self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
+            "tools_nccmethod":          self.ui.tools_defaults_form.tools_ncc_group.ncc_method_combo,
+            "tools_nccconnect":         self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
+            "tools_ncccontour":         self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
+            "tools_nccrest":            self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_ncc_offset_choice":  self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
+            "tools_ncc_offset_value":   self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
+            "tools_nccref":             self.ui.tools_defaults_form.tools_ncc_group.select_combo,
+            "tools_ncc_area_shape":     self.ui.tools_defaults_form.tools_ncc_group.area_shape_radio,
+            "tools_nccmilling_type":    self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
+            "tools_ncctool_type":       self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
+            "tools_ncccutz":            self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
+            "tools_ncctipdia":          self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
+            "tools_ncctipangle":        self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
+            "tools_nccnewdia":          self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
+            "tools_ncc_plotting":       self.ui.tools_defaults_form.tools_ncc_group.plotting_radio,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -937,6 +949,7 @@ class PreferencesUIManager:
             msgbox.setText(_("Are you sure you want to continue?"))
             msgbox.setWindowTitle(_("Application restart"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.NoRole)
@@ -1111,7 +1124,7 @@ class PreferencesUIManager:
         if self.ui.grb_edit_toolbar.isVisible():
             tb_status += 64
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.status_toolbar.isVisible():
             tb_status += 128
 
         if self.ui.toolbarshell.isVisible():
@@ -1175,6 +1188,7 @@ class PreferencesUIManager:
                              "Do you want to save the Preferences?"))
             msgbox.setWindowTitle(_("Save Preferences"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)

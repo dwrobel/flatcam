@@ -7,12 +7,63 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.05.2020
+
+- made confirmation messages for the values that are modified not to be printed in the Shell
+- Isolation Tool: working on the Rest machining: almost there, perhaps I will use multiprocessing
+- Isolation Tool: removed the tools that have empty geometry in case of rest machining
+- Isolation Tool: solved some naming issues
+- Isolation Tool: updated the tools dict with the common parameters value on isolating
+- Fixed a recent change that made the edited Geometry objects in the Geometry Editor not to be plotted after saving changes
+- modified the Tool Database such that when a tool shape is selected as 'V' any change in the Vdia or Vangle or CutZ parameters will update the tool diameter value
+- In Tool Isolation made sure that the use of ESC key while some processes are active will disconnect the mouse events that may be connected, correctly
+- optimized the Gerber UI
+- added a Multi-color checkbox for the Geometry UI (will color differently tool geometry when the geometry is multitool)
+- added a Multi-color checkbox for the Excellon UI (this way colors for each tool are easier to differentiate especially when the diameter is close)
+- made the Shell Dock always show docked
+- fixed NCC Tool behavior when selecting tools for Isolation operation
+
+29.05.2020
+
+- fixed the Tool Isolation when using the 'follow' parameter
+- in Isolation Tool when the Rest machining is checked the combine parameter is set True automatically because the rest machining concept make sense only when all tools are used together
+- some changes in the UI; added in the status bar an icon to control the Shell Dock
+- clicking on the activity icon will replot all objects
+- optimized UI in Tool Isolation
+- overloaded the App inform signal to allow not printing to shell if a second bool parameter is given; modified some GUI messages to use this feature
+- fixed the shell status label status on shell dock close from close button
+- refactored some methods from App class and moved them to plotcanvas (plotcanvaslegacy) class
+- added an label with icon in the status bar, clicking it will toggle (show status) of the X-Y axis on cavnas
+- optimized the UI, added to status bar an icon to toggle the axis 
+- updated the Etch Compensation Tool by adding a new possibility to compensate the lateral etch (manual value)
+- updated the Etch Compensation Tool such that the resulting Gerber object will have the apertures attributes ('size', 'width', 'height') updated to the changes
+
+28.05.2020
+
+- made the visibility change (when using the Spacebar key in Project Tab) to be not threaded and to use the enabled property of the ShapesCollection which should be faster
+- updated the Tool Database class to have the Isolation Tool data
+- Isolation Tool - made to work the adding of tools from database
+- fixed some issues related to using the new Numerical... GUI elements
+- fixed issues in the Tool Subtract
+- remade Tool Subtract to use multiprocessing when processing geometry
+- the resulting Gerber file from Tool Subtract has now the attribute source_file populated
+
+27.05.2020
+
+- working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
+
 26.05.2020
 
 - working on Isolation Tool: made to work the tool parameters data to GUI and GUI to data
 - Isolation Tool: reworked the GUI
 - if there is a Gerber object selected then in Isolation Tool the Gerber object combobox will show that object name as current
 - made the Project Tree items not editable by clicking on selected Tree items (the object rename can still be done in the Selected tab)
+- working on Isolation Tool: added a Preferences section in Edit -> Preferences and updated their usage within the Isolation tool
+- fixed milling drills not plotting the resulting Geometry object
+- all tuple entries in the Preferences UI are now protected against letter entry
+- all entries in the Preferences UI that have numerical entry are protected now against letters
+- cleaned the Preferences UI in the Gerber area
+- minor UI changes
 
 25.05.2020
 

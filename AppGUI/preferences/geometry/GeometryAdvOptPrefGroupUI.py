@@ -1,7 +1,8 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCEntry, FloatEntry, FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel
+from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCLabel, NumericalEvalTupleEntry, \
+    NumericalEvalEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -46,8 +47,9 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
+        self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+
         grid1.addWidget(toolchange_xy_label, 1, 0)
-        self.toolchangexy_entry = FCEntry()
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
 
         # Start move Z
@@ -56,8 +58,9 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
             _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")
         )
+        self.gstartz_entry = NumericalEvalEntry(border_color='#0069A9')
+
         grid1.addWidget(startzlabel, 2, 0)
-        self.gstartz_entry = FloatEntry()
         grid1.addWidget(self.gstartz_entry, 2, 1)
 
         # Feedrate rapids
@@ -186,6 +189,11 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(segy_label, 11, 0)
         grid1.addWidget(self.segy_entry, 11, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 12, 0, 1, 2)
+
         # -----------------------------
         # --- Area Exclusion ----------
         # -----------------------------
@@ -195,10 +203,10 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "Those parameters are available only for\n"
               "Advanced App. Level.")
         )
-        grid1.addWidget(self.adv_label, 12, 0, 1, 2)
+        grid1.addWidget(self.adv_label, 13, 0, 1, 2)
 
         # Exclusion Area CB
-        self.exclusion_cb = FCCheckBox('%s:' % _("Exclusion areas"))
+        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
         self.exclusion_cb.setToolTip(
             _(
                 "Include exclusion areas.\n"
@@ -206,7 +214,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
                 "is forbidden."
             )
         )
-        grid1.addWidget(self.exclusion_cb, 13, 0, 1, 2)
+        grid1.addWidget(self.exclusion_cb, 14, 0, 1, 2)
 
         # Area Selection shape
         self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
@@ -217,8 +225,8 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        grid1.addWidget(self.area_shape_label, 14, 0)
-        grid1.addWidget(self.area_shape_radio, 14, 1)
+        grid1.addWidget(self.area_shape_label, 15, 0)
+        grid1.addWidget(self.area_shape_radio, 15, 1)
 
         # Chose Strategy
         self.strategy_label = FCLabel('%s:' % _("Strategy"))
@@ -229,8 +237,8 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
                                         {'label': _('Around'), 'value': 'around'}])
 
-        grid1.addWidget(self.strategy_label, 15, 0)
-        grid1.addWidget(self.strategy_radio, 15, 1)
+        grid1.addWidget(self.strategy_label, 16, 0)
+        grid1.addWidget(self.strategy_radio, 16, 1)
 
         # Over Z
         self.over_z_label = FCLabel('%s:' % _("Over Z"))

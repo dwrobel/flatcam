@@ -570,9 +570,12 @@ class FCEntry3(FCEntry):
 
 
 class EvalEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, border_color=None, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
+
+        if border_color:
+            self.setStyleSheet("QLineEdit {border: 1px solid %s;}" % border_color)
 
         self.editingFinished.connect(self.on_edit_finished)
 
@@ -639,7 +642,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
-        evaled = 0.0
+
         try:
             evaled = eval(raw)
         except Exception as e:
@@ -660,20 +663,20 @@ class NumericalEvalEntry(EvalEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, border_color=None):
+        super().__init__(border_color=border_color)
 
         regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s]*")
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
 
 
-class NumericalEvalTupleEntry(EvalEntry):
+class NumericalEvalTupleEntry(FCEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, border_color=None):
+        super().__init__(border_color=border_color)
 
         regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,]*")
         validator = QtGui.QRegExpValidator(regex, self)
@@ -2551,7 +2554,7 @@ class DialogBoxRadio(QtWidgets.QDialog):
         :param title: string with the window title
         :param label: string with the message inside the dialog box
         """
-        super(DialogBoxRadio, self).__init__()
+        super(DialogBoxRadio, self).__init__(parent=parent)
         if initial_text is None:
             self.location = str((0, 0))
         else:
@@ -2794,9 +2797,12 @@ class MyCompleter(QCompleter):
     insertText = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
-        QCompleter.__init__(self)
+        QCompleter.__init__(self, parent=parent)
         self.setCompletionMode(QCompleter.PopupCompletion)
         self.highlighted.connect(self.setHighlighted)
+
+        self.lastSelected = ''
+
         # self.popup().installEventFilter(self)
 
     # def eventFilter(self, obj, event):
@@ -2952,9 +2958,9 @@ class FCFileSaveDialog(QtWidgets.QFileDialog):
         super(FCFileSaveDialog, self).__init__(*args)
 
     @staticmethod
-    def get_saved_filename(parent=None, caption='', directory='', filter='', initialFilter=''):
+    def get_saved_filename(parent=None, caption='', directory='', ext_filter='', initialFilter=''):
         filename, _filter = QtWidgets.QFileDialog.getSaveFileName(parent=parent, caption=caption,
-                                                                  directory=directory, filter=filter,
+                                                                  directory=directory, filter=ext_filter,
                                                                   initialFilter=initialFilter)
 
         filename = str(filename)
@@ -2968,6 +2974,22 @@ class FCFileSaveDialog(QtWidgets.QFileDialog):
         else:
             filename += extension
             return filename, _filter
+
+
+class FCDock(QtWidgets.QDockWidget):
+
+    def __init__(self, *args, **kwargs):
+        super(FCDock, self).__init__(*args)
+        self.close_callback = kwargs["close_callback"] if "close_callback" in kwargs else None
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        self.close_callback()
+        super().closeEvent(event)
+
+    def show(self) -> None:
+        if self.isFloating():
+            self.setFloating(False)
+        super().show()
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):
@@ -3000,7 +3022,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.movie_path = movie
         self.icon_path = icon
 
-        self.icon = QtWidgets.QLabel(self)
+        self.icon = FCLabel(self)
         self.icon.setGeometry(0, 0, 16, 12)
         self.movie = QtGui.QMovie(self.movie_path)
 
@@ -3018,6 +3040,8 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
 
         layout.addWidget(self.text)
+
+        self.icon.clicked.connect(self.app.on_toolbar_replot)
 
     def set_idle(self):
         self.movie.stop()

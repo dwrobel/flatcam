@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from AppGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCEntry, FCSpinner, OptionalInputSection, \
-    FCComboBox
+    FCComboBox, NumericalEvalTupleEntry
 from AppGUI.preferences import machinist_setting
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
@@ -198,7 +198,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
-        self.endxy_entry = FCEntry()
+        self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
         grid2.addWidget(endmove_xy_label, 9, 0)
         grid2.addWidget(self.endxy_entry, 9, 1)

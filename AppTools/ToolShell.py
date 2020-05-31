@@ -267,6 +267,7 @@ class FCShell(TermWidget):
         self.app = app
 
         self.tcl_commands_storage = {}
+        self.tcl = None
 
         self.init_tcl()
 
@@ -345,11 +346,11 @@ class FCShell(TermWidget):
 
     def is_command_complete(self, text):
 
-        def skipQuotes(txt):
-            quote = txt[0]
-            text_val = txt[1:]
-            endIndex = str(text_val).index(quote)
-            return text[endIndex:]
+        # def skipQuotes(txt):
+        #     quote = txt[0]
+        #     text_val = txt[1:]
+        #     endIndex = str(text_val).index(quote)
+        #     return text[endIndex:]
 
         # I'm disabling this because I need to be able to load paths that have spaces by
         # enclosing them in quotes --- Marius Stanciu
@@ -371,10 +372,10 @@ class FCShell(TermWidget):
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
         Also handles execution in separated threads
 
-        :param text: FlatCAM TclCommand with parameters
-        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
-        will create crashes of the _Expandable_Edit widget
-        :return: output if there was any
+        :param text:        FlatCAM TclCommand with parameters
+        :param no_echo:     If True it will not try to print to the Shell because most likely the shell is hidden and it
+                            will create crashes of the _Expandable_Edit widget
+        :return:            output if there was any
         """
 
         self.app.defaults.report_usage('exec_command')
@@ -404,12 +405,11 @@ class FCShell(TermWidget):
                 self.append_output(result + '\n')
 
         except tk.TclError as e:
-
             # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
-            self.app.log.error("Exec command Exception: %s" % (result + '\n'))
+            self.app.log.error("Exception on Tcl Command execution: %s" % (result + '\n'))
             if no_echo is False:
-                self.append_error('ERROR: ' + result + '\n')
+                self.append_error('ERROR Report: ' + result + '\n')
             # Show error in console and just return or in test raise exception
             if reraise:
                 raise e

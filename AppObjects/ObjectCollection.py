@@ -1185,7 +1185,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 except Exception:
                     pass
             if obj_list:
-                self.app.inform.emit('[selected] %s' % _("All objects are selected."))
+                self.app.inform[str, bool].emit('[selected] %s' % _("All objects are selected."), False)
         else:
             self.set_all_inactive()
             for act in self.app.ui.menuobjects.actions():
@@ -1195,6 +1195,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     pass
 
             if obj_list:
-                self.app.inform.emit('%s' % _("Objects selection is cleared."))
+                self.app.inform[str, bool].emit('%s' % _("Objects selection is cleared."), False)
             else:
-                self.app.inform.emit('')
+                self.app.inform[str, bool].emit('', False)

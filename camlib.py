@@ -4143,7 +4143,8 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
+        self.startz = float(startz) if startz is not None and startz != '' else self.app.defaults["geometry_startz"]
+
         self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
 
         self.xy_end = endxy if endxy != '' and endxy else self.app.defaults["geometry_endxy"]
@@ -4374,7 +4375,7 @@ class CNCjob(Geometry):
 
                     self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
                                                                tolerance,
-                                                               z_move=z_move,_postproc=p,
+                                                               z_move=z_move, postproc=p,
                                                                old_point=current_pt)
 
                 # calculate the travel distance
@@ -4831,15 +4832,25 @@ class CNCjob(Geometry):
         # Current path: temporary storage until tool is
         # lifted or lowered.
         if self.toolchange_xy_type == "excellon":
-            if self.app.defaults["excellon_toolchangexy"] == '':
+            if self.app.defaults["excellon_toolchangexy"] == '' or self.app.defaults["excellon_toolchangexy"] is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
+                pos_xy = self.app.defaults["excellon_toolchangexy"]
+                try:
+                    pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
+                except Exception:
+                    if len(pos_xy) != 2:
+                        pos_xy = (0, 0)
         else:
-            if self.app.defaults["geometry_toolchangexy"] == '':
+            if self.app.defaults["geometry_toolchangexy"] == '' or self.app.defaults["geometry_toolchangexy"] is None:
                 pos_xy = (0, 0)
             else:
-                pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
+                pos_xy = self.app.defaults["geometry_toolchangexy"]
+                try:
+                    pos_xy = [float(eval(a)) for a in pos_xy.split(",")]
+                except Exception:
+                    if len(pos_xy) != 2:
+                        pos_xy = (0, 0)
 
         path = [pos_xy]
         # path = [(0, 0)]

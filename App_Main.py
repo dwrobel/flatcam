@@ -204,7 +204,7 @@ class App(QtCore.QObject):
     # Inform the user
     # Handled by:
     #  * App.info() --> Print on the status bar
-    inform = QtCore.pyqtSignal(str)
+    inform = QtCore.pyqtSignal([str], [str, bool])
 
     app_quit = QtCore.pyqtSignal()
 
@@ -757,7 +757,9 @@ class App(QtCore.QObject):
 
         # ########################################## Custom signals  ################################################
         # signal for displaying messages in status bar
-        self.inform.connect(self.info)
+        self.inform[str].connect(self.info)
+        self.inform[str, bool].connect(self.info)
+
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
         self.message.connect(lambda: message_dialog(parent=self.ui))
@@ -871,10 +873,11 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_notebook.triggered.connect(self.ui.on_toggle_notebook)
         self.ui.menu_toggle_nb.triggered.connect(self.ui.on_toggle_notebook)
         self.ui.menuview_toggle_grid.triggered.connect(self.ui.on_toggle_grid)
-        self.ui.menuview_toggle_grid_lines.triggered.connect(self.on_toggle_grid_lines)
-        self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_toggle)
-        self.ui.menuview_toggle_hud.triggered.connect(self.on_toggle_hud)
+
+        self.ui.menuview_toggle_grid_lines.triggered.connect(self.plotcanvas.on_toggle_grid_lines)
+        self.ui.menuview_toggle_axis.triggered.connect(self.plotcanvas.on_toggle_axis)
+        self.ui.menuview_toggle_hud.triggered.connect(self.plotcanvas.on_toggle_hud)
 
         self.ui.menutoolshell.triggered.connect(self.ui.toggle_shell_ui)
 
@@ -1019,6 +1022,15 @@ class App(QtCore.QObject):
         self.ui.util_defaults_form.kw_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='keyword'))
 
+        # ###########################################################################################################
+        # ########################################### GUI SIGNALS ###################################################
+        # ###########################################################################################################
+        self.ui.hud_label.clicked.connect(self.plotcanvas.on_toggle_hud)
+        self.ui.axis_status_label.clicked.connect(self.plotcanvas.on_toggle_axis)
+
+        # ###########################################################################################################
+        # ####################################### VARIOUS SIGNALS ###################################################
+        # ###########################################################################################################
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
 
@@ -1343,7 +1355,7 @@ class App(QtCore.QObject):
         try:
             self.install_tools()
         except AttributeError as e:
-            log.debug("App.__init__() install tools() --> %s" % str(e))
+            log.debug("App.__init__() install_tools() --> %s" % str(e))
 
         # ###########################################################################################################
         # ############################################ SETUP RECENT ITEMS ###########################################
@@ -1438,12 +1450,6 @@ class App(QtCore.QObject):
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
-
-        # Variable to hold the status of the axis
-        self.toggle_axis = True
-
-        # Variable to hold the status of the grid lines
-        self.toggle_grid_lines = True
 
         # Variable to store the status of the code editor
         self.toggle_codeeditor = False
@@ -2206,6 +2212,7 @@ class App(QtCore.QObject):
                 msgbox.setText(_("Do you want to save the edited object?"))
                 msgbox.setWindowTitle(_("Close Editor"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -2242,6 +2249,7 @@ class App(QtCore.QObject):
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 
                         edited_obj.build_ui()
+                        edited_obj.plot()
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     elif isinstance(edited_obj, GerberObject):
@@ -2298,6 +2306,7 @@ class App(QtCore.QObject):
                     if isinstance(edited_obj, GeometryObject):
                         self.geo_editor.deactivate()
                         edited_obj.build_ui()
+                        edited_obj.plot()
                     elif isinstance(edited_obj, GerberObject):
                         self.grb_editor.deactivate_grb_editor()
                         edited_obj.build_ui()
@@ -2361,12 +2370,17 @@ class App(QtCore.QObject):
             loc = os.path.dirname(__file__)
         return loc
 
-    def info(self, msg):
+    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot(str, bool)
+    def info(self, msg, shell_echo=True):
         """
         Informs the user. Normally on the status bar, optionally
         also on the shell.
 
-        :param msg: Text to write.
+        :param msg:         Text to write.
+        :type msg:          str
+        :param shell_echo:  Control if to display the message msg in the Shell
+        :type shell_echo:   bool
         :return: None
         """
 
@@ -2377,32 +2391,33 @@ class App(QtCore.QObject):
             msg_ = match.group(2)
             self.ui.fcinfo.set_status(str(msg_), level=level)
 
-            if level.lower() == "error":
-                self.shell_message(msg, error=True, show=True)
-            elif level.lower() == "warning":
-                self.shell_message(msg, warning=True, show=True)
+            if shell_echo is True:
+                if level.lower() == "error":
+                    self.shell_message(msg, error=True, show=True)
+                elif level.lower() == "warning":
+                    self.shell_message(msg, warning=True, show=True)
 
-            elif level.lower() == "error_notcl":
-                self.shell_message(msg, error=True, show=False)
+                elif level.lower() == "error_notcl":
+                    self.shell_message(msg, error=True, show=False)
 
-            elif level.lower() == "warning_notcl":
-                self.shell_message(msg, warning=True, show=False)
+                elif level.lower() == "warning_notcl":
+                    self.shell_message(msg, warning=True, show=False)
 
-            elif level.lower() == "success":
-                self.shell_message(msg, success=True, show=False)
+                elif level.lower() == "success":
+                    self.shell_message(msg, success=True, show=False)
 
-            elif level.lower() == "selected":
-                self.shell_message(msg, selected=True, show=False)
+                elif level.lower() == "selected":
+                    self.shell_message(msg, selected=True, show=False)
 
-            else:
-                self.shell_message(msg, show=False)
+                else:
+                    self.shell_message(msg, show=False)
 
         else:
             self.ui.fcinfo.set_status(str(msg), level="info")
 
             # make sure that if the message is to clear the infobar with a space
             # is not printed over and over on the shell
-            if msg != '':
+            if msg != '' and shell_echo is True:
                 self.shell_message(msg)
 
     def on_import_preferences(self):
@@ -2456,10 +2471,11 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + date,
-                filter=filter__
+                ext_filter=filter__
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Preferences"), filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export FlatCAM Preferences"), ext_filter=filter__)
         filename = str(filename)
         if filename == "":
             self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
@@ -2501,10 +2517,10 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save to file"),
                 directory=path_to_save + '/file_' + self.date,
-                filter=filter__
+                ext_filter=filter__
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), filter=filter__)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save to file"), ext_filter=filter__)
 
         filename = str(filename)
 
@@ -3092,6 +3108,8 @@ class App(QtCore.QObject):
 
         msgbox.setWindowTitle(_("Alternative website"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
@@ -3855,9 +3873,10 @@ class App(QtCore.QObject):
             return
 
         # Keys in self.defaults for which to scale their values
-        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f", "gerber_vtipdia",
-                      "gerber_vcutz", "gerber_editor_newdim", "gerber_editor_ma_low",
+        dimensions = ['tools_iso_tooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
+                      "tools_iso_tool_vtipdia",
+                      "tools_iso_tool_cutz", "gerber_editor_newdim", "gerber_editor_ma_low",
                       "gerber_editor_ma_high",
 
                       'excellon_cutz', 'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
@@ -4000,6 +4019,8 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
+        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
         msgbox.setText(_("Changing the units of the project\n"
                          "will scale all objects.\n\n"
                          "Do you want to continue?"))
@@ -4079,95 +4100,6 @@ class App(QtCore.QObject):
         self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
-    def on_toggle_axis(self):
-        self.defaults.report_usage("on_toggle_axis()")
-
-        if self.toggle_axis is False:
-            if self.is_legacy is False:
-                self.plotcanvas.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
-                                                      parent=self.plotcanvas.view.scene)
-
-                self.plotcanvas.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
-                                                      parent=self.plotcanvas.view.scene)
-            else:
-                if self.plotcanvas.h_line not in self.plotcanvas.axes.lines and \
-                        self.plotcanvas.v_line not in self.plotcanvas.axes.lines:
-                    self.plotcanvas.h_line = self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-                    self.plotcanvas.v_line = self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
-                    self.plotcanvas.canvas.draw()
-            self.inform.emit(_("Axis enabled."))
-            self.toggle_axis = True
-        else:
-            if self.is_legacy is False:
-                self.plotcanvas.v_line.parent = None
-                self.plotcanvas.h_line.parent = None
-            else:
-                if self.plotcanvas.h_line in self.plotcanvas.axes.lines and \
-                        self.plotcanvas.v_line in self.plotcanvas.axes.lines:
-                    self.plotcanvas.axes.lines.remove(self.plotcanvas.h_line)
-                    self.plotcanvas.axes.lines.remove(self.plotcanvas.v_line)
-                    self.plotcanvas.canvas.draw()
-            self.inform.emit(_("Axis disabled."))
-            self.toggle_axis = False
-
-    def on_toggle_hud(self):
-        new_state = False if self.plotcanvas.hud_enabled else True
-
-        self.plotcanvas.on_toggle_hud(state=new_state)
-        if new_state is False:
-            self.inform.emit(_("HUD disabled."))
-        else:
-            self.inform.emit(_("HUD enabled."))
-
-    def on_toggle_grid_lines(self):
-        self.defaults.report_usage("on_toggle_grd_lines()")
-
-        tt_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if tt_settings.contains("theme"):
-            theme = tt_settings.value('theme', type=str)
-        else:
-            theme = 'white'
-
-        if self.toggle_grid_lines is False:
-            if self.is_legacy is False:
-                if theme == 'white':
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
-                else:
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#dededeff').rgba
-            else:
-                self.plotcanvas.axes.grid(True)
-                try:
-                    self.plotcanvas.canvas.draw()
-                except IndexError:
-                    pass
-                pass
-            self.inform.emit(_("Grid enabled."))
-            self.toggle_grid_lines = True
-        else:
-            if self.is_legacy is False:
-                if theme == 'white':
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#ffffffff').rgba
-                else:
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#000000FF').rgba
-            else:
-                self.plotcanvas.axes.grid(False)
-                try:
-                    self.plotcanvas.canvas.draw()
-                except IndexError:
-                    pass
-            self.toggle_grid_lines = False
-            self.inform.emit(_("Grid disabled."))
-
-        if self.is_legacy is False:
-            # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
-            # - perhaps is a bug in VisPy implementation
-            if self.grid_status():
-                self.app_cursor.enabled = False
-                self.app_cursor.enabled = True
-            else:
-                self.app_cursor.enabled = True
-                self.app_cursor.enabled = False
-
     def on_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
@@ -4206,10 +4138,10 @@ class App(QtCore.QObject):
     def on_workspace(self):
         if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
-            self.inform.emit(_("Workspace enabled."))
+            self.inform[str, bool].emit(_("Workspace enabled."), False)
         else:
             self.plotcanvas.delete_workspace()
-            self.inform.emit(_("Workspace disabled."))
+            self.inform[str, bool].emit(_("Workspace disabled."), False)
         self.preferencesUiManager.defaults_read_form()
         # self.save_defaults(silent=True)
 
@@ -4277,6 +4209,8 @@ class App(QtCore.QObject):
                                      "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
+                    msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
@@ -4323,6 +4257,10 @@ class App(QtCore.QObject):
             # and only if the tool is Solder Paste Dispensing Tool
             elif tool_widget == self.paste_tool.toolName:
                 self.paste_tool.on_tool_delete()
+
+            # and only if the tool is Isolation Tool
+            elif tool_widget == self.isolation_tool.toolName:
+                self.isolation_tool.on_tool_delete()
         else:
             self.on_delete()
 
@@ -4351,6 +4289,8 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
                 # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
@@ -4376,7 +4316,7 @@ class App(QtCore.QObject):
                                 obj_active.mark_shapes[el].enabled = False
                                 # obj_active.mark_shapes[el] = None
                                 del el
-                        elif isinstance(obj_active, CNCJobObject):
+                        elif obj_active.kind == 'cncjob':
                             try:
                                 obj_active.text_col.enabled = False
                                 del obj_active.text_col
@@ -4390,13 +4330,13 @@ class App(QtCore.QObject):
                     while self.collection.get_selected():
                         self.delete_first_selected()
 
-                    self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
 
                     # if there are no longer objects delete also the exclusion areas shapes
                     if not self.collection.get_list():
                         self.exc_areas.clear_shapes()
+                    self.inform.emit('%s...' % _("Object(s) deleted"))
                 else:
                     self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
@@ -5283,7 +5223,13 @@ class App(QtCore.QObject):
                 callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.paint_tool.on_paint_tool_add_from_db_executed
             )
-
+        elif source == 'iso':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.isolation_tool.on_iso_tool_add_from_db_executed
+            )
         # add the tab if it was closed
         try:
             self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
@@ -5310,7 +5256,7 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.inform.emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."))
+        self.inform[str, bool].emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."), False)
 
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
@@ -5328,8 +5274,18 @@ class App(QtCore.QObject):
         tool_from_db = deepcopy(tool)
 
         obj = self.collection.get_active()
-        if isinstance(obj, GeometryObject):
+        if obj.kind == 'geometry':
             obj.on_tool_from_db_inserted(tool=tool_from_db)
+
+            # close the tab and delete it
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.ui.plot_tab_area.removeTab(idx)
+            self.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
+        elif obj.kind == 'gerber':
+            self.isolation_tool.on_tool_from_db_inserted(tool=tool_from_db)
 
             # close the tab and delete it
             for idx in range(self.ui.plot_tab_area.count()):
@@ -5361,6 +5317,7 @@ class App(QtCore.QObject):
                                  "Do you want to update the Tools Database?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
                 msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+                msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -5643,7 +5600,6 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        self.defaults.report_usage("on_toolbar_replot")
         self.log.debug("on_toolbar_replot()")
 
         try:
@@ -6422,6 +6378,8 @@ class App(QtCore.QObject):
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
+
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
@@ -6807,6 +6765,8 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -6821,6 +6781,8 @@ class App(QtCore.QObject):
             msg = '[ERROR_NOTCL] %s' % \
                   _("Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -6834,9 +6796,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export SVG"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -6857,8 +6819,9 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
+        data = None
         if self.is_legacy is False:
-            image = _screenshot()
+            image = _screenshot(alpha=None)
             data = np.asarray(image)
             if not data.ndim == 3 and data.shape[-1] in (3, 4):
                 self.inform.emit('[[WARNING_NOTCL]] %s' % _('Data must be a 3D array with last dimension 3 or 4'))
@@ -6869,9 +6832,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export PNG Image"),
                 directory=self.get_last_save_folder() + '/png_' + self.date,
-                filter=filter_)
+                ext_filter=filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export PNG Image"), ext_filter=filter_)
 
         filename = str(filename)
 
@@ -6914,9 +6877,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Gerber source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -6955,9 +6918,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Script source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Script source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -6996,9 +6959,10 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption="Save Document source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Document source file"),
+                                                               ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7037,9 +7001,10 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Excellon source file"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Save Excellon source file"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7078,9 +7043,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter)
+                ext_filter=_filter)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), filter=_filter)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Excellon"), ext_filter=_filter)
 
         filename = str(filename)
 
@@ -7122,9 +7087,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export Gerber"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter_)
+                ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Gerber"), ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -7154,6 +7119,8 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' % _("No object selected."))
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -7164,6 +7131,8 @@ class App(QtCore.QObject):
         if not isinstance(obj, GeometryObject):
             msg = '[ERROR_NOTCL] %s' % _("Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
+            msgbox.setIcon(QtWidgets.QMessageBox.Warning)
+
             msgbox.setInformativeText(msg)
             bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
             msgbox.setDefaultButton(bt_ok)
@@ -7178,9 +7147,9 @@ class App(QtCore.QObject):
             filename, _f = FCFileSaveDialog.get_saved_filename(
                 caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=_filter_)
+                ext_filter=_filter_)
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export DXF"), ext_filter=_filter_)
 
         filename = str(filename)
 
@@ -7630,10 +7599,10 @@ class App(QtCore.QObject):
                 caption=_("Save Project As ..."),
                 directory='{l_save}/{proj}_{date}'.format(l_save=str(self.get_last_save_folder()), date=self.date,
                                                           proj=_("Project")),
-                filter=filter_
+                ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Project As ..."), ext_filter=filter_)
 
         filename = str(filename)
 
@@ -7685,10 +7654,10 @@ class App(QtCore.QObject):
                 directory='{l_save}/{obj_name}_{date}'.format(l_save=str(self.get_last_save_folder()),
                                                               obj_name=obj_name,
                                                               date=self.date),
-                filter=filter_
+                ext_filter=filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), filter=filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Save Object as PDF ..."), ext_filter=filter_)
 
         filename = str(filename)
 
@@ -9892,12 +9861,12 @@ class App(QtCore.QObject):
         """
         Shows a message on the FlatCAM Shell
 
-        :param msg: Message to display.
-        :param show: Opens the shell.
-        :param error: Shows the message as an error.
-        :param warning: Shows the message as an warning.
-        :param success: Shows the message as an success.
-        :param selected: Indicate that something was selected on canvas
+        :param msg:         Message to display.
+        :param show:        Opens the shell.
+        :param error:       Shows the message as an error.
+        :param warning:     Shows the message as an warning.
+        :param success:     Shows the message as an success.
+        :param selected:    Indicate that something was selected on canvas
         :return: None
         """
         if show:

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCEntry
+from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -191,7 +191,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "The 'x' in (x, y) will be used when using Flip on X and\n"
               "the 'y' in (x, y) will be used when using Flip on Y and")
         )
-        self.flip_ref_entry = FCEntry()
+        self.flip_ref_entry = NumericalEvalTupleEntry(border_color='#0069A9')
 
         grid0.addWidget(self.flip_ref_label, 14, 0, 1, 2)
         grid0.addWidget(self.flip_ref_entry, 15, 0, 1, 2)

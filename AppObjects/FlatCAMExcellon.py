@@ -19,6 +19,7 @@ from AppParsers.ParseExcellon import Excellon
 from AppObjects.FlatCAMObj import *
 
 import itertools
+import numpy as np
 
 import gettext
 import AppTranslation as fcTranslate
@@ -50,6 +51,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.options.update({
             "plot": True,
             "solid": False,
+            "multicolored": False,
 
             "operation": "drill",
             "milling_type": "drills",
@@ -607,6 +609,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
+            "multicolored": self.ui.multicolored_cb,
 
             "operation": self.ui.operation_radio,
             "milling_type": self.ui.milling_type_radio,
@@ -708,6 +711,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
+        self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
         self.ui.generate_cnc_button.clicked.connect(self.on_create_cncjob_button_click)
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
@@ -1180,13 +1185,25 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
+        Will generate an Geometry Object allowing to cut a drill hole instead of drilling it.
+
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
-        :return:    Success/failure condition tuple (bool, str).
-        :rtype:     tuple
+        :param tools:       A list of tools where the drills are to be milled or a string: "all"
+        :type tools:
+        :param outname:     the name of the resulting Geometry object
+        :type outname:      str
+        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
+        :type tooldia:      float
+        :param plot:        if to plot the resulting object
+        :type plot:         bool
+        :param use_thread:  if to use threading for creation of the Geometry object
+        :type use_thread:   bool
+        :return:            Success/failure condition tuple (bool, str).
+        :rtype:             tuple
         """
 
         # Get the tools from the list. These are keys
@@ -1250,7 +1267,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-
+            geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1280,15 +1297,27 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         return True, ""
 
-    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=True, use_thread=False):
+    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
+        Will generate an Geometry Object allowing to cut/mill a slot hole.
+
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
         object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
-        :return: Success/failure condition tuple (bool, str).
-        :rtype: tuple
+        :param tools:       A list of tools where the drills are to be milled or a string: "all"
+        :type tools:
+        :param outname:     the name of the resulting Geometry object
+        :type outname:      str
+        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
+        :type tooldia:      float
+        :param plot:        if to plot the resulting object
+        :type plot:         bool
+        :param use_thread:  if to use threading for creation of the Geometry object
+        :type use_thread:   bool
+        :return:            Success/failure condition tuple (bool, str).
+        :rtype:             tuple
         """
 
         # Get the tools from the list. These are keys
@@ -1341,7 +1370,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-
+            geo_obj.options["multidepth"] = self.options["multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -1388,13 +1417,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.app.defaults.report_usage("excellon_on_create_milling_drills button")
         self.read_form()
 
-        self.generate_milling_drills(use_thread=False)
+        self.generate_milling_drills(use_thread=False, plot=True)
 
     def on_generate_milling_slots_button_click(self, *args):
         self.app.defaults.report_usage("excellon_on_create_milling_slots_button")
         self.read_form()
 
-        self.generate_milling_slots(use_thread=False)
+        self.generate_milling_slots(use_thread=False, plot=True)
 
     def on_pp_changed(self):
         current_pp = self.ui.pp_excellon_name_cb.get_value()
@@ -1727,6 +1756,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.read_form_item('solid')
         self.plot()
 
+    def on_multicolored_cb_click(self, *args):
+        if self.muted_ui:
+            return
+        self.read_form_item('multicolored')
+        self.plot()
+
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
@@ -1800,6 +1835,27 @@ class ExcellonObject(FlatCAMObj, Excellon):
         if not FlatCAMObj.plot(self):
             return
 
+        if self.app.is_legacy is False:
+            def random_color():
+                r_color = np.random.rand(4)
+                r_color[3] = 1
+                return r_color
+        else:
+            def random_color():
+                while True:
+                    r_color = np.random.rand(4)
+                    r_color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(r_color)):
+                        new_color += '%x' % int(r_color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
+
         # try:
         #     # Plot Excellon (All polygons?)
         #     if self.options["solid"]:
@@ -1831,12 +1887,26 @@ class ExcellonObject(FlatCAMObj, Excellon):
         try:
             # Plot Excellon (All polygons?)
             if self.options["solid"]:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo,
-                                   color=self.outline_color,
-                                   face_color=self.fill_color,
-                                   visible=visible,
-                                   layer=2)
+                # for geo in self.solid_geometry:
+                #     self.add_shape(shape=geo,
+                #                    color=self.outline_color,
+                #                    face_color=random_color() if self.options['multicolored'] else self.fill_color,
+                #                    visible=visible,
+                #                    layer=2)
+
+                # plot polygons for each tool separately
+                for tool in self.tools:
+                    # set the color here so we have one color for each tool
+                    geo_color = random_color()
+
+                    # tool is a dict also
+                    for geo in self.tools[tool]["solid_geometry"]:
+                        self.add_shape(shape=geo,
+                                       color=geo_color if self.options['multicolored'] else self.outline_color,
+                                       face_color=geo_color if self.options['multicolored'] else self.fill_color,
+                                       visible=visible,
+                                       layer=2)
+
             else:
                 for geo in self.solid_geometry:
                     self.add_shape(shape=geo.exterior, color='red', visible=visible)

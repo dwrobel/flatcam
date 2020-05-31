@@ -8,6 +8,8 @@ import json
 
 from copy import deepcopy
 from datetime import datetime
+import math
+
 import gettext
 import AppTranslation as fcTranslate
 import builtins
@@ -655,7 +657,7 @@ class ToolsDB(QtWidgets.QWidget):
                                                                l_save=str(self.app.get_last_save_folder()),
                                                                n=_("Tools_Database"),
                                                                date=date),
-                                                           filter=filter__)
+                                                           ext_filter=filter__)
 
         filename = str(filename)
 
@@ -1030,6 +1032,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.advanced_box.setTitle(_("Advanced Geo Parameters"))
         self.advanced_box.setFixedWidth(250)
 
+        # NCC TOOL BOX
         self.ncc_box = QtWidgets.QGroupBox()
         self.ncc_box.setStyleSheet("""
                         QGroupBox
@@ -1042,6 +1045,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ncc_box.setTitle(_("NCC Parameters"))
         self.ncc_box.setFixedWidth(250)
 
+        # PAINT TOOL BOX
         self.paint_box = QtWidgets.QGroupBox()
         self.paint_box.setStyleSheet("""
                         QGroupBox
@@ -1054,10 +1058,24 @@ class ToolsDB2(QtWidgets.QWidget):
         self.paint_box.setTitle(_("Paint Parameters"))
         self.paint_box.setFixedWidth(250)
 
+        # ISOLATION TOOL BOX
+        self.iso_box = QtWidgets.QGroupBox()
+        self.iso_box.setStyleSheet("""
+                     QGroupBox
+                     {
+                         font-size: 16px;
+                         font-weight: bold;
+                     }
+                     """)
+        self.iso_vlay = QtWidgets.QVBoxLayout()
+        self.iso_box.setTitle(_("Isolation Parameters"))
+        self.iso_box.setFixedWidth(250)
+
         self.basic_box.setLayout(self.basic_vlay)
         self.advanced_box.setLayout(self.advanced_vlay)
         self.ncc_box.setLayout(self.ncc_vlay)
         self.paint_box.setLayout(self.paint_vlay)
+        self.iso_box.setLayout(self.iso_vlay)
 
         geo_vlay = QtWidgets.QVBoxLayout()
         geo_vlay.addWidget(self.basic_box)
@@ -1067,6 +1085,7 @@ class ToolsDB2(QtWidgets.QWidget):
         tools_vlay = QtWidgets.QVBoxLayout()
         tools_vlay.addWidget(self.ncc_box)
         tools_vlay.addWidget(self.paint_box)
+        tools_vlay.addWidget(self.iso_box)
         tools_vlay.addStretch()
 
         param_hlay.addLayout(geo_vlay)
@@ -1621,6 +1640,101 @@ class ToolsDB2(QtWidgets.QWidget):
         self.grid3.addWidget(self.pathconnect_cb, 10, 0)
         self.grid3.addWidget(self.paintcontour_cb, 10, 1)
 
+        # ###########################################################################
+        # ############### Paint UI form #############################################
+        # ###########################################################################
+
+        self.grid4 = QtWidgets.QGridLayout()
+        self.iso_vlay.addLayout(self.grid4)
+        self.grid4.setColumnStretch(0, 0)
+        self.grid4.setColumnStretch(1, 1)
+        self.iso_vlay.addStretch()
+
+        # Passes
+        passlabel = QtWidgets.QLabel('%s:' % _('Passes'))
+        passlabel.setToolTip(
+            _("Width of the isolation gap in\n"
+              "number (integer) of tool widths.")
+        )
+        self.passes_entry = FCSpinner()
+        self.passes_entry.set_range(1, 999)
+        self.passes_entry.setObjectName("gdb_i_passes")
+
+        self.grid4.addWidget(passlabel, 0, 0)
+        self.grid4.addWidget(self.passes_entry, 0, 1)
+
+        # Overlap Entry
+        overlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        overlabel.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.")
+        )
+        self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.iso_overlap_entry.set_precision(self.decimals)
+        self.iso_overlap_entry.setWrapping(True)
+        self.iso_overlap_entry.set_range(0.0000, 99.9999)
+        self.iso_overlap_entry.setSingleStep(0.1)
+        self.iso_overlap_entry.setObjectName("gdb_i_overlap")
+
+        self.grid4.addWidget(overlabel, 2, 0)
+        self.grid4.addWidget(self.iso_overlap_entry, 2, 1)
+
+        # Milling Type Radio Button
+        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conventional'), 'value': 'cv'}])
+        self.milling_type_radio.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+        self.milling_type_radio.setObjectName("gdb_i_milling_type")
+
+        self.grid4.addWidget(self.milling_type_label, 4, 0)
+        self.grid4.addWidget(self.milling_type_radio, 4, 1)
+
+        # Follow
+        self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
+        self.follow_label.setToolTip(
+            _("Generate a 'Follow' geometry.\n"
+              "This means that it will cut through\n"
+              "the middle of the trace.")
+        )
+
+        self.follow_cb = FCCheckBox()
+        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
+                                    "This means that it will cut through\n"
+                                    "the middle of the trace."))
+        self.follow_cb.setObjectName("gdb_i_follow")
+
+        self.grid4.addWidget(self.follow_label, 6, 0)
+        self.grid4.addWidget(self.follow_cb, 6, 1)
+
+        # Isolation Type
+        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label.setToolTip(
+            _("Choose how the isolation will be executed:\n"
+              "- 'Full' -> complete isolation of polygons\n"
+              "- 'Ext' -> will isolate only on the outside\n"
+              "- 'Int' -> will isolate only on the inside\n"
+              "'Exterior' isolation is almost always possible\n"
+              "(with the right tool) but 'Interior'\n"
+              "isolation can be done only when there is an opening\n"
+              "inside of the polygon (e.g polygon is a 'doughnut' shape).")
+        )
+        self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
+                                        {'label': _('Ext'), 'value': 'ext'},
+                                        {'label': _('Int'), 'value': 'int'}])
+        self.iso_type_radio.setObjectName("gdb_i_iso_type")
+
+        self.grid4.addWidget(self.iso_type_label, 8, 0)
+        self.grid4.addWidget(self.iso_type_radio, 8, 1)
+
         # ####################################################################
         # ####################################################################
         # GUI for the lower part of the window
@@ -1743,6 +1857,13 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_paintmethod":        self.paintmethod_combo,
             "tools_pathconnect":        self.pathconnect_cb,
             "tools_paintcontour":       self.paintcontour_cb,
+
+            # Isolation
+            "tools_iso_passes":         self.passes_entry,
+            "tools_iso_overlap":        self.iso_overlap_entry,
+            "tools_iso_milling_type":   self.milling_type_radio,
+            "tools_iso_follow":         self.follow_cb,
+            "tools_iso_isotype":        self.iso_type_radio
         }
 
         self.name2option = {
@@ -1787,6 +1908,13 @@ class ToolsDB2(QtWidgets.QWidget):
             'gdb_p_method':         "tools_paintmethod",
             'gdb_p_connect':        "tools_pathconnect",
             'gdb_p_contour':        "tools_paintcontour",
+
+            # Isolation
+            "gdb_i_passes":         "tools_iso_passes",
+            "gdb_i_overlap":        "tools_iso_overlap",
+            "gdb_i_milling_type":   "tools_iso_milling_type",
+            "gdb_i_follow":         "tools_iso_follow",
+            "gdb_i_iso_type":       "tools_iso_isotype"
         }
 
         self.current_toolid = None
@@ -1944,6 +2072,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.advanced_box.setEnabled(True)
                 self.ncc_box.setEnabled(True)
                 self.paint_box.setEnabled(True)
+                self.iso_box.setEnabled(True)
 
                 self.tree_widget.setCurrentItem(self.tree_widget.topLevelItem(0))
                 # self.tree_widget.setFocus()
@@ -1954,6 +2083,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.advanced_box.setEnabled(False)
                 self.ncc_box.setEnabled(False)
                 self.paint_box.setEnabled(False)
+                self.iso_box.setEnabled(False)
         else:
             self.storage_to_form(self.db_tool_dict[str(self.current_toolid)])
 
@@ -2006,6 +2136,13 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
             "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
             "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
+
+            # Isolation
+            "tools_iso_passes":         int(self.app.defaults["tools_iso_passes"]),
+            "tools_iso_overlap":        float(self.app.defaults["tools_iso_overlap"]),
+            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
+            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
+            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
         })
 
         dict_elem = {}
@@ -2117,7 +2254,7 @@ class ToolsDB2(QtWidgets.QWidget):
                                                                 l_save=str(self.app.get_last_save_folder()),
                                                                 n=_("Tools_Database"),
                                                                 date=date),
-                                                           filter=filter__)
+                                                           ext_filter=filter__)
 
         filename = str(filename)
 
@@ -2218,6 +2355,18 @@ class ToolsDB2(QtWidgets.QWidget):
         self.app.tools_db_changed_flag = False
         self.on_save_tools_db()
 
+    def on_calculate_tooldia(self):
+        if self.shape_combo.get_value() == 'V':
+            tip_dia = float(self.vdia_entry.get_value())
+            half_tip_angle = float(self.vangle_entry.get_value()) / 2.0
+            cut_z = float(self.cutz_entry.get_value())
+            cut_z = -cut_z if cut_z < 0 else cut_z
+
+            # calculated tool diameter so the cut_z parameter is obeyed
+            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(half_tip_angle)))
+
+            self.dia_entry.set_value(tool_dia)
+
     def ui_connect(self):
         # make sure that we don't make multiple connections to the widgets
         self.ui_disconnect()
@@ -2247,9 +2396,37 @@ class ToolsDB2(QtWidgets.QWidget):
             if isinstance(wdg, FCSpinner) or isinstance(wdg, FCDoubleSpinner):
                 wdg.valueChanged.connect(self.update_storage)
 
+        # connect the calculate tooldia method to the controls
+        # if the tool shape is 'V' the tool dia will be calculated to obey Cut Z parameter
+        self.shape_combo.currentIndexChanged.connect(self.on_calculate_tooldia)
+        self.cutz_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.vdia_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.vangle_entry.valueChanged.connect(self.on_calculate_tooldia)
+
+
     def ui_disconnect(self):
         try:
             self.name_entry.editingFinished.disconnect(self.update_tree_name)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.shape_combo.currentIndexChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.cutz_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.vdia_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.vangle_entry.valueChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
@@ -2397,6 +2574,18 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.db_tool_dict[tool_id]['data']['tools_pathconnect'] = val
             elif wdg_name == "gdb_p_contour":
                 self.db_tool_dict[tool_id]['data']['tools_paintcontour'] = val
+
+            # Isolation Tool
+            elif wdg_name == "gdb_i_passes":
+                self.db_tool_dict[tool_id]['data']['tools_iso_passes'] = val
+            elif wdg_name == "gdb_i_overlap":
+                self.db_tool_dict[tool_id]['data']['tools_iso_overlap'] = val
+            elif wdg_name == "gdb_i_milling_type":
+                self.db_tool_dict[tool_id]['data']['tools_iso_milling_type'] = val
+            elif wdg_name == "gdb_i_follow":
+                self.db_tool_dict[tool_id]['data']['tools_iso_follow'] = val
+            elif wdg_name == "gdb_i_iso_type":
+                self.db_tool_dict[tool_id]['data']['tools_iso_isotype'] = val
 
         self.callback_app()
 

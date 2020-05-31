@@ -501,6 +501,13 @@ class CutOut(AppTool):
             "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
             "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
             "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
+
+            # Isolation Tool
+            "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
+            "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
+            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
+            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
+            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
         })
 
     def on_freeform_cutout(self):
@@ -912,7 +919,7 @@ class CutOut(AppTool):
         if 0 in {self.cutting_dia}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
-            return "Tool Diameter is zero value. Change it to a positive real number."
+            return
 
         self.cutting_gapsize = float(self.gapsize.get_value())
 
@@ -923,7 +930,7 @@ class CutOut(AppTool):
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
-            return "Could not retrieve object: %s" % name
+            return
 
         if self.app.is_legacy is False:
             self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
@@ -1306,10 +1313,10 @@ class CutOut(AppTool):
         This only operates on the paths in the original geometry,
         i.e. it converts polygons into paths.
 
-        :param x0: x coord for lower left vertice of the polygon.
-        :param y0: y coord for lower left vertice of the polygon.
-        :param x1: x coord for upper right vertice of the polygon.
-        :param y1: y coord for upper right vertice of the polygon.
+        :param x0: x coord for lower left vertex of the polygon.
+        :param y0: y coord for lower left vertex of the polygon.
+        :param x1: x coord for upper right vertex of the polygon.
+        :param y1: y coord for upper right vertex of the polygon.
 
         :param solid_geo: Geometry from which to substract. If none, use the solid_geomety property of the object
         :return: none
@@ -1367,6 +1374,7 @@ def flatten(geometry):
 
 def recursive_bounds(geometry):
     """
+    Return the bounds of the biggest bounding box in geometry, one that include all.
 
     :param geometry:    a iterable object that holds geometry
     :return:            Returns coordinates of rectangular bounds of geometry: (xmin, ymin, xmax, ymax).

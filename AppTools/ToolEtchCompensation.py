@@ -13,6 +13,7 @@ from AppGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet, FCComboBox, 
 from shapely.ops import unary_union
 
 from copy import deepcopy
+import math
 
 import logging
 import gettext
@@ -95,7 +96,7 @@ class ToolEtchCompensation(AppTool):
 
         hlay_1 = QtWidgets.QHBoxLayout()
 
-        self.oz_entry = NumericalEvalEntry()
+        self.oz_entry = NumericalEvalEntry(border_color='#0069A9')
         self.oz_entry.setPlaceholderText(_("Oz value"))
         self.oz_to_um_entry = FCEntry()
         self.oz_to_um_entry.setPlaceholderText(_("Microns value"))
@@ -116,7 +117,7 @@ class ToolEtchCompensation(AppTool):
 
         hlay_2 = QtWidgets.QHBoxLayout()
 
-        self.mils_entry = NumericalEvalEntry()
+        self.mils_entry = NumericalEvalEntry(border_color='#0069A9')
         self.mils_entry.setPlaceholderText(_("Mils value"))
         self.mils_to_um_entry = FCEntry()
         self.mils_to_um_entry.setPlaceholderText(_("Microns value"))
@@ -155,8 +156,9 @@ class ToolEtchCompensation(AppTool):
               "- preselection -> value which depends on a selection of etchants")
         )
         self.ratio_radio = RadioSet([
-            {'label': _('Custom'), 'value': 'c'},
-            {'label': _('PreSelection'), 'value': 'p'}
+            {'label': _('Etch Factor'), 'value': 'factor'},
+            {'label': _('Etchants list'), 'value': 'etch_list'},
+            {'label': _('Manual offset'), 'value': 'manual'}
         ], orientation='vertical', stretch=False)
 
         grid0.addWidget(self.ratio_label, 14, 0, 1, 2)
@@ -180,18 +182,34 @@ class ToolEtchCompensation(AppTool):
             _("The ratio between depth etch and lateral etch .\n"
               "Accepts real numbers and formulas using the operators: /,*,+,-,%")
         )
-        self.factor_entry = NumericalEvalEntry()
+        self.factor_entry = NumericalEvalEntry(border_color='#0069A9')
         self.factor_entry.setPlaceholderText(_("Real number or formula"))
         self.factor_entry.setObjectName(_("Etch_factor"))
+
+        grid0.addWidget(self.factor_label, 19, 0)
+        grid0.addWidget(self.factor_entry, 19, 1)
+
+        # Manual Offset
+        self.offset_label = QtWidgets.QLabel('%s:' % _('Offset'))
+        self.offset_label.setToolTip(
+            _("Value with which to increase or decrease (buffer)\n"
+              "the copper features. In microns [um].")
+        )
+        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_entry.set_precision(self.decimals)
+        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.setObjectName(_("Offset"))
+
+        grid0.addWidget(self.offset_label, 20, 0)
+        grid0.addWidget(self.offset_entry, 20, 1)
 
         # Hide the Etchants and Etch factor
         self.etchants_label.hide()
         self.etchants_combo.hide()
         self.factor_label.hide()
         self.factor_entry.hide()
-
-        grid0.addWidget(self.factor_label, 20, 0)
-        grid0.addWidget(self.factor_entry, 20, 1)
+        self.offset_label.hide()
+        self.offset_entry.hide()
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -265,7 +283,7 @@ class ToolEtchCompensation(AppTool):
 
     def set_tool_ui(self):
         self.thick_entry.set_value(18.0)
-        self.ratio_radio.set_value('c')
+        self.ratio_radio.set_value('factor')
 
     def on_ratio_change(self, val):
         """
@@ -276,16 +294,27 @@ class ToolEtchCompensation(AppTool):
         :return:        None
         :rtype:
         """
-        if val == 'c':
+        if val == 'factor':
             self.etchants_label.hide()
             self.etchants_combo.hide()
             self.factor_label.show()
             self.factor_entry.show()
-        else:
+            self.offset_label.hide()
+            self.offset_entry.hide()
+        elif val == 'etch_list':
             self.etchants_label.show()
             self.etchants_combo.show()
             self.factor_label.hide()
             self.factor_entry.hide()
+            self.offset_label.hide()
+            self.offset_entry.hide()
+        else:
+            self.etchants_label.hide()
+            self.etchants_combo.hide()
+            self.factor_label.hide()
+            self.factor_entry.hide()
+            self.offset_label.show()
+            self.offset_entry.show()
 
     def on_oz_conversion(self, txt):
         try:
@@ -294,6 +323,7 @@ class ToolEtchCompensation(AppTool):
             # mils to microns by multiplying with 25.4
             val *= 34.798
         except Exception:
+            self.oz_to_um_entry.set_value('')
             return
         self.oz_to_um_entry.set_value(val, self.decimals)
 
@@ -302,10 +332,13 @@ class ToolEtchCompensation(AppTool):
             val = eval(txt)
             val *= 25.4
         except Exception:
+            self.mils_to_um_entry.set_value('')
             return
         self.mils_to_um_entry.set_value(val, self.decimals)
 
     def on_compensate(self):
+        log.debug("ToolEtchCompensation.on_compensate()")
+
         ratio_type = self.ratio_radio.get_value()
         thickness = self.thick_entry.get_value() / 1000     # in microns
 
@@ -327,15 +360,18 @@ class ToolEtchCompensation(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        if ratio_type == 'c':
+        if ratio_type == 'factor':
             etch_factor = 1 / self.factor_entry.get_value()
-        else:
+            offset = thickness / etch_factor
+        elif ratio_type == 'etch_list':
             etchant = self.etchants_combo.get_value()
             if etchant == "CuCl2":
                 etch_factor = 0.33
             else:
                 etch_factor = 0.25
-        offset = thickness / etch_factor
+            offset = thickness / etch_factor
+        else:
+            offset = self.offset_entry.get_value() / 1000   # in microns
 
         try:
             __ = iter(grb_obj.solid_geometry)
@@ -354,12 +390,31 @@ class ToolEtchCompensation(AppTool):
 
         new_apertures = deepcopy(grb_obj.apertures)
 
+        # update the apertures attributes (keys in the apertures dict)
         for ap in new_apertures:
-            for k in ap:
+            type = new_apertures[ap]['type']
+            for k in new_apertures[ap]:
+                if type == 'R' or type == 'O':
+                    if k == 'width' or k == 'height':
+                        new_apertures[ap][k] += offset
+                else:
+                    if k == 'size' or k == 'width' or k == 'height':
+                        new_apertures[ap][k] += offset
+
                 if k == 'geometry':
-                    for geo_el in new_apertures[ap]['geometry']:
+                    for geo_el in new_apertures[ap][k]:
                         if 'solid' in geo_el:
                             geo_el['solid'] = geo_el['solid'].buffer(offset, int(grb_circle_steps))
+
+        # in case of 'R' or 'O' aperture type we need to update the aperture 'size' after
+        # the 'width' and 'height' keys were updated
+        for ap in new_apertures:
+            type = new_apertures[ap]['type']
+            for k in new_apertures[ap]:
+                if type == 'R' or type == 'O':
+                    if k == 'size':
+                        new_apertures[ap][k] = math.sqrt(
+                            new_apertures[ap]['width'] ** 2 + new_apertures[ap]['height'] ** 2)
 
         def init_func(new_obj, app_obj):
             """
