@@ -30,6 +30,7 @@ CHANGELOG for FlatCAM beta
 - changed the status bar label to have an icon instead of text
 - added a label in status bar that will toggle the Preferences tab
 - made some changes such that that the label in status bar for toggling the Preferences Tab will be updated in various cases of closing the tab
+- changed colors for the status bar labels and added some of the new icons in the gray version
 
 31.05.2020
 

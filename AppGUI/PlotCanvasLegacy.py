@@ -339,7 +339,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                             QLabel
                                                             {
                                                                 color: black;
-                                                                background-color: peachpuff;
+                                                                background-color: orange;
                                                             }
                                                             """)
                 self.app.inform[str, bool].emit(_("Axis enabled."), False)
@@ -366,7 +366,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                                                 QLabel
                                                 {
                                                     color: black;
-                                                    background-color: lightblue;
+                                                    background-color: mediumpurple;
                                                 }
                                                 """)
             self.app.inform[str, bool].emit(_("HUD enabled."), False)
@@ -490,7 +490,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                         QLabel
                         {
                             color: black;
-                            background-color: lightgreen;
+                            background-color: olivedrab;
                         }
                         """)
 

@@ -230,7 +230,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                                                           QLabel
                                                           {
                                                               color: black;
-                                                              background-color: peachpuff;
+                                                              background-color: orange;
                                                           }
                                                           """)
             self.fcapp.inform[str, bool].emit(_("Axis enabled."), False)
@@ -254,7 +254,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                                                   QLabel
                                                   {
                                                       color: black;
-                                                      background-color: lightblue;
+                                                      background-color: mediumpurple;
                                                   }
                                                   """)
             self.fcapp.inform[str, bool].emit(_("HUD enabled."), False)
@@ -322,7 +322,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
                         QLabel
                         {
                             color: black;
-                            background-color: lightgreen;
+                            background-color: olivedrab;
                         }
                         """)
 
