@@ -805,6 +805,9 @@ class ToolIsolation(AppTool, Gerber):
             self.except_cb.set_value(False)
             self.except_cb.hide()
 
+            self.type_excobj_radio.hide()
+            self.exc_obj_combo.hide()
+
             self.select_combo.setCurrentIndex(0)
             self.select_combo.hide()
             self.select_label.hide()
@@ -1747,6 +1750,8 @@ class ToolIsolation(AppTool, Gerber):
                                      lim_area=limited_area, plot=plot)
 
         else:
+            prog_plot = self.app.defaults["tools_iso_plotting"]
+
             for tool in tools_storage:
                 tool_data = tools_storage[tool]['data']
                 to_follow = tool_data['tools_iso_follow']
@@ -1793,7 +1798,7 @@ class ToolIsolation(AppTool, Gerber):
                     mill_dir = 1 if milling_type == 'cl' else 0
 
                     iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                     follow=to_follow, nr_passes=i)
+                                                     follow=to_follow, nr_passes=i, prog_plot=prog_plot)
                     if iso_geo == 'fail':
                         self.app.inform.emit(
                             '[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
@@ -1865,11 +1870,17 @@ class ToolIsolation(AppTool, Gerber):
 
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
+            # clean the progressive plotted shapes if it was used
+
+            if prog_plot == 'progressive':
+                self.temp_shapes.clear(update=True)
+
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
     def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
         """
+        Isolate the provided Gerber object using "rest machining" strategy
 
         :param iso_obj:         the isolated Gerber object
         :type iso_obj:          AppObjects.FlatCAMGerber.GerberObject
@@ -1903,6 +1914,9 @@ class ToolIsolation(AppTool, Gerber):
             sorted_tools.sort(reverse=True)
         else:
             pass
+
+        # decide to use "progressive" or "normal" plotting
+        prog_plot = self.app.defaults["tools_iso_plotting"]
 
         for sorted_tool in sorted_tools:
             for tool in tools_storage:
@@ -1942,7 +1956,8 @@ class ToolIsolation(AppTool, Gerber):
 
                     solid_geo, work_geo = self.generate_rest_geometry(geometry=work_geo, tooldia=tool_dia,
                                                                       passes=passes, overlap=overlap, invert=mill_dir,
-                                                                      env_iso_type=iso_t)
+                                                                      env_iso_type=iso_t, prog_plot=prog_plot,
+                                                                      prog_plot_handler=self.plot_temp_shapes)
 
                     # ############################################################
                     # ########## AREA SUBTRACTION ################################
@@ -1972,6 +1987,10 @@ class ToolIsolation(AppTool, Gerber):
                     # if the geometry is all isolated
                     if not work_geo:
                         break
+
+        # clean the progressive plotted shapes if it was used
+        if self.app.defaults["tools_iso_plotting"] == 'progressive':
+            self.temp_shapes.clear(update=True)
 
         def iso_init(geo_obj, app_obj):
             geo_obj.options["cnctooldia"] = str(tool_dia)
@@ -2052,6 +2071,7 @@ class ToolIsolation(AppTool, Gerber):
 
         iso_name = iso_obj.options["name"] + '_iso_combined'
         geometry = iso2geo
+        prog_plot = self.app.defaults["tools_iso_plotting"]
 
         for tool in tools_storage:
             tool_dia = tools_storage[tool]['tooldia']
@@ -2100,7 +2120,7 @@ class ToolIsolation(AppTool, Gerber):
                 mill_dir = 1 if milling_type == 'cl' else 0
 
                 iso_geo = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                 follow=to_follow, nr_passes=nr_pass)
+                                                 follow=to_follow, nr_passes=nr_pass, prog_plot=prog_plot)
                 if iso_geo == 'fail':
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     continue
@@ -2134,6 +2154,10 @@ class ToolIsolation(AppTool, Gerber):
             })
 
             total_solid_geometry += solid_geo
+
+        # clean the progressive plotted shapes if it was used
+        if prog_plot == 'progressive':
+            self.temp_shapes.clear(update=True)
 
         def iso_init(geo_obj, app_obj):
             geo_obj.options["cnctooldia"] = str(tool_dia)
@@ -2709,7 +2733,8 @@ class ToolIsolation(AppTool, Gerber):
     def poly2ints(poly):
         return [interior for interior in poly.interiors]
 
-    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
+    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0,
+                          prog_plot=False):
         """
         Isolation_geometry produces an envelope that is going on the left of the geometry
         (the copper features). To leave the least amount of burrs on the features
@@ -2730,17 +2755,19 @@ class ToolIsolation(AppTool, Gerber):
         :type follow:           bool
         :param nr_passes:       Number of passes
         :type nr_passes:        int
+        :param prog_plot:       Type of plotting: "normal" or "progressive"
+        :type prog_plot:        str
         :return:                The buffered geometry
         :rtype:                 MultiPolygon or Polygon
         """
 
         if follow:
-            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow)
+            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow, prog_plot=prog_plot)
             return geom
         else:
             try:
                 geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
-                                                       passes=nr_passes)
+                                                       passes=nr_passes, prog_plot=prog_plot)
             except Exception as e:
                 log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
                 return 'fail'
@@ -2769,25 +2796,30 @@ class ToolIsolation(AppTool, Gerber):
         return geom
 
     @staticmethod
-    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2):
+    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2,
+                               prog_plot="normal", prog_plot_handler=None):
         """
         Will try to isolate the geometry and return a tuple made of list of paths made through isolation
         and a list of Shapely Polygons that could not be isolated
 
-        :param geometry:        A list of Shapely Polygons to be isolated
-        :type geometry:         list
-        :param tooldia:         The tool diameter used to do the isolation
-        :type tooldia:          float
-        :param passes:          Number of passes that will made the isolation
-        :type passes:           int
-        :param overlap:         How much to overlap the previous pass; in percentage [0.00, 99.99]%
-        :type overlap:          float
-        :param invert:          If to invert the direction of the resulting isolated geometries
-        :type invert:           bool
-        :param env_iso_type:    can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
-        :type env_iso_type:     int
-        :return:                Tuple made from list of isolating paths and list of not isolated Polygons
-        :rtype:                 tuple
+        :param geometry:            A list of Shapely Polygons to be isolated
+        :type geometry:             list
+        :param tooldia:             The tool diameter used to do the isolation
+        :type tooldia:              float
+        :param passes:              Number of passes that will made the isolation
+        :type passes:               int
+        :param overlap:             How much to overlap the previous pass; in percentage [0.00, 99.99]%
+        :type overlap:              float
+        :param invert:              If to invert the direction of the resulting isolated geometries
+        :type invert:               bool
+        :param env_iso_type:        can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
+        :type env_iso_type:         int
+        :param prog_plot:           kind of plotting: "progressive" or "normal"
+        :type prog_plot:            str
+        :param prog_plot_handler:   method used to plot shapes if plot_prog is "proggressive"
+        :type prog_plot_handler:
+        :return:                    Tuple made from list of isolating paths and list of not isolated Polygons
+        :rtype:                     tuple
         """
 
         isolated_geo = []
@@ -2819,7 +2851,10 @@ class ToolIsolation(AppTool, Gerber):
 
                 # if we had an intersection do nothing, else add the geo to the good pass isolations
                 if intersect_flag is False:
-                    good_pass_iso.append(geo.buffer(iso_offset))
+                    temp_geo = geo.buffer(iso_offset)
+                    good_pass_iso.append(temp_geo)
+                    if prog_plot == 'progressive':
+                        prog_plot_handler(temp_geo)
 
             if good_pass_iso:
                 work_geo += good_pass_iso

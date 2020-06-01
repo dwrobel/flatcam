@@ -499,7 +499,7 @@ class Geometry(object):
         self.el_count = 0
 
         if self.app.is_legacy is False:
-            self.temp_shapes = self.app.plotcanvas.new_shape_group()
+            self.temp_shapes = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from AppGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
@@ -915,7 +915,8 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, follow=None, passes=0):
+    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, follow=None, passes=0,
+                           prog_plot=False):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -928,6 +929,7 @@ class Geometry(object):
                             0 = round; 1 = square; 2= beveled (line that connects the ends)
         :param follow:      whether the geometry to be isolated is a follow_geometry
         :param passes:      current pass out of possible multiple passes for which the isolation is done
+        :param prog_plot:   type of plotting: "normal" or "progressive"
         :return:            The buffered geometry.
         :rtype:             Shapely.MultiPolygon or Shapely.Polygon
         """
@@ -960,10 +962,13 @@ class Geometry(object):
                     # graceful abort requested by the user
                     raise grace
                 if offset == 0:
-                    geo_iso.append(pol)
+                    temp_geo = pol
                 else:
                     corner_type = 1 if corner is None else corner
-                    geo_iso.append(pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
+                    temp_geo = pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type)
+
+                geo_iso.append(temp_geo)
+
                 pol_nr += 1
 
                 # activity view update
@@ -977,10 +982,12 @@ class Geometry(object):
             # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
             # MultiPolygon (not an iterable)
             if offset == 0:
-                geo_iso.append(working_geo)
+                temp_geo = working_geo
             else:
                 corner_type = 1 if corner is None else corner
-                geo_iso.append(working_geo.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
+                temp_geo = working_geo.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type)
+
+            geo_iso.append(temp_geo)
 
         self.app.proc_container.update_view_text(' %s' % _("Buffering"))
         geo_iso = unary_union(geo_iso)
@@ -989,16 +996,22 @@ class Geometry(object):
         # end of replaced block
 
         if iso_type == 2:
-            return geo_iso
+            ret_geo = geo_iso
         elif iso_type == 0:
             self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))
-            return self.get_exteriors(geo_iso)
+            ret_geo = self.get_exteriors(geo_iso)
         elif iso_type == 1:
             self.app.proc_container.update_view_text(' %s' % _("Get Interiors"))
-            return self.get_interiors(geo_iso)
+            ret_geo =  self.get_interiors(geo_iso)
         else:
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
             return "fail"
+
+        if prog_plot == 'progressive':
+            for elem in ret_geo:
+                self.plot_temp_shapes(elem)
+
+        return ret_geo
 
     def flatten_list(self, obj_list):
         for item in obj_list:

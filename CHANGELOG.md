@@ -23,6 +23,8 @@ CHANGELOG for FlatCAM beta
 - after using Isolation Tool it will switch automatically to the Geometry UI
 - in Preferences replaced some widgets with a new one that combine a Slider with a Spinner (from David Robertson)
 - in Preferences replaced the widgets that sets colors with a compound one (from David Robertson)
+- made Progressive plotting work in Isolation Tool
+- fix an issue with progressive plotted shapes not being deleted on the end of the job
 
 31.05.2020
 
