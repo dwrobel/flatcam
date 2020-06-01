@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry
+from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -186,25 +186,14 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_1, 12, 1, 1, 2)
 
         # Plot Fill Transparency Level
-        self.pf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
-        self.pf_alpha_label.setToolTip(
+        self.gerber_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.gerber_alpha_label.setToolTip(
             _("Set the fill transparency for plotted objects.")
         )
-        self.pf_color_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.pf_color_alpha_slider.setMinimum(0)
-        self.pf_color_alpha_slider.setMaximum(255)
-        self.pf_color_alpha_slider.setSingleStep(1)
+        self.gerber_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        self.pf_color_alpha_spinner = FCSpinner()
-        self.pf_color_alpha_spinner.setMinimumWidth(70)
-        self.pf_color_alpha_spinner.set_range(0, 255)
-
-        self.form_box_child_3 = QtWidgets.QHBoxLayout()
-        self.form_box_child_3.addWidget(self.pf_color_alpha_slider)
-        self.form_box_child_3.addWidget(self.pf_color_alpha_spinner)
-
-        grid0.addWidget(self.pf_alpha_label, 13, 0)
-        grid0.addLayout(self.form_box_child_3, 13, 1, 1, 2)
+        grid0.addWidget(self.gerber_alpha_label, 13, 0)
+        grid0.addWidget(self.gerber_alpha_entry, 13, 1, 1, 2)
 
         self.layout.addStretch()
 
@@ -213,8 +202,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.pl_color_button.clicked.connect(self.on_pl_color_button)
         self.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
         self.pf_color_button.clicked.connect(self.on_pf_color_button)
-        self.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
-        self.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
+
+        self.gerber_alpha_entry.valueChanged.connect(self.on_gerber_alpha_changed)     # alpha
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
@@ -237,19 +226,13 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.pf_color_entry.set_value(new_val)
         self.app.defaults['gerber_plot_fill'] = new_val
 
-    def on_pf_color_spinner(self):
-        spinner_value = self.pf_color_alpha_spinner.value()
-        self.pf_color_alpha_slider.setValue(spinner_value)
+    def on_gerber_alpha_changed(self, spinner_value):
         self.app.defaults['gerber_plot_fill'] = \
             self.app.defaults['gerber_plot_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.app.defaults['gerber_plot_line'] = \
             self.app.defaults['gerber_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_pf_color_slider(self):
-        slider_value = self.pf_color_alpha_slider.value()
-        self.pf_color_alpha_spinner.setValue(slider_value)
 
     def on_pl_color_entry(self):
         self.app.defaults['gerber_plot_line'] = self.pl_color_entry.get_value()[:7] + \

@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings, Qt
 
-from AppGUI.GUIElements import RadioSet, FCCheckBox, FCButton, FCComboBox, FCEntry, FCSpinner
+from AppGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCEntry, FCSpinner, FCSliderWithSpinner
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -187,25 +187,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_5, 17, 1)
 
         # Plot Selection (left - right) Fill Transparency Level
-        self.sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
-        self.sf_alpha_label.setToolTip(
+        self.left_right_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.left_right_alpha_label.setToolTip(
             _("Set the fill transparency for the 'left to right' selection box.")
         )
-        self.sf_color_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.sf_color_alpha_slider.setMinimum(0)
-        self.sf_color_alpha_slider.setMaximum(255)
-        self.sf_color_alpha_slider.setSingleStep(1)
+        self.left_right_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        self.sf_color_alpha_spinner = FCSpinner()
-        self.sf_color_alpha_spinner.setMinimumWidth(70)
-        self.sf_color_alpha_spinner.set_range(0, 255)
-
-        self.form_box_child_6 = QtWidgets.QHBoxLayout()
-        self.form_box_child_6.addWidget(self.sf_color_alpha_slider)
-        self.form_box_child_6.addWidget(self.sf_color_alpha_spinner)
-
-        grid0.addWidget(self.sf_alpha_label, 18, 0)
-        grid0.addLayout(self.form_box_child_6, 18, 1)
+        grid0.addWidget(self.left_right_alpha_label, 18, 0)
+        grid0.addWidget(self.left_right_alpha_entry, 18, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -254,25 +243,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_8, 22, 1)
 
         # Plot Selection (right - left) Fill Transparency Level
-        self.alt_sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
-        self.alt_sf_alpha_label.setToolTip(
+        self.right_left_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.right_left_alpha_label.setToolTip(
             _("Set the fill transparency for selection 'right to left' box.")
         )
-        self.alt_sf_color_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.alt_sf_color_alpha_slider.setMinimum(0)
-        self.alt_sf_color_alpha_slider.setMaximum(255)
-        self.alt_sf_color_alpha_slider.setSingleStep(1)
+        self.right_left_alpha_entry = FCSliderWithSpinner(0 , 255, 1)
 
-        self.alt_sf_color_alpha_spinner = FCSpinner()
-        self.alt_sf_color_alpha_spinner.setMinimumWidth(70)
-        self.alt_sf_color_alpha_spinner.set_range(0, 255)
-
-        self.form_box_child_9 = QtWidgets.QHBoxLayout()
-        self.form_box_child_9.addWidget(self.alt_sf_color_alpha_slider)
-        self.form_box_child_9.addWidget(self.alt_sf_color_alpha_spinner)
-
-        grid0.addWidget(self.alt_sf_alpha_label, 23, 0)
-        grid0.addLayout(self.form_box_child_9, 23, 1)
+        grid0.addWidget(self.right_left_alpha_label, 23, 0)
+        grid0.addWidget(self.right_left_alpha_entry, 23, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -388,18 +366,18 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Setting selection (left - right) colors signals
         self.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
         self.sf_color_button.clicked.connect(self.on_sf_color_button)
-        self.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
-        self.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
         self.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
         self.sl_color_button.clicked.connect(self.on_sl_color_button)
+
+        self.left_right_alpha_entry.valueChanged.connect(self.on_left_right_alpha_changed)  # alpha
 
         # Setting selection (right - left) colors signals
         self.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
         self.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
-        self.alt_sf_color_alpha_spinner.valueChanged.connect(self.on_alt_sf_color_spinner)
-        self.alt_sf_color_alpha_slider.valueChanged.connect(self.on_alt_sf_color_slider)
         self.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
         self.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+
+        self.right_left_alpha_entry.valueChanged.connect(self.on_right_left_alpha_changed)  # alpha
 
         # Setting Editor Draw colors signals
         self.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
@@ -454,17 +432,21 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sf_color_entry.set_value(new_val)
         self.app.defaults['global_sel_fill'] = new_val
 
-    def on_sf_color_spinner(self):
-        spinner_value = self.sf_color_alpha_spinner.value()
-        self.sf_color_alpha_slider.setValue(spinner_value)
+    def on_left_right_alpha_changed(self, spinner_value):
+        """
+        Change the alpha level for the color of the selection box when selection is done left to right.
+        Called on valueChanged of a FCSliderWithSpinner.
+
+        :param spinner_value:   passed value within [0, 255]
+        :type spinner_value:    int
+        :return:                None
+        :rtype:
+        """
+
         self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.app.defaults['global_sel_line'] = self.app.defaults['global_sel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_sf_color_slider(self):
-        slider_value = self.sf_color_alpha_slider.value()
-        self.sf_color_alpha_spinner.setValue(slider_value)
 
     def on_sl_color_entry(self):
         self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
@@ -509,9 +491,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_entry.set_value(new_val)
         self.app.defaults['global_alt_sel_fill'] = new_val
 
-    def on_alt_sf_color_spinner(self):
-        spinner_value = self.alt_sf_color_alpha_spinner.value()
-        self.alt_sf_color_alpha_slider.setValue(spinner_value)
+    def on_right_left_alpha_changed(self, spinner_value):
+        """
+        Change the alpha level for the color of the selection box when selection is done right to left.
+        Called on valueChanged of a FCSliderWithSpinner.
+
+        :param spinner_value:   passed value within [0, 255]
+        :type spinner_value:    int
+        :return:                None
+        :rtype:
+        """
+
         self.app.defaults['global_alt_sel_fill'] = self.app.defaults['global_alt_sel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.app.defaults['global_alt_sel_line'] = self.app.defaults['global_alt_sel_line'][:7] + \

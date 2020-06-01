@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCEntry
+from AppGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCEntry, FCSliderWithSpinner
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -202,25 +202,14 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_1, 15, 1)
 
         # Plot Fill Transparency Level
-        self.alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
-        self.alpha_label.setToolTip(
+        self.cncjob_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.cncjob_alpha_label.setToolTip(
             _("Set the fill transparency for plotted objects.")
         )
-        self.tcolor_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.tcolor_alpha_slider.setMinimum(0)
-        self.tcolor_alpha_slider.setMaximum(255)
-        self.tcolor_alpha_slider.setSingleStep(1)
+        self.cncjob_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        self.tcolor_alpha_spinner = FCSpinner()
-        self.tcolor_alpha_spinner.setMinimumWidth(70)
-        self.tcolor_alpha_spinner.set_range(0, 255)
-
-        self.form_box_child_3 = QtWidgets.QHBoxLayout()
-        self.form_box_child_3.addWidget(self.tcolor_alpha_slider)
-        self.form_box_child_3.addWidget(self.tcolor_alpha_spinner)
-
-        grid0.addWidget(self.alpha_label, 16, 0)
-        grid0.addLayout(self.form_box_child_3, 16, 1)
+        grid0.addWidget(self.cncjob_alpha_label, 16, 0)
+        grid0.addWidget(self.cncjob_alpha_entry, 16, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -274,8 +263,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.tline_color_button.clicked.connect(self.on_tline_color_button)
         self.tfill_color_entry.editingFinished.connect(self.on_tfill_color_entry)
         self.tfill_color_button.clicked.connect(self.on_tfill_color_button)
-        self.tcolor_alpha_spinner.valueChanged.connect(self.on_tcolor_spinner)
-        self.tcolor_alpha_slider.valueChanged.connect(self.on_tcolor_slider)
+
+        self.cncjob_alpha_entry.valueChanged.connect(self.on_cncjob_alpha_changed)  # alpha
 
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
         self.line_color_button.clicked.connect(self.on_line_color_button)
@@ -306,19 +295,13 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.tfill_color_entry.set_value(new_val)
         self.app.defaults['cncjob_travel_fill'] = new_val
 
-    def on_tcolor_spinner(self):
-        spinner_value = self.tcolor_alpha_spinner.value()
-        self.tcolor_alpha_slider.setValue(spinner_value)
+    def on_cncjob_alpha_changed(self, spinner_value):
         self.app.defaults['cncjob_travel_fill'] = \
             self.app.defaults['cncjob_travel_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.app.defaults['cncjob_travel_line'] = \
             self.app.defaults['cncjob_travel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_tcolor_slider(self):
-        slider_value = self.tcolor_alpha_slider.value()
-        self.tcolor_alpha_spinner.setValue(slider_value)
 
     def on_tline_color_entry(self):
         self.app.defaults['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \

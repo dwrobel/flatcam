@@ -754,10 +754,9 @@ class PreferencesUIManager:
         self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_spinner.set_value(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.setValue(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
+
+        self.ui.gerber_defaults_form.gerber_gen_group.gerber_alpha_entry.set_value(
+            int(self.defaults['gerber_plot_fill'][7:9], 16))    # alpha
 
         self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
         self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
@@ -770,9 +769,8 @@ class PreferencesUIManager:
         self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_spinner.set_value(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.setValue(
+
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_alpha_entry.set_value(
             int(self.defaults['excellon_plot_fill'][7:9], 16))
 
         self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
@@ -794,10 +792,9 @@ class PreferencesUIManager:
         self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['cncjob_travel_fill'])[:7])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_spinner.set_value(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_slider.setValue(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
+
+        self.ui.cncjob_defaults_form.cncjob_gen_group.cncjob_alpha_entry.set_value(
+            int(self.defaults['cncjob_travel_fill'][7:9], 16))      # alpha
 
         self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
             self.defaults['cncjob_travel_line'])
@@ -823,9 +820,8 @@ class PreferencesUIManager:
         self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
+
+        self.ui.general_defaults_form.general_gui_group.left_right_alpha_entry.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
         self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
@@ -839,9 +835,8 @@ class PreferencesUIManager:
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
+
+        self.ui.general_defaults_form.general_gui_group.right_left_alpha_entry.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(

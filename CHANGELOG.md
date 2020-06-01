@@ -21,6 +21,8 @@ CHANGELOG for FlatCAM beta
 - added a button for Transformations Tool in the lower side (common) of the Object UI
 - some other UI changes
 - after using Isolation Tool it will switch automatically to the Geometry UI
+- in Preferences replaced some widgets with a new one that combine a Slider with a Spinner (courtesy of David Robertson)
+
 
 31.05.2020
 

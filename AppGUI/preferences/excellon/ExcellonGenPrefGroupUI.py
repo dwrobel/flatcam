@@ -3,7 +3,7 @@ import platform
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry
+from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -304,25 +304,14 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addLayout(self.form_box_child_1, 14, 1)
 
         # Plot Fill Transparency Level
-        self.alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
-        self.alpha_label.setToolTip(
+        self.excellon_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.excellon_alpha_label.setToolTip(
             _("Set the fill transparency for plotted objects.")
         )
-        self.color_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.color_alpha_slider.setMinimum(0)
-        self.color_alpha_slider.setMaximum(255)
-        self.color_alpha_slider.setSingleStep(1)
+        self.excellon_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        self.color_alpha_spinner = FCSpinner()
-        self.color_alpha_spinner.setMinimumWidth(70)
-        self.color_alpha_spinner.set_range(0, 255)
-
-        self.form_box_child_3 = QtWidgets.QHBoxLayout()
-        self.form_box_child_3.addWidget(self.color_alpha_slider)
-        self.form_box_child_3.addWidget(self.color_alpha_spinner)
-
-        grid2.addWidget(self.alpha_label, 15, 0)
-        grid2.addLayout(self.form_box_child_3, 15, 1)
+        grid2.addWidget(self.excellon_alpha_label, 15, 0)
+        grid2.addWidget(self.excellon_alpha_entry, 15, 1)
 
         self.layout.addStretch()
 
@@ -345,8 +334,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.line_color_button.clicked.connect(self.on_line_color_button)
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
         self.fill_color_button.clicked.connect(self.on_fill_color_button)
-        self.color_alpha_spinner.valueChanged.connect(self.on_color_spinner)
-        self.color_alpha_slider.valueChanged.connect(self.on_color_slider)
+
+        self.excellon_alpha_entry.valueChanged.connect(self.on_excellon_alpha_changed)  # alpha
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
         self.excellon_defaults_button.clicked.connect(self.on_excellon_defaults_button)
@@ -386,19 +375,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.fill_color_entry.set_value(new_val)
         self.app.defaults['excellon_plot_fill'] = new_val
 
-    def on_color_spinner(self):
-        spinner_value = self.color_alpha_spinner.value()
-        self.color_alpha_slider.setValue(spinner_value)
+    def on_excellon_alpha_changed(self, spinner_value):
         self.app.defaults['excellon_plot_fill'] = \
             self.app.defaults['excellon_plot_fill'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.app.defaults['excellon_plot_line'] = \
             self.app.defaults['excellon_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_color_slider(self):
-        slider_value = self.color_alpha_slider.value()
-        self.color_alpha_spinner.setValue(slider_value)
 
     def on_line_color_entry(self):
         self.app.defaults['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \

@@ -750,6 +750,9 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
         self.spinner.set_step(step)
         self.spinner.setMinimumWidth(70)
 
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.layout.setContentsMargins(0, 0, 0, 0)
