@@ -6,13 +6,13 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 # This post processor is configured to output code that
 # is compatible with almost any version of Grbl.
 
 
-class GRBL_laser(PreProc):
+class GRBL_laser(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"

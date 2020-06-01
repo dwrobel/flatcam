@@ -1,5 +1,5 @@
 from tclCommands.TclCommand import TclCommand
-from AppObjects.FlatCAMGeometry import GeometryObject
+from flatcamObjects.FlatCAMGeometry import GeometryObject
 
 import collections
 
@@ -65,6 +65,6 @@ class TclCommandJoinGeometry(TclCommand):
             GeometryObject.merge(objs, obj_)
 
         if objs and len(objs) >= 2:
-            self.app.app_obj.new_object("geometry", outname, initialize, plot=False)
+            self.app.new_object("geometry", outname, initialize, plot=False)
         else:
             return "No Geometry objects to be joined or less than two Geometry objects specified for merging."

@@ -7,7 +7,7 @@ from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
 
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 log = logging.getLogger('base')
@@ -300,8 +300,11 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
                 app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
-            self.app.app_obj.new_object('geometry', outname, geo_init, plot=False)
+            self.app.new_object('geometry', outname, geo_init, plot=False)
 
+            # cutout_obj.plot()
+            # self.app.inform.emit("[success] Any-form Cutout operation finished.")
+            # self.app.plots_updated.emit()
         elif cutout_obj.kind == 'gerber':
 
             def geo_init(geo_obj, app_obj):
@@ -355,7 +358,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 geo_obj.options['ymax'] = cutout_obj.options['ymax']
                 app_obj.inform.emit("[success] %s" % _("Any-form Cutout operation finished."))
 
-            self.app.app_obj.new_object('geometry', outname, geo_init, plot=False)
+            self.app.new_object('geometry', outname, geo_init, plot=False)
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:

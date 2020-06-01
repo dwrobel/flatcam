@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 
-class Paste_1(AppPreProcTools):
+class Paste_1(FlatCAMPostProc_Tools):
 
     include_header = True
     coordinate_format = "%.*f"

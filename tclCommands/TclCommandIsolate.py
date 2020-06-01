@@ -89,7 +89,7 @@ class TclCommandIsolate(TclCommandSignaled):
                 par = args['combine']
             args['combine'] = bool(eval(par))
         else:
-            args['combine'] = bool(eval(self.app.defaults["tools_iso_combine_passes"]))
+            args['combine'] = bool(eval(self.app.defaults["gerber_combine_passes"]))
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

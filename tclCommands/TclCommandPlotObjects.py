@@ -21,7 +21,7 @@ class TclCommandPlotObjects(TclCommand):
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
     aliases = ['plot_objects']
 
-    description = '%s %s' % ("--", "Plot a specified list of objects in AppGUI.")
+    description = '%s %s' % ("--", "Plot a specified list of objects in GUI.")
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -38,7 +38,7 @@ class TclCommandPlotObjects(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Plot a specified list of objects in AppGUI.",
+        'main': "Plot a specified list of objects in GUI.",
         'args': collections.OrderedDict([
             ('names', "A list of object names to be plotted separated by comma. Required.\n"
                       "WARNING: no spaces are allowed. If unsure enclose the entire list with quotes."),

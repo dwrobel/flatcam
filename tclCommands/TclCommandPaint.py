@@ -4,7 +4,7 @@ import collections
 import logging
 
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -43,6 +43,8 @@ class TclCommandPaint(TclCommand):
         ('single', str),
         ('ref', str),
         ('box', str),
+        ('x', float),
+        ('y', float),
         ('outname', str),
     ])
 
@@ -51,32 +53,30 @@ class TclCommandPaint(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Paint polygons in the specified object by covering them with toolpaths.\n"
-                "Can use only one of the parameters: 'all', 'box', 'single'.",
+        'main': "Paint polygons in the specified object by covering them with toolpaths.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source Geometry object. String.'),
-            ('tooldia', 'Diameter of the tools to be used. Can be a comma separated list of diameters.\n'
-                        'WARNING: No space is allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
+            ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
+                        'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('margin', 'Bounding box margin. Float number.'),
-            ('order', 'Can have the values: "no", "fwd" and "rev". String.\n'
-                      'It is useful when there are multiple tools in tooldia parameter.\n'
-                      '"no" -> the order used is the one provided.\n'
-                      '"fwd" -> tools are ordered from smallest to biggest.\n'
+            ('order', 'Can have the values: "no", "fwd" and "rev". String.'
+                      'It is useful when there are multiple tools in tooldia parameter.'
+                      '"no" -> the order used is the one provided.'
+                      '"fwd" -> tools are ordered from smallest to biggest.'
                       '"rev" -> tools are ordered from biggest to smallest.'),
             ('method', 'Algorithm for painting. Can be: "standard", "seed", "lines", "laser_lines", "combo".'),
             ('connect', 'Draw lines to minimize tool lifts. True (1) or False (0)'),
             ('contour', 'Cut around the perimeter of the painting. True (1) or False (0)'),
             ('all', 'If used, paint all polygons in the object.'),
             ('box', 'name of the object to be used as paint reference. String.'),
-            ('single', 'Value is in format x,y or (x,y). Example: 2.0,1.1\n'
-                       'If used will paint a single polygon specified by "x" and "y" values.\n'
-                       'WARNING: No spaces allowed in the value. Use dot decimals separator.'),
-            ('outname', 'Name of the resulting Geometry object. String. No spaces.'),
+            ('single', 'Paint a single polygon specified by "x" and "y" parameters. True (1) or False (0)'),
+            ('x', 'X value of coordinate for the selection of a single polygon. Float number.'),
+            ('y', 'Y value of coordinate for the selection of a single polygon. Float number.'),
+            ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
-        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all",
-                     "paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -single 3.3,2.0"]
+        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all"]
     }
 
     def execute(self, args, unnamed_args):
@@ -159,7 +159,7 @@ class TclCommandPaint(TclCommand):
 
         # used only to have correct information's in the obj.tools[tool]['data'] dict
         if "all" in args:
-            select = _("All")
+            select = _("All Polygons")
         elif "single" in args:
             select = _("Polygon Selection")
         else:
@@ -245,17 +245,11 @@ class TclCommandPaint(TclCommand):
 
         # Paint single polygon in the painted object
         if 'single' in args:
-            if not args['single'] or args['single'] == '':
-                self.raise_tcl_error('%s Got: %s' %
-                                     (_("Expected a tuple value like -single 3.2,0.1."), str(args['single'])))
+            if 'x' not in args and 'y' not in args:
+                self.raise_tcl_error('%s' % _("Expected -x <value> and -y <value>."))
             else:
-                coords_xy = [float(eval(a)) for a in args['single'].split(",") if a != '']
-
-                if coords_xy and len(coords_xy) != 2:
-                    self.raise_tcl_error('%s Got: %s' %
-                                         (_("Expected a tuple value like -single 3.2,0.1."), str(coords_xy)))
-                x = coords_xy[0]
-                y = coords_xy[1]
+                x = args['x']
+                y = args['y']
 
                 self.app.paint_tool.paint_poly(obj=obj,
                                                inside_pt=[x, y],

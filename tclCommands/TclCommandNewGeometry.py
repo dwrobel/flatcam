@@ -52,4 +52,4 @@ class TclCommandNewGeometry(TclCommandSignaled):
         else:
             name = 'new_geo'
 
-        self.app.app_obj.new_object('geometry', str(name), lambda x, y: None, plot=False)
+        self.app.new_object('geometry', str(name), lambda x, y: None, plot=False)

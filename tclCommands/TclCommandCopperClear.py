@@ -4,7 +4,7 @@ import collections
 import logging
 
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -54,8 +54,8 @@ class TclCommandCopperClear(TclCommand):
         'main': "Clear excess copper in polygons. Basically it's a negative Paint.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source Geometry object. String.'),
-            ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters.\n'
-                        'WARNING: No space is allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
+            ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
+                        'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('margin', 'Bounding box margin. Float number.'),
@@ -72,7 +72,7 @@ class TclCommandCopperClear(TclCommand):
             ('all', 'If used will copper clear the whole object. Either "-all" or "-box <value>" has to be used.'),
             ('box', 'Name of the object to be used as reference. Either "-all" or "-box <value>" has to be used. '
                     'String.'),
-            ('outname', 'Name of the resulting Geometry object. String. No spaces.'),
+            ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
         'examples': ["ncc obj_name -tooldia 0.3,1 -overlap 10 -margin 1.0 -method 'lines' -all"]
     }

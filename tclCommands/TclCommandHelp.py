@@ -11,7 +11,7 @@ from tclCommands.TclCommand import TclCommand
 import collections
 
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

@@ -182,7 +182,7 @@ class MyApp(QtCore.QObject):
         # we don't need all the info in the tuple returned by the translate_coords()
         # only first 2 elements
         pos_canvas = [pos_canvas[0], pos_canvas[1]]
-        self.ui.position_label.setText("Position:  X: %.4f\tY: %.4f" % (pos_canvas[0], pos_canvas[1]))
+        # self.ui.position_label.setText("Position:  X: %.4f\tY: %.4f" % (pos_canvas[0], pos_canvas[1]))
         # pos_text = 'Coordinates:   \nX: {:<7.4f}\nY: {:<7.4f}'.format(pos_canvas[0], pos_canvas[1])
         pos_text = 'Coordinates:   \nX: {:<.4f}\nY: {:<.4f}'.format(pos_canvas[0], pos_canvas[1])
         self.plot.vispy_canvas.text.text = pos_text

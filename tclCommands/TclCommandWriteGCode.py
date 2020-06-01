@@ -80,15 +80,15 @@ class TclCommandWriteGCode(TclCommandSignaled):
         # This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.
         # if self.collection.has_promises():
-        #     def write_gcode_on_object(app_obj.new_object):
+        #     def write_gcode_on_object(new_object):
         #         self.log.debug("write_gcode_on_object(): Disconnecting %s" % write_gcode_on_object)
-        #         self.app_obj.new_object_available.disconnect(write_gcode_on_object)
+        #         self.new_object_available.disconnect(write_gcode_on_object)
         #         write_gcode(obj_name, filename, preamble, postamble)
         #
         #     # Try again when a new object becomes available.
         #     self.log.debug("write_gcode(): Collection has promises. Queued for %s." % obj_name)
         #     self.log.debug("write_gcode(): Queued function: %s" % write_gcode_on_object)
-        #     self.app_obj.new_object_available.connect(write_gcode_on_object)
+        #     self.new_object_available.connect(write_gcode_on_object)
         #
         #     return
 

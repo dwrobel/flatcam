@@ -11,7 +11,7 @@ import collections
 import os
 import logging
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -75,22 +75,19 @@ class TclCommandSetPath(TclCommand):
         if path_isdir is False:
             path_isfile = os.path.isfile(path)
             if path_isfile:
-                msg = '[ERROR] %s: %s, %s' % (
+                self.app.inform.emit('[ERROR] %s: %s, %s' % (
                     "The provided path",
                     str(path),
-                    "is a path to file and not a directory as expected.")
-                self.app.shell_message(msg, success=True, show=False)
+                    "is a path to file and not a directory as expected."))
                 return "Failed. The Tcl command set_path was used but it was not a directory."
             else:
-                msg = '[ERROR] %s: %s, %s' % (
+                self.app.inform.emit('[ERROR] %s: %s, %s' % (
                     "The provided path",
                     str(path),
-                    "do not exist. Check for typos.")
-                self.app.shell_message(msg, success=True, show=False)
+                    "do not exist. Check for typos."))
                 return "Failed. The Tcl command set_path was used but it does not exist."
 
         cd_command = 'cd %s' % path
         self.app.shell.exec_command(cd_command, no_echo=False)
         self.app.defaults["global_tcl_path"] = str(path)
-        msg = '[success] %s: %s' % ("Relative path set to", str(path))
-        self.app.shell_message(msg, success=True, show=False)
+        self.app.inform.emit('[success] %s: %s' % ("Relative path set to", str(path)))

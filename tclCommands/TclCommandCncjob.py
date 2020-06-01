@@ -37,10 +37,9 @@ class TclCommandCncjob(TclCommandSignaled):
         ('extracut_length', float),
         ('dpp', float),
         ('toolchangez', float),
-        ('toolchangexy', str),
+        ('toolchangexy', tuple),
         ('startz', float),
         ('endz', float),
-        ('endxy', str),
         ('spindlespeed', int),
         ('dwelltime', float),
         ('pp', str),
@@ -66,12 +65,9 @@ class TclCommandCncjob(TclCommandSignaled):
             ('dpp', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
-            ('toolchangexy', 'The X,Y coordinates at Toolchange event in format (x, y) (example: (30.0, 15.2) or '
-                             'without parenthesis like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
+            ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('startz', 'Height before the first move.'),
             ('endz', 'Height where the last move will park.'),
-            ('endxy', 'The X,Y coordinates at job end in format (x, y) (example: (2.0, 1.2) or without parenthesis'
-                      'like: 0.3,1.0). WARNING: no spaces allowed in the value.'),
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
                           'If it is not used in command then it will not be included'),
@@ -128,18 +124,16 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 return
 
-        args["dia"] = args["dia"] if "dia" in args and args["dia"] else self.app.defaults["geometry_cnctooldia"]
+        args["dia"] = args["dia"] if "dia" in args and args["dia"] else obj.options["cnctooldia"]
 
-        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else self.app.defaults["geometry_cutz"]
-        args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else \
-            self.app.defaults["geometry_travelz"]
+        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else obj.options["cutz"]
+        args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else obj.options["travelz"]
 
-        args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
-            self.app.defaults["geometry_feedrate"]
+        args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
         args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
-            self.app.defaults["geometry_feedrate_z"]
+            obj.options["feedrate_z"]
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
-            self.app.defaults["geometry_feedrate_rapid"]
+            obj.options["feedrate_rapid"]
 
         if "extracut_length" in args:
             args["extracut"] = True
@@ -148,33 +142,20 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["extracut_length"] = float(args["extracut_length"])
         else:
-            args["extracut"] = self.app.defaults["geometry_extracut"]
-            args["extracut_length"] = self.app.defaults["geometry_extracut_length"]
+            args["extracut"] = False
 
         if "dpp" in args:
             args["multidepth"] = True
             if args["dpp"] is None:
-                args["dpp"] =self.app.defaults["geometry_depthperpass"]
+                args["dpp"] = obj.options["dpp"]
             else:
                 args["dpp"] = float(args["dpp"])
         else:
-            args["multidepth"] = self.app.defaults["geometry_multidepth"]
-            args["dpp"] = self.app.defaults["geometry_depthperpass"]
+            args["multidepth"] = False
 
         args["startz"] = args["startz"] if "startz" in args and args["startz"] else \
             self.app.defaults["geometry_startz"]
-        args["endz"] = args["endz"] if "endz" in args and args["endz"] else self.app.defaults["geometry_endz"]
-
-        if "endxy" in args and args["endxy"]:
-            args["endxy"] = args["endxy"]
-        else:
-            if self.app.defaults["geometry_endxy"]:
-                args["endxy"] = self.app.defaults["geometry_endxy"]
-            else:
-                args["endxy"] = '0, 0'
-        if len(eval(args["endxy"])) != 2:
-            self.raise_tcl_error("The entered value for 'endxy' needs to have the format x,y or "
-                                 "in format (x, y) - no spaces allowed. But always two comma separated values.")
+        args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
 
@@ -185,31 +166,23 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 args["dwelltime"] = float(args['dwelltime'])
         else:
-            args["dwell"] = self.app.defaults["geometry_dwell"]
-            args["dwelltime"] = self.app.defaults["geometry_dwelltime"]
+            args["dwell"] = False
+            args["dwelltime"] = 0.0
 
-        args["pp"] = args["pp"] if "pp" in args and args["pp"] else  self.app.defaults["geometry_ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_g"]
 
         if "toolchangez" in args:
             args["toolchange"] = True
             if args["toolchangez"] is not None:
                 args["toolchangez"] = args["toolchangez"]
             else:
-                args["toolchangez"] = self.app.defaults["geometry_toolchangez"]
+                args["toolchangez"] = obj.options["toolchangez"]
         else:
-            args["toolchange"] = self.app.defaults["geometry_toolchange"]
-            args["toolchangez"] = self.app.defaults["geometry_toolchangez"]
+            args["toolchange"] = False
+            args["toolchangez"] = 0.0
 
-        if "toolchangexy" in args and args["toolchangexy"]:
-            args["toolchangexy"] = args["toolchangexy"]
-        else:
-            if self.app.defaults["geometry_toolchangexy"]:
-                args["toolchangexy"] = self.app.defaults["geometry_toolchangexy"]
-            else:
-                args["toolchangexy"] = '0, 0'
-        if len(eval(args["toolchangexy"])) != 2:
-            self.raise_tcl_error("The entered value for 'toolchangexy' needs to have the format x,y or "
-                                 "in format (x, y) - no spaces allowed. But always two comma separated values.")
+        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
+            self.app.defaults["geometry_toolchangexy"]
 
         del args['name']
 
@@ -218,7 +191,7 @@ class TclCommandCncjob(TclCommandSignaled):
                 continue
             else:
                 if args[arg] is None:
-                    print("None parameters: %s is None" % arg)
+                    print(arg, args[arg])
                     if muted is False:
                         self.raise_tcl_error('One of the command parameters that have to be not None, is None.\n'
                                              'The parameter that is None is in the default values found in the list \n'
@@ -228,7 +201,7 @@ class TclCommandCncjob(TclCommandSignaled):
 
         # HACK !!! Should be solved elsewhere!!!
         # default option for multidepth is False
-        # obj.options['multidepth'] = False
+        obj.options['multidepth'] = False
 
         if not obj.multigeo:
             obj.generatecncjob(use_thread=False, plot=False, **args)
@@ -257,7 +230,6 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['toolchangexy'] = args["toolchangexy"]
                     local_tools_dict[tool_uid]['data']['startz'] = args["startz"]
                     local_tools_dict[tool_uid]['data']['endz'] = args["endz"]
-                    local_tools_dict[tool_uid]['data']['endxy'] = args["endxy"]
                     local_tools_dict[tool_uid]['data']['spindlespeed'] = args["spindlespeed"]
                     local_tools_dict[tool_uid]['data']['dwell'] = args["dwell"]
                     local_tools_dict[tool_uid]['data']['dwelltime'] = args["dwelltime"]

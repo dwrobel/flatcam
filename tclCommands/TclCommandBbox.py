@@ -4,7 +4,7 @@ from tclCommands.TclCommand import TclCommand
 from shapely.ops import cascaded_union
 
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -100,6 +100,6 @@ class TclCommandBbox(TclCommand):
                     bounding_box = bounding_box.envelope
                 geo_obj.solid_geometry = bounding_box
 
-            self.app.app_obj.new_object("geometry", args['outname'], geo_init, plot=False)
+            self.app.new_object("geometry", args['outname'], geo_init, plot=False)
         except Exception as e:
             return "Operation failed: %s" % str(e)

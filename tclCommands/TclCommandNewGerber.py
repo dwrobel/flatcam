@@ -75,4 +75,4 @@ class TclCommandNewGerber(TclCommandSignaled):
             except KeyError:
                 pass
 
-        self.app.app_obj.new_object('gerber', name, initialize, plot=False)
+        self.app.new_object('gerber', name, initialize, plot=False)
