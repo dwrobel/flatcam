@@ -689,6 +689,9 @@ class FCColorEntry(QtWidgets.QFrame):
         super().__init__(**kwargs)
 
         self.entry = FCEntry()
+        regex = QtCore.QRegExp("[#A-Fa-f0-9]*")
+        validator = QtGui.QRegExpValidator(regex, self.entry)
+        self.entry.setValidator(validator)
 
         self.button = QtWidgets.QPushButton()
         self.button.setFixedSize(15, 15)

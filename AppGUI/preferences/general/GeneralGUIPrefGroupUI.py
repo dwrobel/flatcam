@@ -349,12 +349,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
         self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][7:9]
-        self.sf_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_fill'])[:7])
 
     def on_sl_color_entry(self):
         self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
             self.app.defaults['global_sel_line'][7:9]
-        self.sl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_line'])[:7])
 
     def on_left_right_alpha_changed(self, spinner_value):
         """
@@ -376,16 +374,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def on_alt_sf_color_entry(self):
         self.app.defaults['global_alt_sel_fill'] = self.alt_sf_color_entry.get_value()[:7] + \
                                                    self.app.defaults['global_alt_sel_fill'][7:9]
-        self.alt_sf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_alt_sel_fill'])[:7]
-        )
 
     def on_alt_sl_color_entry(self):
         self.app.defaults['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
                                                    self.app.defaults['global_alt_sel_line'][7:9]
-        self.alt_sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_alt_sel_line'])[:7]
-        )
 
     def on_right_left_alpha_changed(self, spinner_value):
         """
@@ -406,22 +398,15 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     # Setting Editor colors
     def on_draw_color_entry(self):
         self.app.defaults['global_draw_color'] = self.draw_color_entry.get_value()
-        self.draw_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_draw_color']))
 
     def on_sel_draw_color_entry(self):
         self.app.defaults['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
-        self.sel_draw_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_sel_draw_color']))
 
     def on_proj_color_entry(self):
         self.app.defaults['global_proj_item_color'] = self.proj_color_entry.get_value()
-        self.proj_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_proj_item_color']))
 
     def on_proj_color_dis_entry(self):
         self.app.defaults['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()
-        self.proj_color_dis_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_proj_item_dis_color']))
 
     def on_layout(self, index=None, lay=None):
         """

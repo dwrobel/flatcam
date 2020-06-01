@@ -259,7 +259,7 @@ class ToolFiducials(AppTool):
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Copper Gerber"))
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which will be added a copper thieving.")
         )

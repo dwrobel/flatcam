@@ -67,7 +67,7 @@ class ToolSub(AppTool):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("Gerber Objects"))
+        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
@@ -122,7 +122,7 @@ class ToolSub(AppTool):
         form_geo_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_geo_layout)
 
-        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("Geometry Objects"))
+        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object

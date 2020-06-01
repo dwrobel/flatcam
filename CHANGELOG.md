@@ -25,6 +25,8 @@ CHANGELOG for FlatCAM beta
 - in Preferences replaced the widgets that sets colors with a compound one (from David Robertson)
 - made Progressive plotting work in Isolation Tool
 - fix an issue with progressive plotted shapes not being deleted on the end of the job
+- some fixed due of recent changes and some strings changed
+- added a validator for the FCColorEntry GUI element such that only the valid chars are accepted
 
 31.05.2020
 

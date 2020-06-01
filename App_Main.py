@@ -8906,7 +8906,7 @@ class App(QtCore.QObject):
         """
         self.log.debug("Plot_all()")
         if muted is not True:
-            self.inform[str, bool].emit('[success] %s...' % _("Redrawing all objects"), False)
+            self.inform[str, bool].emit('%s...' % _("Redrawing all objects"), False)
 
         for plot_obj in self.collection.get_list():
             def worker_task(obj):

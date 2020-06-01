@@ -58,7 +58,7 @@ class RulesCheck(AppTool):
         self.grid_layout.setColumnStretch(1, 3)
         self.grid_layout.setColumnStretch(2, 0)
 
-        self.gerber_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Gerber Files"))
+        self.gerber_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
         self.gerber_title_lbl.setToolTip(
             _("Gerber objects for which to check rules.")
         )
@@ -196,7 +196,7 @@ class RulesCheck(AppTool):
 
         self.grid_layout.addWidget(QtWidgets.QLabel(""), 8, 0, 1, 3)
 
-        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon Objects"))
+        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("EXCELLON"))
         self.excellon_title_lbl.setToolTip(
             _("Excellon objects for which to check rules.")
         )
