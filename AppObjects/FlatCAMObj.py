@@ -182,6 +182,11 @@ class FlatCAMObj(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
+        try:
+            self.ui.transformations_button.clicked.connect(self.app.transform_tool.run)
+        except (TypeError, AttributeError):
+            pass
+
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):

@@ -1865,6 +1865,9 @@ class ToolIsolation(AppTool, Gerber):
 
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
     def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
         """
 

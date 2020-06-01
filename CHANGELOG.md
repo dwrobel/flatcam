@@ -17,6 +17,10 @@ CHANGELOG for FlatCAM beta
 - made some minor changes in the GUI of the FlatCAM Tools
 - in Tools Database made sure that each new tool added has a unique name
 - in AppTool made some methods to be class methods
+- reverted the class methods in AppTool
+- added a button for Transformations Tool in the lower side (common) of the Object UI
+- some other UI changes
+- after using Isolation Tool it will switch automatically to the Geometry UI
 
 31.05.2020
 

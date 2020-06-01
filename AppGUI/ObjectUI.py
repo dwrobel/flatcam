@@ -149,6 +149,12 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.offsetvector_entry, 4, 0)
             self.common_grid.addWidget(self.offset_button, 4, 1)
 
+            self.transformations_button = QtWidgets.QPushButton(_('Transformations'))
+            self.transformations_button.setToolTip(
+                _("Geometrical transformations of the current object.")
+            )
+            self.common_grid.addWidget(self.transformations_button, 5, 0, 1, 2)
+
         layout.addStretch()
     
     def confirmation_message(self, accepted, minval, maxval):
