@@ -177,7 +177,7 @@ class ToolEtchCompensation(AppTool):
         )
         self.etchants_combo = FCComboBox(callback=self.confirmation_message)
         self.etchants_combo.setObjectName(_("Etchants"))
-        self.etchants_combo.addItems(["CuCl2", "Fe3Cl"])
+        self.etchants_combo.addItems(["CuCl2", "Fe3Cl", _("Alkaline baths")])
 
         grid0.addWidget(self.etchants_label, 18, 0)
         grid0.addWidget(self.etchants_combo, 18, 1)

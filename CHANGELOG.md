@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - Tcl Shell - added a button to delete the content of the active line
 - Tcl Command Isolate - fixed to work in the new configuration
+- Tcl Command Follow - fixed to work in the new configuration
+- Etch Compensation Tool - added a new etchant: alkaline baths
 
 1.06.2020
 

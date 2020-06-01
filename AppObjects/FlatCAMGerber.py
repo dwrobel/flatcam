@@ -796,7 +796,7 @@ class GerberObject(FlatCAMObj, Gerber):
 
         def follow_init(follow_obj, app):
             # Propagate options
-            follow_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+            follow_obj.options["cnctooldia"] = str(self.app.defaults["tools_iso_tooldia"])
             follow_obj.solid_geometry = self.follow_geometry
 
         # TODO: Do something if this is None. Offer changing name?
