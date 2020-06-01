@@ -64,11 +64,16 @@ class SolderPaste(AppTool):
         self.obj_combo.is_last = True
         self.obj_combo.obj_type = "Gerber"
 
-        self.object_label = QtWidgets.QLabel("Gerber:   ")
-        self.object_label.setToolTip(
-            _("Gerber Solder paste object.                        ")
+        self.object_label = QtWidgets.QLabel('<b>%s</b>:'% _("GERBER"))
+        self.object_label.setToolTip(_("Gerber Solder paste object.")
         )
-        obj_form_layout.addRow(self.object_label, self.obj_combo)
+        obj_form_layout.addRow(self.object_label)
+        obj_form_layout.addRow(self.obj_combo)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        obj_form_layout.addRow(separator_line)
 
         # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
@@ -131,22 +136,13 @@ class SolderPaste(AppTool):
              "by first selecting a row(s) in the Tool Table.")
         )
 
-        self.soldergeo_btn = QtWidgets.QPushButton(_("Generate Geo"))
-        self.soldergeo_btn.setToolTip(
-            _("Generate solder paste dispensing geometry.")
-        )
-        self.soldergeo_btn.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-
         grid0.addWidget(self.addtool_btn, 0, 0)
-        # grid2.addWidget(self.copytool_btn, 0, 1)
         grid0.addWidget(self.deltool_btn, 0, 2)
 
-        self.layout.addSpacing(10)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 1, 0, 1, 3)
 
         # ## Buttons
         grid0_1 = QtWidgets.QGridLayout()
@@ -373,6 +369,18 @@ class SolderPaste(AppTool):
             _("Second step is to create a solder paste dispensing\n"
               "geometry out of an Solder Paste Mask Gerber file.")
         )
+
+        self.soldergeo_btn = QtWidgets.QPushButton(_("Generate Geo"))
+        self.soldergeo_btn.setToolTip(
+            _("Generate solder paste dispensing geometry.")
+        )
+        self.soldergeo_btn.setStyleSheet("""
+                                        QPushButton
+                                        {
+                                            font-weight: bold;
+                                        }
+                                        """)
+
         grid2.addWidget(step2_lbl, 0, 0)
         grid2.addWidget(self.soldergeo_btn, 0, 2)
 

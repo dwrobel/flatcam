@@ -72,7 +72,13 @@ class ToolOptimal(AppTool):
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
-        form_lay.addRow(self.gerber_object_label, self.gerber_object_combo)
+        form_lay.addRow(self.gerber_object_label)
+        form_lay.addRow(self.gerber_object_combo)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form_lay.addRow(separator_line)
 
         # Precision = nr of decimals
         self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))

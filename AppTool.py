@@ -101,7 +101,8 @@ class AppTool(QtWidgets.QWidget):
 
         self.show()
 
-    def draw_tool_selection_shape(self, old_coords, coords, **kwargs):
+    @classmethod
+    def draw_tool_selection_shape(cls, old_coords, coords, **kwargs):
         """
 
         :param old_coords: old coordinates
@@ -113,17 +114,17 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.tool_shapes
+            s_storage = cls.app.tool_shapes
 
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = cls.app.defaults['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = cls.app.defaults['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']
@@ -145,10 +146,11 @@ class AppTool(QtWidgets.QWidget):
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
         s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
-        if self.app.is_legacy is True:
+        if cls.app.is_legacy is True:
             s_storage.redraw()
 
-    def draw_selection_shape_polygon(self, points, **kwargs):
+    @classmethod
+    def draw_selection_shape_polygon(cls, points, **kwargs):
         """
 
         :param points: a list of points from which to create a Polygon
@@ -159,17 +161,17 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.tool_shapes
+            s_storage = cls.app.tool_shapes
 
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = cls.app.defaults['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = cls.app.defaults['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']
@@ -187,10 +189,11 @@ class AppTool(QtWidgets.QWidget):
         color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
 
         s_storage.add(sel_rect, color=color, face_color=color_t, update=True, layer=0, tolerance=None)
-        if self.app.is_legacy is True:
+        if cls.app.is_legacy is True:
             s_storage.redraw()
 
-    def delete_tool_selection_shape(self, **kwargs):
+    @classmethod
+    def delete_tool_selection_shape(cls, **kwargs):
         """
 
         :param kwargs:
@@ -200,12 +203,13 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.tool_shapes
+            s_storage = cls.app.tool_shapes
 
         s_storage.clear()
         s_storage.redraw()
 
-    def draw_moving_selection_shape_poly(self, points, data, **kwargs):
+    @classmethod
+    def draw_moving_selection_shape_poly(cls, points, data, **kwargs):
         """
 
         :param points:
@@ -217,17 +221,17 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = cls.app.move_tool.sel_shapes
 
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_sel_line']
+            color = cls.app.defaults['global_sel_line']
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_sel_fill']
+            face_color = cls.app.defaults['global_sel_fill']
 
         if 'face_alpha' in kwargs:
             face_alpha = kwargs['face_alpha']
@@ -257,10 +261,11 @@ class AppTool(QtWidgets.QWidget):
         elif not geo.is_valid:
             s_storage.add(geo, color="red", face_color=color_t_error, update=True, layer=0, tolerance=None)
 
-        if self.app.is_legacy is True:
+        if cls.app.is_legacy is True:
             s_storage.redraw()
 
-    def delete_moving_selection_shape(self, **kwargs):
+    @classmethod
+    def delete_moving_selection_shape(cls, **kwargs):
         """
 
         :param kwargs:
@@ -270,7 +275,7 @@ class AppTool(QtWidgets.QWidget):
         if 'shapes_storage' in kwargs:
             s_storage = kwargs['shapes_storage']
         else:
-            s_storage = self.app.move_tool.sel_shapes
+            s_storage = cls.app.move_tool.sel_shapes
 
         s_storage.clear()
         s_storage.redraw()

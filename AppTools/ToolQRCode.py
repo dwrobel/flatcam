@@ -75,14 +75,35 @@ class QRCode(AppTool):
         self.grb_object_combo.is_last = True
         self.grb_object_combo.obj_type = "Gerber"
 
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Object"))
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
             _("Gerber Object to which the QRCode will be added.")
         )
 
         i_grid_lay.addWidget(self.grbobj_label, 0, 0)
-        i_grid_lay.addWidget(self.grb_object_combo, 0, 1, 1, 2)
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
+        i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
+
+        # Text box
+        self.text_label = QtWidgets.QLabel('<b>%s</b>:' % _("QRCode Data"))
+        self.text_label.setToolTip(
+            _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
+        )
+        self.text_data = FCTextArea()
+        self.text_data.setPlaceholderText(
+            _("Add here the text to be included in the QRCode...")
+        )
+        i_grid_lay.addWidget(self.text_label, 5, 0)
+        i_grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        i_grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -90,7 +111,7 @@ class QRCode(AppTool):
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.qrcode_label = QtWidgets.QLabel('<b>%s</b>' % _('QRCode Parameters'))
+        self.qrcode_label = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
         self.qrcode_label.setToolTip(
             _("The parameters used to shape the QRCode.")
         )
@@ -157,18 +178,6 @@ class QRCode(AppTool):
 
         grid_lay.addWidget(self.border_size_label, 4, 0)
         grid_lay.addWidget(self.border_size_entry, 4, 1)
-
-        # Text box
-        self.text_label = QtWidgets.QLabel('%s:' % _("QRCode Data"))
-        self.text_label.setToolTip(
-            _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
-        )
-        self.text_data = FCTextArea()
-        self.text_data.setPlaceholderText(
-            _("Add here the text to be included in the QRCode...")
-        )
-        grid_lay.addWidget(self.text_label, 5, 0)
-        grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
 
         # POLARITY CHOICE #
         self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))

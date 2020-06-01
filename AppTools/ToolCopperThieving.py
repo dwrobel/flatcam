@@ -77,8 +77,12 @@ class ToolCopperThieving(AppTool):
         )
 
         i_grid_lay.addWidget(self.grbobj_label, 0, 0)
-        i_grid_lay.addWidget(self.grb_object_combo, 0, 1, 1, 2)
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
+        i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()

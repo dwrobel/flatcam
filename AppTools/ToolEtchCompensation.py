@@ -78,7 +78,10 @@ class ToolEtchCompensation(AppTool):
         grid0.addWidget(self.gerber_label, 1, 0, 1, 2)
         grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(""), 3, 0, 1, 2)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 3, 0, 1, 2)
 
         self.util_label = QtWidgets.QLabel("<b>%s:</b>" % _("Utilities"))
         self.util_label.setToolTip('%s.' % _("Conversion utilities"))
@@ -127,7 +130,10 @@ class ToolEtchCompensation(AppTool):
         hlay_2.addWidget(self.mils_to_um_entry)
         grid0.addLayout(hlay_2, 8, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(""), 9, 0, 1, 2)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip('%s.' % _("Parameters for this tool"))

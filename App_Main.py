@@ -6832,7 +6832,7 @@ class App(QtCore.QObject):
 
         data = None
         if self.is_legacy is False:
-            image = _screenshot(alpha=None)
+            image = _screenshot(alpha=False)
             data = np.asarray(image)
             if not data.ndim == 3 and data.shape[-1] in (3, 4):
                 self.inform.emit('[[WARNING_NOTCL]] %s' % _('Data must be a 3D array with last dimension 3 or 4'))

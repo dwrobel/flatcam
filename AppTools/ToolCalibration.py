@@ -64,7 +64,7 @@ class ToolCalibration(AppTool):
         grid_lay.setColumnStretch(1, 1)
         grid_lay.setColumnStretch(2, 0)
 
-        self.gcode_title_label = QtWidgets.QLabel('<b>%s</b>' % _('GCode Parameters'))
+        self.gcode_title_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
         self.gcode_title_label.setToolTip(
             _("Parameters used when creating the GCode in this tool.")
         )

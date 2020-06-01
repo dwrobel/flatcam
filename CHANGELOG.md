@@ -13,6 +13,10 @@ CHANGELOG for FlatCAM beta
 - changed some strings
 - fixed the warning that old preferences found even for new installation
 - in Paint Tool fixed the message to select a polygon when using the Selection: Single Polygon being overwritten by the "Grid disabled" message
+- more changes in strings throughout the app
+- made some minor changes in the GUI of the FlatCAM Tools
+- in Tools Database made sure that each new tool added has a unique name
+- in AppTool made some methods to be class methods
 
 31.05.2020
 
