@@ -381,7 +381,7 @@ class App(QtCore.QObject):
             f.close()
 
         # Write factory_defaults.FlatConfig file to disk
-        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"))
+        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"), self.version)
 
         # create a recent files json file if there is none
         try:

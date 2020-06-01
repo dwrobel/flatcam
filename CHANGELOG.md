@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - made the Distance Tool display the angle in values between 0 and 359.9999 degrees
 - changed some strings
+- fixed the warning that old preferences found even for new installation
+- in Paint Tool fixed the message to select a polygon when using the Selection: Single Polygon being overwritten by the "Grid disabled" message
 
 31.05.2020
 
