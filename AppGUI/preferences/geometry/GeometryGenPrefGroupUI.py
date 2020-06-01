@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry
+from AppGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -32,7 +32,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.plot_options_label)
 
         plot_hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout((plot_hlay))
+        self.layout.addLayout(plot_hlay)
 
         # Plot CB
         self.plot_cb = FCCheckBox(label=_('Plot'))
@@ -87,7 +87,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Geometry Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Geometry Object Color'))
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
         grid0.addWidget(self.gerber_color_label, 10, 0, 1, 2)
 
         # Plot Line Color
@@ -95,39 +95,15 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
-        self.line_color_entry = FCEntry()
-        self.line_color_button = QtWidgets.QPushButton()
-        self.line_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.line_color_entry)
-        self.form_box_child_2.addWidget(self.line_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.line_color_entry = FCColorEntry()
 
         grid0.addWidget(self.line_color_label, 11, 0)
-        grid0.addLayout(self.form_box_child_2, 11, 1)
+        grid0.addWidget(self.line_color_entry, 11, 1)
 
         self.layout.addStretch()
 
         # Setting plot colors signals
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
-        self.line_color_button.clicked.connect(self.on_line_color_button)
 
     def on_line_color_entry(self):
         self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
-        self.line_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['geometry_plot_line'])[:7])
-
-    def on_line_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['geometry_plot_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['geometry_plot_line'][7:9])
-        self.line_color_entry.set_value(new_val_line)

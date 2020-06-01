@@ -123,8 +123,8 @@ class PreferencesUIManager:
             "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
             "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
             "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
-            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry,
-            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
+            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.fill_color_entry,
+            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.line_color_entry,
 
             # Gerber Options
             "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
@@ -737,7 +737,7 @@ class PreferencesUIManager:
         self.ui.fa_scroll_area.setWidget(fa_form)
         fa_form.show()
 
-        # Initialize the color box's color in Preferences -> Global -> Colo
+        # Initialize the color box's color in Preferences -> Global -> Colors
         self.__init_color_pickers()
 
         # Button handlers
@@ -750,162 +750,90 @@ class PreferencesUIManager:
 
     def __init_color_pickers(self):
         # Init Gerber Plot Colors
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
+        self.ui.gerber_defaults_form.gerber_gen_group.fill_color_entry.set_value(self.defaults['gerber_plot_fill'])
+        self.ui.gerber_defaults_form.gerber_gen_group.line_color_entry.set_value(self.defaults['gerber_plot_line'])
 
         self.ui.gerber_defaults_form.gerber_gen_group.gerber_alpha_entry.set_value(
             int(self.defaults['gerber_plot_fill'][7:9], 16))    # alpha
 
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
-
         # Init Excellon Plot Colors
         self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
             self.defaults['excellon_plot_fill'])
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
+        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
+            self.defaults['excellon_plot_line'])
 
         self.ui.excellon_defaults_form.excellon_gen_group.excellon_alpha_entry.set_value(
             int(self.defaults['excellon_plot_fill'][7:9], 16))
 
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
-            self.defaults['excellon_plot_line'])
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
         # Init Geometry Plot Colors
         self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry.set_value(
             self.defaults['geometry_plot_line'])
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['geometry_plot_line'])[:7])
 
         # Init CNCJob Travel Line Colors
         self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry.set_value(
             self.defaults['cncjob_travel_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_fill'])[:7])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
+            self.defaults['cncjob_travel_line'])
 
         self.ui.cncjob_defaults_form.cncjob_gen_group.cncjob_alpha_entry.set_value(
             int(self.defaults['cncjob_travel_fill'][7:9], 16))      # alpha
 
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
-            self.defaults['cncjob_travel_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_line'])[:7])
-
         # Init CNCJob Plot Colors
         self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry.set_value(
             self.defaults['cncjob_plot_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_fill'])[:7])
 
         self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry.set_value(
             self.defaults['cncjob_plot_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
 
         # Init Left-Right Selection colors
         self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
 
         self.ui.general_defaults_form.general_gui_group.left_right_alpha_entry.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_line'])[:7])
-
         # Init Right-Left Selection colors
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
             self.defaults['global_alt_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
+            self.defaults['global_alt_sel_line'])
 
         self.ui.general_defaults_form.general_gui_group.right_left_alpha_entry.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
-            self.defaults['global_alt_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_line'])[:7])
-
         # Init Draw color and Selection Draw Color
         self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
             self.defaults['global_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_draw_color'])[:7])
 
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
             self.defaults['global_sel_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_draw_color'])[:7])
 
         # Init Project Items color
         self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
             self.defaults['global_proj_item_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
 
         # Init Project Disabled Items color
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
             self.defaults['global_proj_item_dis_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
 
-        # Init Project Disabled Items color
+        # Init Mouse Cursor color
         self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(
             self.defaults['global_cursor_color'])
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
 
         # Init the Annotation CNC Job color
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
             self.defaults['cncjob_annotation_fontcolor'])
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
 
         # Init the Tool Film color
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
             self.defaults['tools_film_color'])
-        self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_film_color'])[:7]
-        )
 
         # Init the Tool QRCode colors
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(
             self.defaults['tools_qrcode_fill_color'])
-        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_fill_color'])[:7])
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(
             self.defaults['tools_qrcode_back_color'])
-        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])[:7])
 
     def on_save_button(self, save_to_file=True):
         log.debug("on_save_button() --> Applying preferences to file.")

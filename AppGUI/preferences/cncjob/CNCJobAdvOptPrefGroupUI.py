@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings, Qt
 
-from AppGUI.GUIElements import FCTextArea, FCCheckBox, FCComboBox, FCSpinner, FCEntry
+from AppGUI.GUIElements import FCTextArea, FCCheckBox, FCComboBox, FCSpinner, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -158,28 +158,16 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.annotation_color_label.setToolTip(
             _("Set the font color for the annotation texts.")
         )
-        self.annotation_fontcolor_entry = FCEntry()
-        self.annotation_fontcolor_button = QtWidgets.QPushButton()
-        self.annotation_fontcolor_button.setFixedSize(15, 15)
+        self.annotation_fontcolor_entry = FCColorEntry()
 
-        self.form_box_child = QtWidgets.QHBoxLayout()
-        self.form_box_child.setContentsMargins(0, 0, 0, 0)
-        self.form_box_child.addWidget(self.annotation_fontcolor_entry)
-        self.form_box_child.addWidget(self.annotation_fontcolor_button, alignment=Qt.AlignRight)
-        self.form_box_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        color_widget = QtWidgets.QWidget()
-        color_widget.setLayout(self.form_box_child)
         grid0.addWidget(self.annotation_color_label, 3, 0)
-        grid0.addWidget(color_widget, 3, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
+        grid0.addWidget(self.annotation_fontcolor_entry, 3, 1)
 
+        grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
         self.layout.addStretch()
 
         self.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
-
         self.annotation_fontcolor_entry.editingFinished.connect(self.on_annotation_fontcolor_entry)
-        self.annotation_fontcolor_button.clicked.connect(self.on_annotation_fontcolor_button)
 
     def on_cnc_custom_parameters(self, signal_text):
         if signal_text == 'Parameters':
@@ -189,20 +177,3 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
     def on_annotation_fontcolor_entry(self):
         self.app.defaults['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()
-        self.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['cncjob_annotation_fontcolor']))
-
-    def on_annotation_fontcolor_button(self):
-        current_color = QtGui.QColor(self.app.defaults['cncjob_annotation_fontcolor'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        annotation_color = c_dialog.getColor(initial=current_color)
-
-        if annotation_color.isValid() is False:
-            return
-
-        self.annotation_fontcolor_button.setStyleSheet("background-color:%s" % str(annotation_color.name()))
-
-        new_val_sel = str(annotation_color.name())
-        self.annotation_fontcolor_entry.set_value(new_val_sel)
-        self.app.defaults['cncjob_annotation_fontcolor'] = new_val_sel

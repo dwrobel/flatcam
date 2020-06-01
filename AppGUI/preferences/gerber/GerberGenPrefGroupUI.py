@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner
+from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -146,44 +146,30 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 9, 0, 1, 3)
 
         # Gerber Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Gerber Object Color'))
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
         grid0.addWidget(self.gerber_color_label, 10, 0, 1, 3)
 
         # Plot Line Color
-        self.pl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
-        self.pl_color_label.setToolTip(
+        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
-        self.pl_color_entry = FCEntry()
-        self.pl_color_button = QtWidgets.QPushButton()
-        self.pl_color_button.setFixedSize(15, 15)
+        self.line_color_entry = FCColorEntry()
 
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.pl_color_entry)
-        self.form_box_child_2.addWidget(self.pl_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        grid0.addWidget(self.pl_color_label, 11, 0)
-        grid0.addLayout(self.form_box_child_2, 11, 1, 1, 2)
+        grid0.addWidget(self.line_color_label, 11, 0)
+        grid0.addWidget(self.line_color_entry, 11, 1, 1, 2)
 
         # Plot Fill Color
-        self.pf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
-        self.pf_color_label.setToolTip(
+        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.fill_color_label.setToolTip(
             _("Set the fill color for plotted objects.\n"
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.pf_color_entry = FCEntry()
-        self.pf_color_button = QtWidgets.QPushButton()
-        self.pf_color_button.setFixedSize(15, 15)
+        self.fill_color_entry = FCColorEntry()
 
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.pf_color_entry)
-        self.form_box_child_1.addWidget(self.pf_color_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        grid0.addWidget(self.pf_color_label, 12, 0)
-        grid0.addLayout(self.form_box_child_1, 12, 1, 1, 2)
+        grid0.addWidget(self.fill_color_label, 12, 0)
+        grid0.addWidget(self.fill_color_entry, 12, 1, 1, 2)
 
         # Plot Fill Transparency Level
         self.gerber_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -198,33 +184,15 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
         # Setting plot colors signals
-        self.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
-        self.pl_color_button.clicked.connect(self.on_pl_color_button)
-        self.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
-        self.pf_color_button.clicked.connect(self.on_pf_color_button)
+        self.line_color_entry.editingFinished.connect(self.on_line_color_changed)
+        self.fill_color_entry.editingFinished.connect(self.on_fill_color_changed)
 
         self.gerber_alpha_entry.valueChanged.connect(self.on_gerber_alpha_changed)     # alpha
 
     # Setting plot colors handlers
-    def on_pf_color_entry(self):
-        self.app.defaults['gerber_plot_fill'] = self.pf_color_entry.get_value()[:7] + \
-            self.app.defaults['gerber_plot_fill'][7:9]
-        self.pf_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['gerber_plot_fill'])[:7])
-
-    def on_pf_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['gerber_plot_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.pf_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['gerber_plot_fill'][7:9])
-        self.pf_color_entry.set_value(new_val)
-        self.app.defaults['gerber_plot_fill'] = new_val
+    def on_fill_color_changed(self):
+        self.app.defaults['gerber_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+                                                self.app.defaults['gerber_plot_fill'][7:9]
 
     def on_gerber_alpha_changed(self, spinner_value):
         self.app.defaults['gerber_plot_fill'] = \
@@ -234,23 +202,6 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
             self.app.defaults['gerber_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
-    def on_pl_color_entry(self):
-        self.app.defaults['gerber_plot_line'] = self.pl_color_entry.get_value()[:7] + \
+    def on_line_color_changed(self):
+        self.app.defaults['gerber_plot_line'] = self.line_color_entry.get_value()[:7] + \
                                                 self.app.defaults['gerber_plot_line'][7:9]
-        self.pl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['gerber_plot_line'])[:7])
-
-    def on_pl_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['gerber_plot_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.pl_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['gerber_plot_line'][7:9])
-        self.pl_color_entry.set_value(new_val_line)
-        self.app.defaults['gerber_plot_line'] = new_val_line

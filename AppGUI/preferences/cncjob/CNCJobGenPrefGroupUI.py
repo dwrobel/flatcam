@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCEntry, FCSliderWithSpinner
+from AppGUI.GUIElements import FCCheckBox, RadioSet, FCSpinner, FCDoubleSpinner, FCSliderWithSpinner, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -170,17 +170,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.tline_color_label.setToolTip(
             _("Set the travel line color for plotted objects.")
         )
-        self.tline_color_entry = FCEntry()
-        self.tline_color_button = QtWidgets.QPushButton()
-        self.tline_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.tline_color_entry)
-        self.form_box_child_2.addWidget(self.tline_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.tline_color_entry = FCColorEntry()
 
         grid0.addWidget(self.tline_color_label, 14, 0)
-        grid0.addLayout(self.form_box_child_2, 14, 1)
+        grid0.addWidget(self.tline_color_entry, 14, 1)
 
         # Plot Fill Color
         self.tfill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -189,17 +182,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.tfill_color_entry = FCEntry()
-        self.tfill_color_button = QtWidgets.QPushButton()
-        self.tfill_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.tfill_color_entry)
-        self.form_box_child_1.addWidget(self.tfill_color_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.tfill_color_entry = FCColorEntry()
 
         grid0.addWidget(self.tfill_color_label, 15, 0)
-        grid0.addLayout(self.form_box_child_1, 15, 1)
+        grid0.addWidget(self.tfill_color_entry, 15, 1)
 
         # Plot Fill Transparency Level
         self.cncjob_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -217,7 +203,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 17, 0, 1, 2)
 
         # CNCJob Object Color
-        self.cnc_color_label = QtWidgets.QLabel('<b>%s</b>' % _('CNCJob Object Color'))
+        self.cnc_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
         grid0.addWidget(self.cnc_color_label, 18, 0, 1, 2)
 
         # Plot Line Color
@@ -225,17 +211,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.line_color_label.setToolTip(
             _("Set the color for plotted objects.")
         )
-        self.line_color_entry = FCEntry()
-        self.line_color_button = QtWidgets.QPushButton()
-        self.line_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.line_color_entry)
-        self.form_box_child_2.addWidget(self.line_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.line_color_entry = FCColorEntry()
 
         grid0.addWidget(self.line_color_label, 19, 0)
-        grid0.addLayout(self.form_box_child_2, 19, 1)
+        grid0.addWidget(self.line_color_entry, 19, 1)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -244,32 +223,21 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.fill_color_entry = FCEntry()
-        self.fill_color_button = QtWidgets.QPushButton()
-        self.fill_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.fill_color_entry)
-        self.form_box_child_1.addWidget(self.fill_color_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.fill_color_entry = FCColorEntry()
 
         grid0.addWidget(self.fill_color_label, 20, 0)
-        grid0.addLayout(self.form_box_child_1, 20, 1)
+        grid0.addWidget(self.fill_color_entry, 20, 1)
 
         self.layout.addStretch()
 
         # Setting plot colors signals
         self.tline_color_entry.editingFinished.connect(self.on_tline_color_entry)
-        self.tline_color_button.clicked.connect(self.on_tline_color_button)
         self.tfill_color_entry.editingFinished.connect(self.on_tfill_color_entry)
-        self.tfill_color_button.clicked.connect(self.on_tfill_color_button)
 
         self.cncjob_alpha_entry.valueChanged.connect(self.on_cncjob_alpha_changed)  # alpha
 
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
-        self.line_color_button.clicked.connect(self.on_line_color_button)
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
-        self.fill_color_button.clicked.connect(self.on_fill_color_button)
 
     # ------------------------------------------------------
     # Setting travel colors handlers
@@ -277,23 +245,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
     def on_tfill_color_entry(self):
         self.app.defaults['cncjob_travel_fill'] = self.tfill_color_entry.get_value()[:7] + \
                                                   self.app.defaults['cncjob_travel_fill'][7:9]
-        self.tfill_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['cncjob_travel_fill'])[:7])
 
-    def on_tfill_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['cncjob_travel_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.tfill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['cncjob_travel_fill'][7:9])
-        self.tfill_color_entry.set_value(new_val)
-        self.app.defaults['cncjob_travel_fill'] = new_val
+    def on_tline_color_entry(self):
+        self.app.defaults['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \
+                                                  self.app.defaults['cncjob_travel_line'][7:9]
 
     def on_cncjob_alpha_changed(self, spinner_value):
         self.app.defaults['cncjob_travel_fill'] = \
@@ -303,70 +258,13 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             self.app.defaults['cncjob_travel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
-    def on_tline_color_entry(self):
-        self.app.defaults['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \
-                                                  self.app.defaults['cncjob_travel_line'][7:9]
-        self.tline_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['cncjob_travel_line'])[:7])
-
-    def on_tline_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['cncjob_travel_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.tline_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['cncjob_travel_line'][7:9])
-        self.tline_color_entry.set_value(new_val_line)
-        self.app.defaults['cncjob_travel_line'] = new_val_line
-
     # ------------------------------------------------------
     # Setting plot colors handlers
     # ------------------------------------------------------
     def on_fill_color_entry(self):
         self.app.defaults['cncjob_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
                                                   self.app.defaults['cncjob_plot_fill'][7:9]
-        self.fill_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['cncjob_plot_fill'])[:7])
-
-    def on_fill_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['cncjob_plot_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.fill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['cncjob_plot_fill'][7:9])
-        self.fill_color_entry.set_value(new_val)
-        self.app.defaults['cncjob_plot_fill'] = new_val
 
     def on_line_color_entry(self):
         self.app.defaults['cncjob_plot_line'] = self.line_color_entry.get_value()[:7] + \
                                                   self.app.defaults['cncjob_plot_line'][7:9]
-        self.line_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['cncjob_plot_line'])[:7])
-
-    def on_line_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['cncjob_plot_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['cncjob_plot_line'][7:9])
-        self.line_color_entry.set_value(new_val_line)
-        self.app.defaults['cncjob_plot_line'] = new_val_line

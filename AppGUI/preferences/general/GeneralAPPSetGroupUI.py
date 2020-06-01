@@ -1,8 +1,8 @@
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QSettings
 
 from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, RadioSet, OptionalInputSection, FCSpinner, \
-    FCEntry
+    FCColorEntry
 from AppGUI.preferences import settings
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
@@ -334,24 +334,16 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.mouse_color_label.setToolTip(
             _("Set the color of the mouse cursor.")
         )
-        self.mouse_cursor_entry = FCEntry()
-        self.mouse_cursor_button = QtWidgets.QPushButton()
-        self.mouse_cursor_button.setFixedSize(15, 15)
-
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.mouse_cursor_entry)
-        self.form_box_child_1.addWidget(self.mouse_cursor_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.mouse_cursor_entry = FCColorEntry()
 
         grid0.addWidget(self.mouse_color_label, 26, 0)
-        grid0.addLayout(self.form_box_child_1, 26, 1)
+        grid0.addWidget(self.mouse_cursor_entry, 26, 1)
 
         self.mois = OptionalInputSection(
             self.mouse_cursor_color_cb,
             [
                 self.mouse_color_label,
-                self.mouse_cursor_entry,
-                self.mouse_cursor_button
+                self.mouse_cursor_entry
             ]
         )
         # Select mouse pan button
@@ -451,9 +443,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
         self.mouse_cursor_color_cb.stateChanged.connect(self.on_mouse_cursor_color_enable)
-
         self.mouse_cursor_entry.editingFinished.connect(self.on_mouse_cursor_entry)
-        self.mouse_cursor_button.clicked.connect(self.on_mouse_cursor_button)
 
     def on_mouse_cursor_color_enable(self, val):
         if val:
@@ -472,23 +462,4 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
     def on_mouse_cursor_entry(self):
         self.app.defaults['global_cursor_color'] = self.mouse_cursor_entry.get_value()
-        self.mouse_cursor_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_cursor_color']))
-
-        self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
-
-    def on_mouse_cursor_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_cursor_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        proj_color = c_dialog.getColor(initial=current_color)
-
-        if proj_color.isValid() is False:
-            return
-
-        self.mouse_cursor_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
-
-        new_val_sel = str(proj_color.name())
-        self.mouse_cursor_entry.set_value(new_val_sel)
-        self.app.defaults['global_cursor_color'] = new_val_sel
-
         self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]

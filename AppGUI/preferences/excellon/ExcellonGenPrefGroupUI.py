@@ -3,7 +3,7 @@ import platform
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner
+from AppGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import AppTranslation as fcTranslate
@@ -264,7 +264,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(separator_line, 11, 0, 1, 2)
 
         # Excellon Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Excellon Object Color'))
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
         grid2.addWidget(self.gerber_color_label, 12, 0, 1, 2)
 
         # Plot Line Color
@@ -272,17 +272,10 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.line_color_label.setToolTip(
             _("Set the line color for plotted objects.")
         )
-        self.line_color_entry = FCEntry()
-        self.line_color_button = QtWidgets.QPushButton()
-        self.line_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.line_color_entry)
-        self.form_box_child_2.addWidget(self.line_color_button)
-        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.line_color_entry = FCColorEntry()
 
         grid2.addWidget(self.line_color_label, 13, 0)
-        grid2.addLayout(self.form_box_child_2, 13, 1)
+        grid2.addWidget(self.line_color_entry, 13, 1)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -291,17 +284,10 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.fill_color_entry = FCEntry()
-        self.fill_color_button = QtWidgets.QPushButton()
-        self.fill_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_1 = QtWidgets.QHBoxLayout()
-        self.form_box_child_1.addWidget(self.fill_color_entry)
-        self.form_box_child_1.addWidget(self.fill_color_button)
-        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.fill_color_entry = FCColorEntry()
 
         grid2.addWidget(self.fill_color_label, 14, 0)
-        grid2.addLayout(self.form_box_child_1, 14, 1)
+        grid2.addWidget(self.fill_color_entry, 14, 1)
 
         # Plot Fill Transparency Level
         self.excellon_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -331,9 +317,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         # Setting plot colors signals
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
-        self.line_color_button.clicked.connect(self.on_line_color_button)
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
-        self.fill_color_button.clicked.connect(self.on_fill_color_button)
 
         self.excellon_alpha_entry.valueChanged.connect(self.on_excellon_alpha_changed)  # alpha
 
@@ -358,22 +342,10 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
     def on_fill_color_entry(self):
         self.app.defaults['excellon_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
             self.app.defaults['excellon_plot_fill'][7:9]
-        self.fill_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['excellon_plot_fill'])[:7])
 
-    def on_fill_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['excellon_plot_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.fill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['excellon_plot_fill'][7:9])
-        self.fill_color_entry.set_value(new_val)
-        self.app.defaults['excellon_plot_fill'] = new_val
+    def on_line_color_entry(self):
+        self.app.defaults['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \
+                                                self.app.defaults['excellon_plot_line'][7:9]
 
     def on_excellon_alpha_changed(self, spinner_value):
         self.app.defaults['excellon_plot_fill'] = \
@@ -382,27 +354,6 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.app.defaults['excellon_plot_line'] = \
             self.app.defaults['excellon_plot_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_line_color_entry(self):
-        self.app.defaults['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \
-                                                self.app.defaults['excellon_plot_line'][7:9]
-        self.line_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['excellon_plot_line'])[:7])
-
-    def on_line_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['excellon_plot_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['excellon_plot_line'][7:9])
-        self.line_color_entry.set_value(new_val_line)
-        self.app.defaults['excellon_plot_line'] = new_val_line
 
     def on_excellon_defaults_button(self):
         self.app.preferencesUiManager.defaults_form_fields["excellon_format_lower_in"].set_value('4')

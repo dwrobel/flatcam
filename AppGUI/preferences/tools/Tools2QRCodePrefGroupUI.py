@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt, QSettings
 
-from AppGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCEntry
+from AppGUI.GUIElements import FCSpinner, RadioSet, FCTextArea, FCEntry, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -153,42 +153,20 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.fill_color_label.setToolTip(
             _("Set the QRCode fill color (squares color).")
         )
-        self.fill_color_entry = FCEntry()
-        self.fill_color_button = QtWidgets.QPushButton()
-        self.fill_color_button.setFixedSize(15, 15)
-
-        fill_lay_child = QtWidgets.QHBoxLayout()
-        fill_lay_child.setContentsMargins(0, 0, 0, 0)
-        fill_lay_child.addWidget(self.fill_color_entry)
-        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignRight)
-        fill_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        fill_color_widget = QtWidgets.QWidget()
-        fill_color_widget.setLayout(fill_lay_child)
+        self.fill_color_entry = FCColorEntry()
 
         grid_lay.addWidget(self.fill_color_label, 9, 0)
-        grid_lay.addWidget(fill_color_widget, 9, 1)
+        grid_lay.addWidget(self.fill_color_entry, 9, 1)
 
         # BACK COLOR #
         self.back_color_label = QtWidgets.QLabel('%s:' % _('Back Color'))
         self.back_color_label.setToolTip(
             _("Set the QRCode background color.")
         )
-        self.back_color_entry = FCEntry()
-        self.back_color_button = QtWidgets.QPushButton()
-        self.back_color_button.setFixedSize(15, 15)
-
-        back_lay_child = QtWidgets.QHBoxLayout()
-        back_lay_child.setContentsMargins(0, 0, 0, 0)
-        back_lay_child.addWidget(self.back_color_entry)
-        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignRight)
-        back_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        back_color_widget = QtWidgets.QWidget()
-        back_color_widget.setLayout(back_lay_child)
+        self.back_color_entry = FCColorEntry()
 
         grid_lay.addWidget(self.back_color_label, 10, 0)
-        grid_lay.addWidget(back_color_widget, 10, 1)
+        grid_lay.addWidget(self.back_color_entry, 10, 1)
 
         # Selection Limit
         self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
@@ -208,64 +186,10 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
 
         # QRCode Tool
         self.fill_color_entry.editingFinished.connect(self.on_qrcode_fill_color_entry)
-        self.fill_color_button.clicked.connect(self.on_qrcode_fill_color_button)
         self.back_color_entry.editingFinished.connect(self.on_qrcode_back_color_entry)
-        self.back_color_button.clicked.connect(self.on_qrcode_back_color_button)
 
     def on_qrcode_fill_color_entry(self):
         self.app.defaults['tools_qrcode_fill_color'] = self.fill_color_entry.get_value()
-        self.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_fill_color'])
-        )
-
-    def on_qrcode_fill_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['tools_qrcode_fill_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        fill_color = c_dialog.getColor(initial=current_color)
-
-        if fill_color.isValid() is False:
-            return
-
-        # if new color is different then mark that the Preferences are changed
-        if fill_color != current_color:
-            self.app.preferencesUiManager.on_preferences_edited()
-
-        self.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(fill_color.name())
-        )
-
-        new_val_sel = str(fill_color.name())
-        self.fill_color_entry.set_value(new_val_sel)
-        self.app.defaults['tools_qrcode_fill_color'] = new_val_sel
 
     def on_qrcode_back_color_entry(self):
         self.app.defaults['tools_qrcode_back_color'] = self.back_color_entry.get_value()
-        self.back_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])
-        )
-
-    def on_qrcode_back_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['tools_qrcode_back_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        back_color = c_dialog.getColor(initial=current_color)
-
-        if back_color.isValid() is False:
-            return
-
-        # if new color is different then mark that the Preferences are changed
-        if back_color != current_color:
-            self.app.preferencesUiManager.on_preferences_edited()
-
-        self.back_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(back_color.name())
-        )
-
-        new_val_sel = str(back_color.name())
-        self.back_color_entry.set_value(new_val_sel)
-        self.app.defaults['tools_qrcode_back_color'] = new_val_sel

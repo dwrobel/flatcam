@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt, QSettings
 
-from AppGUI.GUIElements import RadioSet, FCEntry, FCDoubleSpinner, FCCheckBox, FCComboBox
+from AppGUI.GUIElements import RadioSet, FCEntry, FCDoubleSpinner, FCCheckBox, FCComboBox, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -57,20 +57,10 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.film_color_label.setToolTip(
             _("Set the film color when positive film is selected.")
         )
-        self.film_color_entry = FCEntry()
-        self.film_color_button = QtWidgets.QPushButton()
-        self.film_color_button.setFixedSize(15, 15)
+        self.film_color_entry = FCColorEntry()
 
-        self.form_box_child = QtWidgets.QHBoxLayout()
-        self.form_box_child.setContentsMargins(0, 0, 0, 0)
-        self.form_box_child.addWidget(self.film_color_entry)
-        self.form_box_child.addWidget(self.film_color_button, alignment=Qt.AlignRight)
-        self.form_box_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        film_color_widget = QtWidgets.QWidget()
-        film_color_widget.setLayout(self.form_box_child)
         grid0.addWidget(self.film_color_label, 1, 0)
-        grid0.addWidget(film_color_widget, 1, 1)
+        grid0.addWidget(self.film_color_entry, 1, 1)
 
         # Film Border
         self.film_boundary_entry = FCDoubleSpinner()
@@ -316,32 +306,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         # Film Tool
         self.film_color_entry.editingFinished.connect(self.on_film_color_entry)
-        self.film_color_button.clicked.connect(self.on_film_color_button)
 
     def on_film_color_entry(self):
         self.app.defaults['tools_film_color'] = self.film_color_entry.get_value()
-        self.film_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['tools_film_color'])
-        )
-
-    def on_film_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['tools_film_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        film_color = c_dialog.getColor(initial=current_color)
-
-        if film_color.isValid() is False:
-            return
-
-        # if new color is different then mark that the Preferences are changed
-        if film_color != current_color:
-            self.app.preferencesUiManager.on_preferences_edited()
-
-        self.film_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(film_color.name())
-        )
-        new_val_sel = str(film_color.name())
-        self.film_color_entry.set_value(new_val_sel)
-        self.app.defaults['tools_film_color'] = new_val_sel

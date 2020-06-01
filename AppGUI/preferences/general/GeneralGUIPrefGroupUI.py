@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings, Qt
 
-from AppGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCEntry, FCSpinner, FCSliderWithSpinner
+from AppGUI.GUIElements import RadioSet, FCCheckBox, FCComboBox, FCSliderWithSpinner, FCColorEntry
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -155,17 +155,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sl_color_label.setToolTip(
             _("Set the line color for the 'left to right' selection box.")
         )
-        self.sl_color_entry = FCEntry()
-        self.sl_color_button = QtWidgets.QPushButton()
-        self.sl_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_4 = QtWidgets.QHBoxLayout()
-        self.form_box_child_4.addWidget(self.sl_color_entry)
-        self.form_box_child_4.addWidget(self.sl_color_button)
-        self.form_box_child_4.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.sl_color_entry = FCColorEntry()
 
         grid0.addWidget(self.sl_color_label, 16, 0)
-        grid0.addLayout(self.form_box_child_4, 16, 1)
+        grid0.addWidget(self.sl_color_entry, 16, 1)
 
         self.sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
         self.sf_color_label.setToolTip(
@@ -174,17 +167,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.sf_color_entry = FCEntry()
-        self.sf_color_button = QtWidgets.QPushButton()
-        self.sf_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_5 = QtWidgets.QHBoxLayout()
-        self.form_box_child_5.addWidget(self.sf_color_entry)
-        self.form_box_child_5.addWidget(self.sf_color_button)
-        self.form_box_child_5.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.sf_color_entry = FCColorEntry()
 
         grid0.addWidget(self.sf_color_label, 17, 0)
-        grid0.addLayout(self.form_box_child_5, 17, 1)
+        grid0.addWidget(self.sf_color_entry, 17, 1)
 
         # Plot Selection (left - right) Fill Transparency Level
         self.left_right_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -210,17 +196,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sl_color_label.setToolTip(
             _("Set the line color for the 'right to left' selection box.")
         )
-        self.alt_sl_color_entry = FCEntry()
-        self.alt_sl_color_button = QtWidgets.QPushButton()
-        self.alt_sl_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_7 = QtWidgets.QHBoxLayout()
-        self.form_box_child_7.addWidget(self.alt_sl_color_entry)
-        self.form_box_child_7.addWidget(self.alt_sl_color_button)
-        self.form_box_child_7.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.alt_sl_color_entry = FCColorEntry()
 
         grid0.addWidget(self.alt_sl_color_label, 21, 0)
-        grid0.addLayout(self.form_box_child_7, 21, 1)
+        grid0.addWidget(self.alt_sl_color_entry, 21, 1)
 
         # Plot Selection (right - left) Fill Color
         self.alt_sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -230,24 +209,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
               "First 6 digits are the color and the last 2\n"
               "digits are for alpha (transparency) level.")
         )
-        self.alt_sf_color_entry = FCEntry()
-        self.alt_sf_color_button = QtWidgets.QPushButton()
-        self.alt_sf_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_8 = QtWidgets.QHBoxLayout()
-        self.form_box_child_8.addWidget(self.alt_sf_color_entry)
-        self.form_box_child_8.addWidget(self.alt_sf_color_button)
-        self.form_box_child_8.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.alt_sf_color_entry = FCColorEntry()
 
         grid0.addWidget(self.alt_sf_color_label, 22, 0)
-        grid0.addLayout(self.form_box_child_8, 22, 1)
+        grid0.addWidget(self.alt_sf_color_entry, 22, 1)
 
         # Plot Selection (right - left) Fill Transparency Level
         self.right_left_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
         self.right_left_alpha_label.setToolTip(
             _("Set the fill transparency for selection 'right to left' box.")
         )
-        self.right_left_alpha_entry = FCSliderWithSpinner(0 , 255, 1)
+        self.right_left_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
         grid0.addWidget(self.right_left_alpha_label, 23, 0)
         grid0.addWidget(self.right_left_alpha_entry, 23, 1)
@@ -269,34 +241,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_label.setToolTip(
             _("Set the color for the shape.")
         )
-        self.draw_color_entry = FCEntry()
-        self.draw_color_button = QtWidgets.QPushButton()
-        self.draw_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_10 = QtWidgets.QHBoxLayout()
-        self.form_box_child_10.addWidget(self.draw_color_entry)
-        self.form_box_child_10.addWidget(self.draw_color_button)
-        self.form_box_child_10.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.draw_color_entry = FCColorEntry()
 
         grid0.addWidget(self.draw_color_label, 26, 0)
-        grid0.addLayout(self.form_box_child_10, 26, 1)
+        grid0.addWidget(self.draw_color_entry, 26, 1)
 
         # Editor Draw Selection Color
         self.sel_draw_color_label = QtWidgets.QLabel('%s:' % _('Selection'))
         self.sel_draw_color_label.setToolTip(
             _("Set the color of the shape when selected.")
         )
-        self.sel_draw_color_entry = FCEntry()
-        self.sel_draw_color_button = QtWidgets.QPushButton()
-        self.sel_draw_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_11 = QtWidgets.QHBoxLayout()
-        self.form_box_child_11.addWidget(self.sel_draw_color_entry)
-        self.form_box_child_11.addWidget(self.sel_draw_color_button)
-        self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.sel_draw_color_entry = FCColorEntry()
 
         grid0.addWidget(self.sel_draw_color_label, 27, 0)
-        grid0.addLayout(self.form_box_child_11, 27, 1)
+        grid0.addWidget(self.sel_draw_color_entry, 27, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -315,34 +273,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.proj_color_label.setToolTip(
             _("Set the color of the items in Project Tab Tree.")
         )
-        self.proj_color_entry = FCEntry()
-        self.proj_color_button = QtWidgets.QPushButton()
-        self.proj_color_button.setFixedSize(15, 15)
-
-        self.form_box_child_12 = QtWidgets.QHBoxLayout()
-        self.form_box_child_12.addWidget(self.proj_color_entry)
-        self.form_box_child_12.addWidget(self.proj_color_button)
-        self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.proj_color_entry = FCColorEntry()
 
         grid0.addWidget(self.proj_color_label, 30, 0)
-        grid0.addLayout(self.form_box_child_12, 30, 1)
+        grid0.addWidget(self.proj_color_entry, 30, 1)
 
         self.proj_color_dis_label = QtWidgets.QLabel('%s:' % _('Disabled'))
         self.proj_color_dis_label.setToolTip(
             _("Set the color of the items in Project Tab Tree,\n"
               "for the case when the items are disabled.")
         )
-        self.proj_color_dis_entry = FCEntry()
-        self.proj_color_dis_button = QtWidgets.QPushButton()
-        self.proj_color_dis_button.setFixedSize(15, 15)
-
-        self.form_box_child_13 = QtWidgets.QHBoxLayout()
-        self.form_box_child_13.addWidget(self.proj_color_dis_entry)
-        self.form_box_child_13.addWidget(self.proj_color_dis_button)
-        self.form_box_child_13.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.proj_color_dis_entry = FCColorEntry()
 
         grid0.addWidget(self.proj_color_dis_label, 31, 0)
-        grid0.addLayout(self.form_box_child_13, 31, 1)
+        grid0.addWidget(self.proj_color_dis_entry, 31, 1)
 
         # Project autohide CB
         self.project_autohide_cb = FCCheckBox(label=_('Project AutoHide'))
@@ -365,32 +309,22 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         # Setting selection (left - right) colors signals
         self.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
-        self.sf_color_button.clicked.connect(self.on_sf_color_button)
         self.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
-        self.sl_color_button.clicked.connect(self.on_sl_color_button)
 
         self.left_right_alpha_entry.valueChanged.connect(self.on_left_right_alpha_changed)  # alpha
 
         # Setting selection (right - left) colors signals
         self.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
-        self.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
         self.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
-        self.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
 
         self.right_left_alpha_entry.valueChanged.connect(self.on_right_left_alpha_changed)  # alpha
 
         # Setting Editor Draw colors signals
         self.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.draw_color_button.clicked.connect(self.on_draw_color_button)
-
         self.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
-        self.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
 
         self.proj_color_entry.editingFinished.connect(self.on_proj_color_entry)
-        self.proj_color_button.clicked.connect(self.on_proj_color_button)
-
         self.proj_color_dis_entry.editingFinished.connect(self.on_proj_color_dis_entry)
-        self.proj_color_dis_button.clicked.connect(self.on_proj_color_dis_button)
 
         self.layout_combo.activated.connect(self.on_layout)
 
@@ -417,20 +351,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][7:9]
         self.sf_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_fill'])[:7])
 
-    def on_sf_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_sel_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.sf_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['global_sel_fill'][7:9])
-        self.sf_color_entry.set_value(new_val)
-        self.app.defaults['global_sel_fill'] = new_val
+    def on_sl_color_entry(self):
+        self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
+            self.app.defaults['global_sel_line'][7:9]
+        self.sl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_line'])[:7])
 
     def on_left_right_alpha_changed(self, spinner_value):
         """
@@ -448,26 +372,6 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.defaults['global_sel_line'] = self.app.defaults['global_sel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
-    def on_sl_color_entry(self):
-        self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
-            self.app.defaults['global_sel_line'][7:9]
-        self.sl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_line'])[:7])
-
-    def on_sl_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_sel_line'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.sl_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['global_sel_line'][7:9])
-        self.sl_color_entry.set_value(new_val_line)
-        self.app.defaults['global_sel_line'] = new_val_line
-
     # Setting selection colors (right - left) handlers
     def on_alt_sf_color_entry(self):
         self.app.defaults['global_alt_sel_fill'] = self.alt_sf_color_entry.get_value()[:7] + \
@@ -476,20 +380,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             "background-color:%s" % str(self.app.defaults['global_alt_sel_fill'])[:7]
         )
 
-    def on_alt_sf_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_alt_sel_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.alt_sf_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.app.defaults['global_alt_sel_fill'][7:9])
-        self.alt_sf_color_entry.set_value(new_val)
-        self.app.defaults['global_alt_sel_fill'] = new_val
+    def on_alt_sl_color_entry(self):
+        self.app.defaults['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
+                                                   self.app.defaults['global_alt_sel_line'][7:9]
+        self.alt_sl_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_alt_sel_line'])[:7]
+        )
 
     def on_right_left_alpha_changed(self, spinner_value):
         """
@@ -507,111 +403,25 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.app.defaults['global_alt_sel_line'] = self.app.defaults['global_alt_sel_line'][:7] + \
             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
-    def on_alt_sf_color_slider(self):
-        slider_value = self.alt_sf_color_alpha_slider.value()
-        self.alt_sf_color_alpha_spinner.setValue(slider_value)
-
-    def on_alt_sl_color_entry(self):
-        self.app.defaults['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
-                                                   self.app.defaults['global_alt_sel_line'][7:9]
-        self.alt_sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.app.defaults['global_alt_sel_line'])[:7]
-        )
-
-    def on_alt_sl_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_alt_sel_line'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.alt_sl_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['global_alt_sel_line'][7:9])
-        self.alt_sl_color_entry.set_value(new_val_line)
-        self.app.defaults['global_alt_sel_line'] = new_val_line
-
     # Setting Editor colors
     def on_draw_color_entry(self):
         self.app.defaults['global_draw_color'] = self.draw_color_entry.get_value()
         self.draw_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_draw_color']))
-
-    def on_draw_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_draw_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        draw_color = c_dialog.getColor(initial=current_color)
-
-        if draw_color.isValid() is False:
-            return
-
-        self.draw_color_button.setStyleSheet("background-color:%s" % str(draw_color.name()))
-
-        new_val = str(draw_color.name())
-        self.draw_color_entry.set_value(new_val)
-        self.app.defaults['global_draw_color'] = new_val
 
     def on_sel_draw_color_entry(self):
         self.app.defaults['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
         self.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.app.defaults['global_sel_draw_color']))
 
-    def on_sel_draw_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_sel_draw_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        sel_draw_color = c_dialog.getColor(initial=current_color)
-
-        if sel_draw_color.isValid() is False:
-            return
-
-        self.sel_draw_color_button.setStyleSheet("background-color:%s" % str(sel_draw_color.name()))
-
-        new_val_sel = str(sel_draw_color.name())
-        self.sel_draw_color_entry.set_value(new_val_sel)
-        self.app.defaults['global_sel_draw_color'] = new_val_sel
-
     def on_proj_color_entry(self):
         self.app.defaults['global_proj_item_color'] = self.proj_color_entry.get_value()
         self.proj_color_button.setStyleSheet(
             "background-color:%s" % str(self.app.defaults['global_proj_item_color']))
 
-    def on_proj_color_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_proj_item_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        proj_color = c_dialog.getColor(initial=current_color)
-
-        if proj_color.isValid() is False:
-            return
-
-        self.proj_color_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
-
-        new_val_sel = str(proj_color.name())
-        self.proj_color_entry.set_value(new_val_sel)
-        self.app.defaults['global_proj_item_color'] = new_val_sel
-
     def on_proj_color_dis_entry(self):
         self.app.defaults['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()
         self.proj_color_dis_button.setStyleSheet(
             "background-color:%s" % str(self.app.defaults['global_proj_item_dis_color']))
-
-    def on_proj_color_dis_button(self):
-        current_color = QtGui.QColor(self.app.defaults['global_proj_item_dis_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        proj_color = c_dialog.getColor(initial=current_color)
-
-        if proj_color.isValid() is False:
-            return
-
-        self.proj_color_dis_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
-
-        new_val_sel = str(proj_color.name())
-        self.proj_color_dis_entry.set_value(new_val_sel)
-        self.app.defaults['global_proj_item_dis_color'] = new_val_sel
 
     def on_layout(self, index=None, lay=None):
         """

@@ -704,6 +704,8 @@ class FCColorEntry(QtWidgets.QFrame):
         self.entry.editingFinished.connect(self._sync_button_color)
         self.button.clicked.connect(self._on_button_clicked)
 
+        self.editingFinished = self.entry.editingFinished
+
     def get_value(self) -> str:
         return self.entry.get_value()
 
