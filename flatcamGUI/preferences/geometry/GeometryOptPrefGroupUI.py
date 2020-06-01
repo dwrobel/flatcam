@@ -1,13 +1,14 @@
-from PyQt5.QtCore import QSettings
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt, QSettings
 
-from flatcamGUI.GUIElements import OptionalInputSection
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection, FCEntry, FCSpinner, FCComboBox
 from flatcamGUI.preferences import machinist_setting
-from flatcamGUI.preferences.OptionUI import *
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -19,135 +20,246 @@ else:
     machinist_setting = 0
 
 
-class GeometryOptPrefGroupUI(OptionsGroupUI2):
+class GeometryOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, decimals=4, parent=None):
+        # OptionsGroupUI.__init__(self, "Geometry Options Preferences", parent=parent)
+        super(GeometryOptPrefGroupUI, self).__init__(self, parent=parent)
 
-    def __init__(self, decimals=4, **kwargs):
-        self.decimals = decimals
-        super().__init__(**kwargs)
         self.setTitle(str(_("Geometry Options")))
-        self.pp_geometry_name_cb = self.option_dict()["geometry_ppname_g"].get_field()
+        self.decimals = decimals
 
-        self.multidepth_cb = self.option_dict()["geometry_multidepth"].get_field()
-        self.depthperpass_entry = self.option_dict()["geometry_depthperpass"].get_field()
+        # ------------------------------
+        # ## Create CNC Job
+        # ------------------------------
+        self.cncjob_label = QtWidgets.QLabel('<b>%s:</b>' % _('Create CNC Job'))
+        self.cncjob_label.setToolTip(
+            _("Create a CNC Job object\n"
+              "tracing the contours of this\n"
+              "Geometry object.")
+        )
+        self.layout.addWidget(self.cncjob_label)
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+
+        # Cut Z
+        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel.setToolTip(
+            _("Cutting depth (negative)\n"
+              "below the copper surface.")
+        )
+        self.cutz_entry = FCDoubleSpinner()
+
+        if machinist_setting == 0:
+            self.cutz_entry.set_range(-9999.9999, 0.0000)
+        else:
+            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.setSingleStep(0.1)
+        self.cutz_entry.setWrapping(True)
+
+        grid1.addWidget(cutzlabel, 0, 0)
+        grid1.addWidget(self.cutz_entry, 0, 1)
+
+        # Multidepth CheckBox
+        self.multidepth_cb = FCCheckBox(label=_('Multi-Depth'))
+        self.multidepth_cb.setToolTip(
+            _(
+                "Use multiple passes to limit\n"
+                "the cut depth in each pass. Will\n"
+                "cut multiple times until Cut Z is\n"
+                "reached."
+            )
+        )
+        grid1.addWidget(self.multidepth_cb, 1, 0)
+
+        # Depth/pass
+        dplabel = QtWidgets.QLabel('%s:' % _('Depth/Pass'))
+        dplabel.setToolTip(
+            _("The depth to cut on each pass,\n"
+              "when multidepth is enabled.\n"
+              "It has positive value although\n"
+              "it is a fraction from the depth\n"
+              "which has negative value.")
+        )
+
+        self.depthperpass_entry = FCDoubleSpinner()
+        self.depthperpass_entry.set_range(0, 99999)
+        self.depthperpass_entry.set_precision(self.decimals)
+        self.depthperpass_entry.setSingleStep(0.1)
+        self.depthperpass_entry.setWrapping(True)
+
+        grid1.addWidget(dplabel, 2, 0)
+        grid1.addWidget(self.depthperpass_entry, 2, 1)
+
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
 
-        self.dwell_cb = self.option_dict()["geometry_dwell"].get_field()
-        self.dwelltime_entry = self.option_dict()["geometry_dwelltime"].get_field()
+        # Travel Z
+        travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        travelzlabel.setToolTip(
+            _("Height of the tool when\n"
+              "moving without cutting.")
+        )
+        self.travelz_entry = FCDoubleSpinner()
+
+        if machinist_setting == 0:
+            self.travelz_entry.set_range(0.0001, 9999.9999)
+        else:
+            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+
+        self.travelz_entry.set_precision(self.decimals)
+        self.travelz_entry.setSingleStep(0.1)
+        self.travelz_entry.setWrapping(True)
+
+        grid1.addWidget(travelzlabel, 3, 0)
+        grid1.addWidget(self.travelz_entry, 3, 1)
+
+        # Tool change:
+        self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
+        self.toolchange_cb.setToolTip(
+            _(
+                "Include tool-change sequence\n"
+                "in the Machine Code (Pause for tool change)."
+            )
+        )
+        grid1.addWidget(self.toolchange_cb, 4, 0, 1, 2)
+
+        # Toolchange Z
+        toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
+        toolchangezlabel.setToolTip(
+            _(
+                "Z-axis position (height) for\n"
+                "tool change."
+            )
+        )
+        self.toolchangez_entry = FCDoubleSpinner()
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.set_range(0.000, 9999.9999)
+        else:
+            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setSingleStep(0.1)
+        self.toolchangez_entry.setWrapping(True)
+
+        grid1.addWidget(toolchangezlabel, 5, 0)
+        grid1.addWidget(self.toolchangez_entry, 5, 1)
+
+        # End move Z
+        endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        endz_label.setToolTip(
+            _("Height of the tool after\n"
+              "the last move at the end of the job.")
+        )
+        self.endz_entry = FCDoubleSpinner()
+
+        if machinist_setting == 0:
+            self.endz_entry.set_range(0.000, 9999.9999)
+        else:
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
+
+        self.endz_entry.set_precision(self.decimals)
+        self.endz_entry.setSingleStep(0.1)
+        self.endz_entry.setWrapping(True)
+
+        grid1.addWidget(endz_label, 6, 0)
+        grid1.addWidget(self.endz_entry, 6, 1)
+
+        # End Move X,Y
+        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label.setToolTip(
+            _("End move X,Y position. In format (x,y).\n"
+              "If no value is entered then there is no move\n"
+              "on X,Y plane at the end of the job.")
+        )
+        self.endxy_entry = FCEntry()
+
+        grid1.addWidget(endmove_xy_label, 7, 0)
+        grid1.addWidget(self.endxy_entry, 7, 1)
+
+        # Feedrate X-Y
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
+        frlabel.setToolTip(
+            _("Cutting speed in the XY\n"
+              "plane in units per minute")
+        )
+        self.cncfeedrate_entry = FCDoubleSpinner()
+        self.cncfeedrate_entry.set_range(0, 99999.9999)
+        self.cncfeedrate_entry.set_precision(self.decimals)
+        self.cncfeedrate_entry.setSingleStep(0.1)
+        self.cncfeedrate_entry.setWrapping(True)
+
+        grid1.addWidget(frlabel, 8, 0)
+        grid1.addWidget(self.cncfeedrate_entry, 8, 1)
+
+        # Feedrate Z (Plunge)
+        frz_label = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        frz_label.setToolTip(
+            _("Cutting speed in the XY\n"
+              "plane in units per minute.\n"
+              "It is called also Plunge.")
+        )
+        self.feedrate_z_entry = FCDoubleSpinner()
+        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.set_precision(self.decimals)
+        self.feedrate_z_entry.setSingleStep(0.1)
+        self.feedrate_z_entry.setWrapping(True)
+
+        grid1.addWidget(frz_label, 9, 0)
+        grid1.addWidget(self.feedrate_z_entry, 9, 1)
+
+        # Spindle Speed
+        spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        spdlabel.setToolTip(
+            _(
+                "Speed of the spindle in RPM (optional).\n"
+                "If LASER preprocessor is used,\n"
+                "this value is the power of laser."
+            )
+        )
+        self.cncspindlespeed_entry = FCSpinner()
+        self.cncspindlespeed_entry.set_range(0, 1000000)
+        self.cncspindlespeed_entry.set_step(100)
+
+        grid1.addWidget(spdlabel, 10, 0)
+        grid1.addWidget(self.cncspindlespeed_entry, 10, 1)
+
+        # Dwell
+        self.dwell_cb = FCCheckBox(label='%s' % _('Enable Dwell'))
+        self.dwell_cb.setToolTip(
+            _("Pause to allow the spindle to reach its\n"
+              "speed before cutting.")
+        )
+        dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
+        dwelltime.setToolTip(
+            _("Number of time units for spindle to dwell.")
+        )
+        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.set_range(0, 99999)
+        self.dwelltime_entry.set_precision(self.decimals)
+        self.dwelltime_entry.setSingleStep(0.1)
+        self.dwelltime_entry.setWrapping(True)
+
+        grid1.addWidget(self.dwell_cb, 11, 0)
+        grid1.addWidget(dwelltime, 12, 0)
+        grid1.addWidget(self.dwelltime_entry, 12, 1)
+
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-    def build_options(self) -> [OptionUI]:
-        return [
-            HeadingOptionUI(
-                label_text="Create CNC Job",
-                label_tooltip="Create a CNC Job object\n"
-                              "tracing the contours of this\n"
-                              "Geometry object."
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_cutz",
-                label_text="Cut Z",
-                label_tooltip="Cutting depth (negative)\n"
-                              "below the copper surface.",
-                min_value=-9999.9999, max_value=(9999.999 if machinist_setting else 0.0),
-                decimals=self.decimals, step=0.1
-            ),
-            CheckboxOptionUI(
-                option="geometry_multidepth",
-                label_text="Multi-Depth",
-                label_tooltip="Use multiple passes to limit\n"
-                              "the cut depth in each pass. Will\n"
-                              "cut multiple times until Cut Z is\n"
-                              "reached."
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_depthperpass",
-                label_text="Depth/Pass",
-                label_tooltip="The depth to cut on each pass,\n"
-                              "when multidepth is enabled.\n"
-                              "It has positive value although\n"
-                              "it is a fraction from the depth\n"
-                              "which has negative value.",
-                min_value=0, max_value=99999, step=0.1, decimals=self.decimals
+        # preprocessor selection
+        pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_label.setToolTip(
+            _("The Preprocessor file that dictates\n"
+              "the Machine Code (like GCode, RML, HPGL) output.")
+        )
+        self.pp_geometry_name_cb = FCComboBox()
+        self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
 
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_travelz",
-                label_text="Travel Z",
-                label_tooltip="Height of the tool when\n"
-                              "moving without cutting.",
-                min_value=(-9999.9999 if machinist_setting else 0.0001), max_value=9999.9999,
-                step=0.1, decimals=self.decimals
-            ),
-            CheckboxOptionUI(
-                option="geometry_toolchange",
-                label_text="Tool change",
-                label_tooltip="Include tool-change sequence\n"
-                              "in the Machine Code (Pause for tool change)."
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_toolchangez",
-                label_text="Toolchange Z",
-                label_tooltip="Z-axis position (height) for\n"
-                              "tool change.",
-                min_value=(-9999.9999 if machinist_setting else 0.0), max_value=9999.9999,
-                step=0.1, decimals=self.decimals
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_endz",
-                label_text="End move Z",
-                label_tooltip="Height of the tool after\n"
-                              "the last move at the end of the job.",
-                min_value=(-9999.9999 if machinist_setting else 0.0), max_value=9999.9999,
-                step=0.1, decimals=self.decimals
-            ),
-            LineEntryOptionUI(
-                option="geometry_endxy",
-                label_text="End move X,Y",
-                label_tooltip="End move X,Y position. In format (x,y).\n"
-                              "If no value is entered then there is no move\n"
-                              "on X,Y plane at the end of the job."
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_feedrate",
-                label_text="Feedrate X-Y",
-                label_tooltip="Cutting speed in the XY\n"
-                              "plane in units per minute",
-                min_value=0, max_value=99999.9999, step=0.1, decimals=self.decimals
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_feedrate_z",
-                label_text="Feedrate Z",
-                label_tooltip="Cutting speed in the XY\n"
-                              "plane in units per minute.\n"
-                              "It is called also Plunge.",
-                min_value=0, max_value=99999.9999, step=0.1, decimals=self.decimals
-            ),
-            SpinnerOptionUI(
-                option="geometry_spindlespeed",
-                label_text="Spindle speed",
-                label_tooltip="Speed of the spindle in RPM (optional).\n"
-                              "If LASER preprocessor is used,\n"
-                              "this value is the power of laser.",
-                min_value=0, max_value=1000000, step=100
-            ),
-            CheckboxOptionUI(
-                option="geometry_dwell",
-                label_text="Enable Dwell",
-                label_tooltip="Pause to allow the spindle to reach its\n"
-                              "speed before cutting."
-            ),
-            DoubleSpinnerOptionUI(
-                option="geometry_dwelltime",
-                label_text="Duration",
-                label_tooltip="Number of time units for spindle to dwell.",
-                min_value=0, max_value=999999, step=0.5, decimals=self.decimals
-            ),
-            ComboboxOptionUI(
-                option="geometry_ppname_g",
-                label_text="Preprocessor",
-                label_tooltip="The Preprocessor file that dictates\n"
-                           "the Machine Code (like GCode, RML, HPGL) output.",
-                choices=[]  # Populated in App (FIXME)
-            )
-        ]
+        grid1.addWidget(pp_label, 13, 0)
+        grid1.addWidget(self.pp_geometry_name_cb, 13, 1)
 
+        self.layout.addStretch()

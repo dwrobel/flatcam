@@ -1,5 +1,6 @@
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
-from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.preferences.geometry.GeometryEditorPrefGroupUI import GeometryEditorPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryAdvOptPrefGroupUI import GeometryAdvOptPrefGroupUI
 from flatcamGUI.preferences.geometry.GeometryOptPrefGroupUI import GeometryOptPrefGroupUI
@@ -8,30 +9,38 @@ from flatcamGUI.preferences.geometry.GeometryGenPrefGroupUI import GeometryGenPr
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
-class GeometryPreferencesUI(PreferencesSectionUI):
 
-    def __init__(self, decimals, **kwargs):
+class GeometryPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, decimals, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
         self.decimals = decimals
-        # FIXME: remove the need for external access to geometry_opt_group
+
+        self.geometry_gen_group = GeometryGenPrefGroupUI(decimals=self.decimals)
+        self.geometry_gen_group.setMinimumWidth(220)
         self.geometry_opt_group = GeometryOptPrefGroupUI(decimals=self.decimals)
-        super().__init__(**kwargs)
+        self.geometry_opt_group.setMinimumWidth(300)
+        self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI(decimals=self.decimals)
+        self.geometry_adv_opt_group.setMinimumWidth(270)
+        self.geometry_editor_group = GeometryEditorPrefGroupUI(decimals=self.decimals)
+        self.geometry_editor_group.setMinimumWidth(250)
 
-    def build_groups(self) -> [OptionsGroupUI]:
-        return [
-            GeometryGenPrefGroupUI(decimals=self.decimals),
-            self.geometry_opt_group,
-            GeometryAdvOptPrefGroupUI(decimals=self.decimals),
-            GeometryEditorPrefGroupUI(decimals=self.decimals)
-        ]
+        self.layout.addWidget(self.geometry_gen_group)
+        self.layout.addWidget(self.geometry_opt_group)
+        self.layout.addWidget(self.geometry_adv_opt_group)
+        self.layout.addWidget(self.geometry_editor_group)
 
-    def get_tab_id(self):
-        return "geometry_tab"
-
-    def get_tab_label(self):
-        return _("GEOMETRY")
-
+        self.layout.addStretch()

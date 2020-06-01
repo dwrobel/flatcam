@@ -1,5 +1,6 @@
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
-from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.preferences.excellon.ExcellonEditorPrefGroupUI import ExcellonEditorPrefGroupUI
 from flatcamGUI.preferences.excellon.ExcellonExpPrefGroupUI import ExcellonExpPrefGroupUI
 from flatcamGUI.preferences.excellon.ExcellonAdvOptPrefGroupUI import ExcellonAdvOptPrefGroupUI
@@ -9,62 +10,44 @@ from flatcamGUI.preferences.excellon.ExcellonGenPrefGroupUI import ExcellonGenPr
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
-class ExcellonPreferencesUI(PreferencesSectionUI):
 
-    def __init__(self, decimals, **kwargs):
+class ExcellonPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, decimals, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
         self.decimals = decimals
-        # FIXME: remove the need for external access to excellon_opt_group
+
+        self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals)
+        self.excellon_gen_group.setMinimumWidth(220)
         self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
-        super().__init__(**kwargs)
-        self.init_sync_export()
+        self.excellon_opt_group.setMinimumWidth(290)
+        self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)
+        self.excellon_exp_group.setMinimumWidth(250)
+        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
+        self.excellon_adv_opt_group.setMinimumWidth(250)
+        self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
+        self.excellon_editor_group.setMinimumWidth(260)
 
-    def build_groups(self) -> [OptionsGroupUI]:
-        return [
-            ExcellonGenPrefGroupUI(decimals=self.decimals),
-            self.excellon_opt_group,
-            ExcellonExpPrefGroupUI(decimals=self.decimals),
-            ExcellonAdvOptPrefGroupUI(decimals=self.decimals),
-            ExcellonEditorPrefGroupUI(decimals=self.decimals)
-        ]
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.excellon_opt_group)
+        self.vlay.addWidget(self.excellon_exp_group)
 
-    def get_tab_id(self):
-        return "excellon_tab"
+        self.layout.addWidget(self.excellon_gen_group)
+        self.layout.addLayout(self.vlay)
+        self.layout.addWidget(self.excellon_adv_opt_group)
+        self.layout.addWidget(self.excellon_editor_group)
 
-    def get_tab_label(self):
-        return _("EXCELLON")
-
-    def init_sync_export(self):
-        self.option_dict()["excellon_update"].get_field().stateChanged.connect(self.sync_export)
-        self.option_dict()["excellon_format_upper_in"].get_field().returnPressed.connect(self.sync_export)
-        self.option_dict()["excellon_format_lower_in"].get_field().returnPressed.connect(self.sync_export)
-        self.option_dict()["excellon_format_upper_mm"].get_field().returnPressed.connect(self.sync_export)
-        self.option_dict()["excellon_format_lower_mm"].get_field().returnPressed.connect(self.sync_export)
-        self.option_dict()["excellon_zeros"].get_field().activated_custom.connect(self.sync_export)
-        self.option_dict()["excellon_units"].get_field().activated_custom.connect(self.sync_export)
-
-    def sync_export(self):
-        if not self.option_dict()["excellon_update"].get_field().get_value():
-            # User has disabled sync.
-            return
-
-        zeros = self.option_dict()["excellon_zeros"].get_field().get_value() + 'Z'
-        self.option_dict()["excellon_exp_zeros"].get_field().set_value(zeros)
-
-        units = self.option_dict()["excellon_units"].get_field().get_value()
-        self.option_dict()["excellon_exp_units"].get_field().set_value(units)
-
-        if units.upper() == 'METRIC':
-            whole = self.option_dict()["excellon_format_upper_mm"].get_field().get_value()
-            dec = self.option_dict()["excellon_format_lower_mm"].get_field().get_value()
-        else:
-            whole = self.option_dict()["excellon_format_upper_in"].get_field().get_value()
-            dec = self.option_dict()["excellon_format_lower_in"].get_field().get_value()
-        self.option_dict()["excellon_exp_integer"].get_field().set_value(whole)
-        self.option_dict()["excellon_exp_decimals"].get_field().set_value(dec)
-
-
+        self.layout.addStretch()

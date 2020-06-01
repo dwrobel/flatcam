@@ -3467,32 +3467,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
             :return:
             """
             try:
-                text_value = entry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                self.options[opt] = float(text_value)
+                self.options[opt] = float(entry.text())
             except Exception as e:
-                entry.set_value(self.app.defaults[opt])
                 log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
-        def grid_changed(goption, gentry):
+        def gridx_changed(goption, gentry):
             """
 
-            :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
-            :param gentry:      A GUI element which text value is read and used
+            :param goption: String. Can be either 'global_gridx' or 'global_gridy'
+            :param gentry:  A GUI element which text value is read and used
             :return:
             """
-            if goption not in ['global_gridx', 'global_gridy']:
-                return
-
             entry2option(opt=goption, entry=gentry)
             # if the grid link is checked copy the value in the GridX field to GridY
             try:
-                text_value = gentry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                val = float(text_value)
+                val = float(gentry.get_value())
             except ValueError:
                 return
 
@@ -3501,7 +3491,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
-            lambda: grid_changed("global_gridx", self.app.ui.grid_gap_x_entry))
+            lambda: gridx_changed("global_gridx", self.app.ui.grid_gap_x_entry))
 
         self.app.ui.grid_gap_y_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_y_entry.textChanged.connect(
@@ -4271,23 +4261,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.snap_y = y
         self.app.mouse = [x, y]
 
+        # update the position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f" % (x, y))
+
         if self.pos is None:
             self.pos = (0, 0)
         self.app.dx = x - self.pos[0]
         self.app.dy = y - self.pos[1]
 
-        # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                    "<b>Y</b>: %.4f" % (x, y))
-        #
-        # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
-
-        units = self.app.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                self.app.dx, units, self.app.dy, units, x, units, y, units)
+        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass

@@ -1,25 +1,43 @@
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
-from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.preferences.general.GeneralAppPrefGroupUI import GeneralAppPrefGroupUI
-from flatcamGUI.preferences.general.GeneralAppSettingsGroupUI import GeneralAppSettingsGroupUI
+from flatcamGUI.preferences.general.GeneralAPPSetGroupUI import GeneralAPPSetGroupUI
 from flatcamGUI.preferences.general.GeneralGUIPrefGroupUI import GeneralGUIPrefGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
 
-class GeneralPreferencesUI(PreferencesSectionUI):
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
-    def __init__(self, decimals, **kwargs):
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
+
+class GeneralPreferencesUI(QtWidgets.QWidget):
+    def __init__(self, decimals, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
         self.decimals = decimals
-        super().__init__(**kwargs)
 
-    def build_groups(self) -> [OptionsGroupUI]:
-        return [
-            GeneralAppPrefGroupUI(decimals=self.decimals),
-            GeneralGUIPrefGroupUI(decimals=self.decimals),
-            GeneralAppSettingsGroupUI(decimals=self.decimals)
-        ]
+        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
+        self.general_app_group.setMinimumWidth(250)
 
-    def get_tab_id(self):
-        return "general_tab"
+        self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
+        self.general_gui_group.setMinimumWidth(250)
 
-    def get_tab_label(self):
-        return _("General")
+        self.general_app_set_group = GeneralAPPSetGroupUI(decimals=self.decimals)
+        self.general_app_set_group.setMinimumWidth(250)
+
+        self.layout.addWidget(self.general_app_group)
+        self.layout.addWidget(self.general_gui_group)
+        self.layout.addWidget(self.general_app_set_group)
+
+        self.layout.addStretch()

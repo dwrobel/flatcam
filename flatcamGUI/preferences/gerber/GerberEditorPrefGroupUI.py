@@ -1,138 +1,247 @@
-from flatcamGUI.preferences.OptionUI import *
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI2
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
+from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCComboBox, FCEntry, RadioSet
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
-class GerberEditorPrefGroupUI(OptionsGroupUI2):
 
-    def __init__(self, decimals=4, **kwargs):
-        self.decimals = decimals
-        super().__init__(**kwargs)
+class GerberEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, decimals=4, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GerberEditorPrefGroupUI, self).__init__(self, parent=parent)
+
         self.setTitle(str(_("Gerber Editor")))
+        self.decimals = decimals
 
-    def build_options(self) -> [OptionUI]:
-        return [
-            HeadingOptionUI(
-                label_text="Parameters",
-                label_tooltip="A list of Gerber Editor parameters."
-            ),
-            SpinnerOptionUI(
-                option="gerber_editor_sel_limit",
-                label_text="Selection limit",
-                label_tooltip="Set the number of selected Gerber geometry\n"
-                              "items above which the utility geometry\n"
-                              "becomes just a selection rectangle.\n"
-                              "Increases the performance when moving a\n"
-                              "large number of geometric elements.",
-                min_value=0, max_value=9999, step=1
-            ),
-            SpinnerOptionUI(
-                option="gerber_editor_newcode",
-                label_text="New Aperture code",
-                label_tooltip="Code for the new aperture",
-                min_value=10, max_value=99, step=1
-            ),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_newsize",
-                label_text="New Aperture size",
-                label_tooltip="Size for the new aperture",
-                min_value=0.0, max_value=100.0, step=0.1, decimals=self.decimals
-            ),
-            ComboboxOptionUI(
-                option="gerber_editor_newtype",
-                label_text="New Aperture type",
-                label_tooltip="Type for the new aperture.\n"
-                              "Can be 'C', 'R' or 'O'.",
-                choices=['C', 'R', 'O']
-            ),
-            SpinnerOptionUI(
-                option="gerber_editor_array_size",
-                label_text="Nr of pads",
-                label_tooltip="Specify how many pads to be in the array.",
-                min_value=0, max_value=9999, step=1
-            ),
-            LineEntryOptionUI(
-                option="gerber_editor_newdim",
-                label_text="Aperture Dimensions",
-                label_tooltip="Diameters of the tools, separated by comma.\n"
-                              "The value of the diameter has to use the dot decimals separator.\n"
-                              "Valid values: 0.3, 1.0"
-            ),
+        # Advanced Gerber Parameters
+        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label.setToolTip(
+            _("A list of Gerber Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
 
-            HeadingOptionUI(label_text="Linear Pad Array"),
-            RadioSetOptionUI(
-                option="gerber_editor_lin_axis",
-                label_text="Linear Direction",
-                label_tooltip="Direction on which the linear array is oriented:\n"
-                              "- 'X' - horizontal axis \n"
-                              "- 'Y' - vertical axis or \n"
-                              "- 'Angle' - a custom angle for the array inclination",
-                choices=[{'label': _('X'), 'value': 'X'},
-                         {'label': _('Y'), 'value': 'Y'},
-                         {'label': _('Angle'), 'value': 'A'}]
-            ),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_lin_pitch",
-                label_text="Pitch",
-                label_tooltip="Pitch = Distance between elements of the array.",
-                min_value=-9999.99, max_value=9999.99, step=0.1, decimals=self.decimals
-            ),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_lin_angle",
-                label_text="Angle",
-                label_tooltip="Angle at which each element in circular array is placed.",  # FIXME: this seems wrong
-                min_value=-360, max_value=360, step=5, decimals=self.decimals
-            ),
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
 
-            HeadingOptionUI(label_text="Circular Pad Array"),
-            RadioSetOptionUI(
-                option="gerber_editor_circ_dir",
-                label_text="Circular Direction",
-                label_tooltip="Direction for circular array.\n"
-                              "Can be CW = clockwise or CCW = counter clockwise.",
-                choices=[{'label': _('CW'), 'value': 'CW'},
-                         {'label': _('CCW'), 'value': 'CCW'}]
-            ),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_circ_angle",
-                label_text="Circular Angle",
-                label_tooltip="Angle at which each element in circular array is placed.",
-                min_value=-360, max_value=360, step=5, decimals=self.decimals
-            ),
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected Gerber geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = FCSpinner()
+        self.sel_limit_entry.set_range(0, 9999)
 
-            HeadingOptionUI(label_text="Buffer Tool"),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_buff_f",
-                label_text="Buffer distance",
-                label_tooltip="Distance at which to buffer the Gerber element.",
-                min_value=-9999, max_value=9999, step=0.1, decimals=self.decimals
-            ),
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
 
-            HeadingOptionUI(label_text="Scale Tool"),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_scale_f",
-                label_text="Scale factor",
-                label_tooltip="Factor to scale the Gerber element.",
-                min_value=0, max_value=9999, step=0.1, decimals=self.decimals
-            ),
+        # New aperture code
+        self.addcode_entry_lbl = QtWidgets.QLabel('%s:' % _('New Aperture code'))
+        self.addcode_entry_lbl.setToolTip(
+            _("Code for the new aperture")
+        )
 
-            HeadingOptionUI(label_text="Mark Area Tool"),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_ma_low",
-                label_text="Threshold low",
-                label_tooltip="Threshold value under which the apertures are not marked.",
-                min_value=0, max_value=9999, step=0.1, decimals=self.decimals
-            ),
-            DoubleSpinnerOptionUI(
-                option="gerber_editor_ma_high",
-                label_text="Threshold high",
-                label_tooltip="Threshold value over which the apertures are not marked.",
-                min_value=0, max_value=9999, step=0.1, decimals=self.decimals
-            )
-        ]
+        self.addcode_entry = FCSpinner()
+        self.addcode_entry.set_range(10, 99)
+        self.addcode_entry.setWrapping(True)
+
+        grid0.addWidget(self.addcode_entry_lbl, 1, 0)
+        grid0.addWidget(self.addcode_entry, 1, 1)
+
+        # New aperture size
+        self.addsize_entry_lbl = QtWidgets.QLabel('%s:' % _('New Aperture size'))
+        self.addsize_entry_lbl.setToolTip(
+            _("Size for the new aperture")
+        )
+
+        self.addsize_entry = FCDoubleSpinner()
+        self.addsize_entry.set_range(0, 100)
+        self.addsize_entry.set_precision(self.decimals)
+
+        grid0.addWidget(self.addsize_entry_lbl, 2, 0)
+        grid0.addWidget(self.addsize_entry, 2, 1)
+
+        # New aperture type
+        self.addtype_combo_lbl = QtWidgets.QLabel('%s:' % _('New Aperture type'))
+        self.addtype_combo_lbl.setToolTip(
+            _("Type for the new aperture.\n"
+              "Can be 'C', 'R' or 'O'.")
+        )
+
+        self.addtype_combo = FCComboBox()
+        self.addtype_combo.addItems(['C', 'R', 'O'])
+
+        grid0.addWidget(self.addtype_combo_lbl, 3, 0)
+        grid0.addWidget(self.addtype_combo, 3, 1)
+
+        # Number of pads in a pad array
+        self.grb_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of pads'))
+        self.grb_array_size_label.setToolTip(
+            _("Specify how many pads to be in the array.")
+        )
+
+        self.grb_array_size_entry = FCSpinner()
+        self.grb_array_size_entry.set_range(0, 9999)
+
+        grid0.addWidget(self.grb_array_size_label, 4, 0)
+        grid0.addWidget(self.grb_array_size_entry, 4, 1)
+
+        self.adddim_label = QtWidgets.QLabel('%s:' % _('Aperture Dimensions'))
+        self.adddim_label.setToolTip(
+            _("Diameters of the tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
+        )
+        grid0.addWidget(self.adddim_label, 5, 0)
+        self.adddim_entry = FCEntry()
+        grid0.addWidget(self.adddim_entry, 5, 1)
+
+        self.grb_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Pad Array'))
+        grid0.addWidget(self.grb_array_linear_label, 6, 0, 1, 2)
+
+        # Linear Pad Array direction
+        self.grb_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
+        self.grb_axis_label.setToolTip(
+            _("Direction on which the linear array is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the array inclination")
+        )
+
+        self.grb_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                        {'label': _('Y'), 'value': 'Y'},
+                                        {'label': _('Angle'), 'value': 'A'}])
+
+        grid0.addWidget(self.grb_axis_label, 7, 0)
+        grid0.addWidget(self.grb_axis_radio, 7, 1)
+
+        # Linear Pad Array pitch distance
+        self.grb_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
+        self.grb_pitch_label.setToolTip(
+            _("Pitch = Distance between elements of the array.")
+        )
+        # self.drill_pitch_label.setMinimumWidth(100)
+        self.grb_pitch_entry = FCDoubleSpinner()
+        self.grb_pitch_entry.set_precision(self.decimals)
+
+        grid0.addWidget(self.grb_pitch_label, 8, 0)
+        grid0.addWidget(self.grb_pitch_entry, 8, 1)
+
+        # Linear Pad Array custom angle
+        self.grb_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
+        self.grb_angle_label.setToolTip(
+            _("Angle at which each element in circular array is placed.")
+        )
+        self.grb_angle_entry = FCDoubleSpinner()
+        self.grb_angle_entry.set_precision(self.decimals)
+        self.grb_angle_entry.set_range(-360, 360)
+        self.grb_angle_entry.setSingleStep(5)
+
+        grid0.addWidget(self.grb_angle_label, 9, 0)
+        grid0.addWidget(self.grb_angle_entry, 9, 1)
+
+        self.grb_array_circ_label = QtWidgets.QLabel('<b>%s:</b>' % _('Circular Pad Array'))
+        grid0.addWidget(self.grb_array_circ_label, 10, 0, 1, 2)
+
+        # Circular Pad Array direction
+        self.grb_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
+        self.grb_circular_direction_label.setToolTip(
+            _("Direction for circular array.\n"
+              "Can be CW = clockwise or CCW = counter clockwise.")
+        )
+
+        self.grb_circular_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                                {'label': _('CCW'), 'value': 'CCW'}])
+
+        grid0.addWidget(self.grb_circular_direction_label, 11, 0)
+        grid0.addWidget(self.grb_circular_dir_radio, 11, 1)
+
+        # Circular Pad Array Angle
+        self.grb_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
+        self.grb_circular_angle_label.setToolTip(
+            _("Angle at which each element in circular array is placed.")
+        )
+        self.grb_circular_angle_entry = FCDoubleSpinner()
+        self.grb_circular_angle_entry.set_precision(self.decimals)
+        self.grb_circular_angle_entry.set_range(-360, 360)
+
+        self.grb_circular_angle_entry.setSingleStep(5)
+
+        grid0.addWidget(self.grb_circular_angle_label, 12, 0)
+        grid0.addWidget(self.grb_circular_angle_entry, 12, 1)
+
+        self.grb_array_tools_b_label = QtWidgets.QLabel('<b>%s:</b>' % _('Buffer Tool'))
+        grid0.addWidget(self.grb_array_tools_b_label, 13, 0, 1, 2)
+
+        # Buffer Distance
+        self.grb_buff_label = QtWidgets.QLabel('%s:' % _('Buffer distance'))
+        self.grb_buff_label.setToolTip(
+            _("Distance at which to buffer the Gerber element.")
+        )
+        self.grb_buff_entry = FCDoubleSpinner()
+        self.grb_buff_entry.set_precision(self.decimals)
+        self.grb_buff_entry.set_range(-9999, 9999)
+
+        grid0.addWidget(self.grb_buff_label, 14, 0)
+        grid0.addWidget(self.grb_buff_entry, 14, 1)
+
+        self.grb_array_tools_s_label = QtWidgets.QLabel('<b>%s:</b>' % _('Scale Tool'))
+        grid0.addWidget(self.grb_array_tools_s_label, 15, 0, 1, 2)
+
+        # Scale Factor
+        self.grb_scale_label = QtWidgets.QLabel('%s:' % _('Scale factor'))
+        self.grb_scale_label.setToolTip(
+            _("Factor to scale the Gerber element.")
+        )
+        self.grb_scale_entry = FCDoubleSpinner()
+        self.grb_scale_entry.set_precision(self.decimals)
+        self.grb_scale_entry.set_range(0, 9999)
+
+        grid0.addWidget(self.grb_scale_label, 16, 0)
+        grid0.addWidget(self.grb_scale_entry, 16, 1)
+
+        self.grb_array_tools_ma_label = QtWidgets.QLabel('<b>%s:</b>' % _('Mark Area Tool'))
+        grid0.addWidget(self.grb_array_tools_ma_label, 17, 0, 1, 2)
+
+        # Mark area Tool low threshold
+        self.grb_ma_low_label = QtWidgets.QLabel('%s:' % _('Threshold low'))
+        self.grb_ma_low_label.setToolTip(
+            _("Threshold value under which the apertures are not marked.")
+        )
+        self.grb_ma_low_entry = FCDoubleSpinner()
+        self.grb_ma_low_entry.set_precision(self.decimals)
+        self.grb_ma_low_entry.set_range(0, 9999)
+
+        grid0.addWidget(self.grb_ma_low_label, 18, 0)
+        grid0.addWidget(self.grb_ma_low_entry, 18, 1)
+
+        # Mark area Tool high threshold
+        self.grb_ma_high_label = QtWidgets.QLabel('%s:' % _('Threshold high'))
+        self.grb_ma_high_label.setToolTip(
+            _("Threshold value over which the apertures are not marked.")
+        )
+        self.grb_ma_high_entry = FCDoubleSpinner()
+        self.grb_ma_high_entry.set_precision(self.decimals)
+        self.grb_ma_high_entry.set_range(0, 9999)
+
+        grid0.addWidget(self.grb_ma_high_label, 19, 0)
+        grid0.addWidget(self.grb_ma_high_entry, 19, 1)
+
+        self.layout.addStretch()

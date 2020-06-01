@@ -4774,23 +4774,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.mouse = [x, y]
 
+        # update the position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   " 
+                                           "<b>Y</b>: %.4f" % (x, y))
+
         if self.pos is None:
             self.pos = (0, 0)
         self.app.dx = x - self.pos[0]
         self.app.dy = y - self.pos[1]
 
-        # # update the position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-        #                                    "<b>Y</b>: %.4f" % (x, y))
-        #
-        # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
-
-        units = self.app.defaults["units"].lower()
-        self.plotcanvas.text_hud.text = \
-            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
-                self.app.dx, units, self.app.dy, units, x, units, y, units)
+        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: " 
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         self.update_utility_geometry(data=(x, y))
 

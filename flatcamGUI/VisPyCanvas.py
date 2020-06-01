@@ -13,7 +13,6 @@ import numpy as np
 
 import vispy.scene as scene
 from vispy.scene.cameras.base_camera import BaseCamera
-# from vispy.scene.widgets import Widget as VisPyWidget
 from vispy.color import Color
 
 import time
