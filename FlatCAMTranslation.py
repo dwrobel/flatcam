@@ -79,7 +79,7 @@ def on_language_apply_click(app, restart=False):
 
     :return:
     """
-    name = app.ui.general_defaults_form.general_app_group.language_cb.currentText()
+    name = app.preferencesUiManager.get_form_field("global_language").currentText()
 
     theme_settings = QSettings("Open Source", "FlatCAM")
     if theme_settings.contains("theme"):

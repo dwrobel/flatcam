@@ -285,6 +285,8 @@ class App(QtCore.QObject):
         :rtype: App
         """
 
+        super().__init__()
+
         App.log.info("FlatCAM Starting...")
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
@@ -452,6 +454,8 @@ class App(QtCore.QObject):
 
         self.current_units = self.defaults['units']
 
+
+
         # ###########################################################################################################
         # #################################### SETUP OBJECT CLASSES #################################################
         # ###########################################################################################################
@@ -503,8 +507,6 @@ class App(QtCore.QObject):
         self.FC_dark_green = '#006E20BF'
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
-
-        QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
 
@@ -603,13 +605,11 @@ class App(QtCore.QObject):
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             initial_lay = 'minimal'
-            self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
+            layout_field = self.preferencesUiManager.get_form_field("layout")
+            layout_field.setCurrentIndex(layout_field.findText(initial_lay))
+            self.ui.set_layout(initial_lay)
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False
@@ -632,8 +632,9 @@ class App(QtCore.QObject):
         # ###########################################################################################################
 
         self.languages = fcTranslate.load_languages()
+        language_field = self.preferencesUiManager.get_form_field("global_language")
         for name in sorted(self.languages.values()):
-            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
+            language_field.addItem(name)
 
         # ###########################################################################################################
         # ####################################### APPLY APP LANGUAGE ################################################
@@ -646,7 +647,7 @@ class App(QtCore.QObject):
             log.debug("Could not find the Language files. The App strings are missing.")
         else:
             # make the current language the current selection on the language combobox
-            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
+            self.preferencesUiManager.get_form_field("global_language").setCurrentText(ret_val)
             log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
         # ###########################################################################################################
@@ -966,23 +967,25 @@ class App(QtCore.QObject):
         # #################################### GUI PREFERENCES SIGNALS ##############################################
         # ###########################################################################################################
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.preferencesUiManager.get_form_field("units").activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
         # ##################################### Workspace Setting Signals ###########################################
-        self.ui.general_defaults_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
+
+
+        self.preferencesUiManager.get_form_field("global_workspaceT").currentIndexChanged.connect(
             self.on_workspace_modified)
-        self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio.activated_custom.connect(
+        self.preferencesUiManager.get_form_field("global_workspace_orientation").activated_custom.connect(
             self.on_workspace_modified
         )
+        self.preferencesUiManager.get_form_field("global_workspace").stateChanged.connect(self.on_workspace)
 
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         # ###########################################################################################################
         # ######################################## GUI SETTINGS SIGNALS #############################################
         # ###########################################################################################################
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
-        self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
+        self.preferencesUiManager.get_form_field("global_graphic_engine").activated_custom.connect(self.on_app_restart)
+        self.preferencesUiManager.get_form_field("global_cursor_type").activated_custom.connect(self.on_cursor_type)
 
         # ######################################## Tools related signals ############################################
         # Film Tool
@@ -1002,22 +1005,13 @@ class App(QtCore.QObject):
             self.on_qrcode_back_color_button)
 
         # portability changed signal
-        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+        self.preferencesUiManager.get_form_field("global_portable").stateChanged.connect(self.on_portable_checked)
 
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
         self.collection.item_selected.connect(self.on_row_selected)
 
         self.object_status_changed.connect(self.on_collection_updated)
-
-        # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
-        # Export Excellon parameters.
-        self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb.stateChanged.connect(
-            self.on_update_exc_export
-        )
-
-        # call it once to make sure it is updated at startup
-        self.on_update_exc_export(state=self.defaults["excellon_update"])
 
         # when there are arguments at application startup this get launched
         self.args_at_startup[list].connect(self.on_startup_args)
@@ -1425,8 +1419,8 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
-            App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
+                self.preferencesUiManager.get_form_field("global_version_check").get_value() is True:
+            App.log.info("Checking for updates in background (this is version %s)." % str(self.version))
 
             # self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
@@ -1553,7 +1547,7 @@ class App(QtCore.QObject):
         self.abort_flag = False
 
         # set the value used in the Windows Title
-        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+        self.engine = self.preferencesUiManager.get_form_field("global_graphic_engine").get_value()
 
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
@@ -1598,11 +1592,7 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
-        # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
-        current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################
@@ -3571,24 +3561,24 @@ class App(QtCore.QObject):
             stgs.setValue('maximized_gui', self.ui.isMaximized())
             stgs.setValue(
                 'language',
-                self.ui.general_defaults_form.general_app_group.language_cb.get_value()
+                self.preferencesUiManager.get_form_field("global_language").get_value()
             )
             stgs.setValue(
                 'notebook_font_size',
-                self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("notebook_font_size").get_value()
             )
             stgs.setValue(
                 'axis_font_size',
-                self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("axis_font_size").get_value()
             )
             stgs.setValue(
                 'textbox_font_size',
-                self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
+                self.preferencesUiManager.get_form_field("textbox_font_size").get_value()
             )
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
             stgs.setValue(
                 'machinist',
-                1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
+                1 if self.preferencesUiManager.get_form_field("global_machinist_setting").get_value() else 0
             )
 
             # This will write the setting to the platform specific storage.
@@ -4211,18 +4201,18 @@ class App(QtCore.QObject):
 
     def on_toggle_units_click(self):
         try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+            self.preferencesUiManager.get_form_field("units").activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
         if self.defaults["units"] == 'MM':
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+            self.preferencesUiManager.get_form_field("units").set_value("IN")
         else:
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+            self.preferencesUiManager.get_form_field("units").set_value("MM")
 
         self.on_toggle_units(no_pref=True)
 
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.preferencesUiManager.get_form_field("units").activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
     def on_toggle_units(self, no_pref=False):
@@ -4240,7 +4230,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        new_units = self.preferencesUiManager.get_form_field("units").get_value().upper()
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
@@ -4451,9 +4441,9 @@ class App(QtCore.QObject):
             # Undo toggling
             self.toggle_units_ignore = True
             if self.defaults['units'].upper() == 'MM':
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('IN')
+                self.preferencesUiManager.get_form_field("units").set_value('IN')
             else:
-                self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
+                self.preferencesUiManager.get_form_field("units").set_value('MM')
             self.toggle_units_ignore = False
 
             # store the grid values so they are not changed in the next step
@@ -4622,133 +4612,7 @@ class App(QtCore.QObject):
                 self.app_cursor.enabled = True
                 self.app_cursor.enabled = False
 
-    def on_update_exc_export(self, state):
-        """
-        This is handling the update of Excellon Export parameters based on the ones in the Excellon General but only
-        if the update_excellon_cb checkbox is checked
 
-        :param state: state of the checkbox whose signals is tied to his slot
-        :return:
-        """
-        if state:
-            # first try to disconnect
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom. \
-                    disconnect(self.on_excellon_zeros_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom. \
-                    disconnect(self.on_excellon_zeros_changed)
-            except TypeError:
-                pass
-
-            # the connect them
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.returnPressed.connect(
-                self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.returnPressed.connect(
-                self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed.connect(
-                self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed.connect(
-                self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
-                self.on_excellon_zeros_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.connect(
-                self.on_excellon_units_changed)
-        else:
-            # disconnect the signals
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.returnPressed. \
-                    disconnect(self.on_excellon_format_changed)
-            except TypeError:
-                pass
-
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom. \
-                    disconnect(self.on_excellon_zeros_changed)
-            except TypeError:
-                pass
-            try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom. \
-                    disconnect(self.on_excellon_zeros_changed)
-            except TypeError:
-                pass
-
-    def on_excellon_format_changed(self):
-        """
-        Slot activated when the user changes the Excellon format values in Preferences -> Excellon -> Excellon General
-        :return: None
-        """
-        if self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value().upper() == 'METRIC':
-            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.get_value()
-            )
-            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.get_value()
-            )
-        else:
-            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.get_value()
-            )
-            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.get_value()
-            )
-
-    def on_excellon_zeros_changed(self):
-        """
-        Slot activated when the user changes the Excellon zeros values in Preferences -> Excellon -> Excellon General
-        :return: None
-        """
-        self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio.set_value(
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.get_value() + 'Z'
-        )
-
-    def on_excellon_units_changed(self):
-        """
-        Slot activated when the user changes the Excellon unit values in Preferences -> Excellon -> Excellon General
-        :return: None
-        """
-        self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio.set_value(
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value()
-        )
-        self.on_excellon_format_changed()
 
     def on_film_color_entry(self):
         self.defaults['tools_film_color'] = \
@@ -4875,7 +4739,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
+        if self.preferencesUiManager.get_form_field("global_workspace").get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
@@ -4883,13 +4747,13 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value() else True
+        state = False if self.preferencesUiManager.get_form_field("global_workspace").get_value() else True
         try:
-            self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
+            self.preferencesUiManager.get_form_field("global_workspace").stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
-        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.preferencesUiManager.get_form_field("global_workspace").set_value(state)
+        self.preferencesUiManager.get_form_field("global_workspace").stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_cursor_type(self, val):
@@ -4901,12 +4765,12 @@ class App(QtCore.QObject):
         self.app_cursor.enabled = False
 
         if val == 'small':
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(False)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
+            self.preferencesUiManager.get_form_field("global_cursor_size").setDisabled(False)
+            #self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(True)
-            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
+            self.preferencesUiManager.get_form_field("global_cursor_size").setDisabled(False)
+            #self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
@@ -5378,14 +5242,20 @@ class App(QtCore.QObject):
                                      edge_width=self.defaults["global_cursor_width"],
                                      size=self.defaults["global_cursor_size"])
 
-        # Set the position label
-        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
         # Set the relative position label
         dx = location[0] - float(self.rel_point1[0])
         dy = location[1] - float(self.rel_point1[1])
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # # Set the position label
+        #
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        units = self.defaults["units"].lower()
+        self.plotcanvas.text_hud.text = \
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                dx, units, dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -5527,14 +5397,19 @@ class App(QtCore.QObject):
                                      edge_width=self.defaults["global_cursor_width"],
                                      size=self.defaults["global_cursor_size"])
 
-        # Set the position label
-        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
         # Set the relative position label
         self.dx = location[0] - float(self.rel_point1[0])
         self.dy = location[1] - float(self.rel_point1[1])
-        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+        # Set the position label
+        # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+        #                                "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+        units = self.defaults["units"].lower()
+        self.plotcanvas.text_hud.text = \
+            'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                self.dx, units, self.dy, units, location[0], units, location[1], units)
 
         self.inform.emit('[success] %s' % _("Done."))
         return location
@@ -5843,8 +5718,8 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
@@ -6738,6 +6613,9 @@ class App(QtCore.QObject):
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
+                if pos_canvas[0] is None or pos_canvas[1] is None:
+                    return
+
                 if self.grid_status():
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
@@ -6749,13 +6627,19 @@ class App(QtCore.QObject):
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
-                self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                               "<b>Y</b>: %.4f" % (pos[0], pos[1]))
-
                 self.dx = pos[0] - float(self.rel_point1[0])
                 self.dy = pos[1] - float(self.rel_point1[1])
-                self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+                # self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                #                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
+                # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+
+                units = self.defaults["units"].lower()
+                self.plotcanvas.text_hud.text = \
+                    'Dx:\t{:<.4f} [{:s}]\nDy:\t{:<.4f} [{:s}]\nX:  \t{:<.4f} [{:s}]\nY:  \t{:<.4f} [{:s}]'.format(
+                        self.dx, units, self.dy, units, pos[0], units, pos[1], units)
+
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
@@ -6804,9 +6688,10 @@ class App(QtCore.QObject):
                             # In this case poly_obj creation (see above) will fail
                             pass
 
-            except Exception:
-                self.ui.position_label.setText("")
-                self.ui.rel_position_label.setText("")
+            except Exception as e:
+                log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
+                # self.ui.position_label.setText("")
+                # self.ui.rel_position_label.setText("")
                 self.mouse = None
 
     def on_mouse_click_release_over_plot(self, event):
@@ -10134,7 +10019,8 @@ class App(QtCore.QObject):
 
         self.log.debug("version_check()")
 
-        if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
+
+        if self.defaults["global_send_stats"] is True:
             full_url = "%s?s=%s&v=%s&os=%s&%s" % (
                 App.version_url,
                 str(self.defaults['global_serial']),
@@ -10473,10 +10359,9 @@ class App(QtCore.QObject):
         alpha_level = 'BF'
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
-                alpha_level = str(hex(
-                    self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
+                alpha_level = self.defaults["excellon_plot_fill"][7:]
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+                alpha_level = self.defaults["gerber_plot_fill"][7:]
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:

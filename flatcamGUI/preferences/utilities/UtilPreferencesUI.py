@@ -1,37 +1,31 @@
-from PyQt5 import QtWidgets
-
+from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
+from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
 from flatcamGUI.preferences.utilities.AutoCompletePrefGroupUI import AutoCompletePrefGroupUI
 from flatcamGUI.preferences.utilities.FAGrbPrefGroupUI import FAGrbPrefGroupUI
 from flatcamGUI.preferences.utilities.FAGcoPrefGroupUI import FAGcoPrefGroupUI
 from flatcamGUI.preferences.utilities.FAExcPrefGroupUI import FAExcPrefGroupUI
 
 
-class UtilPreferencesUI(QtWidgets.QWidget):
+class UtilPreferencesUI(PreferencesSectionUI):
 
-    def __init__(self, decimals, parent=None):
-        QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QHBoxLayout()
-        self.setLayout(self.layout)
+    def __init__(self, decimals, **kwargs):
         self.decimals = decimals
-
-        self.vlay = QtWidgets.QVBoxLayout()
         self.fa_excellon_group = FAExcPrefGroupUI(decimals=self.decimals)
-        self.fa_excellon_group.setMinimumWidth(260)
-
         self.fa_gcode_group = FAGcoPrefGroupUI(decimals=self.decimals)
-        self.fa_gcode_group.setMinimumWidth(260)
-
-        self.vlay.addWidget(self.fa_excellon_group)
-        self.vlay.addWidget(self.fa_gcode_group)
-
         self.fa_gerber_group = FAGrbPrefGroupUI(decimals=self.decimals)
-        self.fa_gerber_group.setMinimumWidth(260)
-
         self.kw_group = AutoCompletePrefGroupUI(decimals=self.decimals)
-        self.kw_group.setMinimumWidth(260)
+        super().__init__(**kwargs)
 
-        self.layout.addLayout(self.vlay)
-        self.layout.addWidget(self.fa_gerber_group)
-        self.layout.addWidget(self.kw_group)
+    def build_groups(self) -> [OptionsGroupUI]:
+        return [
+            self.fa_excellon_group, # fixme column with fa_excellon and fa_gcode
+            self.fa_gcode_group,
+            self.fa_gerber_group,
+            self.kw_group,
+        ]
 
-        self.layout.addStretch()
+    def get_tab_id(self):
+        return "fa_tab"
+
+    def get_tab_label(self):
+        return _("UTILITIES")

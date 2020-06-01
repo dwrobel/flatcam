@@ -1,4 +1,6 @@
 import os
+from typing import Any, Dict
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import QSettings
 from defaults import FlatCAMDefaults
@@ -7,6 +9,8 @@ import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+from flatcamGUI.preferences.OptionUI import OptionUI
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -20,7 +24,6 @@ else:
 
 log = logging.getLogger('PreferencesUIManager')
 
-
 class PreferencesUIManager:
 
     def __init__(self, defaults: FlatCAMDefaults, data_path: str, ui, inform):
@@ -30,7 +33,7 @@ class PreferencesUIManager:
         :param defaults:    a dictionary storage where all the application settings are stored
         :param data_path:   a path to the file where all the preferences are stored for persistence
         :param ui:          reference to the FlatCAMGUI class which constructs the UI
-        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        :param inform:      a pyqtSignal used to display information in the StatusBar of the GUI
         """
 
         self.defaults = defaults
@@ -45,298 +48,6 @@ class PreferencesUIManager:
         # when adding entries here read the comments in the  method found below named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
-            # General App
-            "decimals_inch": self.ui.general_defaults_form.general_app_group.precision_inch_entry,
-            "decimals_metric": self.ui.general_defaults_form.general_app_group.precision_metric_entry,
-            "units": self.ui.general_defaults_form.general_app_group.units_radio,
-            "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
-            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
-            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
-            "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
-
-            "global_systray_icon": self.ui.general_defaults_form.general_app_group.systray_cb,
-            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
-            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
-            "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
-            "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
-
-            "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
-            "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
-
-            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
-            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
-            "global_autosave": self.ui.general_defaults_form.general_app_group.autosave_cb,
-            "global_autosave_timeout": self.ui.general_defaults_form.general_app_group.autosave_entry,
-
-            "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
-            "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
-            "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
-            "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
-
-            # General GUI Preferences
-            "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
-            "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
-            "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
-            "global_hover": self.ui.general_defaults_form.general_gui_group.hover_cb,
-            "global_selection_shape": self.ui.general_defaults_form.general_gui_group.selection_cb,
-
-            "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
-            "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
-            "global_alt_sel_fill": self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry,
-            "global_alt_sel_line": self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry,
-            "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
-            "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
-
-            "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
-            "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
-            "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
-
-            # General GUI Settings
-            "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
-            "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
-            "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
-            "global_workspace": self.ui.general_defaults_form.general_app_set_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_app_set_group.wk_cb,
-            "global_workspace_orientation": self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio,
-
-            "global_cursor_type": self.ui.general_defaults_form.general_app_set_group.cursor_radio,
-            "global_cursor_size": self.ui.general_defaults_form.general_app_set_group.cursor_size_entry,
-            "global_cursor_width": self.ui.general_defaults_form.general_app_set_group.cursor_width_entry,
-            "global_cursor_color_enabled": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_color_cb,
-            "global_cursor_color": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry,
-            "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
-            "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
-            "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
-
-            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_set_group.bm_limit_spinner,
-            "global_activity_icon": self.ui.general_defaults_form.general_app_set_group.activity_combo,
-
-            # Gerber General
-            "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
-            "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
-            "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
-            "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
-            "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
-            "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
-            "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
-            "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
-            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry,
-            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
-
-            # Gerber Options
-            "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
-            "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
-            "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
-            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.iso_scope_radio,
-            "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
-            "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
-            "gerber_bboxrounded": self.ui.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
-
-            # Gerber Advanced Options
-            "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
-            # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
-            # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
-            "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
-            "gerber_tool_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.tool_type_radio,
-            "gerber_vtipdia": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipdia_spinner,
-            "gerber_vtipangle": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipangle_spinner,
-            "gerber_vcutz": self.ui.gerber_defaults_form.gerber_adv_opt_group.cutz_spinner,
-            "gerber_iso_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.iso_type_radio,
-
-            "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
-            "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
-            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
-
-            # Gerber Export
-            "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
-            "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
-            "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
-            "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
-
-            # Gerber Editor
-            "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
-            "gerber_editor_newcode": self.ui.gerber_defaults_form.gerber_editor_group.addcode_entry,
-            "gerber_editor_newsize": self.ui.gerber_defaults_form.gerber_editor_group.addsize_entry,
-            "gerber_editor_newtype": self.ui.gerber_defaults_form.gerber_editor_group.addtype_combo,
-            "gerber_editor_newdim": self.ui.gerber_defaults_form.gerber_editor_group.adddim_entry,
-            "gerber_editor_array_size": self.ui.gerber_defaults_form.gerber_editor_group.grb_array_size_entry,
-            "gerber_editor_lin_axis": self.ui.gerber_defaults_form.gerber_editor_group.grb_axis_radio,
-            "gerber_editor_lin_pitch": self.ui.gerber_defaults_form.gerber_editor_group.grb_pitch_entry,
-            "gerber_editor_lin_angle": self.ui.gerber_defaults_form.gerber_editor_group.grb_angle_entry,
-            "gerber_editor_circ_dir": self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_dir_radio,
-            "gerber_editor_circ_angle":
-                self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_angle_entry,
-            "gerber_editor_scale_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_scale_entry,
-            "gerber_editor_buff_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_buff_entry,
-            "gerber_editor_ma_low": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_low_entry,
-            "gerber_editor_ma_high": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_high_entry,
-
-            # Excellon General
-            "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
-            "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm":
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
-            "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
-            "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
-            "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
-            "excellon_plot_fill": self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry,
-            "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
-
-            # Excellon Options
-            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
-            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
-
-            "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
-
-            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
-            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
-
-            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
-            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
-            "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
-
-            # Excellon Advanced Options
-            "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
-
-            # Excellon Export
-            "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
-            "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
-            "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
-            "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
-            "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
-            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
-
-            # Excellon Editor
-            "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
-            "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
-            "excellon_editor_array_size": self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
-            "excellon_editor_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
-            "excellon_editor_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
-            "excellon_editor_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
-            "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
-            "excellon_editor_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
-            # Excellon Slots
-            "excellon_editor_slot_direction":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
-            "excellon_editor_slot_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
-            "excellon_editor_slot_length":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
-            # Excellon Slots
-            "excellon_editor_slot_array_size":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
-            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
-            "excellon_editor_slot_lin_pitch":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
-            "excellon_editor_slot_lin_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
-            "excellon_editor_slot_circ_dir":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
-            "excellon_editor_slot_circ_angle":
-                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
-
-            # Geometry General
-            "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_plot_line": self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
-
-            # Geometry Options
-            "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.feedrate_z_entry,
-            "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
-            "geometry_endxy": self.ui.geometry_defaults_form.geometry_opt_group.endxy_entry,
-            "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
-
-            # Geometry Advanced Options
-            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
-            "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
-            "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
-            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
-            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
-            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
-            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
-            "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
-            "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
-            "geometry_area_exclusion": self.ui.geometry_defaults_form.geometry_adv_opt_group.exclusion_cb,
-            "geometry_area_shape": self.ui.geometry_defaults_form.geometry_adv_opt_group.area_shape_radio,
-            "geometry_area_strategy": self.ui.geometry_defaults_form.geometry_adv_opt_group.strategy_radio,
-            "geometry_area_overz": self.ui.geometry_defaults_form.geometry_adv_opt_group.over_z_entry,
-
-            # Geometry Editor
-            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
-            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
-
-            # CNCJob General
-            "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
-
-            "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
-            "cncjob_coords_type": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
-            "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
-            "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
-            "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
-            "cncjob_line_ending": self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
-            "cncjob_plot_line": self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
-            "cncjob_plot_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
-            "cncjob_travel_line": self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
-            "cncjob_travel_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
-
-            # CNC Job Options
-            "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
-
-            # CNC Job Advanced Options
-            "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
-            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
-            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
@@ -587,17 +298,49 @@ class PreferencesUIManager:
 
         }
 
+        self.sections = [
+            ui.general_defaults_form,
+            ui.gerber_defaults_form,
+            ui.excellon_defaults_form,
+            ui.geometry_defaults_form,
+            ui.cncjob_defaults_form,
+            ui.tools_defaults_form,
+            ui.tools2_defaults_form,
+            ui.util_defaults_form
+        ]
+
+    def get_form_fields(self) -> Dict[str, Any]:
+        result = {}
+        result.update(self.defaults_form_fields)
+        result.update(self._option_field_dict())
+        return result
+
+    def get_form_field(self, option: str) -> Any:
+        return self.get_form_fields()[option]
+
+    def option_dict(self) -> Dict[str, OptionUI]:
+        result = {}
+        for section in self.sections:
+            sectionoptions = section.option_dict()
+            result.update(sectionoptions)
+        return result
+
+    def _option_field_dict(self):
+        result = {k: v.get_field() for k, v in self.option_dict().items()}
+        return result
+
     def defaults_read_form(self):
         """
         Will read all the values in the Preferences GUI and update the defaults dictionary.
 
         :return: None
         """
-        for option in self.defaults_form_fields:
-            try:
-                self.defaults[option] = self.defaults_form_fields[option].get_value()
-            except Exception as e:
-                log.debug("App.defaults_read_form() --> %s" % str(e))
+        for option in self.get_form_fields():
+            if option in self.defaults:
+                try:
+                    self.defaults[option] = self.get_form_field(option=option).get_value()
+                except Exception as e:
+                    log.debug("App.defaults_read_form() --> %s" % str(e))
 
     def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """
@@ -637,7 +380,7 @@ class PreferencesUIManager:
             if factor is not None:
                 value *= factor
 
-            form_field = self.defaults_form_fields[field]
+            form_field = self.get_form_field(option=field)
             if units is None:
                 form_field.set_value(value)
             elif (units == 'IN' or units == 'MM') and (field == 'global_gridx' or field == 'global_gridy'):
@@ -654,70 +397,12 @@ class PreferencesUIManager:
 
         :return: None
         """
+        # FIXME this should be done in __init__
 
-        gen_form = self.ui.general_defaults_form
-        try:
-            self.ui.general_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.general_scroll_area.setWidget(gen_form)
-        gen_form.show()
-
-        ger_form = self.ui.gerber_defaults_form
-        try:
-            self.ui.gerber_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.gerber_scroll_area.setWidget(ger_form)
-        ger_form.show()
-
-        exc_form = self.ui.excellon_defaults_form
-        try:
-            self.ui.excellon_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.excellon_scroll_area.setWidget(exc_form)
-        exc_form.show()
-
-        geo_form = self.ui.geometry_defaults_form
-        try:
-            self.ui.geometry_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.geometry_scroll_area.setWidget(geo_form)
-        geo_form.show()
-
-        cnc_form = self.ui.cncjob_defaults_form
-        try:
-            self.ui.cncjob_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.cncjob_scroll_area.setWidget(cnc_form)
-        cnc_form.show()
-
-        tools_form = self.ui.tools_defaults_form
-        try:
-            self.ui.tools_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.tools_scroll_area.setWidget(tools_form)
-        tools_form.show()
-
-        tools2_form = self.ui.tools2_defaults_form
-        try:
-            self.ui.tools2_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.tools2_scroll_area.setWidget(tools2_form)
-        tools2_form.show()
-
-        fa_form = self.ui.util_defaults_form
-        try:
-            self.ui.fa_scroll_area.takeWidget()
-        except Exception:
-            log.debug("Nothing to remove")
-        self.ui.fa_scroll_area.setWidget(fa_form)
-        fa_form.show()
+        for section in self.sections:
+            tab = section.build_tab()
+            tab.setObjectName(section.get_tab_id())
+            self.ui.pref_tab_area.addTab(tab, section.get_tab_label())
 
         # Initialize the color box's color in Preferences -> Global -> Colo
         self.__init_color_pickers()
@@ -731,148 +416,6 @@ class PreferencesUIManager:
         log.debug("Finished Preferences GUI form initialization.")
 
     def __init_color_pickers(self):
-        # Init Gerber Plot Colors
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_spinner.set_value(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.setValue(
-            int(self.defaults['gerber_plot_fill'][7:9], 16))
-
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
-        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
-
-        # Init Excellon Plot Colors
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
-            self.defaults['excellon_plot_fill'])
-        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_spinner.set_value(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.setValue(
-            int(self.defaults['excellon_plot_fill'][7:9], 16))
-
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
-            self.defaults['excellon_plot_line'])
-        self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
-
-        # Init Geometry Plot Colors
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry.set_value(
-            self.defaults['geometry_plot_line'])
-        self.ui.geometry_defaults_form.geometry_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['geometry_plot_line'])[:7])
-
-        # Init CNCJob Travel Line Colors
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry.set_value(
-            self.defaults['cncjob_travel_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_fill'])[:7])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_spinner.set_value(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_slider.setValue(
-            int(self.defaults['cncjob_travel_fill'][7:9], 16))
-
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
-            self.defaults['cncjob_travel_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_travel_line'])[:7])
-
-        # Init CNCJob Plot Colors
-        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry.set_value(
-            self.defaults['cncjob_plot_fill'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_fill'])[:7])
-
-        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry.set_value(
-            self.defaults['cncjob_plot_line'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
-
-        # Init Left-Right Selection colors
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_line'])[:7])
-
-        # Init Right-Left Selection colors
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
-            self.defaults['global_alt_sel_fill'])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
-            int(self.defaults['global_sel_fill'][7:9], 16))
-
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
-            self.defaults['global_alt_sel_line'])
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_alt_sel_line'])[:7])
-
-        # Init Draw color and Selection Draw Color
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
-            self.defaults['global_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_draw_color'])[:7])
-
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
-            self.defaults['global_sel_draw_color'])
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_sel_draw_color'])[:7])
-
-        # Init Project Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
-            self.defaults['global_proj_item_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
-
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
-            self.defaults['global_proj_item_dis_color'])
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
-
-        # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(
-            self.defaults['global_cursor_color'])
-        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
-
-        # Init the Annotation CNC Job color
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
-            self.defaults['cncjob_annotation_fontcolor'])
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
-
         # Init the Tool Film color
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
             self.defaults['tools_film_color'])
@@ -921,7 +464,8 @@ class PreferencesUIManager:
             theme = 'white'
 
         should_restart = False
-        val = self.ui.general_defaults_form.general_gui_group.theme_radio.get_value()
+
+        val = self.get_form_field("global_theme").get_value()
         if val != theme:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("Are you sure you want to continue?"))
@@ -956,20 +500,20 @@ class PreferencesUIManager:
         settgs = QSettings("Open Source", "FlatCAM")
 
         # save the notebook font size
-        fsize = self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
+        fsize = self.get_form_field("notebook_font_size").get_value()
         settgs.setValue('notebook_font_size', fsize)
 
         # save the axis font size
-        g_fsize = self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
+        g_fsize = self.get_form_field("axis_font_size").get_value()
         settgs.setValue('axis_font_size', g_fsize)
 
         # save the textbox font size
-        tb_fsize = self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
+        tb_fsize = self.get_form_field("textbox_font_size").get_value()
         settgs.setValue('textbox_font_size', tb_fsize)
 
         settgs.setValue(
             'machinist',
-            1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
+            1 if self.get_form_field("global_machinist_setting").get_value() else 0
         )
 
         # This will write the setting to the platform specific storage.
@@ -992,11 +536,11 @@ class PreferencesUIManager:
         self.ignore_tab_close_event = True
 
         try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+            self.get_form_field("units").activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+        self.get_form_field("units").activated_custom.connect(
             lambda: self.ui.app.on_toggle_units(no_pref=False))
         self.defaults.update(self.defaults.current_defaults)
 
