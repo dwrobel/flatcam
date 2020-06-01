@@ -1,5 +1,6 @@
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
-from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.preferences.gerber.GerberEditorPrefGroupUI import GerberEditorPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberExpPrefGroupUI import GerberExpPrefGroupUI
 from flatcamGUI.preferences.gerber.GerberAdvOptPrefGroupUI import GerberAdvOptPrefGroupUI
@@ -9,30 +10,44 @@ from flatcamGUI.preferences.gerber.GerberGenPrefGroupUI import GerberGenPrefGrou
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
 
-class GerberPreferencesUI(PreferencesSectionUI):
 
-    def __init__(self, decimals, **kwargs):
+class GerberPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, decimals, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
         self.decimals = decimals
-        super().__init__(**kwargs)
 
-    def build_groups(self) -> [OptionsGroupUI]:
-        return [
-            GerberGenPrefGroupUI(decimals=self.decimals),
+        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals)
+        self.gerber_gen_group.setMinimumWidth(250)
+        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals)
+        self.gerber_opt_group.setMinimumWidth(250)
+        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals)
+        self.gerber_exp_group.setMinimumWidth(230)
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals)
+        self.gerber_adv_opt_group.setMinimumWidth(200)
+        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals)
+        self.gerber_editor_group.setMinimumWidth(200)
 
-            GerberOptPrefGroupUI(decimals=self.decimals),  # FIXME vertical layout with opt and exp
-            GerberExpPrefGroupUI(decimals=self.decimals),
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.gerber_opt_group)
+        self.vlay.addWidget(self.gerber_exp_group)
 
-            GerberAdvOptPrefGroupUI(decimals=self.decimals),
-            GerberEditorPrefGroupUI(decimals=self.decimals)
-        ]
+        self.layout.addWidget(self.gerber_gen_group)
+        self.layout.addLayout(self.vlay)
+        self.layout.addWidget(self.gerber_adv_opt_group)
+        self.layout.addWidget(self.gerber_editor_group)
 
-    def get_tab_id(self):
-        return "gerber_tab"
-
-    def get_tab_label(self):
-        return _("GERBER")
+        self.layout.addStretch()

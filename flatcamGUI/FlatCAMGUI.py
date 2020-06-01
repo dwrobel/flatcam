@@ -1207,6 +1207,89 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_area_tabBar.setExpanding(True)
         self.pref_tab_layout.addWidget(self.pref_tab_area)
 
+        self.general_tab = QtWidgets.QWidget()
+        self.general_tab.setObjectName("general_tab")
+        self.pref_tab_area.addTab(self.general_tab, _("General"))
+        self.general_tab_lay = QtWidgets.QVBoxLayout()
+        self.general_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.general_tab.setLayout(self.general_tab_lay)
+
+        self.hlay1 = QtWidgets.QHBoxLayout()
+        self.general_tab_lay.addLayout(self.hlay1)
+
+        self.hlay1.addStretch()
+
+        self.general_scroll_area = QtWidgets.QScrollArea()
+        self.general_tab_lay.addWidget(self.general_scroll_area)
+
+        self.gerber_tab = QtWidgets.QWidget()
+        self.gerber_tab.setObjectName("gerber_tab")
+        self.pref_tab_area.addTab(self.gerber_tab, _("GERBER"))
+        self.gerber_tab_lay = QtWidgets.QVBoxLayout()
+        self.gerber_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.gerber_tab.setLayout(self.gerber_tab_lay)
+
+        self.gerber_scroll_area = QtWidgets.QScrollArea()
+        self.gerber_tab_lay.addWidget(self.gerber_scroll_area)
+
+        self.excellon_tab = QtWidgets.QWidget()
+        self.excellon_tab.setObjectName("excellon_tab")
+        self.pref_tab_area.addTab(self.excellon_tab, _("EXCELLON"))
+        self.excellon_tab_lay = QtWidgets.QVBoxLayout()
+        self.excellon_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.excellon_tab.setLayout(self.excellon_tab_lay)
+
+        self.excellon_scroll_area = QtWidgets.QScrollArea()
+        self.excellon_tab_lay.addWidget(self.excellon_scroll_area)
+
+        self.geometry_tab = QtWidgets.QWidget()
+        self.geometry_tab.setObjectName("geometry_tab")
+        self.pref_tab_area.addTab(self.geometry_tab, _("GEOMETRY"))
+        self.geometry_tab_lay = QtWidgets.QVBoxLayout()
+        self.geometry_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.geometry_tab.setLayout(self.geometry_tab_lay)
+
+        self.geometry_scroll_area = QtWidgets.QScrollArea()
+        self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
+
+        self.text_editor_tab = QtWidgets.QWidget()
+        self.text_editor_tab.setObjectName("text_editor_tab")
+        self.pref_tab_area.addTab(self.text_editor_tab, _("CNC-JOB"))
+        self.cncjob_tab_lay = QtWidgets.QVBoxLayout()
+        self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.text_editor_tab.setLayout(self.cncjob_tab_lay)
+
+        self.cncjob_scroll_area = QtWidgets.QScrollArea()
+        self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
+
+        self.tools_tab = QtWidgets.QWidget()
+        self.pref_tab_area.addTab(self.tools_tab, _("TOOLS"))
+        self.tools_tab_lay = QtWidgets.QVBoxLayout()
+        self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.tools_tab.setLayout(self.tools_tab_lay)
+
+        self.tools_scroll_area = QtWidgets.QScrollArea()
+        self.tools_tab_lay.addWidget(self.tools_scroll_area)
+
+        self.tools2_tab = QtWidgets.QWidget()
+        self.pref_tab_area.addTab(self.tools2_tab, _("TOOLS 2"))
+        self.tools2_tab_lay = QtWidgets.QVBoxLayout()
+        self.tools2_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.tools2_tab.setLayout(self.tools2_tab_lay)
+
+        self.tools2_scroll_area = QtWidgets.QScrollArea()
+        self.tools2_tab_lay.addWidget(self.tools2_scroll_area)
+
+        self.fa_tab = QtWidgets.QWidget()
+        self.fa_tab.setObjectName("fa_tab")
+        self.pref_tab_area.addTab(self.fa_tab, _("UTILITIES"))
+        self.fa_tab_lay = QtWidgets.QVBoxLayout()
+        self.fa_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.fa_tab.setLayout(self.fa_tab_lay)
+
+        self.fa_scroll_area = QtWidgets.QScrollArea()
+        self.fa_tab_lay.addWidget(self.fa_scroll_area)
+
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout.setAlignment(QtCore.Qt.AlignVCenter)
         self.pref_tab_layout.addLayout(self.pref_tab_bottom_layout)
@@ -2223,17 +2306,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
         self.infobar.addWidget(self.snap_infobar_label)
 
-        # self.rel_position_label = QtWidgets.QLabel(
-        #     "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
-        # self.rel_position_label.setMinimumWidth(110)
-        # self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
-        # self.infobar.addWidget(self.rel_position_label)
-        #
-        # self.position_label = QtWidgets.QLabel(
-        #     "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
-        # self.position_label.setMinimumWidth(110)
-        # self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
-        # self.infobar.addWidget(self.position_label)
+        self.rel_position_label = QtWidgets.QLabel(
+            "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
+        self.rel_position_label.setMinimumWidth(110)
+        self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
+        self.infobar.addWidget(self.rel_position_label)
+
+        self.position_label = QtWidgets.QLabel(
+            "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000")
+        self.position_label.setMinimumWidth(110)
+        self.position_label.setToolTip(_("Absolute measurement.\nReference is (X=0, Y= 0) position"))
+        self.infobar.addWidget(self.position_label)
 
         self.units_label = QtWidgets.QLabel("[in]")
         self.units_label.setMargin(2)
@@ -2909,11 +2992,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_axis()
-
-                # Toggle HUD (Heads-Up Display)
-                if key == QtCore.Qt.Key_H:
-                    state = False if self.app.plotcanvas.hud_enabled else True
-                    self.app.plotcanvas.on_toggle_hud(state=state)
 
                 # Locate in Object
                 if key == QtCore.Qt.Key_J:
@@ -3984,7 +4062,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if key == QtCore.Qt.Key_T or key == 'T':
                         self.app.exc_editor.launched_from_shortcuts = True
                         # ## Current application units in Upper Case
-                        self.units = self.general_defaults_form.option_dict()["units"].get_field().get_value().upper()
+                        self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
                         tool_add_popup = FCInputDialog(title=_("New Tool ..."),
                                                        text='%s:' % _('Enter a Tool Diameter'),
                                                        min=0.0000, max=99.9999, decimals=4)
@@ -4201,153 +4279,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
             self.final_save.emit()
         event.ignore()
-
-    def set_layout(self, layout: str):
-        """
-        Set the toolbars layout (location)
-
-        :param index:
-        :param lay:     Type of layout to be set on the toolbard
-        :return:        None
-        """
-
-        self.app.defaults.report_usage("on_layout()")
-
-        lay_settings = QSettings("Open Source", "FlatCAM")
-        lay_settings.setValue('layout', layout)
-        # This will write the setting to the platform specific storage.
-        del lay_settings
-
-        # first remove the toolbars:
-        try:
-            self.removeToolBar(self.app.ui.toolbarfile)
-            self.removeToolBar(self.app.ui.toolbargeo)
-            self.removeToolBar(self.app.ui.toolbarview)
-            self.removeToolBar(self.app.ui.toolbarshell)
-            self.removeToolBar(self.app.ui.toolbartools)
-            self.removeToolBar(self.app.ui.exc_edit_toolbar)
-            self.removeToolBar(self.app.ui.geo_edit_toolbar)
-            self.removeToolBar(self.app.ui.grb_edit_toolbar)
-            self.removeToolBar(self.app.ui.snap_toolbar)
-            self.removeToolBar(self.app.ui.toolbarshell)
-        except Exception:
-            pass
-
-        if layout == 'compact':
-            # ## TOOLBAR INSTALLATION # ##
-            self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.toolbarfile.setObjectName('File_TB')
-            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarfile)
-
-            self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.toolbargeo.setObjectName('Edit_TB')
-            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbargeo)
-
-            self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.toolbarshell.setObjectName('Shell_TB')
-            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbarshell)
-
-            self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.toolbartools.setObjectName('Tools_TB')
-            self.addToolBar(Qt.LeftToolBarArea, self.app.ui.toolbartools)
-
-            self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.geo_edit_toolbar.setVisible(False)
-            self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.addToolBar(Qt.RightToolBarArea, self.app.ui.geo_edit_toolbar)
-
-            self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.toolbarview.setObjectName('View_TB')
-            self.addToolBar(Qt.RightToolBarArea, self.app.ui.toolbarview)
-
-            self.addToolBarBreak(area=Qt.RightToolBarArea)
-
-            self.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.grb_edit_toolbar.setVisible(False)
-            self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.addToolBar(Qt.RightToolBarArea, self.app.ui.grb_edit_toolbar)
-
-            self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.addToolBar(Qt.RightToolBarArea, self.app.ui.exc_edit_toolbar)
-
-            self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.snap_toolbar.setObjectName('Snap_TB')
-            self.snap_toolbar.setMaximumHeight(30)
-            self.splitter_left.addWidget(self.app.ui.snap_toolbar)
-
-            self.corner_snap_btn.setVisible(True)
-            self.snap_magnet.setVisible(True)
-        else:
-            # ## TOOLBAR INSTALLATION # ##
-            self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-            self.toolbarfile.setObjectName('File_TB')
-            self.addToolBar(self.app.ui.toolbarfile)
-
-            self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-            self.toolbargeo.setObjectName('Edit_TB')
-            self.addToolBar(self.app.ui.toolbargeo)
-
-            self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.toolbarview.setObjectName('View_TB')
-            self.addToolBar(self.app.ui.toolbarview)
-
-            self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
-            self.toolbarshell.setObjectName('Shell_TB')
-            self.addToolBar(self.app.ui.toolbarshell)
-
-            self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-            self.toolbartools.setObjectName('Tools_TB')
-            self.addToolBar(self.app.ui.toolbartools)
-
-            self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            # self.exc_edit_toolbar.setVisible(False)
-            self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.addToolBar(self.app.ui.exc_edit_toolbar)
-
-            self.addToolBarBreak()
-
-            self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            # self.geo_edit_toolbar.setVisible(False)
-            self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-            self.addToolBar(self.app.ui.geo_edit_toolbar)
-
-            self.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            # self.grb_edit_toolbar.setVisible(False)
-            self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
-            self.addToolBar(self.app.ui.grb_edit_toolbar)
-
-            self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-            self.snap_toolbar.setObjectName('Snap_TB')
-            # self.snap_toolbar.setMaximumHeight(30)
-            self.addToolBar(self.app.ui.snap_toolbar)
-
-            self.corner_snap_btn.setVisible(False)
-            self.snap_magnet.setVisible(False)
-
-        if layout == 'minimal':
-            self.toolbarview.setVisible(False)
-            self.toolbarshell.setVisible(False)
-            self.snap_toolbar.setVisible(False)
-            self.geo_edit_toolbar.setVisible(False)
-            self.grb_edit_toolbar.setVisible(False)
-            self.exc_edit_toolbar.setVisible(False)
-            self.lock_toolbar(lock=True)
-
-        # add all the actions to the toolbars
-        self.populate_toolbars()
-
-        # reconnect all the signals to the toolbar actions
-        self.app.connect_toolbar_signals()
-
-        self.grid_snap_btn.setChecked(True)
-        self.on_grid_snap_triggered(state=True)
-
-        self.grid_gap_x_entry.setText(str(self.app.defaults["global_gridx"]))
-        self.grid_gap_y_entry.setText(str(self.app.defaults["global_gridy"]))
-        self.snap_max_dist_entry.setText(str(self.app.defaults["global_snap_max"]))
-        self.grid_gap_link_cb.setChecked(True)
-
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):

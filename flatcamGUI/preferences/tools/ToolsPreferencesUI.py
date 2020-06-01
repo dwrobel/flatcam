@@ -1,5 +1,6 @@
-from flatcamGUI.preferences.OptionsGroupUI import OptionsGroupUI
-from flatcamGUI.preferences.PreferencesSectionUI import PreferencesSectionUI
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QSettings
+
 from flatcamGUI.preferences.tools.ToolsSubPrefGroupUI import ToolsSubPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsSolderpastePrefGroupUI import ToolsSolderpastePrefGroupUI
 from flatcamGUI.preferences.tools.ToolsTransformPrefGroupUI import ToolsTransformPrefGroupUI
@@ -11,48 +12,83 @@ from flatcamGUI.preferences.tools.Tools2sidedPrefGroupUI import Tools2sidedPrefG
 from flatcamGUI.preferences.tools.ToolsCutoutPrefGroupUI import ToolsCutoutPrefGroupUI
 from flatcamGUI.preferences.tools.ToolsNCCPrefGroupUI import ToolsNCCPrefGroupUI
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
 
-class ToolsPreferencesUI(PreferencesSectionUI):
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
-    def __init__(self, decimals, **kwargs):
+settings = QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
+
+class ToolsPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, decimals, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
         self.decimals = decimals
+
         self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
+        self.tools_ncc_group.setMinimumWidth(220)
+
         self.tools_paint_group = ToolsPaintPrefGroupUI(decimals=self.decimals)
+        self.tools_paint_group.setMinimumWidth(220)
+
         self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals)
+        self.tools_cutout_group.setMinimumWidth(220)
+
         self.tools_2sided_group = Tools2sidedPrefGroupUI(decimals=self.decimals)
+        self.tools_2sided_group.setMinimumWidth(220)
+
         self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals)
+        self.tools_film_group.setMinimumWidth(220)
+
         self.tools_panelize_group = ToolsPanelizePrefGroupUI(decimals=self.decimals)
+        self.tools_panelize_group.setMinimumWidth(220)
+
         self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(decimals=self.decimals)
+        self.tools_calculators_group.setMinimumWidth(220)
+
         self.tools_transform_group = ToolsTransformPrefGroupUI(decimals=self.decimals)
+        self.tools_transform_group.setMinimumWidth(200)
+
         self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals)
+        self.tools_solderpaste_group.setMinimumWidth(200)
+
         self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals)
-        super().__init__(**kwargs)
+        self.tools_sub_group.setMinimumWidth(200)
 
-    def build_groups(self) -> [OptionsGroupUI]:
-        return [
-            # fixme column 1
-            self.tools_ncc_group,
-            self.tools_cutout_group,
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.tools_ncc_group)
+        self.vlay.addWidget(self.tools_cutout_group)
 
-            # fixme column 2
-            self.tools_paint_group,
-            self.tools_panelize_group,
+        self.vlay1 = QtWidgets.QVBoxLayout()
+        self.vlay1.addWidget(self.tools_paint_group)
+        self.vlay1.addWidget(self.tools_panelize_group)
 
-            # fixme column 3
-            self.tools_transform_group,
-            self.tools_2sided_group,
-            self.tools_sub_group,
+        self.vlay2 = QtWidgets.QVBoxLayout()
+        self.vlay2.addWidget(self.tools_transform_group)
+        self.vlay2.addWidget(self.tools_2sided_group)
+        self.vlay2.addWidget(self.tools_sub_group)
 
-            # fixme column 4
-            self.tools_film_group,
-            self.tools_calculators_group,
+        self.vlay3 = QtWidgets.QVBoxLayout()
+        self.vlay3.addWidget(self.tools_film_group)
+        self.vlay3.addWidget(self.tools_calculators_group)
 
-            # fixme column 5
-            self.tools_solderpaste_group,
-        ]
+        self.vlay4 = QtWidgets.QVBoxLayout()
+        self.vlay4.addWidget(self.tools_solderpaste_group)
 
-    def get_tab_id(self):
-        return "tools_tab"
+        self.layout.addLayout(self.vlay)
+        self.layout.addLayout(self.vlay1)
+        self.layout.addLayout(self.vlay2)
+        self.layout.addLayout(self.vlay3)
+        self.layout.addLayout(self.vlay4)
 
-    def get_tab_label(self):
-        return _("TOOLS")
+        self.layout.addStretch()
