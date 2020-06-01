@@ -2495,6 +2495,7 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Space:
                     for select in selected:
                         select.ui.plot_cb.toggle()
+                        QtWidgets.QApplication.processEvents()
                     self.app.collection.update_view()
                     self.app.delete_selection_shape()
 
