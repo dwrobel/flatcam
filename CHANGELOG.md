@@ -27,6 +27,9 @@ CHANGELOG for FlatCAM beta
 - fix an issue with progressive plotted shapes not being deleted on the end of the job
 - some fixed due of recent changes and some strings changed
 - added a validator for the FCColorEntry GUI element such that only the valid chars are accepted
+- changed the status bar label to have an icon instead of text
+- added a label in status bar that will toggle the Preferences tab
+- made some changes such that that the label in status bar for toggling the Preferences Tab will be updated in various cases of closing the tab
 
 31.05.2020
 

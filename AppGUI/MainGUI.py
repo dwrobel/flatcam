@@ -1103,10 +1103,21 @@ class MainGUI(QtWidgets.QMainWindow):
         self.status_toolbar.addWidget(self.axis_status_label)
         self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
 
+        self.pref_status_label = FCLabel()
+        self.pref_status_label.setToolTip(_("Preferences"))
+        self.pref_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/settings18.png'))
+        self.status_toolbar.addWidget(self.pref_status_label)
+
         self.shell_status_label = FCLabel()
         self.shell_status_label.setToolTip(_("Command Line"))
         self.shell_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/shell20.png'))
         self.status_toolbar.addWidget(self.shell_status_label)
+
+        self.hud_label = FCLabel()
+        self.hud_label.setToolTip(_("HUD (Heads up display)"))
+        self.hud_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/hud16.png'))
+        self.status_toolbar.addWidget(self.hud_label)
+
 
         self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
 
@@ -1537,11 +1548,6 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
-
-        self.hud_label = FCLabel("H")
-        self.hud_label.setToolTip(_("HUD (Heads up display)"))
-        self.hud_label.setMargin(2)
-        self.infobar.addWidget(self.hud_label)
 
         self.wplace_label = FCLabel("A4")
         self.wplace_label.setToolTip(_("Draw a delimiting rectangle on canvas.\n"

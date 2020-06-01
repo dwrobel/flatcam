@@ -2231,6 +2231,24 @@ class FCDetachableTab2(FCDetachableTab):
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
 
+        try:
+            self.tabBar.onCloseTabSignal.disconnect()
+        except TypeError:
+            pass
+
+        self.tabBar.onCloseTabSignal.connect(self.on_closetab_middle_button)
+
+    def on_closetab_middle_button(self, current_index):
+        """
+
+        :param current_index:
+        :return:
+        """
+
+        # if tab is protected don't delete it
+        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.RightSide) is not None:
+            self.closeTab(current_index)
+
     def closeTab(self, currentIndex):
         """
         Slot connected to the tabCloseRequested signal

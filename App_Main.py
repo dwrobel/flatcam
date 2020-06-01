@@ -1027,6 +1027,7 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         self.ui.hud_label.clicked.connect(self.plotcanvas.on_toggle_hud)
         self.ui.axis_status_label.clicked.connect(self.plotcanvas.on_toggle_axis)
+        self.ui.pref_status_label.clicked.connect(self.on_toggle_preferences)
 
         # ###########################################################################################################
         # ####################################### VARIOUS SIGNALS ###################################################
@@ -5129,6 +5130,29 @@ class App(QtCore.QObject):
             # create the selection box around the selected object
             if self.defaults['global_selection_shape'] is True:
                 self.draw_selection_shape(curr_sel_obj)
+
+    def on_toggle_preferences(self):
+        pref_open = False
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                pref_open = True
+
+        if pref_open:
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.removeTab(idx)
+                    break
+            self.ui.pref_status_label.setStyleSheet("")
+        else:
+            self.on_preferences()
+            self.ui.pref_status_label.setStyleSheet("""
+                                                    QLabel
+                                                    {
+                                                        color: black;
+                                                        background-color: lightseagreen;
+                                                    }
+                                                    """
+                                                    )
 
     def on_preferences(self):
         """

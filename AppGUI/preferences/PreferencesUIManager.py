@@ -948,10 +948,14 @@ class PreferencesUIManager:
         self.preferences_changed_flag = False
         self.ignore_tab_close_event = True
 
+        # restore stylesheet to default for the statusBar icon
+        self.ui.pref_status_label.setStyleSheet("")
+
         try:
             self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
+
         self.defaults_write_form(source_dict=self.defaults.current_defaults)
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.ui.app.on_toggle_units(no_pref=False))
@@ -1075,6 +1079,9 @@ class PreferencesUIManager:
     def on_close_preferences_tab(self):
         if self.ignore_tab_close_event:
             return
+
+        # restore stylesheet to default for the statusBar icon
+        self.ui.pref_status_label.setStyleSheet("")
 
         # disconnect
         for idx in range(self.ui.pref_tab_area.count()):
