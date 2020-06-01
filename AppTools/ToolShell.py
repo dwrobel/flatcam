@@ -8,9 +8,9 @@
 
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
-from AppGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit
+from PyQt5.QtGui import QTextCursor, QPixmap
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout, QLabel
+from AppGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit, FCLabel
 import html
 import sys
 import traceback
@@ -38,6 +38,8 @@ class TermWidget(QWidget):
     def __init__(self, version, app, *args):
         QWidget.__init__(self, *args)
 
+        self.app = app
+
         self._browser = _BrowserTextEdit(version=version, app=app)
         self._browser.setStyleSheet("font: 9pt \"Courier\";")
         self._browser.setReadOnly(True)
@@ -51,14 +53,29 @@ class TermWidget(QWidget):
         self._edit.setFocus()
         self.setFocusProxy(self._edit)
 
+        self._delete_line = FCLabel()
+        self._delete_line.setPixmap(QPixmap(self.app.resource_location + '/clear_line16.png'))
+        self._delete_line.setMargin(3)
+        self._delete_line.setToolTip(_("Clear the text."))
+
         layout = QVBoxLayout(self)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._browser)
-        layout.addWidget(self._edit)
+
+        hlay = QHBoxLayout()
+        hlay.addWidget(self._delete_line)
+        hlay.addWidget(QLabel(" "))
+        hlay.addWidget(self._edit)
+        layout.addLayout(hlay)
 
         self._history = ['']  # current empty line
         self._historyIndex = 0
+
+        self._delete_line.clicked.connect(self.on_delete_line_clicked)
+
+    def on_delete_line_clicked(self):
+        self._edit.clear()
 
     def open_processing(self, detail=None):
         """

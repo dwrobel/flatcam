@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.06.2020
+
+- Tcl Shell - added a button to delete the content of the active line
+- Tcl Command Isolate - fixed to work in the new configuration
+
 1.06.2020
 
 - made the Distance Tool display the angle in values between 0 and 359.9999 degrees

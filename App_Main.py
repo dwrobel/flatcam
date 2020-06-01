@@ -2728,6 +2728,9 @@ class App(QtCore.QObject):
                         'title="Flaticon">www.flaticon.com</a></div>'
                         '<div>Icons by <a target="_blank" href="https://icons8.com">Icons8</a></div>'
                         'Icons by <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>'
+                        '<div>Icons by <a href="https://www.flaticon.com/authors/pixel-perfect" '
+                        'title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" '
+                        'title="Flaticon">www.flaticon.com</a></div>'
                     )
                 )
                 attributions_label.setOpenExternalLinks(True)

@@ -121,6 +121,7 @@ class GerberObject(FlatCAMObj, Gerber):
             "bboxrounded": False,
             "aperture_display": False,
             "follow": False,
+            "milling_type": 'cl',
         })
 
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
@@ -450,6 +451,296 @@ class GerberObject(FlatCAMObj, Gerber):
             geo_obj.solid_geometry = bounding_box
 
         self.app.app_obj.new_object("geometry", name, geo_init)
+
+    def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
+                milling_type=None, follow=None, plot=True):
+        """
+        Creates an isolation routing geometry object in the project.
+
+        :param iso_type:        type of isolation to be done: 0 = exteriors, 1 = interiors and 2 = both
+        :param geometry:        specific geometry to isolate
+        :param dia:             Tool diameter
+        :param passes:          Number of tool widths to cut
+        :param overlap:         Overlap between passes in fraction of tool diameter
+        :param outname:         Base name of the output object
+        :param combine:         Boolean: if to combine passes in one resulting object in case of multiple passes
+        :param milling_type:    type of milling: conventional or climbing
+        :param follow: Boolean: if to generate a 'follow' geometry
+        :param plot: Boolean:   if to plot the resulting geometry object
+        :return:                None
+        """
+
+        if geometry is None:
+            work_geo = self.follow_geometry if follow is True else self.solid_geometry
+        else:
+            work_geo = geometry
+
+        if dia is None:
+            dia = float(self.app.defaults["tools_iso_tooldia"])
+
+        if passes is None:
+            passes = int(self.app.defaults["tools_iso_passes"])
+
+        if overlap is None:
+            overlap = float(self.app.defaults["tools_iso_overlap"])
+
+        overlap /= 100.0
+
+        combine = self.app.defaults["tools_iso_combine_passes"] if combine is None else bool(combine)
+
+        if milling_type is None:
+            milling_type = self.app.defaults["tools_iso_milling_type"]
+
+        if iso_type is None:
+            iso_t = 2
+        else:
+            iso_t = iso_type
+
+        base_name = self.options["name"]
+
+        if combine:
+            if outname is None:
+                if self.iso_type == 0:
+                    iso_name = base_name + "_ext_iso"
+                elif self.iso_type == 1:
+                    iso_name = base_name + "_int_iso"
+                else:
+                    iso_name = base_name + "_iso"
+            else:
+                iso_name = outname
+
+            def iso_init(geo_obj, app_obj):
+                # Propagate options
+                geo_obj.options["cnctooldia"] = str(dia)
+                geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
+
+                geo_obj.solid_geometry = []
+
+                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                if geo_obj.tool_type.lower() == 'v':
+                    new_cutz = self.app.defaults["tools_iso_tool_cutz"]
+                    new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
+                    new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
+                    tool_type = 'V'
+                else:
+                    new_cutz = self.app.defaults['geometry_cutz']
+                    new_vtipdia = self.app.defaults['geometry_vtipdia']
+                    new_vtipangle = self.app.defaults['geometry_vtipangle']
+                    tool_type = 'C1'
+
+                # store here the default data for Geometry Data
+                default_data = {}
+                default_data.update({
+                    "name": iso_name,
+                    "plot": self.app.defaults['geometry_plot'],
+                    "cutz": new_cutz,
+                    "vtipdia": new_vtipdia,
+                    "vtipangle": new_vtipangle,
+                    "travelz": self.app.defaults['geometry_travelz'],
+                    "feedrate": self.app.defaults['geometry_feedrate'],
+                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                    "dwell": self.app.defaults['geometry_dwell'],
+                    "dwelltime": self.app.defaults['geometry_dwelltime'],
+                    "multidepth": self.app.defaults['geometry_multidepth'],
+                    "ppname_g": self.app.defaults['geometry_ppname_g'],
+                    "depthperpass": self.app.defaults['geometry_depthperpass'],
+                    "extracut": self.app.defaults['geometry_extracut'],
+                    "extracut_length": self.app.defaults['geometry_extracut_length'],
+                    "toolchange": self.app.defaults['geometry_toolchange'],
+                    "toolchangez": self.app.defaults['geometry_toolchangez'],
+                    "endz": self.app.defaults['geometry_endz'],
+                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                    "startz": self.app.defaults['geometry_startz']
+                })
+
+                geo_obj.tools = {}
+                geo_obj.tools['1'] = {}
+                geo_obj.tools.update({
+                    '1': {
+                        'tooldia': dia,
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': tool_type,
+                        'data': default_data,
+                        'solid_geometry': geo_obj.solid_geometry
+                    }
+                })
+
+                for nr_pass in range(passes):
+                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
+
+                    # if milling type is climb then the move is counter-clockwise around features
+                    mill_dir = 1 if milling_type == 'cl' else 0
+                    geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
+                                                  follow=follow, nr_passes=nr_pass)
+
+                    if geom == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        return 'fail'
+                    geo_obj.solid_geometry.append(geom)
+
+                    # update the geometry in the tools
+                    geo_obj.tools['1']['solid_geometry'] = geo_obj.solid_geometry
+
+                # detect if solid_geometry is empty and this require list flattening which is "heavy"
+                # or just looking in the lists (they are one level depth) and if any is not empty
+                # proceed with object creation, if there are empty and the number of them is the length
+                # of the list then we have an empty solid_geometry which should raise a Custom Exception
+                empty_cnt = 0
+                if not isinstance(geo_obj.solid_geometry, list) and \
+                        not isinstance(geo_obj.solid_geometry, MultiPolygon):
+                    geo_obj.solid_geometry = [geo_obj.solid_geometry]
+
+                for g in geo_obj.solid_geometry:
+                    if g:
+                        break
+                    else:
+                        empty_cnt += 1
+
+                if empty_cnt == len(geo_obj.solid_geometry):
+                    raise ValidationError("Empty Geometry", None)
+                else:
+                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
+
+                # even if combine is checked, one pass is still single-geo
+                geo_obj.multigeo = True if passes > 1 else False
+
+                # ############################################################
+                # ########## AREA SUBTRACTION ################################
+                # ############################################################
+                # if self.app.defaults["tools_iso_except"]:
+                #     self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                #     geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
+
+            self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+        else:
+            for i in range(passes):
+
+                offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+                if passes > 1:
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso" + str(i + 1)
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso" + str(i + 1)
+                        else:
+                            iso_name = base_name + "_iso" + str(i + 1)
+                    else:
+                        iso_name = outname
+                else:
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso"
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso"
+                        else:
+                            iso_name = base_name + "_iso"
+                    else:
+                        iso_name = outname
+
+                def iso_init(geo_obj, app_obj):
+                    # Propagate options
+                    geo_obj.options["cnctooldia"] = str(dia)
+                    geo_obj.tool_type = self.app.defaults["tools_iso_tool_type"]
+
+                    # if milling type is climb then the move is counter-clockwise around features
+                    mill_dir = 1 if milling_type == 'cl' else 0
+                    geom = self.generate_envelope(offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
+                                                  follow=follow, nr_passes=i)
+
+                    if geom == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                        return 'fail'
+
+                    geo_obj.solid_geometry = geom
+
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
+                    # required to be transfered to the Geometry object
+                    if self.app.defaults["tools_iso_tool_type"].lower() == 'v':
+                        new_cutz = self.app.defaults["tools_iso_tool_cutz"]
+                        new_vtipdia = self.app.defaults["tools_iso_tool_vtipdia"]
+                        new_vtipangle = self.app.defaults["tools_iso_tool_vtipangle"]
+                        tool_type = 'V'
+                    else:
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
+
+                    # store here the default data for Geometry Data
+                    default_data = {}
+                    default_data.update({
+                        "name": iso_name,
+                        "plot": self.app.defaults['geometry_plot'],
+                        "cutz": new_cutz,
+                        "vtipdia": new_vtipdia,
+                        "vtipangle": new_vtipangle,
+                        "travelz": self.app.defaults['geometry_travelz'],
+                        "feedrate": self.app.defaults['geometry_feedrate'],
+                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                        "dwell": self.app.defaults['geometry_dwell'],
+                        "dwelltime": self.app.defaults['geometry_dwelltime'],
+                        "multidepth": self.app.defaults['geometry_multidepth'],
+                        "ppname_g": self.app.defaults['geometry_ppname_g'],
+                        "depthperpass": self.app.defaults['geometry_depthperpass'],
+                        "extracut": self.app.defaults['geometry_extracut'],
+                        "extracut_length": self.app.defaults['geometry_extracut_length'],
+                        "toolchange": self.app.defaults['geometry_toolchange'],
+                        "toolchangez": self.app.defaults['geometry_toolchangez'],
+                        "endz": self.app.defaults['geometry_endz'],
+                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                        "startz": self.app.defaults['geometry_startz']
+                    })
+
+                    geo_obj.tools = {}
+                    geo_obj.tools['1'] = {}
+                    geo_obj.tools.update({
+                        '1': {
+                            'tooldia': dia,
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': tool_type,
+                            'data': default_data,
+                            'solid_geometry': geo_obj.solid_geometry
+                        }
+                    })
+
+                    # detect if solid_geometry is empty and this require list flattening which is "heavy"
+                    # or just looking in the lists (they are one level depth) and if any is not empty
+                    # proceed with object creation, if there are empty and the number of them is the length
+                    # of the list then we have an empty solid_geometry which should raise a Custom Exception
+                    empty_cnt = 0
+                    if not isinstance(geo_obj.solid_geometry, list):
+                        geo_obj.solid_geometry = [geo_obj.solid_geometry]
+
+                    for g in geo_obj.solid_geometry:
+                        if g:
+                            break
+                        else:
+                            empty_cnt += 1
+
+                    if empty_cnt == len(geo_obj.solid_geometry):
+                        raise ValidationError("Empty Geometry", None)
+                    else:
+                        app_obj.inform.emit('[success] %s: %s' %
+                                            (_("Isolation geometry created"), geo_obj.options["name"]))
+                    geo_obj.multigeo = False
+
+                    # ############################################################
+                    # ########## AREA SUBTRACTION ################################
+                    # ############################################################
+                    # if self.app.defaults["tools_iso_except"]:
+                    #     self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
+                    #     geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
+
+                self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
     def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
         # isolation_geometry produces an envelope that is going on the left of the geometry
