@@ -1429,14 +1429,14 @@ class ToolPaint(AppTool, Gerber):
                                 outname=self.o_name)
 
         elif self.select_method == _("Polygon Selection"):
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to paint it."))
-
             # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
                 self.app.ui.grid_snap_btn.trigger()
             else:
                 self.grid_status_memory = False
+
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to paint it."))
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_single_poly_mouse_release)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)

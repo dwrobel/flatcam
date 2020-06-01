@@ -30,8 +30,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         # ## Parameters
         self.film_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.film_label.setToolTip(
-            _("Create a PCB film from a Gerber or Geometry\n"
-              "FlatCAM object.\n"
+            _("Create a PCB film from a Gerber or Geometry object.\n"
               "The file is saved in SVG format.")
         )
         self.layout.addWidget(self.film_label)

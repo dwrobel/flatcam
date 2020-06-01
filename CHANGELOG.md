@@ -7,6 +7,26 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+1.06.2020
+
+- made the Distance Tool display the angle in values between 0 and 359.9999 degrees
+- changed some strings
+- fixed the warning that old preferences found even for new installation
+- in Paint Tool fixed the message to select a polygon when using the Selection: Single Polygon being overwritten by the "Grid disabled" message
+- more changes in strings throughout the app
+- made some minor changes in the GUI of the FlatCAM Tools
+- in Tools Database made sure that each new tool added has a unique name
+- in AppTool made some methods to be class methods
+- reverted the class methods in AppTool
+- added a button for Transformations Tool in the lower side (common) of the Object UI
+- some other UI changes
+- after using Isolation Tool it will switch automatically to the Geometry UI
+
+31.05.2020
+
+- structural changes in Preferences from David Robertson
+- made last filter selected for open file to be used next time when opening files (for Excellon, GCode and Gerber files, for now)
+
 30.05.2020
 
 - made confirmation messages for the values that are modified not to be printed in the Shell

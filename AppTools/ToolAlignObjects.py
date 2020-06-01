@@ -308,13 +308,6 @@ class AlignObjects(AppTool):
         else:
             self.grid_status_memory = False
 
-        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
-
-        if self.app.is_legacy is False:
-            self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        else:
-            self.canvas.graph_event_disconnect(self.app.mr)
-
         self.local_connected = True
 
         self.aligner_old_fill_color = self.aligner_obj.fill_color
@@ -322,9 +315,16 @@ class AlignObjects(AppTool):
         self.aligned_old_fill_color = self.aligned_obj.fill_color
         self.aligned_old_line_color = self.aligned_obj.outline_color
 
-        self.app.inform.emit('%s: %s' % (_("First Point"), _("Click on the START point.")))
         self.target_obj = self.aligned_obj
         self.set_color()
+
+        self.app.inform.emit('%s: %s' % (_("First Point"), _("Click on the START point.")))
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        else:
+            self.canvas.graph_event_disconnect(self.app.mr)
 
     def on_mouse_click_release(self, event):
         if self.app.is_legacy is False:

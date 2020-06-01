@@ -287,8 +287,8 @@ class BookmarkManager(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export FlatCAM Bookmarks"),
-                                                           directory='{l_save}/FlatCAM_{n}_{date}'.format(
+        filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Bookmarks"),
+                                                           directory='{l_save}/{n}_{date}'.format(
                                                                 l_save=str(self.app.get_last_save_folder()),
                                                                 n=_("Bookmarks"),
                                                                 date=date),
@@ -334,7 +334,7 @@ class BookmarkManager(QtWidgets.QWidget):
         self.app.log.debug("on_import_bookmarks()")
 
         filter_ = "Text File (*.txt);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"), filter=filter_)
+        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import Bookmarks"), filter=filter_)
 
         filename = str(filename)
 

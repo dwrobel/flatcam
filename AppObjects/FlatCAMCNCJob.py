@@ -504,17 +504,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
             filename, _f = FCFileSaveDialog.get_saved_filename(
-                caption=_("Export Machine Code ..."),
+                caption=_("Export Code ..."),
                 directory=dir_file_to_save,
                 ext_filter=_filter_
             )
         except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Machine Code ..."), ext_filter=_filter_)
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
             return
         else:
             if save_gcode is True:
@@ -535,7 +535,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.app.defaults["global_open_style"] is False:
             self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
-        self.app.inform.emit('[success] %s: %s' % (_("Machine Code file saved to"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
     def on_edit_code_click(self, *args):
         """

@@ -63,9 +63,6 @@ class ToolFiducials(AppTool):
         self.points_table = FCTable()
         self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
-        self.layout.addWidget(self.points_table)
-        self.layout.addWidget(QtWidgets.QLabel(''))
-
         self.points_table.setColumnCount(3)
         self.points_table.setHorizontalHeaderLabels(
             [
@@ -76,7 +73,6 @@ class ToolFiducials(AppTool):
         )
         self.points_table.setRowCount(3)
         row = 0
-
         flags = QtCore.Qt.ItemIsEnabled
 
         # BOTTOM LEFT
@@ -139,6 +135,13 @@ class ToolFiducials(AppTool):
         # remove the frame on the QLineEdit childrens of the table
         for row in range(self.points_table.rowCount()):
             self.points_table.cellWidget(row, 2).setFrame(False)
+
+        self.layout.addWidget(self.points_table)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()

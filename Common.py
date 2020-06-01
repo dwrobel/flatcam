@@ -212,9 +212,6 @@ class ExclusionAreas(QtCore.QObject):
 
         self.shape_type_button = shape_button
 
-        # TODO use the self.app.defaults when made general (not in Geo object Pref UI)
-        # self.shape_type_button.set_value('square')
-
         self.over_z_button = overz_button
         self.strategy_button = strategy_radio
         self.cnc_button = cnc_button

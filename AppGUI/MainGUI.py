@@ -1124,7 +1124,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # #######################################################################
         # ####################### TCL Shell DOCK ################################
         # #######################################################################
-        self.shell_dock = FCDock("FlatCAM TCL Shell", close_callback=self.toggle_shell_ui)
+        self.shell_dock = FCDock("TCL Shell", close_callback=self.toggle_shell_ui)
         self.shell_dock.setObjectName('Shell_DockWidget')
         self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |

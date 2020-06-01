@@ -35,7 +35,7 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, app, icon_file='assets/resources/flatcam_icon32.png', title=_('FlatCAM Object'),
+    def __init__(self, app, icon_file='assets/resources/flatcam_icon32.png', title=_('App Object'),
                  parent=None, common=True):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
@@ -148,6 +148,12 @@ class ObjectUI(QtWidgets.QWidget):
 
             self.common_grid.addWidget(self.offsetvector_entry, 4, 0)
             self.common_grid.addWidget(self.offset_button, 4, 1)
+
+            self.transformations_button = QtWidgets.QPushButton(_('Transformations'))
+            self.transformations_button.setToolTip(
+                _("Geometrical transformations of the current object.")
+            )
+            self.common_grid.addWidget(self.transformations_button, 5, 0, 1, 2)
 
         layout.addStretch()
     

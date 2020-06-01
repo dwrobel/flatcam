@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from AppTool import AppTool
 from AppGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, \
-    FCComboBox, OptionalHideInputSection, FCSpinner
+    FCComboBox, OptionalInputSection, FCSpinner
 from AppParsers.ParseGerber import Gerber
 
 from copy import deepcopy
@@ -484,11 +484,11 @@ class ToolIsolation(AppTool, Gerber):
 
         self.grid3.addWidget(self.exc_obj_combo, 29, 0, 1, 2)
 
-        self.e_ois = OptionalHideInputSection(self.except_cb,
-                                              [
-                                                  self.type_excobj_radio,
-                                                  self.exc_obj_combo
-                                              ])
+        self.e_ois = OptionalInputSection(self.except_cb,
+                                          [
+                                              self.type_excobj_radio,
+                                              self.exc_obj_combo
+                                          ])
 
         # Isolation Scope
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
@@ -1691,6 +1691,7 @@ class ToolIsolation(AppTool, Gerber):
             else:
                 self.grid_status_memory = False
 
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to isolate it."))
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_poly_mouse_click_release)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
@@ -1703,7 +1704,6 @@ class ToolIsolation(AppTool, Gerber):
             # disconnect flags
             self.poly_sel_disconnect_flag = True
 
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to isolate it."))
         elif selection == _("Reference Object"):
             ref_obj = self.app.collection.get_by_name(self.reference_combo.get_value())
             ref_geo = cascaded_union(ref_obj.solid_geometry)
@@ -1864,6 +1864,9 @@ class ToolIsolation(AppTool, Gerber):
                         geo_obj.multigeo = False
 
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
+
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
     def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
         """

@@ -105,7 +105,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
             _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
+              "In application units.")
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
@@ -114,7 +114,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
 
         self.cutz_entry.setToolTip(
             _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
+              "In application units.")
         )
         grid0.addWidget(cutzlabel, 4, 0)
         grid0.addWidget(self.cutz_entry, 4, 1)

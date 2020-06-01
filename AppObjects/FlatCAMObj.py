@@ -139,7 +139,7 @@ class FlatCAMObj(QtCore.QObject):
                 except KeyError:
                     log.debug("FlatCAMObj.from_dict() --> KeyError: %s. "
                               "Means that we are loading an old project that don't"
-                              "have all attributes in the latest FlatCAM." % str(attr))
+                              "have all attributes in the latest application version." % str(attr))
                     pass
 
     def on_options_change(self, key):
@@ -179,6 +179,11 @@ class FlatCAMObj(QtCore.QObject):
         # Creates problems on focusOut
         try:
             self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.ui.transformations_button.clicked.connect(self.app.transform_tool.run)
         except (TypeError, AttributeError):
             pass
 

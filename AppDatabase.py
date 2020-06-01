@@ -119,7 +119,7 @@ class ToolsDB(QtWidgets.QWidget):
         )
         self.buttons_box.addWidget(import_db_btn)
 
-        self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
+        self.add_tool_from_db = FCButton(_("Transfer Tool"))
         self.add_tool_from_db.setToolTip(
             _("Add a new tool in the Tools Table of the\n"
               "active Geometry object after selecting a tool\n"
@@ -315,7 +315,7 @@ class ToolsDB(QtWidgets.QWidget):
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             return
 
-        self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
 
         self.build_db_ui()
 
@@ -726,7 +726,7 @@ class ToolsDB(QtWidgets.QWidget):
                 self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
                 return
 
-            self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
             self.build_db_ui()
             self.callback_on_edited()
 
@@ -1792,12 +1792,19 @@ class ToolsDB2(QtWidgets.QWidget):
         )
         self.buttons_box.addWidget(self.save_db_btn)
 
-        self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
+        self.add_tool_from_db = FCButton(_("Transfer Tool"))
         self.add_tool_from_db.setToolTip(
-            _("Add a new tool in the Tools Table of the\n"
-              "active Geometry object after selecting a tool\n"
+            _("Insert a new tool in the Tools Table of the\n"
+              "object/application tool after selecting a tool\n"
               "in the Tools Database.")
         )
+        self.add_tool_from_db.setStyleSheet("""
+                                            QPushButton
+                                            {
+                                                font-weight: bold;
+                                                color: green;
+                                            }
+                                            """)
         self.add_tool_from_db.hide()
 
         self.cancel_tool_from_db = FCButton(_("Cancel"))
@@ -1807,7 +1814,7 @@ class ToolsDB2(QtWidgets.QWidget):
         tree_layout.addLayout(hlay)
         hlay.addWidget(self.add_tool_from_db)
         hlay.addWidget(self.cancel_tool_from_db)
-        hlay.addStretch()
+        # hlay.addStretch()
 
         # ##############################################################################
         # ##############################################################################
@@ -2015,7 +2022,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.blockSignals(False)
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '/geo_tools_db.FlatDB'
+        filename = self.app.data_path + '\geo_tools_db.FlatDB'
 
         # load the database tools from the file
         try:
@@ -2034,7 +2041,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             return
 
-        self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
 
         self.build_db_ui()
 
@@ -2145,8 +2152,18 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
         })
 
+        temp = []
+        for k, v in self.db_tool_dict.items():
+            if "new_tool_" in v['name']:
+                temp.append(float(v['name'].rpartition('_')[2]))
+
+        if temp:
+            new_name = "new_tool_%d" % int(max(temp) + 1)
+        else:
+            new_name = "new_tool_1"
+
         dict_elem = {}
-        dict_elem['name'] = 'new_tool'
+        dict_elem['name'] = new_name
         if type(self.app.defaults["geometry_cnctooldia"]) == float:
             dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
         else:
@@ -2323,7 +2340,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
                 return
 
-            self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Loaded Tools DB from"), filename))
             self.build_db_ui()
             self.update_storage()
 

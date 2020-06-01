@@ -697,12 +697,14 @@ class FlatCAMDefaults:
     }
 
     @classmethod
-    def save_factory_defaults(cls, file_path: str):
+    def save_factory_defaults(cls, file_path: str, version: float):
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
         # Delete any existing factory defaults file
         if os.path.isfile(file_path):
             os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
             os.remove(file_path)
+
+        cls.factory_defaults['version'] = version
 
         try:
             # recreate a new factory defaults file and save the factory defaults data into it
@@ -784,8 +786,8 @@ class FlatCAMDefaults:
         if defaults is None:
             return
 
-        # Perform migration if necessary
-        if self.__is_old_defaults(defaults):
+        # Perform migration if necessary but only if the defaults dict is not empty
+        if self.__is_old_defaults(defaults) and defaults:
             self.old_defaults_found = True
             defaults = self.__migrate_old_defaults(defaults=defaults)
         else:
