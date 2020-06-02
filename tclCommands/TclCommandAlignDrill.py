@@ -189,7 +189,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 px = 0.5 * (xmin + xmax)
                 py = 0.5 * (ymin + ymax)
 
-                obj.app.new_object("excellon", outname, alligndrill_init_me, plot=False)
+                obj.app.app_obj.new_object("excellon", outname, alligndrill_init_me, plot=False)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -205,7 +205,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
             try:
                 px = dist
                 py = dist
-                obj.app.new_object("excellon", outname, alligndrill_init_me, plot=False)
+                obj.app.app_obj.new_object("excellon", outname, alligndrill_init_me, plot=False)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 

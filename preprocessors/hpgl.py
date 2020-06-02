@@ -6,12 +6,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
 # for Roland Preprocessors it is mandatory for the preprocessor name (python file and class name, both of them must be
 # the same) to contain the following keyword, case-sensitive: 'Roland' without the quotes.
-class hpgl(FlatCAMPostProc):
+class hpgl(PreProc):
     include_header = True
     coordinate_format = "%.*f"
 

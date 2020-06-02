@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
-class ISEL_ICP_CNC(FlatCAMPostProc):
+class ISEL_ICP_CNC(PreProc):
     include_header = False
 
     def start_code(self, p):
