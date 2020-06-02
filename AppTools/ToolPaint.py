@@ -1046,13 +1046,33 @@ class ToolPaint(AppTool, Gerber):
 
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
-        # make the default object type, "Geometry"
-        self.type_obj_combo.set_value("geometry")
+        # # make the default object type, "Geometry"
+        # self.type_obj_combo.set_value("geometry")
 
-        # run those once so the obj_type attribute is updated in the FCComboBoxes
-        # to make sure that the last loaded object is displayed in the combobox
-        self.on_type_obj_changed(val="geometry")
-        self.on_reference_combo_changed()
+        # use the current selected object and make it visible in the Paint object combobox
+        sel_list = self.app.collection.get_selected()
+        if len(sel_list) == 1:
+            active = self.app.collection.get_active()
+            kind = active.kind
+            if kind == 'gerber':
+                self.type_obj_radio.set_value('gerber')
+            else:
+                self.type_obj_radio.set_value('geometry')
+
+            # run those once so the obj_type attribute is updated in the FCComboBoxes
+            # to make sure that the last loaded object is displayed in the combobox
+            self.on_type_obj_changed(val=kind)
+            self.on_reference_combo_changed()
+
+            self.object_combo.set_value(active.options['name'])
+        else:
+            kind = 'geometry'
+            self.type_obj_radio.set_value('geometry')
+
+            # run those once so the obj_type attribute is updated in the FCComboBoxes
+            # to make sure that the last loaded object is displayed in the combobox
+            self.on_type_obj_changed(val=kind)
+            self.on_reference_combo_changed()
 
         try:
             diameters = [float(self.app.defaults["tools_painttooldia"])]

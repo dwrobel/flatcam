@@ -979,12 +979,30 @@ class NonCopperClear(AppTool, Gerber):
 
         self.tools_frame.show()
 
-        self.type_obj_radio.set_value('gerber')
+        # use the current selected object and make it visible in the NCC object combobox
+        sel_list = self.app.collection.get_selected()
+        if len(sel_list) == 1:
+            active = self.app.collection.get_active()
+            kind = active.kind
+            if kind == 'gerber':
+                self.type_obj_radio.set_value('gerber')
+            else:
+                self.type_obj_radio.set_value('geometry')
 
-        # run those once so the obj_type attribute is updated for the FCComboboxes
-        # so the last loaded object is displayed
-        self.on_type_obj_index_changed(val="gerber")
-        self.on_reference_combo_changed()
+            # run those once so the obj_type attribute is updated for the FCComboboxes
+            # so the last loaded object is displayed
+            self.on_type_obj_index_changed(val=kind)
+            self.on_reference_combo_changed()
+
+            self.object_combo.set_value(active.options['name'])
+        else:
+            kind = 'gerber'
+            self.type_obj_radio.set_value('gerber')
+
+            # run those once so the obj_type attribute is updated for the FCComboboxes
+            # so the last loaded object is displayed
+            self.on_type_obj_index_changed(val=kind)
+            self.on_reference_combo_changed()
 
         self.op_radio.set_value(self.app.defaults["tools_nccoperation"])
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])

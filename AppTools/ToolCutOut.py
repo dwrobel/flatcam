@@ -455,7 +455,37 @@ class CutOut(AppTool):
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
-        self.type_obj_radio.set_value('grb')
+
+        # use the current selected object and make it visible in the Paint object combobox
+        sel_list = self.app.collection.get_selected()
+        if len(sel_list) == 1:
+            active = self.app.collection.get_active()
+            kind = active.kind
+            if kind == 'gerber':
+                self.type_obj_radio.set_value('grb')
+            else:
+                self.type_obj_radio.set_value('geo')
+
+            # run those once so the obj_type attribute is updated for the FCComboboxes
+            # so the last loaded object is displayed
+            if kind == 'gerber':
+                self.on_type_obj_changed(val='grb')
+            else:
+                self.on_type_obj_changed(val='geo')
+
+            self.obj_combo.set_value(active.options['name'])
+        else:
+            kind = 'gerber'
+            self.type_obj_radio.set_value('grb')
+
+            # run those once so the obj_type attribute is updated for the FCComboboxes
+            # so the last loaded object is displayed
+            if kind == 'gerber':
+                self.on_type_obj_changed(val='grb')
+            else:
+                self.on_type_obj_changed(val='geo')
+
+        # self.type_obj_radio.set_value('grb')
 
         self.default_data.update({
             "plot":             True,

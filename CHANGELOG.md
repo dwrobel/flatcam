@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Etch Compensation Tool - added a new etchant: alkaline baths
 - fixed spacing in the status toolbar icons
 - updated the translation files to the latest changes
+ - modified behavior of object comboboxes in Paint, NCC and CutOut Tools: now if an object is selected in Project Tab and is of the supported kind in the Tool, it will be auto-selected
 
 1.06.2020
 
