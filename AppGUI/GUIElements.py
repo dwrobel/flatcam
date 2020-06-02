@@ -673,7 +673,7 @@ class NumericalEvalEntry(EvalEntry):
 
 class NumericalEvalTupleEntry(FCEntry):
     """
-    Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
+    Will return a text value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
@@ -2712,14 +2712,14 @@ class DialogBoxRadio(QtWidgets.QDialog):
               "If the reference is Relative then the Jump will be at the (x,y) distance\n"
               "from the current mouse location point.")
         )
-        self.lineEdit = EvalEntry(self)
+        self.lineEdit = EvalEntry(parent=self)
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
         self.lineEdit.selectAll()
         self.lineEdit.setFocus()
         self.form.addRow(self.loc_label, self.lineEdit)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-                                                     Qt.Horizontal, parent=self)
+                                                     orientation=Qt.Horizontal, parent=self)
         self.form.addRow(self.button_box)
 
         self.button_box.accepted.connect(self.accept)

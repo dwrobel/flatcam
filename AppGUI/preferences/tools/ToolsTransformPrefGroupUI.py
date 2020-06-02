@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry
+from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, NumericalEvalTupleEntry, FCComboBox
 from AppGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -40,10 +40,53 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        # ## Rotate Angle
+        # Reference Type
+        ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        ref_label.setToolTip(
+            _("The reference point for Rotate, Skew, Scale, Mirror.\n"
+              "Can be:\n"
+              "- Origin -> it is the 0, 0 point\n"
+              "- Selection -> the center of the bounding box of the selected objects\n"
+              "- Point -> a custom point defined by X,Y coordinates\n"
+              "- Object -> the center of the bounding box of a specific object")
+        )
+        self.ref_combo = FCComboBox()
+        self.ref_items = [_("Origin"), _("Selection"), _("Point"), _("Object")]
+        self.ref_combo.addItems(self.ref_items)
 
+        grid0.addWidget(ref_label, 0, 0)
+        grid0.addWidget(self.ref_combo, 0, 1)
+
+        self.point_label = QtWidgets.QLabel('%s:' % _("Point"))
+        self.point_label.setToolTip(
+            _("A point of reference in format X,Y.")
+        )
+        self.point_entry = NumericalEvalTupleEntry()
+
+        grid0.addWidget(self.point_label, 1, 0)
+        grid0.addWidget(self.point_entry, 1, 1)
+
+        # Type of object to be used as reference
+        self.type_object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.type_object_label.setToolTip(
+            _("The type of object used as reference.")
+        )
+
+        self.type_obj_combo = FCComboBox()
+        self.type_obj_combo.addItem(_("Gerber"))
+        self.type_obj_combo.addItem(_("Excellon"))
+        self.type_obj_combo.addItem(_("Geometry"))
+
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+
+        grid0.addWidget(self.type_object_label, 3, 0)
+        grid0.addWidget(self.type_obj_combo, 3, 1)
+
+        # ## Rotate Angle
         rotate_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Rotate"))
-        grid0.addWidget(rotate_title_lbl, 0, 0, 1, 2)
+        grid0.addWidget(rotate_title_lbl, 4, 0, 1, 2)
 
         self.rotate_entry = FCDoubleSpinner()
         self.rotate_entry.set_range(-360.0, 360.0)
@@ -57,12 +100,21 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
         )
-        grid0.addWidget(self.rotate_label, 1, 0)
-        grid0.addWidget(self.rotate_entry, 1, 1)
+        grid0.addWidget(self.rotate_label, 6, 0)
+        grid0.addWidget(self.rotate_entry, 6, 1)
 
         # ## Skew/Shear Angle on X axis
         skew_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
-        grid0.addWidget(skew_title_lbl, 2, 0, 1, 2)
+        grid0.addWidget(skew_title_lbl, 8, 0)
+
+        # ## Link Skew factors
+        self.skew_link_cb = FCCheckBox()
+        self.skew_link_cb.setText(_("Link"))
+        self.skew_link_cb.setToolTip(
+            _("Link the Y entry to X entry and copy it's content.")
+        )
+
+        grid0.addWidget(self.skew_link_cb, 8, 1)
 
         self.skewx_entry = FCDoubleSpinner()
         self.skewx_entry.set_range(-360.0, 360.0)
@@ -74,8 +126,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewx_label, 3, 0)
-        grid0.addWidget(self.skewx_entry, 3, 1)
+        grid0.addWidget(self.skewx_label, 9, 0)
+        grid0.addWidget(self.skewx_entry, 9, 1)
 
         # ## Skew/Shear Angle on Y axis
         self.skewy_entry = FCDoubleSpinner()
@@ -88,12 +140,19 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewy_label, 4, 0)
-        grid0.addWidget(self.skewy_entry, 4, 1)
+        grid0.addWidget(self.skewy_label, 10, 0)
+        grid0.addWidget(self.skewy_entry, 10, 1)
 
         # ## Scale
         scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
-        grid0.addWidget(scale_title_lbl, 5, 0, 1, 2)
+        grid0.addWidget(scale_title_lbl, 12, 0)
+
+        # ## Link Scale factors
+        self.scale_link_cb = FCCheckBox(_("Link"))
+        self.scale_link_cb.setToolTip(
+            _("Link the Y entry to X entry and copy it's content.")
+        )
+        grid0.addWidget(self.scale_link_cb, 12, 1)
 
         self.scalex_entry = FCDoubleSpinner()
         self.scalex_entry.set_range(0, 9999.9999)
@@ -104,8 +163,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
-        grid0.addWidget(self.scalex_label, 6, 0)
-        grid0.addWidget(self.scalex_entry, 6, 1)
+        grid0.addWidget(self.scalex_label, 14, 0)
+        grid0.addWidget(self.scalex_entry, 14, 1)
 
         # ## Scale factor on X axis
         self.scaley_entry = FCDoubleSpinner()
@@ -117,30 +176,12 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
-        grid0.addWidget(self.scaley_label, 7, 0)
-        grid0.addWidget(self.scaley_entry, 7, 1)
-
-        # ## Link Scale factors
-        self.link_cb = FCCheckBox(_("Link"))
-        self.link_cb.setToolTip(
-            _("Scale the selected object(s)\n"
-              "using the Scale_X factor for both axis.")
-        )
-        grid0.addWidget(self.link_cb, 8, 0)
-
-        # ## Scale Reference
-        self.reference_cb = FCCheckBox('%s' % _("Scale Reference"))
-        self.reference_cb.setToolTip(
-            _("Scale the selected object(s)\n"
-              "using the origin reference when checked,\n"
-              "and the center of the biggest bounding box\n"
-              "of the selected objects when unchecked.")
-        )
-        grid0.addWidget(self.reference_cb, 8, 1)
+        grid0.addWidget(self.scaley_label, 16, 0)
+        grid0.addWidget(self.scaley_entry, 16, 1)
 
         # ## Offset
         offset_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Offset"))
-        grid0.addWidget(offset_title_lbl, 9, 0, 1, 2)
+        grid0.addWidget(offset_title_lbl, 20, 0, 1, 2)
 
         self.offx_entry = FCDoubleSpinner()
         self.offx_entry.set_range(-9999.9999, 9999.9999)
@@ -151,8 +192,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offx_label.setToolTip(
            _("Distance to offset on X axis. In current units.")
         )
-        grid0.addWidget(self.offx_label, 10, 0)
-        grid0.addWidget(self.offx_entry, 10, 1)
+        grid0.addWidget(self.offx_label, 22, 0)
+        grid0.addWidget(self.offx_entry, 22, 1)
 
         # ## Offset distance on Y axis
         self.offy_entry = FCDoubleSpinner()
@@ -164,41 +205,23 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
-        grid0.addWidget(self.offy_label, 11, 0)
-        grid0.addWidget(self.offy_entry, 11, 1)
-
-        # ## Mirror
-        mirror_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Mirror"))
-        grid0.addWidget(mirror_title_lbl, 12, 0, 1, 2)
-
-        # ## Mirror (Flip) Reference Point
-        self.mirror_reference_cb = FCCheckBox('%s' % _("Mirror Reference"))
-        self.mirror_reference_cb.setToolTip(
-            _("Flip the selected object(s)\n"
-              "around the point in Point Entry Field.\n"
-              "\n"
-              "The point coordinates can be captured by\n"
-              "left click on canvas together with pressing\n"
-              "SHIFT key. \n"
-              "Then click Add button to insert coordinates.\n"
-              "Or enter the coords in format (x, y) in the\n"
-              "Point Entry field and click Flip on X(Y)"))
-        grid0.addWidget(self.mirror_reference_cb, 13, 0, 1, 2)
-
-        self.flip_ref_label = QtWidgets.QLabel('%s' % _("Mirror Reference point"))
-        self.flip_ref_label.setToolTip(
-            _("Coordinates in format (x, y) used as reference for mirroring.\n"
-              "The 'x' in (x, y) will be used when using Flip on X and\n"
-              "the 'y' in (x, y) will be used when using Flip on Y and")
-        )
-        self.flip_ref_entry = NumericalEvalTupleEntry(border_color='#0069A9')
-
-        grid0.addWidget(self.flip_ref_label, 14, 0, 1, 2)
-        grid0.addWidget(self.flip_ref_entry, 15, 0, 1, 2)
+        grid0.addWidget(self.offy_label, 24, 0)
+        grid0.addWidget(self.offy_entry, 24, 1)
 
         # ## Buffer
         buffer_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Buffer"))
-        grid0.addWidget(buffer_title_lbl, 16, 0, 1, 2)
+        grid0.addWidget(buffer_title_lbl, 26, 0)
+
+        self.buffer_rounded_cb = FCCheckBox()
+        self.buffer_rounded_cb.setText('%s' % _("Rounded"))
+        self.buffer_rounded_cb.setToolTip(
+            _("If checked then the buffer will surround the buffered shape,\n"
+              "every corner will be rounded.\n"
+              "If not checked then the buffer will follow the exact geometry\n"
+              "of the buffered shape.")
+        )
+
+        grid0.addWidget(self.buffer_rounded_cb, 26, 1)
 
         self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
@@ -214,8 +237,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.buffer_entry.setWrapping(True)
         self.buffer_entry.set_range(-9999.9999, 9999.9999)
 
-        grid0.addWidget(self.buffer_label, 17, 0)
-        grid0.addWidget(self.buffer_entry, 17, 1)
+        grid0.addWidget(self.buffer_label, 28, 0)
+        grid0.addWidget(self.buffer_entry, 28, 1)
 
         self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
@@ -232,18 +255,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.buffer_factor_entry.setWrapping(True)
         self.buffer_factor_entry.setSingleStep(1)
 
-        grid0.addWidget(self.buffer_factor_label, 18, 0)
-        grid0.addWidget(self.buffer_factor_entry, 18, 1)
-
-        self.buffer_rounded_cb = FCCheckBox()
-        self.buffer_rounded_cb.setText('%s' % _("Rounded"))
-        self.buffer_rounded_cb.setToolTip(
-            _("If checked then the buffer will surround the buffered shape,\n"
-              "every corner will be rounded.\n"
-              "If not checked then the buffer will follow the exact geometry\n"
-              "of the buffered shape.")
-        )
-
-        grid0.addWidget(self.buffer_rounded_cb, 19, 0, 1, 2)
+        grid0.addWidget(self.buffer_factor_label, 30, 0)
+        grid0.addWidget(self.buffer_factor_entry, 30, 1)
 
         self.layout.addStretch()

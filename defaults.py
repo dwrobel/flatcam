@@ -499,17 +499,22 @@ class FlatCAMDefaults:
         "tools_calc_electro_growth": 10.0,
 
         # Transform Tool
+        "tools_transform_reference": _("Selection"),
+        "tools_transform_ref_object": _("Gerber"),
+        "tools_transform_ref_point": "0, 0",
+
         "tools_transform_rotate": 90,
         "tools_transform_skew_x": 0.0,
         "tools_transform_skew_y": 0.0,
+        "tools_transform_skew_link": True,
+
         "tools_transform_scale_x": 1.0,
         "tools_transform_scale_y": 1.0,
         "tools_transform_scale_link": True,
-        "tools_transform_scale_reference": True,
+
         "tools_transform_offset_x": 0.0,
         "tools_transform_offset_y": 0.0,
-        "tools_transform_mirror_reference": False,
-        "tools_transform_mirror_point": "0.0, 0.0",
+
         "tools_transform_buffer_dis": 0.0,
         "tools_transform_buffer_factor": 100.0,
         "tools_transform_buffer_corner": True,

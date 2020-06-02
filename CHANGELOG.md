@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.06.2020
+
+- updated Transform Tool to have a selection of possible references for the transformations that are now selectable in the GUI
+- Transform Tool - compacted the UI
+
 2.06.2020
 
 - Tcl Shell - added a button to delete the content of the active line

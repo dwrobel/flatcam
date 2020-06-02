@@ -5,9 +5,12 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
 from AppTool import AppTool
-from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCEntry
+from AppGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, FCEntry, FCComboBox, \
+    NumericalEvalTupleEntry
+
+import numpy as np
 
 import gettext
 import AppTranslation as fcTranslate
@@ -53,9 +56,76 @@ class ToolTransform(AppTool):
 
         grid0.addWidget(QtWidgets.QLabel(''))
 
+        # Reference
+        ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        ref_label.setToolTip(
+            _("The reference point for Rotate, Skew, Scale, Mirror.\n"
+              "Can be:\n"
+              "- Origin -> it is the 0, 0 point\n"
+              "- Selection -> the center of the bounding box of the selected objects\n"
+              "- Point -> a custom point defined by X,Y coordinates\n"
+              "- Object -> the center of the bounding box of a specific object")
+        )
+        self.ref_combo = FCComboBox()
+        self.ref_items = [_("Origin"), _("Selection"), _("Point"), _("Object")]
+        self.ref_combo.addItems(self.ref_items)
+
+        grid0.addWidget(ref_label, 0, 0)
+        grid0.addWidget(self.ref_combo, 0, 1, 1, 2)
+
+        self.point_label = QtWidgets.QLabel('%s:' % _("Value"))
+        self.point_label.setToolTip(
+            _("A point of reference in format X,Y.")
+        )
+        self.point_entry = NumericalEvalTupleEntry()
+
+        grid0.addWidget(self.point_label, 1, 0)
+        grid0.addWidget(self.point_entry, 1, 1, 1, 2)
+
+        self.point_button = FCButton(_("Add"))
+        self.point_button.setToolTip(
+            _("Add point coordinates from clipboard.")
+        )
+        grid0.addWidget(self.point_button, 2, 0, 1, 3)
+
+        # Type of object to be used as reference
+        self.type_object_label = QtWidgets.QLabel('%s:' % _("Type"))
+        self.type_object_label.setToolTip(
+            _("The type of object used as reference.")
+        )
+
+        self.type_obj_combo = FCComboBox()
+        self.type_obj_combo.addItem(_("Gerber"))
+        self.type_obj_combo.addItem(_("Excellon"))
+        self.type_obj_combo.addItem(_("Geometry"))
+
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+
+        grid0.addWidget(self.type_object_label, 3, 0)
+        grid0.addWidget(self.type_obj_combo, 3, 1, 1, 2)
+
+        # Object to be used as reference
+        self.object_combo = FCComboBox()
+        self.object_combo.setModel(self.app.collection)
+        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.object_combo.is_last = True
+
+        self.object_combo.setToolTip(
+            _("The object used as reference.\n"
+              "The used point is the center of it's bounding box.")
+        )
+        grid0.addWidget(self.object_combo, 4, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 5, 0, 1, 3)
+
         # ## Rotate Title
         rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
-        grid0.addWidget(rotate_title_label, 0, 0, 1, 3)
+        grid0.addWidget(rotate_title_label, 6, 0, 1, 3)
 
         self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
@@ -73,7 +143,7 @@ class ToolTransform(AppTool):
 
         # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
-        self.rotate_button = FCButton()
+        self.rotate_button = FCButton(_("Rotate"))
         self.rotate_button.setToolTip(
             _("Rotate the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -81,18 +151,26 @@ class ToolTransform(AppTool):
         )
         self.rotate_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.rotate_label, 1, 0)
-        grid0.addWidget(self.rotate_entry, 1, 1)
-        grid0.addWidget(self.rotate_button, 1, 2)
+        grid0.addWidget(self.rotate_label, 7, 0)
+        grid0.addWidget(self.rotate_entry, 7, 1)
+        grid0.addWidget(self.rotate_button, 7, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 3)
+        grid0.addWidget(separator_line, 8, 0, 1, 3)
 
         # ## Skew Title
         skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
-        grid0.addWidget(skew_title_label, 3, 0, 1, 3)
+        grid0.addWidget(skew_title_label, 9, 0, 1, 2)
+
+        self.skew_link_cb = FCCheckBox()
+        self.skew_link_cb.setText(_("Link"))
+        self.skew_link_cb.setToolTip(
+            _("Link the Y entry to X entry and copy it's content.")
+        )
+
+        grid0.addWidget(self.skew_link_cb, 9, 2)
 
         self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
@@ -104,16 +182,16 @@ class ToolTransform(AppTool):
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.set_range(-360, 360)
 
-        self.skewx_button = FCButton()
+        self.skewx_button = FCButton(_("Skew X"))
         self.skewx_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects."))
         self.skewx_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.skewx_label, 4, 0)
-        grid0.addWidget(self.skewx_entry, 4, 1)
-        grid0.addWidget(self.skewx_button, 4, 2)
+        grid0.addWidget(self.skewx_label, 10, 0)
+        grid0.addWidget(self.skewx_entry, 10, 1)
+        grid0.addWidget(self.skewx_button, 10, 2)
 
         self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
@@ -125,25 +203,36 @@ class ToolTransform(AppTool):
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.set_range(-360, 360)
 
-        self.skewy_button = FCButton()
+        self.skewy_button = FCButton(_("Skew Y"))
         self.skewy_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects."))
         self.skewy_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.skewy_label, 5, 0)
-        grid0.addWidget(self.skewy_entry, 5, 1)
-        grid0.addWidget(self.skewy_button, 5, 2)
+        grid0.addWidget(self.skewy_label, 12, 0)
+        grid0.addWidget(self.skewy_entry, 12, 1)
+        grid0.addWidget(self.skewy_button, 12, 2)
+
+        self.ois_sk = OptionalInputSection(self.skew_link_cb, [self.skewy_label, self.skewy_entry, self.skewy_button],
+                                           logic=False)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 3)
+        grid0.addWidget(separator_line, 14, 0, 1, 3)
 
         # ## Scale Title
         scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
-        grid0.addWidget(scale_title_label, 7, 0, 1, 3)
+        grid0.addWidget(scale_title_label, 15, 0, 1, 2)
+
+        self.scale_link_cb = FCCheckBox()
+        self.scale_link_cb.setText(_("Link"))
+        self.scale_link_cb.setToolTip(
+            _("Link the Y entry to X entry and copy it's content.")
+        )
+
+        grid0.addWidget(self.scale_link_cb, 15, 2)
 
         self.scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
@@ -154,16 +243,16 @@ class ToolTransform(AppTool):
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setMinimum(-1e6)
 
-        self.scalex_button = FCButton()
+        self.scalex_button = FCButton(_("Scale X"))
         self.scalex_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
               "the Scale reference checkbox state."))
         self.scalex_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.scalex_label, 8, 0)
-        grid0.addWidget(self.scalex_entry, 8, 1)
-        grid0.addWidget(self.scalex_button, 8, 2)
+        grid0.addWidget(self.scalex_label, 17, 0)
+        grid0.addWidget(self.scalex_entry, 17, 1)
+        grid0.addWidget(self.scalex_button, 17, 2)
 
         self.scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
@@ -174,45 +263,57 @@ class ToolTransform(AppTool):
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setMinimum(-1e6)
 
-        self.scaley_button = FCButton()
+        self.scaley_button = FCButton(_("Scale Y"))
         self.scaley_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
               "the Scale reference checkbox state."))
         self.scaley_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.scaley_label, 9, 0)
-        grid0.addWidget(self.scaley_entry, 9, 1)
-        grid0.addWidget(self.scaley_button, 9, 2)
+        grid0.addWidget(self.scaley_label, 19, 0)
+        grid0.addWidget(self.scaley_entry, 19, 1)
+        grid0.addWidget(self.scaley_button, 19, 2)
 
-        self.scale_link_cb = FCCheckBox()
-        self.scale_link_cb.setText(_("Link"))
-        self.scale_link_cb.setToolTip(
-            _("Scale the selected object(s)\n"
-              "using the Scale_X factor for both axis.")
-        )
-
-        self.scale_zero_ref_cb = FCCheckBox()
-        self.scale_zero_ref_cb.setText('%s' % _("Scale Reference"))
-        self.scale_zero_ref_cb.setToolTip(
-            _("Scale the selected object(s)\n"
-              "using the origin reference when checked,\n"
-              "and the center of the biggest bounding box\n"
-              "of the selected objects when unchecked."))
-
-        self.ois_scale = OptionalInputSection(self.scale_link_cb, [self.scaley_entry, self.scaley_button], logic=False)
-
-        grid0.addWidget(self.scale_link_cb, 10, 0)
-        grid0.addWidget(self.scale_zero_ref_cb, 10, 1, 1, 2)
+        self.ois_s = OptionalInputSection(self.scale_link_cb,
+                                          [
+                                              self.scaley_label,
+                                              self.scaley_entry,
+                                              self.scaley_button
+                                          ], logic=False)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 11, 0, 1, 3)
+        grid0.addWidget(separator_line, 21, 0, 1, 3)
+
+        # ## Flip Title
+        flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
+        grid0.addWidget(flip_title_label, 23, 0, 1, 3)
+
+        self.flipx_button = FCButton(_("Flip on X"))
+        self.flipx_button.setToolTip(
+            _("Flip the selected object(s) over the X axis.")
+        )
+
+        self.flipy_button = FCButton(_("Flip on Y"))
+        self.flipy_button.setToolTip(
+            _("Flip the selected object(s) over the X axis.")
+        )
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        grid0.addLayout(hlay0, 25, 0, 1, 3)
+
+        hlay0.addWidget(self.flipx_button)
+        hlay0.addWidget(self.flipy_button)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 27, 0, 1, 3)
 
         # ## Offset Title
         offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
-        grid0.addWidget(offset_title_label, 12, 0, 1, 3)
+        grid0.addWidget(offset_title_label, 29, 0, 1, 3)
 
         self.offx_label = QtWidgets.QLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
@@ -223,16 +324,16 @@ class ToolTransform(AppTool):
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setMinimum(-1e6)
 
-        self.offx_button = FCButton()
+        self.offx_button = FCButton(_("Offset X"))
         self.offx_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects.\n"))
         self.offx_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.offx_label, 13, 0)
-        grid0.addWidget(self.offx_entry, 13, 1)
-        grid0.addWidget(self.offx_button, 13, 2)
+        grid0.addWidget(self.offx_label, 31, 0)
+        grid0.addWidget(self.offx_entry, 31, 1)
+        grid0.addWidget(self.offx_button, 31, 2)
 
         self.offy_label = QtWidgets.QLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
@@ -243,91 +344,35 @@ class ToolTransform(AppTool):
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setMinimum(-1e6)
 
-        self.offy_button = FCButton()
+        self.offy_button = FCButton(_("Offset Y"))
         self.offy_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects.\n"))
         self.offy_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.offy_label, 14, 0)
-        grid0.addWidget(self.offy_entry, 14, 1)
-        grid0.addWidget(self.offy_button, 14, 2)
+        grid0.addWidget(self.offy_label, 32, 0)
+        grid0.addWidget(self.offy_entry, 32, 1)
+        grid0.addWidget(self.offy_button, 32, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 15, 0, 1, 3)
-
-        # ## Flip Title
-        flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
-        grid0.addWidget(flip_title_label, 16, 0, 1, 3)
-
-        self.flipx_button = FCButton()
-        self.flipx_button.setToolTip(
-            _("Flip the selected object(s) over the X axis.")
-        )
-
-        self.flipy_button = FCButton()
-        self.flipy_button.setToolTip(
-            _("Flip the selected object(s) over the X axis.")
-        )
-
-        hlay0 = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay0, 17, 0, 1, 3)
-
-        hlay0.addWidget(self.flipx_button)
-        hlay0.addWidget(self.flipy_button)
-
-        self.flip_ref_cb = FCCheckBox()
-        self.flip_ref_cb.setText('%s' % _("Mirror Reference"))
-        self.flip_ref_cb.setToolTip(
-            _("Flip the selected object(s)\n"
-              "around the point in Point Entry Field.\n"
-              "\n"
-              "The point coordinates can be captured by\n"
-              "left click on canvas together with pressing\n"
-              "SHIFT key. \n"
-              "Then click Add button to insert coordinates.\n"
-              "Or enter the coords in format (x, y) in the\n"
-              "Point Entry field and click Flip on X(Y)"))
-
-        grid0.addWidget(self.flip_ref_cb, 18, 0, 1, 3)
-
-        self.flip_ref_label = QtWidgets.QLabel('%s:' % _("Ref. Point"))
-        self.flip_ref_label.setToolTip(
-            _("Coordinates in format (x, y) used as reference for mirroring.\n"
-              "The 'x' in (x, y) will be used when using Flip on X and\n"
-              "the 'y' in (x, y) will be used when using Flip on Y.")
-        )
-        self.flip_ref_entry = FCEntry()
-        # self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.flip_ref_entry.setFixedWidth(70)
-
-        self.flip_ref_button = FCButton()
-        self.flip_ref_button.setToolTip(
-            _("The point coordinates can be captured by\n"
-              "left click on canvas together with pressing\n"
-              "SHIFT key. Then click Add button to insert."))
-
-        self.ois_flip = OptionalInputSection(self.flip_ref_cb, [self.flip_ref_entry, self.flip_ref_button], logic=True)
-
-        hlay1 = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay1, 19, 0, 1, 3)
-
-        hlay1.addWidget(self.flip_ref_label)
-        hlay1.addWidget(self.flip_ref_entry)
-
-        grid0.addWidget(self.flip_ref_button, 20, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 3)
+        grid0.addWidget(separator_line, 34, 0, 1, 3)
 
         # ## Buffer Title
         buffer_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.bufferName)
-        grid0.addWidget(buffer_title_label, 22, 0, 1, 3)
+        grid0.addWidget(buffer_title_label, 35, 0, 1, 2)
+
+        self.buffer_rounded_cb = FCCheckBox('%s' % _("Rounded"))
+        self.buffer_rounded_cb.setToolTip(
+            _("If checked then the buffer will surround the buffered shape,\n"
+              "every corner will be rounded.\n"
+              "If not checked then the buffer will follow the exact geometry\n"
+              "of the buffered shape.")
+        )
+
+        grid0.addWidget(self.buffer_rounded_cb, 35, 2)
 
         self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
         self.buffer_label.setToolTip(
@@ -343,16 +388,16 @@ class ToolTransform(AppTool):
         self.buffer_entry.setWrapping(True)
         self.buffer_entry.set_range(-9999.9999, 9999.9999)
 
-        self.buffer_button = FCButton()
+        self.buffer_button = FCButton(_("Buffer D"))
         self.buffer_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the distance.")
         )
         self.buffer_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.buffer_label, 23, 0)
-        grid0.addWidget(self.buffer_entry, 23, 1)
-        grid0.addWidget(self.buffer_button, 23, 2)
+        grid0.addWidget(self.buffer_label, 37, 0)
+        grid0.addWidget(self.buffer_entry, 37, 1)
+        grid0.addWidget(self.buffer_button, 37, 2)
 
         self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
@@ -369,28 +414,18 @@ class ToolTransform(AppTool):
         self.buffer_factor_entry.setWrapping(True)
         self.buffer_factor_entry.setSingleStep(1)
 
-        self.buffer_factor_button = FCButton()
+        self.buffer_factor_button = FCButton(_("Buffer F"))
         self.buffer_factor_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the factor.")
         )
         self.buffer_factor_button.setMinimumWidth(90)
 
-        grid0.addWidget(self.buffer_factor_label, 24, 0)
-        grid0.addWidget(self.buffer_factor_entry, 24, 1)
-        grid0.addWidget(self.buffer_factor_button, 24, 2)
+        grid0.addWidget(self.buffer_factor_label, 38, 0)
+        grid0.addWidget(self.buffer_factor_entry, 38, 1)
+        grid0.addWidget(self.buffer_factor_button, 38, 2)
 
-        self.buffer_rounded_cb = FCCheckBox('%s' % _("Rounded"))
-        self.buffer_rounded_cb.setToolTip(
-            _("If checked then the buffer will surround the buffered shape,\n"
-              "every corner will be rounded.\n"
-              "If not checked then the buffer will follow the exact geometry\n"
-              "of the buffered shape.")
-        )
-
-        grid0.addWidget(self.buffer_rounded_cb, 25, 0, 1, 3)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 3)
+        grid0.addWidget(QtWidgets.QLabel(''), 42, 0, 1, 3)
 
         self.layout.addStretch()
 
@@ -408,29 +443,28 @@ class ToolTransform(AppTool):
         self.layout.addWidget(self.reset_button)
 
         # ## Signals
+        self.ref_combo.currentIndexChanged.connect(self.on_reference_changed)
+        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.point_button.clicked.connect(self.on_add_coords)
+
         self.rotate_button.clicked.connect(self.on_rotate)
+
         self.skewx_button.clicked.connect(self.on_skewx)
         self.skewy_button.clicked.connect(self.on_skewy)
+
         self.scalex_button.clicked.connect(self.on_scalex)
         self.scaley_button.clicked.connect(self.on_scaley)
+
         self.offx_button.clicked.connect(self.on_offx)
         self.offy_button.clicked.connect(self.on_offy)
+
         self.flipx_button.clicked.connect(self.on_flipx)
         self.flipy_button.clicked.connect(self.on_flipy)
-        self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
+
         self.buffer_button.clicked.connect(self.on_buffer_by_distance)
         self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
 
         self.reset_button.clicked.connect(self.set_tool_ui)
-
-        # self.rotate_entry.returnPressed.connect(self.on_rotate)
-        # self.skewx_entry.returnPressed.connect(self.on_skewx)
-        # self.skewy_entry.returnPressed.connect(self.on_skewy)
-        # self.scalex_entry.returnPressed.connect(self.on_scalex)
-        # self.scaley_entry.returnPressed.connect(self.on_scaley)
-        # self.offx_entry.returnPressed.connect(self.on_offx)
-        # self.offy_entry.returnPressed.connect(self.on_offy)
-        # self.buffer_entry.returnPressed.connect(self.on_buffer_by_distance)
 
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolTransform()")
@@ -463,130 +497,160 @@ class ToolTransform(AppTool):
         AppTool.install(self, icon, separator, shortcut='Alt+T', **kwargs)
 
     def set_tool_ui(self):
-        self.rotate_button.set_value(_("Rotate"))
-        self.skewx_button.set_value(_("Skew X"))
-        self.skewy_button.set_value(_("Skew Y"))
-        self.scalex_button.set_value(_("Scale X"))
-        self.scaley_button.set_value(_("Scale Y"))
-        self.scale_link_cb.set_value(True)
-        self.scale_zero_ref_cb.set_value(True)
-        self.offx_button.set_value(_("Offset X"))
-        self.offy_button.set_value(_("Offset Y"))
-        self.flipx_button.set_value(_("Flip on X"))
-        self.flipy_button.set_value(_("Flip on Y"))
-        self.flip_ref_cb.set_value(True)
-        self.flip_ref_button.set_value(_("Add"))
-        self.buffer_button.set_value(_("Buffer D"))
-        self.buffer_factor_button.set_value(_("Buffer F"))
 
         # ## Initialize form
-        if self.app.defaults["tools_transform_rotate"]:
-            self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
-        else:
-            self.rotate_entry.set_value(0.0)
+        self.ref_combo.set_value(self.app.defaults["tools_transform_reference"])
+        self.type_obj_combo.set_value(self.app.defaults["tools_transform_ref_object"])
+        self.point_entry.set_value(self.app.defaults["tools_transform_ref_point"])
+        self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
 
-        if self.app.defaults["tools_transform_skew_x"]:
-            self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
-        else:
-            self.skewx_entry.set_value(0.0)
+        self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
+        self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
+        self.skew_link_cb.set_value(self.app.defaults["tools_transform_skew_link"])
 
-        if self.app.defaults["tools_transform_skew_y"]:
-            self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
-        else:
-            self.skewy_entry.set_value(0.0)
+        self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
+        self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
+        self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
 
-        if self.app.defaults["tools_transform_scale_x"]:
-            self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
-        else:
-            self.scalex_entry.set_value(1.0)
+        self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
+        self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
 
-        if self.app.defaults["tools_transform_scale_y"]:
-            self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
-        else:
-            self.scaley_entry.set_value(1.0)
+        self.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])
+        self.buffer_factor_entry.set_value(self.app.defaults["tools_transform_buffer_factor"])
+        self.buffer_rounded_cb.set_value(self.app.defaults["tools_transform_buffer_corner"])
 
-        if self.app.defaults["tools_transform_scale_link"]:
-            self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
-        else:
-            self.scale_link_cb.set_value(True)
+        # initial state is hidden
+        self.point_label.hide()
+        self.point_entry.hide()
+        self.point_button.hide()
 
-        if self.app.defaults["tools_transform_scale_reference"]:
-            self.scale_zero_ref_cb.set_value(self.app.defaults["tools_transform_scale_reference"])
-        else:
-            self.scale_zero_ref_cb.set_value(True)
+        self.type_object_label.hide()
+        self.type_obj_combo.hide()
+        self.object_combo.hide()
 
-        if self.app.defaults["tools_transform_offset_x"]:
-            self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
-        else:
-            self.offx_entry.set_value(0.0)
+    def on_type_obj_index_changed(self, index):
+        self.object_combo.setRootModelIndex(self.app.collection.index(index, 0, QtCore.QModelIndex()))
+        self.object_combo.setCurrentIndex(0)
+        self.object_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.type_obj_combo.get_value()]
 
-        if self.app.defaults["tools_transform_offset_y"]:
-            self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
-        else:
-            self.offy_entry.set_value(0.0)
+    def on_reference_changed(self, index):
+        if index == 0 or index == 1:  # "Origin" or "Selection" reference
+            self.point_label.hide()
+            self.point_entry.hide()
+            self.point_button.hide()
 
-        if self.app.defaults["tools_transform_mirror_reference"]:
-            self.flip_ref_cb.set_value(self.app.defaults["tools_transform_mirror_reference"])
-        else:
-            self.flip_ref_cb.set_value(False)
+            self.type_object_label.hide()
+            self.type_obj_combo.hide()
+            self.object_combo.hide()
+        elif index == 2:    # "Point" reference
+            self.point_label.show()
+            self.point_entry.show()
+            self.point_button.show()
 
-        if self.app.defaults["tools_transform_mirror_point"]:
-            self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
-        else:
-            self.flip_ref_entry.set_value("0, 0")
+            self.type_object_label.hide()
+            self.type_obj_combo.hide()
+            self.object_combo.hide()
+        else:   # "Object" reference
+            self.point_label.hide()
+            self.point_entry.hide()
+            self.point_button.hide()
 
-        if self.app.defaults["tools_transform_buffer_dis"]:
-            self.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])
-        else:
-            self.buffer_entry.set_value(0.0)
+            self.type_object_label.show()
+            self.type_obj_combo.show()
+            self.object_combo.show()
 
-        if self.app.defaults["tools_transform_buffer_factor"]:
-            self.buffer_factor_entry.set_value(self.app.defaults["tools_transform_buffer_factor"])
-        else:
-            self.buffer_factor_entry.set_value(100.0)
+    def on_calculate_reference(self):
+        ref_val = self.ref_combo.currentIndex()
 
-        if self.app.defaults["tools_transform_buffer_corner"]:
-            self.buffer_rounded_cb.set_value(self.app.defaults["tools_transform_buffer_corner"])
-        else:
-            self.buffer_rounded_cb.set_value(True)
+        if ref_val == 0:    # "Origin" reference
+            return 0, 0
+        elif ref_val == 1:  # "Selection" reference
+            sel_list = self.app.collection.get_selected()
+            if sel_list:
+                xmin, ymin, xmax, ymax = self.alt_bounds(obj_list=sel_list)
+                px = (xmax + xmin) * 0.5
+                py = (ymax + ymin) * 0.5
+                return px, py
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+                return "fail"
+        elif ref_val == 2:  # "Point" reference
+            point_val = self.point_entry.get_value()
+            try:
+                px, py = eval('{}'.format(point_val))
+                return px, py
+            except Exception:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Incorrect format for Point value. Needs format X,Y"))
+                return "fail"
+        else:               # "Object" reference
+            obj_name = self.object_combo.get_value()
+            ref_obj = self.app.collection.get_by_name(obj_name)
+            xmin, ymin, xmax, ymax = ref_obj.bounds()
+            px = (xmax + xmin) * 0.5
+            py = (ymax + ymin) * 0.5
+            return px, py
+
+    def on_add_coords(self):
+        val = self.app.clipboard.text()
+        self.point_entry.set_value(val)
 
     def on_rotate(self):
         value = float(self.rotate_entry.get_value())
         if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Rotate transformation can not be done for a value of 0."))
-        self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value]})
-        return
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Rotate transformation can not be done for a value of 0."))
+            return
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
+        self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value, point]})
 
     def on_flipx(self):
         axis = 'Y'
-
-        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis]})
-        return
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
+        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
     def on_flipy(self):
         axis = 'X'
-
-        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis]})
-        return
-
-    def on_flip_add_coords(self):
-        val = self.app.clipboard.text()
-        self.flip_ref_entry.set_value(val)
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
+        self.app.worker_task.emit({'fcn': self.on_flip, 'params': [axis, point]})
 
     def on_skewx(self):
-        value = float(self.skewx_entry.get_value())
-        axis = 'X'
+        xvalue = float(self.skewx_entry.get_value())
 
-        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, value]})
-        return
+        if xvalue == 0:
+            return
+
+        if self.skew_link_cb.get_value():
+            yvalue = xvalue
+        else:
+            yvalue = 0
+
+        axis = 'X'
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
+
+        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
     def on_skewy(self):
-        value = float(self.skewy_entry.get_value())
-        axis = 'Y'
+        xvalue = 0
+        yvalue = float(self.skewy_entry.get_value())
 
-        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, value]})
-        return
+        if yvalue == 0:
+            return
+
+        axis = 'Y'
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
+
+        self.app.worker_task.emit({'fcn': self.on_skew, 'params': [axis, xvalue, yvalue, point]})
 
     def on_scalex(self):
         xvalue = float(self.scalex_entry.get_value())
@@ -602,13 +666,11 @@ class ToolTransform(AppTool):
             yvalue = 1
 
         axis = 'X'
-        point = (0, 0)
-        if self.scale_zero_ref_cb.get_value():
-            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
-        else:
-            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue]})
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
 
-        return
+        self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
     def on_scaley(self):
         xvalue = 1
@@ -620,13 +682,11 @@ class ToolTransform(AppTool):
             return
 
         axis = 'Y'
-        point = (0, 0)
-        if self.scale_zero_ref_cb.get_value():
-            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
-        else:
-            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue]})
+        point = self.on_calculate_reference()
+        if point == 'fail':
+            return
 
-        return
+        self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
 
     def on_offx(self):
         value = float(self.offx_entry.get_value())
@@ -636,7 +696,6 @@ class ToolTransform(AppTool):
         axis = 'X'
 
         self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
-        return
 
     def on_offy(self):
         value = float(self.offy_entry.get_value())
@@ -646,14 +705,12 @@ class ToolTransform(AppTool):
         axis = 'Y'
 
         self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
-        return
 
     def on_buffer_by_distance(self):
         value = self.buffer_entry.get_value()
         join = 1 if self.buffer_rounded_cb.get_value() else 2
 
         self.app.worker_task.emit({'fcn': self.on_buffer_action, 'params': [value, join]})
-        return
 
     def on_buffer_by_factor(self):
         value = self.buffer_factor_entry.get_value() / 100.0
@@ -663,14 +720,9 @@ class ToolTransform(AppTool):
         factor = True
 
         self.app.worker_task.emit({'fcn': self.on_buffer_action, 'params': [value, join, factor]})
-        return
 
-    def on_rotate_action(self, num):
+    def on_rotate_action(self, num, point):
         obj_list = self.app.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
 
         if not obj_list:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to rotate!"))
@@ -678,25 +730,7 @@ class ToolTransform(AppTool):
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
                 try:
-                    # first get a bounding box to fit all
-                    for obj in obj_list:
-                        if obj.kind == 'cncjob':
-                            pass
-                        else:
-                            xmin, ymin, xmax, ymax = obj.bounds()
-                            xminlist.append(xmin)
-                            yminlist.append(ymin)
-                            xmaxlist.append(xmax)
-                            ymaxlist.append(ymax)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
-                    xmaximal = max(xmaxlist)
-                    ymaximal = max(ymaxlist)
-
-                    px = 0.5 * (xminimal + xmaximal)
-                    py = 0.5 * (yminimal + ymaximal)
+                    px, py = point
                     for sel_obj in obj_list:
                         if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be rotated."))
@@ -713,44 +747,16 @@ class ToolTransform(AppTool):
                                          (_("Due of"), str(e), _("action was not executed.")))
                     return
 
-    def on_flip(self, axis):
+    def on_flip(self, axis, point):
         obj_list = self.app.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s!' %
-                                 _("No object selected. Please Select an object to flip"))
+            self.app.inform.emit('[WARNING_NOTCL] %s!' % _("No object selected. Please Select an object to flip"))
             return
         else:
             with self.app.proc_container.new(_("Applying Flip")):
                 try:
-                    # get mirroring coords from the point entry
-                    if self.flip_ref_cb.isChecked():
-                        px, py = eval('{}'.format(self.flip_ref_entry.text()))
-                    # get mirroing coords from the center of an all-enclosing bounding box
-                    else:
-                        # first get a bounding box to fit all
-                        for obj in obj_list:
-                            if obj.kind == 'cncjob':
-                                pass
-                            else:
-                                xmin, ymin, xmax, ymax = obj.bounds()
-                                xminlist.append(xmin)
-                                yminlist.append(ymin)
-                                xmaxlist.append(xmax)
-                                ymaxlist.append(ymax)
-
-                        # get the minimum x,y and maximum x,y for all objects selected
-                        xminimal = min(xminlist)
-                        yminimal = min(yminlist)
-                        xmaximal = max(xmaxlist)
-                        ymaximal = max(ymaxlist)
-
-                        px = 0.5 * (xminimal + xmaximal)
-                        py = 0.5 * (yminimal + ymaximal)
+                    px, py = point
 
                     # execute mirroring
                     for sel_obj in obj_list:
@@ -765,8 +771,7 @@ class ToolTransform(AppTool):
                                     sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
                                 else:
                                     sel_obj.options['mirror_y'] = True
-                                self.app.inform.emit('[success] %s...' %
-                                                     _('Flip on the Y axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on the Y axis done'))
                             elif axis == 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -783,12 +788,10 @@ class ToolTransform(AppTool):
                                          (_("Due of"), str(e), _("action was not executed.")))
                     return
 
-    def on_skew(self, axis, num):
+    def on_skew(self, axis, xvalue, yvalue, point):
         obj_list = self.app.collection.get_selected()
-        xminlist = []
-        yminlist = []
 
-        if num == 0 or num == 90 or num == 180:
+        if xvalue in [90, 180] or yvalue in [90, 180] or xvalue == yvalue == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Skew transformation can not be done for 0, 90 and 180 degrees."))
             return
@@ -800,31 +803,16 @@ class ToolTransform(AppTool):
         else:
             with self.app.proc_container.new(_("Applying Skew")):
                 try:
-                    # first get a bounding box to fit all
-                    for obj in obj_list:
-                        if obj.kind == 'cncjob':
-                            pass
-                        else:
-                            xmin, ymin, xmax, ymax = obj.bounds()
-                            xminlist.append(xmin)
-                            yminlist.append(ymin)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
+                    px, py = point
 
                     for sel_obj in obj_list:
                         if sel_obj.kind == 'cncjob':
                             self.app.inform.emit(_("CNCJob objects can't be skewed."))
                         else:
-                            if axis == 'X':
-                                sel_obj.skew(num, 0, point=(xminimal, yminimal))
-                                # add information to the object that it was changed and how much
-                                sel_obj.options['skew_x'] = num
-                            elif axis == 'Y':
-                                sel_obj.skew(0, num, point=(xminimal, yminimal))
-                                # add information to the object that it was changed and how much
-                                sel_obj.options['skew_y'] = num
+                            sel_obj.skew(xvalue, yvalue, point=(px, py))
+                            # add information to the object that it was changed and how much
+                            sel_obj.options['skew_x'] = xvalue
+                            sel_obj.options['skew_y'] = yvalue
                             self.app.app_obj.object_changed.emit(sel_obj)
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
@@ -835,10 +823,6 @@ class ToolTransform(AppTool):
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
         obj_list = self.app.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
 
         if not obj_list:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to scale!"))
@@ -846,29 +830,7 @@ class ToolTransform(AppTool):
         else:
             with self.app.proc_container.new(_("Applying Scale")):
                 try:
-                    # first get a bounding box to fit all
-                    for obj in obj_list:
-                        if obj.kind == 'cncjob':
-                            pass
-                        else:
-                            xmin, ymin, xmax, ymax = obj.bounds()
-                            xminlist.append(xmin)
-                            yminlist.append(ymin)
-                            xmaxlist.append(xmax)
-                            ymaxlist.append(ymax)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
-                    xmaximal = max(xmaxlist)
-                    ymaximal = max(ymaxlist)
-
-                    if point is None:
-                        px = 0.5 * (xminimal + xmaximal)
-                        py = 0.5 * (yminimal + ymaximal)
-                    else:
-                        px = 0
-                        py = 0
+                    px, py = point
 
                     for sel_obj in obj_list:
                         if sel_obj.kind == 'cncjob':
@@ -952,5 +914,33 @@ class ToolTransform(AppTool):
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e),  _("action was not executed.")))
                     return
+
+    @staticmethod
+    def alt_bounds(obj_list):
+        """
+        Returns coordinates of rectangular bounds
+        of an object with geometry: (xmin, ymin, xmax, ymax).
+        """
+
+        def bounds_rec(lst):
+            minx = np.Inf
+            miny = np.Inf
+            maxx = -np.Inf
+            maxy = -np.Inf
+
+            try:
+                for obj in lst:
+                    if obj.kind != 'cncjob':
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(obj)
+                        minx = min(minx, minx_)
+                        miny = min(miny, miny_)
+                        maxx = max(maxx, maxx_)
+                        maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            except TypeError:
+                # it's an object, return it's bounds
+                return lst.bounds()
+
+        return bounds_rec(obj_list)
 
 # end of file

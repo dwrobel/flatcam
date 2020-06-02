@@ -445,17 +445,23 @@ class PreferencesUIManager:
             "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
 
             # Transformations Tool
+            "tools_transform_reference": self.ui.tools_defaults_form.tools_transform_group.ref_combo,
+            "tools_transform_ref_object": self.ui.tools_defaults_form.tools_transform_group.type_obj_combo,
+            "tools_transform_ref_point": self.ui.tools_defaults_form.tools_transform_group.point_entry,
+
             "tools_transform_rotate": self.ui.tools_defaults_form.tools_transform_group.rotate_entry,
+
             "tools_transform_skew_x": self.ui.tools_defaults_form.tools_transform_group.skewx_entry,
             "tools_transform_skew_y": self.ui.tools_defaults_form.tools_transform_group.skewy_entry,
+            "tools_transform_skew_link": self.ui.tools_defaults_form.tools_transform_group.skew_link_cb,
+
             "tools_transform_scale_x": self.ui.tools_defaults_form.tools_transform_group.scalex_entry,
             "tools_transform_scale_y": self.ui.tools_defaults_form.tools_transform_group.scaley_entry,
-            "tools_transform_scale_link": self.ui.tools_defaults_form.tools_transform_group.link_cb,
-            "tools_transform_scale_reference": self.ui.tools_defaults_form.tools_transform_group.reference_cb,
+            "tools_transform_scale_link": self.ui.tools_defaults_form.tools_transform_group.scale_link_cb,
+
             "tools_transform_offset_x": self.ui.tools_defaults_form.tools_transform_group.offx_entry,
             "tools_transform_offset_y": self.ui.tools_defaults_form.tools_transform_group.offy_entry,
-            "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
-            "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
+
             "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
             "tools_transform_buffer_factor": self.ui.tools_defaults_form.tools_transform_group.buffer_factor_entry,
             "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
