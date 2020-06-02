@@ -5,7 +5,7 @@ import collections
 
 class TclCommandGetNames(TclCommand):
     """
-    Tcl shell command to set an object as active in the AppGUI.
+    Tcl shell command to set an object as active in the GUI.
 
     example:
 

@@ -76,7 +76,7 @@ class TclCommandImportSvg(TclCommandSignaled):
         with self.app.proc_container.new("Import SVG"):
 
             # Object creation
-            self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
+            self.app.new_object(obj_type, outname, obj_init, plot=False)
 
             # Register recent file
             self.app.file_opened.emit("svg", filename)

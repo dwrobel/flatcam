@@ -77,10 +77,10 @@ class TclCommandOpenDXF(TclCommandSignaled):
         with self.app.proc_container.new("Open DXF"):
 
             # Object creation
-            ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
+            ret_val = self.app.new_object(obj_type, outname, obj_init, plot=False)
             if ret_val == 'fail':
                 filename = self.app.defaults['global_tcl_path'] + '/' + outname
-                ret_val = self.app.app_obj.new_object(obj_type, outname, obj_init, plot=False)
+                ret_val = self.app.new_object(obj_type, outname, obj_init, plot=False)
                 self.app.shell.append_output(
                     "No path provided or path is wrong. Using the default Path... \n")
 

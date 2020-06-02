@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 
-class grbl_11(PreProc):
+class grbl_11(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"

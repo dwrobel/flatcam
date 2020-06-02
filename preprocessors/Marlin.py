@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 
-class Marlin(PreProc):
+class Marlin(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"

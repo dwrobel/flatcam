@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 
-class Toolchange_Custom(PreProc):
+class Toolchange_Custom(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"

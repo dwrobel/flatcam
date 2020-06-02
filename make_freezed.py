@@ -63,7 +63,7 @@ include_files.append(("assets/examples", "lib/assets/examples"))
 include_files.append(("assets/linux", "lib/assets/linux"))
 include_files.append(("assets/resources", "lib/assets/resources"))
 # include_files.append(("share", "lib/share"))
-include_files.append(("AppGUI/VisPyData", "lib/vispy"))
+include_files.append(("flatcamGUI/VisPyData", "lib/vispy"))
 include_files.append(("config", "lib/config"))
 
 include_files.append(("README.md", "README.md"))

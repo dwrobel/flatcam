@@ -2,16 +2,16 @@ import os
 import stat
 import sys
 from copy import deepcopy
-from Common import LoudDict
+from FlatCAMCommon import LoudDict
 from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
 import gettext
-import AppTranslation as fcTranslate
+import FlatCAMTranslation as fcTranslate
 import builtins
 
-from AppParsers.ParseExcellon import Excellon
-from AppParsers.ParseGerber import Gerber
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -43,7 +43,6 @@ class FlatCAMDefaults:
 
         # General
         "global_graphic_engine": '3D',
-        "global_hud": True,
         "global_app_level": 'b',
         "global_portable": False,
         "global_language": 'English',
@@ -172,6 +171,12 @@ class FlatCAMDefaults:
                                "All Files (*.*)",
 
         # Gerber Options
+        "gerber_isotooldia": 0.1,
+        "gerber_isopasses": 1,
+        "gerber_isooverlap": 10,
+        "gerber_milling_type": "cl",
+        "gerber_combine_passes": False,
+        "gerber_iso_scope": 'all',
         "gerber_noncoppermargin": 0.1,
         "gerber_noncopperrounded": False,
         "gerber_bboxmargin": 0.1,
@@ -182,6 +187,11 @@ class FlatCAMDefaults:
         "gerber_aperture_scale_factor": 1.0,
         "gerber_aperture_buffer_factor": 0.0,
         "gerber_follow": False,
+        "gerber_tool_type": 'circular',
+        "gerber_vtipdia": 0.1,
+        "gerber_vtipangle": 30,
+        "gerber_vcutz": -0.05,
+        "gerber_iso_type": "full",
         "gerber_buffering": "full",
         "gerber_simplification": False,
         "gerber_simp_tolerance": 0.0005,
@@ -212,7 +222,6 @@ class FlatCAMDefaults:
         # Excellon General
         "excellon_plot": True,
         "excellon_solid": True,
-        "excellon_multicolored": False,
         "excellon_format_upper_in": 2,
         "excellon_format_lower_in": 4,
         "excellon_format_upper_mm": 3,
@@ -301,7 +310,6 @@ class FlatCAMDefaults:
 
         # Geometry General
         "geometry_plot": True,
-        "geometry_multicolored": False,
         "geometry_circle_steps": 64,
         "geometry_cnctooldia": "2.4",
         "geometry_plot_line": "#FF0000",
@@ -382,28 +390,6 @@ class FlatCAMDefaults:
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
 
-        # Isolation Routing Tool
-        "tools_iso_tooldia": "0.1",
-        "tools_iso_order": 'rev',
-        "tools_iso_tool_type": 'C1',
-        "tools_iso_tool_vtipdia": 0.1,
-        "tools_iso_tool_vtipangle": 30,
-        "tools_iso_tool_cutz": -0.05,
-        "tools_iso_newdia": 0.1,
-
-        "tools_iso_passes": 1,
-        "tools_iso_overlap": 10,
-        "tools_iso_milling_type": "cl",
-        "tools_iso_follow": False,
-        "tools_iso_isotype": "full",
-
-        "tools_iso_rest":           False,
-        "tools_iso_combine_passes": False,
-        "tools_iso_isoexcept":      False,
-        "tools_iso_selection":      _("All"),
-        "tools_iso_area_shape":     "square",
-        "tools_iso_plotting":       'normal',
-
         # NCC Tool
         "tools_ncctools": "1.0, 0.5",
         "tools_nccorder": 'rev',
@@ -418,13 +404,13 @@ class FlatCAMDefaults:
         "tools_ncc_offset_value": 0.0000,
         "tools_nccref": _('Itself'),
         "tools_ncc_area_shape": "square",
+        "tools_ncc_plotting": 'normal',
         "tools_nccmilling_type": 'cl',
         "tools_ncctool_type": 'C1',
         "tools_ncccutz": -0.05,
         "tools_ncctipdia": 0.1,
         "tools_ncctipangle": 30,
         "tools_nccnewdia": 0.1,
-        "tools_ncc_plotting": 'normal',
 
         # Cutout Tool
         "tools_cutouttooldia": 2.4,
@@ -443,7 +429,7 @@ class FlatCAMDefaults:
         "tools_paintoverlap": 20,
         "tools_paintmargin": 0.0,
         "tools_paintmethod": _("Seed"),
-        "tools_selectmethod": _("All"),
+        "tools_selectmethod": _("All Polygons"),
         "tools_paint_area_shape": "square",
         "tools_pathconnect": True,
         "tools_paintcontour": True,
@@ -537,12 +523,6 @@ class FlatCAMDefaults:
 
         # Distance Tool
         "tools_dist_snap_center": False,
-
-        # Corner Markers Tool
-
-        "tools_corners_thickness": 0.1,
-        "tools_corners_length": 3.0,
-        "tools_corners_margin": 0.0,
 
         # ########################################################################################################
         # ################################ TOOLS 2 ###############################################################
@@ -697,14 +677,12 @@ class FlatCAMDefaults:
     }
 
     @classmethod
-    def save_factory_defaults(cls, file_path: str, version: float):
+    def save_factory_defaults(cls, file_path: str):
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
         # Delete any existing factory defaults file
         if os.path.isfile(file_path):
             os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
             os.remove(file_path)
-
-        cls.factory_defaults['version'] = version
 
         try:
             # recreate a new factory defaults file and save the factory defaults data into it
@@ -786,8 +764,8 @@ class FlatCAMDefaults:
         if defaults is None:
             return
 
-        # Perform migration if necessary but only if the defaults dict is not empty
-        if self.__is_old_defaults(defaults) and defaults:
+        # Perform migration if necessary
+        if self.__is_old_defaults(defaults):
             self.old_defaults_found = True
             defaults = self.__migrate_old_defaults(defaults=defaults)
         else:

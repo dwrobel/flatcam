@@ -1,5 +1,5 @@
 from tclCommands.TclCommand import TclCommand
-from AppObjects.FlatCAMExcellon import ExcellonObject
+from flatcamObjects.FlatCAMExcellon import ExcellonObject
 
 import collections
 
@@ -65,6 +65,6 @@ class TclCommandJoinExcellon(TclCommand):
             ExcellonObject.merge(objs, obj_, decimals=self.app.decimals)
 
         if objs and len(objs) >= 2:
-            self.app.app_obj.new_object("excellon", outname, initialize, plot=False)
+            self.app.new_object("excellon", outname, initialize, plot=False)
         else:
             return "No Excellon objects to be joined or less than two Excellon objects specified for merging."

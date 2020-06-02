@@ -6,10 +6,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from FlatCAMPostProc import *
 
 
-class Toolchange_Probe_MACH3(PreProc):
+class Toolchange_Probe_MACH3(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -106,10 +106,10 @@ class Toolchange_Probe_MACH3(PreProc):
         return g
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
+        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange

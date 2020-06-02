@@ -58,4 +58,4 @@ class TclCommandNewExcellon(TclCommandSignaled):
             name = args['name']
         else:
             name = 'new_exc'
-        self.app.app_obj.new_object('excellon', name, lambda x, y: None, plot=False)
+        self.app.new_object('excellon', name, lambda x, y: None, plot=False)
