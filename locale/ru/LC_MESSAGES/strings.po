@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-06-02 17:37+0300\n"
+"POT-Creation-Date: 2020-06-02 17:39+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: build\n"
@@ -62,10 +62,8 @@ msgstr ""
 "файла."
 
 #: AppDatabase.py:122 AppDatabase.py:1795
-#, fuzzy
-#| msgid "Transform Tool"
 msgid "Transfer the Tool"
-msgstr "Трансформация"
+msgstr "Перенос инструмента"
 
 #: AppDatabase.py:124
 msgid ""
@@ -511,10 +509,8 @@ msgstr "Не удалось прочитать файл БД."
 
 #: AppDatabase.py:318 AppDatabase.py:729 AppDatabase.py:2044
 #: AppDatabase.py:2343
-#, fuzzy
-#| msgid "Loaded FlatCAM Tools DB from"
 msgid "Loaded Tools DB from"
-msgstr "Загрузка FlatCAM БД из"
+msgstr "Загрузка БД из"
 
 #: AppDatabase.py:324 AppDatabase.py:1958
 msgid "Add to DB"
@@ -629,10 +625,8 @@ msgid "Paint Parameters"
 msgstr "Параметры рисования"
 
 #: AppDatabase.py:1071
-#, fuzzy
-#| msgid "Paint Parameters"
 msgid "Isolation Parameters"
-msgstr "Параметры рисования"
+msgstr "Параметры изоляции"
 
 #: AppDatabase.py:1204 AppGUI/ObjectUI.py:746 AppGUI/ObjectUI.py:1671
 #: AppGUI/preferences/geometry/GeometryOptPrefGroupUI.py:186
@@ -979,10 +973,8 @@ msgstr "Laser_lines"
 
 #: AppDatabase.py:1654 AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:154
 #: AppTools/ToolIsolation.py:323
-#, fuzzy
-#| msgid "# Passes"
 msgid "Passes"
-msgstr "# Проходы"
+msgstr "Проход"
 
 #: AppDatabase.py:1656 AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:156
 #: AppTools/ToolIsolation.py:325
@@ -1003,10 +995,8 @@ msgstr ""
 #: AppDatabase.py:1702 AppGUI/ObjectUI.py:236
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:201
 #: AppTools/ToolIsolation.py:371
-#, fuzzy
-#| msgid "\"Follow\""
 msgid "Follow"
-msgstr "\"Следовать\""
+msgstr "Следование"
 
 #: AppDatabase.py:1704 AppDatabase.py:1710 AppGUI/ObjectUI.py:237
 #: AppGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:45
@@ -1077,11 +1067,6 @@ msgid "Save the Tools Database information's."
 msgstr "Сохраните информацию базы данных инструментов."
 
 #: AppDatabase.py:1797
-#, fuzzy
-#| msgid ""
-#| "Add a new tool in the Tools Table of the\n"
-#| "active Geometry object after selecting a tool\n"
-#| "in the Tools Database."
 msgid ""
 "Insert a new tool in the Tools Table of the\n"
 "object/application tool after selecting a tool\n"
@@ -2508,16 +2493,12 @@ msgid "with diameter"
 msgstr "с диаметром"
 
 #: AppEditors/FlatCAMGeoEditor.py:4138
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Grid Snap enabled."
-msgstr "Настройки рабочей области"
+msgstr "Привязка к сетке включена."
 
 #: AppEditors/FlatCAMGeoEditor.py:4142
-#, fuzzy
-#| msgid "Grid X snapping distance"
 msgid "Grid Snap disabled."
-msgstr "Размер сетки по X"
+msgstr "Привязка к сетке отключена."
 
 #: AppEditors/FlatCAMGeoEditor.py:4503 AppGUI/MainGUI.py:3046
 #: AppGUI/MainGUI.py:3092 AppGUI/MainGUI.py:3110 AppGUI/MainGUI.py:3254
@@ -3071,8 +3052,6 @@ msgid "Setting up the UI"
 msgstr "Настройка пользовательского интерфейса"
 
 #: AppEditors/FlatCAMGrbEditor.py:4196
-#, fuzzy
-#| msgid "Adding geometry finished. Preparing the GUI"
 msgid "Adding geometry finished. Preparing the AppGUI"
 msgstr ""
 "Добавление геометрии закончено. Подготовка графического интерфейса "
@@ -3822,10 +3801,9 @@ msgid "Toggle Workspace\tShift+W"
 msgstr "Границы рабочего пространства\tShift+W"
 
 #: AppGUI/MainGUI.py:486
-#, fuzzy
 #| msgid "Toggle Units"
 msgid "Toggle HUD\tAlt+H"
-msgstr "Единицы измерения"
+msgstr "Переключить HUD\tAlt+H"
 
 #: AppGUI/MainGUI.py:491
 msgid "Objects"
@@ -3883,7 +3861,7 @@ msgstr "Канал YouTube\tF4"
 
 #: AppGUI/MainGUI.py:539
 msgid "ReadMe?"
-msgstr ""
+msgstr "Информация"
 
 #: AppGUI/MainGUI.py:542 App_Main.py:2646
 msgid "About FlatCAM"
@@ -4259,10 +4237,8 @@ msgstr "Очистка меди"
 
 #: AppGUI/MainGUI.py:914 AppGUI/MainGUI.py:1946 AppGUI/MainGUI.py:4113
 #: AppTools/ToolIsolation.py:38 AppTools/ToolIsolation.py:766
-#, fuzzy
-#| msgid "Isolation Type"
 msgid "Isolation Tool"
-msgstr "Тип изоляции"
+msgstr "Изоляция"
 
 #: AppGUI/MainGUI.py:918 AppGUI/MainGUI.py:1950
 msgid "Panel Tool"
@@ -4324,17 +4300,13 @@ msgstr "Инверсия Gerber"
 
 #: AppGUI/MainGUI.py:950 AppGUI/MainGUI.py:1982 AppGUI/MainGUI.py:4115
 #: AppTools/ToolCorners.py:31
-#, fuzzy
-#| msgid "Invert Gerber Tool"
 msgid "Corner Markers Tool"
-msgstr "Инверсия Gerber"
+msgstr "Угловые маркеры"
 
 #: AppGUI/MainGUI.py:952 AppGUI/MainGUI.py:1984
 #: AppTools/ToolEtchCompensation.py:32 AppTools/ToolEtchCompensation.py:288
-#, fuzzy
-#| msgid "Editor Transformation Tool"
 msgid "Etch Compensation Tool"
-msgstr "Трансформация"
+msgstr "Компенсация травления"
 
 #: AppGUI/MainGUI.py:958 AppGUI/MainGUI.py:984 AppGUI/MainGUI.py:1036
 #: AppGUI/MainGUI.py:1990 AppGUI/MainGUI.py:2068
@@ -4516,14 +4488,12 @@ msgid "Preferences"
 msgstr "Настройки"
 
 #: AppGUI/MainGUI.py:1113
-#, fuzzy
-#| msgid "&Command Line"
 msgid "Command Line"
-msgstr "&Командная строка"
+msgstr "Командная строка"
 
 #: AppGUI/MainGUI.py:1119
 msgid "HUD (Heads up display)"
-msgstr ""
+msgstr "HUD (Heads-Up Display)"
 
 #: AppGUI/MainGUI.py:1125 AppGUI/preferences/general/GeneralAPPSetGroupUI.py:97
 msgid ""
@@ -4769,10 +4739,8 @@ msgstr ""
 "Указатель в точке (X=0, Y= 0)"
 
 #: AppGUI/MainGUI.py:1563
-#, fuzzy
-#| msgid "Application started ..."
 msgid "Application units"
-msgstr "Приложение запущено ..."
+msgstr "Единицы приложения"
 
 #: AppGUI/MainGUI.py:1654
 msgid "Lock Toolbars"
@@ -4899,24 +4867,18 @@ msgid "Application is saving the project. Please wait ..."
 msgstr "Приложение сохраняет проект. Пожалуйста, подождите ..."
 
 #: AppGUI/MainGUI.py:3668
-#, fuzzy
-#| msgid "Disabled"
 msgid "Shell disabled."
-msgstr "Отключено"
+msgstr "Командная строка отключена."
 
 #: AppGUI/MainGUI.py:3678
-#, fuzzy
-#| msgid "Enabled"
 msgid "Shell enabled."
-msgstr "Включено"
+msgstr "Командная строка включена."
 
 #: AppGUI/MainGUI.py:3706 App_Main.py:9155
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Список комбинаций клавиш</b>"
 
 #: AppGUI/MainGUI.py:4089
-#, fuzzy
-#| msgid "Key Shortcut List"
 msgid "General Shortcut list"
 msgstr "Список комбинаций клавиш"
 
@@ -5077,10 +5039,8 @@ msgid "2-Sided PCB Tool"
 msgstr "2-х сторонняя плата"
 
 #: AppGUI/MainGUI.py:4112
-#, fuzzy
-#| msgid "&Toggle Grid Lines\tAlt+G"
 msgid "Toggle Grid Lines"
-msgstr "&Переключить линии сетки \tAlt+G"
+msgstr "Переключить линии сетки"
 
 #: AppGUI/MainGUI.py:4114
 msgid "Solder Paste Dispensing Tool"
@@ -5372,10 +5332,8 @@ msgid "Transformation Tool"
 msgstr "Трансформация"
 
 #: AppGUI/ObjectUI.py:38
-#, fuzzy
-#| msgid "Object"
 msgid "App Object"
-msgstr "Объект"
+msgstr "Объект приложения"
 
 #: AppGUI/ObjectUI.py:78 AppTools/ToolIsolation.py:77
 msgid ""
@@ -5534,15 +5492,11 @@ msgstr "Изоляция разводки"
 
 #: AppGUI/ObjectUI.py:334 AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:32
 #: AppTools/ToolIsolation.py:67
-#, fuzzy
-#| msgid ""
-#| "Create a Geometry object with\n"
-#| "toolpaths to cut outside polygons."
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut around polygons."
 msgstr ""
-"Создание объекта Geometry\n"
+"Создание объекта Geometry \n"
 "с траекториям обрезки за\n"
 "пределами полигонов."
 
@@ -6092,10 +6046,8 @@ msgstr ""
 "на Gcode для объектов геометрии (фрезерования)."
 
 #: AppGUI/ObjectUI.py:1079 AppGUI/ObjectUI.py:1934
-#, fuzzy
-#| msgid "Exclusion areas"
 msgid "Add exclusion areas"
-msgstr "Зоны исключения"
+msgstr "Добавить зоны исключения"
 
 #: AppGUI/ObjectUI.py:1082 AppGUI/ObjectUI.py:1937
 #: AppGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:212
@@ -6180,10 +6132,8 @@ msgstr ""
 "Высота Z, на которую поднимется инструмент, чтобы избежать зоны исключения."
 
 #: AppGUI/ObjectUI.py:1145 AppGUI/ObjectUI.py:2000
-#, fuzzy
-#| msgid "Add area"
 msgid "Add area:"
-msgstr "Добавить область"
+msgstr "Добавить область:"
 
 #: AppGUI/ObjectUI.py:1146 AppGUI/ObjectUI.py:2001
 msgid "Add an Exclusion Area."
@@ -6212,16 +6162,12 @@ msgid "Delete all exclusion areas."
 msgstr "Удаляет все исключаемые зоны."
 
 #: AppGUI/ObjectUI.py:1166 AppGUI/ObjectUI.py:2021
-#, fuzzy
-#| msgid "Delete Object"
 msgid "Delete Selected"
-msgstr "Удалить объект"
+msgstr "Удалить выбранное"
 
 #: AppGUI/ObjectUI.py:1167 AppGUI/ObjectUI.py:2022
-#, fuzzy
-#| msgid "Delete all exclusion areas."
 msgid "Delete all exclusion areas that are selected in the table."
-msgstr "Удаляет все исключаемые зоны."
+msgstr "Удаляет все исключаемые зоны выбранные в таблице."
 
 #: AppGUI/ObjectUI.py:1191 AppGUI/ObjectUI.py:2038
 msgid ""
@@ -7032,40 +6978,30 @@ msgstr ""
 "пикселей."
 
 #: AppGUI/PlotCanvas.py:236 AppGUI/PlotCanvasLegacy.py:345
-#, fuzzy
-#| msgid "All plots enabled."
 msgid "Axis enabled."
-msgstr "Все участки включены."
+msgstr "Оси включены."
 
 #: AppGUI/PlotCanvas.py:242 AppGUI/PlotCanvasLegacy.py:352
-#, fuzzy
-#| msgid "All plots disabled."
 msgid "Axis disabled."
-msgstr "Все участки отключены."
+msgstr "Оси отключены."
 
 #: AppGUI/PlotCanvas.py:260 AppGUI/PlotCanvasLegacy.py:372
-#, fuzzy
 #| msgid "Enabled"
 msgid "HUD enabled."
-msgstr "Включено"
+msgstr "HUD включен."
 
 #: AppGUI/PlotCanvas.py:268 AppGUI/PlotCanvasLegacy.py:378
-#, fuzzy
 #| msgid "Disabled"
 msgid "HUD disabled."
-msgstr "Отключено"
+msgstr "HUD отключен."
 
 #: AppGUI/PlotCanvas.py:276 AppGUI/PlotCanvasLegacy.py:451
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Grid enabled."
-msgstr "Настройки рабочей области"
+msgstr "Сетка включена."
 
 #: AppGUI/PlotCanvas.py:280 AppGUI/PlotCanvasLegacy.py:459
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Grid disabled."
-msgstr "Настройки рабочей области"
+msgstr "Сетка отключена."
 
 #: AppGUI/PlotCanvasLegacy.py:1523
 msgid ""
@@ -7080,16 +7016,12 @@ msgid "Preferences applied."
 msgstr "Настройки применяются."
 
 #: AppGUI/preferences/PreferencesUIManager.py:872
-#, fuzzy
-#| msgid "Are you sure you want to delete the GUI Settings? \n"
 msgid "Are you sure you want to continue?"
-msgstr "Вы уверены, что хотите сбросить настройки интерфейса?\n"
+msgstr "Вы уверены что хотите продолжить?"
 
 #: AppGUI/preferences/PreferencesUIManager.py:873
-#, fuzzy
-#| msgid "Application started ..."
 msgid "Application will restart"
-msgstr "Приложение запущено ..."
+msgstr "Приложение будет перезапущено"
 
 #: AppGUI/preferences/PreferencesUIManager.py:971
 msgid "Preferences closed without saving."
@@ -7329,10 +7261,8 @@ msgstr "Установит прозрачность заливки для пос
 #: AppGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:267
 #: AppGUI/preferences/geometry/GeometryGenPrefGroupUI.py:90
 #: AppGUI/preferences/gerber/GerberGenPrefGroupUI.py:149
-#, fuzzy
-#| msgid "CNCJob Object Color"
 msgid "Object Color"
-msgstr "Цвет объектов CNCJob"
+msgstr "Цвет объекта"
 
 #: AppGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:212
 msgid "Set the color for plotted objects."
@@ -8079,19 +8009,14 @@ msgid "Notebook"
 msgstr "Боковая панель"
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:195
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the elements found in the Notebook.\n"
-#| "The notebook is the collapsible area in the left side of the GUI,\n"
-#| "and include the Project, Selected and Tool tabs."
 msgid ""
 "This sets the font size for the elements found in the Notebook.\n"
 "The notebook is the collapsible area in the left side of the AppGUI,\n"
 "and include the Project, Selected and Tool tabs."
 msgstr ""
-"Это устанавливает размер шрифта для элементов, найденных в блокноте.\n"
-"Блокнот - это складная область в левой части графического интерфейса,\n"
-"и включают вкладки Project, Selected и Tool."
+"Это устанавливает размер шрифта для элементов боковой панели.\n"
+"Боковая панель - это скрывающаяся область в левой части интерфейса,\n"
+"включающая вкладки Проект, Выбранное и Инструменты."
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:214
 msgid "Axis"
@@ -8106,26 +8031,20 @@ msgid "Textbox"
 msgstr "Поле ввода текста"
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:235
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the Textbox GUI\n"
-#| "elements that are used in FlatCAM."
 msgid ""
 "This sets the font size for the Textbox AppGUI\n"
 "elements that are used in the application."
 msgstr ""
 "Это устанавливает размер шрифта для полей ввода текста\n"
-"которые используются в FlatCAM."
+"которые используются в приложении."
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:253
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:255
-#, fuzzy
-#| msgid "This sets the font size for canvas axis."
 msgid "This sets the font size for the Heads Up Display."
-msgstr "Это устанавливает размер шрифта для оси холста."
+msgstr "Это позволяет задать размер шрифта для Head-Up Display."
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:280
 msgid "Mouse Settings"
@@ -8676,14 +8595,12 @@ msgid "Theme"
 msgstr "Тема"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:38
-#, fuzzy
-#| msgid ""
-#| "Select a theme for FlatCAM.\n"
-#| "It will theme the plot area."
 msgid ""
 "Select a theme for the application.\n"
 "It will theme the plot area."
-msgstr "Выбор темы для FlatCAM."
+msgstr ""
+"Выбор темы для приложения.\n"
+"Это будет тема рабочей области."
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:43
 msgid "Light"
@@ -8712,15 +8629,11 @@ msgid "Layout"
 msgstr "Макет"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:75
-#, fuzzy
-#| msgid ""
-#| "Select an layout for FlatCAM.\n"
-#| "It is applied immediately."
 msgid ""
 "Select a layout for the application.\n"
 "It is applied immediately."
 msgstr ""
-"Выберите макет для FlatCAM.\n"
+"Выбор макета приложения.\n"
 "Применяется немедленно."
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:95
@@ -8728,49 +8641,36 @@ msgid "Style"
 msgstr "Стиль"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:97
-#, fuzzy
-#| msgid ""
-#| "Select an style for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Select a style for the application.\n"
 "It will be applied at the next app start."
 msgstr ""
-"Выберите стиль для FlatCAM.\n"
-"Он будет применен при следующем запуске приложения."
+"Выбор стиля приложения.\n"
+"Он будет применён при следующем запуске программы."
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:111
 msgid "Activate HDPI Support"
 msgstr "Поддержка HDPI"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:113
-#, fuzzy
-#| msgid ""
-#| "Enable High DPI support for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Enable High DPI support for the application.\n"
 "It will be applied at the next app start."
 msgstr ""
-"Включает поддержку высокого разрешения для FlatCAM.\n"
-"Требуется перезапуск приложения."
+"Включает поддержку высокого разрешения для приложения.\n"
+"Требуется перезапуск программы."
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:127
 msgid "Display Hover Shape"
 msgstr "Показать форму наведения"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:129
-#, fuzzy
-#| msgid ""
-#| "Enable display of a hover shape for FlatCAM objects.\n"
-#| "It is displayed whenever the mouse cursor is hovering\n"
-#| "over any kind of not-selected object."
 msgid ""
 "Enable display of a hover shape for the application objects.\n"
 "It is displayed whenever the mouse cursor is hovering\n"
 "over any kind of not-selected object."
 msgstr ""
-"Возможность отображения формы при наведении на объекты FlatCAM.\n"
+"Возможность отображения формы при наведении на объекты приложения.\n"
 "Он отображается при наведении курсора мыши\n"
 "над любым невыбранным объектом."
 
@@ -8779,19 +8679,13 @@ msgid "Display Selection Shape"
 msgstr "Показывать форму выбора"
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:138
-#, fuzzy
-#| msgid ""
-#| "Enable the display of a selection shape for FlatCAM objects.\n"
-#| "It is displayed whenever the mouse selects an object\n"
-#| "either by clicking or dragging mouse from left to right or\n"
-#| "right to left."
 msgid ""
 "Enable the display of a selection shape for the application objects.\n"
 "It is displayed whenever the mouse selects an object\n"
 "either by clicking or dragging mouse from left to right or\n"
 "right to left."
 msgstr ""
-"Включите отображение формы выделения для объектов FlatCAM.\n"
+"Включает отображение формы выделения для объектов приложения.\n"
 "Он отображается всякий раз, когда мышь выбирает объект\n"
 "щелчком или перетаскиванием мыши слева направо или\n"
 "справа налево."
@@ -10661,10 +10555,8 @@ msgstr ""
 "В микронах."
 
 #: AppGUI/preferences/tools/ToolsCornersPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Gerber Options"
 msgid "Corner Markers Options"
-msgstr "Параметры Gerber"
+msgstr "Параметры угловых маркеров"
 
 #: AppGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
 #: AppTools/ToolCorners.py:124
@@ -10807,17 +10699,11 @@ msgid "Film Tool Options"
 msgstr "Плёнка"
 
 #: AppGUI/preferences/tools/ToolsFilmPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "Create a PCB film from a Gerber or Geometry\n"
-#| "FlatCAM object.\n"
-#| "The file is saved in SVG format."
 msgid ""
 "Create a PCB film from a Gerber or Geometry object.\n"
 "The file is saved in SVG format."
 msgstr ""
-"Создание плёнки печатной платы из Gerber или Geometry\n"
-"объектов FlatCAM.\n"
+"Создание плёнки печатной платы из объектов Gerber или Geometry.\n"
 "Файл сохраняется в формате SVG."
 
 #: AppGUI/preferences/tools/ToolsFilmPrefGroupUI.py:43
@@ -11048,10 +10934,8 @@ msgid "A selection of standard ISO 216 page sizes."
 msgstr "Выбор стандартных размеров страниц ISO 216."
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:26
-#, fuzzy
-#| msgid "Calibration Tool Options"
 msgid "Isolation Tool Options"
-msgstr "Параметры калибровки"
+msgstr "Изоляция"
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:48
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:49
@@ -11136,16 +11020,12 @@ msgid "V-shape"
 msgstr "V-образный"
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:103
-#, fuzzy
-#| msgid ""
-#| "The tip angle for V-Shape Tool.\n"
-#| "In degree."
 msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degrees."
 msgstr ""
 "Угол наклона наконечника для V-образного инструмента.\n"
-"В степенях."
+"В градусах."
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:117
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:126
@@ -11180,22 +11060,11 @@ msgstr ""
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:245
 #: AppTools/ToolIsolation.py:432 AppTools/ToolNCC.py:512
 #: AppTools/ToolPaint.py:441
-#, fuzzy
-#| msgid "Restore"
 msgid "Rest"
-msgstr "Восстановить"
+msgstr "Обработка остаточного припуска"
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:246
 #: AppTools/ToolIsolation.py:435
-#, fuzzy
-#| msgid ""
-#| "If checked, use 'rest machining'.\n"
-#| "Basically it will clear copper outside PCB features,\n"
-#| "using the biggest tool and continue with the next tools,\n"
-#| "from bigger to smaller, to clear areas of copper that\n"
-#| "could not be cleared by previous tool, until there is\n"
-#| "no more copper to clear or there are no more tools.\n"
-#| "If not checked, use the standard algorithm."
 msgid ""
 "If checked, use 'rest machining'.\n"
 "Basically it will isolate outside PCB features,\n"
@@ -11241,11 +11110,6 @@ msgstr ""
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
 #: AppTools/ToolIsolation.py:496
-#, fuzzy
-#| msgid ""
-#| "Isolation scope. Choose what to isolate:\n"
-#| "- 'All' -> Isolate all the polygons in the object\n"
-#| "- 'Selection' -> Isolate a selection of polygons."
 msgid ""
 "Isolation scope. Choose what to isolate:\n"
 "- 'All' -> Isolate all the polygons in the object\n"
@@ -11255,7 +11119,9 @@ msgid ""
 msgstr ""
 "Объем изоляции. Выберите, что изолировать:\n"
 "- 'Все' -> Изолировать все полигоны в объекте.\n"
-"- 'Выделенные' -> Изолировать выделенные полигоны."
+"- 'Выделенные' -> Изолировать полигоны в выделенной области.\n"
+"- 'Выбранные полигоны' - > изолировать выбранные полигоны.\n"
+"- 'Reference Object' - будет обрабатывать область, указанную другим объектом."
 
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
@@ -11292,10 +11158,6 @@ msgstr "Прорисовка"
 #: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:314
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:307
-#, fuzzy
-#| msgid ""
-#| "- 'Normal' -  normal plotting, done at the end of the NCC job\n"
-#| "- 'Progressive' - after each shape is generated it will be plotted."
 msgid ""
 "- 'Normal' -  normal plotting, done at the end of the job\n"
 "- 'Progressive' - each shape is plotted after it is generated"
@@ -11303,7 +11165,7 @@ msgstr ""
 "- 'Нормальный' - нормальное построение, выполненное в конце задания очистки "
 "от меди \n"
 "- 'Последовательный' - после создания каждой фигуры она будет нанесена на "
-"график."
+"график"
 
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:27
 msgid "NCC Tool Options"
@@ -11379,16 +11241,12 @@ msgstr "<b>Параметры:</b>"
 
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:107
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:116
-#, fuzzy
-#| msgid ""
-#| "Depth of cut into material. Negative value.\n"
-#| "In FlatCAM units."
 msgid ""
 "Depth of cut into material. Negative value.\n"
 "In application units."
 msgstr ""
-"Диаметр инструмента. Это значение (в текущих единицах FlatCAM) \n"
-"ширины разреза в материале."
+"Глубина резания. Отрицательное значение.\n"
+"В единицах приложения."
 
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:247
 #: AppTools/ToolPaint.py:444
@@ -11779,16 +11637,12 @@ msgid "Transform Tool Options"
 msgstr "Трансформация"
 
 #: AppGUI/preferences/tools/ToolsTransformPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "Various transformations that can be applied\n"
-#| "on a FlatCAM object."
 msgid ""
 "Various transformations that can be applied\n"
 "on a application object."
 msgstr ""
 "Различные преобразования, которые могут быть применены\n"
-"на объекте FlatCAM."
+"к объектам приложения."
 
 #: AppGUI/preferences/tools/ToolsTransformPrefGroupUI.py:64
 msgid "Skew"
@@ -12149,16 +12003,12 @@ msgid "Plotting..."
 msgstr "Построение..."
 
 #: AppObjects/FlatCAMCNCJob.py:517 AppTools/ToolSolderPaste.py:1511
-#, fuzzy
-#| msgid "Export PNG cancelled."
 msgid "Export cancelled ..."
-msgstr "Экспорт PNG отменён."
+msgstr "Экспорт отменён ..."
 
 #: AppObjects/FlatCAMCNCJob.py:538
-#, fuzzy
-#| msgid "PDF file saved to"
 msgid "File saved to"
-msgstr "Файл PDF сохранён в"
+msgstr "Файл сохранён в"
 
 #: AppObjects/FlatCAMCNCJob.py:548 AppObjects/FlatCAMScript.py:134
 #: App_Main.py:7301
@@ -12266,14 +12116,10 @@ msgid "Generating CNC Code"
 msgstr "Генерация кода ЧПУ"
 
 #: AppObjects/FlatCAMExcellon.py:1663 AppObjects/FlatCAMGeometry.py:2553
-#, fuzzy
-#| msgid "Delete failed. Select a tool to delete."
 msgid "Delete failed. There are no exclusion areas to delete."
-msgstr "Ошибка удаления. Выберите инструмент для удаления."
+msgstr "Ошибка удаления. Нет исключаемых зон для удаления."
 
 #: AppObjects/FlatCAMExcellon.py:1680 AppObjects/FlatCAMGeometry.py:2570
-#, fuzzy
-#| msgid "Failed. Nothing selected."
 msgid "Delete failed. Nothing is selected."
 msgstr "Ошибка. Ничего не выбрано."
 
@@ -13459,14 +13305,10 @@ msgid "Copper Thieving Tool exit."
 msgstr "Выход из Copper Thieving."
 
 #: AppTools/ToolCorners.py:57
-#, fuzzy
-#| msgid "Gerber Object to which will be added a copper thieving."
 msgid "The Gerber object to which will be added corner markers."
-msgstr "Gerber объект, к которому будет добавлен copper thieving."
+msgstr "Объект Gerber, к которому будут добавлены угловые маркеры."
 
 #: AppTools/ToolCorners.py:73
-#, fuzzy
-#| msgid "Location"
 msgid "Locations"
 msgstr "Местоположение"
 
@@ -13479,36 +13321,28 @@ msgid "Top Right"
 msgstr "Верхний правый"
 
 #: AppTools/ToolCorners.py:101
-#, fuzzy
-#| msgid "Toggle Panel"
 msgid "Toggle ALL"
-msgstr "Переключить бок. панель"
+msgstr "Переключить всё"
 
 #: AppTools/ToolCorners.py:167
-#, fuzzy
-#| msgid "Add area"
 msgid "Add Marker"
-msgstr "Добавить область"
+msgstr "Добавить маркер"
 
 #: AppTools/ToolCorners.py:169
 msgid "Will add corner markers to the selected Gerber file."
 msgstr ""
 
 #: AppTools/ToolCorners.py:235
-#, fuzzy
-#| msgid "QRCode Tool"
 msgid "Corners Tool"
-msgstr "QR код"
+msgstr "Углы"
 
 #: AppTools/ToolCorners.py:305
 msgid "Please select at least a location"
 msgstr ""
 
 #: AppTools/ToolCorners.py:440
-#, fuzzy
-#| msgid "Copper Thieving Tool exit."
 msgid "Corners Tool exit."
-msgstr "Выход из Copper Thieving."
+msgstr "Выход из инструмента углов."
 
 #: AppTools/ToolCutOut.py:41
 msgid "Cutout PCB"
@@ -14166,8 +14000,6 @@ msgid "Pads overlapped. Aborting."
 msgstr "Площадки перекрываются. Отмена."
 
 #: AppTools/ToolDistance.py:489
-#, fuzzy
-#| msgid "Distance Tool finished."
 msgid "Distance Tool cancelled."
 msgstr "Измеритель завершён."
 
@@ -14252,17 +14084,15 @@ msgstr "Объект Gerber, который будет инвертирован.
 
 #: AppTools/ToolEtchCompensation.py:86
 msgid "Utilities"
-msgstr ""
+msgstr "Утилиты"
 
 #: AppTools/ToolEtchCompensation.py:87
-#, fuzzy
-#| msgid "Conversion"
 msgid "Conversion utilities"
 msgstr "Конвертация"
 
 #: AppTools/ToolEtchCompensation.py:92
 msgid "Oz to Microns"
-msgstr ""
+msgstr "Унция в микроны"
 
 #: AppTools/ToolEtchCompensation.py:94
 msgid ""
@@ -14272,20 +14102,16 @@ msgid ""
 msgstr ""
 
 #: AppTools/ToolEtchCompensation.py:103
-#, fuzzy
-#| msgid "X value"
 msgid "Oz value"
-msgstr "Значение X"
+msgstr "Значение унции"
 
 #: AppTools/ToolEtchCompensation.py:105 AppTools/ToolEtchCompensation.py:126
-#, fuzzy
-#| msgid "Min value"
 msgid "Microns value"
-msgstr "Минимальное значение"
+msgstr "Значение в микронах"
 
 #: AppTools/ToolEtchCompensation.py:113
 msgid "Mils to Microns"
-msgstr ""
+msgstr "Mils в микроны"
 
 #: AppTools/ToolEtchCompensation.py:115
 msgid ""
@@ -14295,38 +14121,28 @@ msgid ""
 msgstr ""
 
 #: AppTools/ToolEtchCompensation.py:124
-#, fuzzy
-#| msgid "Min value"
 msgid "Mils value"
-msgstr "Минимальное значение"
+msgstr "Значение в mils"
 
 #: AppTools/ToolEtchCompensation.py:139 AppTools/ToolInvertGerber.py:86
 msgid "Parameters for this tool"
 msgstr "Параметры, используемые для этого инструмента"
 
 #: AppTools/ToolEtchCompensation.py:144
-#, fuzzy
-#| msgid "Thickness"
 msgid "Copper Thickness"
-msgstr "Толщина"
+msgstr "Толщина медного слоя"
 
 #: AppTools/ToolEtchCompensation.py:146
-#, fuzzy
-#| msgid ""
-#| "How thick the copper growth is intended to be.\n"
-#| "In microns."
 msgid ""
 "The thickness of the copper foil.\n"
 "In microns [um]."
 msgstr ""
 "Насколько толстым должен быть медный слой.\n"
-"В микронах."
+"В микронах [um]."
 
 #: AppTools/ToolEtchCompensation.py:157
-#, fuzzy
-#| msgid "Location"
 msgid "Ratio"
-msgstr "Местоположение"
+msgstr "Соотношение"
 
 #: AppTools/ToolEtchCompensation.py:159
 msgid ""
@@ -14337,42 +14153,32 @@ msgid ""
 msgstr ""
 
 #: AppTools/ToolEtchCompensation.py:165
-#, fuzzy
-#| msgid "Factor"
 msgid "Etch Factor"
-msgstr "Коэффициент"
+msgstr "Фактор травления"
 
 #: AppTools/ToolEtchCompensation.py:166
-#, fuzzy
-#| msgid "Extensions list"
 msgid "Etchants list"
-msgstr "Список расширений"
+msgstr "Список травителей"
 
 #: AppTools/ToolEtchCompensation.py:167
-#, fuzzy
-#| msgid "Manual"
 msgid "Manual offset"
-msgstr "Вручную"
+msgstr "Ручное смещение"
 
 #: AppTools/ToolEtchCompensation.py:174 AppTools/ToolEtchCompensation.py:179
 msgid "Etchants"
-msgstr ""
+msgstr "Травители"
 
 #: AppTools/ToolEtchCompensation.py:176
-#, fuzzy
-#| msgid "Shows list of commands."
 msgid "A list of etchants."
-msgstr "Показывает список команд."
+msgstr "Список травителей."
 
 #: AppTools/ToolEtchCompensation.py:180
 msgid "Alkaline baths"
-msgstr ""
+msgstr "Щелочные ванны"
 
 #: AppTools/ToolEtchCompensation.py:186
-#, fuzzy
-#| msgid "X factor"
 msgid "Etch factor"
-msgstr "Коэффициент X"
+msgstr "Фактор травления"
 
 #: AppTools/ToolEtchCompensation.py:188
 msgid ""
@@ -14382,13 +14188,12 @@ msgstr ""
 
 #: AppTools/ToolEtchCompensation.py:192
 msgid "Real number or formula"
-msgstr ""
+msgstr "Реальное число или формула"
 
 #: AppTools/ToolEtchCompensation.py:193
-#, fuzzy
 #| msgid "X factor"
 msgid "Etch_factor"
-msgstr "Коэффициент X"
+msgstr "Фактор травления"
 
 #: AppTools/ToolEtchCompensation.py:201
 msgid ""
@@ -14398,7 +14203,7 @@ msgstr ""
 
 #: AppTools/ToolEtchCompensation.py:225
 msgid "Compensate"
-msgstr ""
+msgstr "Компенсация"
 
 #: AppTools/ToolEtchCompensation.py:227
 msgid ""
@@ -14833,10 +14638,8 @@ msgid "Invert Tool"
 msgstr "Инвертирование"
 
 #: AppTools/ToolIsolation.py:96
-#, fuzzy
-#| msgid "Gerber objects for which to check rules."
 msgid "Gerber object for isolation routing."
-msgstr "Объекты Gerber для проверки правил."
+msgstr "Объект Gerber для маршрутизации изоляции."
 
 #: AppTools/ToolIsolation.py:120 AppTools/ToolNCC.py:122
 msgid ""
@@ -14847,14 +14650,6 @@ msgstr ""
 "выберет те, которые будут использоваться для очистки меди."
 
 #: AppTools/ToolIsolation.py:136
-#, fuzzy
-#| msgid ""
-#| "This is the Tool Number.\n"
-#| "Non copper clearing will start with the tool with the biggest \n"
-#| "diameter, continuing until there are no more tools.\n"
-#| "Only tools that create NCC clearing geometry will still be present\n"
-#| "in the resulting geometry. This is because with some tools\n"
-#| "this function will not be able to create painting geometry."
 msgid ""
 "This is the Tool Number.\n"
 "Isolation routing will start with the tool with the biggest \n"
@@ -14864,12 +14659,13 @@ msgid ""
 "this function will not be able to create routing geometry."
 msgstr ""
 "Это номер инструмента.\n"
-"Не медная очистка начнется с инструмента с самым большим\n"
-"диаметр, продолжающийся до тех пор, пока не останется никаких инструментов.\n"
-"По-прежнему будут присутствовать только инструменты, создающие геометрию "
-"очистки NCC.\n"
+"Маршрутизация изоляции начнется с инструмента с самым большим\n"
+"диаметром и будет продолжаться до тех пор, пока не останется никаких "
+"инструментов.\n"
+"По-прежнему будут присутствовать только инструменты, которые создают "
+"геометрию изоляции.\n"
 "в результирующей геометрии. Это потому, что с некоторыми инструментами\n"
-"эта функция не сможет создавать геометрию рисования."
+"эта функция не сможет создавать геометрию маршрутизации."
 
 #: AppTools/ToolIsolation.py:144 AppTools/ToolNCC.py:146
 msgid ""
@@ -15035,10 +14831,8 @@ msgid "Failed to create Follow Geometry with tool diameter"
 msgstr ""
 
 #: AppTools/ToolIsolation.py:1657
-#, fuzzy
-#| msgid "NCC Tool clearing with tool diameter"
 msgid "Follow Geometry was created with tool diameter"
-msgstr "Очистка от меди инструментом с диаметром"
+msgstr "Геометрия следования была создана инструментом с диаметром"
 
 #: AppTools/ToolIsolation.py:1698
 msgid "Click on a polygon to isolate it."
@@ -15051,17 +14845,13 @@ msgstr "Вычитание геометрии"
 
 #: AppTools/ToolIsolation.py:1816 AppTools/ToolIsolation.py:1971
 #: AppTools/ToolIsolation.py:2142
-#, fuzzy
-#| msgid "Intersection"
 msgid "Intersecting Geo"
 msgstr "Пересечение"
 
 #: AppTools/ToolIsolation.py:1865 AppTools/ToolIsolation.py:2032
 #: AppTools/ToolIsolation.py:2199
-#, fuzzy
-#| msgid "Geometry Options"
 msgid "Empty Geometry in"
-msgstr "Параметры Geometry"
+msgstr "Пустая геометрия в"
 
 #: AppTools/ToolIsolation.py:2041
 msgid ""
@@ -15230,28 +15020,20 @@ msgid "NCC Tool. Finished calculation of 'empty' area."
 msgstr "Очистка от меди. Закончен расчёт «пустой» области."
 
 #: AppTools/ToolNCC.py:2267
-#, fuzzy
-#| msgid "Painting polygon with method: lines."
 msgid "Clearing the polygon with the method: lines."
-msgstr "Окраска полигона методом: линии."
+msgstr "Очистка полигона методом: линии."
 
 #: AppTools/ToolNCC.py:2277
-#, fuzzy
-#| msgid "Failed. Painting polygon with method: seed."
 msgid "Failed. Clearing the polygon with the method: seed."
-msgstr "Ошибка. Отрисовка полигона методом: круговой."
+msgstr "Ошибка. Очистка полигона методом: круговой."
 
 #: AppTools/ToolNCC.py:2286
-#, fuzzy
-#| msgid "Failed. Painting polygon with method: standard."
 msgid "Failed. Clearing the polygon with the method: standard."
-msgstr "Ошибка. Отрисовка полигона методом: стандартный."
+msgstr "Ошибка. Очистка полигона методом: стандартный."
 
 #: AppTools/ToolNCC.py:2300
-#, fuzzy
-#| msgid "Geometry could not be painted completely"
 msgid "Geometry could not be cleared completely"
-msgstr "Геометрия не может быть окрашена полностью"
+msgstr "Геометрия не может быть очищена полностью"
 
 #: AppTools/ToolNCC.py:2325 AppTools/ToolNCC.py:2327 AppTools/ToolNCC.py:2973
 #: AppTools/ToolNCC.py:2975
@@ -16547,7 +16329,7 @@ msgstr "Нарушения: нарушений по текущему прави�
 
 #: AppTools/ToolShell.py:59
 msgid "Clear the text."
-msgstr ""
+msgstr "Очистить текст."
 
 #: AppTools/ToolShell.py:91 AppTools/ToolShell.py:93
 msgid "...processing..."
@@ -16558,10 +16340,8 @@ msgid "Solder Paste Tool"
 msgstr "Паяльная паста"
 
 #: AppTools/ToolSolderPaste.py:68
-#, fuzzy
-#| msgid "Select Soldermask object"
 msgid "Gerber Solderpaste object."
-msgstr "Выберите объект паяльной маски"
+msgstr "Объект паяльной маски."
 
 #: AppTools/ToolSolderPaste.py:81
 msgid ""
@@ -17223,10 +17003,9 @@ msgid "Open Gerber file failed."
 msgstr "Не удалось открыть файл Gerber."
 
 #: App_Main.py:2116
-#, fuzzy
-#| msgid "Select a Geometry, Gerber or Excellon Object to edit."
 msgid "Select a Geometry, Gerber, Excellon or CNCJob Object to edit."
-msgstr "Выберите объект Geometry, Gerber или Excellon для редактирования."
+msgstr ""
+"Выберите объект Geometry, Gerber , Excellon или CNCJob для редактирования."
 
 #: App_Main.py:2131
 msgid ""
@@ -17370,14 +17149,6 @@ msgstr ""
 "THE SOFTWARE."
 
 #: App_Main.py:2725
-#, fuzzy
-#| msgid ""
-#| "Some of the icons used are from the following sources:<br><div>Icons by "
-#| "<a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik"
-#| "\">Freepik</a> from <a href=\"https://www.flaticon.com/\"             "
-#| "title=\"Flaticon\">www.flaticon.com</a></div><div>Icons by <a target="
-#| "\"_blank\" href=\"https://icons8.com\">Icons8</a></div>Icons by <a href="
-#| "\"http://www.onlinewebfonts.com\">oNline Web Fonts</a>"
 msgid ""
 "Some of the icons used are from the following sources:<br><div>Icons by <a "
 "href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</"
@@ -17394,7 +17165,10 @@ msgstr ""
 "title=\"Freepik\">Freepik</a> из <a href=\"https://www.flaticon.com/"
 "\"             title=\"Flaticon\">www.flaticon.com</a></div><br><div>Иконки "
 "от <a target=\"_blank\" href=\"https://icons8.com\">Icons8</a></div>Иконки "
-"от <a href=\"http://www.onlinewebfonts.com\">oNline Web Fonts</a>"
+"от <a href=\"http://www.onlinewebfonts.com\">oNline Web Fonts</a><div>Иконки "
+"от <a href=\"https://www.flaticon.com/authors/pixel-perfect\" title=\"Pixel "
+"perfect\">Pixel perfect</a> из <a href=\"https://www.flaticon.com/\" title="
+"\"Flaticon\">www.flaticon.com</a></div>"
 
 #: App_Main.py:2761
 msgid "Splash"
@@ -17449,10 +17223,8 @@ msgid "Corrections"
 msgstr "Исправления"
 
 #: App_Main.py:2963
-#, fuzzy
-#| msgid "Transformations"
 msgid "Important Information's"
-msgstr "Трансформация"
+msgstr "Важная информация"
 
 #: App_Main.py:3111
 msgid ""
@@ -17577,16 +17349,12 @@ msgid "Detachable Tabs"
 msgstr "Плавающие вкладки"
 
 #: App_Main.py:4150
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace enabled."
-msgstr "Настройки рабочей области"
+msgstr "Рабочая область включена."
 
 #: App_Main.py:4153
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace disabled."
-msgstr "Настройки рабочей области"
+msgstr "Рабочая область отключена."
 
 #: App_Main.py:4217
 msgid ""
@@ -18204,17 +17972,10 @@ msgid "Details"
 msgstr "Описание"
 
 #: App_Main.py:9238
-#, fuzzy
-#| msgid "The normal flow when working in FlatCAM is the following:"
 msgid "The normal flow when working with the application is the following:"
 msgstr "Нормальный порядок при работе в FlatCAM выглядит следующим образом:"
 
 #: App_Main.py:9239
-#, fuzzy
-#| msgid ""
-#| "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-#| "FlatCAM using either the toolbars, key shortcuts or even dragging and "
-#| "dropping the files on the GUI."
 msgid ""
 "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
 "the application using either the toolbars, key shortcuts or even dragging "
@@ -18225,19 +17986,14 @@ msgstr ""
 "просто перетащив в окно программы."
 
 #: App_Main.py:9242
-#, fuzzy
-#| msgid ""
-#| "You can also load a FlatCAM project by double clicking on the project "
-#| "file, drag and drop of the file into the FLATCAM GUI or through the menu "
-#| "(or toolbar) actions offered within the app."
 msgid ""
 "You can also load a project by double clicking on the project file, drag and "
 "drop of the file into the AppGUI or through the menu (or toolbar) actions "
 "offered within the app."
 msgstr ""
-"Вы также можете загрузить проект FlatCAM, дважды щелкнув файл проекта, "
-"перетащив его в окно программы или с помощью действий меню (или панели "
-"инструментов), предлагаемых в приложении."
+"Вы также можете загрузить проект дважды щелкнув файл проекта, перетащив его "
+"в окно программы или с помощью действий меню (или панели инструментов), "
+"предлагаемых в приложении."
 
 #: App_Main.py:9245
 msgid ""
@@ -18464,10 +18220,8 @@ msgid "Bookmark removed."
 msgstr "Закладка удалена."
 
 #: Bookmark.py:290
-#, fuzzy
-#| msgid "Exported bookmarks to"
 msgid "Export Bookmarks"
-msgstr "Экспорт закладок в"
+msgstr "Экспорт закладок"
 
 #: Bookmark.py:319 Bookmark.py:349
 msgid "Could not load bookmarks file."
@@ -18482,10 +18236,8 @@ msgid "Exported bookmarks to"
 msgstr "Экспорт закладок в"
 
 #: Bookmark.py:337
-#, fuzzy
-#| msgid "Imported Bookmarks from"
 msgid "Import Bookmarks"
-msgstr "Закладки импортированы из"
+msgstr "Импорт закладок"
 
 #: Bookmark.py:356
 msgid "Imported Bookmarks from"
@@ -18508,32 +18260,32 @@ msgid "Failed. Exclusion areas intersects the object geometry ..."
 msgstr ""
 
 #: Common.py:417
-#, fuzzy
-#| msgid "Exclusion areas"
 msgid "Exclusion areas added."
-msgstr "Зоны исключения"
+msgstr "Зоны исключения добавлены."
 
 #: Common.py:426
-#, fuzzy
-#| msgid "Exclusion areas"
 msgid "With Exclusion areas."
-msgstr "Зоны исключения"
+msgstr "С зонами исключения."
 
 #: Common.py:461
 msgid "Cancelled. Area exclusion drawing was interrupted."
 msgstr "Отменено. Рисование зоны исключения было прервано."
 
 #: Common.py:572 Common.py:621
-#, fuzzy
-#| msgid "All objects are selected."
 msgid "All exclusion zones deleted."
-msgstr "Все объекты выделены."
+msgstr "Все исключаемые зоны удалены."
 
 #: Common.py:608
-#, fuzzy
-#| msgid "Delete all exclusion areas."
 msgid "Selected exclusion zones deleted."
-msgstr "Удаляет все исключаемые зоны."
+msgstr "Выбранные исключаемые зоны удалены."
+
+#: assets/linux/flatcam-beta.desktop:3
+msgid "FlatCAM Beta"
+msgstr "FlatCAM Beta"
+
+#: assets/linux/flatcam-beta.desktop:8
+msgid "G-Code from GERBERS"
+msgstr "G-Code из GERBERS"
 
 #: camlib.py:597
 msgid "self.solid_geometry is neither BaseGeometry or list."
@@ -18869,6 +18621,59 @@ msgstr ""
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
 
+#, fuzzy
+#~| msgid ""
+#~| "How much (fraction) of the tool width to overlap each tool pass.\n"
+#~| "Example:\n"
+#~| "A value here of 0.25 means 25% from the tool diameter found above.\n"
+#~| "\n"
+#~| "Adjust the value starting with lower values\n"
+#~| "and increasing it if areas that should be painted are still \n"
+#~| "not painted.\n"
+#~| "Lower values = faster processing, faster execution on PCB.\n"
+#~| "Higher values = slow processing and slow execution on CNC\n"
+#~| "due of too many paths."
+#~ msgid ""
+#~ "How much (fraction) of the tool width to overlap each tool pass.\n"
+#~ "Example:\n"
+#~ "A value here of 0.25 means 25\\% from the tool diameter found above.\n"
+#~ "\n"
+#~ "Adjust the value starting with lower values\n"
+#~ "and increasing it if areas that should be painted are still \n"
+#~ "not painted.\n"
+#~ "Lower values = faster processing, faster execution on PCB.\n"
+#~ "Higher values = slow processing and slow execution on CNC\n"
+#~ "due of too many paths."
+#~ msgstr ""
+#~ "Какая часть ширины инструмента будет перекрываться за каждый проход "
+#~ "инструмента.\n"
+#~ "Пример:\n"
+#~ "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного "
+#~ "выше.\n"
+#~ "\n"
+#~ "Отрегулируйте значение, начиная с более низких значений\n"
+#~ "и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
+#~ "не окрашены.\n"
+#~ "Более низкие значения = более быстрая обработка, более быстрое выполнение "
+#~ "на печатной плате.\n"
+#~ "Более высокие значения = медленная обработка и медленное выполнение на "
+#~ "ЧПУ\n"
+#~ "из-за большого количества путей."
+
+#, fuzzy
+#~| msgid "z_move = Z coord for Toolchange"
+#~ msgid "z_cut = Z coord for Toolchange"
+#~ msgstr "z_move = Z coord for Toolchange"
+
+#~ msgid "z_move = Z coord for Toolchange"
+#~ msgstr "z_move = Z coord for Toolchange"
+
+#~ msgid "%s/Project_%s"
+#~ msgstr "%s/Project_%s"
+
+#~ msgid "tool_tab"
+#~ msgstr "tool_tab"
+
 #~ msgid "Add Tool from Tools DB"
 #~ msgstr "Добавить инструмент из БД"
 
@@ -19013,13 +18818,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "Unifying Geometry from parsed Geometry segments"
 #~ msgstr "Объединение геометрии из разбираемых сегментов геометрии"
 
-#~| msgid "FlatCAM Object"
-#~ msgid "FlatCAM Beta"
-#~ msgstr "FlatCAM Beta"
-
-#~ msgid "G-Code from GERBERS"
-#~ msgstr "G-Code из GERBERS"
-
 #~ msgid "New Blank Geometry"
 #~ msgstr "Создать Geometry"
 
@@ -19072,59 +18870,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 
 #~ msgid "Expected -x <value> and -y <value>."
 #~ msgstr "Ожидались -x <значение> и -y <значение>."
-
-#, fuzzy
-#~| msgid ""
-#~| "How much (fraction) of the tool width to overlap each tool pass.\n"
-#~| "Example:\n"
-#~| "A value here of 0.25 means 25% from the tool diameter found above.\n"
-#~| "\n"
-#~| "Adjust the value starting with lower values\n"
-#~| "and increasing it if areas that should be painted are still \n"
-#~| "not painted.\n"
-#~| "Lower values = faster processing, faster execution on PCB.\n"
-#~| "Higher values = slow processing and slow execution on CNC\n"
-#~| "due of too many paths."
-#~ msgid ""
-#~ "How much (fraction) of the tool width to overlap each tool pass.\n"
-#~ "Example:\n"
-#~ "A value here of 0.25 means 25\\% from the tool diameter found above.\n"
-#~ "\n"
-#~ "Adjust the value starting with lower values\n"
-#~ "and increasing it if areas that should be painted are still \n"
-#~ "not painted.\n"
-#~ "Lower values = faster processing, faster execution on PCB.\n"
-#~ "Higher values = slow processing and slow execution on CNC\n"
-#~ "due of too many paths."
-#~ msgstr ""
-#~ "Какая часть ширины инструмента будет перекрываться за каждый проход "
-#~ "инструмента.\n"
-#~ "Пример:\n"
-#~ "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного "
-#~ "выше.\n"
-#~ "\n"
-#~ "Отрегулируйте значение, начиная с более низких значений\n"
-#~ "и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
-#~ "не окрашены.\n"
-#~ "Более низкие значения = более быстрая обработка, более быстрое выполнение "
-#~ "на печатной плате.\n"
-#~ "Более высокие значения = медленная обработка и медленное выполнение на "
-#~ "ЧПУ\n"
-#~ "из-за большого количества путей."
-
-#, fuzzy
-#~| msgid "z_move = Z coord for Toolchange"
-#~ msgid "z_cut = Z coord for Toolchange"
-#~ msgstr "z_move = Z coord for Toolchange"
-
-#~ msgid "z_move = Z coord for Toolchange"
-#~ msgstr "z_move = Z coord for Toolchange"
-
-#~ msgid "%s/Project_%s"
-#~ msgstr "%s/Project_%s"
-
-#~ msgid "tool_tab"
-#~ msgstr "tool_tab"
 
 #~ msgid "Could not load factory defaults file."
 #~ msgstr "Не удалось загрузить файл с исходными значениями."
