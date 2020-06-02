@@ -233,7 +233,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox'))
         self.textbox_font_size_label.setToolTip(
             _("This sets the font size for the Textbox AppGUI\n"
-              "elements that are used in FlatCAM.")
+              "elements that are used in the application.")
         )
 
         self.textbox_font_size_spinner = FCSpinner()

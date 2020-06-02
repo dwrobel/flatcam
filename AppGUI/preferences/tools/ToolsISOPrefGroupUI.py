@@ -276,7 +276,8 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         self.select_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Selection' -> Isolate a selection of polygons.\n"
+              "- 'Area Selection' -> Isolate polygons within a selection area.\n"
+              "- 'Polygon Selection' -> Isolate a selection of polygons.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
         self.select_combo = FCComboBox()

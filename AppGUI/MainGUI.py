@@ -483,7 +483,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_workspace = self.menuview.addAction(
             QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tShift+W"))
         self.menuview_toggle_hud = self.menuview.addAction(
-            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+M"))
+            QtGui.QIcon(self.app.resource_location + '/hud_32.png'), _("Toggle HUD\tAlt+H"))
 
         # ########################################################################
         # ########################## Objects # ###################################

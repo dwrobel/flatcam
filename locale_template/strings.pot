@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-06-02 05:17+0300\n"
+"POT-Creation-Date: 2020-06-02 17:39+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -59,7 +59,7 @@ msgid "Load the Tools Database information's from a custom text file."
 msgstr ""
 
 #: AppDatabase.py:122 AppDatabase.py:1795
-msgid "Transfer Tool"
+msgid "Transfer the Tool"
 msgstr ""
 
 #: AppDatabase.py:124
@@ -485,9 +485,9 @@ msgid "Import FlatCAM Tools DB"
 msgstr ""
 
 #: AppDatabase.py:740 AppDatabase.py:915 AppDatabase.py:2354 AppDatabase.py:2624
-#: AppObjects/FlatCAMGeometry.py:956 AppTools/ToolIsolation.py:2908
-#: AppTools/ToolIsolation.py:2993 AppTools/ToolNCC.py:4011 AppTools/ToolNCC.py:4095
-#: AppTools/ToolPaint.py:3558 AppTools/ToolPaint.py:3643 App_Main.py:5233 App_Main.py:5267
+#: AppObjects/FlatCAMGeometry.py:956 AppTools/ToolIsolation.py:2909
+#: AppTools/ToolIsolation.py:2994 AppTools/ToolNCC.py:4029 AppTools/ToolNCC.py:4113
+#: AppTools/ToolPaint.py:3578 AppTools/ToolPaint.py:3663 App_Main.py:5233 App_Main.py:5267
 #: App_Main.py:5294 App_Main.py:5314 App_Main.py:5324
 msgid "Tools Database"
 msgstr ""
@@ -676,8 +676,8 @@ msgstr ""
 #: AppDatabase.py:1500 AppDatabase.py:1615 AppEditors/FlatCAMGeoEditor.py:498
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217 AppTools/ToolNCC.py:431
-#: AppTools/ToolNCC.py:2214 AppTools/ToolNCC.py:2746 AppTools/ToolNCC.py:2778
-#: AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:1839
+#: AppTools/ToolNCC.py:2232 AppTools/ToolNCC.py:2764 AppTools/ToolNCC.py:2796
+#: AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:1859
 #: tclCommands/TclCommandCopperClear.py:126 tclCommands/TclCommandCopperClear.py:134
 #: tclCommands/TclCommandPaint.py:125
 msgid "Standard"
@@ -687,8 +687,8 @@ msgstr ""
 #: AppEditors/FlatCAMGeoEditor.py:568 AppEditors/FlatCAMGeoEditor.py:5148
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217 AppTools/ToolNCC.py:431
-#: AppTools/ToolNCC.py:2225 AppTools/ToolNCC.py:2752 AppTools/ToolNCC.py:2784
-#: AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:1853 defaults.py:413 defaults.py:445
+#: AppTools/ToolNCC.py:2243 AppTools/ToolNCC.py:2770 AppTools/ToolNCC.py:2802
+#: AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:1873 defaults.py:413 defaults.py:445
 #: tclCommands/TclCommandCopperClear.py:128 tclCommands/TclCommandCopperClear.py:136
 #: tclCommands/TclCommandPaint.py:127
 msgid "Seed"
@@ -697,8 +697,8 @@ msgstr ""
 #: AppDatabase.py:1500 AppDatabase.py:1615 AppEditors/FlatCAMGeoEditor.py:498
 #: AppEditors/FlatCAMGeoEditor.py:5152 AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217 AppTools/ToolNCC.py:431
-#: AppTools/ToolNCC.py:2236 AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:698
-#: AppTools/ToolPaint.py:1867 tclCommands/TclCommandCopperClear.py:130
+#: AppTools/ToolNCC.py:2254 AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:698
+#: AppTools/ToolPaint.py:1887 tclCommands/TclCommandCopperClear.py:130
 #: tclCommands/TclCommandPaint.py:129
 msgid "Lines"
 msgstr ""
@@ -706,7 +706,7 @@ msgstr ""
 #: AppDatabase.py:1500 AppDatabase.py:1615
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217 AppTools/ToolNCC.py:431
-#: AppTools/ToolNCC.py:2247 AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:2032
+#: AppTools/ToolNCC.py:2265 AppTools/ToolPaint.py:389 AppTools/ToolPaint.py:2052
 #: tclCommands/TclCommandPaint.py:133
 msgid "Combo"
 msgstr ""
@@ -797,7 +797,7 @@ msgstr ""
 #: AppDatabase.py:1615 AppDatabase.py:1617
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217 AppTools/ToolPaint.py:389
 #: AppTools/ToolPaint.py:391 AppTools/ToolPaint.py:692 AppTools/ToolPaint.py:697
-#: AppTools/ToolPaint.py:1881 tclCommands/TclCommandPaint.py:131
+#: AppTools/ToolPaint.py:1901 tclCommands/TclCommandPaint.py:131
 msgid "Laser_lines"
 msgstr ""
 
@@ -1325,8 +1325,8 @@ msgstr ""
 #: AppEditors/FlatCAMGeoEditor.py:1251 AppEditors/FlatCAMGeoEditor.py:1279
 #: AppObjects/FlatCAMGeometry.py:664 AppObjects/FlatCAMGeometry.py:1099
 #: AppObjects/FlatCAMGeometry.py:1841 AppObjects/FlatCAMGeometry.py:2491
-#: AppTools/ToolIsolation.py:1492 AppTools/ToolNCC.py:1498 AppTools/ToolPaint.py:1248
-#: AppTools/ToolPaint.py:1419 AppTools/ToolSolderPaste.py:891
+#: AppTools/ToolIsolation.py:1493 AppTools/ToolNCC.py:1516 AppTools/ToolPaint.py:1268
+#: AppTools/ToolPaint.py:1439 AppTools/ToolSolderPaste.py:891
 #: AppTools/ToolSolderPaste.py:964
 msgid "Wrong value format entered, use a number."
 msgstr ""
@@ -1421,10 +1421,10 @@ msgstr ""
 #: AppGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:68
 #: AppGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:177
 #: AppGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:143
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:297
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:298
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:327
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:291 AppTools/ToolExtractDrills.py:94
-#: AppTools/ToolExtractDrills.py:227 AppTools/ToolIsolation.py:544 AppTools/ToolNCC.py:583
+#: AppTools/ToolExtractDrills.py:227 AppTools/ToolIsolation.py:545 AppTools/ToolNCC.py:583
 #: AppTools/ToolPaint.py:526 AppTools/ToolPunchGerber.py:105 AppTools/ToolPunchGerber.py:255
 #: AppTools/ToolQRCode.py:207
 msgid "Square"
@@ -1473,7 +1473,7 @@ msgstr ""
 #: AppEditors/FlatCAMGeoEditor.py:404 AppGUI/MainGUI.py:502 AppGUI/MainGUI.py:1199
 #: AppGUI/ObjectUI.py:597 AppGUI/ObjectUI.py:1564 AppObjects/FlatCAMExcellon.py:852
 #: AppObjects/FlatCAMExcellon.py:1242 AppObjects/FlatCAMGeometry.py:825
-#: AppTools/ToolIsolation.py:313 AppTools/ToolIsolation.py:1170 AppTools/ToolNCC.py:331
+#: AppTools/ToolIsolation.py:313 AppTools/ToolIsolation.py:1171 AppTools/ToolNCC.py:331
 #: AppTools/ToolNCC.py:797 AppTools/ToolPaint.py:313 AppTools/ToolPaint.py:766
 msgid "Tool"
 msgstr ""
@@ -1758,7 +1758,7 @@ msgstr ""
 
 #: AppEditors/FlatCAMGeoEditor.py:938 AppEditors/FlatCAMGrbEditor.py:2590
 #: AppEditors/FlatCAMGrbEditor.py:5635 AppGUI/ObjectUI.py:1494 AppTools/ToolDblSided.py:192
-#: AppTools/ToolDblSided.py:425 AppTools/ToolIsolation.py:276 AppTools/ToolIsolation.py:609
+#: AppTools/ToolDblSided.py:425 AppTools/ToolIsolation.py:276 AppTools/ToolIsolation.py:610
 #: AppTools/ToolNCC.py:294 AppTools/ToolNCC.py:631 AppTools/ToolPaint.py:276
 #: AppTools/ToolPaint.py:675 AppTools/ToolSolderPaste.py:127 AppTools/ToolSolderPaste.py:605
 #: AppTools/ToolTransform.py:478 App_Main.py:5670
@@ -2017,8 +2017,8 @@ msgstr ""
 msgid "Done. Rectangle completed."
 msgstr ""
 
-#: AppEditors/FlatCAMGeoEditor.py:2409 AppTools/ToolIsolation.py:2526
-#: AppTools/ToolNCC.py:1736 AppTools/ToolPaint.py:1627 Common.py:322
+#: AppEditors/FlatCAMGeoEditor.py:2409 AppTools/ToolIsolation.py:2527
+#: AppTools/ToolNCC.py:1754 AppTools/ToolPaint.py:1647 Common.py:322
 msgid "Click on next Point or click right mouse button to complete ..."
 msgstr ""
 
@@ -2147,9 +2147,9 @@ msgstr ""
 
 #: AppEditors/FlatCAMGeoEditor.py:3600 AppGUI/MainGUI.py:1446 AppGUI/ObjectUI.py:1150
 #: AppGUI/ObjectUI.py:2005 AppGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:226
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:298
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:299
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:328
-#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:292 AppTools/ToolIsolation.py:545
+#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:292 AppTools/ToolIsolation.py:546
 #: AppTools/ToolNCC.py:584 AppTools/ToolPaint.py:527
 msgid "Polygon"
 msgstr ""
@@ -2486,7 +2486,7 @@ msgstr ""
 #: AppGUI/MainGUI.py:748 AppGUI/MainGUI.py:1068 AppGUI/MainGUI.py:1527
 #: AppGUI/MainGUI.py:2099 AppGUI/MainGUI.py:4514 AppGUI/ObjectUI.py:1525
 #: AppObjects/FlatCAMGeometry.py:563 AppTools/ToolIsolation.py:298
-#: AppTools/ToolIsolation.py:615 AppTools/ToolNCC.py:316 AppTools/ToolNCC.py:637
+#: AppTools/ToolIsolation.py:616 AppTools/ToolNCC.py:316 AppTools/ToolNCC.py:637
 #: AppTools/ToolPaint.py:298 AppTools/ToolPaint.py:681 AppTools/ToolSolderPaste.py:133
 #: AppTools/ToolSolderPaste.py:608 App_Main.py:5672
 msgid "Delete"
@@ -2819,10 +2819,10 @@ msgstr ""
 
 #: AppEditors/FlatCAMTextEditor.py:95 AppGUI/ObjectUI.py:2149
 #: AppGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:54
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:284
-#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolIsolation.py:503
-#: AppTools/ToolIsolation.py:1286 AppTools/ToolIsolation.py:1668 AppTools/ToolPaint.py:485
-#: AppTools/ToolPaint.py:1426 defaults.py:403 defaults.py:446
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
+#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolIsolation.py:504
+#: AppTools/ToolIsolation.py:1287 AppTools/ToolIsolation.py:1669 AppTools/ToolPaint.py:485
+#: AppTools/ToolPaint.py:1446 defaults.py:403 defaults.py:446
 #: tclCommands/TclCommandPaint.py:162
 msgid "All"
 msgstr ""
@@ -3376,7 +3376,7 @@ msgid "Toggle Workspace\tShift+W"
 msgstr ""
 
 #: AppGUI/MainGUI.py:486
-msgid "Toggle HUD\tAlt+M"
+msgid "Toggle HUD\tAlt+H"
 msgstr ""
 
 #: AppGUI/MainGUI.py:491
@@ -3806,7 +3806,7 @@ msgid "NCC Tool"
 msgstr ""
 
 #: AppGUI/MainGUI.py:914 AppGUI/MainGUI.py:1946 AppGUI/MainGUI.py:4113
-#: AppTools/ToolIsolation.py:38 AppTools/ToolIsolation.py:765
+#: AppTools/ToolIsolation.py:38 AppTools/ToolIsolation.py:766
 msgid "Isolation Tool"
 msgstr ""
 
@@ -4185,9 +4185,9 @@ msgstr ""
 #: AppTools/ToolCopperThieving.py:162 AppTools/ToolCopperThieving.py:608
 #: AppTools/ToolCutOut.py:92 AppTools/ToolDblSided.py:226 AppTools/ToolFilm.py:69
 #: AppTools/ToolFilm.py:92 AppTools/ToolImage.py:49 AppTools/ToolImage.py:271
-#: AppTools/ToolIsolation.py:464 AppTools/ToolIsolation.py:516
-#: AppTools/ToolIsolation.py:1280 AppTools/ToolNCC.py:95 AppTools/ToolNCC.py:558
-#: AppTools/ToolNCC.py:1300 AppTools/ToolPaint.py:501 AppTools/ToolPaint.py:705
+#: AppTools/ToolIsolation.py:464 AppTools/ToolIsolation.py:517
+#: AppTools/ToolIsolation.py:1281 AppTools/ToolNCC.py:95 AppTools/ToolNCC.py:558
+#: AppTools/ToolNCC.py:1318 AppTools/ToolPaint.py:501 AppTools/ToolPaint.py:705
 #: AppTools/ToolPanelize.py:116 AppTools/ToolPanelize.py:385 AppTools/ToolPanelize.py:402
 msgid "Geometry"
 msgstr ""
@@ -4198,8 +4198,8 @@ msgstr ""
 #: AppTools/ToolCalibration.py:648 AppTools/ToolCalibration.py:807
 #: AppTools/ToolCalibration.py:815 AppTools/ToolCopperThieving.py:148
 #: AppTools/ToolCopperThieving.py:162 AppTools/ToolCopperThieving.py:608
-#: AppTools/ToolDblSided.py:225 AppTools/ToolFilm.py:342 AppTools/ToolIsolation.py:516
-#: AppTools/ToolIsolation.py:1280 AppTools/ToolNCC.py:558 AppTools/ToolNCC.py:1300
+#: AppTools/ToolDblSided.py:225 AppTools/ToolFilm.py:342 AppTools/ToolIsolation.py:517
+#: AppTools/ToolIsolation.py:1281 AppTools/ToolNCC.py:558 AppTools/ToolNCC.py:1318
 #: AppTools/ToolPaint.py:501 AppTools/ToolPaint.py:705 AppTools/ToolPanelize.py:385
 #: AppTools/ToolPunchGerber.py:149 AppTools/ToolPunchGerber.py:164
 msgid "Excellon"
@@ -4386,7 +4386,7 @@ msgstr ""
 msgid "New Tool ..."
 msgstr ""
 
-#: AppGUI/MainGUI.py:3355 AppTools/ToolIsolation.py:1257 AppTools/ToolNCC.py:924
+#: AppGUI/MainGUI.py:3355 AppTools/ToolIsolation.py:1258 AppTools/ToolNCC.py:924
 #: AppTools/ToolPaint.py:849 AppTools/ToolSolderPaste.py:568
 msgid "Enter a Tool Diameter"
 msgstr ""
@@ -4976,11 +4976,11 @@ msgstr ""
 msgid "Mark the aperture instances on canvas."
 msgstr ""
 
-#: AppGUI/ObjectUI.py:305 AppTools/ToolIsolation.py:578
+#: AppGUI/ObjectUI.py:305 AppTools/ToolIsolation.py:579
 msgid "Buffer Solid Geometry"
 msgstr ""
 
-#: AppGUI/ObjectUI.py:307 AppTools/ToolIsolation.py:580
+#: AppGUI/ObjectUI.py:307 AppTools/ToolIsolation.py:581
 msgid ""
 "This button is shown only when the Gerber file\n"
 "is loaded without buffering.\n"
@@ -5138,11 +5138,11 @@ msgstr ""
 #: AppObjects/FlatCAMExcellon.py:836 AppObjects/FlatCAMExcellon.py:852
 #: AppObjects/FlatCAMExcellon.py:856 AppObjects/FlatCAMGeometry.py:380
 #: AppObjects/FlatCAMGeometry.py:825 AppObjects/FlatCAMGeometry.py:861
-#: AppTools/ToolIsolation.py:313 AppTools/ToolIsolation.py:1050
-#: AppTools/ToolIsolation.py:1170 AppTools/ToolIsolation.py:1184 AppTools/ToolNCC.py:331
-#: AppTools/ToolNCC.py:797 AppTools/ToolNCC.py:811 AppTools/ToolNCC.py:1196
+#: AppTools/ToolIsolation.py:313 AppTools/ToolIsolation.py:1051
+#: AppTools/ToolIsolation.py:1171 AppTools/ToolIsolation.py:1185 AppTools/ToolNCC.py:331
+#: AppTools/ToolNCC.py:797 AppTools/ToolNCC.py:811 AppTools/ToolNCC.py:1214
 #: AppTools/ToolPaint.py:313 AppTools/ToolPaint.py:766 AppTools/ToolPaint.py:778
-#: AppTools/ToolPaint.py:1170
+#: AppTools/ToolPaint.py:1190
 msgid "Parameters for"
 msgstr ""
 
@@ -5510,9 +5510,9 @@ msgstr ""
 
 #: AppGUI/ObjectUI.py:1152 AppGUI/ObjectUI.py:2007
 #: AppGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:222
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:294
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:324
-#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:288 AppTools/ToolIsolation.py:541
+#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:288 AppTools/ToolIsolation.py:542
 #: AppTools/ToolNCC.py:580 AppTools/ToolPaint.py:523
 msgid "The kind of selection shape used for area selection."
 msgstr ""
@@ -5685,7 +5685,7 @@ msgid ""
 "cut and negative for 'inside' cut."
 msgstr ""
 
-#: AppGUI/ObjectUI.py:1477 AppTools/ToolIsolation.py:195 AppTools/ToolIsolation.py:1256
+#: AppGUI/ObjectUI.py:1477 AppTools/ToolIsolation.py:195 AppTools/ToolIsolation.py:1257
 #: AppTools/ToolNCC.py:209 AppTools/ToolNCC.py:923 AppTools/ToolPaint.py:191
 #: AppTools/ToolPaint.py:848 AppTools/ToolSolderPaste.py:567
 msgid "New Tool"
@@ -5698,7 +5698,7 @@ msgid ""
 "with the diameter specified above."
 msgstr ""
 
-#: AppGUI/ObjectUI.py:1500 AppTools/ToolIsolation.py:282 AppTools/ToolIsolation.py:612
+#: AppGUI/ObjectUI.py:1500 AppTools/ToolIsolation.py:282 AppTools/ToolIsolation.py:613
 #: AppTools/ToolNCC.py:300 AppTools/ToolNCC.py:634 AppTools/ToolPaint.py:282
 #: AppTools/ToolPaint.py:678
 msgid "Add from DB"
@@ -6186,7 +6186,7 @@ msgid "Are you sure you want to continue?"
 msgstr ""
 
 #: AppGUI/preferences/PreferencesUIManager.py:873
-msgid "Application restart"
+msgid "Application will restart"
 msgstr ""
 
 #: AppGUI/preferences/PreferencesUIManager.py:971
@@ -6843,7 +6843,7 @@ msgstr ""
 #: AppGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:227
 #: AppGUI/preferences/general/GeneralAppPrefGroupUI.py:104 AppObjects/FlatCAMExcellon.py:694
 #: AppObjects/FlatCAMGeometry.py:568 AppObjects/FlatCAMGerber.py:219
-#: AppTools/ToolIsolation.py:784
+#: AppTools/ToolIsolation.py:785
 msgid "Basic"
 msgstr ""
 
@@ -7029,7 +7029,7 @@ msgstr ""
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:235
 msgid ""
 "This sets the font size for the Textbox AppGUI\n"
-"elements that are used in FlatCAM."
+"elements that are used in the application."
 msgstr ""
 
 #: AppGUI/preferences/general/GeneralAPPSetGroupUI.py:253
@@ -7274,7 +7274,7 @@ msgstr ""
 
 #: AppGUI/preferences/general/GeneralAppPrefGroupUI.py:105 AppObjects/FlatCAMExcellon.py:707
 #: AppObjects/FlatCAMGeometry.py:589 AppObjects/FlatCAMGerber.py:227
-#: AppTools/ToolIsolation.py:815
+#: AppTools/ToolIsolation.py:816
 msgid "Advanced"
 msgstr ""
 
@@ -7524,7 +7524,7 @@ msgstr ""
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:75
 msgid ""
-"Select an layout for the application.\n"
+"Select a layout for the application.\n"
 "It is applied immediately."
 msgstr ""
 
@@ -7534,7 +7534,7 @@ msgstr ""
 
 #: AppGUI/preferences/general/GeneralGUIPrefGroupUI.py:97
 msgid ""
-"Select an style for the application.\n"
+"Select a style for the application.\n"
 "It will be applied at the next app start."
 msgstr ""
 
@@ -7730,9 +7730,9 @@ msgid "Exclusion areas"
 msgstr ""
 
 #: AppGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:220
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:292
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:293
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
-#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:286 AppTools/ToolIsolation.py:539
+#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:286 AppTools/ToolIsolation.py:540
 #: AppTools/ToolNCC.py:578 AppTools/ToolPaint.py:521
 msgid "Shape"
 msgstr ""
@@ -7840,10 +7840,10 @@ msgstr ""
 
 #: AppGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:67 AppObjects/FlatCAMGerber.py:391
 #: AppTools/ToolCopperThieving.py:1026 AppTools/ToolCopperThieving.py:1215
-#: AppTools/ToolCopperThieving.py:1227 AppTools/ToolIsolation.py:1592
-#: AppTools/ToolNCC.py:2061 AppTools/ToolNCC.py:2172 AppTools/ToolNCC.py:2187
-#: AppTools/ToolNCC.py:3145 AppTools/ToolNCC.py:3250 AppTools/ToolNCC.py:3265
-#: AppTools/ToolNCC.py:3531 AppTools/ToolNCC.py:3632 AppTools/ToolNCC.py:3647 camlib.py:992
+#: AppTools/ToolCopperThieving.py:1227 AppTools/ToolIsolation.py:1593
+#: AppTools/ToolNCC.py:2079 AppTools/ToolNCC.py:2190 AppTools/ToolNCC.py:2205
+#: AppTools/ToolNCC.py:3163 AppTools/ToolNCC.py:3268 AppTools/ToolNCC.py:3283
+#: AppTools/ToolNCC.py:3549 AppTools/ToolNCC.py:3650 AppTools/ToolNCC.py:3665 camlib.py:992
 msgid "Buffering"
 msgstr ""
 
@@ -8079,32 +8079,32 @@ msgstr ""
 
 #: AppGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:86
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309 AppTools/ToolCopperThieving.py:129
-#: AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1306 AppTools/ToolNCC.py:1637
-#: AppTools/ToolNCC.py:1930 AppTools/ToolNCC.py:1994 AppTools/ToolNCC.py:3009
-#: AppTools/ToolNCC.py:3018 defaults.py:419 tclCommands/TclCommandCopperClear.py:190
+#: AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1324 AppTools/ToolNCC.py:1655
+#: AppTools/ToolNCC.py:1948 AppTools/ToolNCC.py:2012 AppTools/ToolNCC.py:3027
+#: AppTools/ToolNCC.py:3036 defaults.py:419 tclCommands/TclCommandCopperClear.py:190
 msgid "Itself"
 msgstr ""
 
 #: AppGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:87
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:284
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolCopperThieving.py:130
-#: AppTools/ToolIsolation.py:503 AppTools/ToolIsolation.py:1296
-#: AppTools/ToolIsolation.py:1670 AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1316
-#: AppTools/ToolNCC.py:1650 AppTools/ToolNCC.py:1946 AppTools/ToolNCC.py:2001
-#: AppTools/ToolPaint.py:485 AppTools/ToolPaint.py:945 AppTools/ToolPaint.py:1451
+#: AppTools/ToolIsolation.py:504 AppTools/ToolIsolation.py:1297
+#: AppTools/ToolIsolation.py:1671 AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1334
+#: AppTools/ToolNCC.py:1668 AppTools/ToolNCC.py:1964 AppTools/ToolNCC.py:2019
+#: AppTools/ToolPaint.py:485 AppTools/ToolPaint.py:945 AppTools/ToolPaint.py:1471
 msgid "Area Selection"
 msgstr ""
 
 #: AppGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:88
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:284
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolCopperThieving.py:131
-#: AppTools/ToolDblSided.py:216 AppTools/ToolIsolation.py:503 AppTools/ToolIsolation.py:1710
-#: AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1666 AppTools/ToolNCC.py:1952
-#: AppTools/ToolNCC.py:2009 AppTools/ToolNCC.py:2390 AppTools/ToolNCC.py:2638
-#: AppTools/ToolNCC.py:3054 AppTools/ToolPaint.py:485 AppTools/ToolPaint.py:930
-#: AppTools/ToolPaint.py:1467 tclCommands/TclCommandCopperClear.py:192
+#: AppTools/ToolDblSided.py:216 AppTools/ToolIsolation.py:504 AppTools/ToolIsolation.py:1711
+#: AppTools/ToolNCC.py:535 AppTools/ToolNCC.py:1684 AppTools/ToolNCC.py:1970
+#: AppTools/ToolNCC.py:2027 AppTools/ToolNCC.py:2408 AppTools/ToolNCC.py:2656
+#: AppTools/ToolNCC.py:3072 AppTools/ToolPaint.py:485 AppTools/ToolPaint.py:930
+#: AppTools/ToolPaint.py:1487 tclCommands/TclCommandCopperClear.py:192
 #: tclCommands/TclCommandPaint.py:166
 msgid "Reference Object"
 msgstr ""
@@ -9548,30 +9548,31 @@ msgstr ""
 msgid ""
 "Isolation scope. Choose what to isolate:\n"
 "- 'All' -> Isolate all the polygons in the object\n"
-"- 'Selection' -> Isolate a selection of polygons.\n"
+"- 'Area Selection' -> Isolate polygons within a selection area.\n"
+"- 'Polygon Selection' -> Isolate a selection of polygons.\n"
 "- 'Reference Object' - will process the area specified by another object."
 msgstr ""
 
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:284
-#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolIsolation.py:503
-#: AppTools/ToolIsolation.py:1307 AppTools/ToolIsolation.py:1689 AppTools/ToolPaint.py:485
-#: AppTools/ToolPaint.py:941 AppTools/ToolPaint.py:1431 tclCommands/TclCommandPaint.py:164
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
+#: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280 AppTools/ToolIsolation.py:504
+#: AppTools/ToolIsolation.py:1308 AppTools/ToolIsolation.py:1690 AppTools/ToolPaint.py:485
+#: AppTools/ToolPaint.py:941 AppTools/ToolPaint.py:1451 tclCommands/TclCommandPaint.py:164
 msgid "Polygon Selection"
 msgstr ""
 
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:309
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:310
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:339
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 msgid "Normal"
 msgstr ""
 
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:310
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:311
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:340
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:304
 msgid "Progressive"
 msgstr ""
 
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:311
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:312
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:341
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:305 AppObjects/AppObject.py:349
 #: AppObjects/FlatCAMObj.py:251 AppObjects/FlatCAMObj.py:282 AppObjects/FlatCAMObj.py:298
@@ -9581,7 +9582,7 @@ msgstr ""
 msgid "Plotting"
 msgstr ""
 
-#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:313
+#: AppGUI/preferences/tools/ToolsISOPrefGroupUI.py:314
 #: AppGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: AppGUI/preferences/tools/ToolsPaintPrefGroupUI.py:307
 msgid ""
@@ -9722,8 +9723,8 @@ msgstr ""
 #: AppTools/ToolCopperThieving.py:608 AppTools/ToolCutOut.py:91 AppTools/ToolDblSided.py:224
 #: AppTools/ToolFilm.py:68 AppTools/ToolFilm.py:91 AppTools/ToolImage.py:49
 #: AppTools/ToolImage.py:252 AppTools/ToolImage.py:273 AppTools/ToolIsolation.py:465
-#: AppTools/ToolIsolation.py:516 AppTools/ToolIsolation.py:1280 AppTools/ToolNCC.py:96
-#: AppTools/ToolNCC.py:558 AppTools/ToolNCC.py:1300 AppTools/ToolPaint.py:501
+#: AppTools/ToolIsolation.py:517 AppTools/ToolIsolation.py:1281 AppTools/ToolNCC.py:96
+#: AppTools/ToolNCC.py:558 AppTools/ToolNCC.py:1318 AppTools/ToolPaint.py:501
 #: AppTools/ToolPaint.py:705 AppTools/ToolPanelize.py:116 AppTools/ToolPanelize.py:210
 #: AppTools/ToolPanelize.py:385 AppTools/ToolPanelize.py:402
 msgid "Gerber"
@@ -10308,8 +10309,8 @@ msgstr ""
 
 #: AppObjects/FlatCAMExcellon.py:537 AppObjects/FlatCAMExcellon.py:856
 #: AppObjects/FlatCAMGeometry.py:380 AppObjects/FlatCAMGeometry.py:861
-#: AppTools/ToolIsolation.py:1050 AppTools/ToolIsolation.py:1184 AppTools/ToolNCC.py:811
-#: AppTools/ToolNCC.py:1196 AppTools/ToolPaint.py:778 AppTools/ToolPaint.py:1170
+#: AppTools/ToolIsolation.py:1051 AppTools/ToolIsolation.py:1185 AppTools/ToolNCC.py:811
+#: AppTools/ToolNCC.py:1214 AppTools/ToolPaint.py:778 AppTools/ToolPaint.py:1190
 msgid "Multiple Tools"
 msgstr ""
 
@@ -10366,7 +10367,7 @@ msgstr ""
 msgid "Delete failed. Nothing is selected."
 msgstr ""
 
-#: AppObjects/FlatCAMExcellon.py:1945 AppTools/ToolIsolation.py:1252 AppTools/ToolNCC.py:918
+#: AppObjects/FlatCAMExcellon.py:1945 AppTools/ToolIsolation.py:1253 AppTools/ToolNCC.py:918
 #: AppTools/ToolPaint.py:843
 msgid "Current Tool parameters were applied to all tools."
 msgstr ""
@@ -10378,9 +10379,9 @@ msgstr ""
 
 #: AppObjects/FlatCAMGeometry.py:124 AppObjects/FlatCAMGeometry.py:522
 #: AppObjects/FlatCAMGeometry.py:920 AppObjects/FlatCAMGerber.py:565
-#: AppObjects/FlatCAMGerber.py:708 AppTools/ToolCutOut.py:697 AppTools/ToolCutOut.py:893
-#: AppTools/ToolCutOut.py:1053 AppTools/ToolIsolation.py:1841 AppTools/ToolIsolation.py:1978
-#: AppTools/ToolIsolation.py:2149
+#: AppObjects/FlatCAMGerber.py:708 AppTools/ToolCutOut.py:727 AppTools/ToolCutOut.py:923
+#: AppTools/ToolCutOut.py:1083 AppTools/ToolIsolation.py:1842 AppTools/ToolIsolation.py:1979
+#: AppTools/ToolIsolation.py:2150
 msgid "Rough"
 msgstr ""
 
@@ -10499,11 +10500,11 @@ msgid ""
 "but now there is only one value, not two."
 msgstr ""
 
-#: AppObjects/FlatCAMGerber.py:388 AppTools/ToolIsolation.py:1576
+#: AppObjects/FlatCAMGerber.py:388 AppTools/ToolIsolation.py:1577
 msgid "Buffering solid geometry"
 msgstr ""
 
-#: AppObjects/FlatCAMGerber.py:397 AppTools/ToolIsolation.py:1598
+#: AppObjects/FlatCAMGerber.py:397 AppTools/ToolIsolation.py:1599
 msgid "Done"
 msgstr ""
 
@@ -10512,14 +10513,14 @@ msgid "Operation could not be done."
 msgstr ""
 
 #: AppObjects/FlatCAMGerber.py:581 AppObjects/FlatCAMGerber.py:655
-#: AppTools/ToolIsolation.py:1804 AppTools/ToolIsolation.py:2125 AppTools/ToolNCC.py:2099
-#: AppTools/ToolNCC.py:3179 AppTools/ToolNCC.py:3558
+#: AppTools/ToolIsolation.py:1805 AppTools/ToolIsolation.py:2126 AppTools/ToolNCC.py:2117
+#: AppTools/ToolNCC.py:3197 AppTools/ToolNCC.py:3576
 msgid "Isolation geometry could not be generated."
 msgstr ""
 
 #: AppObjects/FlatCAMGerber.py:606 AppObjects/FlatCAMGerber.py:733
-#: AppTools/ToolIsolation.py:1868 AppTools/ToolIsolation.py:2034
-#: AppTools/ToolIsolation.py:2201
+#: AppTools/ToolIsolation.py:1869 AppTools/ToolIsolation.py:2035
+#: AppTools/ToolIsolation.py:2202
 msgid "Isolation geometry created"
 msgstr ""
 
@@ -10778,7 +10779,7 @@ msgstr ""
 #: AppTools/ToolCorners.py:182 AppTools/ToolCutOut.py:362 AppTools/ToolDblSided.py:471
 #: AppTools/ToolEtchCompensation.py:240 AppTools/ToolExtractDrills.py:310
 #: AppTools/ToolFiducials.py:321 AppTools/ToolFilm.py:503 AppTools/ToolInvertGerber.py:143
-#: AppTools/ToolIsolation.py:590 AppTools/ToolNCC.py:612 AppTools/ToolOptimal.py:243
+#: AppTools/ToolIsolation.py:591 AppTools/ToolNCC.py:612 AppTools/ToolOptimal.py:243
 #: AppTools/ToolPaint.py:555 AppTools/ToolPanelize.py:280 AppTools/ToolPunchGerber.py:339
 #: AppTools/ToolQRCode.py:323 AppTools/ToolRulesCheck.py:516 AppTools/ToolSolderPaste.py:481
 #: AppTools/ToolSub.py:181 AppTools/ToolTransform.py:398
@@ -10790,7 +10791,7 @@ msgstr ""
 #: AppTools/ToolCorners.py:184 AppTools/ToolCutOut.py:364 AppTools/ToolDblSided.py:473
 #: AppTools/ToolEtchCompensation.py:242 AppTools/ToolExtractDrills.py:312
 #: AppTools/ToolFiducials.py:323 AppTools/ToolFilm.py:505 AppTools/ToolInvertGerber.py:145
-#: AppTools/ToolIsolation.py:592 AppTools/ToolNCC.py:614 AppTools/ToolOptimal.py:245
+#: AppTools/ToolIsolation.py:593 AppTools/ToolNCC.py:614 AppTools/ToolOptimal.py:245
 #: AppTools/ToolPaint.py:557 AppTools/ToolPanelize.py:282 AppTools/ToolPunchGerber.py:341
 #: AppTools/ToolQRCode.py:325 AppTools/ToolRulesCheck.py:518 AppTools/ToolSolderPaste.py:483
 #: AppTools/ToolSub.py:183 AppTools/ToolTransform.py:400
@@ -11191,7 +11192,7 @@ msgid ""
 "object."
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:142 AppTools/ToolIsolation.py:510 AppTools/ToolNCC.py:552
+#: AppTools/ToolCopperThieving.py:142 AppTools/ToolIsolation.py:511 AppTools/ToolNCC.py:552
 #: AppTools/ToolPaint.py:495
 msgid "Ref. Type"
 msgstr ""
@@ -11202,12 +11203,12 @@ msgid ""
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:153 AppTools/ToolIsolation.py:521 AppTools/ToolNCC.py:562
+#: AppTools/ToolCopperThieving.py:153 AppTools/ToolIsolation.py:522 AppTools/ToolNCC.py:562
 #: AppTools/ToolPaint.py:505
 msgid "Ref. Object"
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:155 AppTools/ToolIsolation.py:523 AppTools/ToolNCC.py:564
+#: AppTools/ToolCopperThieving.py:155 AppTools/ToolIsolation.py:524 AppTools/ToolNCC.py:564
 #: AppTools/ToolPaint.py:507
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
@@ -11317,18 +11318,18 @@ msgid "Copper Thieving Tool done."
 msgstr ""
 
 #: AppTools/ToolCopperThieving.py:763 AppTools/ToolCopperThieving.py:796
-#: AppTools/ToolCutOut.py:526 AppTools/ToolCutOut.py:731
+#: AppTools/ToolCutOut.py:556 AppTools/ToolCutOut.py:761
 #: AppTools/ToolEtchCompensation.py:360 AppTools/ToolInvertGerber.py:211
-#: AppTools/ToolIsolation.py:1584 AppTools/ToolIsolation.py:1611 AppTools/ToolNCC.py:1599
-#: AppTools/ToolNCC.py:1643 AppTools/ToolNCC.py:1672 AppTools/ToolPaint.py:1473
+#: AppTools/ToolIsolation.py:1585 AppTools/ToolIsolation.py:1612 AppTools/ToolNCC.py:1617
+#: AppTools/ToolNCC.py:1661 AppTools/ToolNCC.py:1690 AppTools/ToolPaint.py:1493
 #: AppTools/ToolPanelize.py:423 AppTools/ToolPanelize.py:437 AppTools/ToolSub.py:295
 #: AppTools/ToolSub.py:308 AppTools/ToolSub.py:499 AppTools/ToolSub.py:514
 #: tclCommands/TclCommandCopperClear.py:97 tclCommands/TclCommandPaint.py:99
 msgid "Could not retrieve object"
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:773 AppTools/ToolIsolation.py:1671
-#: AppTools/ToolNCC.py:1651 Common.py:210
+#: AppTools/ToolCopperThieving.py:773 AppTools/ToolIsolation.py:1672
+#: AppTools/ToolNCC.py:1669 Common.py:210
 msgid "Click the start point of the area."
 msgstr ""
 
@@ -11336,9 +11337,9 @@ msgstr ""
 msgid "Click the end point of the filling area."
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:830 AppTools/ToolIsolation.py:2503
-#: AppTools/ToolIsolation.py:2555 AppTools/ToolNCC.py:1713 AppTools/ToolNCC.py:1765
-#: AppTools/ToolPaint.py:1605 AppTools/ToolPaint.py:1656 Common.py:275 Common.py:377
+#: AppTools/ToolCopperThieving.py:830 AppTools/ToolIsolation.py:2504
+#: AppTools/ToolIsolation.py:2556 AppTools/ToolNCC.py:1731 AppTools/ToolNCC.py:1783
+#: AppTools/ToolPaint.py:1625 AppTools/ToolPaint.py:1676 Common.py:275 Common.py:377
 msgid "Zone added. Click to start adding next zone or right click to finish."
 msgstr ""
 
@@ -11368,13 +11369,13 @@ msgstr ""
 msgid "Geometry not supported for bounding box"
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:1077 AppTools/ToolNCC.py:1944 AppTools/ToolNCC.py:1999
-#: AppTools/ToolNCC.py:3034 AppTools/ToolPaint.py:3385
+#: AppTools/ToolCopperThieving.py:1077 AppTools/ToolNCC.py:1962 AppTools/ToolNCC.py:2017
+#: AppTools/ToolNCC.py:3052 AppTools/ToolPaint.py:3405
 msgid "No object available."
 msgstr ""
 
-#: AppTools/ToolCopperThieving.py:1114 AppTools/ToolNCC.py:1969 AppTools/ToolNCC.py:2022
-#: AppTools/ToolNCC.py:3076
+#: AppTools/ToolCopperThieving.py:1114 AppTools/ToolNCC.py:1987 AppTools/ToolNCC.py:2040
+#: AppTools/ToolNCC.py:3094
 msgid "The reference object type is not supported."
 msgstr ""
 
@@ -11403,7 +11404,7 @@ msgid "Copper Thieving Tool exit."
 msgstr ""
 
 #: AppTools/ToolCorners.py:57
-msgid "The Gerber object that to which will be added corner markers."
+msgid "The Gerber object to which will be added corner markers."
 msgstr ""
 
 #: AppTools/ToolCorners.py:73
@@ -11555,87 +11556,87 @@ msgid ""
 "the Geometry object used as a cutout geometry."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:531
+#: AppTools/ToolCutOut.py:561
 msgid ""
 "There is no object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:537 AppTools/ToolCutOut.py:740 AppTools/ToolCutOut.py:921
-#: AppTools/ToolCutOut.py:1003 tclCommands/TclCommandGeoCutout.py:184
+#: AppTools/ToolCutOut.py:567 AppTools/ToolCutOut.py:770 AppTools/ToolCutOut.py:951
+#: AppTools/ToolCutOut.py:1033 tclCommands/TclCommandGeoCutout.py:184
 msgid "Tool Diameter is zero value. Change it to a positive real number."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:551 AppTools/ToolCutOut.py:755
+#: AppTools/ToolCutOut.py:581 AppTools/ToolCutOut.py:785
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:556 AppTools/ToolCutOut.py:759
+#: AppTools/ToolCutOut.py:586 AppTools/ToolCutOut.py:789
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. Fill in a "
 "correct value and retry. "
 msgstr ""
 
-#: AppTools/ToolCutOut.py:561 AppTools/ToolCutOut.py:765
+#: AppTools/ToolCutOut.py:591 AppTools/ToolCutOut.py:795
 msgid ""
 "Cutout operation cannot be done on a multi-geo Geometry.\n"
 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
 "and after that perform Cutout."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:713 AppTools/ToolCutOut.py:910
+#: AppTools/ToolCutOut.py:743 AppTools/ToolCutOut.py:940
 msgid "Any form CutOut operation finished."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:735 AppTools/ToolEtchCompensation.py:366
-#: AppTools/ToolInvertGerber.py:217 AppTools/ToolIsolation.py:1588
-#: AppTools/ToolIsolation.py:1615 AppTools/ToolNCC.py:1603 AppTools/ToolPaint.py:1396
+#: AppTools/ToolCutOut.py:765 AppTools/ToolEtchCompensation.py:366
+#: AppTools/ToolInvertGerber.py:217 AppTools/ToolIsolation.py:1589
+#: AppTools/ToolIsolation.py:1616 AppTools/ToolNCC.py:1621 AppTools/ToolPaint.py:1416
 #: AppTools/ToolPanelize.py:428 tclCommands/TclCommandBbox.py:71
 #: tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr ""
 
-#: AppTools/ToolCutOut.py:879
+#: AppTools/ToolCutOut.py:909
 msgid "Rectangular cutout with negative margin is not possible."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:915
+#: AppTools/ToolCutOut.py:945
 msgid "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:932 AppTools/ToolCutOut.py:958
+#: AppTools/ToolCutOut.py:962 AppTools/ToolCutOut.py:988
 msgid "Could not retrieve Geometry object"
 msgstr ""
 
-#: AppTools/ToolCutOut.py:963
+#: AppTools/ToolCutOut.py:993
 msgid "Geometry object for manual cutout not found"
 msgstr ""
 
-#: AppTools/ToolCutOut.py:973
+#: AppTools/ToolCutOut.py:1003
 msgid "Added manual Bridge Gap."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:985
+#: AppTools/ToolCutOut.py:1015
 msgid "Could not retrieve Gerber object"
 msgstr ""
 
-#: AppTools/ToolCutOut.py:990
+#: AppTools/ToolCutOut.py:1020
 msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:996
+#: AppTools/ToolCutOut.py:1026
 msgid ""
 "The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
 msgstr ""
 
-#: AppTools/ToolCutOut.py:1031
+#: AppTools/ToolCutOut.py:1061
 msgid "Geometry not supported for cutout"
 msgstr ""
 
-#: AppTools/ToolCutOut.py:1106
+#: AppTools/ToolCutOut.py:1136
 msgid "Making manual bridge gap..."
 msgstr ""
 
@@ -12535,11 +12536,11 @@ msgstr ""
 #: AppTools/ToolIsolation.py:136
 msgid ""
 "This is the Tool Number.\n"
-"Non copper clearing will start with the tool with the biggest \n"
+"Isolation routing will start with the tool with the biggest \n"
 "diameter, continuing until there are no more tools.\n"
 "Only tools that create Isolation geometry will still be present\n"
 "in the resulting geometry. This is because with some tools\n"
-"this function will not be able to create painting geometry."
+"this function will not be able to create routing geometry."
 msgstr ""
 
 #: AppTools/ToolIsolation.py:144 AppTools/ToolNCC.py:146
@@ -12582,17 +12583,17 @@ msgstr ""
 msgid "Object whose area will be removed from isolation geometry."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:512 AppTools/ToolNCC.py:554
+#: AppTools/ToolIsolation.py:513 AppTools/ToolNCC.py:554
 msgid ""
 "The type of FlatCAM object to be used as non copper clearing reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:558
+#: AppTools/ToolIsolation.py:559
 msgid "Generate Isolation Geometry"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:566
+#: AppTools/ToolIsolation.py:567
 msgid ""
 "Create a Geometry object with toolpaths to cut \n"
 "isolation outside, inside or on both sides of the\n"
@@ -12605,125 +12606,125 @@ msgid ""
 "diameter above."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1265 AppTools/ToolIsolation.py:1425 AppTools/ToolNCC.py:932
-#: AppTools/ToolNCC.py:1431 AppTools/ToolPaint.py:857 AppTools/ToolSolderPaste.py:576
+#: AppTools/ToolIsolation.py:1266 AppTools/ToolIsolation.py:1426 AppTools/ToolNCC.py:932
+#: AppTools/ToolNCC.py:1449 AppTools/ToolPaint.py:857 AppTools/ToolSolderPaste.py:576
 #: AppTools/ToolSolderPaste.py:901 App_Main.py:4210
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1269 AppTools/ToolNCC.py:936 AppTools/ToolPaint.py:861
+#: AppTools/ToolIsolation.py:1270 AppTools/ToolNCC.py:936 AppTools/ToolPaint.py:861
 #: AppTools/ToolSolderPaste.py:580 App_Main.py:4214
 msgid "Adding Tool cancelled"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1419 AppTools/ToolNCC.py:1425 AppTools/ToolPaint.py:1183
+#: AppTools/ToolIsolation.py:1420 AppTools/ToolNCC.py:1443 AppTools/ToolPaint.py:1203
 #: AppTools/ToolSolderPaste.py:896
 msgid "Please enter a tool diameter to add, in Float format."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1450 AppTools/ToolIsolation.py:2958 AppTools/ToolNCC.py:1456
-#: AppTools/ToolNCC.py:4061 AppTools/ToolPaint.py:1207 AppTools/ToolPaint.py:3608
+#: AppTools/ToolIsolation.py:1451 AppTools/ToolIsolation.py:2959 AppTools/ToolNCC.py:1474
+#: AppTools/ToolNCC.py:4079 AppTools/ToolPaint.py:1227 AppTools/ToolPaint.py:3628
 #: AppTools/ToolSolderPaste.py:925
 msgid "Cancelled. Tool already in Tool Table."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1457 AppTools/ToolIsolation.py:2976 AppTools/ToolNCC.py:1463
-#: AppTools/ToolNCC.py:4078 AppTools/ToolPaint.py:1212 AppTools/ToolPaint.py:3625
+#: AppTools/ToolIsolation.py:1458 AppTools/ToolIsolation.py:2977 AppTools/ToolNCC.py:1481
+#: AppTools/ToolNCC.py:4096 AppTools/ToolPaint.py:1232 AppTools/ToolPaint.py:3645
 msgid "New tool added to Tool Table."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1501 AppTools/ToolNCC.py:1507 AppTools/ToolPaint.py:1256
+#: AppTools/ToolIsolation.py:1502 AppTools/ToolNCC.py:1525 AppTools/ToolPaint.py:1276
 msgid "Tool from Tool Table was edited."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1513 AppTools/ToolNCC.py:1519 AppTools/ToolPaint.py:1268
+#: AppTools/ToolIsolation.py:1514 AppTools/ToolNCC.py:1537 AppTools/ToolPaint.py:1288
 #: AppTools/ToolSolderPaste.py:986
 msgid "Cancelled. New diameter value is already in the Tool Table."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1565 AppTools/ToolNCC.py:1571 AppTools/ToolPaint.py:1366
+#: AppTools/ToolIsolation.py:1566 AppTools/ToolNCC.py:1589 AppTools/ToolPaint.py:1386
 msgid "Delete failed. Select a tool to delete."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1571 AppTools/ToolNCC.py:1577 AppTools/ToolPaint.py:1372
+#: AppTools/ToolIsolation.py:1572 AppTools/ToolNCC.py:1595 AppTools/ToolPaint.py:1392
 msgid "Tool(s) deleted from Tool Table."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1619
+#: AppTools/ToolIsolation.py:1620
 msgid "Isolating..."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1653
+#: AppTools/ToolIsolation.py:1654
 msgid "Failed to create Follow Geometry with tool diameter"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1656
+#: AppTools/ToolIsolation.py:1657
 msgid "Follow Geometry was created with tool diameter"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1697
+#: AppTools/ToolIsolation.py:1698
 msgid "Click on a polygon to isolate it."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1811 AppTools/ToolIsolation.py:1831
-#: AppTools/ToolIsolation.py:1966 AppTools/ToolIsolation.py:2137
+#: AppTools/ToolIsolation.py:1812 AppTools/ToolIsolation.py:1832
+#: AppTools/ToolIsolation.py:1967 AppTools/ToolIsolation.py:2138
 msgid "Subtracting Geo"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1815 AppTools/ToolIsolation.py:1970
-#: AppTools/ToolIsolation.py:2141
+#: AppTools/ToolIsolation.py:1816 AppTools/ToolIsolation.py:1971
+#: AppTools/ToolIsolation.py:2142
 msgid "Intersecting Geo"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:1864 AppTools/ToolIsolation.py:2031
-#: AppTools/ToolIsolation.py:2198
+#: AppTools/ToolIsolation.py:1865 AppTools/ToolIsolation.py:2032
+#: AppTools/ToolIsolation.py:2199
 msgid "Empty Geometry in"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2040
+#: AppTools/ToolIsolation.py:2041
 msgid ""
 "Partial failure. The geometry was processed with all tools.\n"
-"But there are still un-isolated geometry elements. Try to include a tool with smaller "
+"But there are still not-isolated geometry elements. Try to include a tool with smaller "
 "diameter."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2043
+#: AppTools/ToolIsolation.py:2044
 msgid "The following are coordinates for the copper features that could not be isolated:"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2355 AppTools/ToolIsolation.py:2464 AppTools/ToolPaint.py:1515
+#: AppTools/ToolIsolation.py:2356 AppTools/ToolIsolation.py:2465 AppTools/ToolPaint.py:1535
 msgid "Added polygon"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2356 AppTools/ToolIsolation.py:2466
+#: AppTools/ToolIsolation.py:2357 AppTools/ToolIsolation.py:2467
 msgid "Click to add next polygon or right click to start isolation."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2368 AppTools/ToolPaint.py:1529
+#: AppTools/ToolIsolation.py:2369 AppTools/ToolPaint.py:1549
 msgid "Removed polygon"
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2369
+#: AppTools/ToolIsolation.py:2370
 msgid "Click to add/remove next polygon or right click to start isolation."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2374 AppTools/ToolPaint.py:1535
+#: AppTools/ToolIsolation.py:2375 AppTools/ToolPaint.py:1555
 msgid "No polygon detected under click position."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2400 AppTools/ToolPaint.py:1564
+#: AppTools/ToolIsolation.py:2401 AppTools/ToolPaint.py:1584
 msgid "List of single polygons is empty. Aborting."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2469
+#: AppTools/ToolIsolation.py:2470
 msgid "No polygon in selection."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2497 AppTools/ToolNCC.py:1707 AppTools/ToolPaint.py:1599
+#: AppTools/ToolIsolation.py:2498 AppTools/ToolNCC.py:1725 AppTools/ToolPaint.py:1619
 msgid "Click the end point of the paint area."
 msgstr ""
 
-#: AppTools/ToolIsolation.py:2915 AppTools/ToolNCC.py:4018 AppTools/ToolPaint.py:3565
+#: AppTools/ToolIsolation.py:2916 AppTools/ToolNCC.py:4036 AppTools/ToolPaint.py:3585
 #: App_Main.py:5318 App_Main.py:5328
 msgid "Tool from DB added in Tool Table."
 msgstr ""
@@ -12786,119 +12787,119 @@ msgstr ""
 msgid "Generate Geometry"
 msgstr ""
 
-#: AppTools/ToolNCC.py:1620
+#: AppTools/ToolNCC.py:1638
 msgid "Wrong Tool Dia value format entered, use a number."
 msgstr ""
 
-#: AppTools/ToolNCC.py:1631 AppTools/ToolPaint.py:1423
+#: AppTools/ToolNCC.py:1649 AppTools/ToolPaint.py:1443
 msgid "No selected tools in Tool Table."
 msgstr ""
 
-#: AppTools/ToolNCC.py:1987 AppTools/ToolNCC.py:3006
+#: AppTools/ToolNCC.py:2005 AppTools/ToolNCC.py:3024
 msgid "NCC Tool. Preparing non-copper polygons."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2046 AppTools/ToolNCC.py:3134
+#: AppTools/ToolNCC.py:2064 AppTools/ToolNCC.py:3152
 msgid "NCC Tool. Calculate 'empty' area."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2065 AppTools/ToolNCC.py:2174 AppTools/ToolNCC.py:2189
-#: AppTools/ToolNCC.py:3147 AppTools/ToolNCC.py:3252 AppTools/ToolNCC.py:3267
-#: AppTools/ToolNCC.py:3533 AppTools/ToolNCC.py:3634 AppTools/ToolNCC.py:3649
+#: AppTools/ToolNCC.py:2083 AppTools/ToolNCC.py:2192 AppTools/ToolNCC.py:2207
+#: AppTools/ToolNCC.py:3165 AppTools/ToolNCC.py:3270 AppTools/ToolNCC.py:3285
+#: AppTools/ToolNCC.py:3551 AppTools/ToolNCC.py:3652 AppTools/ToolNCC.py:3667
 msgid "Buffering finished"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2073 AppTools/ToolNCC.py:2196 AppTools/ToolNCC.py:3155
-#: AppTools/ToolNCC.py:3274 AppTools/ToolNCC.py:3540 AppTools/ToolNCC.py:3656
+#: AppTools/ToolNCC.py:2091 AppTools/ToolNCC.py:2214 AppTools/ToolNCC.py:3173
+#: AppTools/ToolNCC.py:3292 AppTools/ToolNCC.py:3558 AppTools/ToolNCC.py:3674
 msgid "Could not get the extent of the area to be non copper cleared."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2103 AppTools/ToolNCC.py:2182 AppTools/ToolNCC.py:3182
-#: AppTools/ToolNCC.py:3259 AppTools/ToolNCC.py:3560 AppTools/ToolNCC.py:3641
+#: AppTools/ToolNCC.py:2121 AppTools/ToolNCC.py:2200 AppTools/ToolNCC.py:3200
+#: AppTools/ToolNCC.py:3277 AppTools/ToolNCC.py:3578 AppTools/ToolNCC.py:3659
 msgid "Isolation geometry is broken. Margin is less than isolation tool diameter."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2199 AppTools/ToolNCC.py:3278 AppTools/ToolNCC.py:3659
+#: AppTools/ToolNCC.py:2217 AppTools/ToolNCC.py:3296 AppTools/ToolNCC.py:3677
 msgid "The selected object is not suitable for copper clearing."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2206 AppTools/ToolNCC.py:3285
+#: AppTools/ToolNCC.py:2224 AppTools/ToolNCC.py:3303
 msgid "NCC Tool. Finished calculation of 'empty' area."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2249
-msgid "Clearing polygon with method: lines."
+#: AppTools/ToolNCC.py:2267
+msgid "Clearing the polygon with the method: lines."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2259
-msgid "Failed. Clearing polygon with method: seed."
+#: AppTools/ToolNCC.py:2277
+msgid "Failed. Clearing the polygon with the method: seed."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2268
-msgid "Failed. Clearing polygon with method: standard."
+#: AppTools/ToolNCC.py:2286
+msgid "Failed. Clearing the polygon with the method: standard."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2282
+#: AppTools/ToolNCC.py:2300
 msgid "Geometry could not be cleared completely"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2307 AppTools/ToolNCC.py:2309 AppTools/ToolNCC.py:2955
-#: AppTools/ToolNCC.py:2957
+#: AppTools/ToolNCC.py:2325 AppTools/ToolNCC.py:2327 AppTools/ToolNCC.py:2973
+#: AppTools/ToolNCC.py:2975
 msgid "Non-Copper clearing ..."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2359 AppTools/ToolNCC.py:3102
+#: AppTools/ToolNCC.py:2377 AppTools/ToolNCC.py:3120
 msgid "NCC Tool. Finished non-copper polygons. Normal copper clearing task started."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2397 AppTools/ToolNCC.py:2645
+#: AppTools/ToolNCC.py:2415 AppTools/ToolNCC.py:2663
 msgid "NCC Tool failed creating bounding box."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2412 AppTools/ToolNCC.py:2662 AppTools/ToolNCC.py:3298
-#: AppTools/ToolNCC.py:3684
+#: AppTools/ToolNCC.py:2430 AppTools/ToolNCC.py:2680 AppTools/ToolNCC.py:3316
+#: AppTools/ToolNCC.py:3702
 msgid "NCC Tool clearing with tool diameter"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2412 AppTools/ToolNCC.py:2662 AppTools/ToolNCC.py:3298
-#: AppTools/ToolNCC.py:3684
+#: AppTools/ToolNCC.py:2430 AppTools/ToolNCC.py:2680 AppTools/ToolNCC.py:3316
+#: AppTools/ToolNCC.py:3702
 msgid "started."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2570 AppTools/ToolNCC.py:3459
+#: AppTools/ToolNCC.py:2588 AppTools/ToolNCC.py:3477
 msgid ""
 "There is no NCC Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2579 AppTools/ToolNCC.py:3468
+#: AppTools/ToolNCC.py:2597 AppTools/ToolNCC.py:3486
 msgid "NCC Tool clear all done."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2582 AppTools/ToolNCC.py:3471
+#: AppTools/ToolNCC.py:2600 AppTools/ToolNCC.py:3489
 msgid "NCC Tool clear all done but the copper features isolation is broken for"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2584 AppTools/ToolNCC.py:2870 AppTools/ToolNCC.py:3473
-#: AppTools/ToolNCC.py:3856
+#: AppTools/ToolNCC.py:2602 AppTools/ToolNCC.py:2888 AppTools/ToolNCC.py:3491
+#: AppTools/ToolNCC.py:3874
 msgid "tools"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2866 AppTools/ToolNCC.py:3852
+#: AppTools/ToolNCC.py:2884 AppTools/ToolNCC.py:3870
 msgid "NCC Tool Rest Machining clear all done."
 msgstr ""
 
-#: AppTools/ToolNCC.py:2869 AppTools/ToolNCC.py:3855
+#: AppTools/ToolNCC.py:2887 AppTools/ToolNCC.py:3873
 msgid ""
 "NCC Tool Rest Machining clear all done but the copper features isolation is broken for"
 msgstr ""
 
-#: AppTools/ToolNCC.py:2967
+#: AppTools/ToolNCC.py:2985
 msgid "NCC Tool started. Reading parameters."
 msgstr ""
 
-#: AppTools/ToolNCC.py:3954
+#: AppTools/ToolNCC.py:3972
 msgid ""
 "Try to use the Buffering Type = Full in Preferences -> Gerber General. Reload the Gerber "
 "file after this change."
@@ -13111,148 +13112,148 @@ msgid ""
 "specified by another object."
 msgstr ""
 
-#: AppTools/ToolPaint.py:1392
+#: AppTools/ToolPaint.py:1412
 #, python-format
 msgid "Could not retrieve object: %s"
 msgstr ""
 
-#: AppTools/ToolPaint.py:1402
+#: AppTools/ToolPaint.py:1422
 msgid "Can't do Paint on MultiGeo geometries"
 msgstr ""
 
-#: AppTools/ToolPaint.py:1439
+#: AppTools/ToolPaint.py:1459
 msgid "Click on a polygon to paint it."
 msgstr ""
 
-#: AppTools/ToolPaint.py:1452
+#: AppTools/ToolPaint.py:1472
 msgid "Click the start point of the paint area."
 msgstr ""
 
-#: AppTools/ToolPaint.py:1517
+#: AppTools/ToolPaint.py:1537
 msgid "Click to add next polygon or right click to start painting."
 msgstr ""
 
-#: AppTools/ToolPaint.py:1530
+#: AppTools/ToolPaint.py:1550
 msgid "Click to add/remove next polygon or right click to start painting."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2034
+#: AppTools/ToolPaint.py:2054
 msgid "Painting polygon with method: lines."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2046
+#: AppTools/ToolPaint.py:2066
 msgid "Failed. Painting polygon with method: seed."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2057
+#: AppTools/ToolPaint.py:2077
 msgid "Failed. Painting polygon with method: standard."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2073
+#: AppTools/ToolPaint.py:2093
 msgid "Geometry could not be painted completely"
 msgstr ""
 
-#: AppTools/ToolPaint.py:2102 AppTools/ToolPaint.py:2105 AppTools/ToolPaint.py:2113
-#: AppTools/ToolPaint.py:2416 AppTools/ToolPaint.py:2419 AppTools/ToolPaint.py:2427
-#: AppTools/ToolPaint.py:2915 AppTools/ToolPaint.py:2918 AppTools/ToolPaint.py:2924
+#: AppTools/ToolPaint.py:2122 AppTools/ToolPaint.py:2125 AppTools/ToolPaint.py:2133
+#: AppTools/ToolPaint.py:2436 AppTools/ToolPaint.py:2439 AppTools/ToolPaint.py:2447
+#: AppTools/ToolPaint.py:2935 AppTools/ToolPaint.py:2938 AppTools/ToolPaint.py:2944
 msgid "Paint Tool."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2102 AppTools/ToolPaint.py:2105 AppTools/ToolPaint.py:2113
+#: AppTools/ToolPaint.py:2122 AppTools/ToolPaint.py:2125 AppTools/ToolPaint.py:2133
 msgid "Normal painting polygon task started."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2103 AppTools/ToolPaint.py:2417 AppTools/ToolPaint.py:2916
+#: AppTools/ToolPaint.py:2123 AppTools/ToolPaint.py:2437 AppTools/ToolPaint.py:2936
 msgid "Buffering geometry..."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2125 AppTools/ToolPaint.py:2434 AppTools/ToolPaint.py:2932
+#: AppTools/ToolPaint.py:2145 AppTools/ToolPaint.py:2454 AppTools/ToolPaint.py:2952
 msgid "No polygon found."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2155
+#: AppTools/ToolPaint.py:2175
 msgid "Painting polygon..."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2165 AppTools/ToolPaint.py:2480 AppTools/ToolPaint.py:2670
-#: AppTools/ToolPaint.py:2978 AppTools/ToolPaint.py:3157
+#: AppTools/ToolPaint.py:2185 AppTools/ToolPaint.py:2500 AppTools/ToolPaint.py:2690
+#: AppTools/ToolPaint.py:2998 AppTools/ToolPaint.py:3177
 msgid "Painting with tool diameter = "
 msgstr ""
 
-#: AppTools/ToolPaint.py:2166 AppTools/ToolPaint.py:2481 AppTools/ToolPaint.py:2671
-#: AppTools/ToolPaint.py:2979 AppTools/ToolPaint.py:3158
+#: AppTools/ToolPaint.py:2186 AppTools/ToolPaint.py:2501 AppTools/ToolPaint.py:2691
+#: AppTools/ToolPaint.py:2999 AppTools/ToolPaint.py:3178
 msgid "started"
 msgstr ""
 
-#: AppTools/ToolPaint.py:2191 AppTools/ToolPaint.py:2507 AppTools/ToolPaint.py:2697
-#: AppTools/ToolPaint.py:3005 AppTools/ToolPaint.py:3184
+#: AppTools/ToolPaint.py:2211 AppTools/ToolPaint.py:2527 AppTools/ToolPaint.py:2717
+#: AppTools/ToolPaint.py:3025 AppTools/ToolPaint.py:3204
 msgid "Margin parameter too big. Tool is not used"
 msgstr ""
 
-#: AppTools/ToolPaint.py:2249 AppTools/ToolPaint.py:2576 AppTools/ToolPaint.py:2754
-#: AppTools/ToolPaint.py:3068 AppTools/ToolPaint.py:3246
+#: AppTools/ToolPaint.py:2269 AppTools/ToolPaint.py:2596 AppTools/ToolPaint.py:2774
+#: AppTools/ToolPaint.py:3088 AppTools/ToolPaint.py:3266
 msgid ""
 "Could not do Paint. Try a different combination of parameters. Or a different strategy of "
 "paint"
 msgstr ""
 
-#: AppTools/ToolPaint.py:2306 AppTools/ToolPaint.py:2642 AppTools/ToolPaint.py:2811
-#: AppTools/ToolPaint.py:3129 AppTools/ToolPaint.py:3308
+#: AppTools/ToolPaint.py:2326 AppTools/ToolPaint.py:2662 AppTools/ToolPaint.py:2831
+#: AppTools/ToolPaint.py:3149 AppTools/ToolPaint.py:3328
 msgid ""
 "There is no Painting Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2329
+#: AppTools/ToolPaint.py:2349
 msgid "Paint Single failed."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2335
+#: AppTools/ToolPaint.py:2355
 msgid "Paint Single Done."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2337 AppTools/ToolPaint.py:2847 AppTools/ToolPaint.py:3344
+#: AppTools/ToolPaint.py:2357 AppTools/ToolPaint.py:2867 AppTools/ToolPaint.py:3364
 msgid "Polygon Paint started ..."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2416 AppTools/ToolPaint.py:2419 AppTools/ToolPaint.py:2427
+#: AppTools/ToolPaint.py:2436 AppTools/ToolPaint.py:2439 AppTools/ToolPaint.py:2447
 msgid "Paint all polygons task started."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2458 AppTools/ToolPaint.py:2956
+#: AppTools/ToolPaint.py:2478 AppTools/ToolPaint.py:2976
 msgid "Painting polygons..."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2651
+#: AppTools/ToolPaint.py:2671
 msgid "Paint All Done."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2820 AppTools/ToolPaint.py:3317
+#: AppTools/ToolPaint.py:2840 AppTools/ToolPaint.py:3337
 msgid "Paint All with Rest-Machining done."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2839
+#: AppTools/ToolPaint.py:2859
 msgid "Paint All failed."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2845
+#: AppTools/ToolPaint.py:2865
 msgid "Paint Poly All Done."
 msgstr ""
 
-#: AppTools/ToolPaint.py:2915 AppTools/ToolPaint.py:2918 AppTools/ToolPaint.py:2924
+#: AppTools/ToolPaint.py:2935 AppTools/ToolPaint.py:2938 AppTools/ToolPaint.py:2944
 msgid "Painting area task started."
 msgstr ""
 
-#: AppTools/ToolPaint.py:3138
+#: AppTools/ToolPaint.py:3158
 msgid "Paint Area Done."
 msgstr ""
 
-#: AppTools/ToolPaint.py:3336
+#: AppTools/ToolPaint.py:3356
 msgid "Paint Area failed."
 msgstr ""
 
-#: AppTools/ToolPaint.py:3342
+#: AppTools/ToolPaint.py:3362
 msgid "Paint Poly Area Done."
 msgstr ""
 
@@ -13956,7 +13957,7 @@ msgid "Solder Paste Tool"
 msgstr ""
 
 #: AppTools/ToolSolderPaste.py:68
-msgid "Gerber Solder paste object."
+msgid "Gerber Solderpaste object."
 msgstr ""
 
 #: AppTools/ToolSolderPaste.py:81
@@ -15402,20 +15403,20 @@ msgid "Details"
 msgstr ""
 
 #: App_Main.py:9238
-msgid "The normal flow when working in FlatCAM is the following:"
+msgid "The normal flow when working with the application is the following:"
 msgstr ""
 
 #: App_Main.py:9239
 msgid ""
-"Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using "
-"either the toolbars, key shortcuts or even dragging and dropping the files on the AppGUI."
+"Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into the application "
+"using either the toolbars, key shortcuts or even dragging and dropping the files on the "
+"AppGUI."
 msgstr ""
 
 #: App_Main.py:9242
 msgid ""
-"You can also load a FlatCAM project by double clicking on the project file, drag and drop "
-"of the file into the FLATCAM AppGUI or through the menu (or toolbar) actions offered "
-"within the app."
+"You can also load a project by double clicking on the project file, drag and drop of the "
+"file into the AppGUI or through the menu (or toolbar) actions offered within the app."
 msgstr ""
 
 #: App_Main.py:9245

@@ -134,11 +134,11 @@ class ToolIsolation(AppTool, Gerber):
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
             _("This is the Tool Number.\n"
-              "Non copper clearing will start with the tool with the biggest \n"
+              "Isolation routing will start with the tool with the biggest \n"
               "diameter, continuing until there are no more tools.\n"
               "Only tools that create Isolation geometry will still be present\n"
               "in the resulting geometry. This is because with some tools\n"
-              "this function will not be able to create painting geometry.")
+              "this function will not be able to create routing geometry.")
         )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. It's value (in current FlatCAM units)\n"
@@ -495,7 +495,8 @@ class ToolIsolation(AppTool, Gerber):
         self.select_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Selection' -> Isolate a selection of polygons.\n"
+              "- 'Area Selection' -> Isolate polygons within a selection area.\n"
+              "- 'Polygon Selection' -> Isolate a selection of polygons.\n"
               "- 'Reference Object' - will process the area specified by another object.")
         )
         self.select_combo = FCComboBox()
@@ -2038,7 +2039,7 @@ class ToolIsolation(AppTool, Gerber):
         # the tools are finished but the isolation is not finished therefore it failed
         if work_geo:
             self.app.inform.emit("[WARNING] %s" % _("Partial failure. The geometry was processed with all tools.\n"
-                                                    "But there are still un-isolated geometry elements. "
+                                                    "But there are still not-isolated geometry elements. "
                                                     "Try to include a tool with smaller diameter."))
             self.app.shell_message(msg=_("The following are coordinates for the copper features "
                                          "that could not be isolated:"))

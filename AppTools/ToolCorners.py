@@ -54,7 +54,7 @@ class ToolCorners(AppTool):
         # Gerber object #
         self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
         self.object_label.setToolTip(
-            _("The Gerber object that to which will be added corner markers.")
+            _("The Gerber object to which will be added corner markers.")
         )
         self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)

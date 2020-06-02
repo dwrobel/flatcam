@@ -177,7 +177,7 @@ class GeneralAppSettingsGroupUI(OptionsGroupUI2):
                 option="textbox_font_size",
                 label_text="Textbox",
                 label_tooltip="This sets the font size for the Textbox GUI\n"
-                              "elements that are used in FlatCAM.",
+                              "elements that are used in the application.",
                 min_value=8, max_value=40, step=1
             ),
             SeparatorOptionUI(),

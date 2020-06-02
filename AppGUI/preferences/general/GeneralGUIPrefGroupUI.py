@@ -72,7 +72,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Layout selection
         self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
         self.layout_label.setToolTip(
-            _("Select an layout for the application.\n"
+            _("Select a layout for the application.\n"
               "It is applied immediately.")
         )
         self.layout_combo = FCComboBox()
@@ -94,7 +94,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Style selection
         self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
         self.style_label.setToolTip(
-            _("Select an style for the application.\n"
+            _("Select a style for the application.\n"
               "It will be applied at the next app start.")
         )
         self.style_combo = FCComboBox()

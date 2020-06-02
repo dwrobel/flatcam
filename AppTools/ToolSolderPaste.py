@@ -65,7 +65,7 @@ class SolderPaste(AppTool):
         self.obj_combo.obj_type = "Gerber"
 
         self.object_label = QtWidgets.QLabel('<b>%s</b>:'% _("GERBER"))
-        self.object_label.setToolTip(_("Gerber Solder paste object.")
+        self.object_label.setToolTip(_("Gerber Solderpaste object.")
         )
         obj_form_layout.addRow(self.object_label)
         obj_form_layout.addRow(self.obj_combo)

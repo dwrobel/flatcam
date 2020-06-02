@@ -119,7 +119,7 @@ class ToolsDB(QtWidgets.QWidget):
         )
         self.buttons_box.addWidget(import_db_btn)
 
-        self.add_tool_from_db = FCButton(_("Transfer Tool"))
+        self.add_tool_from_db = FCButton(_("Transfer the Tool"))
         self.add_tool_from_db.setToolTip(
             _("Add a new tool in the Tools Table of the\n"
               "active Geometry object after selecting a tool\n"
@@ -1792,7 +1792,7 @@ class ToolsDB2(QtWidgets.QWidget):
         )
         self.buttons_box.addWidget(self.save_db_btn)
 
-        self.add_tool_from_db = FCButton(_("Transfer Tool"))
+        self.add_tool_from_db = FCButton(_("Transfer the Tool"))
         self.add_tool_from_db.setToolTip(
             _("Insert a new tool in the Tools Table of the\n"
               "object/application tool after selecting a tool\n"

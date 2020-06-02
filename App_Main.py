@@ -9235,12 +9235,12 @@ class App(QtCore.QObject):
             title=_("Selected Tab - Choose an Item from Project Tab"),
             subtitle=_("Details"),
 
-            s1=_("The normal flow when working in FlatCAM is the following:"),
-            s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM "
+            s1=_("The normal flow when working with the application is the following:"),
+            s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into the application "
                  "using either the toolbars, key shortcuts or even dragging and dropping the "
                  "files on the AppGUI."),
-            s3=_("You can also load a FlatCAM project by double clicking on the project file, "
-                 "drag and drop of the file into the FLATCAM AppGUI or through the menu (or toolbar) "
+            s3=_("You can also load a project by double clicking on the project file, "
+                 "drag and drop of the file into the AppGUI or through the menu (or toolbar) "
                  "actions offered within the app."),
             s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
                  "on SELECTED TAB (more simpler is to double click the object name in the Project Tab, "

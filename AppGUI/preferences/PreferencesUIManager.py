@@ -870,7 +870,7 @@ class PreferencesUIManager:
         if theme_new_val != theme or ge != ge_val:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("Are you sure you want to continue?"))
-            msgbox.setWindowTitle(_("Application restart"))
+            msgbox.setWindowTitle(_("Application will restart"))
             msgbox.setWindowIcon(QtGui.QIcon(self.ui.app.resource_location + '/warning.png'))
             msgbox.setIcon(QtWidgets.QMessageBox.Question)
 

@@ -2264,7 +2264,7 @@ class NonCopperClear(AppTool, Gerber):
                 log.debug("NonCopperClear.clear_polygon_worker() Lines --> %s" % str(ee))
         elif ncc_method == _("Combo"):
             try:
-                self.app.inform.emit(_("Clearing polygon with method: lines."))
+                self.app.inform.emit(_("Clearing the polygon with the method: lines."))
                 cp = self.clear_polygon3(pol, tooldia,
                                          steps_per_circle=self.grb_circle_steps,
                                          overlap=ncc_overlap, contour=ncc_contour,
@@ -2274,7 +2274,7 @@ class NonCopperClear(AppTool, Gerber):
                 if cp and cp.objects:
                     pass
                 else:
-                    self.app.inform.emit(_("Failed. Clearing polygon with method: seed."))
+                    self.app.inform.emit(_("Failed. Clearing the polygon with the method: seed."))
                     cp = self.clear_polygon2(pol, tooldia,
                                              steps_per_circle=self.grb_circle_steps,
                                              overlap=ncc_overlap, contour=ncc_contour,
@@ -2283,7 +2283,7 @@ class NonCopperClear(AppTool, Gerber):
                     if cp and cp.objects:
                         pass
                     else:
-                        self.app.inform.emit(_("Failed. Clearing polygon with method: standard."))
+                        self.app.inform.emit(_("Failed. Clearing the polygon with the method: standard."))
                         cp = self.clear_polygon(pol, tooldia,
                                                 steps_per_circle=self.grb_circle_steps,
                                                 overlap=ncc_overlap, contour=ncc_contour,
