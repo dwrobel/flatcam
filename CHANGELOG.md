@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - Tcl Command Follow - fixed to work in the new configuration
 - Etch Compensation Tool - added a new etchant: alkaline baths
 - fixed spacing in the status toolbar icons
+- updated the translation files to the latest changes
 
 1.06.2020
 
