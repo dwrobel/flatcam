@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - fixed some more strings
 - updated the Google-translations for the German, Spanish, French
 - updated the Romanian translation
+- replaced the icon for the Editor in Toolbar (both for the normal icons and for icons in dark theme)
 
 1.06.2020
 
