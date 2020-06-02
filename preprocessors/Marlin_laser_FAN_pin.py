@@ -6,10 +6,10 @@
 # License:      MIT Licence                                #
 # ##########################################################
 
-from FlatCAMPostProc import *
+from AppPreProcessor import *
 
 
-class Marlin_laser_FAN_pin(FlatCAMPostProc):
+class Marlin_laser_FAN_pin(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"

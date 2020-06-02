@@ -7,6 +7,229 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.06.2020
+
+- Tcl Shell - added a button to delete the content of the active line
+- Tcl Command Isolate - fixed to work in the new configuration
+- Tcl Command Follow - fixed to work in the new configuration
+- Etch Compensation Tool - added a new etchant: alkaline baths
+- fixed spacing in the status toolbar icons
+- updated the translation files to the latest changes
+- modified behavior of object comboboxes in Paint, NCC and CutOut Tools: now if an object is selected in Project Tab and is of the supported kind in the Tool, it will be auto-selected
+- fixed some more strings
+- updated the Google-translations for the German, Spanish, French
+- updated the Romanian translation
+- replaced the icon for the Editor in Toolbar (both for the normal icons and for icons in dark theme)
+
+1.06.2020
+
+- made the Distance Tool display the angle in values between 0 and 359.9999 degrees
+- changed some strings
+- fixed the warning that old preferences found even for new installation
+- in Paint Tool fixed the message to select a polygon when using the Selection: Single Polygon being overwritten by the "Grid disabled" message
+- more changes in strings throughout the app
+- made some minor changes in the GUI of the FlatCAM Tools
+- in Tools Database made sure that each new tool added has a unique name
+- in AppTool made some methods to be class methods
+- reverted the class methods in AppTool
+- added a button for Transformations Tool in the lower side (common) of the Object UI
+- some other UI changes
+- after using Isolation Tool it will switch automatically to the Geometry UI
+- in Preferences replaced some widgets with a new one that combine a Slider with a Spinner (from David Robertson)
+- in Preferences replaced the widgets that sets colors with a compound one (from David Robertson)
+- made Progressive plotting work in Isolation Tool
+- fix an issue with progressive plotted shapes not being deleted on the end of the job
+- some fixed due of recent changes and some strings changed
+- added a validator for the FCColorEntry GUI element such that only the valid chars are accepted
+- changed the status bar label to have an icon instead of text
+- added a label in status bar that will toggle the Preferences tab
+- made some changes such that that the label in status bar for toggling the Preferences Tab will be updated in various cases of closing the tab
+- changed colors for the status bar labels and added some of the new icons in the gray version
+- remade visibility as threaded - it seems that I can't really squeeze more performance from this
+
+31.05.2020
+
+- structural changes in Preferences from David Robertson
+- made last filter selected for open file to be used next time when opening files (for Excellon, GCode and Gerber files, for now)
+
+30.05.2020
+
+- made confirmation messages for the values that are modified not to be printed in the Shell
+- Isolation Tool: working on the Rest machining: almost there, perhaps I will use multiprocessing
+- Isolation Tool: removed the tools that have empty geometry in case of rest machining
+- Isolation Tool: solved some naming issues
+- Isolation Tool: updated the tools dict with the common parameters value on isolating
+- Fixed a recent change that made the edited Geometry objects in the Geometry Editor not to be plotted after saving changes
+- modified the Tool Database such that when a tool shape is selected as 'V' any change in the Vdia or Vangle or CutZ parameters will update the tool diameter value
+- In Tool Isolation made sure that the use of ESC key while some processes are active will disconnect the mouse events that may be connected, correctly
+- optimized the Gerber UI
+- added a Multi-color checkbox for the Geometry UI (will color differently tool geometry when the geometry is multitool)
+- added a Multi-color checkbox for the Excellon UI (this way colors for each tool are easier to differentiate especially when the diameter is close)
+- made the Shell Dock always show docked
+- fixed NCC Tool behavior when selecting tools for Isolation operation
+
+29.05.2020
+
+- fixed the Tool Isolation when using the 'follow' parameter
+- in Isolation Tool when the Rest machining is checked the combine parameter is set True automatically because the rest machining concept make sense only when all tools are used together
+- some changes in the UI; added in the status bar an icon to control the Shell Dock
+- clicking on the activity icon will replot all objects
+- optimized UI in Tool Isolation
+- overloaded the App inform signal to allow not printing to shell if a second bool parameter is given; modified some GUI messages to use this feature
+- fixed the shell status label status on shell dock close from close button
+- refactored some methods from App class and moved them to plotcanvas (plotcanvaslegacy) class
+- added an label with icon in the status bar, clicking it will toggle (show status) of the X-Y axis on cavnas
+- optimized the UI, added to status bar an icon to toggle the axis 
+- updated the Etch Compensation Tool by adding a new possibility to compensate the lateral etch (manual value)
+- updated the Etch Compensation Tool such that the resulting Gerber object will have the apertures attributes ('size', 'width', 'height') updated to the changes
+
+28.05.2020
+
+- made the visibility change (when using the Spacebar key in Project Tab) to be not threaded and to use the enabled property of the ShapesCollection which should be faster
+- updated the Tool Database class to have the Isolation Tool data
+- Isolation Tool - made to work the adding of tools from database
+- fixed some issues related to using the new Numerical... GUI elements
+- fixed issues in the Tool Subtract
+- remade Tool Subtract to use multiprocessing when processing geometry
+- the resulting Gerber file from Tool Subtract has now the attribute source_file populated
+
+27.05.2020
+
+- working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
+
+26.05.2020
+
+- working on Isolation Tool: made to work the tool parameters data to GUI and GUI to data
+- Isolation Tool: reworked the GUI
+- if there is a Gerber object selected then in Isolation Tool the Gerber object combobox will show that object name as current
+- made the Project Tree items not editable by clicking on selected Tree items (the object rename can still be done in the Selected tab)
+- working on Isolation Tool: added a Preferences section in Edit -> Preferences and updated their usage within the Isolation tool
+- fixed milling drills not plotting the resulting Geometry object
+- all tuple entries in the Preferences UI are now protected against letter entry
+- all entries in the Preferences UI that have numerical entry are protected now against letters
+- cleaned the Preferences UI in the Gerber area
+- minor UI changes
+
+25.05.2020
+
+- updated the GUI fields for the Scale and Offset in the Object UI to allow only numeric values and operators in the list [/,*,+,-], spaces, dots and comma
+- modified the Etch Compensation Tool and added conversion utilities from Oz thickenss and mils to microns
+- added a Toggle All checkbox to Corner Markers Tool
+- added an Icon to the MessageBox that asks for saving if the user try to close the app and there is some unsaved work 
+- changed and added some icons
+- fixed the Shortcuts Tab to reflect the actual current shortcut keys
+- started to work on moving the Isolation Routing from the Gerber Object UI to it's own tool
+- created a new tool: Isolation Routing Tool: work in progress
+- some fixes in NCC Tool
+- added a dialog in Menu -> Help -> ReadMe?
+
+24.05.2020
+
+- changes some icons
+- added a new GUI element which is a evaluated LineEdit that accepts only float numbers and /,*,+,-,% chars
+- finished the Etch Compensation Tool
+- fixed unreliable work of Gerber Editor and optimized the App.editor2object() method
+- updated the Gerber parser such that it will parse correctly Gerber files that have only one solid polygon inside with multiple clear polygons (like those generated by the Invert Tool)
+- fixed a small bug in the Geometry UI that made updating the storage from GUI not to work
+- some small changes in Gerber Editor
+
+23.05.2020
+
+- fixed a issue when testing for Exclusion areas overlap over the Geometry object solid_geometry
+
+22.05.2020
+
+- fixed the algorithm for calculating closest points in the Exclusion areas
+- added the Exclusion zones processing to Geometry GCode generation
+
+21.05.2020
+
+- added the Exclusion zones processing to Excellon GCode generation
+- fixed a non frequent plotting problem for CNCJob objects made out of Excellon objects
+
+19.05.2020
+
+- updated the Italian language (translation incomplete)
+- updated all the language strings to the latest changes; updated the POT file
+- fixed a possible malfunction in Tool Punch Gerber
+
+18.05.2020
+
+- fixed the PDF Tool when importing as Gerber objects
+- moved all the parsing out of the PDF Tool to a new file ParsePDF in the flatcamParsers folder
+- trying to fix the pixmap load crash when running a FlatCAMScript
+- made the workspace label in the status bar clickable and also added a status bar message on status toggle for workspace
+- modified the GUI for Film and Panelize Tools
+- moved some of the GUI related methods from FlatCAMApp.App to the flatcamGUI.MainGUI class
+- moved Shortcuts Tab creation in it's own class
+- renamed classes to have shorter names and grouped
+- removed reference to postprocessors and replaced it with preprocessors
+- more refactoring class names
+- moved some of the methods from the App class to the ObjectCollection class
+- moved all the new_object related methods in their own class AppObjects.AppObject
+- more refactoring; solved some issues introduced by the refactoring
+- solved a circular import
+- updated the language translation files to the latest changes (no translation)
+- working on a new Tool: Etch Compensation Tool -> installed the tool and created the GUI and class template
+- moved more methods out of App_Main class
+- added confirmation messages for toggle of HUD, Grid, Grid Snap, Axis
+- added icon in status bar for HUD; clicking on it will toggle the HUD (heads up display)
+- fixes due of recent changes
+- fixed issue #417
+
+17.05.2020
+
+- added new FlatCAM Tool: Corner Markers Tool which will add line markers in the selected corners of the bounding box of the targeted Gerber object
+- added a menu entry in Menu -> View for Toggle HUD
+- solved the issue with the GUI in the Notebook being expanded too much in width due of the FCDoubleSpinner and FCSpinner sizeHint by setting the sizePolicy to Ignored value
+- fixed the workspace being always A4
+- added a label in the status bar to show if the workplace is active and what size it is
+- now the Edit command (either from Menu Edit ->Edit Object) or through the shortcut key (E key) or project tab context menu works also for the CNCJob objects (will open a text Editor with the GCode)
+- fixed the object collection methods that return a list of objects or names of objects such that they have a parameter now to allow adding to those lists (or not) for the objects of type Script or Document. Thus fixing some of the Tcl commands such Set Origin
+- reverted the previous changes to object collection; it is better to create empty methods in FlatCAMScript and FlatCAMDocument objects
+
+16.05.2020
+
+- worked on the NCC Tool; added a new clear method named 'Combo' which will go through all methods until the clear is done
+- added a Preferences parameter for font size used in HUD
+
+13.05.2020
+
+- updated the French translation strings, made by @micmac (Michel)
+
+12.05.2020
+
+- fixed recent issues introduced in Tcl command Drillcncjob
+- updated the Cncjob to use the 'endxy' parameter which dictates the x,y position at the end of the job
+- now the Tcl commands Drillcncjob and Cncjob can use the toolchangexy and endxy parameters with or without parenthesis (but no spaces allowed)
+- modified the Tcl command Paint "single" parameter. Now it's value is a tuple with the x,y coordinates of the single polygon to be painted.
+- the HUD display state is now persistent between app restarts
+- updated the Distance Tool such that the right click of the mouse will cancel the tool unless it was a panning move
+- modified the PlotCanvasLegacy to decide if there is a mouse drag based on the distance between the press event position and the release event position. If the distance is smaller than a delta distance then it is not a drag move.
+
+11.05.2020
+
+- removed the labels in status bar that display X,Y positions and replaced it with a HUD display on canvas (combo key SHIFT+H) will toggle the display of the HUD
+- made the HUD work in Legacy2D mode
+- fixed situation when the mouse cursor is outside of the canvas and no therefore returning None values
+- remade the Snap Toolbar presence; now it is always active and situated in the Status Bar
+- Snap Toolbar is now visible in Fullscreen
+- in Fullscreen now the Notebook is available but it will be hidden on Fullscreen launch
+- fixed some minor issues (in the HUD added a separating line, missing an icon in toolbars on first launch)
+- made sure that the corner snap buttons are shown only in Editors
+- changed the HUD color when using Dark theme 
+- fix issue in Legacy2D graphic mode where the snap function was not accessible when the PlotCanvasLegacy class was created
+- modified the HUD in Legacy2D when using Dark Theme to use different colors
+- modified how the graphic engine change act in Preferences: now only by clicking Apply(or Save) the change will happen. And there is also a message asking for confirmation
+- re-added the position labels in the status bar; they will be useful if HUD is Off (Altium does the same :) so learn from the best)
+- fixed the Tcl command Cncjob: there was a problem reported as issue #416. The command did not work due of the dpp parameter
+- modified the Tcl command Cncjob such that if some of the parameters are not used then the default values will be used (set with set_sys)
+- modified the Tcl command Drillcncjob to use the defaults when some of the parameters are not used
+
+10.05.2020
+
+- fixed the problem with using comma as decimal separator in Grid Snap fields
+
 9.05.2020
 
 - modified the GUI for Exclusion areas; now the shapes are displayed in a Table where they can be selected and deleted. Modification applied for Geometry Objects only (for now).
@@ -62,7 +285,7 @@ CHANGELOG for FlatCAM beta
 2.05.2020
 
 - changed the icons for the grid snap in the status bar
-- moved some of the methods from FlatCAMApp.App to flatcamGUI.FlatCAMGUI class
+- moved some of the methods from FlatCAMApp.App to flatcamGUI.MainGUI class
 - fixed bug in Gerber Editor in which the units conversion wasn't calculated correct
 - fixed bug in Gerber Editor in which the QThread that is started on object edit was not stopped at clean up stage
 - fixed bug in Gerber Editor that kept all the apertures (including the geometry) of a previously edited object that was not saved after edit
@@ -1330,7 +1553,7 @@ CHANGELOG for FlatCAM beta
 - optimized Rules Check Tool so it runs faster when doing Copper 2 Copper rule
 - small GUI changes in Optimal Tool and in Film Tool
 - some PEP8 corrections
-- some code annotations to make it easier to navigate in the FlatCAMGUI.py
+- some code annotations to make it easier to navigate in the MainGUI.py
 - fixed exit FullScreen with Escape key
 - added a new menu category in the MenuBar named 'Objects'. It will hold the objects found in the Project tab. Useful when working in FullScreen
 - disabled a log.debug in ObjectColection.get_by_name()
@@ -2769,7 +2992,7 @@ CHANGELOG for FlatCAM beta
 - fix for issue #262: when doing Edit-> Save & Close Editor on a Geometry that is not generated through first entering into an Editor, the geometry disappear
 - finished preparing for internationalization for the files: camlib and objectCollection
 - fixed tools shortcuts not working anymore due of the new toggle parameter for the .run().
-- finished preparing for internationalization for the files: FlatCAMEditor, FlatCAMGUI
+- finished preparing for internationalization for the files: FlatCAMEditor, MainGUI
 - finished preparing for internationalization for the files: FlatCAMObj, ObjectUI
 - sorted the languages in the Preferences combobox
 
@@ -3091,7 +3314,7 @@ CHANGELOG for FlatCAM beta
 - fixed the name self-insert in save dialog file for GCode; added protection in case the save path is None
 - fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
 - changed the messages for Units Conversion
-- all key shortcuts work across the entire application; moved all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
+- all key shortcuts work across the entire application; moved all the shortcuts definitions in MainGUI.keyPressEvent()
 - renamed the theme to layout because it is really a layout change
 - added plot kind for CNC Job in the App Preferences
 - combined the geocutout and cutout_any TCL commands - work in progress
@@ -3612,7 +3835,7 @@ For now they are used only for Excellon objects who do have toolchange events
 
 - fixed a reported bug generated by a typo for feedrate_z object in camlib.py. Because of that, the project could not be saved.
 - fixed a G01 usage (should be G1) in Marlin preprocessor.
-- changed the position of the Tool Dia entry in the Object UI and in FlatCAMGUI
+- changed the position of the Tool Dia entry in the Object UI and in MainGUI
 - fixed issues in the installer
 
 30.10.2018
@@ -4172,7 +4395,7 @@ still copper leftovers.
 - modified generate_milling method which had issues from the Python3 port (it could not sort the tools due of dict to dict comparison no longer possible).
 - modified the 'default' preprocessor in order to include a space between the value of Xcoord and the following Y
 - made optional the using of threads for the milling command; by default it is OFF (False) because in the current configuration it creates issues when it is using threads
-- modified the Panelize function and Tcl command Panelize. It was having issues due to multithreading (kept trying to modify a dictionary in redraw() method)and automatically selecting the last created object (feature introduced by me). I've added a parameter to the new_object method, named autoselected (by default it is True) and in the panelize method I initialized it with False.
+- modified the Panelize function and Tcl command Panelize. It was having issues due to multithreading (kept trying to modify a dictionary in redraw() method)and automatically selecting the last created object (feature introduced by me). I've added a parameter to the app_obj.new_object method, named autoselected (by default it is True) and in the panelize method I initialized it with False.
 By initializing the plot parameter with False for the temporary objects, I have increased dramatically the  generation speed of the panel because now the temporary object are no longer ploted which consumed time.
 - replaced log.warn() with log.warning() in camlib.py. Reason: deprecated
 - fixed the issue that the "Defaults" button was having no effect when clicked and Options Combo was in Project Options

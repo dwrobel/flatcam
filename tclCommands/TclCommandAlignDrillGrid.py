@@ -111,4 +111,4 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             init_obj.create_geometry()
 
         # Create the new object
-        self.app.new_object("excellon", outname, aligndrillgrid_init_me, plot=False)
+        self.app.app_obj.new_object("excellon", outname, aligndrillgrid_init_me, plot=False)
