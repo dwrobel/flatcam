@@ -3191,6 +3191,32 @@ class App(QtCore.QObject):
 
         :return: None
         """
+
+        # close editors before quiting the app, if they are open
+        if self.geo_editor.editor_active is True:
+            self.geo_editor.deactivate()
+            try:
+                self.geo_editor.disconnect()
+            except TypeError:
+                pass
+            log.debug("App.quit_application() --> Geo Editor deactivated.")
+
+        if self.exc_editor.editor_active is True:
+            self.exc_editor.deactivate()
+            try:
+                self.grb_editor.disconnect()
+            except TypeError:
+                pass
+            log.debug("App.quit_application() --> Excellon Editor deactivated.")
+
+        if self.grb_editor.editor_active is True:
+            self.grb_editor.deactivate_grb_editor()
+            try:
+                self.exc_editor.disconnect()
+            except TypeError:
+                pass
+            log.debug("App.quit_application() --> Gerber Editor deactivated.")
+
         self.preferencesUiManager.save_defaults(silent=True)
         log.debug("App.quit_application() --> App Defaults saved.")
 
@@ -3249,6 +3275,7 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         QtWidgets.qApp.quit()
+        # QtCore.QCoreApplication.quit()
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command

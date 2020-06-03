@@ -3739,7 +3739,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.disconnect_canvas_event_handlers()
         self.app.ui.grb_edit_toolbar.setDisabled(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         self.app.ui.corner_snap_btn.setVisible(False)
         self.app.ui.snap_magnet.setVisible(False)
 

@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - fixed the preferences not being saved to a file when the Save button is pressed in Edit -> Preferences
 - fixed and updated the Transform Tools in the Editors
 - updated the language translation strings (and Google_Translated some of them)
+- made sure that if the user closes the app with an editor open, before the exit the editor is closed and signals disconnected
 
 2.06.2020
 
