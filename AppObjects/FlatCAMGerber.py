@@ -388,16 +388,25 @@ class GerberObject(FlatCAMObj, Gerber):
         except (TypeError, AttributeError):
             pass
 
+    @staticmethod
+    def buffer_handler(geo):
+        new_geo = geo
+        if isinstance(new_geo, list):
+            new_geo = MultiPolygon(new_geo)
+
+        new_geo = new_geo.buffer(0.0000001)
+        new_geo = new_geo.buffer(-0.0000001)
+
+        return new_geo
+
     def on_generate_buffer(self):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
 
         def buffer_task():
             with self.app.proc_container.new('%s...' % _("Buffering")):
-                if isinstance(self.solid_geometry, list):
-                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+                output = self.app.pool.apply_async(self.buffer_handler, args=([self.solid_geometry]))
+                self.solid_geometry = output.get()
 
-                self.solid_geometry = self.solid_geometry.buffer(0.0000001)
-                self.solid_geometry = self.solid_geometry.buffer(-0.0000001)
                 self.app.inform.emit('[success] %s.' % _("Done"))
                 self.plot_single_object.emit()
 
