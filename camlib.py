@@ -10,7 +10,6 @@
 from PyQt5 import QtWidgets, QtCore
 from io import StringIO
 
-import numpy as np
 from numpy.linalg import solve, norm
 
 import platform

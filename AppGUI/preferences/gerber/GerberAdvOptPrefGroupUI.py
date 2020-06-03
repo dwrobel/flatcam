@@ -76,6 +76,13 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(buffering_label, 9, 0)
         grid0.addWidget(self.buffering_radio, 9, 1)
 
+        # Delayed Buffering
+        self.delayed_buffer_cb = FCCheckBox(label=_('Delayed Buffering'))
+        self.delayed_buffer_cb.setToolTip(
+            _("When checked it will do the buffering in background.")
+        )
+        grid0.addWidget(self.delayed_buffer_cb, 10, 0, 1, 2)
+
         # Simplification
         self.simplify_cb = FCCheckBox(label=_('Simplify'))
         self.simplify_cb.setToolTip(
@@ -83,7 +90,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "loaded with simplification having a set tolerance.\n"
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
                                     )
-        grid0.addWidget(self.simplify_cb, 10, 0, 1, 2)
+        grid0.addWidget(self.simplify_cb, 11, 0, 1, 2)
 
         # Simplification tolerance
         self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
@@ -95,8 +102,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
 
-        grid0.addWidget(self.simplification_tol_label, 11, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 11, 1)
+        grid0.addWidget(self.simplification_tol_label, 12, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 12, 1)
         self.ois_simplif = OptionalInputSection(
             self.simplify_cb,
             [
@@ -105,3 +112,12 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
             logic=True)
 
         self.layout.addStretch()
+
+        # signals
+        self.buffering_radio.activated_custom.connect(self.on_buffering_change)
+
+    def on_buffering_change(self, val):
+        if val == 'no':
+            self.delayed_buffer_cb.setDisabled(False)
+        else:
+            self.delayed_buffer_cb.setDisabled(True)

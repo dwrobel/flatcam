@@ -356,6 +356,10 @@ class AppObject(QtCore.QObject):
                 log.debug("%f seconds adding object and plotting." % (t1 - t0))
                 self.object_plotted.emit(t_obj)
 
+                if t_obj.kind == 'gerber' and self.app.defaults["gerber_delayed_buffering"] != 'full' and \
+                        self.app.defaults["gerber_delayed_buffering"]:
+                    t_obj.do_buffer_signal.emit()
+
         # Send to worker
         # self.worker.add_task(worker_task, [self])
         if plot is True:

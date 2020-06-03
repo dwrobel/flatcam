@@ -37,6 +37,8 @@ class GerberObject(FlatCAMObj, Gerber):
     optionChanged = QtCore.pyqtSignal(str)
     replotApertures = QtCore.pyqtSignal()
 
+    do_buffer_signal = QtCore.pyqtSignal()
+
     ui_type = GerberObjectUI
 
     @staticmethod
@@ -213,6 +215,8 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
+
+        self.do_buffer_signal.connect(self.on_generate_buffer)
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -1490,7 +1494,7 @@ class GerberObject(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
-    def buffer(self, distance, join, factor=None):
+    def buffer(self, distance, join=2, factor=None):
         Gerber.buffer(self, distance=distance, join=join, factor=factor)
         self.replotApertures.emit()
 

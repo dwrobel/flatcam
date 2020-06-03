@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - updated Transform Tool to have a selection of possible references for the transformations that are now selectable in the GUI
 - Transform Tool - compacted the UI
 - minor issue in Paint Tool
+- added a new feature for Gerber parsing: if the NO buffering is chosen in the Gerber Advanced Preferences there is now a checkbox to activate delayed buffering which will do the buffering in background allowing the user to work in between. I hope that this can be useful in case of large Gerber files.
 
 2.06.2020
 

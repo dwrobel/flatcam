@@ -1493,7 +1493,8 @@ class Gerber(Geometry):
                 if self.app.defaults["gerber_buffering"] == 'full':
                     new_poly = new_poly.buffer(0.00000001)
                     new_poly = new_poly.buffer(-0.00000001)
-                log.warning("Union(buffer) done.")
+                    log.warning("Union(buffer) done.")
+
             else:
                 log.debug("Union by union()...")
                 new_poly = cascaded_union(poly_buffer)
@@ -2260,7 +2261,7 @@ class Gerber(Geometry):
         self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
         self.app.proc_container.new_text = ''
 
-    def buffer(self, distance, join, factor=None):
+    def buffer(self, distance, join=2, factor=None):
         """
 
         :param distance:    If 'factor' is True then distance is the factor

@@ -183,6 +183,7 @@ class FlatCAMDefaults:
         "gerber_aperture_buffer_factor": 0.0,
         "gerber_follow": False,
         "gerber_buffering": "full",
+        "gerber_delayed_buffering": True,
         "gerber_simplification": False,
         "gerber_simp_tolerance": 0.0005,
 
