@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-06-03 22:50+0300\n"
-"PO-Revision-Date: 2020-06-03 22:50+0300\n"
+"POT-Creation-Date: 2020-06-03 23:37+0300\n"
+"PO-Revision-Date: 2020-06-03 23:37+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -1993,6 +1993,12 @@ msgid ""
 "- Min Selection -> the point (minx, miny) of the bounding box of the "
 "selection"
 msgstr ""
+"Il punto di riferimento per Ruota, Inclina, Scala, Specchie.\n"
+"Può essere:\n"
+"- Origine -> è il punto 0, 0\n"
+"- Selezione -> il centro del contenitore degli oggetti selezionati\n"
+"- Punto -> un punto custom definito dalle coordinate X,Y\n"
+"- Selezione Min -> il punto (minx, miny) del contenitore della selezione"
 
 #: appEditors/FlatCAMGeoEditor.py:653 appEditors/FlatCAMGrbEditor.py:5346
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
@@ -2022,10 +2028,8 @@ msgid "Point"
 msgstr "Punto"
 
 #: appEditors/FlatCAMGeoEditor.py:653 appEditors/FlatCAMGrbEditor.py:5346
-#, fuzzy
-#| msgid "Find Minimum"
 msgid "Minimum"
-msgstr "Trova minimi"
+msgstr "Minimo"
 
 #: appEditors/FlatCAMGeoEditor.py:659 appEditors/FlatCAMGeoEditor.py:955
 #: appEditors/FlatCAMGrbEditor.py:5352 appEditors/FlatCAMGrbEditor.py:5648
@@ -2042,7 +2046,7 @@ msgstr "Valore"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:62
 #: appTools/ToolTransform.py:78
 msgid "A point of reference in format X,Y."
-msgstr ""
+msgstr "Un punto di riferimento nel formato X,Y."
 
 #: appEditors/FlatCAMGeoEditor.py:668 appEditors/FlatCAMGrbEditor.py:2590
 #: appEditors/FlatCAMGrbEditor.py:5361 appGUI/ObjectUI.py:1494
@@ -2057,10 +2061,8 @@ msgstr "Aggiungi"
 
 #: appEditors/FlatCAMGeoEditor.py:670 appEditors/FlatCAMGrbEditor.py:5363
 #: appTools/ToolTransform.py:87
-#, fuzzy
-#| msgid "Coordinates copied to clipboard."
 msgid "Add point coordinates from clipboard."
-msgstr "Coordinate copiate negli appunti."
+msgstr "Aggiungi coordinate del punto dagli appunti."
 
 #: appEditors/FlatCAMGeoEditor.py:685 appEditors/FlatCAMGrbEditor.py:5378
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:98
@@ -2101,7 +2103,7 @@ msgstr "Collegamento"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:153
 #: appTools/ToolTransform.py:170 appTools/ToolTransform.py:232
 msgid "Link the Y entry to X entry and copy its content."
-msgstr ""
+msgstr "Collega il valore di Y a quello di X e copia il contenuto."
 
 #: appEditors/FlatCAMGeoEditor.py:728 appEditors/FlatCAMGrbEditor.py:5421
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:151
@@ -2362,15 +2364,13 @@ msgstr "Oggetto"
 #: appEditors/FlatCAMGrbEditor.py:5823 appEditors/FlatCAMGrbEditor.py:5968
 #: appEditors/FlatCAMGrbEditor.py:6001 appEditors/FlatCAMGrbEditor.py:6044
 #: appEditors/FlatCAMGrbEditor.py:6085 appEditors/FlatCAMGrbEditor.py:6121
-#, fuzzy
-#| msgid "Cancelled. No shape selected."
 msgid "No shape selected."
-msgstr "Cancellato. Nessuna forma selezionata."
+msgstr "Nessuna forma selezionata."
 
 #: appEditors/FlatCAMGeoEditor.py:1115 appEditors/FlatCAMGrbEditor.py:5808
 #: appTools/ToolTransform.py:585
 msgid "Incorrect format for Point value. Needs format X,Y"
-msgstr ""
+msgstr "Valori del formato punto non corrette. Il formato è X,Y"
 
 #: appEditors/FlatCAMGeoEditor.py:1140 appEditors/FlatCAMGrbEditor.py:5833
 #: appTools/ToolTransform.py:602
@@ -2477,10 +2477,8 @@ msgid "Offset action was not executed"
 msgstr "Offset non applicato"
 
 #: appEditors/FlatCAMGeoEditor.py:1426 appEditors/FlatCAMGrbEditor.py:6157
-#, fuzzy
-#| msgid "Cancelled. No shape selected."
 msgid "No shape selected"
-msgstr "Cancellato. Nessuna forma selezionata."
+msgstr "Nessuna forma selezionata"
 
 #: appEditors/FlatCAMGeoEditor.py:1429 appEditors/FlatCAMGrbEditor.py:6160
 #: appTools/ToolTransform.py:889
@@ -2494,10 +2492,8 @@ msgstr "Bugger applicato"
 
 #: appEditors/FlatCAMGeoEditor.py:1440 appEditors/FlatCAMGrbEditor.py:6186
 #: appTools/ToolTransform.py:879 appTools/ToolTransform.py:915
-#, fuzzy
-#| msgid "action was not executed."
 msgid "Action was not executed, due of"
-msgstr "l'azione non è stata eseguita."
+msgstr "L'azione non è stata eseguita a causa di"
 
 #: appEditors/FlatCAMGeoEditor.py:1444 appEditors/FlatCAMGrbEditor.py:6190
 msgid "Rotate ..."
@@ -3356,8 +3352,6 @@ msgid "Setting up the UI"
 msgstr "Impostazione della UI"
 
 #: appEditors/FlatCAMGrbEditor.py:4195
-#, fuzzy
-#| msgid "Adding geometry finished. Preparing the AppGUI"
 msgid "Adding geometry finished. Preparing the GUI"
 msgstr "Aggiunta della geometria terminata. Preparazione della GUI"
 
@@ -8308,11 +8302,6 @@ msgid "Notebook"
 msgstr "Blocco note"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:195
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the elements found in the Notebook.\n"
-#| "The notebook is the collapsible area in the left side of the AppGUI,\n"
-#| "and include the Project, Selected and Tool tabs."
 msgid ""
 "This sets the font size for the elements found in the Notebook.\n"
 "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -8336,16 +8325,12 @@ msgid "Textbox"
 msgstr "Box testo"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:235
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the Textbox AppGUI\n"
-#| "elements that are used in the application."
 msgid ""
 "This sets the font size for the Textbox GUI\n"
 "elements that are used in the application."
 msgstr ""
-"Imposta la dimensione del carattere per gli elementi delle box testo\n"
-"della GUI utilizzati dall'applicazione."
+"Imposta la dimensione del carattere per gli elementi delle\n"
+"box testo della GUI utilizzati dall'applicazione."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:253
 msgid "HUD"
@@ -9351,14 +9336,12 @@ msgid "None"
 msgstr "Nessuno"
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:80
-#, fuzzy
-#| msgid "Buffering"
 msgid "Delayed Buffering"
-msgstr "Riempimento"
+msgstr "Buffering ritardato"
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:82
 msgid "When checked it will do the buffering in background."
-msgstr ""
+msgstr "Quando selezionato eseguirà il buffering in background."
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:87
 msgid "Simplify"
@@ -11927,13 +11910,17 @@ msgid ""
 "- Point -> a custom point defined by X,Y coordinates\n"
 "- Object -> the center of the bounding box of a specific object"
 msgstr ""
+"Il punto di riferimento per Ruota, Inclina, Scala, Specchia.\n"
+"Può essere:\n"
+"- Origine -> il punto 0, 0\n"
+"- Selezione -> il centro del contenitore degli oggetti selezionati\n"
+"- Punto -> un punto custom definito con coordinate X,Y\n"
+"- Oggetto -> il centro del box che contiene un oggetto specifico"
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:72
 #: appTools/ToolTransform.py:94
-#, fuzzy
-#| msgid "The FlatCAM object to be used as non copper clearing reference."
 msgid "The type of object used as reference."
-msgstr "Oggetto FlatCAM da usare come riferimento rimozione rame."
+msgstr "Il tipo di oggetto usato come riferimento."
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:107
 msgid "Skew"
@@ -16914,6 +16901,8 @@ msgid ""
 "The object used as reference.\n"
 "The used point is the center of it's bounding box."
 msgstr ""
+"Oggetto usato come riferimento.\n"
+"Il punto usato è il centro del suo contenitore."
 
 #: appTools/ToolTransform.py:728
 msgid "No object selected. Please Select an object to rotate!"
@@ -18057,11 +18046,6 @@ msgid "The normal flow when working with the application is the following:"
 msgstr "Il flusso normale lavorando con l'applicazione è il seguente:"
 
 #: app_Main.py:9268
-#, fuzzy
-#| msgid ""
-#| "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-#| "the application using either the toolbars, key shortcuts or even dragging "
-#| "and dropping the files on the AppGUI."
 msgid ""
 "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
 "the application using either the toolbars, key shortcuts or even dragging "
@@ -18072,18 +18056,14 @@ msgstr ""
 "dei file nella GUI."
 
 #: app_Main.py:9271
-#, fuzzy
-#| msgid ""
-#| "You can also load a project by double clicking on the project file, drag "
-#| "and drop of the file into the AppGUI or through the menu (or toolbar) "
-#| "actions offered within the app."
 msgid ""
 "You can also load a project by double clicking on the project file, drag and "
 "drop of the file into the GUI or through the menu (or toolbar) actions "
 "offered within the app."
 msgstr ""
 "Puoi anche caricare un progetto con un doppio click sul file progetto, drag "
-"& drop del file nella GUI dell'applicazione o dal menu (o toolbar)."
+"& drop del file nella GUI dell'applicazione o dall'azione del menu (o "
+"toolbar) offerto dalla app."
 
 #: app_Main.py:9274
 msgid ""

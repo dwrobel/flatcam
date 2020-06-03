@@ -137,7 +137,9 @@ class AppObject(QtCore.QObject):
             return "fail"
 
         t2 = time.time()
-        log.debug("%f seconds executing initialize()." % (t2 - t1))
+        msg = "%f seconds executing initialize()." % (t2 - t1)
+        log.debug(msg)
+        self.app.shell_message(msg)
 
         if return_value == 'fail':
             log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
@@ -353,10 +355,11 @@ class AppObject(QtCore.QObject):
                     t_obj.plot()
 
                 t1 = time.time()  # DEBUG
-                log.debug("%f seconds adding object and plotting." % (t1 - t0))
+                msg = "%f seconds adding object and plotting." % (t1 - t0)
+                log.debug(msg)
                 self.object_plotted.emit(t_obj)
 
-                if t_obj.kind == 'gerber' and self.app.defaults["gerber_delayed_buffering"] != 'full' and \
+                if t_obj.kind == 'gerber' and self.app.defaults["gerber_buffering"] != 'full' and \
                         self.app.defaults["gerber_delayed_buffering"]:
                     t_obj.do_buffer_signal.emit()
 

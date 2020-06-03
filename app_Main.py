@@ -263,6 +263,8 @@ class App(QtCore.QObject):
     # graphic residues behind
     cleanup = pyqtSignal()
 
+    listen_th = QtCore.QThread()
+
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -282,12 +284,11 @@ class App(QtCore.QObject):
         # ############################################################################################################
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
-            self.th = QtCore.QThread()
-            self.th.start(priority=QtCore.QThread.LowestPriority)
+            self.listen_th.start(priority=QtCore.QThread.LowestPriority)
 
             self.new_launch = ArgsThread()
             self.new_launch.open_signal[list].connect(self.on_startup_args)
-            self.new_launch.moveToThread(self.th)
+            self.new_launch.moveToThread(self.listen_th)
             self.new_launch.start.emit()
 
         # ############################################################################################################
@@ -3259,18 +3260,22 @@ class App(QtCore.QObject):
 
         # try to quit the Socket opened by ArgsThread class
         try:
+            self.new_launch.thread_exit = True
+            self.new_launch.listener.close()
             self.new_launch.stop.emit()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
-            self.th.quit()
+            del self.new_launch
+            self.listen_th.terminate()
         except Exception as e:
             log.debug("App.quit_application() --> %s" % str(e))
 
         # terminate workers
         self.workers.__del__()
+        self.clear_pool()
 
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
@@ -3281,7 +3286,8 @@ class App(QtCore.QObject):
         # we use the following command
         minor_v = sys.version_info.minor
         if minor_v < 8:
-            sys.exit(0)
+            # sys.exit(0)
+            pass
         else:
             os._exit(0)  # fix to work with Python 3.8
 
