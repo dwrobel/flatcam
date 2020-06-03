@@ -9240,9 +9240,9 @@ class App(QtCore.QObject):
             s1=_("The normal flow when working with the application is the following:"),
             s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into the application "
                  "using either the toolbars, key shortcuts or even dragging and dropping the "
-                 "files on the appGUI."),
+                 "files on the GUI."),
             s3=_("You can also load a project by double clicking on the project file, "
-                 "drag and drop of the file into the appGUI or through the menu (or toolbar) "
+                 "drag and drop of the file into the GUI or through the menu (or toolbar) "
                  "actions offered within the app."),
             s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
                  "on SELECTED TAB (more simpler is to double click the object name in the Project Tab, "

@@ -4193,7 +4193,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_multiprocessing_finished(self):
         self.app.proc_container.update_view_text(' %s' % _("Setting up the UI"))
-        self.app.inform.emit('[success] %s.' % _("Adding geometry finished. Preparing the appGUI"))
+        self.app.inform.emit('[success] %s.' % _("Adding geometry finished. Preparing the GUI"))
         self.set_ui()
         self.build_ui(first_run=True)
         self.plot_all()
@@ -5414,7 +5414,7 @@ class TransformEditorTool(AppTool):
         self.skew_link_cb = FCCheckBox()
         self.skew_link_cb.setText(_("Link"))
         self.skew_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
 
         grid0.addWidget(self.skew_link_cb, 9, 2)
@@ -5476,7 +5476,7 @@ class TransformEditorTool(AppTool):
         self.scale_link_cb = FCCheckBox()
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
 
         grid0.addWidget(self.scale_link_cb, 15, 2)

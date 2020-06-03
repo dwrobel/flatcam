@@ -111,7 +111,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.skew_link_cb = FCCheckBox()
         self.skew_link_cb.setText(_("Link"))
         self.skew_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
 
         grid0.addWidget(self.skew_link_cb, 8, 1)
@@ -150,7 +150,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         # ## Link Scale factors
         self.scale_link_cb = FCCheckBox(_("Link"))
         self.scale_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
         grid0.addWidget(self.scale_link_cb, 12, 1)
 

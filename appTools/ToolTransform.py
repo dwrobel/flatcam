@@ -167,7 +167,7 @@ class ToolTransform(AppTool):
         self.skew_link_cb = FCCheckBox()
         self.skew_link_cb.setText(_("Link"))
         self.skew_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
 
         grid0.addWidget(self.skew_link_cb, 9, 2)
@@ -229,7 +229,7 @@ class ToolTransform(AppTool):
         self.scale_link_cb = FCCheckBox()
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
-            _("Link the Y entry to X entry and copy it's content.")
+            _("Link the Y entry to X entry and copy its content.")
         )
 
         grid0.addWidget(self.scale_link_cb, 15, 2)

@@ -193,7 +193,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('Notebook'))
         self.notebook_font_size_label.setToolTip(
             _("This sets the font size for the elements found in the Notebook.\n"
-              "The notebook is the collapsible area in the left side of the appGUI,\n"
+              "The notebook is the collapsible area in the left side of the GUI,\n"
               "and include the Project, Selected and Tool tabs.")
         )
 
@@ -232,7 +232,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         # TextBox Font Size
         self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox'))
         self.textbox_font_size_label.setToolTip(
-            _("This sets the font size for the Textbox appGUI\n"
+            _("This sets the font size for the Textbox GUI\n"
               "elements that are used in the application.")
         )
 

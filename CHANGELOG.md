@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - fixed the issue with factory_defaults being saved every time the app start
 - fixed the preferences not being saved to a file when the Save button is pressed in Edit -> Preferences
 - fixed and updated the Transform Tools in the Editors
+- updated the language translation strings (and Google_Translated some of them)
 
 2.06.2020
 
