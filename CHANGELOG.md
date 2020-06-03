@@ -7,6 +7,21 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.06.2020
+
+- updated Transform Tool to have a selection of possible references for the transformations that are now selectable in the GUI
+- Transform Tool - compacted the UI
+- minor issue in Paint Tool
+- added a new feature for Gerber parsing: if the NO buffering is chosen in the Gerber Advanced Preferences there is now a checkbox to activate delayed buffering which will do the buffering in background allowing the user to work in between. I hope that this can be useful in case of large Gerber files.
+- made the delayed Gerber buffering to use multiprocessing but I see not much performance increase
+- made sure that the status bar label for preferences is updated also when the Preferences Tab is opened from the Edit -> Preferences
+- remade file names in the app
+- fixed the issue with factory_defaults being saved every time the app start
+- fixed the preferences not being saved to a file when the Save button is pressed in Edit -> Preferences
+- fixed and updated the Transform Tools in the Editors
+- updated the language translation strings (and Google_Translated some of them)
+- made sure that if the user closes the app with an editor open, before the exit the editor is closed and signals disconnected
+
 2.06.2020
 
 - Tcl Shell - added a button to delete the content of the active line

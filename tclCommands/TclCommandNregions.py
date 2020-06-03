@@ -5,7 +5,7 @@ from shapely.ops import cascaded_union
 import collections
 
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

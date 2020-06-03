@@ -3,8 +3,8 @@ import os
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
-from App_Main import App
-from AppGUI import VisPyPatches
+from app_Main import App
+from appGUI import VisPyPatches
 
 from multiprocessing import freeze_support
 # import copyreg

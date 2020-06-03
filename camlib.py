@@ -10,7 +10,6 @@
 from PyQt5 import QtWidgets, QtCore
 from io import StringIO
 
-import numpy as np
 from numpy.linalg import solve, norm
 
 import platform
@@ -51,8 +50,8 @@ from Common import GracefulException as grace
 # from scipy.spatial import KDTree, Delaunay
 # from scipy.spatial import Delaunay
 
-from AppParsers.ParseSVG import *
-from AppParsers.ParseDXF import *
+from appParsers.ParseSVG import *
+from appParsers.ParseDXF import *
 
 if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import pywrapcp
@@ -61,7 +60,7 @@ if platform.architecture()[0] == '64bit':
 import logging
 
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -501,7 +500,7 @@ class Geometry(object):
         if self.app.is_legacy is False:
             self.temp_shapes = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
-            from AppGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
     def plot_temp_shapes(self, element, color='red'):
@@ -3087,7 +3086,7 @@ class CNCjob(Geometry):
                             )
 
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
+                            # APPLY Offset only when using the appGUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
@@ -3340,7 +3339,7 @@ class CNCjob(Geometry):
                             )
 
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
+                            # APPLY Offset only when using the appGUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
@@ -3538,7 +3537,7 @@ class CNCjob(Geometry):
                         )
 
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        # APPLY Offset only when using the AppGUI, for TclCommand this will create an error
+                        # APPLY Offset only when using the appGUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         try:
