@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - updated the language translation strings (and Google_Translated some of them)
 - made sure that if the user closes the app with an editor open, before the exit the editor is closed and signals disconnected
 - updated the Italian translation - contribution by Golfetto Massimiliano
+- made the timing for the object creation to be displayed in the shell
 
 2.06.2020
 
