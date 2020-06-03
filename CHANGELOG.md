@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated Transform Tool to have a selection of possible references for the transformations that are now selectable in the GUI
 - Transform Tool - compacted the UI
+- minor issue in Paint Tool
 
 2.06.2020
 

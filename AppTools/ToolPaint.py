@@ -85,11 +85,11 @@ class ToolPaint(AppTool, Gerber):
         )
         self.type_obj_combo_label.setMinimumWidth(60)
 
-        self.type_obj_combo = RadioSet([{'label': "Geometry", 'value': 'geometry'},
+        self.type_obj_radio = RadioSet([{'label': "Geometry", 'value': 'geometry'},
                                         {'label': "Gerber", 'value': 'gerber'}])
 
         grid0.addWidget(self.type_obj_combo_label, 1, 0)
-        grid0.addWidget(self.type_obj_combo, 1, 1)
+        grid0.addWidget(self.type_obj_radio, 1, 1)
 
         # ################################################
         # ##### The object to be painted #################
@@ -657,7 +657,7 @@ class ToolPaint(AppTool, Gerber):
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
         self.reference_type_combo.currentIndexChanged.connect(self.on_reference_combo_changed)
-        self.type_obj_combo.activated_custom.connect(self.on_type_obj_changed)
+        self.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
 
         self.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
@@ -690,7 +690,7 @@ class ToolPaint(AppTool, Gerber):
         self.obj_combo.obj_type = {"gerber": "Gerber", "geometry": "Geometry"}[val]
 
         idx = self.paintmethod_combo.findText(_("Laser_lines"))
-        if self.type_obj_combo.get_value().lower() == 'gerber':
+        if self.type_obj_radio.get_value().lower() == 'gerber':
             self.paintmethod_combo.model().item(idx).setEnabled(True)
         else:
             self.paintmethod_combo.model().item(idx).setEnabled(False)
@@ -1047,7 +1047,7 @@ class ToolPaint(AppTool, Gerber):
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
         # # make the default object type, "Geometry"
-        # self.type_obj_combo.set_value("geometry")
+        # self.type_obj_radio.set_value("geometry")
 
         # use the current selected object and make it visible in the Paint object combobox
         sel_list = self.app.collection.get_selected()
@@ -1064,7 +1064,7 @@ class ToolPaint(AppTool, Gerber):
             self.on_type_obj_changed(val=kind)
             self.on_reference_combo_changed()
 
-            self.object_combo.set_value(active.options['name'])
+            self.obj_combo.set_value(active.options['name'])
         else:
             kind = 'geometry'
             self.type_obj_radio.set_value('geometry')
