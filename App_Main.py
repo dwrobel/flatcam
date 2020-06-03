@@ -5148,14 +5148,6 @@ class App(QtCore.QObject):
             self.ui.pref_status_label.setStyleSheet("")
         else:
             self.on_preferences()
-            self.ui.pref_status_label.setStyleSheet("""
-                                                    QLabel
-                                                    {
-                                                        color: black;
-                                                        background-color: lightseagreen;
-                                                    }
-                                                    """
-                                                    )
 
     def on_preferences(self):
         """
@@ -5174,6 +5166,15 @@ class App(QtCore.QObject):
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
         # self.ui.show()
+
+        self.ui.pref_status_label.setStyleSheet("""
+                                                            QLabel
+                                                            {
+                                                                color: black;
+                                                                background-color: lightseagreen;
+                                                            }
+                                                            """
+                                                )
 
         # detect changes in the preferences
         for idx in range(self.ui.pref_tab_area.count()):
