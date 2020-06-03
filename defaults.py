@@ -7,11 +7,11 @@ from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
-from AppParsers.ParseExcellon import Excellon
-from AppParsers.ParseGerber import Gerber
+from appParsers.ParseExcellon import Excellon
+from appParsers.ParseGerber import Gerber
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -707,6 +707,13 @@ class FlatCAMDefaults:
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
         # Delete any existing factory defaults file
         if os.path.isfile(file_path):
+            # check if it has content other than an empty dict, because if it does we don't need it to be updated
+            # each time the app starts
+            with open(file_path, "r") as file:
+                f_defaults = simplejson.loads(file.read())
+                if f_defaults:
+                    return
+
             os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
             os.remove(file_path)
 

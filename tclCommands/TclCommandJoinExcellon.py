@@ -1,5 +1,5 @@
 from tclCommands.TclCommand import TclCommand
-from AppObjects.FlatCAMExcellon import ExcellonObject
+from appObjects.FlatCAMExcellon import ExcellonObject
 
 import collections
 

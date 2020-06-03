@@ -15,15 +15,15 @@ from PyQt5 import QtCore
 from shapely.geometry import Polygon, Point, LineString
 from shapely.ops import unary_union
 
-from AppGUI.VisPyVisuals import ShapeCollection
-from AppTool import AppTool
+from appGUI.VisPyVisuals import ShapeCollection
+from appTool import AppTool
 
 from copy import deepcopy
 
 import numpy as np
 
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -156,7 +156,7 @@ class ExclusionAreas(QtCore.QObject):
             except AttributeError:
                 self.exclusion_shapes = None
         else:
-            from AppGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.exclusion_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="exclusion")
 
         # Event signals disconnect id holders

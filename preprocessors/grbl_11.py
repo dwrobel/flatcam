@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from appPreProcessor import *
 
 
 class grbl_11(PreProc):

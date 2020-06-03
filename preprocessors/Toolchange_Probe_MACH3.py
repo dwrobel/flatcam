@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from AppPreProcessor import *
+from appPreProcessor import *
 
 
 class Toolchange_Probe_MACH3(PreProc):
