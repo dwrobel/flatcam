@@ -2896,9 +2896,9 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"), 1, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 2, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Michel Maciejewski"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<micmac@gmail.com>"), 2, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
