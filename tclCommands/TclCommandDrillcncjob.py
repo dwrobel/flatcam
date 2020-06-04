@@ -4,7 +4,7 @@ import collections
 import math
 
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')

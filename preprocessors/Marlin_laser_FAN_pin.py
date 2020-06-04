@@ -6,7 +6,7 @@
 # License:      MIT Licence                                #
 # ##########################################################
 
-from AppPreProcessor import *
+from appPreProcessor import *
 
 
 class Marlin_laser_FAN_pin(PreProc):

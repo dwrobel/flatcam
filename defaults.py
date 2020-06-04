@@ -7,11 +7,11 @@ from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
-from AppParsers.ParseExcellon import Excellon
-from AppParsers.ParseGerber import Gerber
+from appParsers.ParseExcellon import Excellon
+from appParsers.ParseGerber import Gerber
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -183,6 +183,7 @@ class FlatCAMDefaults:
         "gerber_aperture_buffer_factor": 0.0,
         "gerber_follow": False,
         "gerber_buffering": "full",
+        "gerber_delayed_buffering": True,
         "gerber_simplification": False,
         "gerber_simp_tolerance": 0.0005,
 
@@ -499,17 +500,22 @@ class FlatCAMDefaults:
         "tools_calc_electro_growth": 10.0,
 
         # Transform Tool
+        "tools_transform_reference": _("Selection"),
+        "tools_transform_ref_object": _("Gerber"),
+        "tools_transform_ref_point": "0, 0",
+
         "tools_transform_rotate": 90,
         "tools_transform_skew_x": 0.0,
         "tools_transform_skew_y": 0.0,
+        "tools_transform_skew_link": True,
+
         "tools_transform_scale_x": 1.0,
         "tools_transform_scale_y": 1.0,
         "tools_transform_scale_link": True,
-        "tools_transform_scale_reference": True,
+
         "tools_transform_offset_x": 0.0,
         "tools_transform_offset_y": 0.0,
-        "tools_transform_mirror_reference": False,
-        "tools_transform_mirror_point": "0.0, 0.0",
+
         "tools_transform_buffer_dis": 0.0,
         "tools_transform_buffer_factor": 100.0,
         "tools_transform_buffer_corner": True,
@@ -701,6 +707,13 @@ class FlatCAMDefaults:
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
         # Delete any existing factory defaults file
         if os.path.isfile(file_path):
+            # check if it has content other than an empty dict, because if it does we don't need it to be updated
+            # each time the app starts
+            with open(file_path, "r") as file:
+                f_defaults = simplejson.loads(file.read())
+                if f_defaults:
+                    return
+
             os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
             os.remove(file_path)
 

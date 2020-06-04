@@ -1,5 +1,5 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
-from AppGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog
+from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCFileSaveDialog
 
 import sys
 import webbrowser
@@ -7,7 +7,7 @@ import webbrowser
 from copy import deepcopy
 from datetime import datetime
 import gettext
-import AppTranslation as fcTranslate
+import appTranslation as fcTranslate
 import builtins
 
 fcTranslate.apply_language('strings')
