@@ -2850,9 +2850,38 @@ class ToolIsolation(AppTool, Gerber):
                             intersect_flag = True
                             break
 
-                # if we had an intersection do nothing, else add the geo to the good pass isolations
+                # if we had an intersection do nothing, else add the geo to the good pass isolation's
                 if intersect_flag is False:
                     temp_geo = geo.buffer(iso_offset)
+                    # this test is done only for the first pass because this is where is relevant
+                    # test if in the first pass, the geo that is isolated has interiors and if it has then test if the
+                    # resulting isolated geometry (buffered) number of subgeo is the same as the exterior + interiors
+                    # if not it means that the geo interiors most likely could not be isolated with this tool so we
+                    # abandon the whole isolation for this geo and add this geo to the not_isolated_geo
+                    if nr_pass == 0:
+                        if geo.interiors:
+                            len_interiors = len(geo.interiors)
+                            if len_interiors > 1:
+                                total_poly_len = 1 + len_interiors  # one exterior + len_interiors of interiors
+
+                                if isinstance(temp_geo, Polygon):
+                                    # calculate the number of subgeos in the buffered geo
+                                    temp_geo_len = len([1] + list(temp_geo.interiors))    # one exterior + interiors
+                                    if total_poly_len != temp_geo_len:
+                                        # some interiors could not be isolated
+                                        break
+                                else:
+                                    try:
+                                        temp_geo_len = len(temp_geo)
+                                        if total_poly_len != temp_geo_len:
+                                            # some interiors could not be isolated
+                                            break
+                                    except TypeError:
+                                        # this means that the buffered geo (temp_geo) is not iterable
+                                        # (one geo element only) therefore failure:
+                                        # we have more interiors but the resulting geo is only one
+                                        break
+
                     good_pass_iso.append(temp_geo)
                     if prog_plot == 'progressive':
                         prog_plot_handler(temp_geo)
