@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-06-04 09:15-0300\n"
-"PO-Revision-Date: 2020-06-04 09:52-0300\n"
+"PO-Revision-Date: 2020-06-04 10:26-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -6390,20 +6390,20 @@ msgid ""
 "- Over -> when encountering the area, the tool will go to a set height\n"
 "- Around -> will avoid the exclusion area by going around the area"
 msgstr ""
+"A estratégia a seguir ao encontrar uma área de exclusão.\n"
+"Pode ser:\n"
+"- Acima -> ao encontrar a área, a ferramenta irá para uma altura definida\n"
+"- Ao redor -> evitará a área de exclusão percorrendo a área"
 
 #: appGUI/ObjectUI.py:1127 appGUI/ObjectUI.py:1982
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:237
-#, fuzzy
-#| msgid "Overlap"
 msgid "Over"
-msgstr "Sobreposição"
+msgstr "Acima"
 
 #: appGUI/ObjectUI.py:1128 appGUI/ObjectUI.py:1983
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:238
-#, fuzzy
-#| msgid "Round"
 msgid "Around"
-msgstr "Redondo"
+msgstr "Ao Redor"
 
 #: appGUI/ObjectUI.py:1135 appGUI/ObjectUI.py:1990
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:245
@@ -6411,16 +6411,16 @@ msgid ""
 "The height Z to which the tool will rise in order to avoid\n"
 "an interdiction area."
 msgstr ""
+"A altura Z para a qual a ferramenta subirá para evitar\n"
+"uma área de exclusão."
 
 #: appGUI/ObjectUI.py:1145 appGUI/ObjectUI.py:2000
-#, fuzzy
-#| msgid "Add Track"
 msgid "Add area:"
-msgstr "Adicionar Trilha"
+msgstr "Adicionar área:"
 
 #: appGUI/ObjectUI.py:1146 appGUI/ObjectUI.py:2001
 msgid "Add an Exclusion Area."
-msgstr ""
+msgstr "Adiciona uma área de exclusão."
 
 #: appGUI/ObjectUI.py:1152 appGUI/ObjectUI.py:2007
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:222
@@ -6441,22 +6441,16 @@ msgid "Delete All"
 msgstr "Excluir Tudo"
 
 #: appGUI/ObjectUI.py:1163 appGUI/ObjectUI.py:2018
-#, fuzzy
-#| msgid "Delete all extensions from the list."
 msgid "Delete all exclusion areas."
-msgstr "Excluir todas as extensões da lista."
+msgstr "Excluir todas as áreas de exclusão."
 
 #: appGUI/ObjectUI.py:1166 appGUI/ObjectUI.py:2021
-#, fuzzy
-#| msgid "Delete Object"
 msgid "Delete Selected"
-msgstr "Excluir Objeto"
+msgstr "Excluir Selecionado"
 
 #: appGUI/ObjectUI.py:1167 appGUI/ObjectUI.py:2022
-#, fuzzy
-#| msgid "Delete all extensions from the list."
 msgid "Delete all exclusion areas that are selected in the table."
-msgstr "Excluir todas as extensões da lista."
+msgstr "Excluir todas as áreas de exclusão selecionadas na tabela."
 
 #: appGUI/ObjectUI.py:1191 appGUI/ObjectUI.py:2038
 msgid ""
@@ -7255,40 +7249,28 @@ msgid "Set the tab size. In pixels. Default value is 80 pixels."
 msgstr "Define o tamanho da aba, em pixels. Valor padrão: 80 pixels."
 
 #: appGUI/PlotCanvas.py:236 appGUI/PlotCanvasLegacy.py:345
-#, fuzzy
-#| msgid "All plots enabled."
 msgid "Axis enabled."
-msgstr "Todos os gráficos habilitados."
+msgstr "Eixo ativado."
 
 #: appGUI/PlotCanvas.py:242 appGUI/PlotCanvasLegacy.py:352
-#, fuzzy
-#| msgid "All plots disabled."
 msgid "Axis disabled."
-msgstr "Todos os gráficos desabilitados."
+msgstr "Eixo desativado."
 
 #: appGUI/PlotCanvas.py:260 appGUI/PlotCanvasLegacy.py:372
-#, fuzzy
-#| msgid "Enabled"
 msgid "HUD enabled."
-msgstr "Ativado"
+msgstr "HUD ativado."
 
 #: appGUI/PlotCanvas.py:268 appGUI/PlotCanvasLegacy.py:378
-#, fuzzy
-#| msgid "Disabled"
 msgid "HUD disabled."
-msgstr "Desativado"
+msgstr "HUD desativado."
 
 #: appGUI/PlotCanvas.py:276 appGUI/PlotCanvasLegacy.py:451
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Grid enabled."
-msgstr "Configurações da área de trabalho"
+msgstr "Grade ativada."
 
 #: appGUI/PlotCanvas.py:280 appGUI/PlotCanvasLegacy.py:459
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Grid disabled."
-msgstr "Configurações da área de trabalho"
+msgstr "Grade desativada."
 
 #: appGUI/PlotCanvasLegacy.py:1523
 msgid ""
@@ -7303,16 +7285,12 @@ msgid "Preferences applied."
 msgstr "Preferências aplicadas."
 
 #: appGUI/preferences/PreferencesUIManager.py:879
-#, fuzzy
-#| msgid "Are you sure you want to delete the GUI Settings? \n"
 msgid "Are you sure you want to continue?"
-msgstr "Você tem certeza de que deseja excluir as configurações da GUI? \n"
+msgstr "Você tem certeza de que deseja continuar?"
 
 #: appGUI/preferences/PreferencesUIManager.py:880
-#, fuzzy
-#| msgid "Application started ..."
 msgid "Application will restart"
-msgstr "Aplicativo iniciado ..."
+msgstr "Aplicativo reiniciará"
 
 #: appGUI/preferences/PreferencesUIManager.py:978
 msgid "Preferences closed without saving."
@@ -7547,10 +7525,8 @@ msgstr "Define a transparência de preenchimento para objetos plotados."
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:267
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:90
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:149
-#, fuzzy
-#| msgid "CNCJob Object Color"
 msgid "Object Color"
-msgstr "Cor do objeto CNCJob"
+msgstr "Cor do Objeto"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:212
 msgid "Set the color for plotted objects."
@@ -8331,13 +8307,11 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:253
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:255
-#, fuzzy
-#| msgid "This sets the font size for canvas axis."
 msgid "This sets the font size for the Heads Up Display."
-msgstr "Define o tamanho da fonte para o eixo da tela."
+msgstr "Define o tamanho da fonte para o HUD (visor de alerta)."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:280
 msgid "Mouse Settings"
@@ -8989,12 +8963,6 @@ msgid "Display Selection Shape"
 msgstr "Exibir forma de seleção"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:138
-#, fuzzy
-#| msgid ""
-#| "Enable the display of a selection shape for FlatCAM objects.\n"
-#| "It is displayed whenever the mouse selects an object\n"
-#| "either by clicking or dragging mouse from left to right or\n"
-#| "right to left."
 msgid ""
 "Enable the display of a selection shape for the application objects.\n"
 "It is displayed whenever the mouse selects an object\n"
@@ -9003,8 +8971,8 @@ msgid ""
 msgstr ""
 "Ativa a exibição de seleção de forma para objetos FlatCAM.\n"
 "É exibido sempre que o mouse seleciona um objeto\n"
-"seja clicando ou arrastando o mouse da esquerda para a direita ou da direita "
-"para a esquerda."
+"seja clicando ou arrastando o mouse da esquerda para a direita\n"
+"ou da direita para a esquerda."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:151
 msgid "Left-Right Selection Color"
@@ -9172,29 +9140,22 @@ msgstr ""
 "Valor 0 significa que não há segmentação no eixo Y."
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:200
-#, fuzzy
-#| msgid "Area Selection"
 msgid "Area Exclusion"
-msgstr "Seleção de Área"
+msgstr "Área de Exclusão"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:202
-#, fuzzy
-#| msgid ""
-#| "A list of Excellon advanced parameters.\n"
-#| "Those parameters are available only for\n"
-#| "Advanced App. Level."
 msgid ""
 "Area exclusion parameters.\n"
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
-"Uma lista de parâmetros avançados do Excellon.\n"
+"Parâmetros para Área de Exclusão.\n"
 "Esses parâmetros estão disponíveis somente para\n"
 "o nível avançado do aplicativo."
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:209
 msgid "Exclusion areas"
-msgstr ""
+msgstr "Áreas de exclusão"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:220
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:293
@@ -9365,14 +9326,12 @@ msgid "None"
 msgstr "Nenhum"
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:80
-#, fuzzy
-#| msgid "Buffering"
 msgid "Delayed Buffering"
-msgstr "Criando buffer"
+msgstr "Buffer Atrasado"
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:82
 msgid "When checked it will do the buffering in background."
-msgstr ""
+msgstr "Quando marcado, ele fará o buffer em segundo plano."
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:87
 msgid "Simplify"
@@ -10855,20 +10814,18 @@ msgid ""
 msgstr "Espessura da camada de cobre, em microns."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:27
-#, fuzzy
-#| msgid "Gerber Options"
 msgid "Corner Markers Options"
-msgstr "Opções Gerber"
+msgstr "Opções de marcadores de canto"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
 #: appTools/ToolCorners.py:124
 msgid "The thickness of the line that makes the corner marker."
-msgstr ""
+msgstr "A espessura da linha que forma o marcador de canto."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
 #: appTools/ToolCorners.py:138
 msgid "The length of the line that makes the corner marker."
-msgstr ""
+msgstr "O comprimento da linha que forma o marcador de canto."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:28
 msgid "Cutout Tool Options"
@@ -11213,10 +11170,8 @@ msgid "A selection of standard ISO 216 page sizes."
 msgstr "Uma seleção de tamanhos de página padrão ISO 216."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:26
-#, fuzzy
-#| msgid "Calibration Tool Options"
 msgid "Isolation Tool Options"
-msgstr "Opções da Ferramenta de Calibração"
+msgstr "Opções da Ferramenta de Isolação"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:48
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:49
@@ -11340,10 +11295,8 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:245
 #: appTools/ToolIsolation.py:432 appTools/ToolNCC.py:512
 #: appTools/ToolPaint.py:441
-#, fuzzy
-#| msgid "Restore"
 msgid "Rest"
-msgstr "Restaurar"
+msgstr "Descansar"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:246
 #: appTools/ToolIsolation.py:435
@@ -11400,11 +11353,6 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
 #: appTools/ToolIsolation.py:496
-#, fuzzy
-#| msgid ""
-#| "Isolation scope. Choose what to isolate:\n"
-#| "- 'All' -> Isolate all the polygons in the object\n"
-#| "- 'Selection' -> Isolate a selection of polygons."
 msgid ""
 "Isolation scope. Choose what to isolate:\n"
 "- 'All' -> Isolate all the polygons in the object\n"
@@ -11414,7 +11362,9 @@ msgid ""
 msgstr ""
 "Escopo de isolação. Escolha o que isolar:\n"
 "- 'Tudo' -> Isola todos os polígonos no objeto\n"
-"- 'Seleção' -> Isola uma seleção de polígonos."
+"- 'Seleção de área' -> Isola polígonos dentro de uma área selecionada.\n"
+"- 'Seleção de polígono' -> Isola uma seleção de polígonos.\n"
+"- 'Objeto de referência' - processará a área especificada por outro objeto."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
@@ -11451,16 +11401,12 @@ msgstr "Plotando"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:314
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:307
-#, fuzzy
-#| msgid ""
-#| "- 'Normal' -  normal plotting, done at the end of the NCC job\n"
-#| "- 'Progressive' - after each shape is generated it will be plotted."
 msgid ""
 "- 'Normal' -  normal plotting, done at the end of the job\n"
 "- 'Progressive' - each shape is plotted after it is generated"
 msgstr ""
-"- 'Normal' - plotagem normal, realizada no final do trabalho de NCC\n"
-"- 'Progressivo' - após cada forma ser gerada, ela será plotada."
+"- 'Normal' - plotagem normal, realizada no final do trabalho\n"
+"- 'Progressivo' - após cada forma ser gerada, ela será plotada"
 
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:27
 msgid "NCC Tool Options"
@@ -11951,13 +11897,17 @@ msgid ""
 "- Point -> a custom point defined by X,Y coordinates\n"
 "- Object -> the center of the bounding box of a specific object"
 msgstr ""
+"O ponto de referência para Girar, Inclinar, Escala, Espelhar.\n"
+"Pode ser:\n"
+"- Origem -> é o ponto 0, 0\n"
+"- Seleção -> o centro da caixa delimitadora dos objetos selecionados\n"
+"- Ponto -> um ponto personalizado definido pelas coordenadas X, Y\n"
+"- Objeto -> o centro da caixa delimitadora de um objeto específico"
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:72
 #: appTools/ToolTransform.py:94
-#, fuzzy
-#| msgid "The FlatCAM object to be used as non copper clearing reference."
 msgid "The type of object used as reference."
-msgstr "O objeto FlatCAM a ser usado como referência para retirada de cobre."
+msgstr "O tipo de objeto usado como referência."
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:107
 msgid "Skew"
@@ -12179,16 +12129,12 @@ msgid "Plotting..."
 msgstr "Plotando..."
 
 #: appObjects/FlatCAMCNCJob.py:517 appTools/ToolSolderPaste.py:1511
-#, fuzzy
-#| msgid "Export PNG cancelled."
 msgid "Export cancelled ..."
-msgstr "Exportar PNG cancelado."
+msgstr "Exportar cancelado ..."
 
 #: appObjects/FlatCAMCNCJob.py:538
-#, fuzzy
-#| msgid "PDF file saved to"
 msgid "File saved to"
-msgstr "Arquivo PDF salvo em"
+msgstr "Arquivo salvo em"
 
 #: appObjects/FlatCAMCNCJob.py:548 appObjects/FlatCAMScript.py:134
 #: app_Main.py:7336
@@ -12300,10 +12246,8 @@ msgid "Generating CNC Code"
 msgstr "Gerando Código CNC"
 
 #: appObjects/FlatCAMExcellon.py:1663 appObjects/FlatCAMGeometry.py:2553
-#, fuzzy
-#| msgid "Delete failed. Select a tool to delete."
 msgid "Delete failed. There are no exclusion areas to delete."
-msgstr "Exclusão falhou. Selecione uma ferramenta para excluir."
+msgstr "Exclusão falhou. Não há áreas para excluir."
 
 #: appObjects/FlatCAMExcellon.py:1680 appObjects/FlatCAMGeometry.py:2570
 #, fuzzy
@@ -13482,56 +13426,44 @@ msgid "Copper Thieving Tool exit."
 msgstr "Sair da Ferramenta de Adição de Cobre."
 
 #: appTools/ToolCorners.py:57
-#, fuzzy
-#| msgid "Gerber Object to which will be added a copper thieving."
 msgid "The Gerber object to which will be added corner markers."
-msgstr "Objeto Gerber ao qual será adicionada uma adição de cobre."
+msgstr "Objeto Gerber ao qual serão adicionados marcadores de canto."
 
 #: appTools/ToolCorners.py:73
-#, fuzzy
-#| msgid "Location"
 msgid "Locations"
-msgstr "Localização"
+msgstr "Locais"
 
 #: appTools/ToolCorners.py:75
 msgid "Locations where to place corner markers."
-msgstr ""
+msgstr "Locais onde colocar marcadores de canto."
 
 #: appTools/ToolCorners.py:92 appTools/ToolFiducials.py:95
 msgid "Top Right"
 msgstr "Direita Superior"
 
 #: appTools/ToolCorners.py:101
-#, fuzzy
-#| msgid "Toggle Panel"
 msgid "Toggle ALL"
-msgstr "Alternar Painel"
+msgstr "Alternar TUDO"
 
 #: appTools/ToolCorners.py:167
-#, fuzzy
-#| msgid "Add Track"
 msgid "Add Marker"
-msgstr "Adicionar Trilha"
+msgstr "Adicionar Marcador"
 
 #: appTools/ToolCorners.py:169
 msgid "Will add corner markers to the selected Gerber file."
-msgstr ""
+msgstr "Adicionará marcadores de canto ao arquivo Gerber selecionado."
 
 #: appTools/ToolCorners.py:235
-#, fuzzy
-#| msgid "QRCode Tool"
 msgid "Corners Tool"
-msgstr "Ferramenta de QRCode"
+msgstr "Ferramenta de Canto"
 
 #: appTools/ToolCorners.py:305
 msgid "Please select at least a location"
-msgstr ""
+msgstr "Selecione pelo menos um local"
 
 #: appTools/ToolCorners.py:440
-#, fuzzy
-#| msgid "Copper Thieving Tool exit."
 msgid "Corners Tool exit."
-msgstr "Sair da Ferramenta de Adição de Cobre."
+msgstr "Sair da Ferramenta de Canto."
 
 #: appTools/ToolCutOut.py:41
 msgid "Cutout PCB"
@@ -14194,10 +14126,8 @@ msgid "Pads overlapped. Aborting."
 msgstr "Pads sobrepostos. Abortando."
 
 #: appTools/ToolDistance.py:489
-#, fuzzy
-#| msgid "Distance Tool finished."
 msgid "Distance Tool cancelled."
-msgstr "Ferramenta de distância concluída."
+msgstr "Ferramenta de distância cancelada."
 
 #: appTools/ToolDistance.py:494
 msgid "MEASURING: Click on the Destination point ..."
@@ -14280,17 +14210,15 @@ msgstr "Objeto Gerber que será invertido."
 
 #: appTools/ToolEtchCompensation.py:86
 msgid "Utilities"
-msgstr ""
+msgstr "Utilitários"
 
 #: appTools/ToolEtchCompensation.py:87
-#, fuzzy
-#| msgid "Conversion"
 msgid "Conversion utilities"
-msgstr "Conversão"
+msgstr "Utilitários de conversão"
 
 #: appTools/ToolEtchCompensation.py:92
 msgid "Oz to Microns"
-msgstr ""
+msgstr "Oz para Mícrons"
 
 #: appTools/ToolEtchCompensation.py:94
 msgid ""
@@ -14298,22 +14226,21 @@ msgid ""
 "Can use formulas with operators: /, *, +, -, %, .\n"
 "The real numbers use the dot decimals separator."
 msgstr ""
+"Converterá a espessura de oz para mícrons [um].\n"
+"Pode usar fórmulas com operadores: /, *, +, -,%,.\n"
+"Os números reais usam ponto como separador de casas decimais."
 
 #: appTools/ToolEtchCompensation.py:103
-#, fuzzy
-#| msgid "X value"
 msgid "Oz value"
-msgstr "Valor X"
+msgstr "Valor Oz"
 
 #: appTools/ToolEtchCompensation.py:105 appTools/ToolEtchCompensation.py:126
-#, fuzzy
-#| msgid "Min value"
 msgid "Microns value"
-msgstr "Valor Min"
+msgstr "Valor Mícrons"
 
 #: appTools/ToolEtchCompensation.py:113
 msgid "Mils to Microns"
-msgstr ""
+msgstr "Mils para Mícrons"
 
 #: appTools/ToolEtchCompensation.py:115
 msgid ""
@@ -14321,38 +14248,31 @@ msgid ""
 "Can use formulas with operators: /, *, +, -, %, .\n"
 "The real numbers use the dot decimals separator."
 msgstr ""
+"Converterá de mils para mícrons [um].\n"
+"Pode usar fórmulas com operadores: /, *, +, -,%,.\n"
+"Os números reais usam ponto como separador de casas decimais."
 
 #: appTools/ToolEtchCompensation.py:124
-#, fuzzy
-#| msgid "Min value"
 msgid "Mils value"
-msgstr "Valor Min"
+msgstr "Valor Mils"
 
 #: appTools/ToolEtchCompensation.py:139 appTools/ToolInvertGerber.py:86
 msgid "Parameters for this tool"
 msgstr "Parâmetros usados para esta ferramenta"
 
 #: appTools/ToolEtchCompensation.py:144
-#, fuzzy
-#| msgid "Thickness"
 msgid "Copper Thickness"
-msgstr "Espessura"
+msgstr "Espessura de Cobre"
 
 #: appTools/ToolEtchCompensation.py:146
-#, fuzzy
-#| msgid ""
-#| "How thick the copper growth is intended to be.\n"
-#| "In microns."
 msgid ""
 "The thickness of the copper foil.\n"
 "In microns [um]."
-msgstr "Espessura da camada de cobre, em microns."
+msgstr "Espessura da camada de cobre, em mícrons."
 
 #: appTools/ToolEtchCompensation.py:157
-#, fuzzy
-#| msgid "Location"
 msgid "Ratio"
-msgstr "Localização"
+msgstr "Razão"
 
 #: appTools/ToolEtchCompensation.py:159
 msgid ""
@@ -14361,18 +14281,18 @@ msgid ""
 "- custom -> the user will enter a custom value\n"
 "- preselection -> value which depends on a selection of etchants"
 msgstr ""
+"A proporção de ataque lateral versus ataque profundo.\n"
+"Pode ser:\n"
+"- personalizado -> o usuário digitará um valor personalizado\n"
+"- pré-seleção -> valor que depende de uma seleção de etchants"
 
 #: appTools/ToolEtchCompensation.py:165
-#, fuzzy
-#| msgid "Factor"
 msgid "Etch Factor"
-msgstr "Fator"
+msgstr "Fator Etch"
 
 #: appTools/ToolEtchCompensation.py:166
-#, fuzzy
-#| msgid "Extensions list"
 msgid "Etchants list"
-msgstr "Lista de extensões"
+msgstr "Lista de Etchants"
 
 #: appTools/ToolEtchCompensation.py:167
 #, fuzzy
@@ -14382,45 +14302,43 @@ msgstr "Manual"
 
 #: appTools/ToolEtchCompensation.py:174 appTools/ToolEtchCompensation.py:179
 msgid "Etchants"
-msgstr ""
+msgstr "Etchants"
 
 #: appTools/ToolEtchCompensation.py:176
-#, fuzzy
-#| msgid "Shows list of commands."
 msgid "A list of etchants."
-msgstr "Mostra a lista de comandos."
+msgstr "Mostra a lista de Etchants."
 
 #: appTools/ToolEtchCompensation.py:180
 msgid "Alkaline baths"
-msgstr ""
+msgstr "Banhos alcalinos"
 
 #: appTools/ToolEtchCompensation.py:186
-#, fuzzy
-#| msgid "X factor"
 msgid "Etch factor"
-msgstr "Fator X"
+msgstr "Fator Etch"
 
 #: appTools/ToolEtchCompensation.py:188
 msgid ""
 "The ratio between depth etch and lateral etch .\n"
 "Accepts real numbers and formulas using the operators: /,*,+,-,%"
 msgstr ""
+"A razão entre a profundidade da gravação e a gravação lateral.\n"
+"Aceita números reais e fórmulas usando os operadores: /, *, +, -,%"
 
 #: appTools/ToolEtchCompensation.py:192
 msgid "Real number or formula"
-msgstr ""
+msgstr "Número real ou fórmula"
 
 #: appTools/ToolEtchCompensation.py:193
-#, fuzzy
-#| msgid "X factor"
 msgid "Etch_factor"
-msgstr "Fator X"
+msgstr "Etch_factor"
 
 #: appTools/ToolEtchCompensation.py:201
 msgid ""
 "Value with which to increase or decrease (buffer)\n"
 "the copper features. In microns [um]."
 msgstr ""
+"Valor com o qual aumentar ou diminuir (buffer)\n"
+"os recursos de cobre. Em mícrons [um]."
 
 #: appTools/ToolEtchCompensation.py:225
 msgid "Compensate"
