@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 4.06.2020
 
 - improved the Isolation Tool - rest machining: test if the isolated polygon has interiors (holes) and if those can't be isolated too then mark the polygon as a rest geometry to be isolated with the next tool and so on
+- updated the French translation strings - from @micmac (Michel Maciejewski)
 
 3.06.2020
 
