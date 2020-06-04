@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-06-04 09:15-0300\n"
-"PO-Revision-Date: 2020-06-04 09:45-0300\n"
+"PO-Revision-Date: 2020-06-04 09:52-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -6379,6 +6379,8 @@ msgid ""
 "If the strategy is to go over the area then this is the height at which the "
 "tool will go to avoid the exclusion area."
 msgstr ""
+"Se a estratégia for percorrer a área, essa é a altura em que a ferramenta "
+"irá para evitar a área de exclusão."
 
 #: appGUI/ObjectUI.py:1123 appGUI/ObjectUI.py:1978
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:233
