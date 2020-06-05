@@ -2898,7 +2898,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Michel Maciejewski"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<micmac@gmail.com>"), 2, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<micmac589@gmail.com>"), 2, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
@@ -2906,7 +2906,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Golfetto Massimiliano"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Massimiliano Golfetto"), 4, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<golfetto.pcb@gmail.com>"), 4, 3)
 

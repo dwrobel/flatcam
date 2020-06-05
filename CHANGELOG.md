@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.06.2020
+
+- fixed a small issue in the Panelization Tool that blocked the usage of a Geometry object as panelization reference
+
 4.06.2020
 
 - improved the Isolation Tool - rest machining: test if the isolated polygon has interiors (holes) and if those can't be isolated too then mark the polygon as a rest geometry to be isolated with the next tool and so on
