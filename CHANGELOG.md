@@ -122,6 +122,7 @@ CHANGELOG for FlatCAM beta
 27.05.2020
 
 - working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
+- in Tool Calculators fixed an application crash if the user typed letters instead of numbers in the boxes. Now the boxes accept only numbers, dots, comma, spaces and arithmetic operators
 
 26.05.2020
 
