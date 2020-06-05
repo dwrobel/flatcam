@@ -20,6 +20,8 @@ CHANGELOG for FlatCAM beta
 - Tool Isolation - added a GUI element to control if the isolation of a polygon, when done with rest, should be done with the current tool even if its interiors (holes in it) could not be isolated or to be left for the next tool
 - updated all the translation strings to the latest changes
 - small fix
+- fixed the color set for the application objects
+- made some reverts regarding the mods in the quit_application() method - problems when freezed
 RELEASE 8.993
 
 4.06.2020

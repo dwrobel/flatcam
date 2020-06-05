@@ -174,6 +174,7 @@ def restart_program(app, ask=None):
     Note: this function does not return. Any cleanup action (like
     saving data) must be done before calling this function.
     """
+    log.debug("FlatCAMTranslation.restart_program()")
 
     theme_settings = QSettings("Open Source", "FlatCAM")
     if theme_settings.contains("theme"):
@@ -188,9 +189,9 @@ def restart_program(app, ask=None):
 
     # try to quit the Socket opened by ArgsThread class
     try:
-        # app.new_launch.stop.emit()
-        app.new_launch.thread_exit = True
-        app.new_launch.listener.close()
+        app.new_launch.stop.emit()
+        # app.new_launch.thread_exit = True
+        # app.new_launch.listener.close()
     except Exception as err:
         log.debug("FlatCAMTranslation.restart_program() --> %s" % str(err))
 
