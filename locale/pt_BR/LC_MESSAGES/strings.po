@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-06-04 09:15-0300\n"
-"PO-Revision-Date: 2020-06-04 10:52-0300\n"
+"POT-Creation-Date: 2020-06-05 19:46+0300\n"
+"PO-Revision-Date: 2020-06-05 19:55+0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -107,22 +107,22 @@ msgstr "Favoritos"
 #: appObjects/ObjectCollection.py:127 appTools/ToolFilm.py:739
 #: appTools/ToolFilm.py:885 appTools/ToolImage.py:247 appTools/ToolMove.py:269
 #: appTools/ToolPcbWizard.py:301 appTools/ToolPcbWizard.py:324
-#: appTools/ToolQRCode.py:800 appTools/ToolQRCode.py:847 app_Main.py:1712
-#: app_Main.py:2453 app_Main.py:2489 app_Main.py:2536 app_Main.py:4134
-#: app_Main.py:6645 app_Main.py:6684 app_Main.py:6728 app_Main.py:6757
-#: app_Main.py:6798 app_Main.py:6823 app_Main.py:6879 app_Main.py:6915
-#: app_Main.py:6960 app_Main.py:7001 app_Main.py:7043 app_Main.py:7085
-#: app_Main.py:7126 app_Main.py:7170 app_Main.py:7230 app_Main.py:7262
-#: app_Main.py:7294 app_Main.py:7525 app_Main.py:7563 app_Main.py:7606
-#: app_Main.py:7683 app_Main.py:7738
+#: appTools/ToolQRCode.py:800 appTools/ToolQRCode.py:847 app_Main.py:1713
+#: app_Main.py:2454 app_Main.py:2490 app_Main.py:2537 app_Main.py:4223
+#: app_Main.py:6734 app_Main.py:6773 app_Main.py:6817 app_Main.py:6846
+#: app_Main.py:6887 app_Main.py:6912 app_Main.py:6968 app_Main.py:7004
+#: app_Main.py:7049 app_Main.py:7090 app_Main.py:7132 app_Main.py:7174
+#: app_Main.py:7215 app_Main.py:7259 app_Main.py:7319 app_Main.py:7351
+#: app_Main.py:7383 app_Main.py:7614 app_Main.py:7652 app_Main.py:7695
+#: app_Main.py:7772 app_Main.py:7827
 msgid "Cancelled."
 msgstr "Cancelado."
 
 #: Bookmark.py:308 appDatabase.py:673 appDatabase.py:2287
 #: appEditors/FlatCAMTextEditor.py:276 appObjects/FlatCAMCNCJob.py:959
 #: appTools/ToolFilm.py:1016 appTools/ToolFilm.py:1197
-#: appTools/ToolSolderPaste.py:1542 app_Main.py:2544 app_Main.py:7982
-#: app_Main.py:8030 app_Main.py:8155 app_Main.py:8291
+#: appTools/ToolSolderPaste.py:1542 app_Main.py:2545 app_Main.py:8071
+#: app_Main.py:8119 app_Main.py:8244 app_Main.py:8380
 msgid ""
 "Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -156,18 +156,16 @@ msgid "The user requested a graceful exit of the current task."
 msgstr "O usuário solicitou uma saída normal da tarefa atual."
 
 #: Common.py:210 appTools/ToolCopperThieving.py:773
-#: appTools/ToolIsolation.py:1672 appTools/ToolNCC.py:1669
+#: appTools/ToolIsolation.py:1706 appTools/ToolNCC.py:1669
 msgid "Click the start point of the area."
 msgstr "Clique no ponto inicial da área."
 
 #: Common.py:269
-#, fuzzy
-#| msgid "Click the end point of the paint area."
 msgid "Click the end point of the area."
 msgstr "Clique no ponto final da área."
 
 #: Common.py:275 Common.py:377 appTools/ToolCopperThieving.py:830
-#: appTools/ToolIsolation.py:2504 appTools/ToolIsolation.py:2556
+#: appTools/ToolIsolation.py:2561 appTools/ToolIsolation.py:2613
 #: appTools/ToolNCC.py:1731 appTools/ToolNCC.py:1783 appTools/ToolPaint.py:1625
 #: appTools/ToolPaint.py:1676
 msgid "Zone added. Click to start adding next zone or right click to finish."
@@ -176,7 +174,7 @@ msgstr ""
 "o botão direito para terminar."
 
 #: Common.py:322 appEditors/FlatCAMGeoEditor.py:2352
-#: appTools/ToolIsolation.py:2527 appTools/ToolNCC.py:1754
+#: appTools/ToolIsolation.py:2584 appTools/ToolNCC.py:1754
 #: appTools/ToolPaint.py:1647
 msgid "Click on next Point or click right mouse button to complete ..."
 msgstr ""
@@ -273,8 +271,8 @@ msgstr ""
 "no banco de dados de ferramentas."
 
 #: appDatabase.py:130 appDatabase.py:1810 appGUI/MainGUI.py:1388
-#: appGUI/preferences/PreferencesUIManager.py:885 app_Main.py:2227
-#: app_Main.py:3162 app_Main.py:4071 app_Main.py:4341 app_Main.py:6452
+#: appGUI/preferences/PreferencesUIManager.py:887 app_Main.py:2228
+#: app_Main.py:3235 app_Main.py:4160 app_Main.py:4430 app_Main.py:6541
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -754,10 +752,10 @@ msgstr "Importar Banco de Dados de Ferramentas do FlatCAM"
 
 #: appDatabase.py:740 appDatabase.py:915 appDatabase.py:2354
 #: appDatabase.py:2624 appObjects/FlatCAMGeometry.py:956
-#: appTools/ToolIsolation.py:2938 appTools/ToolIsolation.py:3023
+#: appTools/ToolIsolation.py:2792 appTools/ToolIsolation.py:2877
 #: appTools/ToolNCC.py:4029 appTools/ToolNCC.py:4113 appTools/ToolPaint.py:3578
-#: appTools/ToolPaint.py:3663 app_Main.py:5268 app_Main.py:5302
-#: app_Main.py:5329 app_Main.py:5349 app_Main.py:5359
+#: appTools/ToolPaint.py:3663 app_Main.py:5357 app_Main.py:5391
+#: app_Main.py:5418 app_Main.py:5438 app_Main.py:5448
 msgid "Tools Database"
 msgstr "Banco de Dados de Ferramentas"
 
@@ -844,7 +842,7 @@ msgstr ""
 "- Limpar -> retirada de cobre padrão."
 
 #: appDatabase.py:1427 appEditors/FlatCAMGrbEditor.py:2749
-#: appGUI/GUIElements.py:2754 appTools/ToolNCC.py:350
+#: appGUI/GUIElements.py:2765 appTools/ToolNCC.py:350
 msgid "Clear"
 msgstr "Limpar"
 
@@ -991,7 +989,7 @@ msgstr "Padrão"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:217
 #: appTools/ToolNCC.py:431 appTools/ToolNCC.py:2243 appTools/ToolNCC.py:2770
 #: appTools/ToolNCC.py:2802 appTools/ToolPaint.py:389
-#: appTools/ToolPaint.py:1873 defaults.py:414 defaults.py:446
+#: appTools/ToolPaint.py:1873 defaults.py:416 defaults.py:448
 #: tclCommands/TclCommandCopperClear.py:128
 #: tclCommands/TclCommandCopperClear.py:136 tclCommands/TclCommandPaint.py:127
 msgid "Seed"
@@ -1134,8 +1132,6 @@ msgstr "Linhas Laser"
 
 #: appDatabase.py:1654 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:154
 #: appTools/ToolIsolation.py:323
-#, fuzzy
-#| msgid "# Passes"
 msgid "Passes"
 msgstr "Passes"
 
@@ -1722,7 +1718,7 @@ msgstr "N° Ranhuras"
 
 #: appEditors/FlatCAMExcEditor.py:2559 appObjects/FlatCAMGeometry.py:664
 #: appObjects/FlatCAMGeometry.py:1099 appObjects/FlatCAMGeometry.py:1841
-#: appObjects/FlatCAMGeometry.py:2491 appTools/ToolIsolation.py:1493
+#: appObjects/FlatCAMGeometry.py:2491 appTools/ToolIsolation.py:1526
 #: appTools/ToolNCC.py:1516 appTools/ToolPaint.py:1268
 #: appTools/ToolPaint.py:1439 appTools/ToolSolderPaste.py:891
 #: appTools/ToolSolderPaste.py:964
@@ -1781,7 +1777,7 @@ msgstr "Cancelado. Não há ferramenta/broca selecionada"
 #: appEditors/FlatCAMGrbEditor.py:4608 appEditors/FlatCAMGrbEditor.py:4625
 #: appGUI/MainGUI.py:2711 appGUI/MainGUI.py:2723
 #: appTools/ToolAlignObjects.py:393 appTools/ToolAlignObjects.py:415
-#: app_Main.py:4711 app_Main.py:4865
+#: app_Main.py:4800 app_Main.py:4954
 msgid "Done."
 msgstr "Pronto."
 
@@ -1832,7 +1828,7 @@ msgstr "Redondo"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:327
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:291
 #: appTools/ToolExtractDrills.py:94 appTools/ToolExtractDrills.py:227
-#: appTools/ToolIsolation.py:545 appTools/ToolNCC.py:583
+#: appTools/ToolIsolation.py:566 appTools/ToolNCC.py:583
 #: appTools/ToolPaint.py:526 appTools/ToolPunchGerber.py:105
 #: appTools/ToolPunchGerber.py:255 appTools/ToolQRCode.py:207
 msgid "Square"
@@ -1885,7 +1881,7 @@ msgstr "Ferramenta de Texto"
 #: appGUI/MainGUI.py:1199 appGUI/ObjectUI.py:597 appGUI/ObjectUI.py:1564
 #: appObjects/FlatCAMExcellon.py:852 appObjects/FlatCAMExcellon.py:1242
 #: appObjects/FlatCAMGeometry.py:825 appTools/ToolIsolation.py:313
-#: appTools/ToolIsolation.py:1171 appTools/ToolNCC.py:331
+#: appTools/ToolIsolation.py:1196 appTools/ToolNCC.py:331
 #: appTools/ToolNCC.py:797 appTools/ToolPaint.py:313 appTools/ToolPaint.py:766
 msgid "Tool"
 msgstr "Ferramenta"
@@ -1984,7 +1980,7 @@ msgid "Buffer"
 msgstr "Buffer"
 
 #: appEditors/FlatCAMGeoEditor.py:643 appEditors/FlatCAMGrbEditor.py:5336
-#: appGUI/GUIElements.py:2690
+#: appGUI/GUIElements.py:2701
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
 #: appTools/ToolDblSided.py:173 appTools/ToolDblSided.py:388
@@ -2023,8 +2019,8 @@ msgstr "Origem"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:311
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:258
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
-#: appTools/ToolIsolation.py:494 appTools/ToolNCC.py:539
-#: appTools/ToolPaint.py:455 appTools/ToolTransform.py:70 defaults.py:503
+#: appTools/ToolIsolation.py:504 appTools/ToolNCC.py:539
+#: appTools/ToolPaint.py:455 appTools/ToolTransform.py:70 defaults.py:505
 msgid "Selection"
 msgstr "Seleção"
 
@@ -2047,7 +2043,7 @@ msgstr "Mínimo"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
 #: appTools/ToolExtractDrills.py:164 appTools/ToolExtractDrills.py:285
 #: appTools/ToolPunchGerber.py:192 appTools/ToolPunchGerber.py:308
-#: appTools/ToolTransform.py:76 appTools/ToolTransform.py:402 app_Main.py:9733
+#: appTools/ToolTransform.py:76 appTools/ToolTransform.py:402 app_Main.py:9822
 msgid "Value"
 msgstr "Valor"
 
@@ -2060,11 +2056,11 @@ msgstr "Um ponto de referência no formato X,Y."
 #: appEditors/FlatCAMGeoEditor.py:668 appEditors/FlatCAMGrbEditor.py:2590
 #: appEditors/FlatCAMGrbEditor.py:5361 appGUI/ObjectUI.py:1494
 #: appTools/ToolDblSided.py:192 appTools/ToolDblSided.py:425
-#: appTools/ToolIsolation.py:276 appTools/ToolIsolation.py:610
+#: appTools/ToolIsolation.py:276 appTools/ToolIsolation.py:631
 #: appTools/ToolNCC.py:294 appTools/ToolNCC.py:631 appTools/ToolPaint.py:276
 #: appTools/ToolPaint.py:675 appTools/ToolSolderPaste.py:127
 #: appTools/ToolSolderPaste.py:605 appTools/ToolTransform.py:85
-#: app_Main.py:5705
+#: app_Main.py:5794
 msgid "Add"
 msgstr "Adicionar"
 
@@ -2777,7 +2773,7 @@ msgstr "Linha"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:299
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:328
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:292
-#: appTools/ToolIsolation.py:546 appTools/ToolNCC.py:584
+#: appTools/ToolIsolation.py:567 appTools/ToolNCC.py:584
 #: appTools/ToolPaint.py:527
 msgid "Polygon"
 msgstr "Polígono"
@@ -3151,10 +3147,10 @@ msgstr "Adiciona uma nova abertura à lista de aberturas."
 #: appGUI/MainGUI.py:748 appGUI/MainGUI.py:1068 appGUI/MainGUI.py:1527
 #: appGUI/MainGUI.py:2099 appGUI/MainGUI.py:4514 appGUI/ObjectUI.py:1525
 #: appObjects/FlatCAMGeometry.py:563 appTools/ToolIsolation.py:298
-#: appTools/ToolIsolation.py:616 appTools/ToolNCC.py:316
+#: appTools/ToolIsolation.py:637 appTools/ToolNCC.py:316
 #: appTools/ToolNCC.py:637 appTools/ToolPaint.py:298 appTools/ToolPaint.py:681
 #: appTools/ToolSolderPaste.py:133 appTools/ToolSolderPaste.py:608
-#: app_Main.py:5707
+#: app_Main.py:5796
 msgid "Delete"
 msgstr "Excluir"
 
@@ -3359,8 +3355,6 @@ msgid "Setting up the UI"
 msgstr "Configurando a interface do usuário"
 
 #: appEditors/FlatCAMGrbEditor.py:4195
-#, fuzzy
-#| msgid "Adding geometry finished. Preparing the GUI"
 msgid "Adding geometry finished. Preparing the GUI"
 msgstr "Geometria adicionada. Preparando a GUI"
 
@@ -3376,8 +3370,8 @@ msgstr ""
 
 #: appEditors/FlatCAMGrbEditor.py:4347 appObjects/AppObject.py:133
 #: appObjects/FlatCAMGeometry.py:1786 appParsers/ParseExcellon.py:896
-#: appTools/ToolPcbWizard.py:432 app_Main.py:8500 app_Main.py:8564
-#: app_Main.py:8695 app_Main.py:8760 app_Main.py:9412
+#: appTools/ToolPcbWizard.py:432 app_Main.py:8589 app_Main.py:8653
+#: app_Main.py:8784 app_Main.py:8849 app_Main.py:9501
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Ocorreu um erro interno. Veja shell (linha de comando).\n"
 
@@ -3393,7 +3387,7 @@ msgstr "Edição de Gerber concluída."
 msgid "Cancelled. No aperture is selected"
 msgstr "Cancelado. Nenhuma abertura selecionada"
 
-#: appEditors/FlatCAMGrbEditor.py:4538 app_Main.py:6033
+#: appEditors/FlatCAMGrbEditor.py:4538 app_Main.py:6122
 msgid "Coordinates copied to clipboard."
 msgstr "Coordenadas copiadas para a área de transferência."
 
@@ -3443,7 +3437,7 @@ msgstr "Nenhum polígono foi marcado. Nenhum se encaixa dentro dos limites."
 msgid "Rotation action was not executed."
 msgstr "A rotação não foi executada."
 
-#: appEditors/FlatCAMGrbEditor.py:6027 app_Main.py:5467 app_Main.py:5515
+#: appEditors/FlatCAMGrbEditor.py:6027 app_Main.py:5556 app_Main.py:5604
 msgid "Flip action was not executed."
 msgstr "A ação de espelhamento não foi executada."
 
@@ -3516,9 +3510,9 @@ msgstr "Texto para substituir o da caixa Localizar ao longo do texto."
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
-#: appTools/ToolIsolation.py:504 appTools/ToolIsolation.py:1287
-#: appTools/ToolIsolation.py:1669 appTools/ToolPaint.py:485
-#: appTools/ToolPaint.py:1446 defaults.py:404 defaults.py:447
+#: appTools/ToolIsolation.py:514 appTools/ToolIsolation.py:1312
+#: appTools/ToolIsolation.py:1703 appTools/ToolPaint.py:485
+#: appTools/ToolPaint.py:1446 defaults.py:404 defaults.py:449
 #: tclCommands/TclCommandPaint.py:162
 msgid "All"
 msgstr "Todos"
@@ -3586,7 +3580,7 @@ msgstr "Salvo em"
 msgid "Code Editor content copied to clipboard ..."
 msgstr "Conteúdo do Code Editor copiado para a área de transferência ..."
 
-#: appGUI/GUIElements.py:2692
+#: appGUI/GUIElements.py:2703
 msgid ""
 "The reference can be:\n"
 "- Absolute -> the reference point is point (0,0)\n"
@@ -3596,19 +3590,19 @@ msgstr ""
 "- Absoluto -> o ponto de referência é o ponto (0,0)\n"
 "- Relativo -> o ponto de referência é a posição do mouse antes de Jump"
 
-#: appGUI/GUIElements.py:2697
+#: appGUI/GUIElements.py:2708
 msgid "Abs"
 msgstr "Abs"
 
-#: appGUI/GUIElements.py:2698
+#: appGUI/GUIElements.py:2709
 msgid "Relative"
 msgstr "Relativo"
 
-#: appGUI/GUIElements.py:2708
+#: appGUI/GUIElements.py:2719
 msgid "Location"
 msgstr "Localização"
 
-#: appGUI/GUIElements.py:2710
+#: appGUI/GUIElements.py:2721
 msgid ""
 "The Location value is a tuple (x,y).\n"
 "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -3620,37 +3614,37 @@ msgstr ""
 "Se a referência for Relativa, o salto estará na distância (x, y)\n"
 "a partir do ponto de localização atual do mouse."
 
-#: appGUI/GUIElements.py:2750
+#: appGUI/GUIElements.py:2761
 msgid "Save Log"
 msgstr "Salvar Log"
 
-#: appGUI/GUIElements.py:2760 app_Main.py:2681 app_Main.py:2990
-#: app_Main.py:3124
+#: appGUI/GUIElements.py:2771 app_Main.py:2682 app_Main.py:3028
+#: app_Main.py:3197
 msgid "Close"
 msgstr "Fechar"
 
-#: appGUI/GUIElements.py:2769 appTools/ToolShell.py:296
+#: appGUI/GUIElements.py:2780 appTools/ToolShell.py:296
 msgid "Type >help< to get started"
 msgstr "Digite >help< para iniciar"
 
-#: appGUI/GUIElements.py:3159 appGUI/GUIElements.py:3168
+#: appGUI/GUIElements.py:3170 appGUI/GUIElements.py:3179
 msgid "Idle."
 msgstr "Ocioso."
 
-#: appGUI/GUIElements.py:3201
+#: appGUI/GUIElements.py:3212
 msgid "Application started ..."
 msgstr "Aplicativo iniciado ..."
 
-#: appGUI/GUIElements.py:3202
+#: appGUI/GUIElements.py:3213
 msgid "Hello!"
 msgstr "Olá!"
 
-#: appGUI/GUIElements.py:3249 appGUI/MainGUI.py:190 appGUI/MainGUI.py:895
+#: appGUI/GUIElements.py:3260 appGUI/MainGUI.py:190 appGUI/MainGUI.py:895
 #: appGUI/MainGUI.py:1927
 msgid "Run Script ..."
 msgstr "Executar Script ..."
 
-#: appGUI/GUIElements.py:3251 appGUI/MainGUI.py:192
+#: appGUI/GUIElements.py:3262 appGUI/MainGUI.py:192
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
@@ -3660,28 +3654,28 @@ msgstr ""
 "ativando a automação de certas\n"
 "funções do FlatCAM."
 
-#: appGUI/GUIElements.py:3260 appGUI/MainGUI.py:118
+#: appGUI/GUIElements.py:3271 appGUI/MainGUI.py:118
 #: appTools/ToolPcbWizard.py:62 appTools/ToolPcbWizard.py:69
 msgid "Open"
 msgstr "Abrir"
 
-#: appGUI/GUIElements.py:3264
+#: appGUI/GUIElements.py:3275
 msgid "Open Project ..."
 msgstr "Abrir Projeto ..."
 
-#: appGUI/GUIElements.py:3270 appGUI/MainGUI.py:129
+#: appGUI/GUIElements.py:3281 appGUI/MainGUI.py:129
 msgid "Open &Gerber ...\tCtrl+G"
 msgstr "Abrir &Gerber ...\tCtrl+G"
 
-#: appGUI/GUIElements.py:3275 appGUI/MainGUI.py:134
+#: appGUI/GUIElements.py:3286 appGUI/MainGUI.py:134
 msgid "Open &Excellon ...\tCtrl+E"
 msgstr "Abrir &Excellon ...\tCtrl+E"
 
-#: appGUI/GUIElements.py:3280 appGUI/MainGUI.py:139
+#: appGUI/GUIElements.py:3291 appGUI/MainGUI.py:139
 msgid "Open G-&Code ..."
 msgstr "Abrir G-&Code ..."
 
-#: appGUI/GUIElements.py:3290
+#: appGUI/GUIElements.py:3301
 msgid "Exit"
 msgstr "Sair"
 
@@ -3871,7 +3865,7 @@ msgstr "Importar preferências de um arquivo ..."
 msgid "Export Preferences to file ..."
 msgstr "Exportar Preferências para um arquivo ..."
 
-#: appGUI/MainGUI.py:295 appGUI/preferences/PreferencesUIManager.py:1125
+#: appGUI/MainGUI.py:295 appGUI/preferences/PreferencesUIManager.py:1127
 msgid "Save Preferences"
 msgstr "Salvar Preferências"
 
@@ -4127,7 +4121,7 @@ msgstr "Ajuda"
 msgid "Online Help\tF1"
 msgstr "Ajuda Online\tF1"
 
-#: appGUI/MainGUI.py:518 app_Main.py:3093 app_Main.py:3102
+#: appGUI/MainGUI.py:518 app_Main.py:3166 app_Main.py:3175
 msgid "Bookmarks Manager"
 msgstr "Gerenciados de Favoritos"
 
@@ -4155,7 +4149,7 @@ msgstr "Canal no YouTube\tF4"
 msgid "ReadMe?"
 msgstr "LeiaMe?"
 
-#: appGUI/MainGUI.py:542 app_Main.py:2648
+#: appGUI/MainGUI.py:542 app_Main.py:2649
 msgid "About FlatCAM"
 msgstr "Sobre FlatCAM"
 
@@ -4327,47 +4321,47 @@ msgstr "Desabilitar Gráfico"
 msgid "Set Color"
 msgstr "Definir cor"
 
-#: appGUI/MainGUI.py:700 app_Main.py:9679
+#: appGUI/MainGUI.py:700 app_Main.py:9768
 msgid "Red"
 msgstr "Vermelho"
 
-#: appGUI/MainGUI.py:703 app_Main.py:9681
+#: appGUI/MainGUI.py:703 app_Main.py:9770
 msgid "Blue"
 msgstr "Azul"
 
-#: appGUI/MainGUI.py:706 app_Main.py:9684
+#: appGUI/MainGUI.py:706 app_Main.py:9773
 msgid "Yellow"
 msgstr "Amarela"
 
-#: appGUI/MainGUI.py:709 app_Main.py:9686
+#: appGUI/MainGUI.py:709 app_Main.py:9775
 msgid "Green"
 msgstr "Verde"
 
-#: appGUI/MainGUI.py:712 app_Main.py:9688
+#: appGUI/MainGUI.py:712 app_Main.py:9777
 msgid "Purple"
 msgstr "Roxo"
 
-#: appGUI/MainGUI.py:715 app_Main.py:9690
+#: appGUI/MainGUI.py:715 app_Main.py:9779
 msgid "Brown"
 msgstr "Marrom"
 
-#: appGUI/MainGUI.py:718 app_Main.py:9692 app_Main.py:9748
+#: appGUI/MainGUI.py:718 app_Main.py:9781 app_Main.py:9837
 msgid "White"
 msgstr "Branco"
 
-#: appGUI/MainGUI.py:721 app_Main.py:9694
+#: appGUI/MainGUI.py:721 app_Main.py:9783
 msgid "Black"
 msgstr "Preto"
 
-#: appGUI/MainGUI.py:726 app_Main.py:9697
+#: appGUI/MainGUI.py:726 app_Main.py:9786
 msgid "Custom"
 msgstr "Personalizado"
 
-#: appGUI/MainGUI.py:731 app_Main.py:9731
+#: appGUI/MainGUI.py:731 app_Main.py:9820
 msgid "Opacity"
 msgstr "Opacidade"
 
-#: appGUI/MainGUI.py:734 app_Main.py:9707
+#: appGUI/MainGUI.py:734 app_Main.py:9796
 msgid "Default"
 msgstr "Padrão"
 
@@ -4382,9 +4376,9 @@ msgstr "Ver Fonte"
 #: appGUI/MainGUI.py:746 appGUI/MainGUI.py:851 appGUI/MainGUI.py:1066
 #: appGUI/MainGUI.py:1525 appGUI/MainGUI.py:1886 appGUI/MainGUI.py:2097
 #: appGUI/MainGUI.py:4511 appGUI/ObjectUI.py:1519
-#: appObjects/FlatCAMGeometry.py:560 appTools/ToolPanelize.py:551
-#: appTools/ToolPanelize.py:578 appTools/ToolPanelize.py:671
-#: appTools/ToolPanelize.py:700 appTools/ToolPanelize.py:762
+#: appObjects/FlatCAMGeometry.py:560 appTools/ToolPanelize.py:552
+#: appTools/ToolPanelize.py:579 appTools/ToolPanelize.py:672
+#: appTools/ToolPanelize.py:699 appTools/ToolPanelize.py:759
 msgid "Copy"
 msgstr "Copiar"
 
@@ -4428,13 +4422,13 @@ msgstr "Barra de Ferramentas Editor Gerber"
 msgid "Grid Toolbar"
 msgstr "Barra de Ferramentas Grade"
 
-#: appGUI/MainGUI.py:831 appGUI/MainGUI.py:1865 app_Main.py:6627
-#: app_Main.py:6632
+#: appGUI/MainGUI.py:831 appGUI/MainGUI.py:1865 app_Main.py:6716
+#: app_Main.py:6721
 msgid "Open Gerber"
 msgstr "Abrir Gerber"
 
-#: appGUI/MainGUI.py:833 appGUI/MainGUI.py:1867 app_Main.py:6667
-#: app_Main.py:6672
+#: appGUI/MainGUI.py:833 appGUI/MainGUI.py:1867 app_Main.py:6756
+#: app_Main.py:6761
 msgid "Open Excellon"
 msgstr "Abrir Excellon"
 
@@ -4532,7 +4526,7 @@ msgid "NCC Tool"
 msgstr "Ferramenta NCC"
 
 #: appGUI/MainGUI.py:914 appGUI/MainGUI.py:1946 appGUI/MainGUI.py:4113
-#: appTools/ToolIsolation.py:38 appTools/ToolIsolation.py:766
+#: appTools/ToolIsolation.py:38 appTools/ToolIsolation.py:787
 msgid "Isolation Tool"
 msgstr "Ferramenta de Isolação"
 
@@ -4775,11 +4769,11 @@ msgstr "Distância de encaixe Grade Y"
 msgid "Toggle the display of axis on canvas"
 msgstr "Alternar a exibição do eixo na tela"
 
-#: appGUI/MainGUI.py:1107 appGUI/preferences/PreferencesUIManager.py:853
-#: appGUI/preferences/PreferencesUIManager.py:945
-#: appGUI/preferences/PreferencesUIManager.py:973
-#: appGUI/preferences/PreferencesUIManager.py:1078 app_Main.py:5174
-#: app_Main.py:5179 app_Main.py:5194
+#: appGUI/MainGUI.py:1107 appGUI/preferences/PreferencesUIManager.py:855
+#: appGUI/preferences/PreferencesUIManager.py:947
+#: appGUI/preferences/PreferencesUIManager.py:975
+#: appGUI/preferences/PreferencesUIManager.py:1080 app_Main.py:5263
+#: app_Main.py:5268 app_Main.py:5283
 msgid "Preferences"
 msgstr "Preferências"
 
@@ -4805,9 +4799,9 @@ msgstr "Encaixar no canto"
 
 #: appGUI/MainGUI.py:1139 appGUI/preferences/general/GeneralAPPSetGroupUI.py:78
 msgid "Max. magnet distance"
-msgstr "Distância magnética max."
+msgstr "Distância mag. max."
 
-#: appGUI/MainGUI.py:1175 appGUI/MainGUI.py:1420 app_Main.py:7674
+#: appGUI/MainGUI.py:1175 appGUI/MainGUI.py:1420 app_Main.py:7763
 msgid "Project"
 msgstr "Projeto"
 
@@ -4927,12 +4921,12 @@ msgstr "Novo"
 #: appTools/ToolCopperThieving.py:162 appTools/ToolCopperThieving.py:608
 #: appTools/ToolCutOut.py:92 appTools/ToolDblSided.py:226
 #: appTools/ToolFilm.py:69 appTools/ToolFilm.py:92 appTools/ToolImage.py:49
-#: appTools/ToolImage.py:271 appTools/ToolIsolation.py:464
-#: appTools/ToolIsolation.py:517 appTools/ToolIsolation.py:1281
+#: appTools/ToolImage.py:271 appTools/ToolIsolation.py:474
+#: appTools/ToolIsolation.py:527 appTools/ToolIsolation.py:1306
 #: appTools/ToolNCC.py:95 appTools/ToolNCC.py:558 appTools/ToolNCC.py:1318
 #: appTools/ToolPaint.py:501 appTools/ToolPaint.py:705
 #: appTools/ToolPanelize.py:116 appTools/ToolPanelize.py:385
-#: appTools/ToolPanelize.py:402 appTools/ToolTransform.py:100
+#: appTools/ToolPanelize.py:403 appTools/ToolTransform.py:100
 #: appTools/ToolTransform.py:535
 msgid "Geometry"
 msgstr "Geometria"
@@ -4946,7 +4940,7 @@ msgstr "Geometria"
 #: appTools/ToolCalibration.py:815 appTools/ToolCopperThieving.py:148
 #: appTools/ToolCopperThieving.py:162 appTools/ToolCopperThieving.py:608
 #: appTools/ToolDblSided.py:225 appTools/ToolFilm.py:342
-#: appTools/ToolIsolation.py:517 appTools/ToolIsolation.py:1281
+#: appTools/ToolIsolation.py:527 appTools/ToolIsolation.py:1306
 #: appTools/ToolNCC.py:558 appTools/ToolNCC.py:1318 appTools/ToolPaint.py:501
 #: appTools/ToolPaint.py:705 appTools/ToolPanelize.py:385
 #: appTools/ToolPunchGerber.py:149 appTools/ToolPunchGerber.py:164
@@ -5027,7 +5021,7 @@ msgstr "Editor Exc"
 msgid "Add Drill"
 msgstr "Adicionar Furo"
 
-#: appGUI/MainGUI.py:1531 app_Main.py:2221
+#: appGUI/MainGUI.py:1531 app_Main.py:2222
 msgid "Close Editor"
 msgstr "Fechar Editor"
 
@@ -5055,20 +5049,20 @@ msgstr "Pasta com Preferências FlatCAM aberta."
 msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr "Você tem certeza de que deseja excluir as configurações da GUI? \n"
 
-#: appGUI/MainGUI.py:1840 appGUI/preferences/PreferencesUIManager.py:884
-#: appGUI/preferences/PreferencesUIManager.py:1129 appTranslation.py:111
-#: appTranslation.py:212 app_Main.py:2225 app_Main.py:3160 app_Main.py:5389
-#: app_Main.py:6450
+#: appGUI/MainGUI.py:1840 appGUI/preferences/PreferencesUIManager.py:886
+#: appGUI/preferences/PreferencesUIManager.py:1131 appTranslation.py:111
+#: appTranslation.py:212 app_Main.py:2226 app_Main.py:3233 app_Main.py:5478
+#: app_Main.py:6539
 msgid "Yes"
 msgstr "Sim"
 
-#: appGUI/MainGUI.py:1841 appGUI/preferences/PreferencesUIManager.py:1130
+#: appGUI/MainGUI.py:1841 appGUI/preferences/PreferencesUIManager.py:1132
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:164
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:150
 #: appTools/ToolIsolation.py:174 appTools/ToolNCC.py:182
 #: appTools/ToolPaint.py:165 appTranslation.py:112 appTranslation.py:213
-#: app_Main.py:2226 app_Main.py:3161 app_Main.py:5390 app_Main.py:6451
+#: app_Main.py:2227 app_Main.py:3234 app_Main.py:5479 app_Main.py:6540
 msgid "No"
 msgstr "Não"
 
@@ -5149,7 +5143,7 @@ msgstr "Cancelado. Nada selecionado para mover."
 msgid "New Tool ..."
 msgstr "Nova Ferramenta ..."
 
-#: appGUI/MainGUI.py:3355 appTools/ToolIsolation.py:1258
+#: appGUI/MainGUI.py:3355 appTools/ToolIsolation.py:1283
 #: appTools/ToolNCC.py:924 appTools/ToolPaint.py:849
 #: appTools/ToolSolderPaste.py:568
 msgid "Enter a Tool Diameter"
@@ -5163,23 +5157,19 @@ msgstr "Adicionar ferramenta cancelado ..."
 msgid "Distance Tool exit..."
 msgstr "Sair da ferramenta de medição ..."
 
-#: appGUI/MainGUI.py:3561 app_Main.py:3148
+#: appGUI/MainGUI.py:3561 app_Main.py:3221
 msgid "Application is saving the project. Please wait ..."
 msgstr "O aplicativo está salvando o projeto. Por favor, espere ..."
 
 #: appGUI/MainGUI.py:3668
-#, fuzzy
-#| msgid "Disabled"
 msgid "Shell disabled."
-msgstr "Desativado"
+msgstr "Shell desativado."
 
 #: appGUI/MainGUI.py:3678
-#, fuzzy
-#| msgid "Enabled"
 msgid "Shell enabled."
-msgstr "Ativado"
+msgstr "Shell ativado."
 
-#: appGUI/MainGUI.py:3706 app_Main.py:9190
+#: appGUI/MainGUI.py:3706 app_Main.py:9279
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Lista de Teclas de Atalho</b>"
 
@@ -5211,7 +5201,7 @@ msgstr "Novo Gerber"
 msgid "Edit Object (if selected)"
 msgstr "Editar Objeto (se selecionado)"
 
-#: appGUI/MainGUI.py:4092 app_Main.py:5693
+#: appGUI/MainGUI.py:4092 app_Main.py:5782
 msgid "Grid On/Off"
 msgstr "Liga/Desliga a Grade"
 
@@ -5282,7 +5272,7 @@ msgstr "Abrir Gerber"
 msgid "New Project"
 msgstr "Novo Projeto"
 
-#: appGUI/MainGUI.py:4101 app_Main.py:6746 app_Main.py:6749
+#: appGUI/MainGUI.py:4101 app_Main.py:6835 app_Main.py:6838
 msgid "Open Project"
 msgstr "Abrir Projeto"
 
@@ -5773,11 +5763,11 @@ msgstr ""
 msgid "Mark the aperture instances on canvas."
 msgstr "Marque as instâncias de abertura na tela."
 
-#: appGUI/ObjectUI.py:305 appTools/ToolIsolation.py:579
+#: appGUI/ObjectUI.py:305 appTools/ToolIsolation.py:600
 msgid "Buffer Solid Geometry"
 msgstr "Buffer de Geometria Sólida"
 
-#: appGUI/ObjectUI.py:307 appTools/ToolIsolation.py:581
+#: appGUI/ObjectUI.py:307 appTools/ToolIsolation.py:602
 msgid ""
 "This button is shown only when the Gerber file\n"
 "is loaded without buffering.\n"
@@ -5969,8 +5959,8 @@ msgstr ""
 #: appObjects/FlatCAMExcellon.py:852 appObjects/FlatCAMExcellon.py:856
 #: appObjects/FlatCAMGeometry.py:380 appObjects/FlatCAMGeometry.py:825
 #: appObjects/FlatCAMGeometry.py:861 appTools/ToolIsolation.py:313
-#: appTools/ToolIsolation.py:1051 appTools/ToolIsolation.py:1171
-#: appTools/ToolIsolation.py:1185 appTools/ToolNCC.py:331
+#: appTools/ToolIsolation.py:1076 appTools/ToolIsolation.py:1196
+#: appTools/ToolIsolation.py:1210 appTools/ToolNCC.py:331
 #: appTools/ToolNCC.py:797 appTools/ToolNCC.py:811 appTools/ToolNCC.py:1214
 #: appTools/ToolPaint.py:313 appTools/ToolPaint.py:766
 #: appTools/ToolPaint.py:778 appTools/ToolPaint.py:1190
@@ -6427,7 +6417,7 @@ msgstr "Adiciona uma área de exclusão."
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:324
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:288
-#: appTools/ToolIsolation.py:542 appTools/ToolNCC.py:580
+#: appTools/ToolIsolation.py:563 appTools/ToolNCC.py:580
 #: appTools/ToolPaint.py:523
 msgid "The kind of selection shape used for area selection."
 msgstr "O tipo de formato usado para a seleção de área."
@@ -6682,7 +6672,7 @@ msgstr ""
 "e negativo para corte 'por dentro'."
 
 #: appGUI/ObjectUI.py:1477 appTools/ToolIsolation.py:195
-#: appTools/ToolIsolation.py:1257 appTools/ToolNCC.py:209
+#: appTools/ToolIsolation.py:1282 appTools/ToolNCC.py:209
 #: appTools/ToolNCC.py:923 appTools/ToolPaint.py:191 appTools/ToolPaint.py:848
 #: appTools/ToolSolderPaste.py:567
 msgid "New Tool"
@@ -6698,7 +6688,7 @@ msgstr ""
 "com o diâmetro especificado."
 
 #: appGUI/ObjectUI.py:1500 appTools/ToolIsolation.py:282
-#: appTools/ToolIsolation.py:613 appTools/ToolNCC.py:300
+#: appTools/ToolIsolation.py:634 appTools/ToolNCC.py:300
 #: appTools/ToolNCC.py:634 appTools/ToolPaint.py:282 appTools/ToolPaint.py:678
 msgid "Add from DB"
 msgstr "Adicionar do BD"
@@ -7212,7 +7202,7 @@ msgstr "Alinhamento"
 msgid "Align Left"
 msgstr "Esquerda"
 
-#: appGUI/ObjectUI.py:2636 app_Main.py:4749
+#: appGUI/ObjectUI.py:2636 app_Main.py:4838
 msgid "Center"
 msgstr "Centro"
 
@@ -7280,41 +7270,41 @@ msgstr ""
 "Não foi possível anotar devido a uma diferença entre o número de elementos "
 "de texto e o número de posições de texto."
 
-#: appGUI/preferences/PreferencesUIManager.py:859
+#: appGUI/preferences/PreferencesUIManager.py:861
 msgid "Preferences applied."
 msgstr "Preferências aplicadas."
 
-#: appGUI/preferences/PreferencesUIManager.py:879
+#: appGUI/preferences/PreferencesUIManager.py:881
 msgid "Are you sure you want to continue?"
 msgstr "Você tem certeza de que deseja continuar?"
 
-#: appGUI/preferences/PreferencesUIManager.py:880
+#: appGUI/preferences/PreferencesUIManager.py:882
 msgid "Application will restart"
 msgstr "Aplicativo reiniciará"
 
-#: appGUI/preferences/PreferencesUIManager.py:978
+#: appGUI/preferences/PreferencesUIManager.py:980
 msgid "Preferences closed without saving."
 msgstr "Preferências fechadas sem salvar."
 
-#: appGUI/preferences/PreferencesUIManager.py:990
+#: appGUI/preferences/PreferencesUIManager.py:992
 msgid "Preferences default values are restored."
 msgstr "Os valores padrão das preferências são restaurados."
 
-#: appGUI/preferences/PreferencesUIManager.py:1021 app_Main.py:2500
-#: app_Main.py:2568
+#: appGUI/preferences/PreferencesUIManager.py:1023 app_Main.py:2501
+#: app_Main.py:2569
 msgid "Failed to write defaults to file."
 msgstr "Falha ao gravar os padrões no arquivo."
 
-#: appGUI/preferences/PreferencesUIManager.py:1025
-#: appGUI/preferences/PreferencesUIManager.py:1138
+#: appGUI/preferences/PreferencesUIManager.py:1027
+#: appGUI/preferences/PreferencesUIManager.py:1140
 msgid "Preferences saved."
 msgstr "Preferências salvas."
 
-#: appGUI/preferences/PreferencesUIManager.py:1075
+#: appGUI/preferences/PreferencesUIManager.py:1077
 msgid "Preferences edited but not saved."
 msgstr "Preferências editadas, mas não salvas."
 
-#: appGUI/preferences/PreferencesUIManager.py:1123
+#: appGUI/preferences/PreferencesUIManager.py:1125
 msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
@@ -8081,7 +8071,7 @@ msgstr "MetaHeuristic"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:227
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:104
 #: appObjects/FlatCAMExcellon.py:694 appObjects/FlatCAMGeometry.py:568
-#: appObjects/FlatCAMGerber.py:223 appTools/ToolIsolation.py:785
+#: appObjects/FlatCAMGerber.py:223 appTools/ToolIsolation.py:806
 msgid "Basic"
 msgstr "Básico"
 
@@ -8266,11 +8256,6 @@ msgid "Notebook"
 msgstr "Caderno"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:195
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the elements found in the Notebook.\n"
-#| "The notebook is the collapsible area in the left side of the GUI,\n"
-#| "and include the Project, Selected and Tool tabs."
 msgid ""
 "This sets the font size for the elements found in the Notebook.\n"
 "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -8294,16 +8279,12 @@ msgid "Textbox"
 msgstr "Caixa de texto"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:235
-#, fuzzy
-#| msgid ""
-#| "This sets the font size for the Textbox GUI\n"
-#| "elements that are used in FlatCAM."
 msgid ""
 "This sets the font size for the Textbox GUI\n"
 "elements that are used in the application."
 msgstr ""
 "Define o tamanho da fonte da caixa de texto\n"
-"de elementos da GUI usados no FlatCAM."
+"de elementos da GUI usados no aplicativo."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:253
 msgid "HUD"
@@ -8598,7 +8579,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:105
 #: appObjects/FlatCAMExcellon.py:707 appObjects/FlatCAMGeometry.py:589
-#: appObjects/FlatCAMGerber.py:231 appTools/ToolIsolation.py:816
+#: appObjects/FlatCAMGerber.py:231 appTools/ToolIsolation.py:837
 msgid "Advanced"
 msgstr "Avançado"
 
@@ -8858,15 +8839,11 @@ msgid "Theme"
 msgstr "Tema"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:38
-#, fuzzy
-#| msgid ""
-#| "Select a theme for FlatCAM.\n"
-#| "It will theme the plot area."
 msgid ""
 "Select a theme for the application.\n"
 "It will theme the plot area."
 msgstr ""
-"Selecione um tema para FlatCAM.\n"
+"Selecione um tema para o aplicativo.\n"
 "Ele será aplicado na área do gráfico."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:43
@@ -8896,15 +8873,11 @@ msgid "Layout"
 msgstr "Layout"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:75
-#, fuzzy
-#| msgid ""
-#| "Select an layout for FlatCAM.\n"
-#| "It is applied immediately."
 msgid ""
 "Select a layout for the application.\n"
 "It is applied immediately."
 msgstr ""
-"Selecione um layout para o FlatCAM.\n"
+"Selecione um layout para o aplicativo..\n"
 "É aplicado imediatamente."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:95
@@ -8912,15 +8885,11 @@ msgid "Style"
 msgstr "Estilo"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:97
-#, fuzzy
-#| msgid ""
-#| "Select an style for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Select a style for the application.\n"
 "It will be applied at the next app start."
 msgstr ""
-"Selecione um estilo para FlatCAM.\n"
+"Selecione um estilo para o aplicativo..\n"
 "Ele será aplicado na próxima inicialização."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:111
@@ -8928,15 +8897,11 @@ msgid "Activate HDPI Support"
 msgstr "Ativar HDPI"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:113
-#, fuzzy
-#| msgid ""
-#| "Enable High DPI support for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Enable High DPI support for the application.\n"
 "It will be applied at the next app start."
 msgstr ""
-"Ativa o suporte de alta DPI para FlatCAM.\n"
+"Ativa o suporte de alta DPI para o aplicativo..\n"
 "Ele será aplicado na próxima inicialização."
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:127
@@ -8944,17 +8909,12 @@ msgid "Display Hover Shape"
 msgstr "Exibir forma de foco suspenso"
 
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:129
-#, fuzzy
-#| msgid ""
-#| "Enable display of a hover shape for FlatCAM objects.\n"
-#| "It is displayed whenever the mouse cursor is hovering\n"
-#| "over any kind of not-selected object."
 msgid ""
 "Enable display of a hover shape for the application objects.\n"
 "It is displayed whenever the mouse cursor is hovering\n"
 "over any kind of not-selected object."
 msgstr ""
-"Habilita a exibição de uma forma flutuante para objetos FlatCAM.\n"
+"Habilita a exibição de uma forma flutuante para objetos de aplicativo..\n"
 "É exibido sempre que o cursor do mouse estiver pairando\n"
 "sobre qualquer tipo de objeto não selecionado."
 
@@ -9161,7 +9121,7 @@ msgstr "Áreas de exclusão"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:293
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:286
-#: appTools/ToolIsolation.py:540 appTools/ToolNCC.py:578
+#: appTools/ToolIsolation.py:561 appTools/ToolNCC.py:578
 #: appTools/ToolPaint.py:521
 msgid "Shape"
 msgstr "Formato"
@@ -9295,7 +9255,7 @@ msgstr ""
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:67
 #: appObjects/FlatCAMGerber.py:406 appTools/ToolCopperThieving.py:1026
 #: appTools/ToolCopperThieving.py:1215 appTools/ToolCopperThieving.py:1227
-#: appTools/ToolIsolation.py:1593 appTools/ToolNCC.py:2079
+#: appTools/ToolIsolation.py:1626 appTools/ToolNCC.py:2079
 #: appTools/ToolNCC.py:2190 appTools/ToolNCC.py:2205 appTools/ToolNCC.py:3163
 #: appTools/ToolNCC.py:3268 appTools/ToolNCC.py:3283 appTools/ToolNCC.py:3549
 #: appTools/ToolNCC.py:3650 appTools/ToolNCC.py:3665 camlib.py:991
@@ -9586,7 +9546,7 @@ msgstr ""
 #: appTools/ToolCopperThieving.py:129 appTools/ToolNCC.py:535
 #: appTools/ToolNCC.py:1324 appTools/ToolNCC.py:1655 appTools/ToolNCC.py:1948
 #: appTools/ToolNCC.py:2012 appTools/ToolNCC.py:3027 appTools/ToolNCC.py:3036
-#: defaults.py:420 tclCommands/TclCommandCopperClear.py:190
+#: defaults.py:422 tclCommands/TclCommandCopperClear.py:190
 msgid "Itself"
 msgstr "Própria"
 
@@ -9594,8 +9554,8 @@ msgstr "Própria"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
-#: appTools/ToolCopperThieving.py:130 appTools/ToolIsolation.py:504
-#: appTools/ToolIsolation.py:1297 appTools/ToolIsolation.py:1671
+#: appTools/ToolCopperThieving.py:130 appTools/ToolIsolation.py:514
+#: appTools/ToolIsolation.py:1323 appTools/ToolIsolation.py:1705
 #: appTools/ToolNCC.py:535 appTools/ToolNCC.py:1334 appTools/ToolNCC.py:1668
 #: appTools/ToolNCC.py:1964 appTools/ToolNCC.py:2019 appTools/ToolPaint.py:485
 #: appTools/ToolPaint.py:945 appTools/ToolPaint.py:1471
@@ -9607,7 +9567,7 @@ msgstr "Seleção de Área"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
 #: appTools/ToolCopperThieving.py:131 appTools/ToolDblSided.py:216
-#: appTools/ToolIsolation.py:504 appTools/ToolIsolation.py:1711
+#: appTools/ToolIsolation.py:514 appTools/ToolIsolation.py:1745
 #: appTools/ToolNCC.py:535 appTools/ToolNCC.py:1684 appTools/ToolNCC.py:1970
 #: appTools/ToolNCC.py:2027 appTools/ToolNCC.py:2408 appTools/ToolNCC.py:2656
 #: appTools/ToolNCC.py:3072 appTools/ToolPaint.py:485 appTools/ToolPaint.py:930
@@ -9901,12 +9861,12 @@ msgstr ""
 "- canto inferior direito -> o usuário alinhará o PCB horizontalmente"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:131
-#: appTools/ToolCalibration.py:159 app_Main.py:4746
+#: appTools/ToolCalibration.py:159 app_Main.py:4835
 msgid "Top-Left"
 msgstr "Esquerda Superior"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:132
-#: appTools/ToolCalibration.py:160 app_Main.py:4747
+#: appTools/ToolCalibration.py:160 app_Main.py:4836
 msgid "Bottom-Right"
 msgstr "Direita Inferior"
 
@@ -10953,17 +10913,11 @@ msgid "Film Tool Options"
 msgstr "Opções da Ferramenta de Filme"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "Create a PCB film from a Gerber or Geometry\n"
-#| "FlatCAM object.\n"
-#| "The file is saved in SVG format."
 msgid ""
 "Create a PCB film from a Gerber or Geometry object.\n"
 "The file is saved in SVG format."
 msgstr ""
-"Cria um filme de PCB a partir de um objeto Gerber\n"
-"ou Geometria FlatCAM.\n"
+"Cria um filme de PCB a partir de um objeto Gerber ou Geometry.\n"
 "O arquivo é salvo no formato SVG."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:43
@@ -11253,10 +11207,6 @@ msgid "V-shape"
 msgstr "Ponta-V"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:103
-#, fuzzy
-#| msgid ""
-#| "The tip angle for V-Shape Tool.\n"
-#| "In degree."
 msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degrees."
@@ -11300,15 +11250,6 @@ msgstr "Descansar"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:246
 #: appTools/ToolIsolation.py:435
-#, fuzzy
-#| msgid ""
-#| "If checked, use 'rest machining'.\n"
-#| "Basically it will clear copper outside PCB features,\n"
-#| "using the biggest tool and continue with the next tools,\n"
-#| "from bigger to smaller, to clear areas of copper that\n"
-#| "could not be cleared by previous tool, until there is\n"
-#| "no more copper to clear or there are no more tools.\n"
-#| "If not checked, use the standard algorithm."
 msgid ""
 "If checked, use 'rest machining'.\n"
 "Basically it will isolate outside PCB features,\n"
@@ -11318,30 +11259,31 @@ msgid ""
 "no more copper features to isolate or there are no more tools.\n"
 "If not checked, use the standard algorithm."
 msgstr ""
-"Se marcada, usa 'usinagem de descanso'.\n"
-"Basicamente, limpará o cobre fora dos recursos do PCB, utilizando\n"
-"a maior ferramenta e continuará com as próximas ferramentas, da\n"
-"maior para a menor, para limpar áreas de cobre que não puderam ser\n"
-"retiradas com a ferramenta anterior.\n"
-"Se não estiver marcada, usa o algoritmo padrão."
+"Se marcado, use 'usinagem em repouso'.\n"
+"Basicamente, isolará recursos externos de PCB,\n"
+"usando a maior ferramenta e continue com as próximas ferramentas,\n"
+"de maior para menor, para isolar os recursos de cobre que\n"
+"não pôde ser limpo pela ferramenta anterior, até que exista\n"
+"não há mais recursos de cobre para isolar ou não há mais ferramentas.\n"
+"Se não estiver marcado, use o algoritmo padrão."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:258
-#: appTools/ToolIsolation.py:447
+#: appTools/ToolIsolation.py:457
 msgid "Combine"
 msgstr "Combinar"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:260
-#: appTools/ToolIsolation.py:449
+#: appTools/ToolIsolation.py:459
 msgid "Combine all passes into one object"
 msgstr "Combinar todos os passes em um objeto"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:267
-#: appTools/ToolIsolation.py:456
+#: appTools/ToolIsolation.py:466
 msgid "Except"
 msgstr "Exceto"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:268
-#: appTools/ToolIsolation.py:457
+#: appTools/ToolIsolation.py:467
 msgid ""
 "When the isolation geometry is generated,\n"
 "by checking this, the area of the object below\n"
@@ -11352,7 +11294,7 @@ msgstr ""
 "de isolação."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
-#: appTools/ToolIsolation.py:496
+#: appTools/ToolIsolation.py:506
 msgid ""
 "Isolation scope. Choose what to isolate:\n"
 "- 'All' -> Isolate all the polygons in the object\n"
@@ -11368,37 +11310,68 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
-#: appTools/ToolIsolation.py:504 appTools/ToolIsolation.py:1308
-#: appTools/ToolIsolation.py:1690 appTools/ToolPaint.py:485
+#: appTools/ToolIsolation.py:514 appTools/ToolIsolation.py:1335
+#: appTools/ToolIsolation.py:1724 appTools/ToolPaint.py:485
 #: appTools/ToolPaint.py:941 appTools/ToolPaint.py:1451
 #: tclCommands/TclCommandPaint.py:164
 msgid "Polygon Selection"
 msgstr "Seleção de Polígonos"
 
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:310
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:305
+#: appTools/ToolIsolation.py:550
+msgid "Interiors"
+msgstr "Interiores"
+
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:307
+#: appTools/ToolIsolation.py:552
+msgid ""
+"When checked the user can select interiors of a polygon.\n"
+"(holes in the polygon)."
+msgstr ""
+"Quando marcado, o usuário pode selecionar interiores de um polígono.\n"
+"(orifícios no polígono)."
+
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:312
+#: appTools/ToolIsolation.py:447
+msgid "Forced Rest"
+msgstr "Forçado"
+
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:314
+#: appTools/ToolIsolation.py:449
+msgid ""
+"When checked the isolation will be done with the current tool even if\n"
+"interiors of a polygon (holes in the polygon) could not be isolated.\n"
+"Works when 'rest machining' is used."
+msgstr ""
+"Quando marcado, o isolamento será feito com a ferramenta atual, mesmo que\n"
+"os interiores de um polígono (orifícios no polígono) não puderam ser "
+"isolados.\n"
+"Funciona quando é usada 'usinagem em repouso'."
+
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:327
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:339
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 msgid "Normal"
 msgstr "Normal"
 
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:311
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:328
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:340
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:304
 msgid "Progressive"
 msgstr "Progressivo"
 
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:312
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:329
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:341
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:305
 #: appObjects/AppObject.py:351 appObjects/FlatCAMObj.py:251
 #: appObjects/FlatCAMObj.py:282 appObjects/FlatCAMObj.py:298
 #: appObjects/FlatCAMObj.py:378 appTools/ToolCopperThieving.py:1491
 #: appTools/ToolCorners.py:411 appTools/ToolFiducials.py:813
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:737 app_Main.py:4431
+#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:737 app_Main.py:4520
 msgid "Plotting"
 msgstr "Plotando"
 
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:314
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:331
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:343
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:307
 msgid ""
@@ -11478,16 +11451,12 @@ msgstr "<b>Parâmetros:</b>"
 
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:107
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:116
-#, fuzzy
-#| msgid ""
-#| "Depth of cut into material. Negative value.\n"
-#| "In FlatCAM units."
 msgid ""
 "Depth of cut into material. Negative value.\n"
 "In application units."
 msgstr ""
 "Profundidade de corte no material. Valor negativo.\n"
-"Em unidades FlatCAM."
+"Em unidades de aplicação."
 
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:247
 #: appTools/ToolPaint.py:444
@@ -11603,13 +11572,13 @@ msgstr "Número de linhas do painel desejado"
 #: appTools/ToolCutOut.py:91 appTools/ToolDblSided.py:224
 #: appTools/ToolFilm.py:68 appTools/ToolFilm.py:91 appTools/ToolImage.py:49
 #: appTools/ToolImage.py:252 appTools/ToolImage.py:273
-#: appTools/ToolIsolation.py:465 appTools/ToolIsolation.py:517
-#: appTools/ToolIsolation.py:1281 appTools/ToolNCC.py:96
+#: appTools/ToolIsolation.py:475 appTools/ToolIsolation.py:527
+#: appTools/ToolIsolation.py:1306 appTools/ToolNCC.py:96
 #: appTools/ToolNCC.py:558 appTools/ToolNCC.py:1318 appTools/ToolPaint.py:501
 #: appTools/ToolPaint.py:705 appTools/ToolPanelize.py:116
 #: appTools/ToolPanelize.py:210 appTools/ToolPanelize.py:385
-#: appTools/ToolPanelize.py:402 appTools/ToolTransform.py:98
-#: appTools/ToolTransform.py:535 defaults.py:504
+#: appTools/ToolPanelize.py:403 appTools/ToolTransform.py:98
+#: appTools/ToolTransform.py:535 defaults.py:506
 msgid "Gerber"
 msgstr "Gerber"
 
@@ -11876,16 +11845,12 @@ msgid "Transform Tool Options"
 msgstr "Opções Transformações"
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:33
-#, fuzzy
-#| msgid ""
-#| "Various transformations that can be applied\n"
-#| "on a FlatCAM object."
 msgid ""
 "Various transformations that can be applied\n"
 "on a application object."
 msgstr ""
 "Várias transformações que podem ser aplicadas\n"
-"a um objeto FlatCAM."
+"em um objeto de aplicativo."
 
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:46
 #: appTools/ToolTransform.py:62
@@ -12137,11 +12102,11 @@ msgid "File saved to"
 msgstr "Arquivo salvo em"
 
 #: appObjects/FlatCAMCNCJob.py:548 appObjects/FlatCAMScript.py:134
-#: app_Main.py:7336
+#: app_Main.py:7425
 msgid "Loading..."
 msgstr "Lendo..."
 
-#: appObjects/FlatCAMCNCJob.py:562 app_Main.py:7433
+#: appObjects/FlatCAMCNCJob.py:562 app_Main.py:7522
 msgid "Code Editor"
 msgstr "Editor de Códigos"
 
@@ -12193,7 +12158,7 @@ msgstr "Editor de Documento"
 
 #: appObjects/FlatCAMExcellon.py:537 appObjects/FlatCAMExcellon.py:856
 #: appObjects/FlatCAMGeometry.py:380 appObjects/FlatCAMGeometry.py:861
-#: appTools/ToolIsolation.py:1051 appTools/ToolIsolation.py:1185
+#: appTools/ToolIsolation.py:1076 appTools/ToolIsolation.py:1210
 #: appTools/ToolNCC.py:811 appTools/ToolNCC.py:1214 appTools/ToolPaint.py:778
 #: appTools/ToolPaint.py:1190
 msgid "Multiple Tools"
@@ -12250,12 +12215,10 @@ msgid "Delete failed. There are no exclusion areas to delete."
 msgstr "Exclusão falhou. Não há áreas para excluir."
 
 #: appObjects/FlatCAMExcellon.py:1680 appObjects/FlatCAMGeometry.py:2570
-#, fuzzy
-#| msgid "Failed. Nothing selected."
 msgid "Delete failed. Nothing is selected."
-msgstr "Falhou. Nada selecionado."
+msgstr "Falha na exclusão. Nada está selecionado."
 
-#: appObjects/FlatCAMExcellon.py:1945 appTools/ToolIsolation.py:1253
+#: appObjects/FlatCAMExcellon.py:1945 appTools/ToolIsolation.py:1278
 #: appTools/ToolNCC.py:918 appTools/ToolPaint.py:843
 msgid "Current Tool parameters were applied to all tools."
 msgstr "Parâmetros aplicados a todas as ferramentas."
@@ -12269,8 +12232,8 @@ msgstr "Isolação"
 #: appObjects/FlatCAMGeometry.py:920 appObjects/FlatCAMGerber.py:578
 #: appObjects/FlatCAMGerber.py:721 appTools/ToolCutOut.py:727
 #: appTools/ToolCutOut.py:923 appTools/ToolCutOut.py:1083
-#: appTools/ToolIsolation.py:1842 appTools/ToolIsolation.py:1979
-#: appTools/ToolIsolation.py:2150
+#: appTools/ToolIsolation.py:1881 appTools/ToolIsolation.py:2021
+#: appTools/ToolIsolation.py:2196
 msgid "Rough"
 msgstr "Desbaste"
 
@@ -12406,11 +12369,11 @@ msgstr ""
 "formato (x, y).\n"
 "Agora está com apenas um valor, não dois."
 
-#: appObjects/FlatCAMGerber.py:403 appTools/ToolIsolation.py:1577
+#: appObjects/FlatCAMGerber.py:403 appTools/ToolIsolation.py:1610
 msgid "Buffering solid geometry"
 msgstr "Buffer de geometria sólida"
 
-#: appObjects/FlatCAMGerber.py:410 appTools/ToolIsolation.py:1599
+#: appObjects/FlatCAMGerber.py:410 appTools/ToolIsolation.py:1632
 msgid "Done"
 msgstr "Pronto"
 
@@ -12419,14 +12382,14 @@ msgid "Operation could not be done."
 msgstr "Não foi possível executar a operação."
 
 #: appObjects/FlatCAMGerber.py:594 appObjects/FlatCAMGerber.py:668
-#: appTools/ToolIsolation.py:1805 appTools/ToolIsolation.py:2126
+#: appTools/ToolIsolation.py:1844 appTools/ToolIsolation.py:2172
 #: appTools/ToolNCC.py:2117 appTools/ToolNCC.py:3197 appTools/ToolNCC.py:3576
 msgid "Isolation geometry could not be generated."
 msgstr "A geometria de isolação não pôde ser gerada."
 
 #: appObjects/FlatCAMGerber.py:619 appObjects/FlatCAMGerber.py:746
-#: appTools/ToolIsolation.py:1869 appTools/ToolIsolation.py:2035
-#: appTools/ToolIsolation.py:2202
+#: appTools/ToolIsolation.py:1908 appTools/ToolIsolation.py:2077
+#: appTools/ToolIsolation.py:2248
 msgid "Isolation geometry created"
 msgstr "Geometria de isolação criada"
 
@@ -12474,7 +12437,7 @@ msgstr "Objeto renomeado de <b>{old}</b> para <b>{new}</b>"
 #: appObjects/ObjectCollection.py:926 appObjects/ObjectCollection.py:932
 #: appObjects/ObjectCollection.py:938 appObjects/ObjectCollection.py:944
 #: appObjects/ObjectCollection.py:950 appObjects/ObjectCollection.py:956
-#: app_Main.py:6270 app_Main.py:6276 app_Main.py:6282 app_Main.py:6288
+#: app_Main.py:6359 app_Main.py:6365 app_Main.py:6371 app_Main.py:6377
 msgid "selected"
 msgstr "selecionado"
 
@@ -12719,7 +12682,7 @@ msgstr ""
 #: appTools/ToolDblSided.py:471 appTools/ToolEtchCompensation.py:240
 #: appTools/ToolExtractDrills.py:310 appTools/ToolFiducials.py:321
 #: appTools/ToolFilm.py:503 appTools/ToolInvertGerber.py:143
-#: appTools/ToolIsolation.py:591 appTools/ToolNCC.py:612
+#: appTools/ToolIsolation.py:612 appTools/ToolNCC.py:612
 #: appTools/ToolOptimal.py:243 appTools/ToolPaint.py:555
 #: appTools/ToolPanelize.py:280 appTools/ToolPunchGerber.py:339
 #: appTools/ToolQRCode.py:323 appTools/ToolRulesCheck.py:516
@@ -12734,7 +12697,7 @@ msgstr "Redefinir Ferramenta"
 #: appTools/ToolDblSided.py:473 appTools/ToolEtchCompensation.py:242
 #: appTools/ToolExtractDrills.py:312 appTools/ToolFiducials.py:323
 #: appTools/ToolFilm.py:505 appTools/ToolInvertGerber.py:145
-#: appTools/ToolIsolation.py:593 appTools/ToolNCC.py:614
+#: appTools/ToolIsolation.py:614 appTools/ToolNCC.py:614
 #: appTools/ToolOptimal.py:245 appTools/ToolPaint.py:557
 #: appTools/ToolPanelize.py:282 appTools/ToolPunchGerber.py:341
 #: appTools/ToolQRCode.py:325 appTools/ToolRulesCheck.py:518
@@ -13201,7 +13164,7 @@ msgstr ""
 "- 'Objeto de referência' - fará Copper Thieving dentro da área especificada "
 "por outro objeto."
 
-#: appTools/ToolCopperThieving.py:142 appTools/ToolIsolation.py:511
+#: appTools/ToolCopperThieving.py:142 appTools/ToolIsolation.py:521
 #: appTools/ToolNCC.py:552 appTools/ToolPaint.py:495
 msgid "Ref. Type"
 msgstr "Tipo de Ref"
@@ -13214,12 +13177,12 @@ msgstr ""
 "O tipo de objeto FlatCAM a ser usado como referência para adição de cobre.\n"
 "Pode ser Gerber, Excellon ou Geometria."
 
-#: appTools/ToolCopperThieving.py:153 appTools/ToolIsolation.py:522
+#: appTools/ToolCopperThieving.py:153 appTools/ToolIsolation.py:532
 #: appTools/ToolNCC.py:562 appTools/ToolPaint.py:505
 msgid "Ref. Object"
 msgstr "Objeto de Ref"
 
-#: appTools/ToolCopperThieving.py:155 appTools/ToolIsolation.py:524
+#: appTools/ToolCopperThieving.py:155 appTools/ToolIsolation.py:534
 #: appTools/ToolNCC.py:564 appTools/ToolPaint.py:507
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr "O objeto FlatCAM a ser usado como referência para retirada de cobre."
@@ -13351,10 +13314,10 @@ msgstr "Área de Adição de Cobre."
 #: appTools/ToolCopperThieving.py:763 appTools/ToolCopperThieving.py:796
 #: appTools/ToolCutOut.py:556 appTools/ToolCutOut.py:761
 #: appTools/ToolEtchCompensation.py:360 appTools/ToolInvertGerber.py:211
-#: appTools/ToolIsolation.py:1585 appTools/ToolIsolation.py:1612
+#: appTools/ToolIsolation.py:1618 appTools/ToolIsolation.py:1645
 #: appTools/ToolNCC.py:1617 appTools/ToolNCC.py:1661 appTools/ToolNCC.py:1690
-#: appTools/ToolPaint.py:1493 appTools/ToolPanelize.py:423
-#: appTools/ToolPanelize.py:437 appTools/ToolSub.py:295 appTools/ToolSub.py:308
+#: appTools/ToolPaint.py:1493 appTools/ToolPanelize.py:424
+#: appTools/ToolPanelize.py:438 appTools/ToolSub.py:295 appTools/ToolSub.py:308
 #: appTools/ToolSub.py:499 appTools/ToolSub.py:514
 #: tclCommands/TclCommandCopperClear.py:97 tclCommands/TclCommandPaint.py:99
 msgid "Could not retrieve object"
@@ -13383,7 +13346,7 @@ msgstr ""
 "Ferramenta de Adição de Cobre. Preparando áreas para preencher com cobre."
 
 #: appTools/ToolCopperThieving.py:1044 appTools/ToolOptimal.py:355
-#: appTools/ToolPanelize.py:810 appTools/ToolRulesCheck.py:1127
+#: appTools/ToolPanelize.py:805 appTools/ToolRulesCheck.py:1127
 msgid "Working..."
 msgstr "Trabalhando..."
 
@@ -13654,9 +13617,9 @@ msgid "Any form CutOut operation finished."
 msgstr "Recorte concluído."
 
 #: appTools/ToolCutOut.py:765 appTools/ToolEtchCompensation.py:366
-#: appTools/ToolInvertGerber.py:217 appTools/ToolIsolation.py:1589
-#: appTools/ToolIsolation.py:1616 appTools/ToolNCC.py:1621
-#: appTools/ToolPaint.py:1416 appTools/ToolPanelize.py:428
+#: appTools/ToolInvertGerber.py:217 appTools/ToolIsolation.py:1622
+#: appTools/ToolIsolation.py:1649 appTools/ToolNCC.py:1621
+#: appTools/ToolPaint.py:1416 appTools/ToolPanelize.py:429
 #: tclCommands/TclCommandBbox.py:71 tclCommands/TclCommandNregions.py:71
 msgid "Object not found"
 msgstr "Objeto não encontrado"
@@ -14029,7 +13992,7 @@ msgstr "Não há objeto Excellon carregado ..."
 msgid "There is no Geometry object loaded ..."
 msgstr "Não há objeto Geometria carregado ..."
 
-#: appTools/ToolDblSided.py:818 app_Main.py:4384 app_Main.py:4539
+#: appTools/ToolDblSided.py:818 app_Main.py:4473 app_Main.py:4628
 msgid "Failed. No object(s) selected..."
 msgstr "Falha. Nenhum objeto selecionado..."
 
@@ -14295,8 +14258,6 @@ msgid "Etchants list"
 msgstr "Lista de Etchants"
 
 #: appTools/ToolEtchCompensation.py:167
-#, fuzzy
-#| msgid "Manual"
 msgid "Manual offset"
 msgstr "Manual"
 
@@ -14612,7 +14573,7 @@ msgid "Export negative film"
 msgstr "Exportar filme negativo"
 
 #: appTools/ToolFilm.py:941 appTools/ToolFilm.py:1124
-#: appTools/ToolPanelize.py:441
+#: appTools/ToolPanelize.py:442
 msgid "No object Box. Using instead"
 msgstr "Nenhuma caixa de objeto. Usando"
 
@@ -14738,7 +14699,7 @@ msgstr "Ferramenta de Imagem"
 msgid "Import IMAGE"
 msgstr "Importar IMAGEM"
 
-#: appTools/ToolImage.py:277 app_Main.py:8395 app_Main.py:8442
+#: appTools/ToolImage.py:277 app_Main.py:8484 app_Main.py:8531
 msgid ""
 "Not supported type is picked as parameter. Only Geometry and Gerber are "
 "supported"
@@ -14750,9 +14711,9 @@ msgstr ""
 msgid "Importing Image"
 msgstr "Importando Imagem"
 
-#: appTools/ToolImage.py:297 appTools/ToolPDF.py:154 app_Main.py:8420
-#: app_Main.py:8466 app_Main.py:8530 app_Main.py:8597 app_Main.py:8663
-#: app_Main.py:8728 app_Main.py:8785
+#: appTools/ToolImage.py:297 appTools/ToolPDF.py:154 app_Main.py:8509
+#: app_Main.py:8555 app_Main.py:8619 app_Main.py:8686 app_Main.py:8752
+#: app_Main.py:8817 app_Main.py:8874
 msgid "Opened"
 msgstr "Aberto"
 
@@ -14852,7 +14813,7 @@ msgstr ""
 "Apague uma seleção de ferramentas na Tabela de Ferramentas selecionando "
 "primeiro a(s) linha(s) na Tabela de Ferramentas."
 
-#: appTools/ToolIsolation.py:467
+#: appTools/ToolIsolation.py:477
 msgid ""
 "Specify the type of object to be excepted from isolation.\n"
 "It can be of type: Gerber or Geometry.\n"
@@ -14864,11 +14825,11 @@ msgstr ""
 "Esta seleção ditará o tipo de objetos que preencherão\n"
 "a caixa de combinação 'Objeto'."
 
-#: appTools/ToolIsolation.py:477
+#: appTools/ToolIsolation.py:487
 msgid "Object whose area will be removed from isolation geometry."
 msgstr "Objeto cuja área será removida da geometria de isolação."
 
-#: appTools/ToolIsolation.py:513 appTools/ToolNCC.py:554
+#: appTools/ToolIsolation.py:523 appTools/ToolNCC.py:554
 msgid ""
 "The type of FlatCAM object to be used as non copper clearing reference.\n"
 "It can be Gerber, Excellon or Geometry."
@@ -14877,11 +14838,11 @@ msgstr ""
 "cobre.\n"
 "Pode ser Gerber, Excellon ou Geometria."
 
-#: appTools/ToolIsolation.py:559
+#: appTools/ToolIsolation.py:580
 msgid "Generate Isolation Geometry"
 msgstr "Gerar Geometria de Isolação"
 
-#: appTools/ToolIsolation.py:567
+#: appTools/ToolIsolation.py:588
 msgid ""
 "Create a Geometry object with toolpaths to cut \n"
 "isolation outside, inside or on both sides of the\n"
@@ -14902,91 +14863,93 @@ msgstr ""
 "desejado é cortar a isolação dentro do recurso Gerber, use uma\n"
 "ferramenta negativa diâmetro acima."
 
-#: appTools/ToolIsolation.py:1266 appTools/ToolIsolation.py:1426
+#: appTools/ToolIsolation.py:1291 appTools/ToolIsolation.py:1459
 #: appTools/ToolNCC.py:932 appTools/ToolNCC.py:1449 appTools/ToolPaint.py:857
 #: appTools/ToolSolderPaste.py:576 appTools/ToolSolderPaste.py:901
-#: app_Main.py:4244
+#: app_Main.py:4333
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr ""
 "Insira um diâmetro de ferramenta com valor diferente de zero, no formato "
 "Flutuante."
 
-#: appTools/ToolIsolation.py:1270 appTools/ToolNCC.py:936
-#: appTools/ToolPaint.py:861 appTools/ToolSolderPaste.py:580 app_Main.py:4248
+#: appTools/ToolIsolation.py:1295 appTools/ToolNCC.py:936
+#: appTools/ToolPaint.py:861 appTools/ToolSolderPaste.py:580 app_Main.py:4337
 msgid "Adding Tool cancelled"
 msgstr "Adicionar ferramenta cancelada"
 
-#: appTools/ToolIsolation.py:1420 appTools/ToolNCC.py:1443
+#: appTools/ToolIsolation.py:1453 appTools/ToolNCC.py:1443
 #: appTools/ToolPaint.py:1203 appTools/ToolSolderPaste.py:896
 msgid "Please enter a tool diameter to add, in Float format."
 msgstr "Insira um diâmetro de ferramenta para adicionar, no formato Flutuante."
 
-#: appTools/ToolIsolation.py:1451 appTools/ToolIsolation.py:2988
+#: appTools/ToolIsolation.py:1484 appTools/ToolIsolation.py:2842
 #: appTools/ToolNCC.py:1474 appTools/ToolNCC.py:4079 appTools/ToolPaint.py:1227
 #: appTools/ToolPaint.py:3628 appTools/ToolSolderPaste.py:925
 msgid "Cancelled. Tool already in Tool Table."
 msgstr "Cancelada. Ferramenta já está na Tabela de Ferramentas."
 
-#: appTools/ToolIsolation.py:1458 appTools/ToolIsolation.py:3006
+#: appTools/ToolIsolation.py:1491 appTools/ToolIsolation.py:2860
 #: appTools/ToolNCC.py:1481 appTools/ToolNCC.py:4096 appTools/ToolPaint.py:1232
 #: appTools/ToolPaint.py:3645
 msgid "New tool added to Tool Table."
 msgstr "Nova ferramenta adicionada à Tabela de Ferramentas."
 
-#: appTools/ToolIsolation.py:1502 appTools/ToolNCC.py:1525
+#: appTools/ToolIsolation.py:1535 appTools/ToolNCC.py:1525
 #: appTools/ToolPaint.py:1276
 msgid "Tool from Tool Table was edited."
 msgstr "A ferramenta da Tabela de Ferramentas foi editada."
 
-#: appTools/ToolIsolation.py:1514 appTools/ToolNCC.py:1537
+#: appTools/ToolIsolation.py:1547 appTools/ToolNCC.py:1537
 #: appTools/ToolPaint.py:1288 appTools/ToolSolderPaste.py:986
 msgid "Cancelled. New diameter value is already in the Tool Table."
 msgstr "Cancelado. O novo valor de diâmetro já está na tabela de ferramentas."
 
-#: appTools/ToolIsolation.py:1566 appTools/ToolNCC.py:1589
+#: appTools/ToolIsolation.py:1599 appTools/ToolNCC.py:1589
 #: appTools/ToolPaint.py:1386
 msgid "Delete failed. Select a tool to delete."
 msgstr "Exclusão falhou. Selecione uma ferramenta para excluir."
 
-#: appTools/ToolIsolation.py:1572 appTools/ToolNCC.py:1595
+#: appTools/ToolIsolation.py:1605 appTools/ToolNCC.py:1595
 #: appTools/ToolPaint.py:1392
 msgid "Tool(s) deleted from Tool Table."
 msgstr "Ferramenta(s) excluída(s) da Tabela de Ferramentas."
 
-#: appTools/ToolIsolation.py:1620
+#: appTools/ToolIsolation.py:1653
 msgid "Isolating..."
 msgstr "Isolando..."
 
-#: appTools/ToolIsolation.py:1654
+#: appTools/ToolIsolation.py:1673
+msgid "Following geometry was generated"
+msgstr "A geometria a seguir foi gerada"
+
+#: appTools/ToolIsolation.py:1688
 msgid "Failed to create Follow Geometry with tool diameter"
 msgstr "Falha ao criar Seguir Geometria com ferramenta com diâmetro"
 
-#: appTools/ToolIsolation.py:1657
+#: appTools/ToolIsolation.py:1691
 msgid "Follow Geometry was created with tool diameter"
 msgstr "Seguir Geometria foi criado com ferramenta com diâmetro"
 
-#: appTools/ToolIsolation.py:1698
+#: appTools/ToolIsolation.py:1732
 msgid "Click on a polygon to isolate it."
 msgstr "Clique em um polígono para isolá-lo."
 
-#: appTools/ToolIsolation.py:1812 appTools/ToolIsolation.py:1832
-#: appTools/ToolIsolation.py:1967 appTools/ToolIsolation.py:2138
+#: appTools/ToolIsolation.py:1851 appTools/ToolIsolation.py:1871
+#: appTools/ToolIsolation.py:2009 appTools/ToolIsolation.py:2184
 msgid "Subtracting Geo"
 msgstr "Subtraindo Geo"
 
-#: appTools/ToolIsolation.py:1816 appTools/ToolIsolation.py:1971
-#: appTools/ToolIsolation.py:2142
-#, fuzzy
-#| msgid "Intersection"
+#: appTools/ToolIsolation.py:1855 appTools/ToolIsolation.py:2013
+#: appTools/ToolIsolation.py:2188
 msgid "Intersecting Geo"
-msgstr "Interseção"
+msgstr "Interseção Geo"
 
-#: appTools/ToolIsolation.py:1865 appTools/ToolIsolation.py:2032
-#: appTools/ToolIsolation.py:2199
+#: appTools/ToolIsolation.py:1904 appTools/ToolIsolation.py:2074
+#: appTools/ToolIsolation.py:2245
 msgid "Empty Geometry in"
 msgstr "Geometria vazia em"
 
-#: appTools/ToolIsolation.py:2041
+#: appTools/ToolIsolation.py:2083
 msgid ""
 "Partial failure. The geometry was processed with all tools.\n"
 "But there are still not-isolated geometry elements. Try to include a tool "
@@ -14997,53 +14960,53 @@ msgstr ""
 "elementos de geometria não isolados. Tente incluir uma ferramenta com "
 "diâmetro menor."
 
-#: appTools/ToolIsolation.py:2044
+#: appTools/ToolIsolation.py:2086
 msgid ""
 "The following are coordinates for the copper features that could not be "
 "isolated:"
 msgstr ""
 "Os recursos de cobre que não puderam ser isolados nas seguintes coordenadas:"
 
-#: appTools/ToolIsolation.py:2356 appTools/ToolIsolation.py:2465
+#: appTools/ToolIsolation.py:2409 appTools/ToolIsolation.py:2522
 #: appTools/ToolPaint.py:1535
 msgid "Added polygon"
 msgstr "Polígono adicionado"
 
-#: appTools/ToolIsolation.py:2357 appTools/ToolIsolation.py:2467
+#: appTools/ToolIsolation.py:2410 appTools/ToolIsolation.py:2524
 msgid "Click to add next polygon or right click to start isolation."
 msgstr ""
 "Clique para adicionar o próximo polígono ou clique com o botão direito do "
 "mouse para iniciar a isolação."
 
-#: appTools/ToolIsolation.py:2369 appTools/ToolPaint.py:1549
+#: appTools/ToolIsolation.py:2422 appTools/ToolPaint.py:1549
 msgid "Removed polygon"
 msgstr "Polígono removido"
 
-#: appTools/ToolIsolation.py:2370
+#: appTools/ToolIsolation.py:2423
 msgid "Click to add/remove next polygon or right click to start isolation."
 msgstr ""
 "Clique para adicionar/remover o próximo polígono ou clique com o botão "
 "direito do mouse para iniciar a isolação."
 
-#: appTools/ToolIsolation.py:2375 appTools/ToolPaint.py:1555
+#: appTools/ToolIsolation.py:2428 appTools/ToolPaint.py:1555
 msgid "No polygon detected under click position."
 msgstr "Nenhum polígono detectado na posição do clique."
 
-#: appTools/ToolIsolation.py:2401 appTools/ToolPaint.py:1584
+#: appTools/ToolIsolation.py:2458 appTools/ToolPaint.py:1584
 msgid "List of single polygons is empty. Aborting."
 msgstr "A lista de polígonos únicos está vazia. Abortando."
 
-#: appTools/ToolIsolation.py:2470
+#: appTools/ToolIsolation.py:2527
 msgid "No polygon in selection."
 msgstr "Nenhum polígono na seleção."
 
-#: appTools/ToolIsolation.py:2498 appTools/ToolNCC.py:1725
+#: appTools/ToolIsolation.py:2555 appTools/ToolNCC.py:1725
 #: appTools/ToolPaint.py:1619
 msgid "Click the end point of the paint area."
 msgstr "Clique no ponto final da área."
 
-#: appTools/ToolIsolation.py:2945 appTools/ToolNCC.py:4036
-#: appTools/ToolPaint.py:3585 app_Main.py:5353 app_Main.py:5363
+#: appTools/ToolIsolation.py:2799 appTools/ToolNCC.py:4036
+#: appTools/ToolPaint.py:3585 app_Main.py:5442 app_Main.py:5452
 msgid "Tool from DB added in Tool Table."
 msgstr "Ferramenta do Banco de Dados adicionada na Tabela de Ferramentas."
 
@@ -15395,11 +15358,11 @@ msgstr "Abrir PDF cancelado"
 msgid "Parsing PDF file ..."
 msgstr "Analisando arquivo PDF ..."
 
-#: appTools/ToolPDF.py:138 app_Main.py:8628
+#: appTools/ToolPDF.py:138 app_Main.py:8717
 msgid "Failed to open"
 msgstr "Falha ao abrir"
 
-#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:445 app_Main.py:8577
+#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:445 app_Main.py:8666
 msgid "No geometry found in file"
 msgstr "Nenhuma geometria encontrada no arquivo"
 
@@ -15804,27 +15767,27 @@ msgstr ""
 msgid "Panel. Tool"
 msgstr "Ferramenta de Painel"
 
-#: appTools/ToolPanelize.py:468
+#: appTools/ToolPanelize.py:469
 msgid "Columns or Rows are zero value. Change them to a positive integer."
 msgstr "Colunas ou Linhas com valor zero. Altere-os para um inteiro positivo."
 
-#: appTools/ToolPanelize.py:505
+#: appTools/ToolPanelize.py:506
 msgid "Generating panel ... "
 msgstr "Gerando painel … "
 
-#: appTools/ToolPanelize.py:788
+#: appTools/ToolPanelize.py:781
 msgid "Generating panel ... Adding the Gerber code."
 msgstr "Gerando painel ... Adicionando o código Gerber."
 
-#: appTools/ToolPanelize.py:796
+#: appTools/ToolPanelize.py:789
 msgid "Generating panel... Spawning copies"
 msgstr "Gerando painel ... Cópias geradas"
 
-#: appTools/ToolPanelize.py:803
+#: appTools/ToolPanelize.py:798
 msgid "Panel done..."
 msgstr "Painel criado..."
 
-#: appTools/ToolPanelize.py:806
+#: appTools/ToolPanelize.py:801
 #, python-brace-format
 msgid ""
 "{text} Too big for the constrain area. Final panel has {col} columns and "
@@ -15833,7 +15796,7 @@ msgstr ""
 "{text} Grande demais para a área restrita.. O painel final tem {col} colunas "
 "e {row} linhas"
 
-#: appTools/ToolPanelize.py:815
+#: appTools/ToolPanelize.py:810
 msgid "Panel created successfully."
 msgstr "Painel criado com sucesso."
 
@@ -15972,7 +15935,7 @@ msgstr "Arquivo PcbWizard .INF carregado."
 msgid "Main PcbWizard Excellon file loaded."
 msgstr "Arquivo PcbWizard Excellon carregado."
 
-#: appTools/ToolPcbWizard.py:424 app_Main.py:8555
+#: appTools/ToolPcbWizard.py:424 app_Main.py:8644
 msgid "This is not Excellon file."
 msgstr "Este não é um arquivo Excellon."
 
@@ -16001,9 +15964,9 @@ msgid "The imported Excellon file is empty."
 msgstr "O arquivo Excellon importado está Vazio."
 
 #: appTools/ToolProperties.py:116 appTools/ToolTransform.py:577
-#: app_Main.py:4726 app_Main.py:6838 app_Main.py:6938 app_Main.py:6979
-#: app_Main.py:7020 app_Main.py:7062 app_Main.py:7104 app_Main.py:7148
-#: app_Main.py:7192 app_Main.py:7716 app_Main.py:7720
+#: app_Main.py:4815 app_Main.py:6927 app_Main.py:7027 app_Main.py:7068
+#: app_Main.py:7109 app_Main.py:7151 app_Main.py:7193 app_Main.py:7237
+#: app_Main.py:7281 app_Main.py:7805 app_Main.py:7809
 msgid "No object selected."
 msgstr "Nenhum objeto selecionado."
 
@@ -16240,8 +16203,8 @@ msgstr "Ferramenta QRCode pronta."
 msgid "Export PNG"
 msgstr "Exportar PNG"
 
-#: appTools/ToolQRCode.py:838 appTools/ToolQRCode.py:842 app_Main.py:6870
-#: app_Main.py:6874
+#: appTools/ToolQRCode.py:838 appTools/ToolQRCode.py:842 app_Main.py:6959
+#: app_Main.py:6963
 msgid "Export SVG"
 msgstr "Exportar SVG"
 
@@ -16458,7 +16421,7 @@ msgstr "Violações: não há violações para a regra atual."
 
 #: appTools/ToolShell.py:59
 msgid "Clear the text."
-msgstr "Limpar o texto"
+msgstr "Limpar o texto."
 
 #: appTools/ToolShell.py:91 appTools/ToolShell.py:93
 msgid "...processing..."
@@ -16972,7 +16935,7 @@ msgstr "Você tem certeza de que quer alterar o idioma para"
 msgid "Apply Language ..."
 msgstr "Aplicar o Idioma ..."
 
-#: appTranslation.py:205 app_Main.py:3153
+#: appTranslation.py:205 app_Main.py:3226
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -16980,21 +16943,21 @@ msgstr ""
 "Existem arquivos/objetos modificados no FlatCAM. \n"
 "Você quer salvar o projeto?"
 
-#: appTranslation.py:208 app_Main.py:3156 app_Main.py:6446
+#: appTranslation.py:208 app_Main.py:3229 app_Main.py:6535
 msgid "Save changes"
 msgstr "Salvar alterações"
 
-#: app_Main.py:478
+#: app_Main.py:479
 msgid "FlatCAM is initializing ..."
 msgstr "FlatCAM está inicializando...."
 
-#: app_Main.py:622
+#: app_Main.py:623
 msgid "Could not find the Language files. The App strings are missing."
 msgstr ""
 "Não foi possível encontrar os arquivos de idioma. Estão faltando as strings "
 "do aplicativo."
 
-#: app_Main.py:694
+#: app_Main.py:695
 msgid ""
 "FlatCAM is initializing ...\n"
 "Canvas initialization started."
@@ -17002,7 +16965,7 @@ msgstr ""
 "FlatCAM está inicializando....\n"
 "Inicialização do Canvas iniciada."
 
-#: app_Main.py:714
+#: app_Main.py:715
 msgid ""
 "FlatCAM is initializing ...\n"
 "Canvas initialization started.\n"
@@ -17012,43 +16975,43 @@ msgstr ""
 "Inicialização do Canvas iniciada.\n"
 "Inicialização do Canvas concluída em"
 
-#: app_Main.py:1560 app_Main.py:6559
+#: app_Main.py:1561 app_Main.py:6648
 msgid "New Project - Not saved"
 msgstr "Novo Projeto - Não salvo"
 
-#: app_Main.py:1661
+#: app_Main.py:1662
 msgid ""
 "Found old default preferences files. Please reboot the application to update."
 msgstr ""
 "Arquivos de preferências padrão antigos encontrados. Por favor, reinicie o "
 "aplicativo para atualizar."
 
-#: app_Main.py:1728
+#: app_Main.py:1729
 msgid "Open Config file failed."
 msgstr "Falha ao abrir o arquivo de Configuração."
 
-#: app_Main.py:1743
+#: app_Main.py:1744
 msgid "Open Script file failed."
 msgstr "Falha ao abrir o arquivo de Script."
 
-#: app_Main.py:1769
+#: app_Main.py:1770
 msgid "Open Excellon file failed."
 msgstr "Falha ao abrir o arquivo Excellon."
 
-#: app_Main.py:1782
+#: app_Main.py:1783
 msgid "Open GCode file failed."
 msgstr "Falha ao abrir o arquivo G-Code."
 
-#: app_Main.py:1795
+#: app_Main.py:1796
 msgid "Open Gerber file failed."
 msgstr "Falha ao abrir o arquivo Gerber."
 
-#: app_Main.py:2118
+#: app_Main.py:2119
 msgid "Select a Geometry, Gerber, Excellon or CNCJob Object to edit."
 msgstr ""
 "Selecione um Objeto Geometria, Gerber, Excellon ou Trabalho CNC para editar."
 
-#: app_Main.py:2133
+#: app_Main.py:2134
 msgid ""
 "Simultaneous editing of tools geometry in a MultiGeo Geometry is not "
 "possible.\n"
@@ -17058,91 +17021,91 @@ msgstr ""
 "possível. \n"
 "Edite apenas uma geometria por vez."
 
-#: app_Main.py:2199
+#: app_Main.py:2200
 msgid "Editor is activated ..."
 msgstr "Editor está ativado ..."
 
-#: app_Main.py:2220
+#: app_Main.py:2221
 msgid "Do you want to save the edited object?"
 msgstr "Você quer salvar o objeto editado?"
 
-#: app_Main.py:2256
+#: app_Main.py:2257
 msgid "Object empty after edit."
 msgstr "Objeto vazio após a edição."
 
-#: app_Main.py:2261 app_Main.py:2279 app_Main.py:2298
+#: app_Main.py:2262 app_Main.py:2280 app_Main.py:2299
 msgid "Editor exited. Editor content saved."
 msgstr "Editor fechado. Conteúdo salvo."
 
-#: app_Main.py:2302 app_Main.py:2326 app_Main.py:2344
+#: app_Main.py:2303 app_Main.py:2327 app_Main.py:2345
 msgid "Select a Gerber, Geometry or Excellon Object to update."
 msgstr "Selecione um objeto Gerber, Geometria ou Excellon para atualizar."
 
-#: app_Main.py:2305
+#: app_Main.py:2306
 msgid "is updated, returning to App..."
 msgstr "está atualizado, retornando ao App..."
 
-#: app_Main.py:2312
+#: app_Main.py:2313
 msgid "Editor exited. Editor content was not saved."
 msgstr "Editor fechado. Conteúdo não salvo."
 
-#: app_Main.py:2445 app_Main.py:2449
+#: app_Main.py:2446 app_Main.py:2450
 msgid "Import FlatCAM Preferences"
 msgstr "Importar Preferências do FlatCAM"
 
-#: app_Main.py:2460
+#: app_Main.py:2461
 msgid "Imported Defaults from"
 msgstr "Padrões importados de"
 
-#: app_Main.py:2480 app_Main.py:2486
+#: app_Main.py:2481 app_Main.py:2487
 msgid "Export FlatCAM Preferences"
 msgstr "Exportar Preferências do FlatCAM"
 
-#: app_Main.py:2506
+#: app_Main.py:2507
 msgid "Exported preferences to"
 msgstr "Preferências exportadas para"
 
-#: app_Main.py:2526 app_Main.py:2531
+#: app_Main.py:2527 app_Main.py:2532
 msgid "Save to file"
 msgstr "Salvar em arquivo"
 
-#: app_Main.py:2555
+#: app_Main.py:2556
 msgid "Could not load the file."
 msgstr "Não foi possível carregar o arquivo."
 
-#: app_Main.py:2571
+#: app_Main.py:2572
 msgid "Exported file to"
 msgstr "Arquivo exportado para"
 
-#: app_Main.py:2608
+#: app_Main.py:2609
 msgid "Failed to open recent files file for writing."
 msgstr "Falha ao abrir o arquivo com lista de arquivos recentes para gravação."
 
-#: app_Main.py:2619
+#: app_Main.py:2620
 msgid "Failed to open recent projects file for writing."
 msgstr "Falha ao abrir o arquivo com lista de projetos recentes para gravação."
 
-#: app_Main.py:2674
+#: app_Main.py:2675
 msgid "2D Computer-Aided Printed Circuit Board Manufacturing"
 msgstr "Fabricação de Placas de Circuito Impresso 2D Assistida por Computador"
 
-#: app_Main.py:2675
+#: app_Main.py:2676
 msgid "Development"
 msgstr "Desenvolvimento"
 
-#: app_Main.py:2676
+#: app_Main.py:2677
 msgid "DOWNLOAD"
 msgstr "DOWNLOAD"
 
-#: app_Main.py:2677
+#: app_Main.py:2678
 msgid "Issue tracker"
 msgstr "Rastreador de problemas"
 
-#: app_Main.py:2696
+#: app_Main.py:2697
 msgid "Licensed under the MIT license"
 msgstr "Licenciado sob licença do MIT"
 
-#: app_Main.py:2705
+#: app_Main.py:2706
 msgid ""
 "Permission is hereby granted, free of charge, to any person obtaining a "
 "copy\n"
@@ -17190,7 +17153,7 @@ msgstr ""
 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
 "THE SOFTWARE."
 
-#: app_Main.py:2727
+#: app_Main.py:2728
 msgid ""
 "Some of the icons used are from the following sources:<br><div>Icons by <a "
 "href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</"
@@ -17212,63 +17175,123 @@ msgstr ""
 "perfect</a> de <a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www."
 "flaticon.com</a></div>"
 
-#: app_Main.py:2763
+#: app_Main.py:2764
 msgid "Splash"
 msgstr "Abertura"
 
-#: app_Main.py:2769
+#: app_Main.py:2770
 msgid "Programmers"
 msgstr "Programadores"
 
-#: app_Main.py:2775
+#: app_Main.py:2776
 msgid "Translators"
 msgstr "Tradutores"
 
-#: app_Main.py:2781
+#: app_Main.py:2782
 msgid "License"
 msgstr "Licença"
 
-#: app_Main.py:2787
+#: app_Main.py:2788
 msgid "Attributions"
 msgstr "Atribuições"
 
-#: app_Main.py:2810
+#: app_Main.py:2811
 msgid "Programmer"
 msgstr "Programador"
 
-#: app_Main.py:2811
+#: app_Main.py:2812
 msgid "Status"
 msgstr "Status"
 
-#: app_Main.py:2812 app_Main.py:2892
+#: app_Main.py:2813 app_Main.py:2893
 msgid "E-mail"
 msgstr "E-mail"
 
-#: app_Main.py:2815
+#: app_Main.py:2816
 msgid "Program Author"
 msgstr "Autor do Programa"
 
-#: app_Main.py:2820
+#: app_Main.py:2821
 msgid "BETA Maintainer >= 2019"
 msgstr "Mantenedor BETA >= 2019"
 
-#: app_Main.py:2889
+#: app_Main.py:2890
 msgid "Language"
 msgstr "Idioma"
 
-#: app_Main.py:2890
+#: app_Main.py:2891
 msgid "Translator"
 msgstr "Tradutor"
 
-#: app_Main.py:2891
+#: app_Main.py:2892
 msgid "Corrections"
 msgstr "Correções"
 
-#: app_Main.py:2965
+#: app_Main.py:2972
 msgid "Important Information's"
 msgstr "Informações Importantes"
 
-#: app_Main.py:3113
+#: app_Main.py:2994
+#, python-format
+msgid "This program is %s and free in a very wide meaning of the word."
+msgstr ""
+"Este programa é %s e gratuito, com um significado muito amplo da palavra."
+
+#: app_Main.py:2995
+msgid "Yet it cannot evolve without <b>contributions</b>."
+msgstr "No entanto, não pode evoluir sem <b> contribuições </b>."
+
+#: app_Main.py:2996
+msgid "If you want to see this application grow and become better and better"
+msgstr "Se você quiser ver esse aplicativo crescer e se tornar cada vez melhor"
+
+#: app_Main.py:2997
+msgid "you can <b>contribute</b> to the development yourself by:"
+msgstr "você pode <b> contribuir </b> para o desenvolvimento por:"
+
+#: app_Main.py:2998
+msgid "Pull Requests on the Bitbucket repository, if you are a developer"
+msgstr "Solicitações Pull no repositório Bitbucket, se você é um desenvolvedor"
+
+#: app_Main.py:3000
+msgid "Bug Reports by providing the steps required to reproduce the bug"
+msgstr ""
+"Relatórios de erros, fornecendo as etapas necessárias para reproduzir o erro"
+
+#: app_Main.py:3002
+msgid "If you like or use this program you can make a donation"
+msgstr "Se você gosta ou usa este programa, pode fazer uma doação"
+
+#: app_Main.py:3004
+#, python-format
+msgid "You don't have to make a donation %s, and it is totally optional but:"
+msgstr "Você não precisa fazer uma doação %s, e é totalmente opcional, mas:"
+
+#: app_Main.py:3005
+msgid "it will be welcomed with joy"
+msgstr "será recebido com alegria"
+
+#: app_Main.py:3006
+msgid "it will give me a reason to continue"
+msgstr "isso me dará uma razão para continuar"
+
+#: app_Main.py:3036
+msgid "Contribute"
+msgstr "Contribuir"
+
+#: app_Main.py:3059
+msgid "Links Exchange"
+msgstr "Troca de Links"
+
+#: app_Main.py:3071 app_Main.py:3090
+msgid "Soon ..."
+msgstr "Em breve ..."
+
+#: app_Main.py:3078
+msgid "How To's"
+msgstr "How To's"
+
+#: app_Main.py:3186
 msgid ""
 "This entry will resolve to another website if:\n"
 "\n"
@@ -17288,33 +17311,33 @@ msgstr ""
 "Se você não conseguir obter informações sobre o FlatCAM beta\n"
 "use o link do canal do YouTube no menu Ajuda."
 
-#: app_Main.py:3120
+#: app_Main.py:3193
 msgid "Alternative website"
 msgstr "Site alternativo"
 
-#: app_Main.py:3455
+#: app_Main.py:3544
 msgid "Selected Excellon file extensions registered with FlatCAM."
 msgstr ""
 "As extensões de arquivo Excellon selecionadas foram registradas para o "
 "FlatCAM."
 
-#: app_Main.py:3477
+#: app_Main.py:3566
 msgid "Selected GCode file extensions registered with FlatCAM."
 msgstr ""
 "As extensões de arquivo G-Code selecionadas foram registradas para o FlatCAM."
 
-#: app_Main.py:3499
+#: app_Main.py:3588
 msgid "Selected Gerber file extensions registered with FlatCAM."
 msgstr ""
 "As extensões de arquivo Gerber selecionadas foram registradas para o FlatCAM."
 
-#: app_Main.py:3687 app_Main.py:3746 app_Main.py:3774
+#: app_Main.py:3776 app_Main.py:3835 app_Main.py:3863
 msgid "At least two objects are required for join. Objects currently selected"
 msgstr ""
 "São necessários pelo menos dois objetos para unir. Objetos atualmente "
 "selecionados"
 
-#: app_Main.py:3696
+#: app_Main.py:3785
 msgid ""
 "Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -17330,47 +17353,47 @@ msgstr ""
 "perdidas e o resultado pode não ser o esperado.\n"
 "Verifique o G-CODE gerado."
 
-#: app_Main.py:3708 app_Main.py:3718
+#: app_Main.py:3797 app_Main.py:3807
 msgid "Geometry merging finished"
 msgstr "Fusão de geometria concluída"
 
-#: app_Main.py:3741
+#: app_Main.py:3830
 msgid "Failed. Excellon joining works only on Excellon objects."
 msgstr "Falha. A união de Excellon funciona apenas em objetos Excellon."
 
-#: app_Main.py:3751
+#: app_Main.py:3840
 msgid "Excellon merging finished"
 msgstr "Fusão de Excellon concluída"
 
-#: app_Main.py:3769
+#: app_Main.py:3858
 msgid "Failed. Gerber joining works only on Gerber objects."
 msgstr "Falha. A união de Gerber funciona apenas em objetos Gerber."
 
-#: app_Main.py:3779
+#: app_Main.py:3868
 msgid "Gerber merging finished"
 msgstr "Fusão de Gerber concluída"
 
-#: app_Main.py:3799 app_Main.py:3836
+#: app_Main.py:3888 app_Main.py:3925
 msgid "Failed. Select a Geometry Object and try again."
 msgstr "Falha. Selecione um Objeto de Geometria e tente novamente."
 
-#: app_Main.py:3803 app_Main.py:3841
+#: app_Main.py:3892 app_Main.py:3930
 msgid "Expected a GeometryObject, got"
 msgstr "Geometria FlatCAM esperada, recebido"
 
-#: app_Main.py:3818
+#: app_Main.py:3907
 msgid "A Geometry object was converted to MultiGeo type."
 msgstr "Um objeto Geometria foi convertido para o tipo MultiGeo."
 
-#: app_Main.py:3856
+#: app_Main.py:3945
 msgid "A Geometry object was converted to SingleGeo type."
 msgstr "Um objeto Geometria foi convertido para o tipo Único."
 
-#: app_Main.py:4063
+#: app_Main.py:4152
 msgid "Toggle Units"
 msgstr "Alternar Unidades"
 
-#: app_Main.py:4067
+#: app_Main.py:4156
 msgid ""
 "Changing the units of the project\n"
 "will scale all objects.\n"
@@ -17382,28 +17405,28 @@ msgstr ""
 "\n"
 "Você quer continuar?"
 
-#: app_Main.py:4070 app_Main.py:4257 app_Main.py:4340 app_Main.py:6844
-#: app_Main.py:6860 app_Main.py:7198 app_Main.py:7210
+#: app_Main.py:4159 app_Main.py:4346 app_Main.py:4429 app_Main.py:6933
+#: app_Main.py:6949 app_Main.py:7287 app_Main.py:7299
 msgid "Ok"
 msgstr "Ok"
 
-#: app_Main.py:4120
+#: app_Main.py:4209
 msgid "Converted units to"
 msgstr "Unidades convertidas para"
 
-#: app_Main.py:4155
+#: app_Main.py:4244
 msgid "Detachable Tabs"
 msgstr "Abas Destacáveis"
 
-#: app_Main.py:4184
+#: app_Main.py:4273
 msgid "Workspace enabled."
 msgstr "Área de trabalho habilitada."
 
-#: app_Main.py:4187
+#: app_Main.py:4276
 msgid "Workspace disabled."
 msgstr "Área de trabalho desabilitada."
 
-#: app_Main.py:4251
+#: app_Main.py:4340
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -17411,11 +17434,11 @@ msgstr ""
 "Adicionar Ferramenta funciona somente no modo Avançado.\n"
 "Vá em Preferências -> Geral - Mostrar Opções Avançadas."
 
-#: app_Main.py:4333
+#: app_Main.py:4422
 msgid "Delete objects"
 msgstr "Excluir objetos"
 
-#: app_Main.py:4338
+#: app_Main.py:4427
 msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
@@ -17423,86 +17446,86 @@ msgstr ""
 "Você tem certeza de que deseja excluir permanentemente\n"
 "os objetos selecionados?"
 
-#: app_Main.py:4382
+#: app_Main.py:4471
 msgid "Object(s) deleted"
 msgstr "Objeto(s) excluído(s)"
 
-#: app_Main.py:4386
+#: app_Main.py:4475
 msgid "Save the work in Editor and try again ..."
 msgstr "Salve o trabalho no Editor e tente novamente ..."
 
-#: app_Main.py:4415
+#: app_Main.py:4504
 msgid "Object deleted"
 msgstr "Objeto excluído"
 
-#: app_Main.py:4442
+#: app_Main.py:4531
 msgid "Click to set the origin ..."
 msgstr "Clique para definir a origem ..."
 
-#: app_Main.py:4464
+#: app_Main.py:4553
 msgid "Setting Origin..."
 msgstr "Definindo Origem..."
 
-#: app_Main.py:4477 app_Main.py:4579
+#: app_Main.py:4566 app_Main.py:4668
 msgid "Origin set"
 msgstr "Origem definida"
 
-#: app_Main.py:4494
+#: app_Main.py:4583
 msgid "Origin coordinates specified but incomplete."
 msgstr "Coordenadas de origem especificadas, mas incompletas."
 
-#: app_Main.py:4535
+#: app_Main.py:4624
 msgid "Moving to Origin..."
 msgstr "Movendo para Origem..."
 
-#: app_Main.py:4616
+#: app_Main.py:4705
 msgid "Jump to ..."
 msgstr "Pular para ..."
 
-#: app_Main.py:4617
+#: app_Main.py:4706
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Digite as coordenadas no formato X,Y:"
 
-#: app_Main.py:4627
+#: app_Main.py:4716
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Coordenadas erradas. Insira as coordenadas no formato X,Y"
 
-#: app_Main.py:4745
+#: app_Main.py:4834
 msgid "Bottom-Left"
 msgstr "Esquerda Inferior"
 
-#: app_Main.py:4748
+#: app_Main.py:4837
 msgid "Top-Right"
 msgstr "Direita Superior"
 
-#: app_Main.py:4769
+#: app_Main.py:4858
 msgid "Locate ..."
 msgstr "Localizar ..."
 
-#: app_Main.py:5042 app_Main.py:5119
+#: app_Main.py:5131 app_Main.py:5208
 msgid "No object is selected. Select an object and try again."
 msgstr "Nenhum objeto está selecionado. Selecione um objeto e tente novamente."
 
-#: app_Main.py:5145
+#: app_Main.py:5234
 msgid ""
 "Aborting. The current task will be gracefully closed as soon as possible..."
 msgstr ""
 "Abortando. A tarefa atual será fechada normalmente o mais rápido possível ..."
 
-#: app_Main.py:5151
+#: app_Main.py:5240
 msgid "The current task was gracefully closed on user request..."
 msgstr ""
 "A tarefa atual foi fechada normalmente mediante solicitação do usuário ..."
 
-#: app_Main.py:5326
+#: app_Main.py:5415
 msgid "Tools in Tools Database edited but not saved."
 msgstr "Ferramenta editada, mas não salva."
 
-#: app_Main.py:5365
+#: app_Main.py:5454
 msgid "Adding tool from DB is not allowed for this object."
 msgstr "Adição de ferramenta do Banco de Dados não permitida para este objeto."
 
-#: app_Main.py:5383
+#: app_Main.py:5472
 msgid ""
 "One or more Tools are edited.\n"
 "Do you want to update the Tools Database?"
@@ -17510,113 +17533,113 @@ msgstr ""
 "Um ou mais Ferramentas foram editadas.\n"
 "Você deseja salvar o Banco de Dados de Ferramentas?"
 
-#: app_Main.py:5385
+#: app_Main.py:5474
 msgid "Save Tools Database"
 msgstr "Salvar Banco de Dados"
 
-#: app_Main.py:5439
+#: app_Main.py:5528
 msgid "No object selected to Flip on Y axis."
 msgstr "Nenhum objeto selecionado para Espelhar no eixo Y."
 
-#: app_Main.py:5465
+#: app_Main.py:5554
 msgid "Flip on Y axis done."
 msgstr "Espelhado no eixo Y."
 
-#: app_Main.py:5487
+#: app_Main.py:5576
 msgid "No object selected to Flip on X axis."
 msgstr "Nenhum objeto selecionado para Espelhar no eixo X."
 
-#: app_Main.py:5513
+#: app_Main.py:5602
 msgid "Flip on X axis done."
 msgstr "Espelhado no eixo X."
 
-#: app_Main.py:5535
+#: app_Main.py:5624
 msgid "No object selected to Rotate."
 msgstr "Nenhum objeto selecionado para Girar."
 
-#: app_Main.py:5538 app_Main.py:5589 app_Main.py:5626
+#: app_Main.py:5627 app_Main.py:5678 app_Main.py:5715
 msgid "Transform"
 msgstr "Transformar"
 
-#: app_Main.py:5538 app_Main.py:5589 app_Main.py:5626
+#: app_Main.py:5627 app_Main.py:5678 app_Main.py:5715
 msgid "Enter the Angle value:"
 msgstr "Digite o valor do Ângulo:"
 
-#: app_Main.py:5568
+#: app_Main.py:5657
 msgid "Rotation done."
 msgstr "Rotação realizada."
 
-#: app_Main.py:5570
+#: app_Main.py:5659
 msgid "Rotation movement was not executed."
 msgstr "O movimento de rotação não foi executado."
 
-#: app_Main.py:5587
+#: app_Main.py:5676
 msgid "No object selected to Skew/Shear on X axis."
 msgstr "Nenhum objeto selecionado para Inclinar no eixo X."
 
-#: app_Main.py:5608
+#: app_Main.py:5697
 msgid "Skew on X axis done."
 msgstr "Inclinação no eixo X concluída."
 
-#: app_Main.py:5624
+#: app_Main.py:5713
 msgid "No object selected to Skew/Shear on Y axis."
 msgstr "Nenhum objeto selecionado para Inclinar no eixo Y."
 
-#: app_Main.py:5645
+#: app_Main.py:5734
 msgid "Skew on Y axis done."
 msgstr "Inclinação no eixo Y concluída."
 
-#: app_Main.py:5723
+#: app_Main.py:5812
 msgid "New Grid ..."
 msgstr "Nova Grade ..."
 
-#: app_Main.py:5724
+#: app_Main.py:5813
 msgid "Enter a Grid Value:"
 msgstr "Digite um valor para grade:"
 
-#: app_Main.py:5732 app_Main.py:5756
+#: app_Main.py:5821 app_Main.py:5845
 msgid "Please enter a grid value with non-zero value, in Float format."
 msgstr ""
 "Por favor, insira um valor de grade com valor diferente de zero, no formato "
 "Flutuante."
 
-#: app_Main.py:5737
+#: app_Main.py:5826
 msgid "New Grid added"
 msgstr "Nova Grade adicionada"
 
-#: app_Main.py:5739
+#: app_Main.py:5828
 msgid "Grid already exists"
 msgstr "Grade já existe"
 
-#: app_Main.py:5741
+#: app_Main.py:5830
 msgid "Adding New Grid cancelled"
 msgstr "Adicionar nova grade cancelada"
 
-#: app_Main.py:5762
+#: app_Main.py:5851
 msgid " Grid Value does not exist"
 msgstr " O valor da grade não existe"
 
-#: app_Main.py:5764
+#: app_Main.py:5853
 msgid "Grid Value deleted"
 msgstr "Grade apagada"
 
-#: app_Main.py:5766
+#: app_Main.py:5855
 msgid "Delete Grid value cancelled"
 msgstr "Excluir valor de grade cancelado"
 
-#: app_Main.py:5772
+#: app_Main.py:5861
 msgid "Key Shortcut List"
 msgstr "Lista de Teclas de Atalho"
 
-#: app_Main.py:5806
+#: app_Main.py:5895
 msgid " No object selected to copy it's name"
 msgstr " Nenhum objeto selecionado para copiar nome"
 
-#: app_Main.py:5810
+#: app_Main.py:5899
 msgid "Name copied on clipboard ..."
 msgstr "Nome copiado para a área de transferência..."
 
-#: app_Main.py:6443
+#: app_Main.py:6532
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -17626,12 +17649,12 @@ msgstr ""
 "Criar um novo projeto irá apagá-los.\n"
 "Você deseja Salvar o Projeto?"
 
-#: app_Main.py:6466
+#: app_Main.py:6555
 msgid "New Project created"
 msgstr "Novo Projeto criado"
 
-#: app_Main.py:6638 app_Main.py:6677 app_Main.py:6721 app_Main.py:6791
-#: app_Main.py:7585 app_Main.py:8798 app_Main.py:8860
+#: app_Main.py:6727 app_Main.py:6766 app_Main.py:6810 app_Main.py:6880
+#: app_Main.py:7674 app_Main.py:8887 app_Main.py:8949
 msgid ""
 "Canvas initialization started.\n"
 "Canvas initialization finished in"
@@ -17639,289 +17662,289 @@ msgstr ""
 "Inicialização do Canvas iniciada.\n"
 "Inicialização do Canvas concluída em"
 
-#: app_Main.py:6640
+#: app_Main.py:6729
 msgid "Opening Gerber file."
 msgstr "Abrindo Arquivo Gerber."
 
-#: app_Main.py:6679
+#: app_Main.py:6768
 msgid "Opening Excellon file."
 msgstr "Abrindo Arquivo Excellon."
 
-#: app_Main.py:6710 app_Main.py:6715
+#: app_Main.py:6799 app_Main.py:6804
 msgid "Open G-Code"
 msgstr "Abrir G-Code"
 
-#: app_Main.py:6723
+#: app_Main.py:6812
 msgid "Opening G-Code file."
 msgstr "Abrindo Arquivo G-Code."
 
-#: app_Main.py:6782 app_Main.py:6786
+#: app_Main.py:6871 app_Main.py:6875
 msgid "Open HPGL2"
 msgstr "Abrir HPGL2"
 
-#: app_Main.py:6793
+#: app_Main.py:6882
 msgid "Opening HPGL2 file."
 msgstr "Abrindo Arquivo HPGL2 ."
 
-#: app_Main.py:6816 app_Main.py:6819
+#: app_Main.py:6905 app_Main.py:6908
 msgid "Open Configuration File"
 msgstr "Abrir Arquivo de Configuração"
 
-#: app_Main.py:6839 app_Main.py:7193
+#: app_Main.py:6928 app_Main.py:7282
 msgid "Please Select a Geometry object to export"
 msgstr "Por favor, selecione um objeto Geometria para exportar"
 
-#: app_Main.py:6855
+#: app_Main.py:6944
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "Somente objetos Geometria, Gerber e Trabalho CNC podem ser usados."
 
-#: app_Main.py:6900
+#: app_Main.py:6989
 msgid "Data must be a 3D array with last dimension 3 or 4"
 msgstr "Os dados devem ser uma matriz 3D com a última dimensão 3 ou 4"
 
-#: app_Main.py:6906 app_Main.py:6910
+#: app_Main.py:6995 app_Main.py:6999
 msgid "Export PNG Image"
 msgstr "Exportar Imagem PNG"
 
-#: app_Main.py:6943 app_Main.py:7153
+#: app_Main.py:7032 app_Main.py:7242
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr ""
 "Falhou. Somente objetos Gerber podem ser salvos como arquivos Gerber..."
 
-#: app_Main.py:6955
+#: app_Main.py:7044
 msgid "Save Gerber source file"
 msgstr "Salvar arquivo fonte Gerber"
 
-#: app_Main.py:6984
+#: app_Main.py:7073
 msgid "Failed. Only Script objects can be saved as TCL Script files..."
 msgstr "Falhou. Somente Scripts podem ser salvos como arquivos Scripts TCL..."
 
-#: app_Main.py:6996
+#: app_Main.py:7085
 msgid "Save Script source file"
 msgstr "Salvar arquivo fonte do Script"
 
-#: app_Main.py:7025
+#: app_Main.py:7114
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
 "Falhou. Somente objetos Documentos podem ser salvos como arquivos "
 "Documentos..."
 
-#: app_Main.py:7037
+#: app_Main.py:7126
 msgid "Save Document source file"
 msgstr "Salvar o arquivo fonte Documento"
 
-#: app_Main.py:7067 app_Main.py:7109 app_Main.py:8068
+#: app_Main.py:7156 app_Main.py:7198 app_Main.py:8157
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "Falhou. Somente objetos Excellon podem ser salvos como arquivos Excellon..."
 
-#: app_Main.py:7075 app_Main.py:7080
+#: app_Main.py:7164 app_Main.py:7169
 msgid "Save Excellon source file"
 msgstr "Salvar o arquivo fonte Excellon"
 
-#: app_Main.py:7117 app_Main.py:7121
+#: app_Main.py:7206 app_Main.py:7210
 msgid "Export Excellon"
 msgstr "Exportar Excellon"
 
-#: app_Main.py:7161 app_Main.py:7165
+#: app_Main.py:7250 app_Main.py:7254
 msgid "Export Gerber"
 msgstr "Exportar Gerber"
 
-#: app_Main.py:7205
+#: app_Main.py:7294
 msgid "Only Geometry objects can be used."
 msgstr "Apenas objetos Geometria podem ser usados."
 
-#: app_Main.py:7221 app_Main.py:7225
+#: app_Main.py:7310 app_Main.py:7314
 msgid "Export DXF"
 msgstr "Exportar DXF"
 
-#: app_Main.py:7250 app_Main.py:7253
+#: app_Main.py:7339 app_Main.py:7342
 msgid "Import SVG"
 msgstr "Importar SVG"
 
-#: app_Main.py:7281 app_Main.py:7285
+#: app_Main.py:7370 app_Main.py:7374
 msgid "Import DXF"
 msgstr "Importar DXF"
 
-#: app_Main.py:7335
+#: app_Main.py:7424
 msgid "Viewing the source code of the selected object."
 msgstr "Vendo o código fonte do objeto selecionado."
 
-#: app_Main.py:7342 app_Main.py:7346
+#: app_Main.py:7431 app_Main.py:7435
 msgid "Select an Gerber or Excellon file to view it's source file."
 msgstr ""
 "Selecione um arquivo Gerber ou Excellon para visualizar o arquivo fonte."
 
-#: app_Main.py:7360
+#: app_Main.py:7449
 msgid "Source Editor"
 msgstr "Editor de Fontes"
 
-#: app_Main.py:7400 app_Main.py:7407
+#: app_Main.py:7489 app_Main.py:7496
 msgid "There is no selected object for which to see it's source file code."
 msgstr "Nenhum objeto selecionado para ver o código fonte do arquivo."
 
-#: app_Main.py:7419
+#: app_Main.py:7508
 msgid "Failed to load the source code for the selected object"
 msgstr "Falha ao ler o código fonte do objeto selecionado"
 
-#: app_Main.py:7455
+#: app_Main.py:7544
 msgid "Go to Line ..."
 msgstr "Ir para Linha ..."
 
-#: app_Main.py:7456
+#: app_Main.py:7545
 msgid "Line:"
 msgstr "Linha:"
 
-#: app_Main.py:7483
+#: app_Main.py:7572
 msgid "New TCL script file created in Code Editor."
 msgstr "Novo arquivo de script TCL criado no Editor de Códigos."
 
-#: app_Main.py:7519 app_Main.py:7521 app_Main.py:7557 app_Main.py:7559
+#: app_Main.py:7608 app_Main.py:7610 app_Main.py:7646 app_Main.py:7648
 msgid "Open TCL script"
 msgstr "Abrir script TCL"
 
-#: app_Main.py:7587
+#: app_Main.py:7676
 msgid "Executing ScriptObject file."
 msgstr "Executando arquivo de Script FlatCAM."
 
-#: app_Main.py:7595 app_Main.py:7598
+#: app_Main.py:7684 app_Main.py:7687
 msgid "Run TCL script"
 msgstr "Executar script TCL"
 
-#: app_Main.py:7621
+#: app_Main.py:7710
 msgid "TCL script file opened in Code Editor and executed."
 msgstr "Arquivo de script TCL aberto no Editor de Código e executado."
 
-#: app_Main.py:7672 app_Main.py:7678
+#: app_Main.py:7761 app_Main.py:7767
 msgid "Save Project As ..."
 msgstr "Salvar Projeto Como..."
 
-#: app_Main.py:7713
+#: app_Main.py:7802
 msgid "FlatCAM objects print"
 msgstr "Objetos FlatCAM imprimem"
 
-#: app_Main.py:7726 app_Main.py:7733
+#: app_Main.py:7815 app_Main.py:7822
 msgid "Save Object as PDF ..."
 msgstr "Salvar objeto como PDF ..."
 
-#: app_Main.py:7742
+#: app_Main.py:7831
 msgid "Printing PDF ... Please wait."
 msgstr "Imprimindo PDF ... Aguarde."
 
-#: app_Main.py:7921
+#: app_Main.py:8010
 msgid "PDF file saved to"
 msgstr "Arquivo PDF salvo em"
 
-#: app_Main.py:7946
+#: app_Main.py:8035
 msgid "Exporting SVG"
 msgstr "Exportando SVG"
 
-#: app_Main.py:7989
+#: app_Main.py:8078
 msgid "SVG file exported to"
 msgstr "Arquivo SVG exportado para"
 
-#: app_Main.py:8015
+#: app_Main.py:8104
 msgid ""
 "Save cancelled because source file is empty. Try to export the Gerber file."
 msgstr ""
 "Salvar cancelado porque o arquivo de origem está vazio. Tente exportar o "
 "arquivo Gerber."
 
-#: app_Main.py:8162
+#: app_Main.py:8251
 msgid "Excellon file exported to"
 msgstr "Arquivo Excellon exportado para"
 
-#: app_Main.py:8171
+#: app_Main.py:8260
 msgid "Exporting Excellon"
 msgstr "Exportando Excellon"
 
-#: app_Main.py:8176 app_Main.py:8183
+#: app_Main.py:8265 app_Main.py:8272
 msgid "Could not export Excellon file."
 msgstr "Não foi possível exportar o arquivo Excellon."
 
-#: app_Main.py:8298
+#: app_Main.py:8387
 msgid "Gerber file exported to"
 msgstr "Arquivo Gerber exportado para"
 
-#: app_Main.py:8306
+#: app_Main.py:8395
 msgid "Exporting Gerber"
 msgstr "Exportando Gerber"
 
-#: app_Main.py:8311 app_Main.py:8318
+#: app_Main.py:8400 app_Main.py:8407
 msgid "Could not export Gerber file."
 msgstr "Não foi possível exportar o arquivo Gerber."
 
-#: app_Main.py:8353
+#: app_Main.py:8442
 msgid "DXF file exported to"
 msgstr "Arquivo DXF exportado para"
 
-#: app_Main.py:8359
+#: app_Main.py:8448
 msgid "Exporting DXF"
 msgstr "Exportando DXF"
 
-#: app_Main.py:8364 app_Main.py:8371
+#: app_Main.py:8453 app_Main.py:8460
 msgid "Could not export DXF file."
 msgstr "Não foi possível exportar o arquivo DXF."
 
-#: app_Main.py:8405
+#: app_Main.py:8494
 msgid "Importing SVG"
 msgstr "Importando SVG"
 
-#: app_Main.py:8413 app_Main.py:8459
+#: app_Main.py:8502 app_Main.py:8548
 msgid "Import failed."
 msgstr "Importação falhou."
 
-#: app_Main.py:8451
+#: app_Main.py:8540
 msgid "Importing DXF"
 msgstr "Importando DXF"
 
-#: app_Main.py:8492 app_Main.py:8687 app_Main.py:8752
+#: app_Main.py:8581 app_Main.py:8776 app_Main.py:8841
 msgid "Failed to open file"
 msgstr "Falha ao abrir o arquivo"
 
-#: app_Main.py:8495 app_Main.py:8690 app_Main.py:8755
+#: app_Main.py:8584 app_Main.py:8779 app_Main.py:8844
 msgid "Failed to parse file"
 msgstr "Falha ao analisar o arquivo"
 
-#: app_Main.py:8507
+#: app_Main.py:8596
 msgid "Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "O objeto não é um arquivo Gerber ou está vazio. Abortando a criação de "
 "objetos."
 
-#: app_Main.py:8512
+#: app_Main.py:8601
 msgid "Opening Gerber"
 msgstr "Abrindo Gerber"
 
-#: app_Main.py:8523
+#: app_Main.py:8612
 msgid "Open Gerber failed. Probable not a Gerber file."
 msgstr "Abrir Gerber falhou. Provavelmente não é um arquivo Gerber."
 
-#: app_Main.py:8559
+#: app_Main.py:8648
 msgid "Cannot open file"
 msgstr "Não é possível abrir o arquivo"
 
-#: app_Main.py:8580
+#: app_Main.py:8669
 msgid "Opening Excellon."
 msgstr "Abrindo Excellon."
 
-#: app_Main.py:8590
+#: app_Main.py:8679
 msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Falha ao abrir Excellon. Provavelmente não é um arquivo Excellon."
 
-#: app_Main.py:8622
+#: app_Main.py:8711
 msgid "Reading GCode file"
 msgstr "Lendo Arquivo G-Code"
 
-#: app_Main.py:8635
+#: app_Main.py:8724
 msgid "This is not GCODE"
 msgstr "Não é G-Code"
 
-#: app_Main.py:8640
+#: app_Main.py:8729
 msgid "Opening G-Code."
 msgstr "Abrindo G-Code."
 
-#: app_Main.py:8653
+#: app_Main.py:8742
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -17933,118 +17956,111 @@ msgstr ""
 "A tentativa de criar um objeto de Trabalho CNC do arquivo G-Code falhou "
 "durante o processamento"
 
-#: app_Main.py:8709
+#: app_Main.py:8798
 msgid "Object is not HPGL2 file or empty. Aborting object creation."
 msgstr ""
 "O objeto não é um arquivo HPGL2 ou está vazio. Interrompendo a criação de "
 "objetos."
 
-#: app_Main.py:8714
+#: app_Main.py:8803
 msgid "Opening HPGL2"
 msgstr "Abrindo o HPGL2"
 
-#: app_Main.py:8721
+#: app_Main.py:8810
 msgid " Open HPGL2 failed. Probable not a HPGL2 file."
 msgstr " Falha no HPGL2 aberto. Provavelmente não é um arquivo HPGL2."
 
-#: app_Main.py:8747
+#: app_Main.py:8836
 msgid "TCL script file opened in Code Editor."
 msgstr "Arquivo de script TCL aberto no Editor de Códigos."
 
-#: app_Main.py:8767
+#: app_Main.py:8856
 msgid "Opening TCL Script..."
 msgstr "Abrindo script TCL..."
 
-#: app_Main.py:8778
+#: app_Main.py:8867
 msgid "Failed to open TCL Script."
 msgstr "Falha ao abrir o Script TCL."
 
-#: app_Main.py:8800
+#: app_Main.py:8889
 msgid "Opening FlatCAM Config file."
 msgstr "Abrindo arquivo de Configuração."
 
-#: app_Main.py:8828
+#: app_Main.py:8917
 msgid "Failed to open config file"
 msgstr "Falha ao abrir o arquivo de configuração"
 
-#: app_Main.py:8857
+#: app_Main.py:8946
 msgid "Loading Project ... Please Wait ..."
 msgstr "Carregando projeto ... Por favor aguarde ..."
 
-#: app_Main.py:8862
+#: app_Main.py:8951
 msgid "Opening FlatCAM Project file."
 msgstr "Abrindo Projeto FlatCAM."
 
-#: app_Main.py:8877 app_Main.py:8881 app_Main.py:8898
+#: app_Main.py:8966 app_Main.py:8970 app_Main.py:8987
 msgid "Failed to open project file"
 msgstr "Falha ao abrir o arquivo de projeto"
 
-#: app_Main.py:8935
+#: app_Main.py:9024
 msgid "Loading Project ... restoring"
 msgstr "Carregando projeto ... restaurando"
 
-#: app_Main.py:8945
+#: app_Main.py:9034
 msgid "Project loaded from"
 msgstr "Projeto carregado de"
 
-#: app_Main.py:8971
+#: app_Main.py:9060
 msgid "Redrawing all objects"
 msgstr "Redesenha todos os objetos"
 
-#: app_Main.py:9059
+#: app_Main.py:9148
 msgid "Failed to load recent item list."
 msgstr "Falha ao carregar a lista de itens recentes."
 
-#: app_Main.py:9066
+#: app_Main.py:9155
 msgid "Failed to parse recent item list."
 msgstr "Falha ao analisar a lista de itens recentes."
 
-#: app_Main.py:9076
+#: app_Main.py:9165
 msgid "Failed to load recent projects item list."
 msgstr "Falha ao carregar a lista de projetos recentes."
 
-#: app_Main.py:9083
+#: app_Main.py:9172
 msgid "Failed to parse recent project item list."
 msgstr "Falha ao analisar a lista de projetos recentes."
 
-#: app_Main.py:9144
+#: app_Main.py:9233
 msgid "Clear Recent projects"
 msgstr "Limpar Projetos Recentes"
 
-#: app_Main.py:9168
+#: app_Main.py:9257
 msgid "Clear Recent files"
 msgstr "Limpar Arquivos Recentes"
 
-#: app_Main.py:9270
+#: app_Main.py:9359
 msgid "Selected Tab - Choose an Item from Project Tab"
 msgstr "Guia Selecionado - Escolha um item na guia Projeto"
 
-#: app_Main.py:9271
+#: app_Main.py:9360
 msgid "Details"
 msgstr "Detalhes"
 
-#: app_Main.py:9273
-#, fuzzy
-#| msgid "The normal flow when working in FlatCAM is the following:"
+#: app_Main.py:9362
 msgid "The normal flow when working with the application is the following:"
-msgstr "O fluxo normal ao trabalhar no FlatCAM é o seguinte:"
+msgstr "O fluxo normal ao trabalhar com o aplicativo é o seguinte:"
 
-#: app_Main.py:9274
-#, fuzzy
-#| msgid ""
-#| "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-#| "FlatCAM using either the toolbars, key shortcuts or even dragging and "
-#| "dropping the files on the GUI."
+#: app_Main.py:9363
 msgid ""
 "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
 "the application using either the toolbars, key shortcuts or even dragging "
 "and dropping the files on the GUI."
 msgstr ""
 "Abrir/Importar um arquivo Gerber, Excellon, G-Code, DXF, Raster Image ou SVG "
-"para o FlatCAM usando a barra de ferramentas, tecla de atalho ou arrastando "
-"e soltando um arquivo na GUI."
+"no aplicativo usando a barra de ferramentas, tecla de atalho ou arrastando e "
+"soltando um arquivo na GUI."
 
-#: app_Main.py:9277
+#: app_Main.py:9366
 msgid ""
 "You can also load a project by double clicking on the project file, drag and "
 "drop of the file into the GUI or through the menu (or toolbar) actions "
@@ -18054,7 +18070,7 @@ msgstr ""
 "usando o menu ou a barra de ferramentas ou arrastando e soltando um arquivo "
 "na GUI."
 
-#: app_Main.py:9280
+#: app_Main.py:9369
 msgid ""
 "Once an object is available in the Project Tab, by selecting it and then "
 "focusing on SELECTED TAB (more simpler is to double click the object name in "
@@ -18066,7 +18082,7 @@ msgstr ""
 "Projeto, a ABA SELECIONADO será atualizada com as propriedades do objeto de "
 "acordo com seu tipo: Gerber, Excellon, Geometria ou Trabalho CNC."
 
-#: app_Main.py:9284
+#: app_Main.py:9373
 msgid ""
 "If the selection of the object is done on the canvas by single click "
 "instead, and the SELECTED TAB is in focus, again the object properties will "
@@ -18080,14 +18096,14 @@ msgstr ""
 "na tela exibirá a ABA SELECIONADO e a preencherá mesmo que ela esteja fora "
 "de foco."
 
-#: app_Main.py:9288
+#: app_Main.py:9377
 msgid ""
 "You can change the parameters in this screen and the flow direction is like "
 "this:"
 msgstr ""
 "Você pode alterar os parâmetros nesta tela e a direção do fluxo é assim:"
 
-#: app_Main.py:9289
+#: app_Main.py:9378
 msgid ""
 "Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> "
 "Geometry Object --> Add tools (change param in Selected Tab) --> Generate "
@@ -18100,7 +18116,7 @@ msgstr ""
 "Código CNC) e/ou adicionar código no início ou no final do G-Code (na Aba "
 "Selecionado) --> Salvar G-Code."
 
-#: app_Main.py:9293
+#: app_Main.py:9382
 msgid ""
 "A list of key shortcuts is available through an menu entry in Help --> "
 "Shortcuts List or through its own key shortcut: <b>F3</b>."
@@ -18109,32 +18125,32 @@ msgstr ""
 "menu em Ajuda --> Lista de Atalhos ou através da sua própria tecla de "
 "atalho: <b>F3</b>."
 
-#: app_Main.py:9357
+#: app_Main.py:9446
 msgid "Failed checking for latest version. Could not connect."
 msgstr ""
 "Falha na verificação da versão mais recente. Não foi possível conectar."
 
-#: app_Main.py:9364
+#: app_Main.py:9453
 msgid "Could not parse information about latest version."
 msgstr "Não foi possível analisar informações sobre a versão mais recente."
 
-#: app_Main.py:9374
+#: app_Main.py:9463
 msgid "FlatCAM is up to date!"
 msgstr "O FlatCAM está atualizado!"
 
-#: app_Main.py:9379
+#: app_Main.py:9468
 msgid "Newer Version Available"
 msgstr "Nova Versão Disponível"
 
-#: app_Main.py:9381
+#: app_Main.py:9470
 msgid "There is a newer version of FlatCAM available for download:"
 msgstr "Existe uma versão nova do FlatCAM disponível para download:"
 
-#: app_Main.py:9385
+#: app_Main.py:9474
 msgid "info"
 msgstr "info"
 
-#: app_Main.py:9413
+#: app_Main.py:9502
 msgid ""
 "OpenGL canvas initialization failed. HW or HW configuration not supported."
 "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General "
@@ -18146,73 +18162,69 @@ msgstr ""
 "Preferências -> aba Geral.\n"
 "\n"
 
-#: app_Main.py:9491
+#: app_Main.py:9580
 msgid "All plots disabled."
 msgstr "Todos os gráficos desabilitados."
 
-#: app_Main.py:9498
+#: app_Main.py:9587
 msgid "All non selected plots disabled."
 msgstr "Todos os gráficos não selecionados desabilitados."
 
-#: app_Main.py:9505
+#: app_Main.py:9594
 msgid "All plots enabled."
 msgstr "Todos os gráficos habilitados."
 
-#: app_Main.py:9511
+#: app_Main.py:9600
 msgid "Selected plots enabled..."
 msgstr "Gráficos selecionados habilitados..."
 
-#: app_Main.py:9519
+#: app_Main.py:9608
 msgid "Selected plots disabled..."
 msgstr "Gráficos selecionados desabilitados..."
 
-#: app_Main.py:9552
+#: app_Main.py:9641
 msgid "Enabling plots ..."
 msgstr "Habilitando gráficos..."
 
-#: app_Main.py:9601
+#: app_Main.py:9690
 msgid "Disabling plots ..."
 msgstr "Desabilitando gráficos..."
 
-#: app_Main.py:9624
+#: app_Main.py:9713
 msgid "Working ..."
 msgstr "Trabalhando ..."
 
-#: app_Main.py:9733
+#: app_Main.py:9822
 msgid "Set alpha level ..."
 msgstr "Ajustar nível alfa ..."
 
-#: app_Main.py:9787
+#: app_Main.py:9876
 msgid "Saving FlatCAM Project"
 msgstr "Salvando o Projeto FlatCAM"
 
-#: app_Main.py:9808 app_Main.py:9844
+#: app_Main.py:9897 app_Main.py:9933
 msgid "Project saved to"
 msgstr "Projeto salvo em"
 
-#: app_Main.py:9815
+#: app_Main.py:9904
 msgid "The object is used by another application."
 msgstr "O objeto é usado por outro aplicativo."
 
-#: app_Main.py:9829
+#: app_Main.py:9918
 msgid "Failed to verify project file"
 msgstr "Falha ao verificar o arquivo do projeto"
 
-#: app_Main.py:9829 app_Main.py:9837 app_Main.py:9847
+#: app_Main.py:9918 app_Main.py:9926 app_Main.py:9936
 msgid "Retry to save it."
 msgstr "Tente salvá-lo novamente."
 
-#: app_Main.py:9837 app_Main.py:9847
+#: app_Main.py:9926 app_Main.py:9936
 msgid "Failed to parse saved project file"
 msgstr "Falha ao analisar o arquivo de projeto salvo"
 
 #: assets/linux/flatcam-beta.desktop:3
 msgid "FlatCAM Beta"
 msgstr "FlatCAM Beta"
-
-#: assets/linux/flatcam-beta.desktop:7
-msgid "./assets/icon.png"
-msgstr "./assets/icon.png"
 
 #: assets/linux/flatcam-beta.desktop:8
 msgid "G-Code from GERBERS"
@@ -18449,11 +18461,11 @@ msgstr "Criando Geometria a partir do arquivo G-Code analisado. "
 msgid "G91 coordinates not implemented ..."
 msgstr "Coordenadas G91 não implementadas..."
 
-#: defaults.py:784
+#: defaults.py:786
 msgid "Could not load defaults file."
 msgstr "Não foi possível carregar o arquivo com os padrões."
 
-#: defaults.py:797
+#: defaults.py:799
 msgid "Failed to parse defaults file."
 msgstr "Falha ao analisar o arquivo com os padrões."
 
@@ -18548,6 +18560,9 @@ msgstr "Origem definida deslocando todos os objetos carregados com "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
+
+#~ msgid "./assets/icon.png"
+#~ msgstr "./assets/icon.png"
 
 #~ msgid "Angle:"
 #~ msgstr "Ângulo:"
@@ -18819,9 +18834,6 @@ msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 
 #~ msgid "Exterior"
 #~ msgstr "Exterior"
-
-#~ msgid "Interior"
-#~ msgstr "Interior"
 
 #~ msgid "Gerber Object Color"
 #~ msgstr "Cor do objeto Gerber"

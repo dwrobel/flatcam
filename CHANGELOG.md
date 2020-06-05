@@ -16,6 +16,9 @@ CHANGELOG for FlatCAM beta
 - changed how the import of svg.path module is done in the ParseSVG.py file
 - Tool Isolation - new feature that allow to isolate interiors of polygons (holes in polygons). It is possible that the isolation to be reported as successful (internal limitations) but some interiors to not be isolated. This way the user get to fix the isolation by doing an extra isolation.
 - added mouse events disconnect in the quit_application() method
+- remade the ReadMe tab
+- Tool Isolation - added a GUI element to control if the isolation of a polygon, when done with rest, should be done with the current tool even if its interiors (holes in it) could not be isolated or to be left for the next tool
+- updated all the translation strings to the latest changes
 
 4.06.2020
 

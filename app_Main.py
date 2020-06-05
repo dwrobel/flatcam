@@ -2947,7 +2947,13 @@ class App(QtCore.QObject):
         AboutDialog(app=self, parent=self.ui).exec_()
 
     def on_readme(self):
-        class AboutDialog(QtWidgets.QDialog):
+        """
+        Displays the "about" dialog found in the Menu --> Help.
+
+        :return: None
+        """
+
+        class ReadmeDialog(QtWidgets.QDialog):
             def __init__(self, app, parent=None):
                 QtWidgets.QDialog.__init__(self, parent)
 
@@ -2955,73 +2961,139 @@ class App(QtCore.QObject):
 
                 open_source_link = "<a href = 'https://opensource.org/'<b>Open Source</b></a>"
                 new_features_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/pull-requests/'" \
-                                    "<b>new features</b></a>"
+                                    "<b>click</b></a>"
 
-                bugs_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/issues/new'<b>report bugs</b></a>"
+                bugs_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/issues/new'<b>click</b></a>"
                 donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
-                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>donation</b></a>"
+                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
                 self.setWindowTitle(_("Important Information's"))
-                self.resize(720, 330)
+                self.resize(750, 375)
 
                 logo = QtWidgets.QLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/contribute256.png'))
 
                 content = QtWidgets.QLabel(
-                    "This program is %s and free in a very wide meaning of the word.<br>"
-                    "Yet it cannot evolve without <b>contributions</b>.<br><br>"
-                    "If you want to see this application evolve and grow, or if you make money with it,<br>"
-                    "you can <b>contribute</b> to the development yourself by:<br>"
+                    "%s<br>"
+                    "%s<br><br>"
+                    "%s,<br>"
+                    "%s<br>"
                     "<ul>"
-                    "<li>adding %s through a Pull Request on the Bitbucket repository</li>"
-                    "<li>%s by providing the steps required to reproduce the bug</li>"
-                    "<li>or by making a %s.</li>"
+                    "<li> &nbsp;%s %s</li>"
+                    "<li> &nbsp;%s %s</li>"
                     "</ul>"
-                    "There are no strings attached.<br>"
-                    "You don't have to make a %s, and it is totally optional but:"
+                    "%s %s.<br>"
+                    "%s"
                     "<ul>"
-                    "<li>it will be welcomed with joy &#128077;</li>"
-                    "<li>it will give me a reason to continue &#128513;</li>"
+                    "<li> &nbsp;%s &#128077;</li>"
+                    "<li> &nbsp;%s &#128513;</li>"
                     "</ul>" %
-                    (open_source_link, new_features_link, bugs_link, donation_link, donation_link)
+                    (
+                        _("This program is %s and free in a very wide meaning of the word.") % open_source_link,
+                        _("Yet it cannot evolve without <b>contributions</b>."),
+                        _("If you want to see this application grow and become better and better"),
+                        _("you can <b>contribute</b> to the development yourself by:"),
+                        _("Pull Requests on the Bitbucket repository, if you are a developer"),
+                        new_features_link,
+                        _("Bug Reports by providing the steps required to reproduce the bug"),
+                        bugs_link,
+                        _("If you like or use this program you can make a donation"),
+                        donation_link,
+                        _("You don't have to make a donation %s, and it is totally optional but:") % donation_link,
+                        _("it will be welcomed with joy"),
+                        _("it will give me a reason to continue")
+                    )
                 )
                 content.setOpenExternalLinks(True)
-                closebtn = QtWidgets.QPushButton(_("Close"))
 
-                # layouts
-                layout1 = QtWidgets.QVBoxLayout()
-                self.setLayout(layout1)
-
+                # palette
                 pal = QtGui.QPalette()
                 pal.setColor(QtGui.QPalette.Background, Qt.white)
+
+                # layouts
+                main_layout = QtWidgets.QVBoxLayout()
+                self.setLayout(main_layout)
+
+                tab_layout = QtWidgets.QHBoxLayout()
+                buttons_hlay = QtWidgets.QHBoxLayout()
+
+                main_layout.addLayout(tab_layout)
+                main_layout.addLayout(buttons_hlay)
+
+                tab_widget = QtWidgets.QTabWidget()
+                tab_layout.addWidget(tab_widget)
+
+                closebtn = QtWidgets.QPushButton(_("Close"))
+                buttons_hlay.addStretch()
+                buttons_hlay.addWidget(closebtn)
+
+                # CONTRIBUTE section
+                self.intro_tab = QtWidgets.QWidget()
+                self.intro_tab_layout = QtWidgets.QHBoxLayout(self.intro_tab)
+                self.intro_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.intro_tab, _("Contribute"))
 
                 self.grid_lay = QtWidgets.QGridLayout()
                 self.grid_lay.setHorizontalSpacing(20)
                 self.grid_lay.setColumnStretch(0, 0)
                 self.grid_lay.setColumnStretch(1, 1)
 
-                content_widget = QtWidgets.QWidget()
-                content_widget.setLayout(self.grid_lay)
-                scroll_area = QtWidgets.QScrollArea()
-                scroll_area.setWidget(content_widget)
-                scroll_area.setWidgetResizable(True)
-                scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
-                scroll_area.setPalette(pal)
+                intro_wdg = QtWidgets.QWidget()
+                intro_wdg.setLayout(self.grid_lay)
+                intro_scroll_area = QtWidgets.QScrollArea()
+                intro_scroll_area.setWidget(intro_wdg)
+                intro_scroll_area.setWidgetResizable(True)
+                intro_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                intro_scroll_area.setPalette(pal)
 
                 self.grid_lay.addWidget(logo, 0, 0)
                 self.grid_lay.addWidget(content, 0, 1)
-                layout1.addWidget(scroll_area)
+                self.intro_tab_layout.addWidget(intro_scroll_area)
 
-                layout2 = QtWidgets.QHBoxLayout()
-                layout1.addLayout(layout2)
-                layout2.addStretch()
-                layout2.addWidget(closebtn)
+                # LINKS EXCHANGE section
+                self.links_tab = QtWidgets.QWidget()
+                self.links_tab_layout = QtWidgets.QVBoxLayout(self.links_tab)
+                self.links_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.links_tab, _("Links Exchange"))
 
+                self.links_lay = QtWidgets.QHBoxLayout()
+
+                links_wdg = QtWidgets.QWidget()
+                links_wdg.setLayout(self.links_lay)
+                links_scroll_area = QtWidgets.QScrollArea()
+                links_scroll_area.setWidget(links_wdg)
+                links_scroll_area.setWidgetResizable(True)
+                links_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                links_scroll_area.setPalette(pal)
+
+                self.links_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.links_tab_layout.addWidget(links_scroll_area)
+
+                # HOW TO section
+                self.howto_tab = QtWidgets.QWidget()
+                self.howto_tab_layout = QtWidgets.QVBoxLayout(self.howto_tab)
+                self.howto_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.howto_tab, _("How To's"))
+
+                self.howto_lay = QtWidgets.QHBoxLayout()
+
+                howto_wdg = QtWidgets.QWidget()
+                howto_wdg.setLayout(self.howto_lay)
+                howto_scroll_area = QtWidgets.QScrollArea()
+                howto_scroll_area.setWidget(howto_wdg)
+                howto_scroll_area.setWidgetResizable(True)
+                howto_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+                howto_scroll_area.setPalette(pal)
+
+                self.howto_lay.addWidget(QtWidgets.QLabel('%s' % _("Soon ...")), alignment=QtCore.Qt.AlignCenter)
+                self.howto_tab_layout.addWidget(howto_scroll_area)
+
+                # BUTTONS section
                 closebtn.clicked.connect(self.accept)
 
-        AboutDialog(app=self, parent=self.ui).exec_()
+        ReadmeDialog(app=self, parent=self.ui).exec_()
 
     def install_bookmarks(self, book_dict=None):
         """
