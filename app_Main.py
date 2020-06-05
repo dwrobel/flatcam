@@ -3219,6 +3219,22 @@ class App(QtCore.QObject):
                 pass
             log.debug("App.quit_application() --> Gerber Editor deactivated.")
 
+        # disconnect the mouse events
+        if self.is_legacy:
+            self.plotcanvas.graph_event_disconnect(self.mm)
+            self.plotcanvas.graph_event_disconnect(self.mp)
+            self.plotcanvas.graph_event_disconnect(self.mr)
+            self.plotcanvas.graph_event_disconnect(self.mdc)
+            self.plotcanvas.graph_event_disconnect(self.kp)
+
+        else:
+            self.mm = self.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move_over_plot)
+            self.mp = self.plotcanvas.graph_event_disconnect('mouse_press', self.on_mouse_click_over_plot)
+            self.mr = self.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release_over_plot)
+            self.mdc = self.plotcanvas.graph_event_disconnect('mouse_double_click',
+                                                              self.on_mouse_double_click_over_plot)
+            self.kp = self.plotcanvas.graph_event_disconnect('key_press', self.ui.keyPressEvent)
+
         self.preferencesUiManager.save_defaults(silent=True)
         log.debug("App.quit_application() --> App Defaults saved.")
 
