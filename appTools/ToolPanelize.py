@@ -396,6 +396,7 @@ class Panelize(AppTool):
 
     def on_type_box_index_changed(self):
         obj_type = self.type_box_combo.currentIndex()
+        obj_type = 2 if obj_type == 1 else obj_type
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
         self.box_combo.obj_type = {
@@ -421,12 +422,12 @@ class Panelize(AppTool):
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
-            return "Could not retrieve object: %s" % name
+            return
 
         if panel_source_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
                                  (_("Object not found"), panel_source_obj))
-            return "Object not found: %s" % panel_source_obj
+            return
 
         boxname = self.box_combo.currentText()
 
@@ -435,7 +436,7 @@ class Panelize(AppTool):
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), boxname))
-            return "Could not retrieve object: %s" % boxname
+            return
 
         if box is None:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), panel_source_obj))
@@ -466,7 +467,7 @@ class Panelize(AppTool):
         if 0 in {columns, rows}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Columns or Rows are zero value. Change them to a positive integer."))
-            return "Columns or Rows are zero value. Change them to a positive integer."
+            return
 
         xmin, ymin, xmax, ymax = box.bounds()
         lenghtx = xmax - xmin + spacing_columns
@@ -586,7 +587,7 @@ class Panelize(AppTool):
                     obj_fin.create_geometry()
                     obj_fin.zeros = panel_source_obj.zeros
                     obj_fin.units = panel_source_obj.units
-                    self.app.proc_container.update_view_text('')
+                    app_obj.proc_container.update_view_text('')
 
                 def job_init_geometry(obj_fin, app_obj):
                     currentx = 0.0
@@ -628,11 +629,11 @@ class Panelize(AppTool):
                                     geo_len += len(panel_source_obj.tools[tool]['solid_geometry'])
                                 except TypeError:
                                     geo_len += 1
-                        else:
-                            try:
-                                geo_len = len(panel_source_obj.solid_geometry)
-                            except TypeError:
-                                geo_len = 1
+                        # else:
+                        #     try:
+                        #         geo_len = len(panel_source_obj.solid_geometry)
+                        #     except TypeError:
+                        #         geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
                         for ap in panel_source_obj.apertures:
                             if 'geometry' in panel_source_obj.apertures[ap]:
@@ -653,7 +654,7 @@ class Panelize(AppTool):
                             if panel_source_obj.kind == 'geometry':
                                 if panel_source_obj.multigeo is True:
                                     for tool in panel_source_obj.tools:
-                                        if self.app.abort_flag:
+                                        if app_obj.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
 
@@ -667,13 +668,11 @@ class Panelize(AppTool):
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                                             if old_disp_number < disp_number <= 100:
-                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
-                                                                                         (_("Copy"),
-                                                                                          int(element),
-                                                                                          disp_number))
+                                                app_obj.proc_container.update_view_text(
+                                                    ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
                                                 old_disp_number = disp_number
                                 else:
-                                    if self.app.abort_flag:
+                                    if app_obj.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
 
@@ -685,7 +684,7 @@ class Panelize(AppTool):
                                     pol_nr = 0
                                     try:
                                         for geo_el in panel_source_obj.solid_geometry:
-                                            if self.app.abort_flag:
+                                            if app_obj.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
 
@@ -696,10 +695,8 @@ class Panelize(AppTool):
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
                                             if old_disp_number < disp_number <= 100:
-                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
-                                                                                         (_("Copy"),
-                                                                                          int(element),
-                                                                                          disp_number))
+                                                app_obj.proc_container.update_view_text(
+                                                    ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
                                                 old_disp_number = disp_number
 
                                     except TypeError:
@@ -713,7 +710,7 @@ class Panelize(AppTool):
 
                                 try:
                                     for geo_el in panel_source_obj.solid_geometry:
-                                        if self.app.abort_flag:
+                                        if app_obj.abort_flag:
                                             # graceful abort requested by the user
                                             raise grace
 
@@ -724,7 +721,7 @@ class Panelize(AppTool):
                                     obj_fin.solid_geometry.append(trans_geo)
 
                                 for apid in panel_source_obj.apertures:
-                                    if self.app.abort_flag:
+                                    if app_obj.abort_flag:
                                         # graceful abort requested by the user
                                         raise grace
                                     if 'geometry' in panel_source_obj.apertures[apid]:
@@ -735,7 +732,7 @@ class Panelize(AppTool):
                                             geo_len = 1
                                         pol_nr = 0
                                         for el in panel_source_obj.apertures[apid]['geometry']:
-                                            if self.app.abort_flag:
+                                            if app_obj.abort_flag:
                                                 # graceful abort requested by the user
                                                 raise grace
 
@@ -758,16 +755,13 @@ class Panelize(AppTool):
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
                                             if old_disp_number < disp_number <= 100:
-                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
-                                                                                         (_("Copy"),
-                                                                                          int(element),
-                                                                                          disp_number))
+                                                app_obj.proc_container.update_view_text(
+                                                    ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
                                                 old_disp_number = disp_number
 
                             currentx += lenghtx
                         currenty += lenghty
 
-                    print("before", obj_fin.tools)
                     if panel_source_obj.kind == 'geometry' and panel_source_obj.multigeo is True:
                         # I'm going to do this only here as a fix for panelizing cutouts
                         # I'm going to separate linestrings out of the solid geometry from other
@@ -782,22 +776,23 @@ class Panelize(AppTool):
                                     other_geo.append(geo)
                             fused_lines = list(unary_union(lines))
                             obj_fin.tools[tool]['solid_geometry'] = fused_lines + other_geo
-                    print("after", obj_fin.tools)
 
                     if panel_type == 'gerber':
-                        self.app.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
+                        app_obj.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
                         obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
 
                     # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
                     # app_obj.log.debug("Finished creating a cascaded union for the panel.")
-                    self.app.proc_container.update_view_text('')
+                    app_obj.proc_container.update_view_text('')
 
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
                 if panel_source_obj.kind == 'excellon':
-                    self.app.app_obj.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
+                    self.app.app_obj.new_object(
+                        "excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
-                    self.app.app_obj.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
+                    self.app.app_obj.new_object(
+                        panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
 
         if self.constrain_flag is False:
             self.app.inform.emit('[success] %s' % _("Panel done..."))
@@ -812,7 +807,7 @@ class Panelize(AppTool):
         def job_thread(app_obj):
             try:
                 panelize_worker()
-                self.app.inform.emit('[success] %s' % _("Panel created successfully."))
+                app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
             except Exception as ee:
                 proc.done()
                 log.debug(str(ee))

@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets
 from appTool import AppTool
-from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCEntry
+from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry
 import math
 
 import gettext
@@ -63,13 +63,13 @@ class ToolCalculator(AppTool):
         grid_units_layout.addWidget(mm_label, 0, 0)
         grid_units_layout.addWidget(inch_label, 0, 1)
 
-        self.inch_entry = FCEntry()
+        self.inch_entry = NumericalEvalEntry(border_color='#0069A9')
 
         # self.inch_entry.setFixedWidth(70)
         # self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.inch_entry.setToolTip(_("Here you enter the value to be converted from INCH to MM"))
 
-        self.mm_entry = FCEntry()
+        self.mm_entry = NumericalEvalEntry(border_color='#0069A9')
         # self.mm_entry.setFixedWidth(130)
         # self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.mm_entry.setToolTip(_("Here you enter the value to be converted from MM to INCH"))
@@ -104,7 +104,7 @@ class ToolCalculator(AppTool):
         )
         self.tipAngle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tipAngle_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.tipAngle_entry.set_range(0,180)
+        self.tipAngle_entry.set_range(0, 180)
         self.tipAngle_entry.set_step(5)
 
         # self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
