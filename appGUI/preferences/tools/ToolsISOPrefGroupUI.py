@@ -301,10 +301,21 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.area_shape_label, 21, 0)
         grid0.addWidget(self.area_shape_radio, 21, 1, 1, 2)
 
+        # Polygon interiors selection
+        self.poly_int_label = QtWidgets.QLabel('%s:' % _("Interiors"))
+        self.poly_int_label.setToolTip(
+            _("When checked the user can select interiors of a polygon.\n"
+              "(holes in the polygon).")
+        )
+        self.poly_int_cb = FCCheckBox()
+
+        grid0.addWidget(self.poly_int_label, 22, 0)
+        grid0.addWidget(self.poly_int_cb, 22, 1)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 3)
+        grid0.addWidget(separator_line, 24, 0, 1, 3)
 
         # ## Plotting type
         self.plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -314,7 +325,7 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the job\n"
               "- 'Progressive' - each shape is plotted after it is generated")
         )
-        grid0.addWidget(plotting_label, 23, 0)
-        grid0.addWidget(self.plotting_radio, 23, 1, 1, 2)
+        grid0.addWidget(plotting_label, 25, 0)
+        grid0.addWidget(self.plotting_radio, 25, 1, 1, 2)
 
         self.layout.addStretch()

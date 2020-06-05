@@ -402,6 +402,7 @@ class FlatCAMDefaults:
         "tools_iso_combine_passes": False,
         "tools_iso_isoexcept":      False,
         "tools_iso_selection":      _("All"),
+        "tools_iso_poly_ints":      False,
         "tools_iso_area_shape":     "square",
         "tools_iso_plotting":       'normal',
 

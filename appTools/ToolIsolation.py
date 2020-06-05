@@ -18,7 +18,7 @@ import numpy as np
 import math
 
 from shapely.ops import cascaded_union
-from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
+from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -536,6 +536,20 @@ class ToolIsolation(AppTool, Gerber):
         self.reference_combo_type.hide()
         self.reference_combo_type_label.hide()
 
+        # Polygon interiors selection
+        self.poly_int_label = QtWidgets.QLabel('%s:' % _("Interiors"))
+        self.poly_int_label.setToolTip(
+            _("When checked the user can select interiors of a polygon.\n"
+              "(holes in the polygon).")
+        )
+        self.poly_int_cb = FCCheckBox()
+
+        self.grid3.addWidget(self.poly_int_label, 33, 0)
+        self.grid3.addWidget(self.poly_int_cb, 33, 1)
+
+        self.poly_int_label.hide()
+        self.poly_int_cb.hide()
+
         # Area Selection shape
         self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
@@ -545,8 +559,8 @@ class ToolIsolation(AppTool, Gerber):
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 33, 0)
-        self.grid3.addWidget(self.area_shape_radio, 33, 1)
+        self.grid3.addWidget(self.area_shape_label, 35, 0)
+        self.grid3.addWidget(self.area_shape_radio, 35, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -554,7 +568,7 @@ class ToolIsolation(AppTool, Gerber):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 34, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 36, 0, 1, 2)
 
         self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
         self.generate_iso_button.setStyleSheet("""
@@ -865,6 +879,7 @@ class ToolIsolation(AppTool, Gerber):
         self.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
         self.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
         self.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
+        self.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
 
         self.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
         self.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
@@ -1291,6 +1306,8 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
+            self.poly_int_label.hide()
+            self.poly_int_cb.hide()
 
             # disable rest-machining for area painting
             self.rest_cb.setDisabled(False)
@@ -1301,6 +1318,8 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.show()
             self.area_shape_radio.show()
+            self.poly_int_label.hide()
+            self.poly_int_cb.hide()
 
             # disable rest-machining for area isolation
             self.rest_cb.set_value(False)
@@ -1312,6 +1331,8 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
+            self.poly_int_label.show()
+            self.poly_int_cb.show()
         else:
             self.reference_combo.show()
             self.reference_combo_label.show()
@@ -1319,6 +1340,8 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.show()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
+            self.poly_int_label.hide()
+            self.poly_int_cb.hide()
 
             # disable rest-machining for area painting
             self.rest_cb.setDisabled(False)
@@ -1714,7 +1737,7 @@ class ToolIsolation(AppTool, Gerber):
             use_geo = cascaded_union(isolated_obj.solid_geometry).difference(ref_geo)
             self.isolate(isolated_obj=isolated_obj, geometry=use_geo)
 
-    def isolate(self, isolated_obj, geometry=None, limited_area=None, plot=True):
+    def isolate(self, isolated_obj, geometry=None, limited_area=None, negative_dia=None, plot=True):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -1724,6 +1747,8 @@ class ToolIsolation(AppTool, Gerber):
         :type geometry:         List of Shapely polygon
         :param limited_area:    if not None isolate only this area
         :type limited_area:     Shapely Polygon or a list of them
+        :param negative_dia:    isolate the geometry with a negative value for the tool diameter
+        :type negative_dia:     bool
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :return: None
@@ -1745,10 +1770,10 @@ class ToolIsolation(AppTool, Gerber):
         if combine:
             if self.rest_cb.get_value():
                 self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
-                                   lim_area=limited_area, plot=plot)
+                                   lim_area=limited_area, negative_dia=negative_dia, plot=plot)
             else:
                 self.combined_normal(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
-                                     lim_area=limited_area, plot=plot)
+                                     lim_area=limited_area, negative_dia=negative_dia, plot=plot)
 
         else:
             prog_plot = self.app.defaults["tools_iso_plotting"]
@@ -1780,6 +1805,9 @@ class ToolIsolation(AppTool, Gerber):
                     tool_type = tools_storage[tool]['tool_type']
 
                     iso_offset = tool_dia * ((2 * i + 1) / 2.0000001) - (i * overlap * tool_dia)
+                    if negative_dia:
+                        iso_offset = -iso_offset
+
                     outname = "%s_%.*f" % (isolated_obj.options["name"], self.decimals, float(tool_dia))
 
                     if passes > 1:
@@ -1879,7 +1907,7 @@ class ToolIsolation(AppTool, Gerber):
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-    def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
+    def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
         """
         Isolate the provided Gerber object using "rest machining" strategy
 
@@ -1891,6 +1919,8 @@ class ToolIsolation(AppTool, Gerber):
         :type tools_storage:    dict
         :param lim_area:        if not None restrict isolation to this area
         :type lim_area:         Shapely Polygon or a list of them
+        :param negative_dia:    isolate the geometry with a negative value for the tool diameter
+        :type negative_dia:     bool
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :return:                Isolated solid geometry
@@ -1957,7 +1987,8 @@ class ToolIsolation(AppTool, Gerber):
 
                     solid_geo, work_geo = self.generate_rest_geometry(geometry=work_geo, tooldia=tool_dia,
                                                                       passes=passes, overlap=overlap, invert=mill_dir,
-                                                                      env_iso_type=iso_t, prog_plot=prog_plot,
+                                                                      env_iso_type=iso_t, negative_dia=negative_dia,
+                                                                      prog_plot=prog_plot,
                                                                       prog_plot_handler=self.plot_temp_shapes)
 
                     # ############################################################
@@ -2050,7 +2081,7 @@ class ToolIsolation(AppTool, Gerber):
                 msg += coords
             self.app.shell_message(msg=msg)
 
-    def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, plot=True):
+    def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
         """
 
         :param iso_obj:         the isolated Gerber object
@@ -2061,6 +2092,8 @@ class ToolIsolation(AppTool, Gerber):
         :type tools_storage:    dict
         :param lim_area:        if not None restrict isolation to this area
         :type lim_area:         Shapely Polygon or a list of them
+        :param negative_dia:    isolate the geometry with a negative value for the tool diameter
+        :type negative_dia:     bool
         :param plot:            if to plot the resulting geometry object
         :type plot:             bool
         :return:                Isolated solid geometry
@@ -2116,6 +2149,8 @@ class ToolIsolation(AppTool, Gerber):
             solid_geo = []
             for nr_pass in range(passes):
                 iso_offset = tool_dia * ((2 * nr_pass + 1) / 2.0000001) - (nr_pass * overlap * tool_dia)
+                if negative_dia:
+                    iso_offset = -iso_offset
 
                 # if milling type is climb then the move is counter-clockwise around features
                 mill_dir = 1 if milling_type == 'cl' else 0
@@ -2340,7 +2375,14 @@ class ToolIsolation(AppTool, Gerber):
             curr_pos = (curr_pos[0], curr_pos[1])
 
         if event.button == 1:
-            clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=self.grb_obj.solid_geometry)
+            if self.poly_int_cb.get_value() is True:
+                clicked_poly = self.find_polygon_ignore_interiors(point=(curr_pos[0], curr_pos[1]),
+                                                                  geoset=self.grb_obj.solid_geometry)
+
+                clicked_poly = self.get_selected_interior(clicked_poly, point=(curr_pos[0], curr_pos[1]))
+
+            else:
+                clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]), geoset=self.grb_obj.solid_geometry)
 
             if self.app.selection_type is not None:
                 self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
@@ -2380,7 +2422,7 @@ class ToolIsolation(AppTool, Gerber):
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_poly_mouse_click_release)
-                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_pres)
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.kp)
@@ -2395,7 +2437,11 @@ class ToolIsolation(AppTool, Gerber):
 
             if self.poly_dict:
                 poly_list = deepcopy(list(self.poly_dict.values()))
-                self.isolate(isolated_obj=self.grb_obj, geometry=poly_list)
+                if self.poly_int_cb.get_value() is True:
+                    # isolate the interior polygons with a negative tool
+                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list, negative_dia=True)
+                else:
+                    self.isolate(isolated_obj=self.grb_obj, geometry=poly_list)
                 self.poly_dict.clear()
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
@@ -2709,7 +2755,7 @@ class ToolIsolation(AppTool, Gerber):
 
                 if self.app.is_legacy is False:
                     self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_poly_mouse_click_release)
-                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_pres)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 else:
                     self.app.plotcanvas.graph_event_disconnect(self.mr)
                     self.app.plotcanvas.graph_event_disconnect(self.kp)
@@ -2721,209 +2767,6 @@ class ToolIsolation(AppTool, Gerber):
             self.poly_drawn = False
             self.delete_moving_selection_shape()
             self.delete_tool_selection_shape()
-
-    @staticmethod
-    def poly2rings(poly):
-        return [poly.exterior] + [interior for interior in poly.interiors]
-
-    @staticmethod
-    def poly2ext(poly):
-        return [poly.exterior]
-
-    @staticmethod
-    def poly2ints(poly):
-        return [interior for interior in poly.interiors]
-
-    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0,
-                          prog_plot=False):
-        """
-        Isolation_geometry produces an envelope that is going on the left of the geometry
-        (the copper features). To leave the least amount of burrs on the features
-        the tool needs to travel on the right side of the features (this is called conventional milling)
-        the first pass is the one cutting all of the features, so it needs to be reversed
-        the other passes overlap preceding ones and cut the left over copper. It is better for them
-        to cut on the right side of the left over copper i.e on the left side of the features.
-
-        :param offset:          Offset distance to be passed to the obj.isolation_geometry() method
-        :type offset:           float
-        :param invert:          If to invert the direction of geometry (CW to CCW or reverse)
-        :type invert:           int
-        :param geometry:        Shapely Geometry for which t ogenerate envelope
-        :type geometry:
-        :param env_iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
-        :type env_iso_type:     int
-        :param follow:          If the kind of isolation is a "follow" one
-        :type follow:           bool
-        :param nr_passes:       Number of passes
-        :type nr_passes:        int
-        :param prog_plot:       Type of plotting: "normal" or "progressive"
-        :type prog_plot:        str
-        :return:                The buffered geometry
-        :rtype:                 MultiPolygon or Polygon
-        """
-
-        if follow:
-            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow, prog_plot=prog_plot)
-            return geom
-        else:
-            try:
-                geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
-                                                       passes=nr_passes, prog_plot=prog_plot)
-            except Exception as e:
-                log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
-                return 'fail'
-
-        if invert:
-            try:
-                pl = []
-                for p in geom:
-                    if p is not None:
-                        if isinstance(p, Polygon):
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                        elif isinstance(p, LinearRing):
-                            pl.append(Polygon(p.coords[::-1]))
-                geom = MultiPolygon(pl)
-            except TypeError:
-                if isinstance(geom, Polygon) and geom is not None:
-                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                elif isinstance(geom, LinearRing) and geom is not None:
-                    geom = Polygon(geom.coords[::-1])
-                else:
-                    log.debug("ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" %
-                              type(geom))
-            except Exception as e:
-                log.debug("ToolIsolation.generate_envelope() Error --> %s" % str(e))
-                return 'fail'
-        return geom
-
-    @staticmethod
-    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2,
-                               prog_plot="normal", prog_plot_handler=None):
-        """
-        Will try to isolate the geometry and return a tuple made of list of paths made through isolation
-        and a list of Shapely Polygons that could not be isolated
-
-        :param geometry:            A list of Shapely Polygons to be isolated
-        :type geometry:             list
-        :param tooldia:             The tool diameter used to do the isolation
-        :type tooldia:              float
-        :param passes:              Number of passes that will made the isolation
-        :type passes:               int
-        :param overlap:             How much to overlap the previous pass; in percentage [0.00, 99.99]%
-        :type overlap:              float
-        :param invert:              If to invert the direction of the resulting isolated geometries
-        :type invert:               bool
-        :param env_iso_type:        can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
-        :type env_iso_type:         int
-        :param prog_plot:           kind of plotting: "progressive" or "normal"
-        :type prog_plot:            str
-        :param prog_plot_handler:   method used to plot shapes if plot_prog is "proggressive"
-        :type prog_plot_handler:
-        :return:                    Tuple made from list of isolating paths and list of not isolated Polygons
-        :rtype:                     tuple
-        """
-
-        isolated_geo = []
-        not_isolated_geo = []
-
-        work_geo = []
-
-        for idx, geo in enumerate(geometry):
-            good_pass_iso = []
-            start_idx = idx + 1
-
-            for nr_pass in range(passes):
-                iso_offset = tooldia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * tooldia)
-                buf_chek = iso_offset * 2
-                check_geo = geo.buffer(buf_chek)
-
-                intersect_flag = False
-                # find if current pass for current geo is valid (no intersection with other geos))
-                for geo_search_idx in range(idx):
-                    if check_geo.intersects(geometry[geo_search_idx]):
-                        intersect_flag = True
-                        break
-
-                if intersect_flag is False:
-                    for geo_search_idx in range(start_idx, len(geometry)):
-                        if check_geo.intersects(geometry[geo_search_idx]):
-                            intersect_flag = True
-                            break
-
-                # if we had an intersection do nothing, else add the geo to the good pass isolation's
-                if intersect_flag is False:
-                    temp_geo = geo.buffer(iso_offset)
-                    # this test is done only for the first pass because this is where is relevant
-                    # test if in the first pass, the geo that is isolated has interiors and if it has then test if the
-                    # resulting isolated geometry (buffered) number of subgeo is the same as the exterior + interiors
-                    # if not it means that the geo interiors most likely could not be isolated with this tool so we
-                    # abandon the whole isolation for this geo and add this geo to the not_isolated_geo
-                    if nr_pass == 0:
-                        if geo.interiors:
-                            len_interiors = len(geo.interiors)
-                            if len_interiors > 1:
-                                total_poly_len = 1 + len_interiors  # one exterior + len_interiors of interiors
-
-                                if isinstance(temp_geo, Polygon):
-                                    # calculate the number of subgeos in the buffered geo
-                                    temp_geo_len = len([1] + list(temp_geo.interiors))    # one exterior + interiors
-                                    if total_poly_len != temp_geo_len:
-                                        # some interiors could not be isolated
-                                        break
-                                else:
-                                    try:
-                                        temp_geo_len = len(temp_geo)
-                                        if total_poly_len != temp_geo_len:
-                                            # some interiors could not be isolated
-                                            break
-                                    except TypeError:
-                                        # this means that the buffered geo (temp_geo) is not iterable
-                                        # (one geo element only) therefore failure:
-                                        # we have more interiors but the resulting geo is only one
-                                        break
-
-                    good_pass_iso.append(temp_geo)
-                    if prog_plot == 'progressive':
-                        prog_plot_handler(temp_geo)
-
-            if good_pass_iso:
-                work_geo += good_pass_iso
-            else:
-                not_isolated_geo.append(geo)
-
-        if invert:
-            try:
-                pl = []
-                for p in work_geo:
-                    if p is not None:
-                        if isinstance(p, Polygon):
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                        elif isinstance(p, LinearRing):
-                            pl.append(Polygon(p.coords[::-1]))
-                work_geo = MultiPolygon(pl)
-            except TypeError:
-                if isinstance(work_geo, Polygon) and work_geo is not None:
-                    work_geo = [Polygon(work_geo.exterior.coords[::-1], work_geo.interiors)]
-                elif isinstance(work_geo, LinearRing) and work_geo is not None:
-                    work_geo = [Polygon(work_geo.coords[::-1])]
-                else:
-                    log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
-                              type(work_geo))
-            except Exception as e:
-                log.debug("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
-                return 'fail', 'fail'
-
-        if env_iso_type == 0:  # exterior
-            for geo in work_geo:
-                isolated_geo.append(geo.exterior)
-        elif env_iso_type == 1:  # interiors
-            for geo in work_geo:
-                isolated_geo += [interior for interior in geo.interiors]
-        else:  # exterior + interiors
-            for geo in work_geo:
-                isolated_geo += [geo.exterior] + [interior for interior in geo.interiors]
-
-        return isolated_geo, not_isolated_geo
 
     def on_iso_tool_add_from_db_executed(self, tool):
         """
@@ -3045,3 +2888,256 @@ class ToolIsolation(AppTool, Gerber):
             self.temp_shapes.clear(update=True)
 
         self.sel_rect = []
+
+    @staticmethod
+    def poly2rings(poly):
+        return [poly.exterior] + [interior for interior in poly.interiors]
+
+    @staticmethod
+    def poly2ext(poly):
+        return [poly.exterior]
+
+    @staticmethod
+    def poly2ints(poly):
+        return [interior for interior in poly.interiors]
+
+    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0,
+                          prog_plot=False):
+        """
+        Isolation_geometry produces an envelope that is going on the left of the geometry
+        (the copper features). To leave the least amount of burrs on the features
+        the tool needs to travel on the right side of the features (this is called conventional milling)
+        the first pass is the one cutting all of the features, so it needs to be reversed
+        the other passes overlap preceding ones and cut the left over copper. It is better for them
+        to cut on the right side of the left over copper i.e on the left side of the features.
+
+        :param offset:          Offset distance to be passed to the obj.isolation_geometry() method
+        :type offset:           float
+        :param invert:          If to invert the direction of geometry (CW to CCW or reverse)
+        :type invert:           int
+        :param geometry:        Shapely Geometry for which t ogenerate envelope
+        :type geometry:
+        :param env_iso_type:    type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
+        :type env_iso_type:     int
+        :param follow:          If the kind of isolation is a "follow" one
+        :type follow:           bool
+        :param nr_passes:       Number of passes
+        :type nr_passes:        int
+        :param prog_plot:       Type of plotting: "normal" or "progressive"
+        :type prog_plot:        str
+        :return:                The buffered geometry
+        :rtype:                 MultiPolygon or Polygon
+        """
+
+        if follow:
+            geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, follow=follow, prog_plot=prog_plot)
+            return geom
+        else:
+            try:
+                geom = self.grb_obj.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type,
+                                                       passes=nr_passes, prog_plot=prog_plot)
+            except Exception as e:
+                log.debug('ToolIsolation.generate_envelope() --> %s' % str(e))
+                return 'fail'
+
+        if invert:
+            try:
+                pl = []
+                for p in geom:
+                    if p is not None:
+                        if isinstance(p, Polygon):
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        elif isinstance(p, LinearRing):
+                            pl.append(Polygon(p.coords[::-1]))
+                geom = MultiPolygon(pl)
+            except TypeError:
+                if isinstance(geom, Polygon) and geom is not None:
+                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                elif isinstance(geom, LinearRing) and geom is not None:
+                    geom = Polygon(geom.coords[::-1])
+                else:
+                    log.debug("ToolIsolation.generate_envelope() Error --> Unexpected Geometry %s" %
+                              type(geom))
+            except Exception as e:
+                log.debug("ToolIsolation.generate_envelope() Error --> %s" % str(e))
+                return 'fail'
+        return geom
+
+    @staticmethod
+    def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2, negative_dia=None,
+                               prog_plot="normal", prog_plot_handler=None):
+        """
+        Will try to isolate the geometry and return a tuple made of list of paths made through isolation
+        and a list of Shapely Polygons that could not be isolated
+
+        :param geometry:            A list of Shapely Polygons to be isolated
+        :type geometry:             list
+        :param tooldia:             The tool diameter used to do the isolation
+        :type tooldia:              float
+        :param passes:              Number of passes that will made the isolation
+        :type passes:               int
+        :param overlap:             How much to overlap the previous pass; in percentage [0.00, 99.99]%
+        :type overlap:              float
+        :param invert:              If to invert the direction of the resulting isolated geometries
+        :type invert:               bool
+        :param env_iso_type:        can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
+        :type env_iso_type:         int
+        :param negative_dia:    isolate the geometry with a negative value for the tool diameter
+        :type negative_dia:     bool
+        :param prog_plot:           kind of plotting: "progressive" or "normal"
+        :type prog_plot:            str
+        :param prog_plot_handler:   method used to plot shapes if plot_prog is "proggressive"
+        :type prog_plot_handler:
+        :return:                    Tuple made from list of isolating paths and list of not isolated Polygons
+        :rtype:                     tuple
+        """
+
+        isolated_geo = []
+        not_isolated_geo = []
+
+        work_geo = []
+
+        for idx, geo in enumerate(geometry):
+            good_pass_iso = []
+            start_idx = idx + 1
+
+            for nr_pass in range(passes):
+                iso_offset = tooldia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * tooldia)
+                if negative_dia:
+                    iso_offset = -iso_offset
+
+                buf_chek = iso_offset * 2
+                check_geo = geo.buffer(buf_chek)
+
+                intersect_flag = False
+                # find if current pass for current geo is valid (no intersection with other geos))
+                for geo_search_idx in range(idx):
+                    if check_geo.intersects(geometry[geo_search_idx]):
+                        intersect_flag = True
+                        break
+
+                if intersect_flag is False:
+                    for geo_search_idx in range(start_idx, len(geometry)):
+                        if check_geo.intersects(geometry[geo_search_idx]):
+                            intersect_flag = True
+                            break
+
+                # if we had an intersection do nothing, else add the geo to the good pass isolation's
+                if intersect_flag is False:
+                    temp_geo = geo.buffer(iso_offset)
+                    # this test is done only for the first pass because this is where is relevant
+                    # test if in the first pass, the geo that is isolated has interiors and if it has then test if the
+                    # resulting isolated geometry (buffered) number of subgeo is the same as the exterior + interiors
+                    # if not it means that the geo interiors most likely could not be isolated with this tool so we
+                    # abandon the whole isolation for this geo and add this geo to the not_isolated_geo
+                    if nr_pass == 0:
+                        if geo.interiors:
+                            len_interiors = len(geo.interiors)
+                            if len_interiors > 1:
+                                total_poly_len = 1 + len_interiors  # one exterior + len_interiors of interiors
+
+                                if isinstance(temp_geo, Polygon):
+                                    # calculate the number of subgeos in the buffered geo
+                                    temp_geo_len = len([1] + list(temp_geo.interiors))    # one exterior + interiors
+                                    if total_poly_len != temp_geo_len:
+                                        # some interiors could not be isolated
+                                        break
+                                else:
+                                    try:
+                                        temp_geo_len = len(temp_geo)
+                                        if total_poly_len != temp_geo_len:
+                                            # some interiors could not be isolated
+                                            break
+                                    except TypeError:
+                                        # this means that the buffered geo (temp_geo) is not iterable
+                                        # (one geo element only) therefore failure:
+                                        # we have more interiors but the resulting geo is only one
+                                        break
+
+                    good_pass_iso.append(temp_geo)
+                    if prog_plot == 'progressive':
+                        prog_plot_handler(temp_geo)
+
+            if good_pass_iso:
+                work_geo += good_pass_iso
+            else:
+                not_isolated_geo.append(geo)
+
+        if invert:
+            try:
+                pl = []
+                for p in work_geo:
+                    if p is not None:
+                        if isinstance(p, Polygon):
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        elif isinstance(p, LinearRing):
+                            pl.append(Polygon(p.coords[::-1]))
+                work_geo = MultiPolygon(pl)
+            except TypeError:
+                if isinstance(work_geo, Polygon) and work_geo is not None:
+                    work_geo = [Polygon(work_geo.exterior.coords[::-1], work_geo.interiors)]
+                elif isinstance(work_geo, LinearRing) and work_geo is not None:
+                    work_geo = [Polygon(work_geo.coords[::-1])]
+                else:
+                    log.debug("ToolIsolation.generate_rest_geometry() Error --> Unexpected Geometry %s" %
+                              type(work_geo))
+            except Exception as e:
+                log.debug("ToolIsolation.generate_rest_geometry() Error --> %s" % str(e))
+                return 'fail', 'fail'
+
+        if env_iso_type == 0:  # exterior
+            for geo in work_geo:
+                isolated_geo.append(geo.exterior)
+        elif env_iso_type == 1:  # interiors
+            for geo in work_geo:
+                isolated_geo += [interior for interior in geo.interiors]
+        else:  # exterior + interiors
+            for geo in work_geo:
+                isolated_geo += [geo.exterior] + [interior for interior in geo.interiors]
+
+        return isolated_geo, not_isolated_geo
+
+    @staticmethod
+    def get_selected_interior(poly: Polygon, point: tuple) -> [Polygon, None]:
+        try:
+            ints = [Polygon(x) for x in poly.interiors]
+        except AttributeError:
+            return None
+
+        for poly in ints:
+            if poly.contains(Point(point)):
+                return poly
+
+        return None
+
+    def find_polygon_ignore_interiors(self, point, geoset=None):
+        """
+        Find an object that object.contains(Point(point)) in
+        poly, which can can be iterable, contain iterable of, or
+        be itself an implementer of .contains(). Will test the Polygon as it is full with no interiors.
+
+        :param point: See description
+        :param geoset: a polygon or list of polygons where to find if the param point is contained
+        :return: Polygon containing point or None.
+        """
+
+        if geoset is None:
+            geoset = self.solid_geometry
+
+        try:  # Iterable
+            for sub_geo in geoset:
+                p = self.find_polygon_ignore_interiors(point, geoset=sub_geo)
+                if p is not None:
+                    return p
+        except TypeError:  # Non-iterable
+            try:  # Implements .contains()
+                if isinstance(geoset, LinearRing):
+                    geoset = Polygon(geoset)
+
+                poly_ext = Polygon(geoset.exterior)
+                if poly_ext.contains(Point(point)):
+                    return geoset
+            except AttributeError:  # Does not implement .contains()
+                return None
+
+        return None

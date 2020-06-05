@@ -10,6 +10,11 @@ CHANGELOG for FlatCAM beta
 5.06.2020
 
 - fixed a small issue in the Panelization Tool that blocked the usage of a Geometry object as panelization reference
+- in Tool Calculators fixed an application crash if the user typed letters instead of numbers in the boxes. Now the boxes accept only numbers, dots, comma, spaces and arithmetic operators
+- NumericalEvalEntry allow the input of commas now
+- Tool Calculators: allowed comma to be used as decimal separator
+- changed how the import of svg.path module is done in the ParseSVG.py file
+- Tool Isolation - new feature that allow to isolate interiors of polygons (holes in polygons). It is possible that the isolation to be reported as successful (internal limitations) but some interiors to not be isolated. This way the user get to fix the isolation by doing an extra isolation.
 
 4.06.2020
 
@@ -122,9 +127,6 @@ CHANGELOG for FlatCAM beta
 27.05.2020
 
 - working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
-- in Tool Calculators fixed an application crash if the user typed letters instead of numbers in the boxes. Now the boxes accept only numbers, dots, comma, spaces and arithmetic operators
-- NumericalEvalEntry allow the input of commas now
-- Tool Calculators: allowed comma to be used as decimal separator
 
 26.05.2020
 
