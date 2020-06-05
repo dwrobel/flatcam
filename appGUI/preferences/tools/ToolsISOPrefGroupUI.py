@@ -302,15 +302,21 @@ class ToolsISOPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.area_shape_radio, 21, 1, 1, 2)
 
         # Polygon interiors selection
-        self.poly_int_label = QtWidgets.QLabel('%s:' % _("Interiors"))
-        self.poly_int_label.setToolTip(
+        self.poly_int_cb = FCCheckBox(_("Interiors"))
+        self.poly_int_cb.setToolTip(
             _("When checked the user can select interiors of a polygon.\n"
               "(holes in the polygon).")
         )
-        self.poly_int_cb = FCCheckBox()
 
-        grid0.addWidget(self.poly_int_label, 22, 0)
-        grid0.addWidget(self.poly_int_cb, 22, 1)
+        # Force isolation even if the interiors are not isolated
+        self.force_iso_cb = FCCheckBox(_("Forced Rest"))
+        self.force_iso_cb.setToolTip(
+            _("When checked the isolation will be done with the current tool even if\n"
+              "interiors of a polygon (holes in the polygon) could not be isolated.\n"
+              "Works when 'rest machining' is used.")
+        )
+        grid0.addWidget(self.poly_int_cb, 22, 0)
+        grid0.addWidget(self.force_iso_cb, 22, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

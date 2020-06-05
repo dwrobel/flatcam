@@ -349,6 +349,7 @@ class PreferencesUIManager:
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_poly_ints":      self.ui.tools_defaults_form.tools_iso_group.poly_int_cb,
+            "tools_iso_force":      self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
             "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
             "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
 

@@ -443,6 +443,16 @@ class ToolIsolation(AppTool, Gerber):
 
         self.grid3.addWidget(self.rest_cb, 25, 0)
 
+        # Force isolation even if the interiors are not isolated
+        self.forced_rest_iso_cb = FCCheckBox(_("Forced Rest"))
+        self.forced_rest_iso_cb.setToolTip(
+            _("When checked the isolation will be done with the current tool even if\n"
+              "interiors of a polygon (holes in the polygon) could not be isolated.\n"
+              "Works when 'rest machining' is used.")
+        )
+
+        self.grid3.addWidget(self.forced_rest_iso_cb, 25, 1)
+
         # Combine All Passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine'))
         self.combine_passes_cb.setToolTip(
@@ -450,7 +460,7 @@ class ToolIsolation(AppTool, Gerber):
         )
         self.combine_passes_cb.setObjectName("i_combine")
 
-        self.grid3.addWidget(self.combine_passes_cb, 25, 1)
+        self.grid3.addWidget(self.combine_passes_cb, 26, 0, 1, 2)
 
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
@@ -537,17 +547,14 @@ class ToolIsolation(AppTool, Gerber):
         self.reference_combo_type_label.hide()
 
         # Polygon interiors selection
-        self.poly_int_label = QtWidgets.QLabel('%s:' % _("Interiors"))
-        self.poly_int_label.setToolTip(
+        self.poly_int_cb = FCCheckBox(_("Interiors"))
+        self.poly_int_cb.setToolTip(
             _("When checked the user can select interiors of a polygon.\n"
               "(holes in the polygon).")
         )
-        self.poly_int_cb = FCCheckBox()
 
-        self.grid3.addWidget(self.poly_int_label, 33, 0)
-        self.grid3.addWidget(self.poly_int_cb, 33, 1)
+        self.grid3.addWidget(self.poly_int_cb, 33, 0)
 
-        self.poly_int_label.hide()
         self.poly_int_cb.hide()
 
         # Area Selection shape
@@ -880,6 +887,7 @@ class ToolIsolation(AppTool, Gerber):
         self.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
         self.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
         self.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
+        self.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
 
         self.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
         self.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
@@ -938,6 +946,8 @@ class ToolIsolation(AppTool, Gerber):
             "tools_iso_combine_passes": self.app.defaults["tools_iso_combine_passes"],
             "tools_iso_isoexcept":      self.app.defaults["tools_iso_isoexcept"],
             "tools_iso_selection":      self.app.defaults["tools_iso_selection"],
+            "tools_iso_poly_ints":      self.app.defaults["tools_iso_poly_ints"],
+            "tools_iso_force":          self.app.defaults["tools_iso_force"],
             "tools_iso_area_shape":     self.app.defaults["tools_iso_area_shape"]
         }
 
@@ -1306,7 +1316,6 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
-            self.poly_int_label.hide()
             self.poly_int_cb.hide()
 
             # disable rest-machining for area painting
@@ -1318,7 +1327,6 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.show()
             self.area_shape_radio.show()
-            self.poly_int_label.hide()
             self.poly_int_cb.hide()
 
             # disable rest-machining for area isolation
@@ -1331,7 +1339,6 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.hide()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
-            self.poly_int_label.show()
             self.poly_int_cb.show()
         else:
             self.reference_combo.show()
@@ -1340,7 +1347,6 @@ class ToolIsolation(AppTool, Gerber):
             self.reference_combo_type_label.show()
             self.area_shape_label.hide()
             self.area_shape_radio.hide()
-            self.poly_int_label.hide()
             self.poly_int_cb.hide()
 
             # disable rest-machining for area painting
@@ -1359,12 +1365,16 @@ class ToolIsolation(AppTool, Gerber):
             self.old_combine_state = self.combine_passes_cb.get_value()
             self.combine_passes_cb.set_value(True)
             self.combine_passes_cb.setDisabled(True)
+
+            self.forced_rest_iso_cb.setDisabled(False)
         else:
             self.order_label.setDisabled(False)
             self.order_radio.setDisabled(False)
 
             self.combine_passes_cb.set_value(self.old_combine_state)
             self.combine_passes_cb.setDisabled(False)
+
+            self.forced_rest_iso_cb.setDisabled(True)
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
@@ -1660,6 +1670,7 @@ class ToolIsolation(AppTool, Gerber):
             # Propagate options
             follow_obj.options["cnctooldia"] = str(tooldia)
             follow_obj.solid_geometry = self.grb_obj.follow_geometry
+            app_obj.inform.emit('[success] %s.' % _("Following geometry was generated"))
 
         # in the end toggle the visibility of the origin object so we can see the generated Geometry
         followed_obj.ui.plot_cb.set_value(False)
@@ -1957,12 +1968,6 @@ class ToolIsolation(AppTool, Gerber):
                     tool_type = tools_storage[tool]['tool_type']
                     tool_data = tools_storage[tool]['data']
 
-                    iso_t = {
-                        'ext': 0,
-                        'int': 1,
-                        'full': 2
-                    }[tool_data['tools_iso_isotype']]
-
                     passes = tool_data['tools_iso_passes']
                     overlap = tool_data['tools_iso_overlap']
                     overlap /= 100.0
@@ -1970,11 +1975,16 @@ class ToolIsolation(AppTool, Gerber):
                     milling_type = tool_data['tools_iso_milling_type']
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = True if milling_type == 'cl' else False
+                    iso_t = {
+                        'ext': 0,
+                        'int': 1,
+                        'full': 2
+                    }[tool_data['tools_iso_isotype']]
 
+                    forced_rest = self.forced_rest_iso_cb.get_value()
                     iso_except = self.except_cb.get_value()
 
                     outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
-
                     internal_name = outname + "_iso"
                     if iso_t == 0:
                         internal_name = outname + "_ext_iso"
@@ -1988,6 +1998,7 @@ class ToolIsolation(AppTool, Gerber):
                     solid_geo, work_geo = self.generate_rest_geometry(geometry=work_geo, tooldia=tool_dia,
                                                                       passes=passes, overlap=overlap, invert=mill_dir,
                                                                       env_iso_type=iso_t, negative_dia=negative_dia,
+                                                                      forced_rest=forced_rest,
                                                                       prog_plot=prog_plot,
                                                                       prog_plot_handler=self.plot_temp_shapes)
 
@@ -2965,6 +2976,7 @@ class ToolIsolation(AppTool, Gerber):
 
     @staticmethod
     def generate_rest_geometry(geometry, tooldia, passes, overlap, invert, env_iso_type=2, negative_dia=None,
+                               forced_rest=False,
                                prog_plot="normal", prog_plot_handler=None):
         """
         Will try to isolate the geometry and return a tuple made of list of paths made through isolation
@@ -2982,8 +2994,10 @@ class ToolIsolation(AppTool, Gerber):
         :type invert:               bool
         :param env_iso_type:        can be either 0 = keep exteriors or 1 = keep interiors or 2 = keep all paths
         :type env_iso_type:         int
-        :param negative_dia:    isolate the geometry with a negative value for the tool diameter
-        :type negative_dia:     bool
+        :param negative_dia:        isolate the geometry with a negative value for the tool diameter
+        :type negative_dia:         bool
+        :param forced_rest:         isolate the polygon even if the interiors can not be isolated
+        :type forced_rest:          bool
         :param prog_plot:           kind of plotting: "progressive" or "normal"
         :type prog_plot:            str
         :param prog_plot_handler:   method used to plot shapes if plot_prog is "proggressive"
@@ -3030,7 +3044,7 @@ class ToolIsolation(AppTool, Gerber):
                     # resulting isolated geometry (buffered) number of subgeo is the same as the exterior + interiors
                     # if not it means that the geo interiors most likely could not be isolated with this tool so we
                     # abandon the whole isolation for this geo and add this geo to the not_isolated_geo
-                    if nr_pass == 0:
+                    if nr_pass == 0 and forced_rest is True:
                         if geo.interiors:
                             len_interiors = len(geo.interiors)
                             if len_interiors > 1:
