@@ -123,6 +123,8 @@ CHANGELOG for FlatCAM beta
 
 - working on Isolation Tool: made to work the Isolation with multiple tools without rest machining
 - in Tool Calculators fixed an application crash if the user typed letters instead of numbers in the boxes. Now the boxes accept only numbers, dots, comma, spaces and arithmetic operators
+- NumericalEvalEntry allow the input of commas now
+- Tool Calculators: allowed comma to be used as decimal separator
 
 26.05.2020
 
