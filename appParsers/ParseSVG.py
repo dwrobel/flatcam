@@ -21,9 +21,10 @@
 
 # import xml.etree.ElementTree as ET
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
-from svg.path.path import Move
-from svg.path.path import Close
-from shapely.geometry import LineString, LinearRing, MultiLineString
+# from svg.path.path import Move
+# from svg.path.path import Close
+import svg.path
+from shapely.geometry import LineString, MultiLineString
 from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
 
@@ -59,16 +60,17 @@ def path2shapely(path, object_type, res=1.0):
     Converts an svg.path.Path into a Shapely
     Polygon or LinearString.
 
-    :rtype : Polygon
-    :rtype : LineString
-    :param path: svg.path.Path instance
-    :param res: Resolution (minimum step along path)
-    :return: Shapely geometry object
+    :param path:        svg.path.Path instance
+    :param object_type:
+    :param res:         Resolution (minimum step along path)
+    :return:            Shapely geometry object
+    :rtype :            Polygon
+    :rtype :            LineString
     """
 
     points = []
     geometry = []
-    geo_element = None
+
     rings = []
     closed = False
 
@@ -111,7 +113,7 @@ def path2shapely(path, object_type, res=1.0):
             continue
 
         # Move
-        if isinstance(component, Move):
+        if isinstance(component, svg.path.Move):
             if not points:
                 continue
             else:
@@ -128,7 +130,7 @@ def path2shapely(path, object_type, res=1.0):
         closed = False
 
         # Close
-        if isinstance(component, Close):
+        if isinstance(component, svg.path.Close):
             if not points:
                 continue
             else:
@@ -176,9 +178,11 @@ def svgrect2shapely(rect, n_points=32):
     """
     Converts an SVG rect into Shapely geometry.
 
-    :param rect: Rect Element
-    :type rect: xml.etree.ElementTree.Element
-    :return: shapely.geometry.polygon.LinearRing
+    :param rect:        Rect Element
+    :type rect:         xml.etree.ElementTree.Element
+    :param n_points:    number of points to approximate circles
+    :type n_points:     int
+    :return:            shapely.geometry.polygon.LinearRing
     """
     w = svgparselength(rect.get('width'))[0]
     h = svgparselength(rect.get('height'))[0]
@@ -325,9 +329,10 @@ def getsvggeo(node, object_type, root=None):
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
 
-    :param node: xml.etree.ElementTree.Element
-    :return: List of Shapely geometry
-    :rtype: list
+    :param node:        xml.etree.ElementTree.Element
+    :param object_type:
+    :return:            List of Shapely geometry
+    :rtype:             list
     """
     if root is None:
         root = node
@@ -427,9 +432,10 @@ def getsvgtext(node, object_type, units='MM'):
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
 
-    :param node: xml.etree.ElementTree.Element
-    :return: List of Shapely geometry
-    :rtype: list
+    :param node:        xml.etree.ElementTree.Element
+    :param object_type:
+    :return:            List of Shapely geometry
+    :rtype:             list
     """
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
     geo = []
