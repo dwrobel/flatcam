@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - remade the ReadMe tab
 - Tool Isolation - added a GUI element to control if the isolation of a polygon, when done with rest, should be done with the current tool even if its interiors (holes in it) could not be isolated or to be left for the next tool
 - updated all the translation strings to the latest changes
+- small fix
 RELEASE 8.993
 
 4.06.2020

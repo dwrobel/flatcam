@@ -3375,8 +3375,8 @@ class App(QtCore.QObject):
         # we use the following command
         minor_v = sys.version_info.minor
         if minor_v < 8:
-            # sys.exit(0)
-            pass
+            # make sure that the app closes
+            sys.exit(0)
         else:
             os._exit(0)  # fix to work with Python 3.8
 
