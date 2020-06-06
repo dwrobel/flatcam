@@ -264,8 +264,6 @@ class App(QtCore.QObject):
     # graphic residues behind
     cleanup = pyqtSignal()
 
-    listen_th = QtCore.QThread()
-
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -278,13 +276,12 @@ class App(QtCore.QObject):
 
         App.log.info("FlatCAM Starting...")
 
-        self.main_thread = QtWidgets.QApplication.instance().thread()
-
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################
         # ############################################################################################################
         if sys.platform == 'win32' or sys.platform == 'linux':
             # make sure the thread is stored by using a self. otherwise it's garbage collected
+            self.listen_th = QtCore.QThread()
             self.listen_th.start(priority=QtCore.QThread.LowestPriority)
 
             self.new_launch = ArgsThread()
@@ -604,6 +601,8 @@ class App(QtCore.QObject):
 
         self.project_filename = None
         self.toggle_units_ignore = False
+
+        self.main_thread = QtWidgets.QApplication.instance().thread()
 
         # ###########################################################################################################
         # ########################################## LOAD LANGUAGES  ################################################
@@ -3349,21 +3348,21 @@ class App(QtCore.QObject):
 
         # try to quit the Socket opened by ArgsThread class
         try:
-            self.new_launch.thread_exit = True
-            self.new_launch.listener.close()
+            # self.new_launch.thread_exit = True
+            # self.new_launch.listener.close()
             self.new_launch.stop.emit()
         except Exception as err:
             log.debug("App.quit_application() --> %s" % str(err))
 
         # try to quit the QThread that run ArgsThread class
         try:
-            del self.new_launch
-            self.listen_th.terminate()
+            # del self.new_launch
+            self.listen_th.quit()
         except Exception as e:
             log.debug("App.quit_application() --> %s" % str(e))
 
         # terminate workers
-        self.workers.__del__()
+        # self.workers.__del__()
         self.clear_pool()
 
         # quit app by signalling for self.kill_app() method
@@ -9754,9 +9753,9 @@ class App(QtCore.QObject):
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'excellon':
                 alpha_level = str(hex(
-                    self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
+                    self.ui.excellon_defaults_form.excellon_gen_group.excellon_alpha_entry.get_value())[2:])
             elif sel_obj.kind == 'gerber':
-                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.gerber_alpha_entry.get_value())[2:])
             elif sel_obj.kind == 'geometry':
                 alpha_level = 'FF'
             else:

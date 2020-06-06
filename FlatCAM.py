@@ -17,6 +17,7 @@ if sys.platform == "win32":
 MIN_VERSION_MAJOR = 3
 MIN_VERSION_MINOR = 5
 
+
 def debug_trace():
     """
     Set a tracepoint in the Python debugger that works with Qt
