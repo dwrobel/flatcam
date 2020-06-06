@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.06.2020
+
+- NCC Tool - added a message to warn the user that he needs at least one tool with clearing operation
+- added a GUI element in the Preferences to control the possibility to edit with mouse cursor objects in the Project Tab. It is named: "Allow Edit"
+
 5.06.2020
 
 - fixed a small issue in the Panelization Tool that blocked the usage of a Geometry object as panelization reference

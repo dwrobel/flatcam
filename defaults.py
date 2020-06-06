@@ -22,70 +22,15 @@ log = logging.getLogger('FlatCAMDefaults')
 class FlatCAMDefaults:
 
     factory_defaults = {
-        # Global APP Preferences
-        "decimals_inch": 4,
-        "decimals_metric": 4,
-        "version": 8.992,   # defaults format version, not necessarily equal to app version
+        # Global
+        "version": 8.992,  # defaults format version, not necessarily equal to app version
         "first_run": True,
-        "units": "MM",
         "root_folder_path": '',
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": True,
         "global_jump_ref": 'abs',
         "global_locate_pt": 'bl',
-        "global_tpdf_tmargin": 15.0,
-        "global_tpdf_bmargin": 10.0,
-        "global_tpdf_lmargin": 20.0,
-        "global_tpdf_rmargin": 20.0,
-        "global_autosave": False,
-        "global_autosave_timeout": 300000,
-
-        # General
-        "global_graphic_engine": '3D',
-        "global_hud": True,
-        "global_app_level": 'b',
-        "global_portable": False,
-        "global_language": 'English',
-        "global_version_check": True,
-        "global_send_stats": True,
-        "global_pan_button": '2',
-        "global_mselect_key": 'Control',
-        "global_project_at_startup": False,
-        "global_systray_icon": True,
-        "global_project_autohide": True,
-        "global_toggle_tooltips": True,
-        "global_worker_number": 2,
-        "global_tolerance": 0.005,
-        "global_open_style": True,
-        "global_delete_confirmation": True,
-        "global_compression_level": 3,
-        "global_save_compressed": True,
-
-        "global_machinist_setting": False,
-
-        # Global GUI Preferences
-        "global_gridx": 1.0,
-        "global_gridy": 1.0,
-        "global_snap_max": 0.05,
-        "global_workspace": False,
-        "global_workspaceT": "A4",
-        "global_workspace_orientation": 'p',
-
-        "global_grid_context_menu": {
-            'in': [0.01, 0.02, 0.025, 0.05, 0.1],
-            'mm': [0.1, 0.2, 0.5, 1, 2.54]
-        },
-
-        "global_sel_fill": '#a5a5ffbf',
-        "global_sel_line": '#0000ffbf',
-        "global_alt_sel_fill": '#BBF268BF',
-        "global_alt_sel_line": '#006E20BF',
-        "global_draw_color": '#FF0000',
-        "global_sel_draw_color": '#0000FF',
-        "global_proj_item_color": '#000000',
-        "global_proj_item_dis_color": '#b7b7cb',
-        "global_activity_icon": 'Ball green',
 
         "global_toolbar_view": 511,
 
@@ -94,6 +39,12 @@ class FlatCAMDefaults:
         # (python trace only for unknown errors),
         # 1 = show trace(show trace always),
         # 2 = (For the future).
+
+        "global_grid_context_menu": {
+            'in': [0.01, 0.02, 0.025, 0.05, 0.1],
+            'mm': [0.1, 0.2, 0.5, 1, 2.54]
+        },
+        "global_hud": True,
 
         # Persistence
         "global_last_folder": None,
@@ -109,11 +60,7 @@ class FlatCAMDefaults:
         # Constants...
         "global_defaults_save_period_ms": 20000,  # Time between default saves.
         "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
-        "global_shell_at_startup": False,  # Show the shell at startup.
         "global_recent_limit": 10,  # Max. items in recent list.
-
-        "global_bookmarks": dict(),
-        "global_bookmarks_limit": 10,
 
         "fit_key": 'V',
         "zoom_out_key": '-',
@@ -125,17 +72,79 @@ class FlatCAMDefaults:
 
         "global_tcl_path": '',
 
-        # General GUI Settings
+        # General APP Preferences
+        "units": "MM",
+        "decimals_inch": 4,
+        "decimals_metric": 4,
+        "global_graphic_engine": '3D',
+        "global_app_level": 'b',
+
+        "global_portable": False,
+        "global_language": 'English',
+
+
+        "global_systray_icon": True,
+        "global_shell_at_startup": False,  # Show the shell at startup.
+        "global_project_at_startup": False,
+        "global_version_check": True,
+        "global_send_stats": True,
+        "global_worker_number": 2,
+        "global_tolerance": 0.005,
+
+        "global_save_compressed": True,
+        "global_compression_level": 3,
+        "global_autosave": False,
+        "global_autosave_timeout": 300000,
+
+        "global_tpdf_tmargin": 15.0,
+        "global_tpdf_bmargin": 10.0,
+        "global_tpdf_lmargin": 20.0,
+        "global_tpdf_rmargin": 20.0,
+
+        # General GUI Preferences
         "global_theme": 'white',
         "global_gray_icons": False,
+
+        "global_layout": "compact",
         "global_hover": False,
         "global_selection_shape": True,
-        "global_layout": "compact",
+
+        "global_sel_fill": '#a5a5ffbf',
+        "global_sel_line": '#0000ffbf',
+        "global_alt_sel_fill": '#BBF268BF',
+        "global_alt_sel_line": '#006E20BF',
+        "global_draw_color": '#FF0000',
+        "global_sel_draw_color": '#0000FF',
+        "global_proj_item_color": '#000000',
+        "global_proj_item_dis_color": '#b7b7cb',
+        "global_project_autohide": True,
+
+        # General App Settings
+        "global_gridx": 1.0,
+        "global_gridy": 1.0,
+        "global_snap_max": 0.05,
+
+        "global_workspace": False,
+        "global_workspaceT": "A4",
+        "global_workspace_orientation": 'p',
+
         "global_cursor_type": "small",
         "global_cursor_size": 20,
         "global_cursor_width": 2,
         "global_cursor_color": '#FF0000',
         "global_cursor_color_enabled": True,
+
+        "global_pan_button": '2',
+        "global_mselect_key": 'Control',
+
+        "global_delete_confirmation": True,
+        "global_allow_edit_in_project_tab": False,
+        "global_open_style": True,
+        "global_toggle_tooltips": True,
+        "global_machinist_setting": False,
+        "global_bookmarks": dict(),
+        "global_bookmarks_limit": 10,
+        "global_activity_icon": 'Ball green',
 
         # Gerber General
         "gerber_plot": True,

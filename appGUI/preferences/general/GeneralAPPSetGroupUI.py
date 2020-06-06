@@ -384,6 +384,14 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.delete_conf_cb, 30, 0, 1, 2)
 
+        self.allow_edit_cb = FCCheckBox(_("Allow Edit"))
+        self.allow_edit_cb.setToolTip(
+            _("When cheched, the user can edit the objects in the Project Tab\n"
+              "by using the left mouse button click on the object name.\n"
+              "Active after restart.")
+        )
+        grid0.addWidget(self.allow_edit_cb, 31, 0, 1, 2)
+
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
         self.open_style_cb.setToolTip(
@@ -393,7 +401,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "path for saving files or the path for opening files.")
         )
 
-        grid0.addWidget(self.open_style_cb, 31, 0, 1, 2)
+        grid0.addWidget(self.open_style_cb, 32, 0, 1, 2)
 
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_cb = FCCheckBox(label=_('Enable ToolTips'))
@@ -402,7 +410,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "when hovering with mouse over items throughout the App.")
         )
 
-        grid0.addWidget(self.toggle_tooltips_cb, 32, 0, 1, 2)
+        grid0.addWidget(self.toggle_tooltips_cb, 33, 0, 1, 2)
 
         # Machinist settings that allow unsafe settings
         self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
@@ -414,7 +422,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
         )
 
-        grid0.addWidget(self.machinist_cb, 33, 0, 1, 2)
+        grid0.addWidget(self.machinist_cb, 34, 0, 1, 2)
 
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
@@ -426,8 +434,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
               "but the menu will hold only so much.")
         )
 
-        grid0.addWidget(self.bm_limit_label, 34, 0)
-        grid0.addWidget(self.bm_limit_spinner, 34, 1)
+        grid0.addWidget(self.bm_limit_label, 35, 0)
+        grid0.addWidget(self.bm_limit_spinner, 35, 1)
 
         # Activity monitor icon
         self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
@@ -437,8 +445,8 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         self.activity_combo = FCComboBox()
         self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
 
-        grid0.addWidget(self.activity_label, 35, 0)
-        grid0.addWidget(self.activity_combo, 35, 1)
+        grid0.addWidget(self.activity_label, 36, 0)
+        grid0.addWidget(self.activity_combo, 36, 1)
 
         self.layout.addStretch()
 
