@@ -3745,23 +3745,28 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = float(tooldia) if tooldia else None
+        try:
+            self.tooldia = float(tooldia)
+        except Exception as e:
+            self.app.inform.emit('[ERROR] %s\n%s' % (_("Failed."), str(e)))
+            return 'fail'
+
         self.z_cut = float(z_cut) if z_cut else None
         self.z_move = float(z_move) if z_move is not None else None
 
-        self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
-        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+        self.feedrate = float(feedrate) if feedrate else  self.app.defaults["geometry_feedrate"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else  self.app.defaults["geometry_feedrate_z"]
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else  self.app.defaults["geometry_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime else None
+        self.dwelltime = float(dwelltime) if dwelltime else  self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else None
-        self.z_end = float(endz) if endz is not None else None
+        self.startz = float(startz) if startz is not None else  self.app.defaults["geometry_startz"]
+        self.z_end = float(endz) if endz is not None else  self.app.defaults["geometry_endz"]
 
-        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else None
+        self.xy_end = re.sub('[()\[\]]', '', str(endxy)) if endxy else  self.app.defaults["geometry_endxy"]
 
         if self.xy_end and self.xy_end != '':
             self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
@@ -3771,10 +3776,10 @@ class CNCjob(Geometry):
                                                    "in the format (x, y) but now there is only one value, not two."))
             return 'fail'
 
-        self.z_depthpercut = float(depthpercut) if depthpercut else None
+        self.z_depthpercut = float(depthpercut) if depthpercut else self.app.defaults["geometry_depthperpass"]
         self.multidepth = multidepth
 
-        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
 
         # it servers in the preprocessor file
         self.tool = tool_no
@@ -3783,7 +3788,8 @@ class CNCjob(Geometry):
             if toolchangexy == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) if toolchangexy else None
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(toolchangexy)) \
+                    if toolchangexy else self.app.defaults["geometry_toolchangexy"]
 
                 if self.xy_toolchange and self.xy_toolchange != '':
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
@@ -3802,9 +3808,9 @@ class CNCjob(Geometry):
 
         if self.z_cut is None:
             if 'laser' not in self.pp_geometry_name:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                       "other parameters."))
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                           "other parameters."))
                 return 'fail'
             else:
                 self.z_cut = 0
@@ -3959,9 +3965,7 @@ class CNCjob(Geometry):
                     total_cut = total_cut + geo.length
 
                     self.gcode += self.create_gcode_single_pass(geo, current_tooldia, extracut, extracut_length,
-                                                                tolerance,
-                                                                z_move=z_move, postproc=p,
-                                                                old_point=current_pt)
+                                                                tolerance, z_move=z_move, old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -3976,8 +3980,7 @@ class CNCjob(Geometry):
                     total_cut += (geo.length * nr_cuts)
 
                     self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
-                                                               tolerance,
-                                                               z_move=z_move, postproc=p,
+                                                               tolerance,  z_move=z_move, postproc=p,
                                                                old_point=current_pt)
 
                 # calculate the total distance
@@ -4009,14 +4012,12 @@ class CNCjob(Geometry):
         )
         return self.gcode
 
-    def generate_from_geometry_2(
-            self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None, z_move=None,
-            feedrate=None, feedrate_z=None, feedrate_rapid=None,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=None,
-            multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0",
-            extracut=False, extracut_length=None, startz=None, endz=None, endxy='',
-            pp_geometry_name=None, tool_no=1):
+    def generate_from_geometry_2(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
+                                 z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
+                                 spindledir='CW', dwell=False, dwelltime=None, multidepth=False, depthpercut=None,
+                                 toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0", extracut=False,
+                                 extracut_length=None, startz=None, endz=None, endxy='', pp_geometry_name=None,
+                                 tool_no=1):
         """
         Second algorithm to generate from Geometry.
 
@@ -4126,7 +4127,7 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        default_dia = 0.01
+        default_dia = None
         if isinstance(self.app.defaults["geometry_cnctooldia"], float):
             default_dia = self.app.defaults["geometry_cnctooldia"]
         else:
@@ -4141,6 +4142,10 @@ class CNCjob(Geometry):
             self.tooldia = float(tooldia) if tooldia else default_dia
         except ValueError:
             self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else default_dia
+
+        if self.tooldia is None:
+            self.app.inform.emit('[ERROR] %s' % _("Failed."))
+            return 'fail'
 
         self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
         self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
@@ -4186,11 +4191,9 @@ class CNCjob(Geometry):
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit(
-                        '[ERROR] %s' %
-                        _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y) \n"
-                          "but now there is only one value, not two. ")
-                    )
+                    msg = _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y)\n"
+                            "but now there is only one value, not two.")
+                    self.app.inform.emit('[ERROR] %s' % msg)
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
@@ -4369,9 +4372,7 @@ class CNCjob(Geometry):
                     # calculate the cut distance
                     total_cut += geo.length
                     self.gcode += self.create_gcode_single_pass(geo, current_tooldia, extracut, self.extracut_length,
-                                                                tolerance,
-                                                                z_move=z_move, postproc=p,
-                                                                old_point=current_pt)
+                                                                tolerance, z_move=z_move, old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -4386,8 +4387,7 @@ class CNCjob(Geometry):
                     total_cut += (geo.length * nr_cuts)
 
                     self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
-                                                               tolerance,
-                                                               z_move=z_move, postproc=p,
+                                                               tolerance, z_move=z_move, postproc=p,
                                                                old_point=current_pt)
 
                 # calculate the travel distance
@@ -4611,8 +4611,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code)
         return gcode
 
-    def create_gcode_single_pass(self, geometry, cdia, extracut, extracut_length, tolerance, z_move, postproc,
-                                 old_point=(0, 0)):
+    def create_gcode_single_pass(self, geometry, cdia, extracut, extracut_length, tolerance, z_move, old_point=(0, 0)):
         """
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
 
@@ -4628,8 +4627,6 @@ class CNCjob(Geometry):
         :type tolerance:            float
         :param z_move:              Travel Z
         :type z_move:               float
-        :param postproc:            Preprocessor class
-        :type postproc:             class
         :param old_point:           Previous point
         :type old_point:            tuple
         :return:                    Gcode
@@ -4638,19 +4635,15 @@ class CNCjob(Geometry):
         # p = postproc
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
-            if extracut is False:
-                gcode_single_pass = self.linear2gcode(geometry, z_move=z_move, dia=cdia, tolerance=tolerance,
+            if extracut is False or not geometry.is_ring:
+                gcode_single_pass = self.linear2gcode(geometry, cdia, z_move=z_move, tolerance=tolerance,
                                                       old_point=old_point)
             else:
-                if geometry.is_ring:
-                    gcode_single_pass = self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
-                                                                z_move=z_move, dia=cdia,
-                                                                old_point=old_point)
-                else:
-                    gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, z_move=z_move, dia=cdia,
-                                                          old_point=old_point)
+                gcode_single_pass = self.linear2gcode_extra(geometry, cdia, extracut_length, tolerance=tolerance,
+                                                            z_move=z_move, old_point=old_point)
+
         elif type(geometry) == Point:
-            gcode_single_pass = self.point2gcode(geometry, dia=cdia, z_move=z_move, old_point=old_point)
+            gcode_single_pass = self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
         else:
             log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
             return
@@ -4708,22 +4701,17 @@ class CNCjob(Geometry):
             # at the first point if the tool is down (in the material).  So, an extra G00 should show up but
             # is inconsequential.
             if type(geometry) == LineString or type(geometry) == LinearRing:
-                if extracut is False:
-                    gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
-                                                          z_move=z_move, dia=cdia, old_point=old_point)
+                if extracut is False or not geometry.is_ring:
+                    gcode_multi_pass += self.linear2gcode(geometry, cdia, tolerance=tolerance, z_cut=depth, up=False,
+                                                          z_move=z_move, old_point=old_point)
                 else:
-                    if geometry.is_ring:
-                        gcode_multi_pass += self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
-                                                                    dia=cdia, z_move=z_move, z_cut=depth, up=False,
-                                                                    old_point=old_point)
-                    else:
-                        gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
-                                                              dia=cdia, z_move=z_move,
-                                                              old_point=old_point)
+                    gcode_multi_pass += self.linear2gcode_extra(geometry, cdia, extracut_length, tolerance=tolerance,
+                                                                z_move=z_move, z_cut=depth, up=False,
+                                                                old_point=old_point)
 
             # Ignore multi-pass for points.
             elif type(geometry) == Point:
-                gcode_multi_pass += self.point2gcode(geometry, dia=cdia, z_move=z_move, old_point=old_point)
+                gcode_multi_pass += self.point2gcode(geometry, cdia, z_move=z_move, old_point=old_point)
                 break  # Ignoring ...
             else:
                 log.warning("G-code generation not implemented for %s" % (str(type(geometry))))

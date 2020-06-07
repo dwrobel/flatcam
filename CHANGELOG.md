@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.06.2020
+
+- refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
+
 6.06.2020
 
 - NCC Tool - added a message to warn the user that he needs at least one tool with clearing operation
