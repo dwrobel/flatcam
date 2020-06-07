@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 7.06.2020
 
 - refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
+- fixed issue with trying to access GUI from different threads by adding a new signal for printing to shell messages
 
 6.06.2020
 
