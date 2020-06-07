@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
 - fixed issue with trying to access GUI from different threads by adding a new signal for printing to shell messages
+- fixed a small issue in Gerber file opener filter that did not see the *.TOP extension or *.outline extension
 
 6.06.2020
 
