@@ -227,7 +227,7 @@ class FlatCAMDefaults:
         "excellon_format_lower_in": 4,
         "excellon_format_upper_mm": 3,
         "excellon_format_lower_mm": 3,
-        "excellon_zeros": "L",
+        "excellon_zeros": "T",
         "excellon_units": "INCH",
         "excellon_update": True,
 
@@ -282,7 +282,7 @@ class FlatCAMDefaults:
 
         # Excellon Export
         "excellon_exp_units": 'INCH',
-        "excellon_exp_format": 'ndec',
+        "excellon_exp_format": 'dec',
         "excellon_exp_integer": 2,
         "excellon_exp_decimals": 4,
         "excellon_exp_zeros": 'LZ',

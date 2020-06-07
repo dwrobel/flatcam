@@ -115,12 +115,12 @@ class Excellon(Geometry):
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
+        self.units_found = self.app.defaults['units']
 
         # Trailing "T" or leading "L" (default)
         # self.zeros = "T"
         self.zeros = zeros or self.defaults["zeros"]
         self.zeros_found = deepcopy(self.zeros)
-        self.units_found = deepcopy(self.units)
 
         # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
         # in another file like for PCB WIzard ECAD software
@@ -134,6 +134,8 @@ class Excellon(Geometry):
         self.excellon_format_upper_mm = excellon_format_upper_mm or self.defaults["excellon_format_upper_mm"]
         self.excellon_format_lower_mm = excellon_format_lower_mm or self.defaults["excellon_format_lower_mm"]
         self.excellon_units = excellon_units or self.defaults["excellon_units"]
+        self.excellon_units_found = None
+
         # detected Excellon format is stored here:
         self.excellon_format = None
 
@@ -362,7 +364,7 @@ class Excellon(Geometry):
 
                         self.excellon_format_upper_in = match.group(1)
                         self.excellon_format_lower_in = match.group(2)
-                        log.warning("Altium Excellon format preset found in comments: %s:%s" %
+                        log.warning("Excellon format preset found in comments: %s:%s" %
                                     (match.group(1), match.group(2)))
                         continue
                     else:
@@ -384,6 +386,25 @@ class Excellon(Geometry):
                         if allegro_warning is True:
                             name_tool = 0
                         log.warning("Found end of the header: %s" % eline)
+
+                        '''
+                        In case that the units were not found in the header, we have two choices:
+                        - one is to use the default value in the App Preferences
+                        - the other is to make an evaluation based on a threshold
+                        we process here the self.tools list and make a list with tools with diameter less or equal 
+                        with 0.1 and a list with tools with value greater than 0.1, 0.1 being the threshold value. 
+                        Most tools in Excellon are greater than 0.1mm therefore if most of the tools are under this 
+                        value it is safe to assume that the units are in INCH
+                        '''
+                        greater_tools = set()
+                        lower_tools = set()
+                        if not self.excellon_units_found and self.tools:
+                            for tool in self.tools:
+                                tool_dia = float(self.tools[tool]['C'])
+                                lower_tools.add(tool_dia) if tool_dia <= 0.1 else greater_tools.add(tool_dia)
+
+                            assumed_units = "IN" if len(lower_tools) > len(greater_tools) else "MM"
+                            self.units = assumed_units
                         continue
 
                 # ## Alternative units format M71/M72
@@ -802,6 +823,8 @@ class Excellon(Geometry):
                     match = self.units_re.match(eline)
                     if match:
                         self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
+                        self.excellon_units_found = self.units
+
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
                         self.excellon_format = match.group(3)
                         if self.excellon_format:
@@ -815,9 +838,9 @@ class Excellon(Geometry):
                                 self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
-                        log.warning("UNITS found inline before conversion: %s" % self.units)
+                        log.warning("UNITS found inline - Value before conversion: %s" % self.units)
                         self.convert_units(self.units)
-                        log.warning("UNITS found inline after conversion: %s" % self.units)
+                        log.warning("UNITS found inline - Value after conversion: %s" % self.units)
                         if self.units == 'MM':
                             log.warning("Excellon format preset is: %s:%s" %
                                         (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
@@ -836,6 +859,7 @@ class Excellon(Geometry):
                         log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
                         log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                        self.excellon_units_found = "IN"
                         continue
                     elif "METRIC" in eline:
                         line_units = "MM"
@@ -845,6 +869,7 @@ class Excellon(Geometry):
                         log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
                         log.warning("Excellon format preset is: %s:%s" %
                                     (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                        self.excellon_units_found = "MM"
                         continue
 
                     # Search for zeros type again because it might be alone on the line
@@ -857,7 +882,9 @@ class Excellon(Geometry):
                 # ## Units and number format outside header# ##
                 match = self.units_re.match(eline)
                 if match:
-                    self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
+                    self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
+                    self.excellon_units_found = self.units
+
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
                     self.excellon_format = match.group(3)
                     if self.excellon_format:

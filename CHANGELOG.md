@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
 - fixed issue with trying to access GUI from different threads by adding a new signal for printing to shell messages
 - fixed a small issue in Gerber file opener filter that did not see the *.TOP extension or *.outline extension
+- in Excellon parser added a way to "guestimate" the units if no units are detected in the header. I may need to make it optional in Preferences
+- changed the Excellon defaults for zeros suppression to TZ (assumed that most Excellon without units in header will come out of older Eagle) and the Excellon export default is now with coordinates in decimal
 
 6.06.2020
 
