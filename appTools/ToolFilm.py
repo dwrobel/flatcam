@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, OptionalInputSection, FCComboBox, FCFileSaveDialog
+    OptionalHideInputSection, FCComboBox, FCFileSaveDialog
 
 from copy import deepcopy
 import logging
@@ -68,7 +68,7 @@ class Film(AppTool):
         self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("Object"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object for which to create the film.\n"
               "The object can be of type: Gerber or Geometry.\n"
@@ -107,13 +107,6 @@ class Film(AppTool):
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_box_combo.is_last = True
 
-        # self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
-        # self.tf_box_combo_label.setToolTip(
-        #     _("The actual object that is used as container for the\n "
-        #       "selected object for which we create the film.\n"
-        #       "Usually it is the PCB outline but it can be also the\n"
-        #       "same object for which the film is created.")
-        # )
         grid0.addWidget(self.tf_box_combo, 3, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
@@ -160,8 +153,13 @@ class Film(AppTool):
         grid0.addWidget(self.film_scaley_label, 8, 0)
         grid0.addWidget(self.film_scaley_entry, 8, 1)
 
-        self.ois_scale = OptionalInputSection(self.film_scale_cb, [self.film_scalex_label, self.film_scalex_entry,
-                                                                   self.film_scaley_label,  self.film_scaley_entry])
+        self.ois_scale = OptionalHideInputSection(self.film_scale_cb,
+                                                  [
+                                                      self.film_scalex_label,
+                                                      self.film_scalex_entry,
+                                                      self.film_scaley_label,
+                                                      self.film_scaley_entry
+                                                  ])
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -214,9 +212,15 @@ class Film(AppTool):
         grid0.addWidget(self.film_skew_ref_label, 13, 0)
         grid0.addWidget(self.film_skew_reference, 13, 1)
 
-        self.ois_skew = OptionalInputSection(self.film_skew_cb, [self.film_skewx_label, self.film_skewx_entry,
-                                                                 self.film_skewy_label,  self.film_skewy_entry,
-                                                                 self.film_skew_reference])
+        self.ois_skew = OptionalHideInputSection(self.film_skew_cb,
+                                                 [
+                                                     self.film_skewx_label,
+                                                     self.film_skewx_entry,
+                                                     self.film_skewy_label,
+                                                     self.film_skewy_entry,
+                                                     self.film_skew_ref_label,
+                                                     self.film_skew_reference
+                                                 ])
 
         separator_line1 = QtWidgets.QFrame()
         separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
@@ -245,8 +249,11 @@ class Film(AppTool):
         grid0.addWidget(self.film_mirror_axis_label, 16, 0)
         grid0.addWidget(self.film_mirror_axis, 16, 1)
 
-        self.ois_mirror = OptionalInputSection(self.film_mirror_cb,
-                                               [self.film_mirror_axis_label, self.film_mirror_axis])
+        self.ois_mirror = OptionalHideInputSection(self.film_mirror_cb,
+                                                   [
+                                                       self.film_mirror_axis_label,
+                                                       self.film_mirror_axis
+                                                   ])
 
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
@@ -271,8 +278,6 @@ class Film(AppTool):
         )
         grid0.addWidget(self.film_scale_stroke_label, 19, 0)
         grid0.addWidget(self.film_scale_stroke_entry, 19, 1)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 20, 0)
 
         # Film Type
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},

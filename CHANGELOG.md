@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed bug: on first ever usage of FlatCAM beta the last loaded language (alphabetically) is used instead of English (in current state is Russian)
 - made sure the the GUI settings are cleared on each new install
 - added a new signal that is triggered by change in visibility for the Shell Dock and will change the status of the shell label in the status bar. In this way the label will really be changed each time the shell is toggled
+- optimized the GUI in Film Tool
 
 6.06.2020
 
