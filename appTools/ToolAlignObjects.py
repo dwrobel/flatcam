@@ -72,7 +72,7 @@ class AlignObjects(AppTool):
         self.type_obj_radio = RadioSet([
             {"label": _("Gerber"), "value": "grb"},
             {"label": _("Excellon"), "value": "exc"},
-        ], orientation='vertical', stretch=False)
+        ])
 
         grid0.addWidget(self.type_obj_radio, 3, 0, 1, 2)
 
@@ -95,7 +95,7 @@ class AlignObjects(AppTool):
 
         grid0.addWidget(QtWidgets.QLabel(''), 6, 0, 1, 2)
 
-        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("TARGET object"))
+        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("DESTINATION object"))
         self.aligned_label.setToolTip(
             _("Specify the type of object to be aligned to.\n"
               "It can be of type: Gerber or Excellon.\n"
@@ -108,7 +108,7 @@ class AlignObjects(AppTool):
         self.type_aligner_obj_radio = RadioSet([
             {"label": _("Gerber"), "value": "grb"},
             {"label": _("Excellon"), "value": "exc"},
-        ], orientation='vertical', stretch=False)
+        ])
 
         grid0.addWidget(self.type_aligner_obj_radio, 8, 0, 1, 2)
 
@@ -142,10 +142,7 @@ class AlignObjects(AppTool):
             [
                 {'label': _('Single Point'), 'value': 'sp'},
                 {'label': _('Dual Point'), 'value': 'dp'}
-            ],
-            orientation='vertical',
-            stretch=False
-        )
+            ])
 
         grid0.addWidget(self.a_type_lbl, 12, 0, 1, 2)
         grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)

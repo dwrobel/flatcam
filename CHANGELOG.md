@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - made sure the the GUI settings are cleared on each new install
 - added a new signal that is triggered by change in visibility for the Shell Dock and will change the status of the shell label in the status bar. In this way the label will really be changed each time the shell is toggled
 - optimized the GUI in Film Tool
+- optimized GUI in Alignment Tool
 
 6.06.2020
 
