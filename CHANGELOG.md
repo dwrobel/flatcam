@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - fixed a small issue in Gerber file opener filter that did not see the *.TOP extension or *.outline extension
 - in Excellon parser added a way to "guestimate" the units if no units are detected in the header. I may need to make it optional in Preferences
 - changed the Excellon defaults for zeros suppression to TZ (assumed that most Excellon without units in header will come out of older Eagle) and the Excellon export default is now with coordinates in decimal
+- made sure that the message that exclusion areas are deleted is displayed only if there are shapes in the exclusion areas storage
 
 6.06.2020
 
