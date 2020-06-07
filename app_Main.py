@@ -450,6 +450,17 @@ class App(QtCore.QObject):
         self.pool = Pool()
 
         # ###########################################################################################################
+        # ###################################### Clear GUI Settings - once at first start ###########################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # on first run clear the previous QSettings, therefore clearing the GUI settings
+            qsettings = QSettings("Open Source", "FlatCAM")
+            for key in qsettings.allKeys():
+                qsettings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del qsettings
+
+        # ###########################################################################################################
         # ###################################### Setting the Splash Screen ##########################################
         # ###########################################################################################################
         splash_settings = QSettings("Open Source", "FlatCAM")
@@ -579,7 +590,7 @@ class App(QtCore.QObject):
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             initial_lay = 'minimal'
             self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 

@@ -15,6 +15,9 @@ CHANGELOG for FlatCAM beta
 - in Excellon parser added a way to "guestimate" the units if no units are detected in the header. I may need to make it optional in Preferences
 - changed the Excellon defaults for zeros suppression to TZ (assumed that most Excellon without units in header will come out of older Eagle) and the Excellon export default is now with coordinates in decimal
 - made sure that the message that exclusion areas are deleted is displayed only if there are shapes in the exclusion areas storage
+- fixed bug: on first ever usage of FlatCAM beta the last loaded language (alphabetically) is used instead of English (in current state is Russian)
+- made sure the the GUI settings are cleared on each new install
+- added a new signal that is triggered by change in visibility for the Shell Dock and will change the status of the shell label in the status bar. In this way the label will really be changed each time the shell is toggled
 
 6.06.2020
 
