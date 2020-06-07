@@ -381,7 +381,8 @@ class App(QtCore.QObject):
             f.close()
 
         # the factory defaults are written only once at the first launch of the application after installation
-        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"), self.version)
+        FlatCAMDefaults.save_factory_defaults(os.path.join(self.data_path, "factory_defaults.FlatConfig"),
+                                              float(self.version))
 
         # create a recent files json file if there is none
         try:
