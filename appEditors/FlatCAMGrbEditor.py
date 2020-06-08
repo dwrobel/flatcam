@@ -3778,7 +3778,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # Canvas events
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-        # but those from FlatCAMGeoEditor
+        # but those from appGeoEditor
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues

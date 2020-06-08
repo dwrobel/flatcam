@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, QSettings
 
 from camlib import distance, arc, FlatCAMRTreeStorage
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner
-from appEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
+from appEditors.appGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, appGeoEditor
 from appParsers.ParseExcellon import Excellon
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -935,7 +935,7 @@ class FCDrillResize(FCShapeTool):
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
-            self.destination_storage = FlatCAMGeoEditor.make_storage()
+            self.destination_storage = appGeoEditor.make_storage()
             self.draw_app.storage_dict[new_dia] = self.destination_storage
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -2560,7 +2560,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     return
 
         if tool_dia not in self.olddia_newdia:
-            storage_elem = FlatCAMGeoEditor.make_storage()
+            storage_elem = appGeoEditor.make_storage()
             self.storage_dict[tool_dia] = storage_elem
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -2615,7 +2615,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         for deleted_tool_dia in deleted_tool_dia_list:
 
             # delete the storage used for that tool
-            storage_elem = FlatCAMGeoEditor.make_storage()
+            storage_elem = appGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
             self.storage_dict.pop(deleted_tool_dia, None)
 
@@ -2679,7 +2679,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # DESTINATION storage
         # tool diameter is not used so we create a new tool with the desired diameter
         if new_dia not in self.olddia_newdia:
-            destination_storage = FlatCAMGeoEditor.make_storage()
+            destination_storage = appGeoEditor.make_storage()
             self.storage_dict[new_dia] = destination_storage
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -2910,7 +2910,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_exc_click_release)
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-        # but those from FlatCAMGeoEditor
+        # but those from appGeoEditor
         if self.app.is_legacy is False:
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
@@ -3052,7 +3052,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
         for tool_dia in self.points_edit:
-            storage_elem = FlatCAMGeoEditor.make_storage()
+            storage_elem = appGeoEditor.make_storage()
             for point in self.points_edit[tool_dia]:
                 # make a '+' sign, the line length is the tool diameter
                 start_hor_line = ((point.x - (tool_dia / 2)), point.y)
@@ -3073,7 +3073,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 shape_geo = line_geo.buffer(buf_value)
 
                 if tool_dia not in self.storage_dict:
-                    storage_elem = FlatCAMGeoEditor.make_storage()
+                    storage_elem = appGeoEditor.make_storage()
                     self.storage_dict[tool_dia] = storage_elem
 
                 if shape_geo is not None:

@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 8.06.2020
 
 - minor changes in the way that the tools are installed and connected
+- renamed the GeoEditor class/file to appGeoEditor from FlatCAMGeoEditor making it easier to see in the IDE tree structure
+- some refactoring that lead to a working solution when using the Python 3.8 + PyQt 5.15
 
 7.06.2020
 

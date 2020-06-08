@@ -78,7 +78,7 @@ from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTr
 from appPreProcessor import load_preprocessors
 
 # FlatCAM appEditors
-from appEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
+from appEditors.appGeoEditor import appGeoEditor
 from appEditors.FlatCAMExcEditor import FlatCAMExcEditor
 from appEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
 from appEditors.FlatCAMTextEditor import TextEditor
@@ -1321,7 +1321,6 @@ class App(QtCore.QObject):
         # ########################################## Tools and Plugins ##############################################
         # ###########################################################################################################
 
-
         self.shell = None
         self.dblsidedtool = None
         self.distance_tool = None
@@ -1553,7 +1552,7 @@ class App(QtCore.QObject):
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
         try:
-            self.geo_editor = FlatCAMGeoEditor(self)
+            self.geo_editor = appGeoEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
 
@@ -3396,12 +3395,12 @@ class App(QtCore.QObject):
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
-        minor_v = sys.version_info.minor
-        if minor_v < 8:
-            # make sure that the app closes
-            sys.exit(0)
-        else:
-            os._exit(0)  # fix to work with Python 3.8
+        # minor_v = sys.version_info.minor
+        # if minor_v < 8:
+        #     # make sure that the app closes
+        #     sys.exit(0)
+        # else:
+        #     os._exit(0)  # fix to work with Python 3.8
 
     @staticmethod
     def kill_app():
@@ -6594,7 +6593,7 @@ class App(QtCore.QObject):
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
             # ## EDITOR section
-            self.geo_editor = FlatCAMGeoEditor(self)
+            self.geo_editor = appGeoEditor(self)
             self.exc_editor = FlatCAMExcEditor(self)
             self.grb_editor = FlatCAMGrbEditor(self)
 

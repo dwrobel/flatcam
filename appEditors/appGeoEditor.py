@@ -2523,12 +2523,12 @@ class FCSelect(DrawTool):
             # it will not work for 3rd method of click selection
             if not over_shape_list:
                 self.draw_app.selected = []
-                FlatCAMGeoEditor.draw_shape_idx = -1
+                appGeoEditor.draw_shape_idx = -1
             else:
                 # if there are shapes under our click then advance through the list of them, one at the time in a
                 # circular way
-                FlatCAMGeoEditor.draw_shape_idx = (FlatCAMGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
-                obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
+                appGeoEditor.draw_shape_idx = (appGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                obj_to_add = over_shape_list[int(appGeoEditor.draw_shape_idx)]
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
@@ -2550,7 +2550,7 @@ class FCSelect(DrawTool):
                     self.draw_app.selected = []
                     self.draw_app.selected.append(obj_to_add)
         except Exception as e:
-            log.error("[ERROR] FlatCAMGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
+            log.error("[ERROR] appGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
 
         # if selection is done on canvas update the Tree in Selected Tab with the selection
         try:
@@ -2788,9 +2788,9 @@ class FCMove(FCShapeTool):
             else:
                 # if there are shapes under our click then advance through the list of them, one at the time in a
                 # circular way
-                self.draw_app.draw_shape_idx = (FlatCAMGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                self.draw_app.draw_shape_idx = (appGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
                 try:
-                    obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
+                    obj_to_add = over_shape_list[int(appGeoEditor.draw_shape_idx)]
                 except IndexError:
                     return
 
@@ -3230,7 +3230,7 @@ class FCTransform(FCShapeTool):
 # ###############################################
 # ################ Main Application #############
 # ###############################################
-class FlatCAMGeoEditor(QtCore.QObject):
+class appGeoEditor(QtCore.QObject):
 
     # will emit the name of the object that was just selected
     item_selected = QtCore.pyqtSignal(str)
@@ -3243,7 +3243,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # assert isinstance(app, FlatCAMApp.App), \
         #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
-        super(FlatCAMGeoEditor, self).__init__()
+        super(appGeoEditor, self).__init__()
 
         self.app = app
         self.canvas = app.plotcanvas
@@ -3316,7 +3316,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # # ## Data
         self.active_tool = None
 
-        self.storage = FlatCAMGeoEditor.make_storage()
+        self.storage = appGeoEditor.make_storage()
         self.utility = []
 
         # VisPy visuals
@@ -3415,7 +3415,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.options[opt] = float(text_value)
             except Exception as e:
                 entry.set_value(self.app.defaults[opt])
-                log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
+                log.debug("appGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
         def grid_changed(goption, gentry):
@@ -3588,7 +3588,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.connect_canvas_event_handlers()
 
         # initialize working objects
-        self.storage = FlatCAMGeoEditor.make_storage()
+        self.storage = appGeoEditor.make_storage()
         self.utility = []
         self.selected = []
 
@@ -3701,7 +3701,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         #     for w in sel_tab_widget_list:
         #         w.setEnabled(True)
         # except Exception as e:
-        #     log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
+        #     log.debug("appGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:
@@ -3727,7 +3727,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if self.app.is_legacy is False:
             # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-            # but those from FlatCAMGeoEditor
+            # but those from appGeoEditor
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -3958,7 +3958,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
 
-        # self.storage = FlatCAMGeoEditor.make_storage()
+        # self.storage = appGeoEditor.make_storage()
         self.replot()
 
     def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
@@ -4567,10 +4567,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 elif isinstance(geom, LineString) and geom is not None:
                     geom = LineString(geom.coords[::-1])
                 else:
-                    log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
+                    log.debug("appGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
                               type(geom))
             except Exception as e:
-                log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
+                log.debug("appGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
         shape_list = []
@@ -4757,7 +4757,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         try:
             results = geo_shapes[0].geo
         except Exception as e:
-            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            log.debug("appGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
@@ -4792,7 +4792,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         try:
             intersector = geo_shapes[0].geo
         except Exception as e:
-            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            log.debug("appGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
