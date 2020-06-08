@@ -920,7 +920,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
         # ToolBar signals
-        self.connect_toolbar_signals()
+        self.connect_toolbar_signals(ui=self.ui)
 
         # Notebook and Plot Tab Area signals
         # make the right click on the notebook tab and plot tab area tab raise a menu
@@ -1318,24 +1318,11 @@ class App(QtCore.QObject):
         self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
 
         # ###########################################################################################################
-        # ############################################## Shell SETUP ################################################
-        # ###########################################################################################################
-
-        self.shell = FCShell(app=self, version=self.version)
-
-        self.ui.shell_dock.setWidget(self.shell)
-        self.log.debug("TCL Shell has been initialized.")
-
-        # show TCL shell at start-up based on the Menu -? Edit -> Preferences setting.
-        if self.defaults["global_shell_at_startup"]:
-            self.ui.shell_dock.show()
-        else:
-            self.ui.shell_dock.hide()
-
-        # ###########################################################################################################
         # ########################################## Tools and Plugins ##############################################
         # ###########################################################################################################
 
+
+        self.shell = None
         self.dblsidedtool = None
         self.distance_tool = None
         self.distance_min_tool = None
@@ -1397,6 +1384,15 @@ class App(QtCore.QObject):
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
+
+        # ###########################################################################################################
+        # ############################################## Shell SETUP ################################################
+        # ###########################################################################################################
+        # show TCL shell at start-up based on the Menu -? Edit -> Preferences setting.
+        if self.defaults["global_shell_at_startup"]:
+            self.ui.shell_dock.show()
+        else:
+            self.ui.shell_dock.hide()
 
         # ###########################################################################################################
         # ######################################### Check for updates ###############################################
@@ -1869,6 +1865,10 @@ class App(QtCore.QObject):
 
         :return: None
         """
+
+        # shell tool has t obe initialized always first because other tools print messages in the Shell Dock
+        self.shell = FCShell(app=self, version=self.version)
+
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
@@ -2041,7 +2041,35 @@ class App(QtCore.QObject):
     #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
     #                            'params': []})
 
-    def connect_toolbar_signals(self):
+    def connect_tools_signals_to_toolbar(self, ui):
+        ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
+        ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+
+        ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
+        ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
+        ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
+        ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
+
+        ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
+        ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
+        ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
+        ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+        ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
+        ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
+
+        ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
+        ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
+        ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
+        ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
+        ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
+        ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
+        ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
+        ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
+        ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
+
+    def connect_toolbar_signals(self, ui):
         """
         Reconnect the signals to the actions in the toolbar.
         This has to be done each time after the FlatCAM tools are removed/installed.
@@ -2052,66 +2080,44 @@ class App(QtCore.QObject):
         # Toolbar
 
         # File Toolbar Signals
-        # self.ui.file_new_btn.triggered.connect(self.on_file_new)
-        self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
-        self.ui.file_save_btn.triggered.connect(self.on_file_saveproject)
-        self.ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
-        self.ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
+        # ui.file_new_btn.triggered.connect(self.on_file_new)
+        ui.file_open_btn.triggered.connect(self.on_file_openproject)
+        ui.file_save_btn.triggered.connect(self.on_file_saveproject)
+        ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
+        ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
 
         # View Toolbar Signals
-        self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
-        self.ui.replot_btn.triggered.connect(self.plot_all)
-        self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
-        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
-        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        ui.clear_plot_btn.triggered.connect(self.clear_plots)
+        ui.replot_btn.triggered.connect(self.plot_all)
+        ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
+        ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
+        ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         # Edit Toolbar Signals
-        self.ui.editgeo_btn.triggered.connect(self.object2editor)
-        self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
-        self.ui.copy_btn.triggered.connect(self.on_copy_command)
-        self.ui.delete_btn.triggered.connect(self.on_delete)
+        ui.editgeo_btn.triggered.connect(self.object2editor)
+        ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
+        ui.copy_btn.triggered.connect(self.on_copy_command)
+        ui.delete_btn.triggered.connect(self.on_delete)
 
-        self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
-        self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
-        self.ui.origin_btn.triggered.connect(self.on_set_origin)
-        self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
+        ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
+        ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
+        ui.origin_btn.triggered.connect(self.on_set_origin)
+        ui.move2origin_btn.triggered.connect(self.on_move2origin)
 
-        self.ui.jmp_btn.triggered.connect(self.on_jump_to)
-        self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
+        ui.jmp_btn.triggered.connect(self.on_jump_to)
+        ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         # Scripting Toolbar Signals
-        self.ui.shell_btn.triggered.connect(self.ui.toggle_shell_ui)
-        self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
-        self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
-        self.ui.run_script_btn.triggered.connect(self.on_filerunscript)
+        ui.shell_btn.triggered.connect(ui.toggle_shell_ui)
+        ui.new_script_btn.triggered.connect(self.on_filenewscript)
+        ui.open_script_btn.triggered.connect(self.on_fileopenscript)
+        ui.run_script_btn.triggered.connect(self.on_filerunscript)
 
         # Tools Toolbar Signals
-        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
-        self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
-        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
-        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
-
-        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
-        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
-        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
-        self.ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
-
-        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
-        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
-        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
-        self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
-        self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
-
-        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
-        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
-        self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
-        self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
-        self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
-        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
-        self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
-        self.ui.corners_tool_btn.triggered.connect(lambda: self.corners_tool.run(toggle=True))
-        self.ui.etch_btn.triggered.connect(lambda: self.etch_tool.run(toggle=True))
+        try:
+            self.connect_tools_signals_to_toolbar(ui=ui)
+        except Exception as err:
+            log.debug("App.connect_toolbar_signals() tools signals -> %s" % str(err))
 
     def object2editor(self):
         """

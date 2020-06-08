@@ -295,6 +295,9 @@ class FCShell(TermWidget):
         self._append_to_browser('in', "FlatCAM %s - " % version)
         self.append_output('%s\n\n' % _("Type >help< to get started"))
 
+        self.app.ui.shell_dock.setWidget(self)
+        self.app.log.debug("TCL Shell has been initialized.")
+
     def init_tcl(self):
         if hasattr(self, 'tcl') and self.tcl is not None:
             # self.tcl = None

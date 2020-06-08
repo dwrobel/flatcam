@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.06.2020
+
+- minor changes in the way that the tools are installed and connected
+
 7.06.2020
 
 - refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods

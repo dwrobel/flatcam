@@ -531,8 +531,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # add all the actions to the toolbars
         self.app.ui.populate_toolbars()
 
-        # reconnect all the signals to the toolbar actions
-        self.app.connect_toolbar_signals()
+        try:
+            # reconnect all the signals to the toolbar actions
+            self.app.connect_toolbar_signals(ui=self.app.ui)
+        except Exception as e:
+            self.app.log.debug(
+                "appGUI.preferences.general.GeneralGUIPrefGroupUI.on_layout() - connect toolbar signals -> %s" % str(e))
 
         self.app.ui.grid_snap_btn.setChecked(True)
 
