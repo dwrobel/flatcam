@@ -565,11 +565,12 @@ class ExclusionAreas(QtCore.QObject):
         :return:    None
         :rtype:
         """
+        if self.exclusion_areas_storage:
+            self.app.inform.emit('%s' % _("All exclusion zones deleted."))
         self.exclusion_areas_storage.clear()
         AppTool.delete_moving_selection_shape(self)
         self.app.delete_selection_shape()
         AppTool.delete_tool_selection_shape(self, shapes_storage=self.exclusion_shapes)
-        self.app.inform.emit('%s' % _("All exclusion zones deleted."))
 
     def delete_sel_shapes(self, idxs):
         """
@@ -604,6 +605,7 @@ class ExclusionAreas(QtCore.QObject):
         if self.app.is_legacy is True:
             self.exclusion_shapes.redraw()
 
+        # if there are still some exclusion areas in the storage
         if self.exclusion_areas_storage:
             self.app.inform.emit('[success] %s' % _("Selected exclusion zones deleted."))
         else:
@@ -618,6 +620,7 @@ class ExclusionAreas(QtCore.QObject):
                                             """)
             self.cnc_button.setToolTip('%s' % _("Generate the CNC Job object."))
 
+            # there are no more exclusion areas in the storage, all have been selected and deleted
             self.app.inform.emit('%s' % _("All exclusion zones deleted."))
 
     def travel_coordinates(self, start_point, end_point, tooldia):

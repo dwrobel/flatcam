@@ -766,6 +766,7 @@ class NonCopperClear(AppTool, Gerber):
         try:
             current_uid = int(self.tools_table.item(current_row, 3).text())
             self.ncc_tools[current_uid]['data']['tools_nccoperation'] = val
+            # TODO got a crash here, a KeyError exception; need to see it again and find out the why
         except AttributeError:
             return
 
@@ -1639,6 +1640,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                     "use a number."))
                         continue
 
+                # find out which tools is for isolation and which are for copper clearing
                 for uid_k, uid_v in self.ncc_tools.items():
                     if round(uid_v['tooldia'], self.decimals) == round(self.tooldia, self.decimals):
                         if uid_v['data']['tools_nccoperation'] == "iso":
@@ -2300,23 +2302,30 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be cleared completely'))
             return None
 
-    def clear_copper(self, ncc_obj, sel_obj=None, ncctooldia=None, isotooldia=None, outname=None, order=None,
+    def clear_copper(self, ncc_obj, ncctooldia, isotooldia, sel_obj=None, outname=None, order=None,
                      tools_storage=None, run_threaded=True):
         """
         Clear the excess copper from the entire object.
 
         :param ncc_obj:         ncc cleared object
+        :type ncc_obj:          appObjects.FlatCAMGerber.GerberObject
+        :param ncctooldia:      a list of diameters of the tools to be used to ncc clear
+        :type ncctooldia:       list
+        :param isotooldia:      a list of diameters of the tools to be used for isolation
+        :type isotooldia:       list
         :param sel_obj:
-        :param ncctooldia:      a tuple or single element made out of diameters of the tools to be used to ncc clear
-        :param isotooldia:      a tuple or single element made out of diameters of the tools to be used for isolation
+        :type sel_obj:
         :param outname:         name of the resulting object
+        :type outname:          str
         :param order:           Tools order
         :param tools_storage:   whether to use the current tools_storage self.ncc_tools or a different one.
                                 Usage of the different one is related to when this function is called
                                 from a TcL command.
+        :type tools_storage:    dict
 
         :param run_threaded:    If True the method will be run in a threaded way suitable for GUI usage; if False
                                 it will run non-threaded for TclShell usage
+        :type run_threaded:     bool
         :return:
         """
         log.debug("Executing the handler ...")
@@ -2338,29 +2347,13 @@ class NonCopperClear(AppTool, Gerber):
 
         # determine if to use the progressive plotting
         prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
-        tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
 
-        # ######################################################################################################
-        # # Read the tooldia parameter and create a sorted list out them - they may be more than one diameter ##
-        # ######################################################################################################
-        sorted_clear_tools = []
-        if ncctooldia is not None:
-            try:
-                sorted_clear_tools = [float(eval(dia)) for dia in ncctooldia.split(",") if dia != '']
-            except AttributeError:
-                if not isinstance(ncctooldia, list):
-                    sorted_clear_tools = [float(ncctooldia)]
-                else:
-                    sorted_clear_tools = ncctooldia
-        else:
-            # for row in range(self.tools_table.rowCount()):
-            #     if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
-            #         sorted_clear_tools.append(float(self.tools_table.item(row, 1).text()))
-            for tooluid in self.ncc_tools:
-                if self.ncc_tools[tooluid]['data']['tools_nccoperation'] == 'clear':
-                    sorted_clear_tools.append(self.ncc_tools[tooluid]['tooldia'])
+        tools_storage = tools_storage if tools_storage is not None else self.ncc_tools
+        sorted_clear_tools = ncctooldia
 
         if not sorted_clear_tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There is no copper clearing tool in the selection "
+                                                        "and at least one is needed."))
             return 'fail'
 
         # ########################################################################################################

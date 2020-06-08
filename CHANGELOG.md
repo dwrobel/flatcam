@@ -7,6 +7,25 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.06.2020
+
+- refactoring in camlib.py. Made sure that some conditions are met, if some of the parameters are None then return failure. Modifications in generate_from_geometry_2 and generate_from_multitool_geometry methods
+- fixed issue with trying to access GUI from different threads by adding a new signal for printing to shell messages
+- fixed a small issue in Gerber file opener filter that did not see the *.TOP extension or *.outline extension
+- in Excellon parser added a way to "guestimate" the units if no units are detected in the header. I may need to make it optional in Preferences
+- changed the Excellon defaults for zeros suppression to TZ (assumed that most Excellon without units in header will come out of older Eagle) and the Excellon export default is now with coordinates in decimal
+- made sure that the message that exclusion areas are deleted is displayed only if there are shapes in the exclusion areas storage
+- fixed bug: on first ever usage of FlatCAM beta the last loaded language (alphabetically) is used instead of English (in current state is Russian)
+- made sure the the GUI settings are cleared on each new install
+- added a new signal that is triggered by change in visibility for the Shell Dock and will change the status of the shell label in the status bar. In this way the label will really be changed each time the shell is toggled
+- optimized the GUI in Film Tool
+- optimized GUI in Alignment Tool
+
+6.06.2020
+
+- NCC Tool - added a message to warn the user that he needs at least one tool with clearing operation
+- added a GUI element in the Preferences to control the possibility to edit with mouse cursor objects in the Project Tab. It is named: "Allow Edit"
+
 5.06.2020
 
 - fixed a small issue in the Panelization Tool that blocked the usage of a Geometry object as panelization reference

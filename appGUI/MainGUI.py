@@ -1705,6 +1705,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.final_save.connect(self.app.final_save)
 
+        self.shell_dock.visibilityChanged.connect(self.on_shelldock_toggled)
+
     def save_geometry(self, x, y, width, height, notebook_width):
         """
         Will save the application geometry and positions in the defaults dicitionary to be restored at the next
@@ -1823,7 +1825,12 @@ class MainGUI(QtWidgets.QMainWindow):
             subprocess.Popen(['xdg-open', self.app.data_path])
         self.app.inform.emit('[success] %s' % _("FlatCAM Preferences Folder opened."))
 
-    def on_gui_clear(self):
+    def on_gui_clear(self, signal=None, forced_clear=False):
+        """
+        Will clear the settings that are stored in QSettings.
+        """
+        log.debug("Clearing the settings in QSettings. GUI settings cleared.")
+
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         theme_settings.setValue('theme', 'white')
 
@@ -1831,20 +1838,22 @@ class MainGUI(QtWidgets.QMainWindow):
 
         resource_loc = self.app.resource_location
 
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
-        msgbox.setWindowTitle(_("Clear GUI Settings"))
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
-        msgbox.setIcon(QtWidgets.QMessageBox.Question)
+        response = None
+        if forced_clear is False:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
+            msgbox.setWindowTitle(_("Clear GUI Settings"))
+            msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
+            msgbox.setIcon(QtWidgets.QMessageBox.Question)
 
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
-        msgbox.setDefaultButton(bt_no)
-        msgbox.exec_()
-        response = msgbox.clickedButton()
+            msgbox.setDefaultButton(bt_no)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-        if response == bt_yes:
+        if forced_clear is True or response == bt_yes:
             qsettings = QSettings("Open Source", "FlatCAM")
             for key in qsettings.allKeys():
                 qsettings.remove(key)
@@ -3664,18 +3673,8 @@ class MainGUI(QtWidgets.QMainWindow):
         if self.shell_dock.isVisible():
             self.shell_dock.hide()
             self.app.plotcanvas.native.setFocus()
-            self.shell_status_label.setStyleSheet("")
-            self.app.inform[str, bool].emit(_("Shell disabled."), False)
         else:
             self.shell_dock.show()
-            self.shell_status_label.setStyleSheet("""
-                                                  QLabel
-                                                  {
-                                                      color: black;
-                                                      background-color: lightcoral;
-                                                  }
-                                                  """)
-            self.app.inform[str, bool].emit(_("Shell enabled."), False)
 
             # I want to take the focus and give it to the Tcl Shell when the Tcl Shell is run
             # self.shell._edit.setFocus()
@@ -3690,6 +3689,20 @@ class MainGUI(QtWidgets.QMainWindow):
             # f = QtGui.QMouseEvent(QtCore.QEvent.MouseButtonRelease, pos, QtCore.Qt.LeftButton, QtCore.Qt.LeftButton,
             #                       no_km)
             # QtWidgets.qApp.sendEvent(self.shell._edit, f)
+
+    def on_shelldock_toggled(self, visibility):
+        if visibility is True:
+            self.shell_status_label.setStyleSheet("""
+                                                  QLabel
+                                                  {
+                                                      color: black;
+                                                      background-color: lightcoral;
+                                                  }
+                                                  """)
+            self.app.inform[str, bool].emit(_("Shell enabled."), False)
+        else:
+            self.shell_status_label.setStyleSheet("")
+            self.app.inform[str, bool].emit(_("Shell disabled."), False)
 
 
 class ShortcutsTab(QtWidgets.QWidget):

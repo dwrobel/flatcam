@@ -50,11 +50,10 @@ class KeySensitiveListView(QtWidgets.QTreeView):
     def __init__(self, app, parent=None):
         super(KeySensitiveListView, self).__init__(parent)
         self.setHeaderHidden(True)
-        # self.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)     # allow Edit on Tree
-        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
 
         # self.setRootIsDecorated(False)
         # self.setExpandsOnDoubleClick(False)
+        self.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)    # No edit in the Project Tab Tree
 
         # Enable dragging and dropping onto the appGUI
         self.setAcceptDrops(True)
@@ -309,6 +308,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        if self.app.defaults["global_allow_edit_in_project_tab"] is True:
+            self.view.setEditTriggers(QtWidgets.QTreeView.SelectedClicked)  # allow Edit on Tree
+        else:
+            self.view.setEditTriggers(QtWidgets.QTreeView.NoEditTriggers)
+
         # self.view.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         # self.view.setDragEnabled(True)
         # self.view.setAcceptDrops(True)

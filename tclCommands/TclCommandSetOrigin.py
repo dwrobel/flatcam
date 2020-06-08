@@ -100,4 +100,4 @@ class TclCommandSetOrigin(TclCommand):
         self.app.on_set_zero_click(event=None, location=loc, noplot=True, use_thread=False)
         msg = '[success] Tcl %s: %s' % (_('Origin set by offsetting all loaded objects with '),
                                         '{0:.4f}, {0:.4f}'.format(loc[0], loc[1]))
-        self.app.shell_message(msg, success=True, show=False)
+        self.app.inform_shell.emit(msg)

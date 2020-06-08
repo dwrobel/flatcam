@@ -162,9 +162,9 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     # ################################### Version and VERSION DATE ##################################################
     # ###############################################################################################################
-    # version = "Unstable Version"
-    version = 8.993
-    version_date = "2020/06/05"
+    version = "Unstable Version"
+    # version = 8.994
+    version_date = "2020/07/05"
     beta = True
 
     engine = '3D'
@@ -203,9 +203,10 @@ class App(QtCore.QObject):
     # ###############################################################################################################
 
     # Inform the user
-    # Handled by:
-    #  * App.info() --> Print on the status bar
+    # Handled by: App.info() --> Print on the status bar
     inform = QtCore.pyqtSignal([str], [str, bool])
+    # Handled by: App.info_shell() --> Print on the shell
+    inform_shell = QtCore.pyqtSignal(str)
 
     app_quit = QtCore.pyqtSignal()
 
@@ -449,6 +450,17 @@ class App(QtCore.QObject):
         self.pool = Pool()
 
         # ###########################################################################################################
+        # ###################################### Clear GUI Settings - once at first start ###########################
+        # ###########################################################################################################
+        if self.defaults["first_run"] is True:
+            # on first run clear the previous QSettings, therefore clearing the GUI settings
+            qsettings = QSettings("Open Source", "FlatCAM")
+            for key in qsettings.allKeys():
+                qsettings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del qsettings
+
+        # ###########################################################################################################
         # ###################################### Setting the Splash Screen ##########################################
         # ###########################################################################################################
         splash_settings = QSettings("Open Source", "FlatCAM")
@@ -578,7 +590,7 @@ class App(QtCore.QObject):
         # ################################ It's done only once after install   #####################################
         # ###########################################################################################################
         if self.defaults["first_run"] is True:
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'minimal'
             initial_lay = 'minimal'
             self.ui.general_defaults_form.general_gui_group.on_layout(lay=initial_lay)
 
@@ -761,6 +773,9 @@ class App(QtCore.QObject):
         # signal for displaying messages in status bar
         self.inform[str].connect(self.info)
         self.inform[str, bool].connect(self.info)
+
+        # signal for displaying messages in the shell
+        self.inform_shell.connect(self.info_shell)
 
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
@@ -2427,6 +2442,9 @@ class App(QtCore.QObject):
             # is not printed over and over on the shell
             if msg != '' and shell_echo is True:
                 self.shell_message(msg)
+
+    def info_shell(self, msg):
+        self.shell_message(msg=msg)
 
     def on_import_preferences(self):
         """
@@ -6699,10 +6717,11 @@ class App(QtCore.QObject):
         self.defaults.report_usage("on_fileopengerber")
         App.log.debug("on_fileopengerber()")
 
-        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
-                   ".gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
-                   "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
+        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 " \
+                   "*.gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb " \
+                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.outline);;" \
+                   "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko " \
+                   "*.outline);;" \
                    "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim " \
                    "*.mil);;" \
                    "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \

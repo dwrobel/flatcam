@@ -137,9 +137,9 @@ class AppObject(QtCore.QObject):
             return "fail"
 
         t2 = time.time()
-        msg = "%f seconds executing initialize()." % (t2 - t1)
+        msg = "New object with name: %s. %f seconds executing initialize()." % (name, (t2 - t1))
         log.debug(msg)
-        self.app.shell_message(msg)
+        self.app.inform_shell.emit(msg)
 
         if return_value == 'fail':
             log.debug("Object (%s) parsing and/or geometry creation failed." % kind)

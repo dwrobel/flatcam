@@ -91,7 +91,7 @@ class PreferencesUIManager:
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
             "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
-            # General GUI Settings
+            # General APP Settings
             "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
             "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
@@ -107,6 +107,7 @@ class PreferencesUIManager:
             "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
             "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
             "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
+            "global_allow_edit_in_project_tab": self.ui.general_defaults_form.general_app_set_group.allow_edit_cb,
             "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
             "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,

@@ -2083,14 +2083,14 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit("[WARNING] %s" % _("Partial failure. The geometry was processed with all tools.\n"
                                                     "But there are still not-isolated geometry elements. "
                                                     "Try to include a tool with smaller diameter."))
-            self.app.shell_message(msg=_("The following are coordinates for the copper features "
-                                         "that could not be isolated:"))
+            msg = _("The following are coordinates for the copper features that could not be isolated:")
+            self.app.inform_shell.emit(msg)
             msg = ''
             for geo in work_geo:
                 pt = geo.representative_point()
                 coords = '(%s, %s), ' % (str(pt.x), str(pt.y))
                 msg += coords
-            self.app.shell_message(msg=msg)
+            self.app.inform_shell.emit(msg=msg)
 
     def combined_normal(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
         """
