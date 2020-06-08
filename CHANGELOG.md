@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - renamed the GeoEditor class/file to AppGeoEditor from FlatCAMGeoEditor making it easier to see in the IDE tree structure
 - some refactoring that lead to a working solution when using the Python 3.8 + PyQt 5.15
 - more refactoring in the app Editors
+- added a protection when trying to edit a Geometry object that have multiple tools but no tool is selected
 
 7.06.2020
 

@@ -2154,6 +2154,10 @@ class App(QtCore.QObject):
                                        "is not possible.\n"
                                        "Edit only one geometry at a time."))
 
+                if not sel_rows:
+                    self.inform.emit('[WARNING_NOTCL] %s.' % _("No Tool Selected"))
+                    return
+
                 # determine the tool dia of the selected tool
                 selected_tooldia = float(edited_object.ui.geo_tools_table.item(sel_rows[0], 1).text())
 

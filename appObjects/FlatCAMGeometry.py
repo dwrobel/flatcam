@@ -1759,7 +1759,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param tools_dict:      a dictionary that holds the whole data needed to create the Gcode
                                 (including the solid_geometry)
         :param tools_in_use:    the tools that are used, needed by some preprocessors
-        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from appGUI
+        :type  tools_in_use     list of lists, each list in the list is made out of row elements of tools table from GUI
         :param segx:            number of segments on the X axis, for auto-levelling
         :param segy:            number of segments on the Y axis, for auto-levelling
         :param plot:            if True the generated object will be plotted; if False will not be plotted
@@ -2103,11 +2103,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.app_obj.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
-    def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None,
-            feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
-            multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None, segx=None, segy=None,
-            use_thread=True, plot=True):
+    def generatecncjob(self, outname=None, dia=None, offset=None, z_cut=None, z_move=None, feedrate=None,
+                       feedrate_z=None, feedrate_rapid=None, spindlespeed=None, dwell=None, dwelltime=None,
+                       multidepth=None, dpp=None, toolchange=None, toolchangez=None, toolchangexy=None,
+                       extracut=None, extracut_length=None, startz=None, endz=None, endxy=None, pp=None,
+                       segx=None, segy=None, use_thread=True, plot=True):
         """
         Only used by the TCL Command Cncjob.
         Creates a CNCJob out of this Geometry object. The actual
@@ -2833,6 +2833,38 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         geo_final.options.update(new_options)
         geo_final.solid_geometry = new_solid_geometry
+
+        # merge the geometries of the tools that share the same tool diameter and the same tool_type and the same type
+        final_tools = {}
+        same_dia = {}
+        same_type = {}
+        same_tool_type = {}
+
+        # find tools that have the same diameter and group them by diameter
+        for k, v in new_tools.items():
+            if v['tooldia'] not in same_dia:
+                same_dia[v['tooldia']] = [k]
+            else:
+                same_dia[v['tooldia']].append(k)
+
+        # find tools that have the same type and group them by type
+        for k, v in new_tools.items():
+            if v['type'] not in same_type:
+                same_type[v['type']] = [k]
+            else:
+                same_type[v['type']].append(k)
+
+        # find tools that have the same tool_type and group them by tool_type
+        for k, v in new_tools.items():
+            if v['tool_type'] not in same_tool_type:
+                same_tool_type[v['tool_type']] = [k]
+            else:
+                same_tool_type[v['tool_type']].append(k)
+
+        print(same_dia)
+        print(same_type)
+        print(same_tool_type)
+
         geo_final.tools = new_tools
 
     @staticmethod
