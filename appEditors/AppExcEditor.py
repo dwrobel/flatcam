@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, QSettings
 
 from camlib import distance, arc, FlatCAMRTreeStorage
 from appGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner
-from appEditors.appGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, appGeoEditor
+from appEditors.AppGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, AppGeoEditor
 from appParsers.ParseExcellon import Excellon
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
@@ -935,7 +935,7 @@ class FCDrillResize(FCShapeTool):
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
-            self.destination_storage = appGeoEditor.make_storage()
+            self.destination_storage = AppGeoEditor.make_storage()
             self.draw_app.storage_dict[new_dia] = self.destination_storage
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -1347,7 +1347,7 @@ class FCDrillSelect(DrawTool):
         self.sel_tools = set()
 
         # here we store all shapes that were selected so we can search for the nearest to our click location
-        self.sel_storage = FlatCAMExcEditor.make_storage()
+        self.sel_storage = AppExcEditor.make_storage()
 
         self.exc_editor_app.resize_frame.hide()
         self.exc_editor_app.array_frame.hide()
@@ -1452,7 +1452,7 @@ class FCDrillSelect(DrawTool):
             self.exc_editor_app.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
 
         # delete whatever is in selection storage, there is no longer need for those shapes
-        self.sel_storage = FlatCAMExcEditor.make_storage()
+        self.sel_storage = AppExcEditor.make_storage()
 
         return ""
 
@@ -1467,13 +1467,13 @@ class FCDrillSelect(DrawTool):
         #     # if there is no shape under our click then deselect all shapes
         #     if not over_shape_list:
         #         self.exc_editor_app.selected = []
-        #         FlatCAMExcEditor.draw_shape_idx = -1
+        #         AppExcEditor.draw_shape_idx = -1
         #         self.exc_editor_app.tools_table_exc.clearSelection()
         #     else:
         #         # if there are shapes under our click then advance through the list of them, one at the time in a
         #         # circular way
-        #         FlatCAMExcEditor.draw_shape_idx = (FlatCAMExcEditor.draw_shape_idx + 1) % len(over_shape_list)
-        #         obj_to_add = over_shape_list[int(FlatCAMExcEditor.draw_shape_idx)]
+        #         AppExcEditor.draw_shape_idx = (AppExcEditor.draw_shape_idx + 1) % len(over_shape_list)
+        #         obj_to_add = over_shape_list[int(AppExcEditor.draw_shape_idx)]
         #
         #         if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Shift':
         #             if self.exc_editor_app.modifiers == Qt.ShiftModifier:
@@ -1510,14 +1510,14 @@ class FCDrillSelect(DrawTool):
         #     raise
 
 
-class FlatCAMExcEditor(QtCore.QObject):
+class AppExcEditor(QtCore.QObject):
 
     draw_shape_idx = -1
 
     def __init__(self, app):
         # assert isinstance(app, FlatCAMApp.App), "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
-        super(FlatCAMExcEditor, self).__init__()
+        super(AppExcEditor, self).__init__()
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -2560,7 +2560,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     return
 
         if tool_dia not in self.olddia_newdia:
-            storage_elem = appGeoEditor.make_storage()
+            storage_elem = AppGeoEditor.make_storage()
             self.storage_dict[tool_dia] = storage_elem
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -2590,7 +2590,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         try:
             self.tools_table_exc.selectRow(row_to_be_selected)
         except TypeError as e:
-            log.debug("FlatCAMExcEditor.on_tool_add() --> %s" % str(e))
+            log.debug("AppExcEditor.on_tool_add() --> %s" % str(e))
 
     def on_tool_delete(self, dia=None):
         self.is_modified = True
@@ -2615,7 +2615,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         for deleted_tool_dia in deleted_tool_dia_list:
 
             # delete the storage used for that tool
-            storage_elem = appGeoEditor.make_storage()
+            storage_elem = AppGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
             self.storage_dict.pop(deleted_tool_dia, None)
 
@@ -2665,7 +2665,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         try:
             new_dia = float(self.tools_table_exc.currentItem().text())
         except ValueError as e:
-            log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
+            log.debug("AppExcEditor.on_tool_edit() --> %s" % str(e))
             return
 
         row_of_item_changed = self.tools_table_exc.currentRow()
@@ -2679,7 +2679,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # DESTINATION storage
         # tool diameter is not used so we create a new tool with the desired diameter
         if new_dia not in self.olddia_newdia:
-            destination_storage = appGeoEditor.make_storage()
+            destination_storage = AppGeoEditor.make_storage()
             self.storage_dict[new_dia] = destination_storage
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
@@ -2910,7 +2910,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_exc_click_release)
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-        # but those from appGeoEditor
+        # but those from AppGeoEditor
         if self.app.is_legacy is False:
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
@@ -3006,7 +3006,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
 
-        # self.storage = FlatCAMExcEditor.make_storage()
+        # self.storage = AppExcEditor.make_storage()
         self.replot()
 
     def edit_fcexcellon(self, exc_obj):
@@ -3052,7 +3052,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
         for tool_dia in self.points_edit:
-            storage_elem = appGeoEditor.make_storage()
+            storage_elem = AppGeoEditor.make_storage()
             for point in self.points_edit[tool_dia]:
                 # make a '+' sign, the line length is the tool diameter
                 start_hor_line = ((point.x - (tool_dia / 2)), point.y)
@@ -3073,7 +3073,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 shape_geo = line_geo.buffer(buf_value)
 
                 if tool_dia not in self.storage_dict:
-                    storage_elem = appGeoEditor.make_storage()
+                    storage_elem = AppGeoEditor.make_storage()
                     self.storage_dict[tool_dia] = storage_elem
 
                 if shape_geo is not None:
@@ -3614,7 +3614,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                         self.app.ui.popMenu.popup(self.app.cursor.pos())
 
         except Exception as e:
-            log.warning("FlatCAMExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
+            log.warning("AppExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -3632,7 +3632,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if self.selected:
                         self.replot()
         except Exception as e:
-            log.warning("FlatCAMExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
+            log.warning("AppExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start, end, sel_type):

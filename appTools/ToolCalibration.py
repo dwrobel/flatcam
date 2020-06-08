@@ -10,7 +10,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCEntry
 from appGUI.GUIElements import FCTable, FCComboBox, RadioSet
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
@@ -1061,7 +1061,7 @@ class ToolCalibration(AppTool):
 
         gcode += 'M2'
 
-        self.gcode_editor_tab = TextEditor(app=self.app, plain_text=True)
+        self.gcode_editor_tab = AppTextEditor(app=self.app, plain_text=True)
 
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Gcode Viewer"))

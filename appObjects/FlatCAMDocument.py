@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 
 import gettext
@@ -75,7 +75,7 @@ class DocumentObject(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
-        self.document_editor_tab = TextEditor(app=self.app)
+        self.document_editor_tab = AppTextEditor(app=self.app)
         stylesheet = """
                         QTextEdit {selection-background-color:%s;
                                    selection-color:white;

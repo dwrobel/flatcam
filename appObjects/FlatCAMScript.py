@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 from appGUI.ObjectUI import *
 
@@ -86,7 +86,7 @@ class ScriptObject(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
-        self.script_editor_tab = TextEditor(app=self.app, plain_text=True, parent=self.app.ui)
+        self.script_editor_tab = AppTextEditor(app=self.app, plain_text=True, parent=self.app.ui)
 
         # tab_here = False
         # # try to not add too many times a tab that it is already installed

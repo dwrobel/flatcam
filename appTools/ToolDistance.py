@@ -15,7 +15,7 @@ from shapely.geometry import Point, MultiLineString, Polygon
 
 import appTranslation as fcTranslate
 from camlib import FlatCAMRTreeStorage
-from appEditors.appGeoEditor import DrawToolShape
+from appEditors.AppGeoEditor import DrawToolShape
 
 from copy import copy
 import math

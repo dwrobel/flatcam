@@ -10,8 +10,9 @@ CHANGELOG for FlatCAM beta
 8.06.2020
 
 - minor changes in the way that the tools are installed and connected
-- renamed the GeoEditor class/file to appGeoEditor from FlatCAMGeoEditor making it easier to see in the IDE tree structure
+- renamed the GeoEditor class/file to AppGeoEditor from FlatCAMGeoEditor making it easier to see in the IDE tree structure
 - some refactoring that lead to a working solution when using the Python 3.8 + PyQt 5.15
+- more refactoring in the app Editors
 
 7.06.2020
 
@@ -1333,7 +1334,7 @@ RELEASE 8.993
 13.11.2019
 
 - trying to improve the performance of View CNC Code command by using QPlainTextEdit; made the mods for it
-- when using the Find function in the TextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
+- when using the Find function in the AppTextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
 - finished improving the show of text files in FlatCAM (CNC Code, Source files)
 - fixed an issue in the FlatCAMObj.GerberObject.convert_units() which needed to be updated after changes elsewhere
 
@@ -1636,7 +1637,7 @@ RELEASE 8.993
 
 - fixed bug in Geometry Editor that did not allow the copy of geometric elements
 - created a new class that holds all the Code Editor functionality and integrated as a Editor in FlatCAM, the location is in flatcamEditors folder
-- remade all the functions for view_source, scripts and view_code to use the new TextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
+- remade all the functions for view_source, scripts and view_code to use the new AppTextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
 - changed the name of the new object FlatCAMNotes to a more general one DocumentObject
 - changed the way a new ScriptObject object is made, the method that is processing the Tcl commands when the Run button is clicked is moved to the FlatCAMObj.ScriptObject() class
 - reused the Multiprocessing Pool declared in the App for the ToolRulesCheck() class
@@ -2492,7 +2493,7 @@ RELEASE 8.993
 
 4.06.2019
 
-- PEP8 updates in FlatCAMExcEditor.py
+- PEP8 updates in AppExcEditor.py
 - added the Excellon Editor parameters to the Edit -> Preferences -> Excellon GUI
 - fixed a small bug in Excellon Editor
 - PEP8 cleanup in FlatCAMGui
@@ -2564,7 +2565,7 @@ RELEASE 8.993
 - fixed the Circle Steps parameter for both Gerber and Geometry objects not being applied and instead the app internal defaults were used.
 - fixed the Tcl command Geocutout issue that gave an error when using the 4 or 8 value for gaps parameter
 - made wider the '#' column for Apertures Table for Gerber Object and for Gerber Editor; in this way numbers with 3 digits can be seen
-- PEP8 corrections in FlatCAMGrbEditor.py
+- PEP8 corrections in AppGerberEditor.py
 - added a selection limit parameter for Geometry Editor
 - added entries in Edit -> Preferences for the new parameter Selection limit for both the Gerber and Geometry Editors.
 - set the buttons in the lower part of the Preferences Window to have a preferred minimum width instead of fixed width
@@ -2841,7 +2842,7 @@ RELEASE 8.993
 - Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
 - when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
 - Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
-- moved the polarity change processing from FlatCAMGrbEditor() class to camlib.Gerber().parse_lines()
+- moved the polarity change processing from AppGerberEditor() class to camlib.Gerber().parse_lines()
 - made optional the saving of an edited object. Now the user can cancel the changes to the object.
 - replaced the standard buttons in the QMessageBox's used in the app with custom ones that can have text translated
 - updated the POT translation file and the MO/PO files for English and Romanian language

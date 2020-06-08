@@ -78,10 +78,10 @@ from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTr
 from appPreProcessor import load_preprocessors
 
 # FlatCAM appEditors
-from appEditors.appGeoEditor import appGeoEditor
-from appEditors.FlatCAMExcEditor import FlatCAMExcEditor
-from appEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppGeoEditor import AppGeoEditor
+from appEditors.AppExcEditor import AppExcEditor
+from appEditors.AppGerberEditor import AppGerberEditor
+from appEditors.AppTextEditor import AppTextEditor
 from appParsers.ParseHPGL2 import HPGL2
 
 # FlatCAM Workers
@@ -1552,17 +1552,17 @@ class App(QtCore.QObject):
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
         try:
-            self.geo_editor = appGeoEditor(self)
+            self.geo_editor = AppGeoEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Geo Editor Error: %s" % str(es))
 
         try:
-            self.exc_editor = FlatCAMExcEditor(self)
+            self.exc_editor = AppExcEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Excellon Editor Error: %s" % str(es))
 
         try:
-            self.grb_editor = FlatCAMGrbEditor(self)
+            self.grb_editor = AppGerberEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
         self.log.debug("Finished adding FlatCAM Editor's.")
@@ -6593,9 +6593,9 @@ class App(QtCore.QObject):
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
             # ## EDITOR section
-            self.geo_editor = appGeoEditor(self)
-            self.exc_editor = FlatCAMExcEditor(self)
-            self.grb_editor = FlatCAMGrbEditor(self)
+            self.geo_editor = AppGeoEditor(self)
+            self.exc_editor = AppExcEditor(self)
+            self.grb_editor = AppGerberEditor(self)
 
         # Clear pool
         self.clear_pool()
@@ -7415,7 +7415,7 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     def init_code_editor(self, name):
 
-        self.text_editor_tab = TextEditor(app=self, plain_text=True)
+        self.text_editor_tab = AppTextEditor(app=self, plain_text=True)
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.text_editor_tab, '%s' % name)
@@ -7466,7 +7466,7 @@ class App(QtCore.QObject):
         elif obj.kind == 'cncjob':
             flt = "GCode Files .nc (*.NC);;PDF Files .pdf (*.PDF);;All Files (*.*)"
 
-        self.source_editor_tab = TextEditor(app=self, plain_text=True)
+        self.source_editor_tab = AppTextEditor(app=self, plain_text=True)
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.source_editor_tab, '%s' % _("Source Editor"))
@@ -7577,7 +7577,7 @@ class App(QtCore.QObject):
             # make sure to move first the cursor at the end so after finding the line the line will be positioned
             # at the top of the window
             self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.End)
-            # get the document() of the TextEditor
+            # get the document() of the AppTextEditor
             doc = self.ui.plot_tab_area.currentWidget().code_editor.document()
             # create a Text Cursor based on the searched line
             cursor = QTextCursor(doc.findBlockByLineNumber(line))

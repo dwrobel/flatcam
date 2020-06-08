@@ -11,7 +11,7 @@ from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
 from app_Main import log
 from camlib import distance
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
@@ -1414,7 +1414,7 @@ class SolderPaste(AppTool):
         """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
-        self.text_editor_tab = TextEditor(app=self.app)
+        self.text_editor_tab = AppTextEditor(app=self.app)
 
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.text_editor_tab, _("SP GCode Editor"))

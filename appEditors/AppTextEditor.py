@@ -23,7 +23,7 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class TextEditor(QtWidgets.QWidget):
+class AppTextEditor(QtWidgets.QWidget):
 
     def __init__(self, app, text=None, plain_text=None, parent=None):
         super().__init__(parent=parent)

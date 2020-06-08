@@ -14,7 +14,7 @@ from copy import deepcopy
 from io import StringIO
 from datetime import datetime
 
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 
 from camlib import CNCjob
@@ -556,7 +556,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gco
 
-        self.gcode_editor_tab = TextEditor(app=self.app, plain_text=True)
+        self.gcode_editor_tab = AppTextEditor(app=self.app, plain_text=True)
 
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Code Editor"))
