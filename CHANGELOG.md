@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 9.06.2020
 
 - fixed a possible problem in generating bounds value for a solid_geometry that have empty geo elements
+- added ability to merge tools when merging Geometry objects if they share the same attributes like: diameter, tool_type or type
+- added a control in Edit -> Preferences -> Geometry to control if to merge/fuse tools during Geometry merging
 
 8.06.2020
 

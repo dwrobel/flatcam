@@ -86,9 +86,26 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
+        # Fuse Tools
+        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Geometry'))
+        grid0.addWidget(self.join_geo_label, 10, 0, 1, 2)
+
+        self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
+        self.fuse_tools_cb.setToolTip(
+            _("When checked the joined (merged) geometry object tools\n"
+              "will be merged also but only if they share the same attributes,\n"
+              "like diameter, tool_type or type.")
+        )
+        grid0.addWidget(self.fuse_tools_cb, 11, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 12, 0, 1, 2)
+
         # Geometry Object Color
-        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
-        grid0.addWidget(self.gerber_color_label, 10, 0, 1, 2)
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>:' % _('Object Color'))
+        grid0.addWidget(self.gerber_color_label, 13, 0, 1, 2)
 
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -97,8 +114,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.line_color_label, 11, 0)
-        grid0.addWidget(self.line_color_entry, 11, 1)
+        grid0.addWidget(self.line_color_label, 14, 0)
+        grid0.addWidget(self.line_color_entry, 14, 1)
 
         self.layout.addStretch()
 

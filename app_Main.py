@@ -3816,10 +3816,12 @@ class App(QtCore.QObject):
                                "Check the generated GCODE."))
             return
 
+        fuse_tools = self.defaults["geometry_merge_fuse_tools"]
+
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_set:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=True)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=True, fuse_tools=fuse_tools)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
@@ -3829,7 +3831,7 @@ class App(QtCore.QObject):
             self.app_obj.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
-                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=False)
+                GeometryObject.merge(geo_list=objs, geo_final=geo_obj, multigeo=False, fuse_tools=fuse_tools)
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi

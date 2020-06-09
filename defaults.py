@@ -314,6 +314,7 @@ class FlatCAMDefaults:
         "geometry_multicolored": False,
         "geometry_circle_steps": 64,
         "geometry_cnctooldia": "2.4",
+        "geometry_merge_fuse_tools": True,
         "geometry_plot_line": "#FF0000",
 
         # Geometry Options

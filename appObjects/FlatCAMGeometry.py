@@ -22,6 +22,8 @@ import math
 import numpy as np
 from copy import deepcopy
 import traceback
+from collections import defaultdict
+from functools import reduce
 
 import gettext
 import appTranslation as fcTranslate
@@ -2773,13 +2775,14 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.plot()
 
     @staticmethod
-    def merge(geo_list, geo_final, multigeo=None):
+    def merge(geo_list, geo_final, multigeo=None, fuse_tools=None):
         """
         Merges the geometry of objects in grb_list into the geometry of geo_final.
 
-        :param geo_list: List of GerberObject Objects to join.
-        :param geo_final: Destination GerberObject object.
-        :param multigeo: if the merged geometry objects are of type MultiGeo
+        :param geo_list:    List of GerberObject Objects to join.
+        :param geo_final:   Destination GerberObject object.
+        :param multigeo:    if the merged geometry objects are of type MultiGeo
+        :param fuse_tools:  If True will try to fuse tools of the same type for the Geometry objects
         :return: None
         """
 
@@ -2834,38 +2837,52 @@ class GeometryObject(FlatCAMObj, Geometry):
         geo_final.options.update(new_options)
         geo_final.solid_geometry = new_solid_geometry
 
-        # merge the geometries of the tools that share the same tool diameter and the same tool_type and the same type
-        final_tools = {}
-        same_dia = {}
-        same_type = {}
-        same_tool_type = {}
+        if new_tools and fuse_tools is True:
+            # merge the geometries of the tools that share the same tool diameter and the same tool_type
+            # and the same type
+            final_tools = {}
+            same_dia = defaultdict(list)
+            same_type = defaultdict(list)
+            same_tool_type = defaultdict(list)
 
-        # find tools that have the same diameter and group them by diameter
-        for k, v in new_tools.items():
-            if v['tooldia'] not in same_dia:
-                same_dia[v['tooldia']] = [k]
-            else:
+            # find tools that have the same diameter and group them by diameter
+            for k, v in new_tools.items():
                 same_dia[v['tooldia']].append(k)
 
-        # find tools that have the same type and group them by type
-        for k, v in new_tools.items():
-            if v['type'] not in same_type:
-                same_type[v['type']] = [k]
-            else:
+            # find tools that have the same type and group them by type
+            for k, v in new_tools.items():
                 same_type[v['type']].append(k)
 
-        # find tools that have the same tool_type and group them by tool_type
-        for k, v in new_tools.items():
-            if v['tool_type'] not in same_tool_type:
-                same_tool_type[v['tool_type']] = [k]
-            else:
+            # find tools that have the same tool_type and group them by tool_type
+            for k, v in new_tools.items():
                 same_tool_type[v['tool_type']].append(k)
 
-        print(same_dia)
-        print(same_type)
-        print(same_tool_type)
+            # find the intersections in the above groups
+            intersect_list = []
+            for dia, dia_list in same_dia.items():
+                for ty, type_list in same_type.items():
+                    for t_ty, tool_type_list in same_tool_type.items():
+                        intersection = reduce(np.intersect1d, (dia_list, type_list, tool_type_list)).tolist()
+                        if intersection:
+                            intersect_list.append(intersection)
 
-        geo_final.tools = new_tools
+            new_tool_nr = 1
+            for i_lst in intersect_list:
+                new_solid_geo = []
+                for old_tool in i_lst:
+                    new_solid_geo += new_tools[old_tool]['solid_geometry']
+
+                if new_solid_geo:
+                    final_tools[new_tool_nr] = \
+                        {
+                            k: deepcopy(new_tools[old_tool][k]) for k in new_tools[old_tool] if k != 'solid_geometry'
+                        }
+                    final_tools[new_tool_nr]['solid_geometry'] = deepcopy(new_solid_geo)
+                    new_tool_nr += 1
+        else:
+            final_tools = new_tools
+
+        geo_final.tools = final_tools
 
     @staticmethod
     def get_pts(o):
