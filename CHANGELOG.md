@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.06.2020
+
+- fixed a possible problem in generating bounds value for a solid_geometry that have empty geo elements
+
 8.06.2020
 
 - minor changes in the way that the tools are installed and connected

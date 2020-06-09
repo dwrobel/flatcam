@@ -652,6 +652,12 @@ class Geometry(object):
                             gmaxx = max(gmaxx, maxx_)
                             gmaxy = max(gmaxy, maxy_)
                     else:
+                        try:
+                            if k.is_empty:
+                                continue
+                        except Exception:
+                            pass
+
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                         gminx = min(gminx, minx_)
                         gminy = min(gminy, miny_)
