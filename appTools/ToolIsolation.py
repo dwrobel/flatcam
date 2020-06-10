@@ -1855,6 +1855,9 @@ class ToolIsolation(AppTool, Gerber):
                         self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
                         iso_geo = self.area_intersection(iso_geo, intersection_geo=limited_area)
 
+                    # make sure that no empty geometry element is in the solid_geometry
+                    new_solid_geo = [geo for geo in iso_geo if not geo.is_empty]
+
                     tool_data.update({
                         "name": iso_name,
                     })
@@ -1862,7 +1865,7 @@ class ToolIsolation(AppTool, Gerber):
                     def iso_init(geo_obj, fc_obj):
                         # Propagate options
                         geo_obj.options["cnctooldia"] = str(tool_dia)
-                        geo_obj.solid_geometry = deepcopy(iso_geo)
+                        geo_obj.solid_geometry = deepcopy(new_solid_geo)
 
                         # ############################################################
                         # ########## AREA SUBTRACTION ################################
@@ -2013,6 +2016,9 @@ class ToolIsolation(AppTool, Gerber):
                         self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
                         solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
+                    # make sure that no empty geometry element is in the solid_geometry
+                    new_solid_geo = [geo for geo in solid_geo if not geo.is_empty]
+
                     tools_storage.update({
                         tool: {
                             'tooldia': float(tool_dia),
@@ -2021,11 +2027,11 @@ class ToolIsolation(AppTool, Gerber):
                             'type': _('Rough'),
                             'tool_type': tool_type,
                             'data': tool_data,
-                            'solid_geometry': deepcopy(solid_geo)
+                            'solid_geometry': deepcopy(new_solid_geo)
                         }
                     })
 
-                    total_solid_geometry += solid_geo
+                    total_solid_geometry += new_solid_geo
 
                     # if the geometry is all isolated
                     if not work_geo:
@@ -2188,6 +2194,9 @@ class ToolIsolation(AppTool, Gerber):
                 self.app.proc_container.update_view_text(' %s' % _("Intersecting Geo"))
                 solid_geo = self.area_intersection(solid_geo, intersection_geo=lim_area)
 
+            # make sure that no empty geometry element is in the solid_geometry
+            new_solid_geo = [geo for geo in solid_geo if not geo.is_empty]
+
             tools_storage.update({
                 tool: {
                     'tooldia': float(tool_dia),
@@ -2196,11 +2205,11 @@ class ToolIsolation(AppTool, Gerber):
                     'type': _('Rough'),
                     'tool_type': tool_type,
                     'data': tool_data,
-                    'solid_geometry': deepcopy(solid_geo)
+                    'solid_geometry': deepcopy(new_solid_geo)
                 }
             })
 
-            total_solid_geometry += solid_geo
+            total_solid_geometry += new_solid_geo
 
         # clean the progressive plotted shapes if it was used
         if prog_plot == 'progressive':

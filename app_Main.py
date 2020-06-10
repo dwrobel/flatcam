@@ -3001,6 +3001,38 @@ class App(QtCore.QObject):
                 logo = QtWidgets.QLabel()
                 logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/contribute256.png'))
 
+                # content = QtWidgets.QLabel(
+                #     "%s<br>"
+                #     "%s<br><br>"
+                #     "%s,<br>"
+                #     "%s<br>"
+                #     "<ul>"
+                #     "<li> &nbsp;%s %s</li>"
+                #     "<li> &nbsp;%s %s</li>"
+                #     "</ul>"
+                #     "%s %s.<br>"
+                #     "%s"
+                #     "<ul>"
+                #     "<li> &nbsp;%s &#128077;</li>"
+                #     "<li> &nbsp;%s &#128513;</li>"
+                #     "</ul>" %
+                #     (
+                #         _("This program is %s and free in a very wide meaning of the word.") % open_source_link,
+                #         _("Yet it cannot evolve without <b>contributions</b>."),
+                #         _("If you want to see this application grow and become better and better"),
+                #         _("you can <b>contribute</b> to the development yourself by:"),
+                #         _("Pull Requests on the Bitbucket repository, if you are a developer"),
+                #         new_features_link,
+                #         _("Bug Reports by providing the steps required to reproduce the bug"),
+                #         bugs_link,
+                #         _("If you like or use this program you can make a donation"),
+                #         donation_link,
+                #         _("You don't have to make a donation %s, and it is totally optional but:") % donation_link,
+                #         _("it will be welcomed with joy"),
+                #         _("it will give me a reason to continue")
+                #     )
+                # )
+
                 content = QtWidgets.QLabel(
                     "%s<br>"
                     "%s<br><br>"
@@ -3009,12 +3041,6 @@ class App(QtCore.QObject):
                     "<ul>"
                     "<li> &nbsp;%s %s</li>"
                     "<li> &nbsp;%s %s</li>"
-                    "</ul>"
-                    "%s %s.<br>"
-                    "%s"
-                    "<ul>"
-                    "<li> &nbsp;%s &#128077;</li>"
-                    "<li> &nbsp;%s &#128513;</li>"
                     "</ul>" %
                     (
                         _("This program is %s and free in a very wide meaning of the word.") % open_source_link,
@@ -3024,12 +3050,7 @@ class App(QtCore.QObject):
                         _("Pull Requests on the Bitbucket repository, if you are a developer"),
                         new_features_link,
                         _("Bug Reports by providing the steps required to reproduce the bug"),
-                        bugs_link,
-                        _("If you like or use this program you can make a donation"),
-                        donation_link,
-                        _("You don't have to make a donation %s, and it is totally optional but:") % donation_link,
-                        _("it will be welcomed with joy"),
-                        _("it will give me a reason to continue")
+                        bugs_link
                     )
                 )
                 content.setOpenExternalLinks(True)

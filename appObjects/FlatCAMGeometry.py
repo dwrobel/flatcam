@@ -1100,6 +1100,9 @@ class GeometryObject(FlatCAMObj, Geometry):
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
+        except AttributeError:
+            self.ui_connect()
+            return
 
         tool_dia = float('%.*f' % (self.decimals, d))
         tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())

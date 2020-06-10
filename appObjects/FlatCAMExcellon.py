@@ -20,6 +20,7 @@ from appObjects.FlatCAMObj import *
 
 import itertools
 import numpy as np
+from collections import defaultdict
 
 import gettext
 import appTranslation as fcTranslate
@@ -169,11 +170,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
         # values will be list of Shapely Points; for drills
-        custom_dict_drills = {}
+        custom_dict_drills = defaultdict(list)
 
         # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
         # values will be list of Shapely Points; for slots
-        custom_dict_slots = {}
+        custom_dict_slots = defaultdict(list)
 
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
@@ -186,19 +187,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             for drill in exc.drills:
                 exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[drill['tool']]['C']))
-
-                if exc_tool_dia not in custom_dict_drills:
-                    custom_dict_drills[exc_tool_dia] = [drill['point']]
-                else:
-                    custom_dict_drills[exc_tool_dia].append(drill['point'])
+                custom_dict_drills[exc_tool_dia].append(drill['point'])
 
             for slot in exc.slots:
                 exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[slot['tool']]['C']))
-
-                if exc_tool_dia not in custom_dict_slots:
-                    custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
-                else:
-                    custom_dict_slots[exc_tool_dia].append([slot['start'], slot['stop']])
+                custom_dict_slots[exc_tool_dia].append([slot['start'], slot['stop']])
 
             # add the zeros and units to the exc_final object
             exc_final.zeros = exc.zeros
