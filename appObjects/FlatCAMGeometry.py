@@ -40,6 +40,8 @@ class GeometryObject(FlatCAMObj, Geometry):
     format.
     """
     optionChanged = QtCore.pyqtSignal(str)
+    builduiSig = QtCore.pyqtSignal()
+
     ui_type = GeometryObjectUI
 
     def __init__(self, name):
@@ -177,18 +179,16 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units']
 
-        tool_idx = 0
+        row_idx = 0
 
         n = len(self.tools)
         self.ui.geo_tools_table.setRowCount(n)
 
         for tooluid_key, tooluid_value in self.tools.items():
-            tool_idx += 1
-            row_no = tool_idx - 1
 
-            tool_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
             tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.geo_tools_table.setItem(row_no, 0, tool_id)  # Tool name/id
+            self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 3 decimals diameter.
@@ -225,22 +225,24 @@ class GeometryObject(FlatCAMObj, Geometry):
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
 
-            self.ui.geo_tools_table.setItem(row_no, 1, dia_item)  # Diameter
-            self.ui.geo_tools_table.setCellWidget(row_no, 2, offset_item)
-            self.ui.geo_tools_table.setCellWidget(row_no, 3, type_item)
-            self.ui.geo_tools_table.setCellWidget(row_no, 4, tool_type_item)
+            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
+            self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
 
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
-            self.ui.geo_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID
-            self.ui.geo_tools_table.setCellWidget(row_no, 6, plot_item)
+            self.ui.geo_tools_table.setItem(row_idx, 5, tool_uid_item)  # Tool unique ID
+            self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
 
             try:
                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
             except Exception as e:
                 log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
 
+            row_idx += 1
+
         # make the diameter column editable
-        for row in range(tool_idx):
+        for row in range(row_idx):
             self.ui.geo_tools_table.item(row, 1).setFlags(QtCore.Qt.ItemIsSelectable |
                                                           QtCore.Qt.ItemIsEditable |
                                                           QtCore.Qt.ItemIsEnabled)
@@ -592,6 +594,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
+        self.builduiSig.connect(self.build_ui)
+
         self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
             self.ui.e_cut_entry.setDisabled(True)
         self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
@@ -622,33 +626,23 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
-    def rebuild_ui(self, old_row, new_row):
-        for td in self.tools:
-            print(td, type(td), self.tools[td])
+    def rebuild_ui(self):
 
-        item = self.ui.geo_tools_table.item(new_row, 5)
-        old_tooluid = int(item.text())
-        old_dict = self.tools.pop(old_tooluid)
-
-        item = self.ui.geo_tools_table.item(old_row, 5)
-        new_tooluid = int(item.text())
-
-        print(old_tooluid, new_tooluid)
+        # read the table tools uid
+        current_uid_list = []
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            uid = int(self.ui.geo_tools_table.item(row, 5).text())
+            current_uid_list.append(uid)
 
         new_tools = {}
-        new_tid = 1
+        new_uid = 1
 
-        for k, v in list(self.tools.items()):
-            if k != new_tooluid:
-                new_tools[new_tid] = deepcopy(v)
-            else:
-                new_tools[new_tid] = deepcopy(old_dict)
-                new_tools[new_tid + 1] = deepcopy(v)
-            new_tid += 1
+        for current_uid in current_uid_list:
+            new_tools[new_uid] = deepcopy(self.tools[current_uid])
+            new_uid += 1
 
         self.tools = new_tools
-        for td in self.tools:
-            print(td, self.tools[td])
+        self.ui.geo_tools_table.setRowCount(0)
         self.build_ui()
 
     def on_cut_z_changed(self):
@@ -1092,7 +1086,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     except AttributeError:
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
                         self.ui_connect()
-                        self.build_ui()
+                        self.builduiSig.emit()
                         return
                     except Exception as e:
                         log.debug("on_tool_copy() --> " + str(e))
@@ -1101,7 +1095,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
                 self.ui_connect()
-                self.build_ui()
+                self.builduiSig.emit()
                 return
         else:
             # we copy all tools in geo_tools_table
@@ -1127,7 +1121,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         self.ui_connect()
-        self.build_ui()
+        self.builduiSig.emit()
         self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
@@ -1160,7 +1154,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
         self.ui_connect()
-        self.build_ui()
+        self.builduiSig.emit()
 
     def on_tool_delete(self, all_tools=None):
         self.ui_disconnect()
@@ -1189,7 +1183,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     except AttributeError:
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
                         self.ui_connect()
-                        self.build_ui()
+                        self.builduiSig.emit()
                         return
                     except Exception as e:
                         log.debug("on_tool_delete() --> " + str(e))
@@ -1198,7 +1192,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             else:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
                 self.ui_connect()
-                self.build_ui()
+                self.builduiSig.emit()
                 return
         else:
             # we delete all tools in geo_tools_table

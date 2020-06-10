@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed bug in the Isolation Tool that in certain cases an empty geometry was present in the solid_geometry which mae the CNCJob object generation to fail. It happen for Gerber objects created in the Gerber Editor
 - working on the tool reordering in the Geometry UI
+- continue - work in tool reordering in Geometry UI
 
 9.06.2020
 
