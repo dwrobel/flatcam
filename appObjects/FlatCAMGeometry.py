@@ -376,7 +376,9 @@ class GeometryObject(FlatCAMObj, Geometry):
         sel_rows = []
         sel_items = self.ui.geo_tools_table.selectedItems()
         for it in sel_items:
-            sel_rows.append(it.row())
+            new_row = it.row()
+            if new_row not in sel_rows:
+                sel_rows.append(new_row)
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -618,6 +620,37 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
+        self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def rebuild_ui(self, old_row, new_row):
+        for td in self.tools:
+            print(td, type(td), self.tools[td])
+
+        item = self.ui.geo_tools_table.item(new_row, 5)
+        old_tooluid = int(item.text())
+        old_dict = self.tools.pop(old_tooluid)
+
+        item = self.ui.geo_tools_table.item(old_row, 5)
+        new_tooluid = int(item.text())
+
+        print(old_tooluid, new_tooluid)
+
+        new_tools = {}
+        new_tid = 1
+
+        for k, v in list(self.tools.items()):
+            if k != new_tooluid:
+                new_tools[new_tid] = deepcopy(v)
+            else:
+                new_tools[new_tid] = deepcopy(old_dict)
+                new_tools[new_tid + 1] = deepcopy(v)
+            new_tid += 1
+
+        self.tools = new_tools
+        for td in self.tools:
+            print(td, self.tools[td])
+        self.build_ui()
+
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
 
@@ -798,12 +831,22 @@ class GeometryObject(FlatCAMObj, Geometry):
             sel_rows = []
             sel_items = self.ui.geo_tools_table.selectedItems()
             for it in sel_items:
-                sel_rows.append(it.row())
+                new_row = it.row()
+                if new_row not in sel_rows:
+                    sel_rows.append(new_row)
         else:
             sel_rows = row if type(row) == list else [row]
 
         if not sel_rows:
-            sel_rows = [0]
+            # sel_rows = [0]
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.ui_connect()
+            return
+        else:
+            self.ui.generate_cnc_button.setDisabled(False)
 
         for current_row in sel_rows:
             self.set_tool_offset_visibility(current_row)

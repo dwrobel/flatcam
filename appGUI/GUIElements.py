@@ -2396,7 +2396,7 @@ class OptionalHideInputSection:
 
 class FCTable(QtWidgets.QTableWidget):
 
-    drag_drop_sig = QtCore.pyqtSignal()
+    drag_drop_sig = QtCore.pyqtSignal(int, int)
     lost_focus = QtCore.pyqtSignal()
 
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
@@ -2431,6 +2431,7 @@ class FCTable(QtWidgets.QTableWidget):
                 self.rows_not_for_drag_and_drop = [protected_rows]
 
         self.rows_to_move = []
+        self.row_dragged = None
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -2455,10 +2456,12 @@ class FCTable(QtWidgets.QTableWidget):
 
     # if user is clicking an blank area inside the QTableWidget it will deselect currently selected rows
     def mousePressEvent(self, event):
-        if not self.itemAt(event.pos()):
+        clicked_item = self.itemAt(event.pos())
+        if not clicked_item:
             self.clearSelection()
             self.clearFocus()
         else:
+            self.row_dragged = clicked_item.row()
             QtWidgets.QTableWidget.mousePressEvent(self, event)
 
     def focusOutEvent(self, event):
@@ -2545,6 +2548,13 @@ class FCTable(QtWidgets.QTableWidget):
     #     return rect.contains(pos, True) and not (
     #                 int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
 
+    def dragEnterEvent(self, e: QtGui.QDragEnterEvent) -> None:
+        if e.source() == self:
+            self.blockSignals(True)
+            e.accept()
+        else:
+            e.ignore()
+
     def dropEvent(self, event):
         """
         From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
@@ -2552,6 +2562,7 @@ class FCTable(QtWidgets.QTableWidget):
         :return:
         """
         if event.source() == self:
+            event.acceptProposedAction()
             rows = set([mi.row() for mi in self.selectedIndexes()])
 
             # if one of the selected rows for drag and drop is within the protected list, return
@@ -2592,10 +2603,12 @@ class FCTable(QtWidgets.QTableWidget):
 
             for row in reversed(sorted(rowMapping.keys())):
                 self.removeRow(row)
-            event.accept()
-            self.drag_drop_sig.emit()
 
-            return
+            self.target_row = targetRow
+            self.blockSignals(False)
+            self.drag_drop_sig.emit(int(self.row_dragged), int(targetRow))
+        else:
+            event.ignore()
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):

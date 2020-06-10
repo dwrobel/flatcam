@@ -1385,7 +1385,7 @@ class GeometryObjectUI(ObjectUI):
         self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         grid0.addWidget(self.plot_cb, 0, 1)
 
-        self.geo_tools_table = FCTable()
+        self.geo_tools_table = FCTable(drag_drop=True)
         grid0.addWidget(self.geo_tools_table, 1, 0, 1, 2)
         self.geo_tools_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
 
