@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.06.2020
+
+- NCC Tool optimization - moved the UI in its own class
+- NCC Tool optimization - optimized the Tool edit method
+
+
 11.06.2020
 
 - finished tool reordering in Geometry UI
