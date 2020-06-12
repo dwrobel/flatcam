@@ -525,7 +525,7 @@ class NonCopperClear(AppTool, Gerber):
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
-                    'tool_type': self.ui.tool_type_radio.get_value(),
+                    'tool_type': self.app.defaults["tools_ncctool_type"],
                     'data': deepcopy(self.default_data),
                     'solid_geometry': []
                 }
@@ -578,41 +578,26 @@ class NonCopperClear(AppTool, Gerber):
             for tooluid_key, tooluid_value in self.ncc_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
+
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                     row_no = tool_id - 1
                     self.ui.tools_table.setItem(row_no, 0, id_)  # Tool name/id
 
-                    # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 2 decimals diameter
-                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+                    # Make sure that the drill diameter when in MM is with no more than self.decimals decimals
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
-
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
+                    self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
 
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
-
-                    # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
-
-                    tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
-
-                    # operation_type = FCComboBox()
-                    # operation_type.addItems(['iso_op', 'clear_op'])
-                    #
-                    # # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
-                    # op_idx = operation_type.findText(tooluid_value['operation'])
-                    # operation_type.setCurrentIndex(op_idx)
-
-                    self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
                     self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
+                    tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
                     # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                     self.ui.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID
-
-                    # self.ui.tools_table.setCellWidget(row_no, 4, operation_type)
 
         # make the diameter column editable
         for row in range(tool_id):
@@ -925,7 +910,7 @@ class NonCopperClear(AppTool, Gerber):
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
-                    'tool_type': self.ui.tool_type_radio.get_value(),
+                    'tool_type': self.app.defaults["tools_ncctool_type"],
                     'data': deepcopy(self.default_data),
                     'solid_geometry': []
                 }
@@ -957,22 +942,21 @@ class NonCopperClear(AppTool, Gerber):
 
         # identify the tool that was edited and get it's tooluid
         if new_tool_dia not in tool_dias:
-            self.ncc_tools[editeduid]['tooldia'] = new_tool_dia
+            self.ncc_tools[editeduid]['tooldia'] = deepcopy(float('%.*f' % (self.decimals, new_tool_dia)))
             self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
             self.blockSignals(False)
             self.build_ui()
             return
-        else:
-            # identify the old tool_dia and restore the text in tool table
-            for k, v in self.ncc_tools.items():
-                if k == editeduid:
-                    old_tool_dia = v['tooldia']
-                    restore_dia_item = self.ui.tools_table.item(edited_row, 1)
-                    restore_dia_item.setText(str(old_tool_dia))
-                    break
 
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. "
-                                                          "New diameter value is already in the Tool Table."))
+        # identify the old tool_dia and restore the text in tool table
+        for k, v in self.ncc_tools.items():
+            if k == editeduid:
+                old_tool_dia = v['tooldia']
+                restore_dia_item = self.ui.tools_table.item(edited_row, 1)
+                restore_dia_item.setText(str(old_tool_dia))
+                break
+
+        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. New diameter value is already in the Tool Table."))
         self.blockSignals(False)
         self.build_ui()
 
@@ -1039,13 +1023,20 @@ class NonCopperClear(AppTool, Gerber):
         :return: None
         """
 
-        # init values for the next usage
-        self.set_tool_ui()
+        self.app.defaults.report_usage("on_ncc_click")
 
-        self.app.defaults.report_usage("on_paint_button_click")
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        if prog_plot:
+            self.temp_shapes.clear(update=True)
+
+        self.sel_rect = []
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
-        self.obj_name = self.object_combo.currentText()
+        self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
         try:
@@ -1102,7 +1093,8 @@ class NonCopperClear(AppTool, Gerber):
             self.clear_copper(ncc_obj=self.ncc_obj,
                               ncctooldia=self.ncc_dia_list,
                               isotooldia=self.iso_dia_list,
-                              outname=self.o_name)
+                              outname=self.o_name,
+                              tools_storage=self.ncc_tools)
         elif self.select_method == _("Area Selection"):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
@@ -1493,7 +1485,7 @@ class NonCopperClear(AppTool, Gerber):
         :param has_offset:
         :param ncc_offset:
         :param ncc_margin:
-        :param bounding_box:
+        :param bounding_box:    only this area is kept
         :param tools_storage:
         :return:
         """
@@ -1521,13 +1513,11 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[success] %s ...' % _("Buffering finished"))
 
             empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
-            if empty == 'fail':
+            if empty == 'fail' or empty.is_empty:
+                msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
+                self.app.inform.emit(msg)
                 return 'fail'
 
-            if empty.is_empty:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not get the extent of the area to be non copper cleared."))
-                return 'fail'
         elif ncc_obj.kind == 'gerber' and isotooldia:
             isolated_geo = []
 
@@ -1550,7 +1540,7 @@ class NonCopperClear(AppTool, Gerber):
                 else:
                     isolated_geo = self.generate_envelope(tool_iso / 2, 0)
 
-                if isolated_geo == 'fail':
+                if isolated_geo == 'fail' or isolated_geo.is_empty:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s' %
                                          (_("Isolation geometry could not be generated."), str(tool_iso)))
                     continue
@@ -1611,7 +1601,6 @@ class NonCopperClear(AppTool, Gerber):
                         warning_flag += 1
                         break
 
-                current_uid = 0
                 for k, v in tools_storage.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
                                                                                         tool_iso)):
@@ -1620,8 +1609,8 @@ class NonCopperClear(AppTool, Gerber):
                         # and then reset the temporary list that stored that solid_geometry
                         v['solid_geometry'] = deepcopy(new_geometry)
                         v['data']['name'] = name
+                        geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         break
-                geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
 
             sol_geo = cascaded_union(isolated_geo)
             if has_offset is True:
@@ -1630,13 +1619,11 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[success] %s ...' % _("Buffering finished"))
 
             empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
-            if empty == 'fail':
+            if empty == 'fail' or empty.is_empty:
+                msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
+                self.app.inform.emit(msg)
                 return 'fail'
 
-            if empty.is_empty:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
-                return 'fail'
         elif ncc_obj.kind == 'geometry':
             sol_geo = cascaded_union(ncc_obj.solid_geometry)
             if has_offset is True:
@@ -1644,12 +1631,9 @@ class NonCopperClear(AppTool, Gerber):
                 sol_geo = sol_geo.buffer(distance=ncc_offset)
                 self.app.inform.emit('[success] %s ...' % _("Buffering finished"))
             empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
-            if empty == 'fail':
-                return 'fail'
-
-            if empty.is_empty:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not get the extent of the area to be non copper cleared."))
+            if empty == 'fail' or empty.is_empty:
+                msg = '[ERROR_NOTCL] %s' % _("Could not get the extent of the area to be non copper cleared.")
+                self.app.inform.emit(msg)
                 return 'fail'
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
@@ -1822,17 +1806,8 @@ class NonCopperClear(AppTool, Gerber):
             else:
                 pass
 
-            cleared_geo = []
-            cleared = MultiPolygon()            # Already cleared area
             app_obj.poly_not_cleared = False    # flag for polygons not cleared
 
-            # Generate area for each tool
-            offset = sum(sorted_clear_tools)
-            current_uid = int(1)
-            # try:
-            #     tool = eval(self.app.defaults["tools_ncctools"])[0]
-            # except TypeError:
-            #     tool = eval(self.app.defaults["tools_ncctools"])
 
             if ncc_select == _("Reference Object"):
                 bbox_geo, bbox_kind = self.calculate_bounding_box(
@@ -1860,6 +1835,9 @@ class NonCopperClear(AppTool, Gerber):
                 )
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
+                # store here the geometry generated by clear operation
+                cleared_geo = []
+
                 tool_uid = 0    # find the current tool_uid
                 for k, v in self.ncc_tools.items():
                     if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool)):
@@ -1875,24 +1853,16 @@ class NonCopperClear(AppTool, Gerber):
                 has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
                 ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
-                # Get remaining tools offset
-                offset -= (tool - 1e-12)
 
                 # Bounding box for current tool
                 bbox = self.apply_margin_to_bounding_box(bbox=bbox_geo, box_kind=bbox_kind,
                                                          ncc_select=ncc_select, ncc_margin=ncc_margin)
 
                 # Area to clear
-                empty, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
+                area, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
                                                                isotooldia=isotooldia, ncc_margin=ncc_margin,
                                                                has_offset=has_offset,  ncc_offset=ncc_offset,
                                                                tools_storage=tools_storage, bounding_box=bbox)
-
-                area = empty.buffer(-offset)
-                try:
-                    area = area.difference(cleared)
-                except Exception:
-                    continue
 
                 # Transform area to MultiPolygon
                 if isinstance(area, Polygon):
@@ -1904,7 +1874,6 @@ class NonCopperClear(AppTool, Gerber):
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
-                cleared_geo[:] = []
                 if area.geoms:
                     if len(area.geoms) > 0:
                         pol_nr = 0
@@ -1966,12 +1935,6 @@ class NonCopperClear(AppTool, Gerber):
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
-                            cleared = empty.buffer(-offset * (1 + ncc_overlap))     # Overall cleared area
-                            cleared = cleared.buffer(-tool / 1.999999).buffer(tool / 1.999999)
-
-                            # clean-up cleared geo
-                            cleared = cleared.buffer(0)
-
                             # find the tooluid associated with the current tool_dia so we know where to add the tool
                             # solid_geometry
                             for k, v in tools_storage.items():
@@ -1983,10 +1946,11 @@ class NonCopperClear(AppTool, Gerber):
                                     # and then reset the temporary list that stored that solid_geometry
                                     v['solid_geometry'] = deepcopy(cleared_geo)
                                     v['data']['name'] = name
+                                    geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                                     break
-                            geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         else:
                             log.debug("There are no geometries in the cleared polygon.")
+
             # clean the progressive plotted shapes if it was used
             if self.app.defaults["tools_ncc_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
@@ -1997,6 +1961,14 @@ class NonCopperClear(AppTool, Gerber):
                 try:
                     # if the solid_geometry (type=list) is empty
                     if not uid_val['solid_geometry']:
+                        msg = '%s %s: %s %s: %s' % (
+                            _("Could not use the tool for copper clear."),
+                            _("Tool"),
+                            str(uid),
+                            _("with diameter"),
+                            str(uid_val['tooldia']))
+                        self.app.inform.emit(msg)
+                        log.debug("Empty geometry for tool: %s with diameter: %s" % (str(uid), str(uid_val['tooldia'])))
                         tools_storage.pop(uid, None)
                 except KeyError:
                     tools_storage.pop(uid, None)
@@ -2004,7 +1976,6 @@ class NonCopperClear(AppTool, Gerber):
             geo_obj.options["cnctooldia"] = str(tool)
 
             geo_obj.multigeo = True
-            geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
 
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
@@ -2013,10 +1984,10 @@ class NonCopperClear(AppTool, Gerber):
                 if geo_obj.tools[tid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                app_obj.inform.emit('[ERROR] %s' %
-                                    _("There is no NCC Geometry in the file.\n"
-                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                      "Change the painting parameters and try again."))
+                msg = '[ERROR] %s' % _("There is no NCC Geometry in the file.\n"
+                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                       "Change the painting parameters and try again.")
+                app_obj.inform.emit(msg)
                 return 'fail'
 
             # check to see if geo_obj.tools is empty

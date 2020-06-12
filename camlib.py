@@ -1339,16 +1339,16 @@ class Geometry(object):
         valid cuts. Finalizes by cutting around the inside edge of
         the polygon.
 
-        :param polygon_to_clear: Shapely.geometry.Polygon
-        :param steps_per_circle: how many linear segments to use to approximate a circle
-        :param tooldia: Diameter of the tool
-        :param seedpoint: Shapely.geometry.Point or None
-        :param overlap: Tool fraction overlap bewteen passes
-        :param connect: Connect disjoint segment to minumize tool lifts
-        :param contour: Cut countour inside the polygon.
-        :return: List of toolpaths covering polygon.
-        :rtype: FlatCAMRTreeStorage | None
-        :param prog_plot: boolean; if True use the progressive plotting
+        :param polygon_to_clear:    Shapely.geometry.Polygon
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param tooldia:             Diameter of the tool
+        :param seedpoint:           Shapely.geometry.Point or None
+        :param overlap:             Tool fraction overlap bewteen passes
+        :param connect:             Connect disjoint segment to minumize tool lifts
+        :param contour:             Cut countour inside the polygon.
+        :param prog_plot:           boolean; if True use the progressive plotting
+        :return:                    List of toolpaths covering polygon.
+        :rtype:                     FlatCAMRTreeStorage | None
         """
 
         # log.debug("camlib.clear_polygon2()")
@@ -1368,7 +1368,7 @@ class Geometry(object):
         path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
 
         if path_margin.is_empty or path_margin is None:
-            return
+            return None
 
         # Estimate good seedpoint if not provided.
         if seedpoint is None:
@@ -1411,12 +1411,12 @@ class Geometry(object):
 
         # Clean inside edges (contours) of the original polygon
         if contour:
-            outer_edges = [
-                x.exterior for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
-            ]
+            buffered_poly = autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
+            outer_edges = [x.exterior for x in buffered_poly]
+
             inner_edges = []
             # Over resulting polygons
-            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))):
+            for x in buffered_poly:
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
@@ -1450,14 +1450,14 @@ class Geometry(object):
 
         This algorithm draws horizontal lines inside the polygon.
 
-        :param polygon: The polygon being painted.
-        :type polygon: shapely.geometry.Polygon
-        :param tooldia: Tool diameter.
-        :param steps_per_circle: how many linear segments to use to approximate a circle
-        :param overlap: Tool path overlap percentage.
-        :param connect: Connect lines to avoid tool lifts.
-        :param contour: Paint around the edges.
-        :param prog_plot: boolean; if to use the progressive plotting
+        :param polygon:             The polygon being painted.
+        :type polygon:              shapely.geometry.Polygon
+        :param tooldia:             Tool diameter.
+        :param steps_per_circle:    how many linear segments to use to approximate a circle
+        :param overlap:             Tool path overlap percentage.
+        :param connect:             Connect lines to avoid tool lifts.
+        :param contour:             Paint around the edges.
+        :param prog_plot:           boolean; if to use the progressive plotting
         :return:
         """
 
@@ -1570,12 +1570,14 @@ class Geometry(object):
         try:
             for line in lines_trimmed:
                 if isinstance(line, LineString) or isinstance(line, LinearRing):
-                    geoms.insert(line)
+                    if not line.is_empty:
+                        geoms.insert(line)
                 else:
                     log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
-            geoms.insert(lines_trimmed)
+            if not lines_trimmed.is_empty:
+                geoms.insert(lines_trimmed)
 
         # Add margin (contour) to storage
         if contour:
@@ -1633,7 +1635,7 @@ class Geometry(object):
         """
 
         # log.debug("camlib.fill_with_lines()")
-        if not isinstance(line, LineString) and not isinstance(line, MultiLineString):
+        if not isinstance(line, LineString):
             log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
             return None
 

@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - NCC Tool optimization - optimized the Tool edit method
 - NCC Tool - allow no tool at NCC Tool start (the Preferences have no tool)
 - NCC Tool - optimized tool reset code
+- NCC Tool - fixed the non-rest copper clearing to work as expected: each tool in the tool table will make it's own copper clearing without interference from the rest of the tools 
 
 11.06.2020
 
