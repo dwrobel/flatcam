@@ -213,7 +213,7 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
-        self.app.cleanup.connect(self.reset_usage)
+        self.app.cleanup.connect(self.set_tool_ui)
 
     def on_type_obj_index_changed(self, val):
         obj_type = 0 if val == 'gerber' else 2
@@ -538,6 +538,16 @@ class NonCopperClear(AppTool, Gerber):
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
         self.units = self.app.defaults['units'].upper()
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
+        if prog_plot:
+            self.temp_shapes.clear(update=True)
+
+        self.sel_rect = []
 
     def build_ui(self):
         self.ui_disconnect()
@@ -1030,7 +1040,7 @@ class NonCopperClear(AppTool, Gerber):
         """
 
         # init values for the next usage
-        self.reset_usage()
+        self.set_tool_ui()
 
         self.app.defaults.report_usage("on_paint_button_click")
 
@@ -3540,21 +3550,6 @@ class NonCopperClear(AppTool, Gerber):
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-
-    def reset_usage(self):
-        self.obj_name = ""
-        self.ncc_obj = None
-        self.bound_obj = None
-
-        self.first_click = False
-        self.cursor_pos = None
-        self.mouse_is_dragging = False
-
-        prog_plot = True if self.app.defaults["tools_ncc_plotting"] == 'progressive' else False
-        if prog_plot:
-            self.temp_shapes.clear(update=True)
-
-        self.sel_rect = []
 
 
 class NccUI:

@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - NCC Tool optimization - moved the UI in its own class
 - NCC Tool optimization - optimized the Tool edit method
 - NCC Tool - allow no tool at NCC Tool start (the Preferences have no tool)
+- NCC Tool - optimized tool reset code
 
 11.06.2020
 
