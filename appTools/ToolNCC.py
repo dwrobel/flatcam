@@ -511,10 +511,8 @@ class NonCopperClear(AppTool, Gerber):
             dias = [float(self.app.defaults["tools_ncctools"])]
         except (ValueError, TypeError):
             dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
-
-        if not dias:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
-            return
+        except Exception:
+            dias = []
 
         self.tooluid = 0
 
