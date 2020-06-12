@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.06.2020
+
+- modified the Tools Database such that there is now a way to mark a tool as meant to be used in a certain part of the application; it will disable or enable parts of the parameters of the tool
+
 12.06.2020
 
 - NCC Tool optimization - moved the UI in its own class

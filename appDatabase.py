@@ -1008,6 +1008,21 @@ class ToolsDB2(QtWidgets.QWidget):
         # ###########################################################################
         # ############## The UI form ################################################
         # ###########################################################################
+
+        # Tool description box
+        self.tool_description_box = QtWidgets.QGroupBox()
+        self.tool_description_box.setStyleSheet("""
+        QGroupBox
+        {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        """)
+        self.description_vlay = QtWidgets.QVBoxLayout()
+        self.tool_description_box.setTitle(_("Tool Description"))
+        self.tool_description_box.setFixedWidth(250)
+
+        # Geometry Basic box
         self.basic_box = QtWidgets.QGroupBox()
         self.basic_box.setStyleSheet("""
         QGroupBox
@@ -1020,6 +1035,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.basic_box.setTitle(_("Basic Geo Parameters"))
         self.basic_box.setFixedWidth(250)
 
+        # Geometry Advanced box
         self.advanced_box = QtWidgets.QGroupBox()
         self.advanced_box.setStyleSheet("""
                 QGroupBox
@@ -1071,6 +1087,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.iso_box.setTitle(_("Isolation Parameters"))
         self.iso_box.setFixedWidth(250)
 
+        self.tool_description_box.setLayout(self.description_vlay)
         self.basic_box.setLayout(self.basic_vlay)
         self.advanced_box.setLayout(self.advanced_vlay)
         self.ncc_box.setLayout(self.ncc_vlay)
@@ -1078,6 +1095,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.iso_box.setLayout(self.iso_vlay)
 
         geo_vlay = QtWidgets.QVBoxLayout()
+        geo_vlay.addWidget(self.tool_description_box)
         geo_vlay.addWidget(self.basic_box)
         geo_vlay.addWidget(self.advanced_box)
         geo_vlay.addStretch()
@@ -1093,14 +1111,13 @@ class ToolsDB2(QtWidgets.QWidget):
         param_hlay.addStretch()
 
         # ###########################################################################
-        # ############### BASIC UI form #############################################
+        # ################ Tool UI form #############################################
         # ###########################################################################
-
-        self.grid0 = QtWidgets.QGridLayout()
-        self.basic_vlay.addLayout(self.grid0)
-        self.grid0.setColumnStretch(0, 0)
-        self.grid0.setColumnStretch(1, 1)
-        self.basic_vlay.addStretch()
+        self.grid_tool = QtWidgets.QGridLayout()
+        self.description_vlay.addLayout(self.grid_tool)
+        self.grid_tool.setColumnStretch(0, 0)
+        self.grid_tool.setColumnStretch(1, 1)
+        self.description_vlay.addStretch()
 
         # Tool Name
         self.name_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Tool Name'))
@@ -1112,8 +1129,29 @@ class ToolsDB2(QtWidgets.QWidget):
         self.name_entry = FCEntry()
         self.name_entry.setObjectName('gdb_name')
 
-        self.grid0.addWidget(self.name_label, 0, 0)
-        self.grid0.addWidget(self.name_entry, 0, 1)
+        self.grid_tool.addWidget(self.name_label, 0, 0)
+        self.grid_tool.addWidget(self.name_entry, 0, 1)
+
+        # Tool Object Type
+        self.tool_object_label = QtWidgets.QLabel('<b>%s:</b>' % _('Object Type'))
+        self.tool_object_label.setToolTip(
+            _("The kind of application object where the tool is to be used."))
+
+        self.object_type_combo = FCComboBox()
+        self.object_type_combo.addItems([_("Application Tool"), _("Geometry"), _("Excellon")])
+        self.object_type_combo.setObjectName('gdb_object_type')
+
+        self.grid_tool.addWidget(self.tool_object_label, 1, 0)
+        self.grid_tool.addWidget(self.object_type_combo, 1, 1)
+
+        # ###########################################################################
+        # ############### BASIC UI form #############################################
+        # ###########################################################################
+        self.grid0 = QtWidgets.QGridLayout()
+        self.basic_vlay.addLayout(self.grid0)
+        self.grid0.setColumnStretch(0, 0)
+        self.grid0.setColumnStretch(1, 1)
+        self.basic_vlay.addStretch()
 
         # Tool Dia
         self.dia_label = QtWidgets.QLabel('%s:' % _('Tool Dia'))
@@ -1641,7 +1679,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.grid3.addWidget(self.paintcontour_cb, 10, 1)
 
         # ###########################################################################
-        # ############### Paint UI form #############################################
+        # ############### Isolation UI form #########################################
         # ###########################################################################
 
         self.grid4 = QtWidgets.QGridLayout()
@@ -1823,6 +1861,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # ##############################################################################
 
         self.form_fields = {
+            "object_type":      self.object_type_combo,
             # Basic
             "name":             self.name_entry,
             "tooldia":          self.dia_entry,
@@ -1874,6 +1913,8 @@ class ToolsDB2(QtWidgets.QWidget):
         }
 
         self.name2option = {
+            "gdb_object_type":      "object_type",
+
             # Basic
             "gdb_name":             "name",
             "gdb_dia":              "tooldia",
@@ -1950,6 +1991,8 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.tree_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
 
+        self.object_type_combo.currentIndexChanged.connect(self.on_object_type_changed)
+
         self.setup_db_ui()
 
     def on_menu_request(self, pos):
@@ -2004,7 +2047,6 @@ class ToolsDB2(QtWidgets.QWidget):
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
-
         tooluid_item = int(tool)
 
         for tooluid_key, tooluid_val in self.db_tool_dict.items():
@@ -2014,7 +2056,6 @@ class ToolsDB2(QtWidgets.QWidget):
                     tooluid_val[option_changed] = new_option_value
                 if option_changed in tooluid_val['data']:
                     tooluid_val['data'][option_changed] = new_option_value
-
         self.blockSignals(False)
 
     def setup_db_ui(self):
@@ -2071,6 +2112,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.storage_to_form(self.db_tool_dict['1'])
 
                 # Enable appGUI
+                self.tool_description_box.setEnabled(True)
                 self.basic_box.setEnabled(True)
                 self.advanced_box.setEnabled(True)
                 self.ncc_box.setEnabled(True)
@@ -2082,6 +2124,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             else:
                 # Disable appGUI
+                self.tool_description_box.setEnabled(False)
                 self.basic_box.setEnabled(False)
                 self.advanced_box.setEnabled(False)
                 self.ncc_box.setEnabled(False)
@@ -2091,6 +2134,36 @@ class ToolsDB2(QtWidgets.QWidget):
             self.storage_to_form(self.db_tool_dict[str(self.current_toolid)])
 
         self.ui_connect()
+
+    def on_object_type_changed(self, index=None, val=None):
+
+        if val is None:
+            object_type = self.object_type_combo.get_value()
+        else:
+            object_type = val
+
+        if self.db_tool_dict:
+            if object_type == _("Application Tool"):
+                self.tool_description_box.setEnabled(True)
+                self.basic_box.setEnabled(True)
+                self.advanced_box.setEnabled(True)
+                self.ncc_box.setEnabled(True)
+                self.paint_box.setEnabled(True)
+                self.iso_box.setEnabled(True)
+            elif object_type == _("Geometry"):
+                self.tool_description_box.setEnabled(True)
+                self.basic_box.setEnabled(True)
+                self.advanced_box.setEnabled(True)
+                self.ncc_box.setEnabled(False)
+                self.paint_box.setEnabled(False)
+                self.iso_box.setEnabled(False)
+            else:
+                self.tool_description_box.setEnabled(True)
+                self.basic_box.setEnabled(True)
+                self.advanced_box.setEnabled(True)
+                self.ncc_box.setEnabled(False)
+                self.paint_box.setEnabled(False)
+                self.iso_box.setEnabled(False)
 
     def on_tool_add(self):
         """
@@ -2121,6 +2194,8 @@ class ToolsDB2(QtWidgets.QWidget):
             "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
+
+            "object_type":      _("Application Tool"),
 
             # NCC
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
@@ -2191,6 +2266,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.tree_widget.setCurrentItem(last_item)
             last_item.setSelected(True)
 
+        self.on_object_type_changed(val=dict_elem['data']['object_type'])
         self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
@@ -2524,7 +2600,9 @@ class ToolsDB2(QtWidgets.QWidget):
         elif wdg_name == "gdb_shape":
             self.db_tool_dict[tool_id]['tool_type'] = val
         else:
-            if wdg_name == "gdb_cutz":
+            if wdg_name == "gdb_object_type":
+                self.db_tool_dict[tool_id]['data']['object_type'] = val
+            elif wdg_name == "gdb_cutz":
                 self.db_tool_dict[tool_id]['data']['cutz'] = val
             elif wdg_name == "gdb_multidepth":
                 self.db_tool_dict[tool_id]['data']['multidepth'] = val
