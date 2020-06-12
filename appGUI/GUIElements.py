@@ -2604,7 +2604,6 @@ class FCTable(QtWidgets.QTableWidget):
             for row in reversed(sorted(rowMapping.keys())):
                 self.removeRow(row)
 
-            self.target_row = targetRow
             self.blockSignals(False)
             self.drag_drop_sig.emit(int(self.row_dragged), int(targetRow))
         else:

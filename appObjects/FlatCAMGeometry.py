@@ -186,6 +186,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         for tooluid_key, tooluid_value in self.tools.items():
 
+            # -------------------- ID ------------------------------------------ #
             tool_id = QtWidgets.QTableWidgetItem('%d' % int(row_idx + 1))
             tool_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.geo_tools_table.setItem(row_idx, 0, tool_id)  # Tool name/id
@@ -194,46 +195,48 @@ class GeometryObject(FlatCAMObj, Geometry):
             # There are no tool bits in MM with more than 3 decimals diameter.
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
 
+            # -------------------- DIAMETER ------------------------------------- #
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
 
+            # -------------------- OFFSET   ------------------------------------- #
             offset_item = FCComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
-            # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
 
+            # -------------------- TYPE     ------------------------------------- #
             type_item = FCComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
-            # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
 
+            # -------------------- TOOL TYPE ------------------------------------- #
             tool_type_item = FCComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
-                # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = tool_type_item.findText(tooluid_value['tool_type'])
             tool_type_item.setCurrentIndex(idx)
+            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
 
+            # -------------------- TOOL UID   ------------------------------------- #
             tool_uid_item = QtWidgets.QTableWidgetItem(str(tooluid_key))
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+            self.ui.geo_tools_table.setItem(row_idx, 5, tool_uid_item)  # Tool unique ID
 
+            # -------------------- PLOT       ------------------------------------- #
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
-
-            self.ui.geo_tools_table.setItem(row_idx, 1, dia_item)  # Diameter
-            self.ui.geo_tools_table.setCellWidget(row_idx, 2, offset_item)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 3, type_item)
-            self.ui.geo_tools_table.setCellWidget(row_idx, 4, tool_type_item)
-
-            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
-            self.ui.geo_tools_table.setItem(row_idx, 5, tool_uid_item)  # Tool unique ID
             self.ui.geo_tools_table.setCellWidget(row_idx, 6, plot_item)
 
+            # set an initial value for the OFFSET ENTRY
             try:
                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
             except Exception as e:
@@ -627,7 +630,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
     def rebuild_ui(self):
-
         # read the table tools uid
         current_uid_list = []
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -642,8 +644,13 @@ class GeometryObject(FlatCAMObj, Geometry):
             new_uid += 1
 
         self.tools = new_tools
+
         self.ui.geo_tools_table.setRowCount(0)
-        self.build_ui()
+
+        # self.build_ui()
+        # for whatever reason, if I simply call the self.build_ui() the table is builded starting with row -1 which
+        # means that the first row is hidden. Calling using a timer make it work !????
+        QtCore.QTimer.singleShot(2, self.build_ui)
 
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
@@ -979,7 +986,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui_connect()
         self.build_ui()
 
-        # if there is no tool left in the Tools Table, enable the parameters appGUI
+        # if there is at least one tool left in the Tools Table, enable the parameters GUI
         if self.ui.geo_tools_table.rowCount() != 0:
             self.ui.geo_param_frame.setDisabled(False)
 
