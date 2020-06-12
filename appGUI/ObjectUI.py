@@ -1005,8 +1005,8 @@ class ExcellonObjectUI(ObjectUI):
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
-        self.endxy_entry = FCEntry()
-
+        self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+        self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.grid5.addWidget(endmove_xy_label, 12, 0)
         self.grid5.addWidget(self.endxy_entry, 12, 1)
 
@@ -1907,7 +1907,8 @@ class GeometryObjectUI(ObjectUI):
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
-        self.endxy_entry = FCEntry()
+        self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+        self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
 
         grid4.addWidget(endmove_xy_label, 10, 0)
         grid4.addWidget(self.endxy_entry, 10, 1)
@@ -2033,19 +2034,15 @@ class GeometryObjectUI(ObjectUI):
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid4.addWidget(separator_line2, 15, 0, 1, 2)
 
-        warning_lbl = QtWidgets.QLabel(
+        # Button
+        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
+        self.generate_cnc_button.setToolTip('%s\n%s' % (
+            _("Generate CNCJob object."),
             _(
                 "Add / Select at least one tool in the tool-table.\n"
                 "Click the # header to select all, or Ctrl + LMB\n"
-                "for custom selection of tools."
-            ))
-        grid4.addWidget(warning_lbl, 16, 0, 1, 2)
+                "for custom selection of tools.")))
 
-        # Button
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
-        self.generate_cnc_button.setToolTip(
-            _("Generate the CNC Job object.")
-        )
         self.generate_cnc_button.setStyleSheet("""
                         QPushButton
                         {

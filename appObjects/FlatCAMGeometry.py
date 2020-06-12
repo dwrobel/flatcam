@@ -156,8 +156,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.param_fields = {}
 
         # store here the state of the exclusion checkbox state to be restored after building the UI
-        # TODO add this in the sel.app.defaults dict and in Preferences
-        self.exclusion_area_cb_is_checked = False
+        self.exclusion_area_cb_is_checked = self.app.defaults["geometry_area_exclusion"]
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -729,7 +728,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
         self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
@@ -822,6 +821,26 @@ class GeometryObject(FlatCAMObj, Geometry):
         except (TypeError, AttributeError):
             pass
 
+    def on_toggle_all_rows(self):
+        """
+        will toggle the selection of all rows in Tools table
+
+        :return:
+        """
+        sel_model = self.ui.geo_tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.geo_tools_table.rowCount():
+            self.ui.geo_tools_table.clearSelection()
+        else:
+            self.ui.geo_tools_table.selectAll()
+        self.update_ui()
+
     def on_row_selection_change(self):
         self.update_ui()
 
@@ -849,6 +868,31 @@ class GeometryObject(FlatCAMObj, Geometry):
         else:
             self.ui.generate_cnc_button.setDisabled(False)
 
+        # update the QLabel that shows for which Tool we have the parameters in the UI form
+        if len(sel_rows) == 1:
+            current_row = sel_rows[0]
+
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.geo_tools_table.item(current_row, 5)
+                if type(item) is not None:
+                    tooluid = int(item.text())
+                else:
+                    self.ui_connect()
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui_connect()
+                return
+
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            )
+        else:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
         for current_row in sel_rows:
             self.set_tool_offset_visibility(current_row)
 
@@ -865,47 +909,36 @@ class GeometryObject(FlatCAMObj, Geometry):
                 self.ui_connect()
                 return
 
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            if len(sel_rows) == 1:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
-                )
-
-                # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
-                # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-                try:
-                    item = self.ui.geo_tools_table.cellWidget(current_row, 4)
-                    if item is not None:
-                        tool_type_txt = item.currentText()
-                        self.ui_update_v_shape(tool_type_txt=tool_type_txt)
-                    else:
-                        self.ui_connect()
-                        return
-                except Exception as e:
-                    log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+            try:
+                item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+                if item is not None:
+                    tool_type_txt = item.currentText()
+                    self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                else:
+                    self.ui_connect()
                     return
+            except Exception as e:
+                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                return
 
-                try:
-                    # set the form with data from the newly selected tool
-                    for tooluid_key, tooluid_value in list(self.tools.items()):
-                        if int(tooluid_key) == tooluid:
-                            for key, value in list(tooluid_value.items()):
-                                if key == 'data':
-                                    form_value_storage = tooluid_value['data']
-                                    self.update_form(form_value_storage)
-                                if key == 'offset_value':
-                                    # update the offset value in the entry even if the entry is hidden
-                                    self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
+            try:
+                # set the form with data from the newly selected tool
+                for tooluid_key, tooluid_value in list(self.tools.items()):
+                    if int(tooluid_key) == tooluid:
+                        for key, value in list(tooluid_value.items()):
+                            if key == 'data':
+                                form_value_storage = tooluid_value['data']
+                                self.update_form(form_value_storage)
+                            if key == 'offset_value':
+                                # update the offset value in the entry even if the entry is hidden
+                                self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
 
-                                if key == 'tool_type' and value == 'V':
-                                    self.update_cutz()
-                except Exception as e:
-                    log.debug("GeometryObject.update_ui() -> %s " % str(e))
-
-            else:
-                self.ui.tool_data_label.setText(
-                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-                )
+                            if key == 'tool_type' and value == 'V':
+                                self.update_cutz()
+            except Exception as e:
+                log.debug("GeometryObject.update_ui() -> %s " % str(e))
 
         self.ui_connect()
 

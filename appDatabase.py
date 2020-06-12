@@ -1973,11 +1973,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.on_tool_requested_from_app()
 
     def on_list_selection_change(self, current, previous):
-        # for idx in current.indexes():
-        #     print(idx.data())
-        # print(current.text(0))
         self.current_toolid = int(current.text(0))
-
         self.storage_to_form(self.db_tool_dict[current.text(0)])
 
     def on_list_item_edited(self, item, column):
@@ -2022,7 +2018,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.blockSignals(False)
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '\geo_tools_db.FlatDB'
+        filename = self.app.data_path + '\\geo_tools_db.FlatDB'
 
         # load the database tools from the file
         try:
@@ -2419,7 +2415,6 @@ class ToolsDB2(QtWidgets.QWidget):
         self.cutz_entry.valueChanged.connect(self.on_calculate_tooldia)
         self.vdia_entry.valueChanged.connect(self.on_calculate_tooldia)
         self.vangle_entry.valueChanged.connect(self.on_calculate_tooldia)
-
 
     def ui_disconnect(self):
         try:

@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - NCC Tool - allow no tool at NCC Tool start (the Preferences have no tool)
 - NCC Tool - optimized tool reset code
 - NCC Tool - fixed the non-rest copper clearing to work as expected: each tool in the tool table will make it's own copper clearing without interference from the rest of the tools 
+- Geometry UI - made again the header clickable and first click selects all rows, second click will deselect all rows.
+- Geometry UI - minor updates in the layout; moved the warning text to the tooltip of the generate_cncjob button
+- Geometry UI - working in making the modification of tool parameters such that if there is a selection of tools the modification in the Tool parameters will be applied to all selected
 
 11.06.2020
 
