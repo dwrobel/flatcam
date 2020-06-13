@@ -3214,8 +3214,12 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.book_dialog_tab, _("Bookmarks Manager"))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
@@ -5299,8 +5303,11 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
@@ -5411,8 +5418,12 @@ class App(QtCore.QObject):
             return
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
@@ -5512,19 +5523,11 @@ class App(QtCore.QObject):
             self.book_dialog_tab.rebuild_actions()
             self.book_dialog_tab.deleteLater()
         else:
-            return
+            pass
 
-    # def on_plotarea_tab_closed(self, tab_idx):
-    #     """
-    #
-    #     :param tab_idx: Index of the Tab from the plotarea that was closed
-    #     :return:
-    #     """
-    #     widget = self.ui.plot_tab_area.widget(tab_idx)
-    #
-    #     if widget is not None:
-    #         widget.deleteLater()
-    #     self.ui.plot_tab_area.removeTab(tab_idx)
+        # restore the coords toolbars
+        self.ui.toggle_coords(checked=self.defaults["global_coords_show"])
+        self.ui.toggle_delta_coords(checked=self.defaults["global_delta_coords_show"])
 
     def on_flipy(self):
         """
@@ -5877,8 +5880,11 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, _("Key Shortcut List"))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
@@ -7416,8 +7422,11 @@ class App(QtCore.QObject):
         self.text_editor_tab.setObjectName('text_editor_tab')
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # first clear previous text in text editor (if any)
         self.text_editor_tab.code_editor.clear()
@@ -7467,8 +7476,11 @@ class App(QtCore.QObject):
         self.source_editor_tab.setObjectName('source_editor_tab')
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         # first clear previous text in text editor (if any)
         self.source_editor_tab.code_editor.clear()
@@ -7589,8 +7601,11 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
 
         # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
+        # self.ui.position_label.setText("")
+        # self.ui.rel_position_label.setText("")
+        # hide coordinates toolbars in the infobar while in DB
+        self.ui.coords_toolbar.hide()
+        self.ui.delta_coords_toolbar.hide()
 
         self.app_obj.new_script_object()
 
