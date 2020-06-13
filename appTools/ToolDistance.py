@@ -475,9 +475,9 @@ class Distance(AppTool):
 
             # Reset here the relative coordinates so there is a new reference on the click position
             if self.rel_point1 is None:
-                # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
-                #                                        "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
-                #                                        (self.decimals, 0.0, self.decimals, 0.0))
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
+                                                       (self.decimals, 0.0, self.decimals, 0.0))
                 self.rel_point1 = pos
             else:
                 self.rel_point2 = copy(self.rel_point1)
@@ -520,11 +520,11 @@ class Distance(AppTool):
                 pass
 
             self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
-            # self.app.ui.rel_position_label.setText(
-            #     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-            #         '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-            #     )
-            # )
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                )
+            )
             self.tool_done = True
             self.deactivate_measure_tool()
 
@@ -573,11 +573,11 @@ class Distance(AppTool):
                 dx = pos[0]
                 dy = pos[1]
 
-            # self.app.ui.rel_position_label.setText(
-            #     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-            #         '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
-            #     )
-            # )
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
+                )
+            )
 
             # update utility geometry
             if len(self.points) == 1:
@@ -595,7 +595,7 @@ class Distance(AppTool):
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
-            # self.app.ui.rel_position_label.setText("")
+            self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape

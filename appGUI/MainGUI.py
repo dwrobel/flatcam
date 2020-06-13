@@ -814,9 +814,23 @@ class MainGUI(QtWidgets.QMainWindow):
         self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
         self.addToolBar(self.grb_edit_toolbar)
 
-        self.status_toolbar = QtWidgets.QToolBar(_('Grid Toolbar'))
-        self.status_toolbar.setObjectName('Snap_TB')
-        # self.addToolBar(self.status_toolbar)
+        # ### INFOBAR TOOLBARS ###################################################
+        self.delta_coords_toolbar = QtWidgets.QToolBar(_('Delta Coordinates Toolbar'))
+        self.delta_coords_toolbar.setObjectName('Delta_Coords_TB')
+
+        self.coords_toolbar = QtWidgets.QToolBar(_('Coordinates Toolbar'))
+        self.coords_toolbar.setObjectName('Coords_TB')
+
+        self.grid_toolbar = QtWidgets.QToolBar(_('Grid Toolbar'))
+        self.grid_toolbar.setObjectName('Snap_TB')
+        self.grid_toolbar.setStyleSheet(
+            """
+            QToolBar { padding: 0; }
+            QToolBar QToolButton { padding: -2; margin: -2; }
+            """
+        )
+
+        self.status_toolbar = QtWidgets.QToolBar(_('Status Toolbar'))
         self.status_toolbar.setStyleSheet(
             """
             QToolBar { padding: 0; }
@@ -1073,30 +1087,46 @@ class MainGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
-        # ########################## Snap Toolbar# ###############################
+        # ########################## GRID Toolbar# ###############################
         # ########################################################################
 
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
-        self.grid_snap_btn = self.status_toolbar.addAction(
+        self.grid_snap_btn = self.grid_toolbar.addAction(
             QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
-        self.status_toolbar.addWidget(self.grid_gap_x_entry)
+        self.grid_toolbar.addWidget(self.grid_gap_x_entry)
 
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
         self.grid_gap_link_cb = FCCheckBox()
         self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n"
                                            "is copied to the Grid_Y value."))
-        self.status_toolbar.addWidget(self.grid_gap_link_cb)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(self.grid_gap_link_cb)
+        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
 
         self.grid_gap_y_entry = FCEntry2()
         self.grid_gap_y_entry.setMaximumWidth(70)
         self.grid_gap_y_entry.setToolTip(_("Grid Y snapping distance"))
-        self.status_toolbar.addWidget(self.grid_gap_y_entry)
-        self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
+        self.grid_toolbar.addWidget(self.grid_gap_y_entry)
+        self.grid_toolbar.addWidget(QtWidgets.QLabel(" "))
 
+        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
+
+        self.corner_snap_btn = self.grid_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
+
+        self.snap_max_dist_entry = FCEntry()
+        self.snap_max_dist_entry.setMaximumWidth(70)
+        self.snap_max_dist_entry.setToolTip(_("Max. magnet distance"))
+        self.snap_magnet = self.grid_toolbar.addWidget(self.snap_max_dist_entry)
+
+        self.corner_snap_btn.setVisible(False)
+        self.snap_magnet.setVisible(False)
+
+        # ########################################################################
+        # ########################## Status Toolbar ##############################
+        # ########################################################################
         self.axis_status_label = FCLabel()
         self.axis_status_label.setToolTip(_("Toggle the display of axis on canvas"))
         self.axis_status_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/axis16.png'))
@@ -1129,18 +1159,23 @@ class MainGUI(QtWidgets.QMainWindow):
         self.status_toolbar.addWidget(self.wplace_label)
         self.status_toolbar.addWidget(QtWidgets.QLabel(" "))
 
-        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
+        # #######################################################################
+        # ####################### Delta Coordinates TOOLBAR #####################
+        # #######################################################################
+        self.rel_position_label = QtWidgets.QLabel(
+            "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
+        self.rel_position_label.setMinimumWidth(110)
+        self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
+        self.delta_coords_toolbar.addWidget(self.rel_position_label)
 
-        self.corner_snap_btn = self.status_toolbar.addAction(
-            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
-
-        self.snap_max_dist_entry = FCEntry()
-        self.snap_max_dist_entry.setMaximumWidth(70)
-        self.snap_max_dist_entry.setToolTip(_("Max. magnet distance"))
-        self.snap_magnet = self.status_toolbar.addWidget(self.snap_max_dist_entry)
-
-        self.corner_snap_btn.setVisible(False)
-        self.snap_magnet.setVisible(False)
+        # #######################################################################
+        # ####################### Coordinates TOOLBAR ###########################
+        # #######################################################################
+        self.position_label = QtWidgets.QLabel("&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
+        self.position_label.setMinimumWidth(110)
+        self.position_label.setToolTip(_("Absolute measurement.\n"
+                                         "Reference is (X=0, Y= 0) position"))
+        self.coords_toolbar.addWidget(self.position_label)
 
         # #######################################################################
         # ####################### TCL Shell DOCK ################################
@@ -1544,20 +1579,19 @@ class MainGUI(QtWidgets.QMainWindow):
         self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
-        # self.rel_position_label = QtWidgets.QLabel(
-        # "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
-        # self.rel_position_label.setMinimumWidth(110)
-        # self.rel_position_label.setToolTip(_("Relative measurement.\nReference is last click position"))
-        # self.infobar.addWidget(self.rel_position_label)
-        #
-        self.position_label = QtWidgets.QLabel("&nbsp;<b>X</b>: 0.0000&nbsp;&nbsp;   <b>Y</b>: 0.0000&nbsp;")
-        self.position_label.setMinimumWidth(110)
-        self.position_label.setToolTip(_("Absolute measurement.\n"
-                                         "Reference is (X=0, Y= 0) position"))
-        self.infobar.addWidget(self.position_label)
+        self.infobar.addWidget(self.delta_coords_toolbar)
+        self.delta_coords_toolbar.setVisible(self.app.defaults["global_delta_coords_show"])
+
+        self.infobar.addWidget(self.coords_toolbar)
+        self.coords_toolbar.setVisible(self.app.defaults["global_coords_show"])
+
+        self.grid_toolbar.setMaximumHeight(24)
+        self.infobar.addWidget(self.grid_toolbar)
+        self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
 
         self.status_toolbar.setMaximumHeight(24)
         self.infobar.addWidget(self.status_toolbar)
+        self.status_toolbar.setVisible(self.app.defaults["global_status_show"])
 
         self.units_label = QtWidgets.QLabel("[mm]")
         self.units_label.setToolTip(_("Application units"))
@@ -1707,6 +1741,18 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.shell_dock.visibilityChanged.connect(self.on_shelldock_toggled)
 
+        # Notebook and Plot Tab Area signals
+        # make the right click on the notebook tab and plot tab area tab raise a menu
+        self.notebook.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.plot_tab_area.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.on_tab_setup_context_menu()
+        # activate initial state
+        self.on_detachable_tab_rmb_click(self.app.defaults["global_tabs_detachable"])
+
+        # status bar activation/deactivation
+        self.infobar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.build_infobar_context_menu()
+
     def save_geometry(self, x, y, width, height, notebook_width):
         """
         Will save the application geometry and positions in the defaults dicitionary to be restored at the next
@@ -1782,17 +1828,89 @@ class MainGUI(QtWidgets.QMainWindow):
             self.grb_edit_toolbar.setVisible(False)
 
         # if tb & 128:
-        #     self.ui.status_toolbar.setVisible(True)
+        #     self.ui.grid_toolbar.setVisible(True)
         # else:
-        #     self.ui.status_toolbar.setVisible(False)
+        #     self.ui.grid_toolbar.setVisible(False)
 
-        # Grid Toolbar is always active now
-        self.status_toolbar.setVisible(True)
+        # Grid Toolbar is controlled by its own setting
 
         if tb & 256:
             self.toolbarshell.setVisible(True)
         else:
             self.toolbarshell.setVisible(False)
+
+    def on_tab_setup_context_menu(self):
+        initial_checked = self.app.defaults["global_tabs_detachable"]
+        action_name = str(_("Detachable Tabs"))
+        action = QtWidgets.QAction(self)
+        action.setCheckable(True)
+        action.setText(action_name)
+        action.setChecked(initial_checked)
+
+        self.notebook.tabBar.addAction(action)
+        self.plot_tab_area.tabBar.addAction(action)
+
+        try:
+            action.triggered.disconnect()
+        except TypeError:
+            pass
+        action.triggered.connect(self.on_detachable_tab_rmb_click)
+
+    def on_detachable_tab_rmb_click(self, checked):
+        self.notebook.set_detachable(val=checked)
+        self.app.defaults["global_tabs_detachable"] = checked
+
+        self.plot_tab_area.set_detachable(val=checked)
+        self.app.defaults["global_tabs_detachable"] = checked
+
+    def build_infobar_context_menu(self):
+        delta_coords_action_name = str(_("Delta Coordinates Toolbar"))
+        delta_coords_action = QtWidgets.QAction(self)
+        delta_coords_action.setCheckable(True)
+        delta_coords_action.setText(delta_coords_action_name)
+        delta_coords_action.setChecked(self.app.defaults["global_delta_coords_show"])
+        self.infobar.addAction(delta_coords_action)
+        delta_coords_action.triggered.connect(self.toggle_delta_coords)
+
+        coords_action_name = str(_("Coordinates Toolbar"))
+        coords_action = QtWidgets.QAction(self)
+        coords_action.setCheckable(True)
+        coords_action.setText(coords_action_name)
+        coords_action.setChecked(self.app.defaults["global_coords_show"])
+        self.infobar.addAction(coords_action)
+        coords_action.triggered.connect(self.toggle_coords)
+
+        grid_action_name = str(_("Grid Toolbar"))
+        grid_action = QtWidgets.QAction(self)
+        grid_action.setCheckable(True)
+        grid_action.setText(grid_action_name)
+        grid_action.setChecked(self.app.defaults["global_grid_show"])
+        self.infobar.addAction(grid_action)
+        grid_action.triggered.connect(self.toggle_gridbar)
+
+        status_action_name = str(_("Status Toolbar"))
+        status_action = QtWidgets.QAction(self)
+        status_action.setCheckable(True)
+        status_action.setText(status_action_name)
+        status_action.setChecked(self.app.defaults["global_status_show"])
+        self.infobar.addAction(status_action)
+        status_action.triggered.connect(self.toggle_statusbar)
+
+    def toggle_coords(self, checked):
+        self.app.defaults["global_coords_show"] = checked
+        self.coords_toolbar.setVisible(checked)
+
+    def toggle_delta_coords(self, checked):
+        self.app.defaults["global_delta_coords_show"] = checked
+        self.delta_coords_toolbar.setVisible(checked)
+
+    def toggle_gridbar(self, checked):
+        self.app.defaults["global_grid_show"] = checked
+        self.grid_toolbar.setVisible(checked)
+
+    def toggle_statusbar(self, checked):
+        self.app.defaults["global_status_show"] = checked
+        self.status_toolbar.setVisible(checked)
 
     def eventFilter(self, obj, event):
         """
@@ -3613,7 +3731,8 @@ class MainGUI(QtWidgets.QMainWindow):
             # hide all Toolbars
             for tb in self.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
-            self.status_toolbar.setVisible(True)  # This Toolbar is always visible so restore it
+
+            self.grid_toolbar.setVisible(self.app.defaults["global_grid_show"])
 
             self.splitter.setSizes([0, 1])
             self.toggle_fscreen = True

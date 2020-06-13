@@ -2830,7 +2830,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.app.ui.exc_edit_toolbar.setDisabled(False)
         self.app.ui.exc_edit_toolbar.setVisible(True)
-        # self.app.ui.status_toolbar.setDisabled(False)
+        # self.app.ui.grid_toolbar.setDisabled(False)
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
@@ -3440,8 +3440,8 @@ class AppExcEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button == 1:
@@ -3787,8 +3787,8 @@ class AppExcEditor(QtCore.QObject):
         self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                            "<b>Y</b>: %.4f&nbsp;" % (x, y))
         # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
         self.app.plotcanvas.text_hud.text = \

@@ -922,14 +922,6 @@ class App(QtCore.QObject):
         # ToolBar signals
         self.connect_toolbar_signals(ui=self.ui)
 
-        # Notebook and Plot Tab Area signals
-        # make the right click on the notebook tab and plot tab area tab raise a menu
-        self.ui.notebook.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.ui.plot_tab_area.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.on_tab_setup_context_menu()
-        # activate initial state
-        self.on_tab_rmb_click(self.defaults["global_tabs_detachable"])
-
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.ui.on_toggle_notebook)
@@ -3223,7 +3215,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
@@ -4281,30 +4273,6 @@ class App(QtCore.QObject):
         self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
         self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
-    def on_tab_rmb_click(self, checked):
-        self.ui.notebook.set_detachable(val=checked)
-        self.defaults["global_tabs_detachable"] = checked
-
-        self.ui.plot_tab_area.set_detachable(val=checked)
-        self.defaults["global_tabs_detachable"] = checked
-
-    def on_tab_setup_context_menu(self):
-        initial_checked = self.defaults["global_tabs_detachable"]
-        action_name = str(_("Detachable Tabs"))
-        action = QtWidgets.QAction(self)
-        action.setCheckable(True)
-        action.setText(action_name)
-        action.setChecked(initial_checked)
-
-        self.ui.notebook.tabBar.addAction(action)
-        self.ui.plot_tab_area.tabBar.addAction(action)
-
-        try:
-            action.triggered.disconnect()
-        except TypeError:
-            pass
-        action.triggered.connect(self.on_tab_rmb_click)
-
     def on_deselect_all(self):
         self.collection.set_all_inactive()
         self.delete_selection_shape()
@@ -4836,10 +4804,9 @@ class App(QtCore.QObject):
         dy = location[1] - float(self.rel_point1[1])
         self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                        "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
-        # # Set the position label
-        #
-        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        # Set the position label
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
@@ -4992,8 +4959,8 @@ class App(QtCore.QObject):
         # Set the position label
         self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                        "<b>Y</b>: %.4f&nbsp;" % (location[0], location[1]))
-        # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
         units = self.defaults["units"].lower()
         self.plotcanvas.text_hud.text = \
@@ -5333,7 +5300,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
@@ -5445,7 +5412,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
@@ -5911,7 +5878,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
@@ -6061,8 +6028,8 @@ class App(QtCore.QObject):
 
                 self.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                                "<b>Y</b>: %.4f&nbsp;" % (pos[0], pos[1]))
-                # self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                #                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
+                self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.dx, self.dy))
 
                 units = self.defaults["units"].lower()
                 self.plotcanvas.text_hud.text = \
@@ -6120,7 +6087,7 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.debug("App.on_mouse_move_over_plot() - rel_point1 is not None -> %s" % str(e))
                 self.ui.position_label.setText("")
-                # self.ui.rel_position_label.setText("")
+                self.ui.rel_position_label.setText("")
                 self.mouse = None
 
     def on_mouse_click_release_over_plot(self, event):
@@ -7450,7 +7417,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
         self.text_editor_tab.code_editor.clear()
@@ -7501,7 +7468,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
         self.source_editor_tab.code_editor.clear()
@@ -7623,7 +7590,7 @@ class App(QtCore.QObject):
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
-        # self.ui.rel_position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
         self.app_obj.new_script_object()
 

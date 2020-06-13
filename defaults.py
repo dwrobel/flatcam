@@ -29,6 +29,12 @@ class FlatCAMDefaults:
         "global_serial": 0,
         "global_stats": dict(),
         "global_tabs_detachable": True,
+
+        "global_coords_show": True,
+        "global_delta_coords_show": False,
+        "global_grid_show": True,
+        "global_status_show": True,
+
         "global_jump_ref": 'abs',
         "global_locate_pt": 'bl',
 
