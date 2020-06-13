@@ -5778,9 +5778,13 @@ class App(QtCore.QObject):
         self.log.debug("on_toolbar_replot()")
 
         try:
-            self.collection.get_active().read_form()
-        except AttributeError:
-            self.log.debug("on_toolbar_replot(): AttributeError")
+            obj = self.collection.get_active()
+            if obj:
+                obj.read_form()
+            else:
+                self.on_zoom_fit()
+        except AttributeError as e:
+            log.debug("on_toolbar_replot() -> %s" % str(e))
             pass
 
         self.plot_all()

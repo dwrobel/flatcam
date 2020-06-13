@@ -1565,16 +1565,27 @@ class FCButton(QtWidgets.QPushButton):
 class FCLabel(QtWidgets.QLabel):
 
     clicked = QtCore.pyqtSignal(bool)
+    right_clicked = QtCore.pyqtSignal(bool)
+    middle_clicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(FCLabel, self).__init__(parent)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
+        self.middle_clicked_state = False
+        self.right_clicked_state = False
 
     def mousePressEvent(self, event):
-        self.clicked_state = not self.clicked_state
-        self.clicked.emit(self.clicked_state)
+        if event.button() == Qt.LeftButton:
+            self.clicked_state = not self.clicked_state
+            self.clicked.emit(self.clicked_state)
+        elif event.button() == Qt.RightButton:
+            self.right_clicked_state = not self.right_clicked_state
+            self.right_clicked.emit(True)
+        elif event.button() == Qt.MiddleButton:
+            self.middle_clicked_state = not self.middle_clicked_state
+            self.middle_clicked.emit(True)
 
     def get_value(self):
         return self.text()

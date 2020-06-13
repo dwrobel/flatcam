@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.06.2020
+
+- made sure that clicking the icons in the status bar works only for the left mouse click
+- if clicking the activity icon in the status bar and there is no object selected then the effect will be a plot_all with fit_view
+- modified the FCLabel GUI element
+
 13.06.2020
 
 - modified the Tools Database such that there is now a way to mark a tool as meant to be used in a certain part of the application; it will disable or enable parts of the parameters of the tool
