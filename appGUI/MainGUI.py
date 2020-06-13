@@ -1598,6 +1598,10 @@ class MainGUI(QtWidgets.QMainWindow):
         self.units_label.setMargin(2)
         self.infobar.addWidget(self.units_label)
 
+        # this used to be done in the APP.__init__()
+        self.activity_view = FlatCAMActivityView(app=self.app)
+        self.infobar.addWidget(self.activity_view)
+
         # disabled
         # self.progress_bar = QtWidgets.QProgressBar()
         # self.progress_bar.setMinimum(0)

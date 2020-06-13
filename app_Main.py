@@ -761,9 +761,9 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ############################################# Activity Monitor ###########################################
         # ###########################################################################################################
-        self.activity_view = FlatCAMActivityView(app=self)
-        self.ui.infobar.addWidget(self.activity_view)
-        self.proc_container = FCVisibleProcessContainer(self.activity_view)
+        # self.activity_view = FlatCAMActivityView(app=self)
+        # self.ui.infobar.addWidget(self.activity_view)
+        self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
 
         # ###########################################################################################################
         # ############################################# Signal handling #############################################
