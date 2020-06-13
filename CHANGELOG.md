@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - updated the Geometry UI to work with the new FCTable
 - made the coordinates / delta coordinates / grid toolbar / actions toolbar visibility an option, controlled from the infobar (Status bar) context menu. How it's at app shutdown it's restored at the next application start
 - moved the init of activity view in the MainGUI file from the APP.__init__()
+- added a new string in the tooltip for the button that adds tool from database specifying the tools database administration is done in the menu
 
 12.06.2020
 

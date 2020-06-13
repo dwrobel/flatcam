@@ -1500,7 +1500,8 @@ class GeometryObjectUI(ObjectUI):
         self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "from the Tool DataBase.")
+              "from the Tool Database.\n"
+              "Tool database administration in Menu: Options -> Tools Database")
         )
 
         bhlay.addWidget(self.addtool_btn)
