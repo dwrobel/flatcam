@@ -644,12 +644,9 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.tools = new_tools
 
-        self.ui.geo_tools_table.setRowCount(0)
-
-        # self.build_ui()
-        # for whatever reason, if I simply call the self.build_ui() the table is builded starting with row -1 which
-        # means that the first row is hidden. Calling using a timer make it work !????
-        QtCore.QTimer.singleShot(2, self.build_ui)
+        # the tools table changed therefore we need to reconnect the signals to the cellWidgets
+        self.ui_disconnect()
+        self.ui_connect()
 
     def on_cut_z_changed(self):
         self.old_cutz = self.ui.cutz_entry.get_value()
@@ -726,7 +723,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
 
-        # self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 

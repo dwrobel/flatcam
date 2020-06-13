@@ -2396,7 +2396,7 @@ class OptionalHideInputSection:
 
 class FCTable(QtWidgets.QTableWidget):
 
-    drag_drop_sig = QtCore.pyqtSignal(int, int)
+    drag_drop_sig = QtCore.pyqtSignal(object, int)
     lost_focus = QtCore.pyqtSignal()
 
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
@@ -2431,7 +2431,7 @@ class FCTable(QtWidgets.QTableWidget):
                 self.rows_not_for_drag_and_drop = [protected_rows]
 
         self.rows_to_move = []
-        self.row_dragged = None
+        self.rows_dragged = None
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -2461,7 +2461,7 @@ class FCTable(QtWidgets.QTableWidget):
             self.clearSelection()
             self.clearFocus()
         else:
-            self.row_dragged = clicked_item.row()
+            self.rows_dragged = [it.row() for it in self.selectedItems()]
             QtWidgets.QTableWidget.mousePressEvent(self, event)
 
     def focusOutEvent(self, event):
@@ -2555,59 +2555,153 @@ class FCTable(QtWidgets.QTableWidget):
         else:
             e.ignore()
 
-    def dropEvent(self, event):
-        """
-        From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
-        :param event:
-        :return:
-        """
-        if event.source() == self:
-            event.acceptProposedAction()
-            rows = set([mi.row() for mi in self.selectedIndexes()])
+    # def dropEvent(self, event):
+    #     """
+    #     From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
+    #     :param event:
+    #     :return:
+    #     """
+    #     if event.source() == self:
+    #         event.acceptProposedAction()
+    #
+    #         # create a set of the selected rows that are dragged to another position
+    #         rows = set([mi.row() for mi in self.selectedIndexes()])
+    #         # if one of the selected rows for drag and drop is within the protected list, return
+    #         for r in rows:
+    #             if r in self.rows_not_for_drag_and_drop:
+    #                 return
+    #
+    #         drop_index = self.indexAt(event.pos())
+    #         # row where we drop the selected rows
+    #         targetRow = drop_index.row()
+    #
+    #         # drop_indicator = self.dropIndicatorPosition()
+    #         # if targetRow != -1:
+    #         #     if drop_indicator == QtWidgets.QAbstractItemView.AboveItem:
+    #         #         print("above")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.BelowItem:
+    #         #         print("below")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+    #         #         print("on")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.OnViewport:
+    #         #         print("on viewport")
+    #
+    #         # if we drop on one row from the already dragged rows
+    #         rows.discard(targetRow)
+    #         rows = sorted(rows)
+    #         if not rows:
+    #             return
+    #         if targetRow == -1:
+    #             targetRow = self.rowCount()
+    #
+    #         # insert empty rows at the index of the targetRow
+    #         for _ in range(len(rows)):
+    #             self.insertRow(targetRow)
+    #
+    #         rowMapping = {}  # Src row to target row.
+    #         for idx, row in enumerate(rows):
+    #             if row < targetRow:
+    #                 rowMapping[row] = targetRow + idx
+    #             else:
+    #                 rowMapping[row + len(rows)] = targetRow + idx
+    #
+    #         colCount = self.columnCount()
+    #         for srcRow, tgtRow in sorted(rowMapping.items()):
+    #             for col in range(0, colCount):
+    #                 new_item = self.item(srcRow, col)
+    #                 if new_item is None:
+    #                     new_item = self.cellWidget(srcRow, col)
+    #
+    #                 if isinstance(new_item, QtWidgets.QTableWidgetItem):
+    #                     new_item = self.takeItem(srcRow, col)
+    #                     self.setItem(tgtRow, col, new_item)
+    #                 else:
+    #                     self.setCellWidget(tgtRow, col, new_item)
+    #
+    #         for row in reversed(sorted(rowMapping.keys())):
+    #             self.removeRow(row)
+    #
+    #         self.blockSignals(False)
+    #         self.drag_drop_sig.emit(int(self.row_dragged), int(targetRow))
+    #     else:
+    #         event.ignore()
 
-            # if one of the selected rows for drag and drop is within the protected list, return
-            for r in rows:
-                if r in self.rows_not_for_drag_and_drop:
-                    return
+    def dropEvent(self, event: QtGui.QDropEvent):
+        if not event.isAccepted() and event.source() == self:
+            drop_row = self.drop_on(event)
 
-            targetRow = self.indexAt(event.pos()).row()
-            rows.discard(targetRow)
-            rows = sorted(rows)
+            rows = sorted(set(item.row() for item in self.selectedItems()))
 
-            if not rows:
-                return
-            if targetRow == -1:
-                targetRow = self.rowCount()
+            rows_to_move = []
+            for row_index in rows:
+                temp_lst = []
+                for column_index in range(self.columnCount()):
+                    col_data = self.item(row_index, column_index)
 
-            for _ in range(len(rows)):
-                self.insertRow(targetRow)
-
-            rowMapping = {}  # Src row to target row.
-            for idx, row in enumerate(rows):
-                if row < targetRow:
-                    rowMapping[row] = targetRow + idx
-                else:
-                    rowMapping[row + len(rows)] = targetRow + idx
-
-            colCount = self.columnCount()
-            for srcRow, tgtRow in sorted(rowMapping.items()):
-                for col in range(0, colCount):
-                    new_item = self.item(srcRow, col)
-                    if new_item is None:
-                        new_item = self.cellWidget(srcRow, col)
-                    if isinstance(new_item, QtWidgets.QTableWidgetItem):
-                        new_item = self.takeItem(srcRow, col)
-                        self.setItem(tgtRow, col, new_item)
+                    if isinstance(col_data, QtWidgets.QTableWidgetItem):
+                        table_item = QtWidgets.QTableWidgetItem(col_data)
                     else:
-                        self.setCellWidget(tgtRow, col, new_item)
+                        old_item = self.cellWidget(row_index, column_index)
+                        if isinstance(old_item, QtWidgets.QComboBox):
+                            table_item = FCComboBox()
+                            items = [old_item.itemText(i) for i in range(old_item.count())]
+                            table_item.addItems(items)
+                            table_item.setCurrentIndex(old_item.currentIndex())
+                        elif isinstance(old_item, QtWidgets.QCheckBox):
+                            table_item = FCCheckBox()
+                            table_item.setChecked(old_item.isChecked())
+                            table_item.setText(old_item.text())
+                        else:
+                            table_item = None
 
-            for row in reversed(sorted(rowMapping.keys())):
-                self.removeRow(row)
+                    temp_lst.append(table_item)
+                rows_to_move.append(temp_lst)
+
+            for row_index in reversed(rows):
+                self.removeRow(row_index)
+                if row_index < drop_row:
+                    drop_row -= 1
+
+            for row_index, data in enumerate(rows_to_move):
+                row_index += drop_row
+                self.insertRow(row_index)
+                for column_index, column_data in enumerate(data):
+                    if column_data is None:
+                        continue
+
+                    if isinstance(column_data, QtWidgets.QTableWidgetItem):
+                        self.setItem(row_index, column_index, column_data)
+                    else:
+                        self.setCellWidget(row_index, column_index, column_data)
+            event.accept()
+            for row_index in range(len(rows_to_move)):
+                self.item(drop_row + row_index, 0).setSelected(True)
+                self.item(drop_row + row_index, 1).setSelected(True)
 
             self.blockSignals(False)
-            self.drag_drop_sig.emit(int(self.row_dragged), int(targetRow))
-        else:
-            event.ignore()
+            self.drag_drop_sig.emit(self.rows_dragged, int(drop_row))
+
+        self.blockSignals(False)
+        self.resizeRowsToContents()
+        super().dropEvent(event)
+
+    def drop_on(self, event):
+        index = self.indexAt(event.pos())
+        if not index.isValid():
+            return self.rowCount()
+
+        return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+
+    def is_below(self, pos, index):
+        rect = self.visualRect(index)
+        margin = 2
+        if pos.y() - rect.top() < margin:
+            return False
+        elif rect.bottom() - pos.y() < margin:
+            return True
+        # noinspection PyTypeChecker
+        return rect.contains(pos, True) and not (int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and \
+               pos.y() >= rect.center().y()
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):

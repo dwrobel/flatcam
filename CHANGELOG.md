@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 13.06.2020
 
 - modified the Tools Database such that there is now a way to mark a tool as meant to be used in a certain part of the application; it will disable or enable parts of the parameters of the tool
+- updated the FCTable GUI element to work correctly when doing drag&drop for the rows
+- updated the Geometry UI to work with the new FCTable
 
 12.06.2020
 
