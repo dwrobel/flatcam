@@ -115,7 +115,7 @@ class NonCopperClear(AppTool, Gerber):
         self.select_method = None
         self.tool_type_item_options = []
 
-        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+        self.circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         self.tooldia = None
 
@@ -183,6 +183,14 @@ class NonCopperClear(AppTool, Gerber):
         self.bound_obj_name = ''
 
         self.build_ui()
+
+        # all the tools are selected by default
+        # self.ui.tools_table.selectColumn(0)
+        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for row in range(self.ui.tools_table.rowCount()):
+            self.ui.tools_table.selectRow(row)
+        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
     def connect_signals_at_init(self):
@@ -239,14 +247,43 @@ class NonCopperClear(AppTool, Gerber):
         except AttributeError:
             return
 
+    def on_toggle_all_rows(self):
+        """
+        will toggle the selection of all rows in Tools table
+
+        :return:
+        """
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
+        else:
+            self.ui.tools_table.selectAll()
+        self.update_ui()
+
     def on_row_selection_change(self):
+        self.update_ui()
+
+    def update_ui(self):
         self.blockSignals(True)
 
-        sel_rows = [it.row() for it in self.ui.tools_table.selectedItems()]
-        # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        sel_rows = set()
+        table_items = self.ui.tools_table.selectedItems()
+        if table_items:
+            for it in table_items:
+                sel_rows.add(it.row())
+            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        else:
+            sel_rows = [0]
 
         if not sel_rows:
-            sel_rows = [0]
+            return
 
         for current_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
@@ -272,8 +309,7 @@ class NonCopperClear(AppTool, Gerber):
                         if int(tooluid_key) == tooluid:
                             for key, value in tooluid_value.items():
                                 if key == 'data':
-                                    form_value_storage = tooluid_value[key]
-                                    self.storage_to_form(form_value_storage)
+                                    self.storage_to_form(tooluid_value['data'])
                 except Exception as e:
                     log.debug("NonCopperClear ---> update_ui() " + str(e))
             else:
@@ -555,6 +591,27 @@ class NonCopperClear(AppTool, Gerber):
 
         self.sel_rect = []
 
+        self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def rebuild_ui(self):
+        # read the table tools uid
+        current_uid_list = []
+        for row in range(self.ui.tools_table.rowCount()):
+            uid = int(self.ui.tools_table.item(row,3).text())
+            current_uid_list.append(uid)
+
+        new_tools = {}
+        new_uid = 1
+
+        for current_uid in current_uid_list:
+            new_tools[new_uid] = deepcopy(self.ncc_tools[current_uid])
+            new_uid += 1
+
+        self.ncc_tools = new_tools
+
+        # the tools table changed therefore we need to rebuild it
+        QtCore.QTimer.singleShot(20, self.build_ui)
+
     def build_ui(self):
         self.ui_disconnect()
 
@@ -610,9 +667,6 @@ class NonCopperClear(AppTool, Gerber):
             self.ui.tools_table.item(row, 1).setFlags(
                 QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-        # all the tools are selected by default
-        self.ui.tools_table.selectColumn(0)
-        #
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
 
@@ -626,20 +680,16 @@ class NonCopperClear(AppTool, Gerber):
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
-        # self.ui.tools_table.setSortingEnabled(True)
-        # sort by tool diameter
-        # self.ui.tools_table.sortItems(1)
-
         self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
         self.ui_connect()
 
         # set the text on tool_data_label after loading the object
-        sel_rows = []
+        sel_rows = set()
         sel_items = self.ui.tools_table.selectedItems()
         for it in sel_items:
-            sel_rows.append(it.row())
+            sel_rows.add(it.row())
         if len(sel_rows) > 1:
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
@@ -650,7 +700,7 @@ class NonCopperClear(AppTool, Gerber):
 
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         for row in range(self.ui.tools_table.rowCount()):
             try:
@@ -771,8 +821,8 @@ class NonCopperClear(AppTool, Gerber):
             self.ui.area_shape_radio.show()
 
             # disable rest-machining for area painting
-            self.ui.ncc_rest_cb.set_value(False)
-            self.ui.ncc_rest_cb.setDisabled(True)
+            # self.ui.ncc_rest_cb.set_value(False)
+            # self.ui.ncc_rest_cb.setDisabled(True)
         else:
             self.ui.reference_combo.show()
             self.ui.reference_combo_label.show()
@@ -954,6 +1004,12 @@ class NonCopperClear(AppTool, Gerber):
         self.blockSignals(False)
         self.build_ui()
 
+        # select the tool just added
+        for row in range(self.ui.tools_table.rowCount()):
+            if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
+                self.ui.tools_table.selectRow(row)
+                break
+
     def on_tool_edit(self, item):
         self.blockSignals(True)
 
@@ -999,8 +1055,8 @@ class NonCopperClear(AppTool, Gerber):
         """
         Will delete a tool in the tool table
 
-        :param rows_to_delete: which rows to delete; can be a list
-        :param all_tools: delete all tools in the tool table
+        :param rows_to_delete:  which rows to delete; can be a list
+        :param all_tools:       delete all tools in the tool table
         :return:
         """
         self.blockSignals(True)
@@ -1054,7 +1110,7 @@ class NonCopperClear(AppTool, Gerber):
 
     def on_ncc_click(self):
         """
-        Slot for clicking signal of the self.generate.ncc_button
+        Slot for clicking signal
         :return: None
         """
 
@@ -1070,7 +1126,9 @@ class NonCopperClear(AppTool, Gerber):
 
         self.sel_rect = []
 
-        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+        obj_type = self.ui.type_obj_radio.get_value
+        self.circle_steps = int(self.app.defaults["gerber_circle_steps"]) if obj_type == 'gerber' else \
+            int(self.app.defaults["geometry_circle_steps"])
         self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
@@ -1089,8 +1147,9 @@ class NonCopperClear(AppTool, Gerber):
         # use the selected tools in the tool table; get diameters for non-copper clear
         self.ncc_dia_list = []
 
-        if self.ui.tools_table.selectedItems():
-            for x in self.ui.tools_table.selectedItems():
+        table_items = self.ui.tools_table.selectedItems()
+        if table_items:
+            for x in table_items:
                 try:
                     self.tooldia = float(self.ui.tools_table.item(x.row(), 1).text())
                 except ValueError:
@@ -1098,8 +1157,7 @@ class NonCopperClear(AppTool, Gerber):
                     try:
                         self.tooldia = float(self.ui.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong Tool Dia value format entered, "
-                                                                    "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         continue
 
                 # find out which tools is for isolation and which are for copper clearing
@@ -1187,7 +1245,7 @@ class NonCopperClear(AppTool, Gerber):
             if shape_type == "square":
                 if self.first_click is False:
                     self.first_click = True
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the area."))
 
                     self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
                     if self.app.grid_status():
@@ -1274,11 +1332,8 @@ class NonCopperClear(AppTool, Gerber):
 
             self.sel_rect = cascaded_union(self.sel_rect)
 
-            self.clear_copper(ncc_obj=self.ncc_obj,
-                              sel_obj=self.bound_obj,
-                              ncctooldia=self.ncc_dia_list,
-                              isotooldia=self.iso_dia_list,
-                              outname=self.o_name)
+            self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctooldia=self.ncc_dia_list,
+                              isotooldia=self.iso_dia_list, outname=self.o_name)
 
     # called on mouse move
     def on_mouse_move(self, event):
@@ -1386,6 +1441,22 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.mm)
                 self.app.plotcanvas.graph_event_disconnect(self.kp)
 
+            try:
+                # restore the Grid snapping if it was active before
+                if self.grid_status_memory is True:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                self.app.tool_shapes.clear(update=True)
+            except Exception as e:
+                log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+
             self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                   self.app.on_mouse_click_over_plot)
             self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
@@ -1394,6 +1465,7 @@ class NonCopperClear(AppTool, Gerber):
                                                                   self.app.on_mouse_click_release_over_plot)
             self.points = []
             self.poly_drawn = False
+
             self.delete_moving_selection_shape()
             self.delete_tool_selection_shape()
 
@@ -1711,7 +1783,7 @@ class NonCopperClear(AppTool, Gerber):
         if ncc_method == _("Standard"):
             try:
                 cp = self.clear_polygon(pol, tooldia,
-                                        steps_per_circle=self.grb_circle_steps,
+                                        steps_per_circle=self.circle_steps,
                                         overlap=ncc_overlap, contour=ncc_contour,
                                         connect=ncc_connect,
                                         prog_plot=prog_plot)
@@ -1722,7 +1794,7 @@ class NonCopperClear(AppTool, Gerber):
         elif ncc_method == _("Seed"):
             try:
                 cp = self.clear_polygon2(pol, tooldia,
-                                         steps_per_circle=self.grb_circle_steps,
+                                         steps_per_circle=self.circle_steps,
                                          overlap=ncc_overlap, contour=ncc_contour,
                                          connect=ncc_connect,
                                          prog_plot=prog_plot)
@@ -1733,7 +1805,7 @@ class NonCopperClear(AppTool, Gerber):
         elif ncc_method == _("Lines"):
             try:
                 cp = self.clear_polygon3(pol, tooldia,
-                                         steps_per_circle=self.grb_circle_steps,
+                                         steps_per_circle=self.circle_steps,
                                          overlap=ncc_overlap, contour=ncc_contour,
                                          connect=ncc_connect,
                                          prog_plot=prog_plot)
@@ -1745,7 +1817,7 @@ class NonCopperClear(AppTool, Gerber):
             try:
                 self.app.inform.emit(_("Clearing the polygon with the method: lines."))
                 cp = self.clear_polygon3(pol, tooldia,
-                                         steps_per_circle=self.grb_circle_steps,
+                                         steps_per_circle=self.circle_steps,
                                          overlap=ncc_overlap, contour=ncc_contour,
                                          connect=ncc_connect,
                                          prog_plot=prog_plot)
@@ -1755,7 +1827,7 @@ class NonCopperClear(AppTool, Gerber):
                 else:
                     self.app.inform.emit(_("Failed. Clearing the polygon with the method: seed."))
                     cp = self.clear_polygon2(pol, tooldia,
-                                             steps_per_circle=self.grb_circle_steps,
+                                             steps_per_circle=self.circle_steps,
                                              overlap=ncc_overlap, contour=ncc_contour,
                                              connect=ncc_connect,
                                              prog_plot=prog_plot)
@@ -1764,7 +1836,7 @@ class NonCopperClear(AppTool, Gerber):
                     else:
                         self.app.inform.emit(_("Failed. Clearing the polygon with the method: standard."))
                         cp = self.clear_polygon(pol, tooldia,
-                                                steps_per_circle=self.grb_circle_steps,
+                                                steps_per_circle=self.circle_steps,
                                                 overlap=ncc_overlap, contour=ncc_contour,
                                                 connect=ncc_connect,
                                                 prog_plot=prog_plot)
@@ -2741,19 +2813,19 @@ class NonCopperClear(AppTool, Gerber):
                                         if pol is not None and isinstance(pol, Polygon):
                                             if ncc_method == 'standard':
                                                 cp = self.clear_polygon(pol, tool,
-                                                                        self.grb_circle_steps,
+                                                                        self.circle_steps,
                                                                         overlap=overlap, contour=contour,
                                                                         connect=connect,
                                                                         prog_plot=False)
                                             elif ncc_method == 'seed':
                                                 cp = self.clear_polygon2(pol, tool,
-                                                                         self.grb_circle_steps,
+                                                                         self.circle_steps,
                                                                          overlap=overlap, contour=contour,
                                                                          connect=connect,
                                                                          prog_plot=False)
                                             else:
                                                 cp = self.clear_polygon3(pol, tool,
-                                                                         self.grb_circle_steps,
+                                                                         self.circle_steps,
                                                                          overlap=overlap, contour=contour,
                                                                          connect=connect,
                                                                          prog_plot=False)
@@ -2769,15 +2841,15 @@ class NonCopperClear(AppTool, Gerber):
                                 except TypeError:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
-                                            cp = self.clear_polygon(p, tool, self.grb_circle_steps,
+                                            cp = self.clear_polygon(p, tool, self.circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=False)
                                         elif ncc_method == 'seed':
-                                            cp = self.clear_polygon2(p, tool, self.grb_circle_steps,
+                                            cp = self.clear_polygon2(p, tool, self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
                                         else:
-                                            cp = self.clear_polygon3(p, tool, self.grb_circle_steps,
+                                            cp = self.clear_polygon3(p, tool, self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
                                         if cp:
@@ -3137,17 +3209,17 @@ class NonCopperClear(AppTool, Gerber):
                                     try:
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool_used,
-                                                                    self.grb_circle_steps,
+                                                                    self.circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=False)
                                         elif ncc_method == 'seed':
                                             cp = self.clear_polygon2(p, tool_used,
-                                                                     self.grb_circle_steps,
+                                                                     self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
                                         else:
                                             cp = self.clear_polygon3(p, tool_used,
-                                                                     self.grb_circle_steps,
+                                                                     self.circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
                                         cleared_geo.append(list(cp.get_objects()))
@@ -3166,19 +3238,19 @@ class NonCopperClear(AppTool, Gerber):
                                             try:
                                                 if ncc_method == 'standard':
                                                     cp = self.clear_polygon(poly_p, tool_used,
-                                                                            self.grb_circle_steps,
+                                                                            self.circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=False)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(poly_p, tool_used,
-                                                                             self.grb_circle_steps,
+                                                                             self.circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=False)
                                                 else:
                                                     cp = self.clear_polygon3(poly_p, tool_used,
-                                                                             self.grb_circle_steps,
+                                                                             self.circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=False)
@@ -3479,8 +3551,11 @@ class NonCopperClear(AppTool, Gerber):
         self.ui_connect()
         self.build_ui()
 
-        # if self.ui.tools_table.rowCount() != 0:
-        #     self.param_frame.setDisabled(False)
+        # select the tool just added
+        for row in range(self.ui.tools_table.rowCount()):
+            if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
+                self.ui.tools_table.selectRow(row)
+                break
 
     def on_ncc_tool_add_from_db_clicked(self):
         """
@@ -3589,7 +3664,7 @@ class NccUI:
         )
         self.tools_box.addWidget(self.tools_table_label)
 
-        self.tools_table = FCTable()
+        self.tools_table = FCTable(drag_drop=True)
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)

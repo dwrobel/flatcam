@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - modified the FCLabel GUI element
 - NCC Tool - remade and optimized the copper clearing with rest machining: now it works as expected with a reasonable performance
 - fixed issue #428 - Cutout Tool -> Freeform geometry was not generated due of trying to get the bounds of the solid_geometry before it was available
+- NCC Tool - now the tools can be reordered (if the order UI radio is set to 'no')
+- remade the UI in Paint Tool and the tools in tools table ca now be reordered (if the order UI radio is set to 'no')
+- some updates in NCC Tool using code from Paint Tool
 
 13.06.2020
 
