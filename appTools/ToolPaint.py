@@ -2588,6 +2588,10 @@ class ToolPaint(AppTool, Gerber):
                     if cp:
                         for x in cp:
                             total_geometry += list(x.get_objects())
+
+                        # clean the geometry
+                        new_geo = [g for g in total_geometry if g and not g.is_empty]
+                        total_geometry = new_geo
                         final_solid_geometry += total_geometry
 
                 except Exception as err:

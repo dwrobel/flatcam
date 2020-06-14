@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - made sure that clicking the icons in the status bar works only for the left mouse click
 - if clicking the activity icon in the status bar and there is no object selected then the effect will be a plot_all with fit_view
 - modified the FCLabel GUI element
+- NCC Tool - remade and optimized the copper clearing with rest machining: now it works as expected with a reasonable performance
 
 13.06.2020
 
