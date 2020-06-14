@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - if clicking the activity icon in the status bar and there is no object selected then the effect will be a plot_all with fit_view
 - modified the FCLabel GUI element
 - NCC Tool - remade and optimized the copper clearing with rest machining: now it works as expected with a reasonable performance
+- fixed issue #428 - Cutout Tool -> Freeform geometry was not generated due of trying to get the bounds of the solid_geometry before it was available
 
 13.06.2020
 

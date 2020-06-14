@@ -708,8 +708,9 @@ class CutOut(AppTool):
 
                     solid_geo += cutout_handler(geom=geom_struct)
 
-            xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
             geo_obj.solid_geometry = deepcopy(solid_geo)
+            xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
+
             geo_obj.options['xmin'] = xmin
             geo_obj.options['ymin'] = ymin
             geo_obj.options['xmax'] = xmax
@@ -1428,6 +1429,7 @@ def recursive_bounds(geometry):
             return minx, miny, maxx, maxy
         except TypeError:
             # it's a Shapely object, return it's bounds
-            return obj.bounds
+            if obj:
+                return obj.bounds
 
     return bounds_rec(geometry)
