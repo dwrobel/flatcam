@@ -19,7 +19,7 @@ CHANGELOG for FlatCAM beta
 - some updates in NCC Tool using code from Paint Tool
 - in Paint and NCC Tools made sure that using the key ESCAPE to cancel the tool will not create mouse events issues
 - some updates in Tcl commands Paint and CopperClear data dicts
-
+- modified the Isolation Tool UI: now the tools can be reordered (if the order UI radio is set to 'no')
 
 13.06.2020
 
