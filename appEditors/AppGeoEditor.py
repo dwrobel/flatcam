@@ -557,8 +557,8 @@ class PaintOptionsTool(AppTool):
         else:
             self.paintoverlap_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintmargin"]:
-            self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        if self.app.defaults["tools_paintoffset"]:
+            self.paintmargin_entry.set_value(self.app.defaults["tools_paintoffset"])
         else:
             self.paintmargin_entry.set_value(0.0)
 

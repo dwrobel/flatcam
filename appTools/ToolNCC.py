@@ -106,8 +106,10 @@ class NonCopperClear(AppTool, Gerber):
 
         self.mm = None
         self.mr = None
-
         self.kp = None
+
+        # disconnect flags
+        self.area_sel_disconnect_flag = False
 
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
@@ -186,10 +188,7 @@ class NonCopperClear(AppTool, Gerber):
 
         # all the tools are selected by default
         # self.ui.tools_table.selectColumn(0)
-        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for row in range(self.ui.tools_table.rowCount()):
-            self.ui.tools_table.selectRow(row)
-        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.tools_table.selectAll()
 
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
@@ -506,47 +505,47 @@ class NonCopperClear(AppTool, Gerber):
         # init the working variables
         self.default_data.clear()
         self.default_data = {
-            "name": '_ncc',
-            "plot": self.app.defaults["geometry_plot"],
-            "cutz": float(self.ui.cutz_entry.get_value()),
-            "vtipdia": float(self.ui.tipdia_entry.get_value()),
-            "vtipangle": float(self.ui.tipangle_entry.get_value()),
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
-            "endxy": self.app.defaults["geometry_endxy"],
+            "name":                     '_ncc',
+            "plot":                     self.app.defaults["geometry_plot"],
+            "cutz":                     float(self.app.defaults["geometry_cutz"]),
+            "vtipdia":                  float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle":                float(self.app.defaults["geometry_vtipangle"]),
+            "travelz":                  self.app.defaults["geometry_travelz"],
+            "feedrate":                 self.app.defaults["geometry_feedrate"],
+            "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
+            "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
+            "dwell":                    self.app.defaults["geometry_dwell"],
+            "dwelltime":                self.app.defaults["geometry_dwelltime"],
+            "multidepth":               self.app.defaults["geometry_multidepth"],
+            "ppname_g":                 self.app.defaults["geometry_ppname_g"],
+            "depthperpass":             self.app.defaults["geometry_depthperpass"],
+            "extracut":                 self.app.defaults["geometry_extracut"],
+            "extracut_length":          self.app.defaults["geometry_extracut_length"],
+            "toolchange":               self.app.defaults["geometry_toolchange"],
+            "toolchangez":              self.app.defaults["geometry_toolchangez"],
+            "endz":                     self.app.defaults["geometry_endz"],
+            "endxy":                    self.app.defaults["geometry_endxy"],
 
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
+            "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
+            "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
+            "startz":                   self.app.defaults["geometry_startz"],
 
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":           self.app.defaults["geometry_area_exclusion"],
+            "area_shape":               self.app.defaults["geometry_area_shape"],
+            "area_strategy":            self.app.defaults["geometry_area_strategy"],
+            "area_overz":               float(self.app.defaults["geometry_area_overz"]),
 
-            "tools_nccoperation": self.app.defaults["tools_nccoperation"],
-            "tools_nccmargin": self.app.defaults["tools_nccmargin"],
-            "tools_nccmethod": self.app.defaults["tools_nccmethod"],
-            "tools_nccconnect": self.app.defaults["tools_nccconnect"],
-            "tools_ncccontour": self.app.defaults["tools_ncccontour"],
-            "tools_nccoverlap": self.app.defaults["tools_nccoverlap"],
-            "nccrest": self.app.defaults["tools_nccrest"],
-            "nccref": self.app.defaults["tools_nccref"],
-            "tools_ncc_offset_choice": self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value": self.app.defaults["tools_ncc_offset_value"],
-            "tools_nccmilling_type": self.app.defaults["tools_nccmilling_type"],
+            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
+            "tools_nccmargin":          self.app.defaults["tools_nccmargin"],
+            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
+            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
+            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
+            "tools_nccoverlap":         self.app.defaults["tools_nccoverlap"],
+            "tools_nccrest":            self.app.defaults["tools_nccrest"],
+            "tools_nccref":             self.app.defaults["tools_nccref"],
+            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
+            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"]
         }
 
         try:
@@ -1204,6 +1203,9 @@ class NonCopperClear(AppTool, Gerber):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
 
+            # disconnect flags
+            self.area_sel_disconnect_flag = True
+
         elif self.select_method == _("Reference Object"):
             self.bound_obj_name = self.ui.reference_combo.currentText()
             # Get source object.
@@ -1327,6 +1329,9 @@ class NonCopperClear(AppTool, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
+            # disconnect flags
+            self.area_sel_disconnect_flag = False
+
             if len(self.sel_rect) == 0:
                 return
 
@@ -1432,37 +1437,39 @@ class NonCopperClear(AppTool, Gerber):
             key = event.key
 
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-                self.app.plotcanvas.graph_event_disconnect(self.mm)
-                self.app.plotcanvas.graph_event_disconnect(self.kp)
 
-            try:
-                # restore the Grid snapping if it was active before
-                if self.grid_status_memory is True:
-                    self.app.ui.grid_snap_btn.trigger()
-
+            if self.area_sel_disconnect_flag is True:
                 if self.app.is_legacy is False:
-                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
                     self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 else:
                     self.app.plotcanvas.graph_event_disconnect(self.mr)
+                    self.app.plotcanvas.graph_event_disconnect(self.mm)
                     self.app.plotcanvas.graph_event_disconnect(self.kp)
 
-                self.app.tool_shapes.clear(update=True)
-            except Exception as e:
-                log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+                try:
+                    # restore the Grid snapping if it was active before
+                    if self.grid_status_memory is True:
+                        self.app.ui.grid_snap_btn.trigger()
 
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.kp)
+
+                    self.app.tool_shapes.clear(update=True)
+                except Exception as e:
+                    log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
+                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                      self.app.on_mouse_move_over_plot)
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
             self.points = []
             self.poly_drawn = False
 

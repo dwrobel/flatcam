@@ -194,42 +194,48 @@ class TclCommandCopperClear(TclCommand):
         # store here the default data for Geometry Data
         default_data = {}
         default_data.update({
-            "name": outname,
-            "plot": False,
-            "cutz": self.app.defaults["geometry_cutz"],
-            "vtipdia": 0.1,
-            "vtipangle": 30,
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
-            "endxy": self.app.defaults["geometry_endxy"],
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
+            "name":             outname,
+            "plot":             False,
+            "cutz":             self.app.defaults["geometry_cutz"],
+            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
+            "travelz":          self.app.defaults["geometry_travelz"],
+            "feedrate":         self.app.defaults["geometry_feedrate"],
+            "feedrate_z":       self.app.defaults["geometry_feedrate_z"],
+            "feedrate_rapid":   self.app.defaults["geometry_feedrate_rapid"],
+            "dwell":            self.app.defaults["geometry_dwell"],
+            "dwelltime":        self.app.defaults["geometry_dwelltime"],
+            "multidepth":       self.app.defaults["geometry_multidepth"],
+            "ppname_g":         self.app.defaults["geometry_ppname_g"],
+            "depthperpass":     self.app.defaults["geometry_depthperpass"],
+            "extracut":         self.app.defaults["geometry_extracut"],
+            "extracut_length":  self.app.defaults["geometry_extracut_length"],
+            "toolchange":       self.app.defaults["geometry_toolchange"],
+            "toolchangez":      self.app.defaults["geometry_toolchangez"],
+            "endz":             self.app.defaults["geometry_endz"],
+            "endxy":            self.app.defaults["geometry_endxy"],
+            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
+            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
+            "startz":           self.app.defaults["geometry_startz"],
 
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "tools_nccmargin": margin,
-            "tools_nccmethod": method_data,
-            "tools_nccref": select,
+            "tooldia":              self.app.defaults["tools_painttooldia"],
+            "tools_nccoperation":   self.app.defaults["tools_nccoperation"],
+
+            "tools_nccmargin":  margin,
+            "tools_nccmethod":  method_data,
+            "tools_nccref":     select,
             "tools_nccconnect": connect,
             "tools_ncccontour": contour,
-            "tools_nccoverlap": overlap
+            "tools_nccoverlap": overlap,
+
+            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
+            "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
+            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"]
         })
         ncc_tools = {}
 
@@ -238,13 +244,13 @@ class TclCommandCopperClear(TclCommand):
             tooluid += 1
             ncc_tools.update({
                 int(tooluid): {
-                    'tooldia': float('%.*f' % (obj.decimals, tool)),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Iso',
-                    'tool_type': 'C1',
-                    'data': dict(default_data),
-                    'solid_geometry': []
+                    'tooldia':          float('%.*f' % (obj.decimals, tool)),
+                    'offset':           'Path',
+                    'offset_value':     0.0,
+                    'type':             'Iso',
+                    'tool_type':        'C1',
+                    'data':             dict(default_data),
+                    'solid_geometry':   []
                 }
             })
             ncc_tools[int(tooluid)]['data']['tooldia'] = float('%.*f' % (obj.decimals, tool))

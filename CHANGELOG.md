@@ -17,6 +17,9 @@ CHANGELOG for FlatCAM beta
 - NCC Tool - now the tools can be reordered (if the order UI radio is set to 'no')
 - remade the UI in Paint Tool and the tools in tools table ca now be reordered (if the order UI radio is set to 'no')
 - some updates in NCC Tool using code from Paint Tool
+- in Paint and NCC Tools made sure that using the key ESCAPE to cancel the tool will not create mouse events issues
+- some updates in Tcl commands Paint and CopperClear data dicts
+
 
 13.06.2020
 

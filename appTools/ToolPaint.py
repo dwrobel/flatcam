@@ -85,6 +85,10 @@ class ToolPaint(AppTool, Gerber):
         self.mr = None
         self.kp = None
 
+        # disconnect flags
+        self.area_sel_disconnect_flag = False
+        self.poly_sel_disconnect_flag = False
+
         self.sel_rect = []
 
         # store here if the grid snapping is active
@@ -100,7 +104,7 @@ class ToolPaint(AppTool, Gerber):
 
         self.form_fields = {
             "tools_paintoverlap": self.ui.paintoverlap_entry,
-            "tools_paintmargin": self.ui.paintmargin_entry,
+            "tools_paintoffset": self.ui.offset_entry,
             "tools_paintmethod": self.ui.paintmethod_combo,
             "tools_pathconnect": self.ui.pathconnect_cb,
             "tools_paintcontour": self.ui.paintcontour_cb,
@@ -108,7 +112,7 @@ class ToolPaint(AppTool, Gerber):
 
         self.name2option = {
             'p_overlap': "tools_paintoverlap",
-            'p_margin': "tools_paintmargin",
+            'p_offset': "tools_paintoffset",
             'p_method': "tools_paintmethod",
             'p_connect': "tools_pathconnect",
             'p_contour': "tools_paintcontour",
@@ -222,10 +226,7 @@ class ToolPaint(AppTool, Gerber):
         self.build_ui()
 
         # all the tools are selected by default
-        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for row in range(self.ui.tools_table.rowCount()):
-            self.ui.tools_table.selectRow(row)
-        self.ui.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.tools_table.selectAll()
 
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
@@ -510,49 +511,49 @@ class ToolPaint(AppTool, Gerber):
 
         self.default_data.clear()
         self.default_data.update({
-            "name": '_paint',
-            "plot": self.app.defaults["geometry_plot"],
-            "cutz": float(self.app.defaults["tools_paintcutz"],),
-            "vtipdia": float(self.app.defaults["tools_painttipdia"],),
-            "vtipangle": float(self.app.defaults["tools_painttipangle"],),
-            "travelz": float(self.app.defaults["geometry_travelz"]),
-            "feedrate": float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
-            "endz": float(self.app.defaults["geometry_endz"]),
-            "endxy": self.app.defaults["geometry_endxy"],
+            "name":                 '_paint',
+            "plot":                 self.app.defaults["geometry_plot"],
+            "cutz":                 float(self.app.defaults["tools_paintcutz"]),
+            "vtipdia":              float(self.app.defaults["tools_painttipdia"]),
+            "vtipangle":            float(self.app.defaults["tools_painttipangle"]),
+            "travelz":              float(self.app.defaults["geometry_travelz"]),
+            "feedrate":             float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z":           float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid":       float(self.app.defaults["geometry_feedrate_rapid"]),
+            "dwell":                self.app.defaults["geometry_dwell"],
+            "dwelltime":            float(self.app.defaults["geometry_dwelltime"]),
+            "multidepth":           self.app.defaults["geometry_multidepth"],
+            "ppname_g":             self.app.defaults["geometry_ppname_g"],
+            "depthperpass":         float(self.app.defaults["geometry_depthperpass"]),
+            "extracut":             self.app.defaults["geometry_extracut"],
+            "extracut_length":      self.app.defaults["geometry_extracut_length"],
+            "toolchange":           self.app.defaults["geometry_toolchange"],
+            "toolchangez":          float(self.app.defaults["geometry_toolchangez"]),
+            "endz":                 float(self.app.defaults["geometry_endz"]),
+            "endxy":                self.app.defaults["geometry_endxy"],
 
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
+            "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
+            "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
+            "startz":               self.app.defaults["geometry_startz"],
 
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
+            "area_shape":           self.app.defaults["geometry_area_shape"],
+            "area_strategy":        self.app.defaults["geometry_area_strategy"],
+            "area_overz":           float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "tools_paintmargin": self.app.defaults["tools_paintmargin"],
-            "tools_paintmethod": self.app.defaults["tools_paintmethod"],
-            "tools_selectmethod": self.app.defaults["tools_selectmethod"],
-            "tools_pathconnect": self.app.defaults["tools_pathconnect"],
-            "tools_paintcontour": self.app.defaults["tools_paintcontour"],
-            "tools_paintoverlap": self.app.defaults["tools_paintoverlap"],
-            "tools_paintrest": self.app.defaults["tools_paintrest"],
+            "tooldia":              self.app.defaults["tools_painttooldia"],
+            "tools_paintoffset":   self.app.defaults["tools_paintoffset"],
+            "tools_paintmethod":    self.app.defaults["tools_paintmethod"],
+            "tools_selectmethod":   self.app.defaults["tools_selectmethod"],
+            "tools_pathconnect":    self.app.defaults["tools_pathconnect"],
+            "tools_paintcontour":   self.app.defaults["tools_paintcontour"],
+            "tools_paintoverlap":   self.app.defaults["tools_paintoverlap"],
+            "tools_paintrest":      self.app.defaults["tools_paintrest"],
         })
 
         # ## Init the GUI interface
         self.ui.order_radio.set_value(self.app.defaults["tools_paintorder"])
-        self.ui.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        self.ui.offset_entry.set_value(self.app.defaults["tools_paintoffset"])
         self.ui.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
         self.ui.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_paint_area_shape"])
@@ -1026,6 +1027,9 @@ class ToolPaint(AppTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.app.mp)
 
+            # disconnect flags
+            self.poly_sel_disconnect_flag = True
+
         elif self.select_method == _("Area Selection"):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the paint area."))
 
@@ -1041,6 +1045,9 @@ class ToolPaint(AppTool, Gerber):
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
             self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+
+            # disconnect flags
+            self.area_sel_disconnect_flag = True
 
         elif self.select_method == _("Reference Object"):
             self.bound_obj_name = self.reference_combo.currentText()
@@ -1126,6 +1133,9 @@ class ToolPaint(AppTool, Gerber):
                                                                   self.app.on_mouse_click_over_plot)
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
+
+            # disconnect flags
+            self.poly_sel_disconnect_flag = False
 
             self.app.tool_shapes.clear(update=True)
 
@@ -1250,6 +1260,9 @@ class ToolPaint(AppTool, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
+            # disconnect flags
+            self.area_sel_disconnect_flag = False
+
             if len(self.sel_rect) == 0:
                 return
 
@@ -1360,41 +1373,47 @@ class ToolPaint(AppTool, Gerber):
             key = event.key
 
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
-            try:
-                if self.app.is_legacy is False:
-                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                    self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-                else:
-                    self.app.plotcanvas.graph_event_disconnect(self.mr)
-                    self.app.plotcanvas.graph_event_disconnect(self.mm)
-                    self.app.plotcanvas.graph_event_disconnect(self.kp)
-            except Exception as e:
-                log.debug("ToolPaint.on_key_press() _1 --> %s" % str(e))
+            if self.area_sel_disconnect_flag is True:
+                try:
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.mm)
+                        self.app.plotcanvas.graph_event_disconnect(self.kp)
+                except Exception as e:
+                    log.debug("ToolPaint.on_key_press() _1 --> %s" % str(e))
 
-            try:
-                # restore the Grid snapping if it was active before
-                if self.grid_status_memory is True:
-                    self.app.ui.grid_snap_btn.trigger()
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
+                self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                      self.app.on_mouse_move_over_plot)
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
 
-                if self.app.is_legacy is False:
-                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
-                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-                else:
-                    self.app.plotcanvas.graph_event_disconnect(self.mr)
-                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+            if self.poly_sel_disconnect_flag is False:
+                try:
+                    # restore the Grid snapping if it was active before
+                    if self.grid_status_memory is True:
+                        self.app.ui.grid_snap_btn.trigger()
 
-                self.app.tool_shapes.clear(update=True)
-            except Exception as e:
-                log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_single_poly_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.kp)
 
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
+                    self.app.tool_shapes.clear(update=True)
+                except Exception as e:
+                    log.debug("ToolPaint.on_key_press() _2 --> %s" % str(e))
 
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                      self.app.on_mouse_click_over_plot)
             self.points = []
             self.poly_drawn = False
             self.poly_dict.clear()
@@ -1643,9 +1662,8 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
             return None
 
-    def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, order=None,
-                   method=None, outname=None, tools_storage=None,
-                   plot=True, run_threaded=True):
+    def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, order=None, method=None, outname=None,
+                   tools_storage=None, plot=True, run_threaded=True):
         """
         Paints a polygon selected by clicking on its interior or by having a point coordinates given
 
@@ -1752,11 +1770,11 @@ class ToolPaint(AppTool, Gerber):
             conn = tools_storage[current_uid]['data']['tools_pathconnect']
             cont = tools_storage[current_uid]['data']['tools_paintcontour']
 
-            paint_margin = float(tools_storage[current_uid]['data']['tools_paintmargin'])
+            paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
 
             poly_buf = []
             for pol in polygon_list:
-                buffered_pol = pol.buffer(-paint_margin)
+                buffered_pol = pol.buffer(-paint_offset)
                 if buffered_pol and not buffered_pol.is_empty:
                     poly_buf.append(buffered_pol)
 
@@ -1918,8 +1936,8 @@ class ToolPaint(AppTool, Gerber):
         else:
             job_thread(app_obj=self.app)
 
-    def paint_poly_all(self, obj, tooldia=None, order=None, method=None, outname=None,
-                       tools_storage=None, plot=True, run_threaded=True):
+    def paint_poly_all(self, obj, tooldia=None, order=None, method=None, outname=None, tools_storage=None, plot=True,
+                       run_threaded=True):
         """
         Paints all polygons in this object.
 
@@ -2069,11 +2087,11 @@ class ToolPaint(AppTool, Gerber):
                 conn = tools_storage[current_uid]['data']['tools_pathconnect']
                 cont = tools_storage[current_uid]['data']['tools_paintcontour']
 
-                paint_margin = float(tools_storage[current_uid]['data']['tools_paintmargin'])
+                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
                 poly_buf = []
                 for pol in painted_area:
                     pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_margin)
+                    buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
 
@@ -2264,11 +2282,11 @@ class ToolPaint(AppTool, Gerber):
                 conn = tools_storage[current_uid]['data']['tools_pathconnect']
                 cont = tools_storage[current_uid]['data']['tools_paintcontour']
 
-                paint_margin = float(tools_storage[current_uid]['data']['tools_paintmargin'])
+                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
                 poly_buf = []
                 for pol in painted_area:
                     pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_margin)
+                    buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
 
@@ -2573,12 +2591,12 @@ class ToolPaint(AppTool, Gerber):
                 conn = tools_storage[current_uid]['data']['tools_pathconnect']
                 cont = tools_storage[current_uid]['data']['tools_paintcontour']
 
-                paint_margin = float(tools_storage[current_uid]['data']['tools_paintmargin'])
+                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
 
                 poly_buf = []
                 for pol in painted_area:
                     pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_margin)
+                    buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
 
@@ -2754,12 +2772,12 @@ class ToolPaint(AppTool, Gerber):
                 conn = tools_storage[current_uid]['data']['tools_pathconnect']
                 cont = tools_storage[current_uid]['data']['tools_paintcontour']
 
-                paint_margin = float(tools_storage[current_uid]['data']['tools_paintmargin'])
+                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
 
                 poly_buf = []
                 for pol in painted_area:
                     pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_margin)
+                    buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
 
@@ -3535,19 +3553,19 @@ class PaintUI:
         grid4.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Offset'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
               "be painted.")
         )
-        self.paintmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.paintmargin_entry.set_precision(self.decimals)
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
-        self.paintmargin_entry.setObjectName('p_margin')
+        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_entry.set_precision(self.decimals)
+        self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.setObjectName('p_offset')
 
         grid4.addWidget(marginlabel, 2, 0)
-        grid4.addWidget(self.paintmargin_entry, 2, 1)
+        grid4.addWidget(self.offset_entry, 2, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))

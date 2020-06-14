@@ -4071,7 +4071,7 @@ class App(QtCore.QObject):
 
                       'cncjob_tooldia',
 
-                      'tools_paintmargin', 'tools_painttooldia', "tools_paintcutz", "tools_painttipdia",
+                      'tools_paintoffset', 'tools_painttooldia', "tools_paintcutz", "tools_painttipdia",
                       "tools_paintnewdia",
 
                       "tools_ncctools", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",

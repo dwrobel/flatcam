@@ -527,7 +527,7 @@ class CutOut(AppTool):
 
             # Paint
             "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
-            "tools_paintmargin":        float(self.app.defaults["tools_paintmargin"]),
+            "tools_paintoffset":        float(self.app.defaults["tools_paintoffset"]),
             "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
             "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
             "tools_paintcontour":       self.app.defaults["tools_paintcontour"],

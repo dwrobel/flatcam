@@ -391,7 +391,7 @@ class PreferencesUIManager:
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
             "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
             "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
-            "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
+            "tools_paintoffset": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
             "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
             "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
             "tools_paint_area_shape": self.ui.tools_defaults_form.tools_paint_group.area_shape_radio,

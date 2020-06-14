@@ -1621,19 +1621,19 @@ class ToolsDB2(QtWidgets.QWidget):
         self.grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Offset'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
               "be painted.")
         )
-        self.paintmargin_entry = FCDoubleSpinner()
-        self.paintmargin_entry.set_precision(self.decimals)
-        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
-        self.paintmargin_entry.setObjectName('gdb_p_margin')
+        self.paint_offset_entry = FCDoubleSpinner()
+        self.paint_offset_entry.set_precision(self.decimals)
+        self.paint_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.paint_offset_entry.setObjectName('gdb_p_offset')
 
         self.grid3.addWidget(marginlabel, 2, 0)
-        self.grid3.addWidget(self.paintmargin_entry, 2, 1)
+        self.grid3.addWidget(self.paint_offset_entry, 2, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -1899,7 +1899,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # Paint
             "tools_paintoverlap":       self.paintoverlap_entry,
-            "tools_paintmargin":        self.paintmargin_entry,
+            "tools_paintoffset":       self.paint_offset_entry,
             "tools_paintmethod":        self.paintmethod_combo,
             "tools_pathconnect":        self.pathconnect_cb,
             "tools_paintcontour":       self.paintcontour_cb,
@@ -1952,7 +1952,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # Paint
             'gdb_p_overlap':        "tools_paintoverlap",
-            'gdb_p_margin':         "tools_paintmargin",
+            'gdb_p_offset':         "tools_paintoffset",
             'gdb_p_method':         "tools_paintmethod",
             'gdb_p_connect':        "tools_pathconnect",
             'gdb_p_contour':        "tools_paintcontour",
@@ -2210,7 +2210,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # Paint
             "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
-            "tools_paintmargin":        float(self.app.defaults["tools_paintmargin"]),
+            "tools_paintoffset":        float(self.app.defaults["tools_paintoffset"]),
             "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
             "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
             "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
@@ -2656,8 +2656,8 @@ class ToolsDB2(QtWidgets.QWidget):
             # Paint Tool
             elif wdg_name == "gdb_p_overlap":
                 self.db_tool_dict[tool_id]['data']['tools_paintoverlap'] = val
-            elif wdg_name == "gdb_p_margin":
-                self.db_tool_dict[tool_id]['data']['tools_paintmargin'] = val
+            elif wdg_name == "gdb_p_offset":
+                self.db_tool_dict[tool_id]['data']['tools_paintoffset'] = val
             elif wdg_name == "gdb_p_method":
                 self.db_tool_dict[tool_id]['data']['tools_paintmethod'] = val
             elif wdg_name == "gdb_p_connect":

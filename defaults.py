@@ -460,7 +460,7 @@ class FlatCAMDefaults:
         "tools_painttooldia": 0.3,
         "tools_paintorder": 'rev',
         "tools_paintoverlap": 20,
-        "tools_paintmargin": 0.0,
+        "tools_paintoffset": 0.0,
         "tools_paintmethod": _("Seed"),
         "tools_selectmethod": _("All"),
         "tools_paint_area_shape": "square",
