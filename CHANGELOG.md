@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - in Paint and NCC Tools made sure that using the key ESCAPE to cancel the tool will not create mouse events issues
 - some updates in Tcl commands Paint and CopperClear data dicts
 - modified the Isolation Tool UI: now the tools can be reordered (if the order UI radio is set to 'no')
+- modified the Paint, NCC and Isolation Tools that when no tools is selected in the Tools Table, a message will show that no Tool is selected and the Geometry generation button is disabled
 
 13.06.2020
 

@@ -103,19 +103,19 @@ class ToolPaint(AppTool, Gerber):
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         self.form_fields = {
-            "tools_paintoverlap": self.ui.paintoverlap_entry,
-            "tools_paintoffset": self.ui.offset_entry,
-            "tools_paintmethod": self.ui.paintmethod_combo,
-            "tools_pathconnect": self.ui.pathconnect_cb,
-            "tools_paintcontour": self.ui.paintcontour_cb,
+            "tools_paintoverlap":   self.ui.paintoverlap_entry,
+            "tools_paintoffset":    self.ui.offset_entry,
+            "tools_paintmethod":    self.ui.paintmethod_combo,
+            "tools_pathconnect":    self.ui.pathconnect_cb,
+            "tools_paintcontour":   self.ui.paintcontour_cb,
         }
 
         self.name2option = {
-            'p_overlap': "tools_paintoverlap",
-            'p_offset': "tools_paintoffset",
-            'p_method': "tools_paintmethod",
-            'p_connect': "tools_pathconnect",
-            'p_contour': "tools_paintcontour",
+            'p_overlap':    "tools_paintoverlap",
+            'p_offset':     "tools_paintoffset",
+            'p_method':     "tools_paintmethod",
+            'p_connect':    "tools_pathconnect",
+            'p_contour':    "tools_paintcontour",
         }
 
         self.old_tool_dia = None
@@ -262,11 +262,16 @@ class ToolPaint(AppTool, Gerber):
             for it in table_items:
                 sel_rows.add(it.row())
             # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-        else:
-            sel_rows = [0]
 
-        if not sel_rows:
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.generate_paint_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.blockSignals(False)
             return
+        else:
+            self.ui.generate_paint_button.setDisabled(False)
 
         for current_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
@@ -3742,18 +3747,14 @@ class PaintUI:
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_paint_button.setToolTip(
-            _("- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-              "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
-              "specified by another object.")
+            _("Create a Geometry Object which paints the polygons.")
         )
         self.generate_paint_button.setStyleSheet("""
-                                QPushButton
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
+                                                 QPushButton
+                                                 {
+                                                     font-weight: bold;
+                                                 }
+                                                 """)
         self.tools_box.addWidget(self.generate_paint_button)
 
         self.tools_box.addStretch()

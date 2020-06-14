@@ -657,11 +657,16 @@ class ToolIsolation(AppTool, Gerber):
             for it in table_items:
                 sel_rows.add(it.row())
             # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-        else:
-            sel_rows = [0]
 
-        if not sel_rows:
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.generate_iso_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.blockSignals(False)
             return
+        else:
+            self.ui.generate_iso_button.setDisabled(False)
 
         for current_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
