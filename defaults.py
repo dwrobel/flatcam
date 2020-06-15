@@ -250,6 +250,7 @@ class FlatCAMDefaults:
 
         # Excellon Options
         "excellon_operation": "drill",
+        "excellon_tool_order": 'rev',
         "excellon_milling_type": "drills",
 
         "excellon_milling_dia": 0.8,

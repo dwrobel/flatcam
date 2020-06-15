@@ -1329,6 +1329,7 @@ class App(QtCore.QObject):
         self.ncclear_tool = None
         self.paint_tool = None
         self.isolation_tool = None
+        self.drilling_tool = None
 
         self.optimal_tool = None
         self.transform_tool = None
@@ -1929,6 +1930,10 @@ class App(QtCore.QObject):
         self.isolation_tool.install(icon=QtGui.QIcon(self.resource_location + '/iso_16.png'), pos=self.ui.menutool,
                                     before=self.sub_tool.menuAction, separator=True)
 
+        self.drilling_tool = ToolDrilling(self)
+        self.drilling_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), pos=self.ui.menutool,
+                                    before=self.sub_tool.menuAction, separator=True)
+
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
                                           pos=self.ui.menutool)
@@ -2042,6 +2047,7 @@ class App(QtCore.QObject):
         ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
         ui.isolation_btn.triggered.connect(lambda: self.isolation_tool.run(toggle=True))
+        ui.drill_btn.triggered.connect(lambda: self.drilling_tool.run(toggle=True))
 
         ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))

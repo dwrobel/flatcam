@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool - fixed to work with selection of tools in the Tool Table (previously it always used all the tools in the Tool Table)
 - Tools Database - added a context menu action to Save the changes to the database even if it's not in the Administration mode
 - Tool Isolation - fixed a UI minor issue: 'forced rest' checkbox state at startup was always enabled
+- started working in moving the Excellon drilling in its own Application Tool
+- created a new App Tool named Drilling Tool where I will move the drilling out of the Excellon UI
 
 14.06.2020
 
