@@ -101,7 +101,7 @@ class ToolIsolation(AppTool, Gerber):
 
         # store here the state of the combine_cb GUI element
         # used when the rest machining is toggled
-        self.old_combine_state = None
+        self.old_combine_state = self.app.defaults["tools_iso_combine_passes"]
 
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
@@ -196,9 +196,6 @@ class ToolIsolation(AppTool, Gerber):
 
         self.ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
         self.ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
-
-        self.ui.rest_cb.stateChanged.connect(self.on_rest_machining_check)
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
         self.ui.type_excobj_radio.activated_custom.connect(self.on_type_excobj_index_changed)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
@@ -425,6 +422,8 @@ class ToolIsolation(AppTool, Gerber):
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
         self.units = self.app.defaults['units'].upper()
 
+        self.on_rest_machining_check(state=self.app.defaults["tools_iso_rest"])
+
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
     def rebuild_ui(self):
@@ -535,19 +534,20 @@ class ToolIsolation(AppTool, Gerber):
 
     def ui_connect(self):
         self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
+        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
 
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
+        # tool table widgets
         for row in range(self.ui.tools_table.rowCount()):
             try:
                 self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
             except AttributeError:
                 pass
 
-        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
-
+        # Tool Parameters
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
@@ -576,6 +576,17 @@ class ToolIsolation(AppTool, Gerber):
         except (TypeError, AttributeError):
             pass
 
+        # rows selected
+        try:
+            self.ui.tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # tool table widgets
         for row in range(self.ui.tools_table.rowCount()):
 
             try:
@@ -583,6 +594,7 @@ class ToolIsolation(AppTool, Gerber):
             except (TypeError, AttributeError):
                 pass
 
+        # Tool Parameters
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
@@ -613,16 +625,6 @@ class ToolIsolation(AppTool, Gerber):
         try:
             self.ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
-            pass
-
-        # rows selected
-        try:
-            self.ui.tools_table.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-        try:
-            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
-        except (TypeError, AttributeError):
             pass
 
     def on_toggle_all_rows(self):

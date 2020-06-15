@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Paint Tool - refurbished the 'rest machining' for the entire tool
 - Isolation Tool - fixed to work with selection of tools in the Tool Table (previously it always used all the tools in the Tool Table)
 - Tools Database - added a context menu action to Save the changes to the database even if it's not in the Administration mode
+- Tool Isolation - fixed a UI minor issue: 'forced rest' checkbox state at startup was always enabled
 
 14.06.2020
 
