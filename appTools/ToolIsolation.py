@@ -1260,7 +1260,26 @@ class ToolIsolation(AppTool, Gerber):
         combine = self.ui.combine_passes_cb.get_value()
         tools_storage = self.iso_tools
 
-        # update the Common Parameters valuse in the self.iso_tools
+        # TODO currently the tool use all the tools in the tool table regardless of selections. Correct this
+        sorted_tools = []
+        table_items = self.ui.tools_table.selectedItems()
+        sel_rows = {t.row() for t in table_items}
+        for row in sel_rows:
+            try:
+                tdia = float(self.ui.tools_table.item(row, 1).text())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tdia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
+                    continue
+            sorted_tools.append(tdia)
+        if not sorted_tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            return 'fail'
+
+        # update the Common Parameters values in the self.iso_tools
         for tool_iso in self.iso_tools:
             for key in self.iso_tools[tool_iso]:
                 if key == 'data':

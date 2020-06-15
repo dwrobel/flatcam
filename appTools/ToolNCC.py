@@ -1152,14 +1152,15 @@ class NonCopperClear(AppTool, Gerber):
         self.ncc_dia_list = []
 
         table_items = self.ui.tools_table.selectedItems()
-        if table_items:
-            for x in table_items:
+        sel_rows = {t.row() for t in table_items}
+        if len(sel_rows) > 0:
+            for row in sel_rows:
                 try:
-                    self.tooldia = float(self.ui.tools_table.item(x.row(), 1).text())
+                    self.tooldia = float(self.ui.tools_table.item(row, 1).text())
                 except ValueError:
                     # try to convert comma to decimal point. if it's still not working error message and return
                     try:
-                        self.tooldia = float(self.ui.tools_table.item(x.row(), 1).text().replace(',', '.'))
+                        self.tooldia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
                     except ValueError:
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         continue
@@ -2303,19 +2304,8 @@ class NonCopperClear(AppTool, Gerber):
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
-                            # find the tool uid associated with the current tool_dia so we know
-                            # where to add the tool solid_geometry
-                            for k, v in tools_storage.items():
-                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
-                                                                                                    tool)):
-                                    current_uid = int(k)
-
-                                    # add the solid_geometry to the current too in self.paint_tools dictionary
-                                    # and then reset the temporary list that stored that solid_geometry
-                                    v['solid_geometry'] = deepcopy(cleared_geo)
-                                    v['data']['name'] = name + '_' + str(tool)
-                                    break
-
+                            tools_storage[tool_uid]["solid_geometry"] = deepcopy(cleared_geo)
+                            tools_storage[tool_uid]["data"]["name"] = name + '_' + str(tool)
                             geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         else:
                             log.debug("There are no geometries in the cleared polygon.")

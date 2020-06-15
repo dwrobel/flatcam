@@ -415,7 +415,7 @@ class FlatCAMDefaults:
         "tools_iso_isotype": "full",
 
         "tools_iso_rest":           False,
-        "tools_iso_combine_passes": False,
+        "tools_iso_combine_passes": True,
         "tools_iso_isoexcept":      False,
         "tools_iso_selection":      _("All"),
         "tools_iso_poly_ints":      False,
