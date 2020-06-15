@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - modified the UI in Paint Tool such that in case of using rest machining the offset will apply for all tools
 - Paint Tool - made the rest machining function for the paint single polygon method
 - Paint Tool - refurbished the 'rest machining' for the entire tool
+- Isolation Tool - fixed to work with selection of tools in the Tool Table (previously it always used all the tools in the Tool Table)
 
 14.06.2020
 

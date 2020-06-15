@@ -1260,21 +1260,12 @@ class ToolIsolation(AppTool, Gerber):
         combine = self.ui.combine_passes_cb.get_value()
         tools_storage = self.iso_tools
 
-        # TODO currently the tool use all the tools in the tool table regardless of selections. Correct this
         sorted_tools = []
         table_items = self.ui.tools_table.selectedItems()
         sel_rows = {t.row() for t in table_items}
         for row in sel_rows:
-            try:
-                tdia = float(self.ui.tools_table.item(row, 1).text())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tdia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                    continue
-            sorted_tools.append(tdia)
+            tid = int(self.ui.tools_table.item(row, 3).text())
+            sorted_tools.append(tid)
         if not sorted_tools:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return 'fail'
@@ -1300,7 +1291,7 @@ class ToolIsolation(AppTool, Gerber):
         else:
             prog_plot = self.app.defaults["tools_iso_plotting"]
 
-            for tool in tools_storage:
+            for tool in sorted_tools:
                 tool_data = tools_storage[tool]['data']
                 to_follow = tool_data['tools_iso_follow']
 
@@ -1458,9 +1449,28 @@ class ToolIsolation(AppTool, Gerber):
         iso_name = iso_obj.options["name"] + '_iso_rest'
         work_geo = iso_obj.solid_geometry if iso2geo is None else iso2geo
 
+        # sorted_tools = []
+        # for k, v in self.iso_tools.items():
+        #     sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+
         sorted_tools = []
-        for k, v in self.iso_tools.items():
-            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+        table_items = self.ui.tools_table.selectedItems()
+        sel_rows = {t.row() for t in table_items}
+        for row in sel_rows:
+            try:
+                tdia = float(self.ui.tools_table.item(row, 1).text())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tdia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
+                    continue
+            sorted_tools.append(float('%.*f' % (self.decimals, tdia)))
+
+        if not sorted_tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            return 'fail'
 
         order = self.ui.order_radio.get_value()
         if order == 'fwd':
@@ -1551,6 +1561,11 @@ class ToolIsolation(AppTool, Gerber):
         if self.app.defaults["tools_iso_plotting"] == 'progressive':
             self.temp_shapes.clear(update=True)
 
+        # remove tools without geometry
+        for tool, tool_dict in list(tools_storage.items()):
+            if not tool_dict['solid_geometry']:
+                tools_storage.pop(tool, None)
+
         def iso_init(geo_obj, app_obj):
             geo_obj.options["cnctooldia"] = str(tool_dia)
 
@@ -1634,7 +1649,17 @@ class ToolIsolation(AppTool, Gerber):
         geometry = iso2geo
         prog_plot = self.app.defaults["tools_iso_plotting"]
 
-        for tool in tools_storage:
+        sorted_tools = []
+        table_items = self.ui.tools_table.selectedItems()
+        sel_rows = {t.row() for t in table_items}
+        for row in sel_rows:
+            tid = int(self.ui.tools_table.item(row, 3).text())
+            sorted_tools.append(tid)
+        if not sorted_tools:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            return 'fail'
+
+        for tool in sorted_tools:
             tool_dia = tools_storage[tool]['tooldia']
             tool_type = tools_storage[tool]['tool_type']
             tool_data = tools_storage[tool]['data']
@@ -1724,6 +1749,11 @@ class ToolIsolation(AppTool, Gerber):
         # clean the progressive plotted shapes if it was used
         if prog_plot == 'progressive':
             self.temp_shapes.clear(update=True)
+
+        # remove tools without geometry
+        for tool, tool_dict in list(tools_storage.items()):
+            if not tool_dict['solid_geometry']:
+                tools_storage.pop(tool, None)
 
         def iso_init(geo_obj, app_obj):
             geo_obj.options["cnctooldia"] = str(tool_dia)
