@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Tool Isolation - fixed a UI minor issue: 'forced rest' checkbox state at startup was always enabled
 - started working in moving the Excellon drilling in its own Application Tool
 - created a new App Tool named Drilling Tool where I will move the drilling out of the Excellon UI
+- working on the Drilling Tool - started to create a new data structure that will hold the Excellon object data
 
 14.06.2020
 

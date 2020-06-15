@@ -171,6 +171,8 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+
+        self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
@@ -363,28 +365,7 @@ class ToolDrilling(AppTool, Excellon):
             if opt_key.find('geometry_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
 
-        sort = []
-        for k, v in list(self.tools.items()):
-            sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
-        dias = [i[0] for i in sort]
-
-        if not dias:
-            log.error("At least one tool diameter needed. Excellon object might be empty.")
-            return
-
-        tooluid = 0
-
-        self.excellon_tools.clear()
-        for tool_dia in dias:
-            tooluid += 1
-            self.excellon_tools.update({
-                int(tooluid): {
-                    'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
-
-                    'data':             deepcopy(self.default_data),
-                    'solid_geometry':   []
-                }
-            })
+        self.on_object_changed()
 
         self.obj_name = ""
         self.excellon_obj = None
@@ -435,22 +416,24 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
 
-        # if self.excellon_obj is None:
-        #     return
+        if self.excellon_obj:
+            self.ui.exc_param_frame.setDisabled(False)
 
-        sort = []
-        for k, v in list(self.tools.items()):
-            sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
-        order = self.ui.order_radio.get_value()
-        if order == 'fwd':
-            sorted_tools = sorted(sort, key=lambda t1: t1[1])
-        elif order == 'rev':
-            sorted_tools = sorted(sort, key=lambda t1: t1[1], reverse=True)
+            sort = []
+            for k, v in list(self.excellon_obj.tools.items()):
+                sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
+            order = self.ui.order_radio.get_value()
+            if order == 'fwd':
+                sorted_tools = sorted(sort, key=lambda t1: t1[1])
+            elif order == 'rev':
+                sorted_tools = sorted(sort, key=lambda t1: t1[1], reverse=True)
+            else:
+                sorted_tools = sort
+            tools = [i[0] for i in sorted_tools]
         else:
-            sorted_tools = sort
-        tools = [i[0] for i in sorted_tools]
+            tools = []
 
-        n = len(sorted_tools)
+        n = len(tools)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
         self.ui.tools_table.setRowCount(n + 2)
         self.tool_row = 0
@@ -649,6 +632,45 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
+
+    def on_object_changed(self):
+        # load the Excellon object
+        self.obj_name = self.ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
+        except Exception as e:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
+            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+
+        if self.excellon_obj is None:
+            self.ui.exc_param_frame.setDisabled(True)
+        else:
+            self.ui.exc_param_frame.setDisabled(False)
+            sort = []
+            for k, v in list(self.excellon_obj.tools.items()):
+                sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
+            dias = [i[0] for i in sort]
+
+            if not dias:
+                log.error("At least one tool diameter needed. Excellon object might be empty.")
+                return
+
+            tooluid = 0
+
+            self.excellon_tools.clear()
+            for tool_dia in dias:
+                tooluid += 1
+                self.excellon_tools.update({
+                    int(tooluid): {
+                        'tooldia': float('%.*f' % (self.decimals, tool_dia)),
+
+                        'data': deepcopy(self.default_data),
+                        'solid_geometry': []
+                    }
+                })
+        self.build_ui()
 
     def ui_connect(self):
 
@@ -1299,7 +1321,6 @@ class ToolDrilling(AppTool, Excellon):
                 pass
 
     def on_cnc_button_click(self):
-        self.read_form()
         self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
