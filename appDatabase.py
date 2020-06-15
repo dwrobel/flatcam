@@ -2007,8 +2007,20 @@ class ToolsDB2(QtWidgets.QWidget):
         delete_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete from DB"))
         delete_tool.triggered.connect(self.on_tool_delete)
 
+        sep = menu.addSeparator()
+
+        save_changes = menu.addAction(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save changes"))
+        save_changes.triggered.connect(self.on_save_changes)
+
         # tree_item = self.tree_widget.itemAt(pos)
         menu.exec(self.tree_widget.viewport().mapToGlobal(pos))
+
+    def on_save_changes(self):
+        widget_name = self.app.ui.plot_tab_area.currentWidget().objectName()
+        if widget_name == 'database_tab':
+            # Tools DB saved, update flag
+            self.app.tools_db_changed_flag = False
+            self.app.tools_db_tab.on_save_tools_db()
 
     def on_item_double_clicked(self, item, column):
         if column == 0 and self.ok_to_add is True:
