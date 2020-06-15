@@ -1675,19 +1675,12 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
             return None
 
-    def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, order=None, method=None, outname=None,
+    def paint_geo(self, obj, geometry, tooldia=None, order=None, method=None, outname=None,
                    tools_storage=None, plot=True, run_threaded=True):
         """
-        Paints a polygon selected by clicking on its interior or by having a point coordinates given
+        Paints a given geometry.
 
-        Note:
-            * The margin is taken directly from the form.
-
-        :param run_threaded:
-        :param plot:
-        :param poly_list:
         :param obj:             painted object
-        :param inside_pt:       [x, y]
         :param tooldia:         Diameter of the painting tool
         :param order:           if the tools are ordered and how
         :param outname:         Name of the resulting Geometry Object.
@@ -1695,39 +1688,11 @@ class ToolPaint(AppTool, Gerber):
         :param tools_storage:   whether to use the current tools_storage self.paints_tools or a different one.
                                 Usage of the different one is related to when this function is called
                                 from a TcL command.
+        :param plot:
+        :param run_threaded:
         :return: None
         """
 
-        if obj.kind == 'gerber':
-            # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
-            if self.app.defaults["gerber_buffering"] == 'no':
-                msg = '%s %s %s' % (_("Paint Tool."),
-                                    _("Normal painting polygon task started."),
-                                    _("Buffering geometry..."))
-                self.app.inform.emit(msg)
-            else:
-                self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
-
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
-                if isinstance(obj.solid_geometry, list):
-                    obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
-                else:
-                    obj.solid_geometry = obj.solid_geometry.buffer(0)
-        else:
-            self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
-
-        if inside_pt and poly_list is None:
-            polygon_list = [self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)]
-        elif (inside_pt is None and poly_list) or (inside_pt and poly_list):
-            polygon_list = poly_list
-        else:
-            return
-
-        # No polygon?
-        if polygon_list is None:
-            self.app.log.warning('No polygon found.')
-            self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
-            return
 
         paint_method = method if method is not None else self.ui.paintmethod_combo.get_value()
         # determine if to use the progressive plotting
@@ -1764,6 +1729,7 @@ class ToolPaint(AppTool, Gerber):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
                 return 'fail'
 
+        # Initializes the new geometry object
         def job_normal_clear(geo_obj, app_obj):
             tool_dia = None
             current_uid = None
@@ -1773,8 +1739,10 @@ class ToolPaint(AppTool, Gerber):
             # sort the tools if we have an order selected in the UI
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
-            else:
+            elif order == 'rev':
                 sorted_tools.sort(reverse=True)
+            else:
+                pass
 
             for tool_dia in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
@@ -1801,7 +1769,7 @@ class ToolPaint(AppTool, Gerber):
                 paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
 
                 poly_buf = []
-                for pol in polygon_list:
+                for pol in geometry:
                     buffered_pol = pol.buffer(-paint_offset)
                     if buffered_pol and not buffered_pol.is_empty:
                         poly_buf.append(buffered_pol)
@@ -1858,17 +1826,18 @@ class ToolPaint(AppTool, Gerber):
                     if cp:
                         for x in cp:
                             total_geometry += list(x.get_objects())
+
+                        # clean the geometry
+                        new_geo = [g for g in total_geometry if g and not g.is_empty]
+                        total_geometry = new_geo
                         final_solid_geometry += total_geometry
                 except grace:
                     return "fail"
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit(
-                        '[ERROR] %s\n%s' %
-                        (_("Could not do Paint. Try a different combination of parameters. "
-                           "Or a different strategy of paint"), str(e)
-                         )
-                    )
+                    mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
+                                                 "Or a different strategy of paint"), str(e))
+                    self.app.inform.emit(mssg)
                     continue
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
@@ -1930,6 +1899,7 @@ class ToolPaint(AppTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
+        # Initializes the new geometry object
         def job_rest_clear(geo_obj, app_obj):
             current_uid = None
             final_solid_geometry = []
@@ -1941,7 +1911,7 @@ class ToolPaint(AppTool, Gerber):
             paint_offset = self.ui.rest_offset_entry.get_value()
 
             poly_buf = []
-            for pol in polygon_list:
+            for pol in geometry:
                 buffered_pol = pol.buffer(-paint_offset)
                 if buffered_pol and not buffered_pol.is_empty:
                     try:
@@ -2021,9 +1991,11 @@ class ToolPaint(AppTool, Gerber):
                             if rest and not rest.is_empty:
                                 try:
                                     for r in rest:
-                                        rest_list.append(r)
+                                        if r.is_valid:
+                                            rest_list.append(r)
                                 except TypeError:
-                                    rest_list.append(rest)
+                                    if rest.is_valid:
+                                        rest_list.append(rest)
 
                             if geo_res:
                                 cleared_geo += geo_elems
@@ -2059,9 +2031,11 @@ class ToolPaint(AppTool, Gerber):
                         if rest and not rest.is_empty:
                             try:
                                 for r in rest:
-                                    rest_list.append(r)
+                                    if r.is_valid:
+                                        rest_list.append(r)
                             except TypeError:
-                                rest_list.append(rest)
+                                if rest.is_valid:
+                                    rest_list.append(rest)
 
                         if geo_res:
                             cleared_geo += geo_elems
@@ -2088,19 +2062,27 @@ class ToolPaint(AppTool, Gerber):
 
                 # Area to clear next
                 log.debug("Generating rest geometry for the next tool.")
-                buffered_cleared = cascaded_union(cleared_geo).buffer(tool_dia / 2.0)
+
+                buffered_cleared = unary_union(cleared_geo)
+                buffered_cleared = buffered_cleared.buffer(tool_dia / 2.0)
                 poly_buf = poly_buf.difference(buffered_cleared)
 
                 tmp = []
                 try:
                     for p in poly_buf:
-                        tmp.append(p)
+                        if p.is_valid:
+                            tmp.append(p)
                 except TypeError:
-                    tmp.append(poly_buf)
-                tmp += rest_list
-                poly_buf = MultiPolygon(tmp)
+                    if poly_buf.is_valid:
+                        tmp.append(poly_buf)
 
-                if not poly_buf or poly_buf.is_empty:
+                tmp += rest_list
+
+                poly_buf = MultiPolygon(tmp)
+                if not poly_buf.is_valid:
+                    poly_buf = cascaded_union(tmp)
+
+                if not poly_buf or poly_buf.is_empty or not poly_buf.is_valid:
                     log.debug("Rest geometry empty. Breaking.")
                     break
 
@@ -2168,32 +2150,87 @@ class ToolPaint(AppTool, Gerber):
                 return
             except Exception as er:
                 proc.done()
-                app_obj.inform.emit('[ERROR] %s --> %s' % ('PaintTool.paint_poly()', str(er)))
+                app_obj.inform.emit('[ERROR] %s --> %s' % ('PaintTool.paint_geo()', str(er)))
                 traceback.print_stack()
                 return
             proc.done()
 
             if ret == 'fail':
-                self.app.inform.emit('[ERROR] %s' % _("Paint Single failed."))
+                self.app.inform.emit('[ERROR] %s' % _("Paint failed."))
                 return
 
             # focus on Selected Tab
             # self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-            self.app.inform.emit('[success] %s' % _("Paint Single Done."))
-
-        self.app.inform.emit(_("Polygon Paint started ..."))
+            self.app.inform.emit('[success] %s' % _("Paint Done."))
 
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        proc = self.app.proc_container.new(_("Painting..."))
 
         if run_threaded:
             # Background
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             job_thread(app_obj=self.app)
+
+    def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, order=None, method=None, outname=None,
+                   tools_storage=None, plot=True, run_threaded=True):
+        """
+        Paints a polygon selected by clicking on its interior or by having a point coordinates given
+
+        Note:
+            * The margin is taken directly from the form.
+
+        :param run_threaded:
+        :param plot:
+        :param poly_list:
+        :param obj:             painted object
+        :param inside_pt:       [x, y]
+        :param tooldia:         Diameter of the painting tool
+        :param order:           if the tools are ordered and how
+        :param outname:         Name of the resulting Geometry Object.
+        :param method:          choice out of _("Seed"), 'normal', 'lines'
+        :param tools_storage:   whether to use the current tools_storage self.paints_tools or a different one.
+                                Usage of the different one is related to when this function is called
+                                from a TcL command.
+        :return: None
+        """
+
+        if obj.kind == 'gerber':
+            # I don't do anything here, like buffering when the Gerber is loaded without buffering????!!!!
+            if self.app.defaults["gerber_buffering"] == 'no':
+                msg = '%s %s %s' % (_("Paint Tool."),
+                                    _("Normal painting polygon task started."),
+                                    _("Buffering geometry..."))
+                self.app.inform.emit(msg)
+            else:
+                self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
+
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                if isinstance(obj.solid_geometry, list):
+                    obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
+                else:
+                    obj.solid_geometry = obj.solid_geometry.buffer(0)
+        else:
+            self.app.inform.emit('%s %s' % (_("Paint Tool."), _("Normal painting polygon task started.")))
+
+        if inside_pt and poly_list is None:
+            polygon_list = [self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)]
+        elif (inside_pt is None and poly_list) or (inside_pt and poly_list):
+            polygon_list = poly_list
+        else:
+            return
+
+        # No polygon?
+        if polygon_list is None:
+            self.app.log.warning('No polygon found.')
+            self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
+            return
+
+        self.paint_geo(obj, polygon_list, tooldia=tooldia, order=order, method=method, outname=outname,
+                       tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)
 
     def paint_poly_all(self, obj, tooldia=None, order=None, method=None, outname=None, tools_storage=None, plot=True,
                        run_threaded=True):
@@ -2248,7 +2285,7 @@ class ToolPaint(AppTool, Gerber):
             # ## If iterable, expand recursively.
             try:
                 for geo in geometry:
-                    if geo is not None:
+                    if geo and not geo.is_empty and geo.is_valid:
                         recurse(geometry=geo, reset=False)
 
             # ## Not iterable, do the actual indexing and add.
@@ -2285,429 +2322,8 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
-        paint_method = method if method is not None else self.ui.paintmethod_combo.get_value()
-        # determine if to use the progressive plotting
-        prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
-
-        name = outname if outname is not None else self.obj_name + "_paint"
-        order = order if order is not None else self.ui.order_radio.get_value()
-        tools_storage = self.paint_tools if tools_storage is None else tools_storage
-
-        sorted_tools = []
-        if tooldia is not None:
-            try:
-                sorted_tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
-            except AttributeError:
-                if not isinstance(tooldia, list):
-                    sorted_tools = [float(tooldia)]
-                else:
-                    sorted_tools = tooldia
-        else:
-            for row in range(self.ui.tools_table.rowCount()):
-                sorted_tools.append(float(self.ui.tools_table.item(row, 1).text()))
-
-        proc = self.app.proc_container.new(_("Painting polygons..."))
-
-        # Initializes the new geometry object
-        def gen_paintarea(geo_obj, app_obj):
-            log.debug("Paint Tool. Normal painting all task started.")
-
-            if order == 'fwd':
-                sorted_tools.sort(reverse=False)
-            elif order == 'rev':
-                sorted_tools.sort(reverse=True)
-            else:
-                pass
-
-            tool_dia = None
-            current_uid = int(1)
-            old_disp_number = 0
-
-            final_solid_geometry = []
-
-            for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
-                mssg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
-                                                 str(tool_dia), self.units.lower(),
-                                                 _('started'))
-                app_obj.inform.emit(mssg)
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-
-                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
-                for k, v in tools_storage.items():
-                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
-                        current_uid = int(k)
-                        break
-                if not current_uid:
-                    return "fail"
-
-                # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
-
-                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
-                poly_buf = []
-                for pol in painted_area:
-                    pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_offset)
-                    if buffered_pol and not buffered_pol.is_empty:
-                        poly_buf.append(buffered_pol)
-
-                if not poly_buf:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
-                    continue
-
-                # variables to display the percentage of work done
-                geo_len = len(poly_buf)
-
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
-
-                pol_nr = 0
-
-                # -----------------------------
-                # effective polygon clearing job
-                # -----------------------------
-                poly_processed = []
-
-                try:
-                    cp = []
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            if geo_res:
-                                cp.append(geo_res)
-                                poly_processed.append(True)
-                            else:
-                                poly_processed.append(False)
-
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                                # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
-
-                    except TypeError:
-                        # provide the app with a way to process the GUI events when in a blocking loop
-                        QtWidgets.QApplication.processEvents()
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
-                                                            cont=cont, paint_method=paint_method, obj=obj,
-                                                            prog_plot=prog_plot)
-                        if geo_res:
-                            cp.append(geo_res)
-                            poly_processed.append(True)
-                        else:
-                            poly_processed.append(False)
-
-                    total_geometry = []
-                    if cp:
-                        for x in cp:
-                            total_geometry += list(x.get_objects())
-
-                        # clean the geometry
-                        new_geo = [g for g in total_geometry if g and not g.is_empty]
-                        total_geometry = new_geo
-                        final_solid_geometry += total_geometry
-
-                except Exception as err:
-                    log.debug("Could not Paint the polygons. %s" % str(err))
-                    self.app.inform.emit(
-                        '[ERROR] %s\n%s' %
-                        (_("Could not do Paint. Try a different combination of parameters. "
-                           "Or a different strategy of paint"), str(err)
-                         )
-                    )
-                    continue
-
-                p_cleared = poly_processed.count(True)
-                p_not_cleared = poly_processed.count(False)
-
-                if p_not_cleared:
-                    app_obj.poly_not_cleared = True
-
-                if p_cleared == 0:
-                    continue
-
-                # add the solid_geometry to the current too in self.paint_tools (tools_storage)
-                # dictionary and then reset the temporary list that stored that solid_geometry
-                tools_storage[current_uid]['solid_geometry'] = deepcopy(total_geometry)
-                tools_storage[current_uid]['data']['name'] = name
-
-            # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
-                self.temp_shapes.clear(update=True)
-
-            # delete tools with empty geometry
-            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in list(tools_storage.keys()):
-                # if the solid_geometry (type=list) is empty
-                if not tools_storage[uid]['solid_geometry']:
-                    tools_storage.pop(uid, None)
-
-            if not tools_storage:
-                return 'fail'
-
-            geo_obj.options["cnctooldia"] = str(tool_dia)
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            geo_obj.multigeo = True
-            geo_obj.multitool = True
-            geo_obj.tools.clear()
-            geo_obj.tools = dict(tools_storage)
-
-            geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
-
-            try:
-                # a, b, c, d = obj.bounds()
-                if isinstance(geo_obj.solid_geometry, list):
-                    a, b, c, d = MultiPolygon(geo_obj.solid_geometry).bounds
-                else:
-                    a, b, c, d = geo_obj.solid_geometry.bounds
-
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
-            except Exception as e:
-                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
-                return
-
-            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
-            has_solid_geo = 0
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
-                    has_solid_geo += 1
-
-            if has_solid_geo == 0:
-                self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no Painting Geometry in the file.\n"
-                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                       "Change the painting parameters and try again."))
-                return "fail"
-
-            # Experimental...
-            # print("Indexing...", end=' ')
-            # geo_obj.make_index()
-
-            self.app.inform.emit('[success] %s' % _("Paint All Done."))
-
-        # Initializes the new geometry object
-        def gen_paintarea_rest_machining(geo_obj, app_obj):
-            log.debug("Paint Tool. Rest machining painting all task started.")
-
-            # when using rest machining use always the reverse order; from bigger tool to smaller one
-            sorted_tools.sort(reverse=True)
-
-            tool_dia = None
-            cleared_geo = []
-            current_uid = int(1)
-            old_disp_number = 0
-
-            final_solid_geometry = []
-
-            for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
-                mssg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
-                                                 str(tool_dia),
-                                                 self.units.lower(),
-                                                 _('started'))
-                app_obj.inform.emit(mssg)
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-
-                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
-                for k, v in tools_storage.items():
-                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
-                        current_uid = int(k)
-                        break
-                if not current_uid:
-                    return "fail"
-
-                # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
-
-                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
-                poly_buf = []
-                for pol in painted_area:
-                    pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_offset)
-                    if buffered_pol and not buffered_pol.is_empty:
-                        poly_buf.append(buffered_pol)
-
-                if not poly_buf:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
-                    continue
-
-                # variables to display the percentage of work done
-                geo_len = len(poly_buf)
-
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
-
-                pol_nr = 0
-
-                # -----------------------------
-                # effective polygon clearing job
-                # -----------------------------
-                try:
-                    cp = []
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            if geo_res:
-                                cp.append(geo_res)
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                    except TypeError:
-                        # provide the app with a way to process the GUI events when in a blocking loop
-                        QtWidgets.QApplication.processEvents()
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
-                                                            cont=cont, paint_method=paint_method, obj=obj,
-                                                            prog_plot=prog_plot)
-                        if geo_res:
-                            cp.append(geo_res)
-
-                    if cp:
-                        for x in cp:
-                            cleared_geo += list(x.get_objects())
-                        final_solid_geometry += cleared_geo
-                except grace:
-                    return "fail"
-                except Exception as e:
-                    log.debug("Could not Paint the polygons. %s" % str(e))
-                    mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different strategy of paint"),
-                                               str(e))
-                    self.app.inform.emit(mssg)
-                    continue
-
-                # add the solid_geometry to the current too in self.paint_tools (or tools_storage) dictionary and
-                # then reset the temporary list that stored that solid_geometry
-                tools_storage[current_uid]['solid_geometry'] = deepcopy(cleared_geo)
-                tools_storage[current_uid]['data']['name'] = name
-                cleared_geo[:] = []
-
-            # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
-                self.temp_shapes.clear(update=True)
-
-            # delete tools with empty geometry
-            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in list(tools_storage.keys()):
-                # if the solid_geometry (type=list) is empty
-                if not tools_storage[uid]['solid_geometry']:
-                    tools_storage.pop(uid, None)
-
-            if not tools_storage:
-                return 'fail'
-
-            geo_obj.options["cnctooldia"] = str(tool_dia)
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            geo_obj.multigeo = True
-            geo_obj.multitool = True
-            geo_obj.tools.clear()
-            geo_obj.tools = dict(tools_storage)
-
-            geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
-
-            try:
-                # a, b, c, d = obj.bounds()
-                if isinstance(geo_obj.solid_geometry, list):
-                    a, b, c, d = MultiPolygon(geo_obj.solid_geometry).bounds
-                else:
-                    a, b, c, d = geo_obj.solid_geometry.bounds
-
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
-            except Exception as e:
-                log.debug("ToolPaint.paint_poly.gen_paintarea_rest_machining() bounds error --> %s" % str(e))
-                return
-
-            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
-            has_solid_geo = 0
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
-                    has_solid_geo += 1
-            if has_solid_geo == 0:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("There is no Painting Geometry in the file.\n"
-                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                       "Change the painting parameters and try again."))
-                return 'fail'
-
-            # Experimental...
-            # print("Indexing...", end=' ')
-            # geo_obj.make_index()
-
-            self.app.inform.emit('[success] %s' % _("Paint All with Rest-Machining done."))
-
-        def job_thread(app_obj):
-            try:
-                if self.ui.rest_cb.isChecked():
-                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
-                else:
-                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
-            except grace:
-                proc.done()
-                return
-            except Exception as err:
-                proc.done()
-                app_obj.inform.emit('[ERROR] %s --> %s' % ('PaintTool.paint_poly_all()', str(err)))
-                traceback.print_stack()
-                return
-            proc.done()
-
-            if ret == 'fail':
-                self.app.inform.emit('[ERROR] %s' % _("Paint All failed."))
-                return
-
-            # focus on Selected Tab
-            # self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-
-            self.app.inform.emit('[success] %s' % _("Paint Poly All Done."))
-
-        self.app.inform.emit(_("Polygon Paint started ..."))
-
-        # Promise object with the new name
-        self.app.collection.promise(name)
-
-        if run_threaded:
-            # Background
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-        else:
-            job_thread(app_obj=self.app)
+        self.paint_geo(obj, painted_area, tooldia=tooldia, order=order, method=method, outname=outname,
+                       tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)
 
     def paint_poly_area(self, obj, sel_obj, tooldia=None, order=None, method=None, outname=None,
                         tools_storage=None, plot=True, run_threaded=True):
@@ -2788,427 +2404,8 @@ class ToolPaint(AppTool, Gerber):
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
-        paint_method = method if method is not None else self.ui.paintmethod_combo.get_value()
-        # determine if to use the progressive plotting
-        prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
-
-        name = outname if outname is not None else self.obj_name + "_paint"
-        order = order if order is not None else self.ui.order_radio.get_value()
-        tools_storage = self.paint_tools if tools_storage is None else tools_storage
-
-        sorted_tools = []
-        if tooldia is not None:
-            try:
-                sorted_tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
-            except AttributeError:
-                if not isinstance(tooldia, list):
-                    sorted_tools = [float(tooldia)]
-                else:
-                    sorted_tools = tooldia
-        else:
-            for row in range(self.ui.tools_table.rowCount()):
-                sorted_tools.append(float(self.ui.tools_table.item(row, 1).text()))
-
-        proc = self.app.proc_container.new(_("Painting polygons..."))
-
-        # Initializes the new geometry object
-        def gen_paintarea(geo_obj, app_obj):
-            log.debug("Paint Tool. Normal painting area task started.")
-
-            if order == 'fwd':
-                sorted_tools.sort(reverse=False)
-            elif order == 'rev':
-                sorted_tools.sort(reverse=True)
-            else:
-                pass
-
-            tool_dia = None
-            current_uid = int(1)
-            old_disp_number = 0
-
-            final_solid_geometry = []
-
-            for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
-                mssg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
-                                                 str(tool_dia),
-                                                 self.units.lower(),
-                                                 _('started'))
-                app_obj.inform.emit(mssg)
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-
-                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
-                for k, v in tools_storage.items():
-                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
-                        current_uid = int(k)
-                        break
-                if not current_uid:
-                    return "fail"
-
-                # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
-
-                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
-
-                poly_buf = []
-                for pol in painted_area:
-                    pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_offset)
-                    if buffered_pol and not buffered_pol.is_empty:
-                        poly_buf.append(buffered_pol)
-
-                if not poly_buf:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
-                    continue
-
-                # variables to display the percentage of work done
-                geo_len = len(poly_buf)
-
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
-
-                pol_nr = 0
-
-                # -----------------------------
-                # effective polygon clearing job
-                # -----------------------------
-                poly_processed = []
-                total_geometry = []
-
-                try:
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            if geo_res and geo_res.objects:
-                                total_geometry += list(geo_res.get_objects())
-                                poly_processed.append(True)
-                            else:
-                                poly_processed.append(False)
-
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                                # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
-
-                    except TypeError:
-                        # provide the app with a way to process the GUI events when in a blocking loop
-                        QtWidgets.QApplication.processEvents()
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
-                                                            cont=cont, paint_method=paint_method, obj=obj,
-                                                            prog_plot=prog_plot)
-                        if geo_res and geo_res.objects:
-                            total_geometry += list(geo_res.get_objects())
-                            poly_processed.append(True)
-                        else:
-                            poly_processed.append(False)
-
-                except Exception as err:
-                    log.debug("Could not Paint the polygons. %s" % str(err))
-                    self.app.inform.emit(
-                        '[ERROR] %s\n%s' %
-                        (_("Could not do Paint. Try a different combination of parameters. "
-                           "Or a different strategy of paint"), str(err)
-                         )
-                    )
-                    continue
-
-                p_cleared = poly_processed.count(True)
-                p_not_cleared = poly_processed.count(False)
-
-                if p_not_cleared:
-                    app_obj.poly_not_cleared = True
-
-                if p_cleared == 0:
-                    continue
-
-                # add the solid_geometry to the current too in self.paint_tools (tools_storage)
-                # dictionary and then reset the temporary list that stored that solid_geometry
-                tools_storage[current_uid]['solid_geometry'] = deepcopy(total_geometry)
-                tools_storage[current_uid]['data']['name'] = name
-                total_geometry[:] = []
-
-            # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
-                self.temp_shapes.clear(update=True)
-
-            # delete tools with empty geometry
-            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in list(tools_storage.keys()):
-                # if the solid_geometry (type=list) is empty
-                if not tools_storage[uid]['solid_geometry']:
-                    tools_storage.pop(uid, None)
-
-            if not tools_storage:
-                return 'fail'
-
-            geo_obj.options["cnctooldia"] = str(tool_dia)
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            geo_obj.multigeo = True
-            geo_obj.multitool = True
-            geo_obj.tools.clear()
-            geo_obj.tools = dict(tools_storage)
-
-            geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
-
-            try:
-                a, b, c, d = self.paint_bounds(geo_to_paint)
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
-            except Exception as e:
-                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
-                return
-
-            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
-            has_solid_geo = 0
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
-                    has_solid_geo += 1
-            if has_solid_geo == 0:
-                self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no Painting Geometry in the file.\n"
-                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                       "Change the painting parameters and try again."))
-                return "fail"
-
-            # Experimental...
-            # print("Indexing...", end=' ')
-            # geo_obj.make_index()
-
-            self.app.inform.emit('[success] %s' % _("Paint Area Done."))
-
-        # Initializes the new geometry object
-        def gen_paintarea_rest_machining(geo_obj, app_obj):
-            log.debug("Paint Tool. Rest machining painting area task started.")
-
-            sorted_tools.sort(reverse=True)
-
-            cleared_geo = []
-
-            tool_dia = None
-            current_uid = int(1)
-            old_disp_number = 0
-
-            final_solid_geometry = []
-
-            for tool_dia in sorted_tools:
-                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
-                mssg = '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
-                                                 str(tool_dia),
-                                                 self.units.lower(),
-                                                 _('started'))
-                app_obj.inform.emit(mssg)
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-
-                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
-                for k, v in tools_storage.items():
-                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
-                        current_uid = int(k)
-                        break
-                if not current_uid:
-                    return "fail"
-
-                # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
-
-                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
-
-                poly_buf = []
-                for pol in painted_area:
-                    pol = Polygon(pol) if not isinstance(pol, Polygon) else pol
-                    buffered_pol = pol.buffer(-paint_offset)
-                    if buffered_pol and not buffered_pol.is_empty:
-                        poly_buf.append(buffered_pol)
-
-                if not poly_buf:
-                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
-                    continue
-
-                # variables to display the percentage of work done
-                geo_len = len(poly_buf)
-
-                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
-
-                pol_nr = 0
-
-                # -----------------------------
-                # effective polygon clearing job
-                # -----------------------------
-                poly_processed = []
-
-                try:
-                    try:
-                        for pp in poly_buf:
-                            # provide the app with a way to process the GUI events when in a blocking loop
-                            QtWidgets.QApplication.processEvents()
-                            if self.app.abort_flag:
-                                # graceful abort requested by the user
-                                raise grace
-
-                            geo_res = self.paint_polygon_worker(pp, tooldiameter=tool_dia, over=over, conn=conn,
-                                                                cont=cont, paint_method=paint_method, obj=obj,
-                                                                prog_plot=prog_plot)
-                            if geo_res and geo_res.objects:
-                                cleared_geo += list(geo_res.get_objects())
-                                poly_processed.append(True)
-                            else:
-                                poly_processed.append(False)
-
-                            pol_nr += 1
-                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                            # log.debug("Polygons cleared: %d" % pol_nr)
-
-                            if old_disp_number < disp_number <= 100:
-                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                                old_disp_number = disp_number
-                                # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
-
-                    except TypeError:
-                        # provide the app with a way to process the GUI events when in a blocking loop
-                        QtWidgets.QApplication.processEvents()
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
-
-                        geo_res = self.paint_polygon_worker(poly_buf, tooldiameter=tool_dia, over=over, conn=conn,
-                                                            cont=cont, paint_method=paint_method, obj=obj,
-                                                            prog_plot=prog_plot)
-                        if geo_res and geo_res.objects:
-                            cleared_geo += list(geo_res.get_objects())
-                            poly_processed.append(True)
-                        else:
-                            poly_processed.append(False)
-
-                except Exception as err:
-                    log.debug("Could not Paint the polygons. %s" % str(err))
-                    mssg = '[ERROR] %s\n%s' % (_("Could not do Paint. Try a different combination of parameters. "
-                                                 "Or a different strategy of paint"),
-                                               str(err))
-                    self.app.inform.emit(mssg)
-                    continue
-
-                p_cleared = poly_processed.count(True)
-                p_not_cleared = poly_processed.count(False)
-
-                if p_not_cleared:
-                    app_obj.poly_not_cleared = True
-
-                if p_cleared == 0:
-                    continue
-
-                final_solid_geometry += cleared_geo
-                # add the solid_geometry to the current too in self.paint_tools (or tools_storage) dictionary and
-                # then reset the temporary list that stored that solid_geometry
-                tools_storage[current_uid]['solid_geometry'] = deepcopy(cleared_geo)
-                tools_storage[current_uid]['data']['name'] = name
-                cleared_geo[:] = []
-
-            # clean the progressive plotted shapes if it was used
-            if self.app.defaults["tools_paint_plotting"] == 'progressive':
-                self.temp_shapes.clear(update=True)
-
-            # delete tools with empty geometry
-            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in list(tools_storage.keys()):
-                # if the solid_geometry (type=list) is empty
-                if not tools_storage[uid]['solid_geometry']:
-                    tools_storage.pop(uid, None)
-
-            if not tools_storage:
-                return 'fail'
-
-            geo_obj.options["cnctooldia"] = str(tool_dia)
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            geo_obj.multigeo = True
-            geo_obj.multitool = True
-            geo_obj.tools.clear()
-            geo_obj.tools = dict(tools_storage)
-
-            geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
-
-            try:
-                a, b, c, d = self.paint_bounds(geo_to_paint)
-                geo_obj.options['xmin'] = a
-                geo_obj.options['ymin'] = b
-                geo_obj.options['xmax'] = c
-                geo_obj.options['ymax'] = d
-            except Exception as e:
-                log.debug("ToolPaint.paint_poly.gen_paintarea_rest_machining() bounds error --> %s" % str(e))
-                return
-
-            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
-            has_solid_geo = 0
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
-                    has_solid_geo += 1
-            if has_solid_geo == 0:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("There is no Painting Geometry in the file.\n"
-                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                       "Change the painting parameters and try again."))
-                return 'fail'
-
-            # Experimental...
-            # print("Indexing...", end=' ')
-            # geo_obj.make_index()
-
-            self.app.inform.emit('[success] %s' % _("Paint All with Rest-Machining done."))
-
-        def job_thread(app_obj):
-            try:
-                if self.ui.rest_cb.isChecked():
-                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
-                else:
-                    ret = app_obj.app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
-            except grace:
-                proc.done()
-                return
-            except Exception as err:
-                proc.done()
-                app_obj.inform.emit('[ERROR] %s --> %s' % ('PaintTool.paint_poly_area()', str(err)))
-                traceback.print_stack()
-                return
-            proc.done()
-
-            if ret == 'fail':
-                self.app.inform.emit('[ERROR] %s' % _("Paint Area failed."))
-                return
-
-            # focus on Selected Tab
-            # self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-
-            self.app.inform.emit('[success] %s' % _("Paint Poly Area Done."))
-
-        self.app.inform.emit(_("Polygon Paint started ..."))
-
-        # Promise object with the new name
-        self.app.collection.promise(name)
-
-        if run_threaded:
-            # Background
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-        else:
-            job_thread(app_obj=self.app)
+        self.paint_geo(obj, painted_area, tooldia=tooldia, order=order, method=method, outname=outname,
+                       tools_storage=tools_storage, plot=plot, run_threaded=run_threaded)
 
     def paint_poly_ref(self, obj, sel_obj, tooldia=None, order=None, method=None, outname=None,
                        tools_storage=None, plot=True, run_threaded=True):

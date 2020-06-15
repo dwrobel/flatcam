@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Paint Tool and NCC Tool updated the way the selected tools were processed and made sure that the Tools Table rows are counted only once in the processing
 - modified the UI in Paint Tool such that in case of using rest machining the offset will apply for all tools
 - Paint Tool - made the rest machining function for the paint single polygon method
+- Paint Tool - refurbished the 'rest machining' for the entire tool
 
 14.06.2020
 
