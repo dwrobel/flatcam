@@ -2555,8 +2555,6 @@ class CNCjob(Geometry):
         # here store the routing time
         self.routing_time = 0.0
 
-        # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
-        self.exc_drills = None
         # store here the Excellon source object tools to be accessible locally
         self.exc_tools = None
 
@@ -2710,8 +2708,7 @@ class CNCjob(Geometry):
         :rtype:         None
         """
 
-        # create a local copy of the exobj.drills so it can be used for creating drill CCode geometry
-        self.exc_drills = deepcopy(exobj.drills)
+        # create a local copy of the exobj.tools so it can be used for creating drill CCode geometry
         self.exc_tools = deepcopy(exobj.tools)
 
         # the Excellon GCode preprocessor will use this info in the start_code() method
@@ -2774,8 +2771,8 @@ class CNCjob(Geometry):
         # sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
 
         sort = []
-        for k, v in list(exobj.tools.items()):
-            sort.append((k, v.get('C')))
+        for k, v in list(self.exc_tools.items()):
+            sort.append((int(k), v['tooldia']))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
@@ -2783,7 +2780,7 @@ class CNCjob(Geometry):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
         else:
             selected_tools = [x.strip() for x in tools.split(",")]  # we strip spaces and also separate the tools by ','
-            selected_tools = [t1 for t1 in selected_tools if t1 in selected_tools]
+            selected_tools = [int(t1) for t1 in selected_tools if t1 in selected_tools]
 
             # Create a sorted list of selected tools from the sorted_tools list
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
@@ -2803,18 +2800,20 @@ class CNCjob(Geometry):
         for it in sorted_tools:
             for to_ol in tools:
                 if to_ol == it[0]:
-                    drill_no = 0
                     sol_geo = []
-                    for dr in exobj.drills:
-                        if dr['tool'] == it[0]:
-                            drill_no += 1
-                            sol_geo.append(dr['point'])
+
+                    drill_no = 0
+                    if 'drills' in exobj.tools[to_ol]:
+                        drill_no = len(exobj.tools[to_ol]['drills'])
+                        for drill in exobj.tools[to_ol]['drills']:
+                            sol_geo.append(drill.buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle))
+
                     slot_no = 0
-                    for dr in exobj.slots:
-                        if dr['tool'] == it[0]:
-                            slot_no += 1
-                            start = (dr['start'].x, dr['start'].y)
-                            stop = (dr['stop'].x, dr['stop'].y)
+                    if 'slots' in exobj.tools[to_ol]:
+                        slot_no = len(exobj.tools[to_ol]['slots'])
+                        for slot in exobj.tools[to_ol]['slots']:
+                            start = (slot[0].x, slot[0].y)
+                            stop = (slot[1].x, slot[1].y)
                             sol_geo.append(
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
@@ -2850,25 +2849,26 @@ class CNCjob(Geometry):
 
         # Points (Group by tool): a dictionary of shapely Point geo elements grouped by tool number
         points = {}
-        for drill in exobj.drills:
+        for tool, tool_dict in self.exc_tools.items():
             if self.app.abort_flag:
                 # graceful abort requested by the user
                 raise grace
 
-            if drill['tool'] in tools:
-                try:
-                    points[drill['tool']].append(drill['point'])
-                except KeyError:
-                    points[drill['tool']] = [drill['point']]
+            if 'drills' in tool_dict and tool_dict['drills']:
+                for drill_pt in tool_dict['drills']:
+                    try:
+                        points[tool].append(drill_pt)
+                    except KeyError:
+                        points[tool] = [drill_pt]
 
-        # log.debug("Found %d drills." % len(points))
+        log.debug("Found %d TOOLS." % len(points))
 
         # check if there are drill points in the exclusion areas.
         # If we find any within the exclusion areas return 'fail'
         for tool in points:
             for pt in points[tool]:
                 for area in self.app.exc_areas.exclusion_areas_storage:
-                    pt_buf = pt.buffer(exobj.tools[tool]['C'] / 2.0)
+                    pt_buf = pt.buffer(self.exc_tools[tool]['tooldia'] / 2.0)
                     if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
                         self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
                         return 'fail'
@@ -2954,22 +2954,28 @@ class CNCjob(Geometry):
             used_excellon_optimization_type = self.excellon_optimization_type
             if used_excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
-                if exobj.drills:
+
+                has_drills = None
+                for tool, tool_dict in self.exc_tools.items():
+                    if 'drills' in tool_dict and tool_dict['drills']:
+                        has_drills = True
+                        break
+                if has_drills:
                     for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
 
                         self.tool = tool
-                        self.postdata['toolC'] = exobj.tools[tool]["C"]
-                        self.tooldia = exobj.tools[tool]["C"]
+                        self.tooldia = self.exc_tools[tool]["tooldia"]
+                        self.postdata['toolC'] = self.tooldia
 
                         if self.use_ui:
-                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+                            self.feedrate = self.exc_tools[tool]['data']['feedrate']
                             gcode += self.doformat(p.z_feedrate_code)
 
-                            self.z_cut = exobj.tools[tool]['data']['cutz']
+                            self.z_cut = self.exc_tools[tool]['data']['cutz']
 
                             if self.machinist_setting == 0:
                                 if self.z_cut > 0:
@@ -2991,12 +2997,12 @@ class CNCjob(Geometry):
 
                             old_zcut = deepcopy(self.z_cut)
 
-                            self.z_move = exobj.tools[tool]['data']['travelz']
-                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                            self.dwell = exobj.tools[tool]['data']['dwell']
-                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                            self.multidepth = exobj.tools[tool]['data']['multidepth']
-                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                            self.z_move = self.exc_tools[tool]['data']['travelz']
+                            self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+                            self.dwell = self.exc_tools[tool]['data']['dwell']
+                            self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+                            self.multidepth = self.exc_tools[tool]['data']['multidepth']
+                            self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
                         else:
                             old_zcut = deepcopy(self.z_cut)
 
@@ -3085,7 +3091,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
+                            current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3098,7 +3104,7 @@ class CNCjob(Geometry):
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
-                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
+                                z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -3138,7 +3144,7 @@ class CNCjob(Geometry):
                                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                                             # restore z_move
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                            self.z_move = self.exc_tools[tool]['data']['travelz']
                                         else:
                                             if prev_z is not None:
                                                 # move to next point
@@ -3146,7 +3152,7 @@ class CNCjob(Geometry):
 
                                                 # we assume that previously the z_move was altered therefore raise to
                                                 # the travel_z (z_move)
-                                                self.z_move = exobj.tools[tool]['data']['travelz']
+                                                self.z_move = self.exc_tools[tool]['data']['travelz']
                                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                             else:
                                                 # move to next point
@@ -3218,21 +3224,28 @@ class CNCjob(Geometry):
 
             if used_excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
-                if exobj.drills:
+
+                has_drills = None
+                for tool, tool_dict in self.exc_tools.items():
+                    if 'drills' in tool_dict and tool_dict['drills']:
+                        has_drills = True
+                        break
+
+                if has_drills:
                     for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise grace
 
                         self.tool = tool
-                        self.postdata['toolC'] = exobj.tools[tool]["C"]
-                        self.tooldia = exobj.tools[tool]["C"]
+                        self.tooldia = self.exc_tools[tool]["tooldia"]
+                        self.postdata['toolC'] = self.tooldia
 
                         if self.use_ui:
-                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+                            self.feedrate = self.exc_tools[tool]['data']['feedrate']
                             gcode += self.doformat(p.z_feedrate_code)
-                            self.z_cut = exobj.tools[tool]['data']['cutz']
+                            self.z_cut = self.exc_tools[tool]['data']['cutz']
 
                             if self.machinist_setting == 0:
                                 if self.z_cut > 0:
@@ -3254,13 +3267,13 @@ class CNCjob(Geometry):
 
                             old_zcut = deepcopy(self.z_cut)
 
-                            self.z_move = exobj.tools[tool]['data']['travelz']
+                            self.z_move = self.exc_tools[tool]['data']['travelz']
 
-                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                            self.dwell = exobj.tools[tool]['data']['dwell']
-                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                            self.multidepth = exobj.tools[tool]['data']['multidepth']
-                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                            self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+                            self.dwell = self.exc_tools[tool]['data']['dwell']
+                            self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+                            self.multidepth = self.exc_tools[tool]['data']['multidepth']
+                            self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
                         else:
                             old_zcut = deepcopy(self.z_cut)
 
@@ -3338,7 +3351,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
+                            current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3351,7 +3364,7 @@ class CNCjob(Geometry):
                             # because the values for Z offset are created in build_ui()
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             try:
-                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
+                                z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -3390,7 +3403,7 @@ class CNCjob(Geometry):
                                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                                             # restore z_move
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                            self.z_move = self.exc_tools[tool]['data']['travelz']
                                         else:
                                             if prev_z is not None:
                                                 # move to next point
@@ -3398,7 +3411,7 @@ class CNCjob(Geometry):
 
                                                 # we assume that previously the z_move was altered therefore raise to
                                                 # the travel_z (z_move)
-                                                self.z_move = exobj.tools[tool]['data']['travelz']
+                                                self.z_move = self.exc_tools[tool]['data']['travelz']
                                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                             else:
                                                 # move to next point
@@ -3473,22 +3486,29 @@ class CNCjob(Geometry):
 
         if used_excellon_optimization_type == 'T':
             log.debug("Using Travelling Salesman drill path optimization.")
+
+            has_drills = None
+            for tool, tool_dict in self.exc_tools.items():
+                if 'drills' in tool_dict and tool_dict['drills']:
+                    has_drills = True
+                    break
+
             for tool in tools:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise grace
 
-                if exobj.drills:
+                if has_drills:
                     self.tool = tool
-                    self.postdata['toolC'] = exobj.tools[tool]["C"]
-                    self.tooldia = exobj.tools[tool]["C"]
+                    self.tooldia = self.exc_tools[tool]["tooldia"]
+                    self.postdata['toolC'] = self.tooldia
 
                     if self.use_ui:
-                        self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
-                        self.feedrate = exobj.tools[tool]['data']['feedrate']
+                        self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
+                        self.feedrate = self.exc_tools[tool]['data']['feedrate']
                         gcode += self.doformat(p.z_feedrate_code)
 
-                        self.z_cut = exobj.tools[tool]['data']['cutz']
+                        self.z_cut = self.exc_tools[tool]['data']['cutz']
 
                         if self.machinist_setting == 0:
                             if self.z_cut > 0:
@@ -3510,12 +3530,12 @@ class CNCjob(Geometry):
 
                         old_zcut = deepcopy(self.z_cut)
 
-                        self.z_move = exobj.tools[tool]['data']['travelz']
-                        self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
-                        self.dwell = exobj.tools[tool]['data']['dwell']
-                        self.dwelltime = exobj.tools[tool]['data']['dwelltime']
-                        self.multidepth = exobj.tools[tool]['data']['multidepth']
-                        self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+                        self.z_move = self.exc_tools[tool]['data']['travelz']
+                        self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
+                        self.dwell = self.exc_tools[tool]['data']['dwell']
+                        self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
+                        self.multidepth = self.exc_tools[tool]['data']['multidepth']
+                        self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
                     else:
                         old_zcut = deepcopy(self.z_cut)
 
@@ -3536,7 +3556,7 @@ class CNCjob(Geometry):
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
+                        current_tooldia = float('%.*f' % (self.decimals, float(self.exc_tools[tool]["tooldia"])))
 
                         self.app.inform.emit(
                             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3549,7 +3569,7 @@ class CNCjob(Geometry):
                         # because the values for Z offset are created in build_ui()
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         try:
-                            z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
+                            z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
                         except KeyError:
                             z_offset = 0
                         self.z_cut = z_offset + old_zcut
@@ -3593,7 +3613,7 @@ class CNCjob(Geometry):
                                         gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                                         # restore z_move
-                                        self.z_move = exobj.tools[tool]['data']['travelz']
+                                        self.z_move = self.exc_tools[tool]['data']['travelz']
                                     else:
                                         if prev_z is not None:
                                             # move to next point
@@ -3601,7 +3621,7 @@ class CNCjob(Geometry):
 
                                             # we assume that previously the z_move was altered therefore raise to
                                             # the travel_z (z_move)
-                                            self.z_move = exobj.tools[tool]['data']['travelz']
+                                            self.z_move = self.exc_tools[tool]['data']['travelz']
                                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                         else:
                                             # move to next point
@@ -3687,6 +3707,7 @@ class CNCjob(Geometry):
         self.routing_time += lift_time + traveled_time
 
         self.gcode = gcode
+
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
@@ -4914,22 +4935,27 @@ class CNCjob(Geometry):
                         )
 
                         # find the drill diameter knowing the drill coordinates
-                        for pt_dict in self.exc_drills:
-                            point_in_dict_coords = (
-                                float('%.*f' % (self.decimals, pt_dict['point'].x)),
-                                float('%.*f' % (self.decimals, pt_dict['point'].y))
-                            )
-                            if point_in_dict_coords == current_drill_point_coords:
-                                tool = pt_dict['tool']
-                                dia = self.exc_tools[tool]['C']
-                                kind = ['C', 'F']
-                                geometry.append(
-                                    {
-                                        "geom": Point(current_drill_point_coords).buffer(dia / 2.0).exterior,
-                                        "kind": kind
-                                    }
-                                )
-                                break
+                        break_loop = False
+                        for tool, tool_dict in self.exc_tools.items():
+                            if 'drills' in tool_dict:
+                                for drill_pt in tool_dict['drills']:
+                                    point_in_dict_coords = (
+                                        float('%.*f' % (self.decimals, drill_pt.x)),
+                                        float('%.*f' % (self.decimals, drill_pt.y))
+                                    )
+                                    if point_in_dict_coords == current_drill_point_coords:
+                                        dia = self.exc_tools[tool]['tooldia']
+                                        kind = ['C', 'F']
+                                        geometry.append(
+                                            {
+                                                "geom": Point(current_drill_point_coords).buffer(dia / 2.0).exterior,
+                                                "kind": kind
+                                            }
+                                        )
+                                        break_loop = True
+                                        break
+                                if break_loop:
+                                    break
 
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])

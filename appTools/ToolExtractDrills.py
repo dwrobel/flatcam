@@ -530,7 +530,7 @@ class ToolExtractDrills(AppTool):
 
                 tool_in_drills = False
                 for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (self.decimals, tool_val["C"])) - float('%.*f' % (self.decimals, dia))) < \
+                    if abs(float('%.*f' % (self.decimals, tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < \
                             (10 ** -self.decimals):
                         tool_in_drills = tool
 
@@ -615,7 +615,7 @@ class ToolExtractDrills(AppTool):
 
                 tool_in_drills = False
                 for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (self.decimals, tool_val["C"])) - float('%.*f' % (self.decimals, dia))) < \
+                    if abs(float('%.*f' % (self.decimals, tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < \
                             (10 ** -self.decimals):
                         tool_in_drills = tool
 

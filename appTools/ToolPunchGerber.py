@@ -558,7 +558,7 @@ class ToolPunchGerber(AppTool):
                     # make it work only for Gerber Flashes who are Points in 'follow'
                     if 'solid' in elem and isinstance(elem['follow'], Point):
                         for drill in exc_obj.drills:
-                            clear_apid_size = exc_obj.tools[drill['tool']]['C']
+                            clear_apid_size = exc_obj.tools[drill['tool']]['tooldia']
 
                             # since there may be drills that do not drill into a pad we test only for drills in a pad
                             if drill['point'].within(elem['solid']):

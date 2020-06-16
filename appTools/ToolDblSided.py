@@ -613,9 +613,9 @@ class DblSidedTool(AppTool):
             return
 
         tools = {}
-        tools["1"] = {}
-        tools["1"]["C"] = dia
-        tools["1"]['solid_geometry'] = []
+        tools[1] = {}
+        tools[1]["tooldia"] = dia
+        tools[1]['solid_geometry'] = []
 
         # holes = self.alignment_holes.get_value()
         holes = eval('[{}]'.format(self.alignment_holes.text()))
@@ -624,21 +624,16 @@ class DblSidedTool(AppTool):
                                                           "Add them and retry."))
             return
 
-        drills = []
-
         for hole in holes:
             point = Point(hole)
             point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
 
-            drills.append({"point": point, "tool": "1"})
-            drills.append({"point": point_mirror, "tool": "1"})
-
-            tools["1"]['solid_geometry'].append(point)
-            tools["1"]['solid_geometry'].append(point_mirror)
+            tools[1]['drills'] = [point, point_mirror]
+            tools[1]['solid_geometry'].append(point)
+            tools[1]['solid_geometry'].append(point_mirror)
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
-            obj_inst.drills = drills
             obj_inst.create_geometry()
             obj_inst.source_file = app_inst.export_excellon(obj_name=obj_inst.options['name'], local_use=obj_inst,
                                                             filename=None, use_thread=False)

@@ -38,7 +38,7 @@ class ISEL_ICP_CNC(PreProc):
         elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
             gcode += '\n;TOOLS DIAMETER: \n'
             for tool, val in p['exc_tools'].items():
-                gcode += ';Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["C"]) + '\n'
+                gcode += ';Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["tooldia"]) + '\n'
 
             gcode += '\n;FEEDRATE Z: \n'
             for tool, val in p['exc_tools'].items():

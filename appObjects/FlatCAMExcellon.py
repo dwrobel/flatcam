@@ -138,7 +138,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ser_attrs += ['options', 'kind']
 
     @staticmethod
-    def merge(exc_list, exc_final, decimals=None):
+    def merge(exc_list, exc_final, decimals=None, fuse_tools=True):
         """
         Merge Excellon objects found in exc_list parameter into exc_final object.
         Options are always copied from source .
@@ -153,31 +153,31 @@ class ExcellonObject(FlatCAMObj, Excellon):
         :type exc_list:     list
         :param exc_final:   Destination ExcellonObject object.
         :type exc_final:    class
+        :param decimals:    The number of decimals to be used for diameters
+        :type decimals:     int
+        :param fuse_tools:  If True will try to fuse tools of the same diameter for the Excellon objects
+        :type fuse_tools:   bool
         :return:            None
         """
+
+        if exc_final.tools is None:
+            exc_final.tools = {}
 
         if decimals is None:
             decimals = 4
         decimals_exc = decimals
-
-        # flag to signal that we need to reorder the tools dictionary and drills and slots lists
-        flag_order = False
 
         try:
             flattened_list = list(itertools.chain(*exc_list))
         except TypeError:
             flattened_list = exc_list
 
-        # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
-        # values will be list of Shapely Points; for drills
-        custom_dict_drills = defaultdict(list)
-
-        # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
-        # values will be list of Shapely Points; for slots
-        custom_dict_slots = defaultdict(list)
-
+        new_tools = {}
+        total_geo = []
+        toolid = 0
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
+            # only the last object options will survive
             for option in exc.options:
                 if option != 'name':
                     try:
@@ -185,129 +185,47 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     except Exception:
                         exc.app.log.warning("Failed to copy option.", option)
 
-            for drill in exc.drills:
-                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[drill['tool']]['C']))
-                custom_dict_drills[exc_tool_dia].append(drill['point'])
+            for tool in exc.tools:
+                toolid += 1
+                new_tools[toolid] = exc.tools[tool]
 
-            for slot in exc.slots:
-                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[slot['tool']]['C']))
-                custom_dict_slots[exc_tool_dia].append([slot['start'], slot['stop']])
-
+            exc_final.tools = deepcopy(new_tools)
             # add the zeros and units to the exc_final object
             exc_final.zeros = exc.zeros
             exc_final.units = exc.units
+            total_geo += exc.solid_geometry
 
-        # ##########################################
-        # Here we add data to the exc_final object #
-        # ##########################################
+        exc_final.solid_geometry = total_geo
 
-        # variable to make tool_name for the tools
-        current_tool = 0
-        # The tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points in case of
-        # drills
-        for tool_dia in custom_dict_drills:
-            # we create a tool name for each key in the drill_dia dict (the key is a unique drill diameter)
-            current_tool += 1
+        fused_tools_dict = {}
+        if exc_final.tools and fuse_tools:
+            toolid = 0
+            for tool, tool_dict in exc_final.tools.items():
+                current_tooldia = float('%.*f' % (decimals_exc, tool_dict['tooldia']))
+                toolid += 1
 
-            tool_name = str(current_tool)
-            spec = {"C": float(tool_dia)}
-            exc_final.tools[tool_name] = spec
+                # calculate all diameters in fused_tools_dict
+                all_dia = []
+                if fused_tools_dict:
+                    for f_tool in fused_tools_dict:
+                        all_dia.append(float('%.*f' % (decimals_exc, fused_tools_dict[f_tool]['tooldia'])))
 
-            # rebuild the drills list of dict's that belong to the exc_final object
-            for point in custom_dict_drills[tool_dia]:
-                exc_final.drills.append(
-                    {
-                        "point": point,
-                        "tool": str(current_tool)
-                    }
-                )
-
-        # The tools diameter are now the keys in the drill_dia dict and the values are a list ([start, stop])
-        # of two Shapely Points in case of slots
-        for tool_dia in custom_dict_slots:
-            # we create a tool name for each key in the slot_dia dict (the key is a unique slot diameter)
-            # but only if there are no drills
-            if not exc_final.tools:
-                current_tool += 1
-                tool_name = str(current_tool)
-                spec = {"C": float(tool_dia)}
-                exc_final.tools[tool_name] = spec
-            else:
-                dia_list = []
-                for v in exc_final.tools.values():
-                    dia_list.append(float(v["C"]))
-
-                if tool_dia not in dia_list:
-                    flag_order = True
-
-                    current_tool = len(dia_list) + 1
-                    tool_name = str(current_tool)
-                    spec = {"C": float(tool_dia)}
-                    exc_final.tools[tool_name] = spec
-
-                else:
-                    for k, v in exc_final.tools.items():
-                        if v["C"] == tool_dia:
-                            current_tool = int(k)
+                if current_tooldia in all_dia:
+                    # find tool for current_tooldia in fuse_tools
+                    t = None
+                    for f_tool in fused_tools_dict:
+                        if fused_tools_dict[f_tool]['tooldia'] == current_tooldia:
+                            t = f_tool
                             break
+                    if t:
+                        fused_tools_dict[t]['drills'] += tool_dict['drills']
+                        fused_tools_dict[t]['slots'] += tool_dict['slots']
+                        fused_tools_dict[t]['solid_geometry'] += tool_dict['solid_geometry']
+                else:
+                    fused_tools_dict[toolid] = tool_dict
+                    fused_tools_dict[toolid]['tooldia'] = current_tooldia
 
-            # rebuild the slots list of dict's that belong to the exc_final object
-            for point in custom_dict_slots[tool_dia]:
-                exc_final.slots.append(
-                    {
-                        "start": point[0],
-                        "stop": point[1],
-                        "tool": str(current_tool)
-                    }
-                )
-
-        # flag_order == True means that there was an slot diameter not in the tools and we also have drills
-        # and the new tool was added to self.tools therefore we need to reorder the tools and drills and slots
-        current_tool = 0
-        if flag_order is True:
-            dia_list = []
-            temp_drills = []
-            temp_slots = []
-            temp_tools = {}
-            for v in exc_final.tools.values():
-                dia_list.append(float(v["C"]))
-            dia_list.sort()
-            for ordered_dia in dia_list:
-                current_tool += 1
-                tool_name_temp = str(current_tool)
-                spec_temp = {"C": float(ordered_dia)}
-                temp_tools[tool_name_temp] = spec_temp
-
-                for drill in exc_final.drills:
-                    exc_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[drill['tool']]['C']))
-                    if exc_tool_dia == ordered_dia:
-                        temp_drills.append(
-                            {
-                                "point": drill["point"],
-                                "tool": str(current_tool)
-                            }
-                        )
-
-                for slot in exc_final.slots:
-                    slot_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[slot['tool']]['C']))
-                    if slot_tool_dia == ordered_dia:
-                        temp_slots.append(
-                            {
-                                "start": slot["start"],
-                                "stop": slot["stop"],
-                                "tool": str(current_tool)
-                            }
-                        )
-
-            # delete the exc_final tools, drills and slots
-            exc_final.tools = {}
-            exc_final.drills[:] = []
-            exc_final.slots[:] = []
-
-            # update the exc_final tools, drills and slots with the ordered values
-            exc_final.tools = temp_tools
-            exc_final.drills[:] = temp_drills
-            exc_final.slots[:] = temp_slots
+            exc_final.tools = fused_tools_dict
 
         # create the geometry for the exc_final object
         exc_final.create_geometry()
@@ -351,7 +269,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         sort = []
         for k, v in list(self.tools.items()):
-            sort.append((k, v.get('C')))
+            sort.append((k, v['tooldia']))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
         tools = [i[0] for i in sorted_tools]
 
@@ -370,23 +288,23 @@ class ExcellonObject(FlatCAMObj, Excellon):
             slot_cnt = 0  # variable to store the nr of slots per tool
 
             # Find no of drills for the current tool
-            for drill in self.drills:
-                if drill['tool'] == tool_no:
-                    drill_cnt += 1
-
+            try:
+                drill_cnt = len(self.tools[tool_no]['drills'])
+            except KeyError:
+                drill_cnt = 0
             self.tot_drill_cnt += drill_cnt
 
             # Find no of slots for the current tool
-            for slot in self.slots:
-                if slot['tool'] == tool_no:
-                    slot_cnt += 1
-
+            try:
+                slot_cnt = len(self.tools[tool_no]['slots'])
+            except KeyError:
+                slot_cnt = 0
             self.tot_slot_cnt += slot_cnt
 
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
             exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['tooldia']))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
@@ -508,14 +426,26 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
-        if not self.drills:
+        # find if we have drills:
+        has_drills = None
+        for tt in self.tools:
+            if 'drills' in self.tools[tt] and self.tools[tt]['drills']:
+                has_drills = True
+                break
+        if has_drills is None:
             self.ui.tooldia_entry.hide()
             self.ui.generate_milling_button.hide()
         else:
             self.ui.tooldia_entry.show()
             self.ui.generate_milling_button.show()
 
-        if not self.slots:
+        # find if we have slots
+        has_slots = None
+        for tt in self.tools:
+            if 'slots' in self.tools[tt] and self.tools[tt]['slots']:
+                has_slots = True
+                break
+        if has_slots is None:
             self.ui.slot_tooldia_entry.hide()
             self.ui.generate_milling_slots_button.hide()
         else:
@@ -962,7 +892,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         :rtype:     list
         """
 
-        return [str(x.text()) for x in self.ui.tools_table.selectedItems()]
+        return [x.text() for x in self.ui.tools_table.selectedItems()]
 
     def get_selected_tools_table_items(self):
         """
@@ -1017,23 +947,37 @@ class ExcellonObject(FlatCAMObj, Excellon):
         excellon_code = ''
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
-        has_slots = 0
+        slots_in_file = 0
+
+        # find if we have drills:
+        has_drills = None
+        for tt in self.tools:
+            if 'drills' in self.tools[tt] and self.tools[tt]['drills']:
+                has_drills = True
+                break
+        # find if we have slots:
+        has_slots = None
+        for tt in self.tools:
+            if 'slots' in self.tools[tt] and self.tools[tt]['slots']:
+                has_slots = True
+                slots_in_file = 1
+                break
 
         # drills processing
         try:
-            if self.drills:
+            if has_drills:
                 length = whole + fract
                 for tool in self.tools:
                     excellon_code += 'T0%s\n' % str(tool) if int(tool) < 10 else 'T%s\n' % str(tool)
 
-                    for drill in self.drills:
-                        if form == 'dec' and tool == drill['tool']:
-                            drill_x = drill['point'].x * factor
-                            drill_y = drill['point'].y * factor
+                    for drill in self.tools[tool]['drills']:
+                        if form == 'dec':
+                            drill_x = drill.x * factor
+                            drill_y = drill.y * factor
                             excellon_code += "X{:.{dec}f}Y{:.{dec}f}\n".format(drill_x, drill_y, dec=fract)
-                        elif e_zeros == 'LZ' and tool == drill['tool']:
-                            drill_x = drill['point'].x * factor
-                            drill_y = drill['point'].y * factor
+                        elif e_zeros == 'LZ':
+                            drill_x = drill.x * factor
+                            drill_y = drill.y * factor
 
                             exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract)
                             exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract)
@@ -1053,9 +997,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
                             excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
                                                                          yform=exc_y_formatted)
-                        elif tool == drill['tool']:
-                            drill_x = drill['point'].x * factor
-                            drill_y = drill['point'].y * factor
+                        else:
+                            drill_x = drill.x * factor
+                            drill_y = drill.y * factor
 
                             exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract).replace('.', '')
                             exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract).replace('.', '')
@@ -1071,8 +1015,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # slots processing
         try:
-            if self.slots:
-                has_slots = 1
+            if has_slots:
                 for tool in self.tools:
                     excellon_code += 'G05\n'
 
@@ -1081,12 +1024,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     else:
                         excellon_code += 'T' + str(tool) + '\n'
 
-                    for slot in self.slots:
-                        if form == 'dec' and tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
+                    for slot in self.tools[tool]['slots']:
+                        if form == 'dec':
+                            start_slot_x = slot.x * factor
+                            start_slot_y = slot.y * factor
+                            stop_slot_x = slot.x * factor
+                            stop_slot_y = slot.y * factor
                             if slot_type == 'routing':
                                 excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
                                                                                            start_slot_y,
@@ -1099,11 +1042,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     start_slot_x, start_slot_y, stop_slot_x, stop_slot_y, dec=fract
                                 )
 
-                        elif e_zeros == 'LZ' and tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
+                        elif e_zeros == 'LZ':
+                            start_slot_x = slot.x * factor
+                            start_slot_y = slot.y * factor
+                            stop_slot_x = slot.x * factor
+                            stop_slot_y = slot.y * factor
 
                             start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
                             start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
@@ -1139,11 +1082,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
                                     xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
                                     xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
                                 )
-                        elif tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
+                        else:
+                            start_slot_x = slot.x * factor
+                            start_slot_y = slot.y * factor
+                            stop_slot_x = slot.x * factor
+                            stop_slot_y = slot.y * factor
                             length = whole + fract
 
                             start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
@@ -1170,11 +1113,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
         except Exception as e:
             log.debug(str(e))
 
-        if not self.drills and not self.slots:
+        if not has_drills and not has_slots:
             log.debug("FlatCAMObj.ExcellonObject.export_excellon() --> Excellon Object is empty: no drills, no slots.")
             return 'fail'
 
-        return has_slots, excellon_code
+        return slots_in_file, excellon_code
 
     def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
@@ -1215,7 +1158,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         sort = []
         for k, v in self.tools.items():
-            sort.append((k, v.get('C')))
+            sort.append((k, v['tooldia']))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
@@ -1223,19 +1166,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
             return False, "Error: No tools."
 
         for tool in tools:
-            if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit(
-                    '[ERROR_NOTCL] %s %s: %s' % (
-                        _("Milling tool for DRILLS is larger than hole size. Cancelled."),
-                        _("Tool"),
-                        str(tool)
-                    )
-                )
+            if tooldia > self.tools[tool]["tooldia"]:
+                mseg = '[ERROR_NOTCL] %s %s: %s' % (_("Milling tool for DRILLS is larger than hole size. Cancelled."),
+                                                    _("Tool"),
+                                                    str(tool))
+                self.app.inform.emit(mseg)
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -1266,15 +1205,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for hole in self.drills:
-                if hole['tool'] in tools:
-                    buffer_value = self.tools[hole['tool']]["C"] / 2 - tooldia / 2
+            for tool in tools:
+                for drill in self.tools[tool]['drills']:
+                    buffer_value = self.tools[tool]['tooldia'] / 2 - tooldia / 2
                     if buffer_value == 0:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(0.0000001).exterior)
+                        geo_obj.solid_geometry.append(drill.buffer(0.0000001).exterior)
                     else:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(buffer_value).exterior)
+                        geo_obj.solid_geometry.append(drill.buffer(buffer_value).exterior)
 
         if use_thread:
             def geo_thread(a_obj):
@@ -1329,7 +1266,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         sort = []
         for k, v in self.tools.items():
-            sort.append((k, v.get('C')))
+            sort.append((k, v['tooldia']))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
@@ -1337,14 +1274,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again."))
             return False, "Error: No tools."
 
         for tool in tools:
             # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
             adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
-            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
+            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["tooldia"])))
             if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Milling tool for SLOTS is larger than hole size. Cancelled."))
@@ -1369,24 +1305,24 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for slot in self.slots:
-                if slot['tool'] in tools:
+            for tool in tools:
+                for slot in self.tools[tool]['slots']:
                     toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
-                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
+                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["tooldia"])))
 
                     # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
                     # for the file_tool (tooldia actually)
                     buffer_value = float(file_tool / 2) - float(toolstable_tool / 2) + 0.0001
                     if buffer_value == 0:
-                        start = slot['start']
-                        stop = slot['stop']
+                        start = slot[0]
+                        stop = slot[1]
 
                         lines_string = LineString([start, stop])
                         poly = lines_string.buffer(0.0000001, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
                     else:
-                        start = slot['start']
-                        stop = slot['stop']
+                        start = slot[0]
+                        stop = slot[1]
 
                         lines_string = LineString([start, stop])
                         poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
@@ -1522,7 +1458,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # tool number) it means that there are 3 rows (1 tool and 2 totals).
             # in this case regardless of the selection status of that tool, use it.
             if self.ui.tools_table.rowCount() == 3:
-                tools.append(self.ui.tools_table.item(0, 0).text())
+                tools.append(int(self.ui.tools_table.item(0, 0).text()))
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Please select one or more tools from the list and try again."))

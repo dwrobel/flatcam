@@ -390,8 +390,7 @@ class FCSlot(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("To add a slot first select a tool"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a slot first select a tool"))
             self.draw_app.select_tool("drill_select")
             return
 
@@ -2059,9 +2058,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.sorted_diameters = []
 
-        self.new_drills = []
         self.new_tools = {}
-        self.new_slots = []
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -2261,30 +2258,33 @@ class AppExcEditor(QtCore.QObject):
         self.tool2tooldia.clear()
 
         # build the self.points_edit dict {dimaters: [point_list]}
-        for drill in self.exc_obj.drills:
-            if drill['tool'] in self.exc_obj.tools:
-                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[drill['tool']]['C']))
+        for tool, tool_dict in self.exc_obj.tools.items():
+            tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[tool]['tooldia']))
 
-                try:
-                    self.points_edit[tool_dia].append(drill['point'])
-                except KeyError:
-                    self.points_edit[tool_dia] = [drill['point']]
+            if 'drills' in tool_dict and tool_dict['drills']:
+                for drill in tool_dict['drills']:
+                    try:
+                        self.points_edit[tool_dia].append(drill)
+                    except KeyError:
+                        self.points_edit[tool_dia] = [drill]
 
         # build the self.slot_points_edit dict {dimaters: {"start": Point, "stop": Point}}
-        for slot in self.exc_obj.slots:
-            if slot['tool'] in self.exc_obj.tools:
-                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[slot['tool']]['C']))
+        for tool, tool_dict in self.exc_obj.tools.items():
+            tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[tool]['tooldia']))
 
-                try:
-                    self.slot_points_edit[tool_dia].append({
-                        "start": slot["start"],
-                        "stop": slot["stop"]
-                    })
-                except KeyError:
-                    self.slot_points_edit[tool_dia] = [{
-                        "start": slot["start"],
-                        "stop": slot["stop"]
-                    }]
+            if 'slots' in tool_dict and tool_dict['slots']:
+                for slot in tool_dict['slots']:
+                    try:
+                        self.slot_points_edit[tool_dia].append({
+                            "start": slot[0],
+                            "stop": slot[1]
+                        })
+                    except KeyError:
+                        self.slot_points_edit[tool_dia] = [{
+                            "start": slot[0],
+                            "stop": slot[1]
+                        }]
+
 
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
         for key in self.points_edit:
@@ -2309,7 +2309,7 @@ class AppExcEditor(QtCore.QObject):
             # Excellon file has no tool diameter information. In this case do not order the diameter in the table
             # but use the real order found in the exc_obj.tools
             for k, v in self.exc_obj.tools.items():
-                tool_dia = float('%.*f' % (self.decimals, v['C']))
+                tool_dia = float('%.*f' % (self.decimals, v['tooldia']))
                 self.tool2tooldia[int(k)] = tool_dia
 
         # Init appGUI
@@ -2385,21 +2385,27 @@ class AppExcEditor(QtCore.QObject):
 
             self.tot_drill_cnt += drill_cnt
 
-            try:
-                # Find no of slots for the current tool
-                for slot in self.slot_points_edit:
-                    if slot['tool'] == tool_no:
-                        slot_cnt += 1
+            # try:
+            #     # Find no of slots for the current tool
+            #     for slot in self.slot_points_edit:
+            #         if float(slot) == tool_no:
+            #             slot_cnt += 1
+            #
+            #     self.tot_slot_cnt += slot_cnt
+            # except AttributeError:
+            #     # log.debug("No slots in the Excellon file")
+            #     # Find no of slots for the current tool
+            #     for tool_dia in self.slot_points_edit:
+            #         if float(tool_dia) == tool_no:
+            #             slot_cnt = len(self.slot_points_edit[tool_dia])
+            #
+            #     self.tot_slot_cnt += slot_cnt
 
-                self.tot_slot_cnt += slot_cnt
-            except AttributeError:
-                # log.debug("No slots in the Excellon file")
-                # Find no of slots for the current tool
-                for tool_dia in self.slot_points_edit:
-                    if float(tool_dia) == tool_no:
-                        slot_cnt = len(self.slot_points_edit[tool_dia])
+            for tool_dia in self.slot_points_edit:
+                if float(tool_dia) == tool_no:
+                    slot_cnt = len(self.slot_points_edit[tool_dia])
 
-                self.tot_slot_cnt += slot_cnt
+            self.tot_slot_cnt += slot_cnt
 
             idd = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
             idd.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -3141,6 +3147,10 @@ class AppExcEditor(QtCore.QObject):
                     poly = x.geo
                     poly = poly.buffer(-radius)
 
+                    if not poly.is_valid or poly.is_empty:
+                        print("Polygon not valid: %s" % str(poly.wkt))
+                        continue
+
                     xmin, ymin, xmax, ymax = poly.bounds
                     line_one = LineString([(xmin, ymin), (xmax, ymax)]).intersection(poly).length
                     line_two = LineString([(xmin, ymax), (xmax, ymin)]).intersection(poly).length
@@ -3197,59 +3207,61 @@ class AppExcEditor(QtCore.QObject):
             current_tool += 1
 
             # create the self.tools for the new Excellon object (the one with edited content)
-            name = str(current_tool)
-            spec = {"C": float(tool_dia[0])}
-            self.new_tools[name] = spec
+            if current_tool not in self.new_tools:
+                self.new_tools[current_tool] = {}
+            self.new_tools[current_tool]['tooldia'] = float(tool_dia[0])
 
             # add in self.tools the 'solid_geometry' key, the value (a list) is populated below
-            self.new_tools[name]['solid_geometry'] = []
+            self.new_tools[current_tool]['solid_geometry'] = []
 
             # create the self.drills for the new Excellon object (the one with edited content)
             for point in tool_dia[1]:
-                self.new_drills.append(
-                    {
-                        'point': Point(point),
-                        'tool': str(current_tool)
-                    }
-                )
+                try:
+                    self.new_tools[current_tool]['drills'].append(Point(point))
+                except KeyError:
+                    self.new_tools[current_tool]['drills'] = [Point(point)]
+
                 # repopulate the 'solid_geometry' for each tool
                 poly = Point(point).buffer(float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4))
-                self.new_tools[name]['solid_geometry'].append(poly)
+                self.new_tools[current_tool]['solid_geometry'].append(poly)
 
         ordered_edited_slot_points = sorted(zip(edited_slot_points.keys(), edited_slot_points.values()))
         for tool_dia in ordered_edited_slot_points:
 
             tool_exist_flag = False
             for tool in self.new_tools:
-                if tool_dia[0] == self.new_tools[tool]["C"]:
+                if tool_dia[0] == self.new_tools[tool]["tooldia"]:
                     current_tool = tool
                     tool_exist_flag = True
                     break
 
             if tool_exist_flag is False:
                 current_tool += 1
+
                 # create the self.tools for the new Excellon object (the one with edited content)
-                name = str(current_tool)
-                spec = {"C": float(tool_dia[0])}
-                self.new_tools[name] = spec
+                if current_tool not in self.new_tools:
+                    self.new_tools[current_tool] = {}
+                self.new_tools[current_tool]['tooldia'] = float(tool_dia[0])
 
                 # add in self.tools the 'solid_geometry' key, the value (a list) is populated below
-                self.new_tools[name]['solid_geometry'] = []
+                self.new_tools[current_tool]['solid_geometry'] = []
 
             # create the self.slots for the new Excellon object (the one with edited content)
             for coord_dict in tool_dia[1]:
-                self.new_slots.append(
-                    {
-                        'start': Point(coord_dict['start']),
-                        'stop': Point(coord_dict['stop']),
-                        'tool': str(current_tool)
-                    }
+                slot = (
+                    Point(coord_dict['start']),
+                    Point(coord_dict['stop'])
                 )
+                try:
+                    self.new_tools[current_tool]['slots'].append(slot)
+                except KeyError:
+                    self.new_tools[current_tool]['slots'] = [slot]
+
                 # repopulate the 'solid_geometry' for each tool
                 poly = LineString([coord_dict['start'], coord_dict['stop']]).buffer(
                     float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4)
                 )
-                self.new_tools[str(current_tool)]['solid_geometry'].append(poly)
+                self.new_tools[current_tool]['solid_geometry'].append(poly)
 
         if self.is_modified is True:
             if "_edit" in self.edited_obj_name:

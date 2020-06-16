@@ -397,16 +397,14 @@ class Properties(AppTool):
                 slot_cnt = 0  # variable to store the nr of slots per tool
 
                 # Find no of drills for the current tool
-                for drill in obj.drills:
-                    if drill['tool'] == tool:
-                        drill_cnt += 1
+                if 'drills' in value and value['drills']:
+                    drill_cnt = len(value['drills'])
 
                 tot_drill_cnt += drill_cnt
 
                 # Find no of slots for the current tool
-                for slot in obj.slots:
-                    if slot['tool'] == tool:
-                        slot_cnt += 1
+                if 'slots' in value and value['slots']:
+                    slot_cnt = len(value['slots'])
 
                 tot_slot_cnt += slot_cnt
 
@@ -414,7 +412,7 @@ class Properties(AppTool):
                     toolid,
                     [
                         _('Diameter'),
-                        '%.*f %s' % (self.decimals, value['C'], self.app.defaults['units'].lower())
+                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.defaults['units'].lower())
                     ],
                     True
                 )

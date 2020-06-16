@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.06.2020
+
+- changed the data structure for the Excellon object; modified the Excellon parser and the Excellon object class
+- fixed partially the Excellon Editor to work with the new data structure
+- fixed Excellon export to work with the new data structure
+- fixed all transformations in the Excellon object attributes; still need to fix the App Tools that creates or use Exellon objects
+
 15.06.2020
 
 - in Paint Tool and NCC Tool updated the way the selected tools were processed and made sure that the Tools Table rows are counted only once in the processing

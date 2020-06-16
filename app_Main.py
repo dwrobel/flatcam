@@ -2314,7 +2314,20 @@ class App(QtCore.QObject):
                         self.ui.tool_scroll_area.takeWidget()
 
                         # delete the old object (the source object) if it was an empty one
-                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
+                        # find if we have drills:
+                        has_drills = None
+                        for tt in edited_obj.tools:
+                            if 'drills' in edited_obj.tools[tt] and edited_obj.tools[tt]['drills']:
+                                has_drills = True
+                                break
+                        # find if we have slots:
+                        has_slots = None
+                        for tt in edited_obj.tools:
+                            if 'slots' in edited_obj.tools[tt] and edited_obj.tools[tt]['slots']:
+                                has_slots = True
+                                slots_in_file = 1
+                                break
+                        if has_drills is None and has_slots is None:
                             old_name = edited_obj.options['name']
                             self.collection.delete_by_name(name=old_name)
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
@@ -8230,11 +8243,11 @@ class App(QtCore.QObject):
 
                     for tool in obj.tools:
                         if eunits == 'METRIC':
-                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['tooldia']) * factor,
                                                                           tool=str(tool),
                                                                           dec=2)
                         else:
-                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['tooldia']) * factor,
                                                                           tool=str(tool),
                                                                           dec=4)
                 else:
@@ -8247,13 +8260,15 @@ class App(QtCore.QObject):
 
                         for tool in obj.tools:
                             if eunits == 'METRIC':
-                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
-                                                                              tool=str(tool),
-                                                                              dec=2)
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(
+                                    float(obj.tools[tool]['tooldia']) * factor,
+                                    tool=str(tool),
+                                    dec=2)
                             else:
-                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
-                                                                              tool=str(tool),
-                                                                              dec=4)
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(
+                                    float(obj.tools[tool]['tooldia']) * factor,
+                                    tool=str(tool),
+                                    dec=4)
                     else:
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
                                                                        form='ndec', e_zeros='TZ', factor=factor,
@@ -8263,13 +8278,15 @@ class App(QtCore.QObject):
 
                         for tool in obj.tools:
                             if eunits == 'METRIC':
-                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
-                                                                              tool=str(tool),
-                                                                              dec=2)
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(
+                                    float(obj.tools[tool]['tooldia']) * factor,
+                                    tool=str(tool),
+                                    dec=2)
                             else:
-                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
-                                                                              tool=str(tool),
-                                                                              dec=4)
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(
+                                    float(obj.tools[tool]['tooldia']) * factor,
+                                    tool=str(tool),
+                                    dec=4)
                 header += '%\n'
                 footer = 'M30\n'
 

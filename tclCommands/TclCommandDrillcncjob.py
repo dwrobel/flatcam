@@ -198,25 +198,23 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if tools == 'all':
                 sort = []
                 for k, v in list(obj.tools.items()):
-                    sort.append((k, v.get('C')))
+                    sort.append((k, v.get('tooldia')))
                 sorted_tools = sorted(sort, key=lambda t1: t1[1])
                 use_tools = [i[0] for i in sorted_tools]
 
                 for tool_no in use_tools:
-                    tool_dia_used = obj.tools[tool_no]['C']
+                    tool_dia_used = obj.tools[tool_no]['tooldia']
 
                     drill_cnt = 0  # variable to store the nr of drills per tool
                     slot_cnt = 0  # variable to store the nr of slots per tool
 
                     # Find no of drills for the current tool
-                    for drill in obj.drills:
-                        if drill['tool'] == tool_no:
-                            drill_cnt += 1
+                    if 'drills' in obj.tools[tool_no] and obj.tools[tool_no]['drills']:
+                        drill_cnt = len(obj.tools[tool_no]['drills'])
 
                     # Find no of slots for the current tool
-                    for slot in obj.slots:
-                        if slot['tool'] == tool_no:
-                            slot_cnt += 1
+                    if 'slots' in obj.tools[tool_no] and obj.tools[tool_no]['slots']:
+                        slot_cnt = len(obj.tools[tool_no]['slots'])
 
                     used_tools_info.append([str(tool_no), str(tool_dia_used), str(drill_cnt), str(slot_cnt)])
 

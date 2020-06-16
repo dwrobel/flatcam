@@ -682,7 +682,7 @@ class NumericalEvalEntry(EvalEntry):
         return evaled
 
 
-class NumericalEvalTupleEntry(FCEntry):
+class NumericalEvalTupleEntry(EvalEntry):
     """
     Will return a text value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """

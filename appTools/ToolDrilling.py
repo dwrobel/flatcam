@@ -172,7 +172,6 @@ class ToolDrilling(AppTool, Excellon):
         # ############################ SIGNALS ########################################
         # #############################################################################
 
-        self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
@@ -365,8 +364,6 @@ class ToolDrilling(AppTool, Excellon):
             if opt_key.find('geometry_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
 
-        self.on_object_changed()
-
         self.obj_name = ""
         self.excellon_obj = None
 
@@ -381,6 +378,16 @@ class ToolDrilling(AppTool, Excellon):
         # ########################################
         self.ui.operation_radio.set_value("drill")
         self.ui.operation_radio.setEnabled(False)
+
+        self.on_object_changed()
+        if self.excellon_obj:
+            self.build_ui()
+
+        try:
+            self.ui.object_combo.currentIndexChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+        self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
 
     def rebuild_ui(self):
         # read the table tools uid
@@ -419,17 +426,8 @@ class ToolDrilling(AppTool, Excellon):
         if self.excellon_obj:
             self.ui.exc_param_frame.setDisabled(False)
 
-            sort = []
-            for k, v in list(self.excellon_obj.tools.items()):
-                sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
-            order = self.ui.order_radio.get_value()
-            if order == 'fwd':
-                sorted_tools = sorted(sort, key=lambda t1: t1[1])
-            elif order == 'rev':
-                sorted_tools = sorted(sort, key=lambda t1: t1[1], reverse=True)
-            else:
-                sorted_tools = sort
-            tools = [i[0] for i in sorted_tools]
+            tools = [k for k in self.excellon_tools]
+
         else:
             tools = []
 
@@ -438,30 +436,23 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.tools_table.setRowCount(n + 2)
         self.tool_row = 0
 
-        new_options = {}
-        if self.excellon_obj:
-            for opt in self.excellon_obj.options:
-                new_options[opt] = self.excellon_obj.options[opt]
-
         for tool_no in tools:
-            # add the data dictionary for each tool with the default values
-            self.tools[tool_no]['data'] = deepcopy(new_options)
 
             drill_cnt = 0  # variable to store the nr of drills per tool
             slot_cnt = 0  # variable to store the nr of slots per tool
 
             # Find no of drills for the current tool
-            for drill in self.drills:
-                if drill['tool'] == tool_no:
-                    drill_cnt += 1
-
+            try:
+                drill_cnt = len(self.excellon_tools[tool_no]["drills"])
+            except KeyError:
+                drill_cnt = 0
             self.tot_drill_cnt += drill_cnt
 
             # Find no of slots for the current tool
-            for slot in self.slots:
-                if slot['tool'] == tool_no:
-                    slot_cnt += 1
-
+            try:
+                slot_cnt = len(self.excellon_tools[tool_no]["slots"])
+            except KeyError:
+                slot_cnt = 0
             self.tot_slot_cnt += slot_cnt
 
             # Tool name/id
@@ -470,7 +461,7 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.excellon_tools[tool_no]['tooldia']))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
@@ -496,6 +487,8 @@ class ToolDrilling(AppTool, Excellon):
         # add a last row with the Total number of drills
         empty_1 = QtWidgets.QTableWidgetItem('')
         empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_1 = QtWidgets.QTableWidgetItem('')
+        empty_1_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -506,6 +499,7 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_1)
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -642,35 +636,15 @@ class ToolDrilling(AppTool, Excellon):
             self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+            return
 
         if self.excellon_obj is None:
             self.ui.exc_param_frame.setDisabled(True)
         else:
             self.ui.exc_param_frame.setDisabled(False)
-            sort = []
-            for k, v in list(self.excellon_obj.tools.items()):
-                sort.append((k, float('%.*f' % (self.decimals, float(v.get('C'))))))
-            dias = [i[0] for i in sort]
+            self.excellon_tools = self.excellon_obj.tools
 
-            if not dias:
-                log.error("At least one tool diameter needed. Excellon object might be empty.")
-                return
-
-            tooluid = 0
-
-            self.excellon_tools.clear()
-            for tool_dia in dias:
-                tooluid += 1
-                self.excellon_tools.update({
-                    int(tooluid): {
-                        'tooldia': float('%.*f' % (self.decimals, tool_dia)),
-
-                        'data': deepcopy(self.default_data),
-                        'solid_geometry': []
-                    }
-                })
-        self.build_ui()
+            self.build_ui()
 
     def ui_connect(self):
 
@@ -809,7 +783,7 @@ class ToolDrilling(AppTool, Excellon):
                 item = self.ui.tools_table.item(c_row, 3)
                 if type(item) is not None:
                     tooluid = item.text()
-                    self.storage_to_form(self.drilling_tools[str(tooluid)]['data'])
+                    self.storage_to_form(self.excellon_tools[str(tooluid)]['data'])
                 else:
                     self.blockSignals(False)
                     return
@@ -845,8 +819,9 @@ class ToolDrilling(AppTool, Excellon):
         :return:    None
         :rtype:
         """
-        if self.ui.tools_table.rowCount() == 0:
+        if self.ui.tools_table.rowCount() == 2:
             # there is no tool in tool table so we can't save the GUI elements values to storage
+            # Excellon Tool Table has 2 rows by default
             return
 
         self.blockSignals(True)
@@ -862,7 +837,7 @@ class ToolDrilling(AppTool, Excellon):
                 row = 0
             tooluid_item = int(self.ui.tools_table.item(row, 3).text())
 
-            for tooluid_key, tooluid_val in self.iso_tools.items():
+            for tooluid_key, tooluid_val in self.excellon_tools.items():
                 if int(tooluid_key) == tooluid_item:
                     new_option_value = self.form_fields[option_changed].get_value()
                     if option_changed in tooluid_val:
@@ -1034,7 +1009,7 @@ class ToolDrilling(AppTool, Excellon):
 
         sort = []
         for k, v in self.tools.items():
-            sort.append((k, v.get('C')))
+            sort.append((k, v.get('tooldia')))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
@@ -1150,7 +1125,7 @@ class ToolDrilling(AppTool, Excellon):
 
         sort = []
         for k, v in self.tools.items():
-            sort.append((k, v.get('C')))
+            sort.append((k, v.get('tooldia')))
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
