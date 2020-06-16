@@ -626,7 +626,7 @@ class Excellon(Geometry):
                             if current_tool not in self.tools:
                                 self.tools[current_tool] = {}
                             if 'slots' in self.tools[current_tool]:
-                                self.tools[current_tool]['slots'].apend(slot)
+                                self.tools[current_tool]['slots'].append(slot)
                             else:
                                 self.tools[current_tool]['slots'] = [slot]
                         continue
@@ -1235,6 +1235,7 @@ class Excellon(Geometry):
                     new_stop = affinity.scale(slot[1], xfactor, yfactor, origin=(px, py))
                     new_slot = (new_start, new_stop)
                     new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
             # Scale solid_geometry
             self.tools[tool]['solid_geometry'] = scale_geom(self.tools[tool]['solid_geometry'])
@@ -1301,6 +1302,7 @@ class Excellon(Geometry):
                     new_stop = affinity.translate(slot[1], xoff=dx, yoff=dy)
                     new_slot = (new_start, new_stop)
                     new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
             # Offset solid_geometry
             self.tools[tool]['solid_geometry'] = offset_geom(self.tools[tool]['solid_geometry'])
@@ -1369,6 +1371,7 @@ class Excellon(Geometry):
                     new_stop = affinity.scale(slot[1], xscale, yscale, origin=(px, py))
                     new_slot = (new_start, new_stop)
                     new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
             # Offset solid_geometry
             self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
@@ -1452,6 +1455,7 @@ class Excellon(Geometry):
                     new_stop = affinity.skew(slot[1], angle_x, angle_y, origin=(px, py))
                     new_slot = (new_start, new_stop)
                     new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
             # Offset solid_geometry
             self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
@@ -1527,6 +1531,7 @@ class Excellon(Geometry):
                     new_stop = affinity.rotate(slot[1], angle, origin=orig)
                     new_slot = (new_start, new_stop)
                     new_slots.append(new_slot)
+                self.tools[tool]['slots'] = new_slots
 
             # Offset solid_geometry
             self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin=orig)
