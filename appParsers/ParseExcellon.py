@@ -552,7 +552,7 @@ class Excellon(Geometry):
                             if current_tool not in self.tools:
                                 self.tools[current_tool] = {}
                             if 'slots' in self.tools[current_tool]:
-                                self.tools[current_tool]['slots'].apend(slot)
+                                self.tools[current_tool]['slots'].append(slot)
                             else:
                                 self.tools[current_tool]['slots'] = [slot]
                             continue
@@ -722,7 +722,7 @@ class Excellon(Geometry):
                                     if current_tool not in self.tools:
                                         self.tools[current_tool] = {}
                                     if 'slots' in self.tools[current_tool]:
-                                        self.tools[current_tool]['slots'].apend(slot)
+                                        self.tools[current_tool]['slots'].append(slot)
                                     else:
                                         self.tools[current_tool]['slots'] = [slot]
                                     continue
@@ -802,7 +802,7 @@ class Excellon(Geometry):
                                 if current_tool not in self.tools:
                                     self.tools[current_tool] = {}
                                 if 'slots' in self.tools[current_tool]:
-                                    self.tools[current_tool]['slots'].apend(slot)
+                                    self.tools[current_tool]['slots'].append(slot)
                                 else:
                                     self.tools[current_tool]['slots'] = [slot]
                                 continue
