@@ -6709,6 +6709,40 @@ class App(QtCore.QObject):
         :return:
         """
 
+        sel_objects = self.collection.get_selected()
+        len_objects = len(sel_objects)
+
+        cnt = 0
+        if len_objects > 1:
+            for o in sel_objects:
+                if o.kind == 'cncjob':
+                    cnt += 1
+
+            if len_objects == cnt:
+                # all selected objects are of type CNCJOB therefore we issue a multiple save
+                _filter_ = self.defaults['cncjob_save_filters'] + \
+                           ";;RML1 Files .rol (*.rol);;HPGL Files .plt (*.plt)"
+
+                dir_file_to_save = self.get_last_save_folder() + '/multi_save'
+
+                try:
+                    filename, _f = FCFileSaveDialog.get_saved_filename(
+                        caption=_("Export Code ..."),
+                        directory=dir_file_to_save,
+                        ext_filter=_filter_
+                    )
+                except TypeError:
+                    filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."),
+                                                                       ext_filter=_filter_)
+
+                filename = filename.rpartition('/')[0]
+
+                for ob in sel_objects:
+                    ob.read_form()
+                    fname = '%s/%s' % (filename, ob.options['name'])
+                    ob.export_gcode_handler(fname, is_gcode=True)
+                return
+
         obj = self.collection.get_active()
         if type(obj) == GeometryObject:
             self.on_file_exportdxf()

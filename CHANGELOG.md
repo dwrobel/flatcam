@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.06.2020
+
+- added the multi-save capability if multiple CNCJob objects are selected in Project tab but only if all are of type CNCJob
+
 16.06.2020
 
 - changed the data structure for the Excellon object; modified the Excellon parser and the Excellon object class

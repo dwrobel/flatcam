@@ -480,7 +480,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
-    def on_exportgcode_button_click(self, *args):
+    def on_exportgcode_button_click(self):
         """
         Handler activated by a button clicked when exporting GCode.
 
@@ -511,13 +511,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except TypeError:
             filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
 
+        self.export_gcode_handler(filename, is_gcode=save_gcode)
+
+    def export_gcode_handler(self, filename, is_gcode=True):
         filename = str(filename)
 
         if filename == '':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
             return
         else:
-            if save_gcode is True:
+            if is_gcode is True:
                 used_extension = filename.rpartition('.')[2]
                 self.update_filters(last_ext=used_extension, filter_string='cncjob_save_filters')
 
