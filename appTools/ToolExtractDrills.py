@@ -441,7 +441,13 @@ class ToolExtractDrills(AppTool):
         mode = self.hole_size_radio.get_value()
 
         if mode == 'fixed':
-            tools = {"1": {"C": drill_dia}}
+            tools = {
+                1: {
+                    "tooldia": drill_dia,
+                    "drills": [],
+                    "slots": []
+                }
+            }
             for apid, apid_value in fcobj.apertures.items():
                 ap_type = apid_value['type']
 
@@ -468,13 +474,13 @@ class ToolExtractDrills(AppTool):
 
                 for geo_el in apid_value['geometry']:
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
-                        drills.append({"point": geo_el['follow'], "tool": "1"})
-                        if 'solid_geometry' not in tools["1"]:
-                            tools["1"]['solid_geometry'] = []
+                        tools[1]["drills"].append(geo_el['follow'])
+                        if 'solid_geometry' not in tools[1]:
+                            tools[1]['solid_geometry'] = []
                         else:
-                            tools["1"]['solid_geometry'].append(geo_el['follow'])
+                            tools[1]['solid_geometry'].append(geo_el['follow'])
 
-            if 'solid_geometry' not in tools["1"] or not tools["1"]['solid_geometry']:
+            if 'solid_geometry' not in tools[1] or not tools[1]['solid_geometry']:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
                 return
         elif mode == 'ring':
@@ -530,23 +536,28 @@ class ToolExtractDrills(AppTool):
 
                 tool_in_drills = False
                 for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (self.decimals, tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < \
-                            (10 ** -self.decimals):
+                    if abs(float('%.*f' % (
+                            self.decimals,
+                            tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
                         tool_in_drills = tool
 
                 if tool_in_drills is False:
                     if tools:
                         new_tool = max([int(t) for t in tools]) + 1
-                        tool_in_drills = str(new_tool)
+                        tool_in_drills = new_tool
                     else:
-                        tool_in_drills = "1"
+                        tool_in_drills = 1
 
                 for geo_el in apid_value['geometry']:
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         if tool_in_drills not in tools:
-                            tools[tool_in_drills] = {"C": dia}
+                            tools[tool_in_drills] = {
+                                "tooldia": dia,
+                                "drills": [],
+                                "slots": []
+                            }
 
-                        drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
+                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
                             tools[tool_in_drills]['solid_geometry'] = []
@@ -615,23 +626,28 @@ class ToolExtractDrills(AppTool):
 
                 tool_in_drills = False
                 for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (self.decimals, tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < \
-                            (10 ** -self.decimals):
+                    if abs(float('%.*f' % (
+                            self.decimals,
+                            tool_val["tooldia"])) - float('%.*f' % (self.decimals, dia))) < (10 ** -self.decimals):
                         tool_in_drills = tool
 
                 if tool_in_drills is False:
                     if tools:
                         new_tool = max([int(t) for t in tools]) + 1
-                        tool_in_drills = str(new_tool)
+                        tool_in_drills = new_tool
                     else:
-                        tool_in_drills = "1"
+                        tool_in_drills = 1
 
                 for geo_el in apid_value['geometry']:
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         if tool_in_drills not in tools:
-                            tools[tool_in_drills] = {"C": dia}
+                            tools[tool_in_drills] = {
+                                "tooldia": dia,
+                                "drills": [],
+                                "slots": []
+                            }
 
-                        drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
+                        tools[tool_in_drills]['drills'].append(geo_el['follow'])
 
                         if 'solid_geometry' not in tools[tool_in_drills]:
                             tools[tool_in_drills]['solid_geometry'] = []
