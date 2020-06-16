@@ -17,6 +17,12 @@ CHANGELOG for FlatCAM beta
 - more typos fixed in Excellon parser, slots processing
 - fixed Extract Drills Tool to work with the new Excellon data format
 - minor fix in App Tools that were updated to have UI in a separate class
+- Tool Punch Gerber - updated the UI
+- Tool Panelize - updated the UI
+- Tool Extract Drills - updated the UI
+- Tool QRcode - updated the UI
+- Tool SolderPaste - updated the UI
+- Tool DblSided - updated the UI
 
 15.06.2020
 
