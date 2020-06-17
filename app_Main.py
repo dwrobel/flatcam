@@ -2301,7 +2301,7 @@ class App(QtCore.QObject):
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                         # restore GUI to the Selected TAB
-                        # Remove anything else in the appGUI
+                        # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
 
                     elif isinstance(edited_obj, ExcellonObject):
@@ -2310,7 +2310,7 @@ class App(QtCore.QObject):
                         # self.exc_editor.update_options(edited_obj)
 
                         # restore GUI to the Selected TAB
-                        # Remove anything else in the appGUI
+                        # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
 
                         # delete the old object (the source object) if it was an empty one
@@ -2325,7 +2325,6 @@ class App(QtCore.QObject):
                         for tt in edited_obj.tools:
                             if 'slots' in edited_obj.tools[tt] and edited_obj.tools[tt]['slots']:
                                 has_slots = True
-                                slots_in_file = 1
                                 break
                         if has_drills is None and has_slots is None:
                             old_name = edited_obj.options['name']
@@ -3001,8 +3000,8 @@ class App(QtCore.QObject):
                                     "<b>click</b></a>"
 
                 bugs_link = "<a href = 'https://bitbucket.org/jpcgt/flatcam/issues/new'<b>click</b></a>"
-                donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
-                                "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
+                # donation_link = "<a href = 'https://www.paypal.com/cgi-bin/webscr?cmd=_" \
+                #                 "donations&business=WLTJJ3Q77D98L&currency_code=USD&source=url'<b>click</b></a>"
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
@@ -3431,7 +3430,7 @@ class App(QtCore.QObject):
         # quit app by signalling for self.kill_app() method
         # self.close_app_signal.emit()
         QtWidgets.qApp.quit()
-        # QtCore.QCoreApplication.quit()
+        sys.exit(0)
 
         # When the main event loop is not started yet in which case the qApp.quit() will do nothing
         # we use the following command
@@ -3899,8 +3898,10 @@ class App(QtCore.QObject):
                              (_("At least two objects are required for join. Objects currently selected"), len(objs)))
             return 'fail'
 
+        fuse_tools = self.defaults["excellon_merge_fuse_tools"]
+
         def initialize(exc_obj, app):
-            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals)
+            ExcellonObject.merge(exc_list=objs, exc_final=exc_obj, decimals=self.decimals, fuse_tools=fuse_tools)
             app.inform.emit('[success] %s.' % _("Excellon merging finished"))
 
         self.app_obj.new_object("excellon", 'Combo_Excellon', initialize)

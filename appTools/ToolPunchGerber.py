@@ -674,8 +674,8 @@ class ToolPunchGerber(AppTool):
             self.app.app_obj.new_object('gerber', outname, init_func)
 
     def reset_fields(self):
-        self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.ui.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.ui_disconnect()
 
 

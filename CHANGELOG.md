@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 17.06.2020
 
 - added the multi-save capability if multiple CNCJob objects are selected in Project tab but only if all are of type CNCJob
+- added fuse tools control in Preferences UI for the Excellon objects: if checked the app will try to see if there are tools with same diameter and merge the drills for those tools; if not the tools will just be added to the new combined Excellon
 
 16.06.2020
 

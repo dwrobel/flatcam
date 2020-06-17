@@ -659,7 +659,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class NumericalEvalEntry(EvalEntry):
+class NumericalEvalEntry(FCEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """

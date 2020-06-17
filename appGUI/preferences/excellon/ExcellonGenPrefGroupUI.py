@@ -263,9 +263,25 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 11, 0, 1, 2)
 
+        # Fuse Tools
+        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Option'))
+        grid2.addWidget(self.join_geo_label, 12, 0, 1, 2)
+
+        self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
+        self.fuse_tools_cb.setToolTip(
+            _("When checked the joined (merged) object tools\n"
+              "will be merged also but only if they share some of their attributes.")
+        )
+        grid2.addWidget(self.fuse_tools_cb, 13, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 14, 0, 1, 2)
+
         # Excellon Object Color
         self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
-        grid2.addWidget(self.gerber_color_label, 12, 0, 1, 2)
+        grid2.addWidget(self.gerber_color_label, 17, 0, 1, 2)
 
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -274,8 +290,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.line_color_label, 13, 0)
-        grid2.addWidget(self.line_color_entry, 13, 1)
+        grid2.addWidget(self.line_color_label, 19, 0)
+        grid2.addWidget(self.line_color_entry, 19, 1)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -286,8 +302,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid2.addWidget(self.fill_color_label, 14, 0)
-        grid2.addWidget(self.fill_color_entry, 14, 1)
+        grid2.addWidget(self.fill_color_label, 22, 0)
+        grid2.addWidget(self.fill_color_entry, 22, 1)
 
         # Plot Fill Transparency Level
         self.excellon_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -296,8 +312,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         self.excellon_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid2.addWidget(self.excellon_alpha_label, 15, 0)
-        grid2.addWidget(self.excellon_alpha_entry, 15, 1)
+        grid2.addWidget(self.excellon_alpha_label, 24, 0)
+        grid2.addWidget(self.excellon_alpha_entry, 24, 1)
 
         self.layout.addStretch()
 

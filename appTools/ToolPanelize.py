@@ -94,7 +94,7 @@ class Panelize(AppTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.reference_radio.set_value('bbox')
+        self.ui.reference_radio.set_value('bbox')
 
         sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
             self.app.defaults["tools_panelize_spacing_columns"] else 0.0
@@ -574,8 +574,8 @@ class Panelize(AppTool):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class PanelizeUI:

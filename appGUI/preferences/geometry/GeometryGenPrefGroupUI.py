@@ -87,14 +87,13 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Fuse Tools
-        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Geometry'))
+        self.join_geo_label = QtWidgets.QLabel('<b>%s</b>:' % _('Join Option'))
         grid0.addWidget(self.join_geo_label, 10, 0, 1, 2)
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
         self.fuse_tools_cb.setToolTip(
-            _("When checked the joined (merged) geometry object tools\n"
-              "will be merged also but only if they share the same attributes,\n"
-              "like diameter, tool_type or type.")
+            _("When checked the joined (merged) object tools\n"
+              "will be merged also but only if they share some of their attributes.")
         )
         grid0.addWidget(self.fuse_tools_cb, 11, 0, 1, 2)
 

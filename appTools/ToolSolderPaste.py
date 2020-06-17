@@ -194,7 +194,7 @@ class SolderPaste(AppTool):
             # populate only with preprocessor files that start with 'Paste_'
             if name.partition('_')[0] != 'Paste':
                 continue
-            self.pp_combo.addItem(name)
+            self.ui.pp_combo.addItem(name)
 
         self.reset_fields()
 
