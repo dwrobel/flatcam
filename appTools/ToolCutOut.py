@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import cascaded_union, unary_union, linemerge
 import shapely.affinity as affinity
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -403,6 +403,8 @@ class CutOut(AppTool):
             if not solid_geo:
                 app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                 return "fail"
+
+            solid_geo = linemerge(solid_geo)
             geo_obj.solid_geometry = deepcopy(solid_geo)
 
             xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
@@ -613,6 +615,12 @@ class CutOut(AppTool):
             geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+            if not solid_geo:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                return "fail"
+
+            solid_geo = linemerge(solid_geo)
             geo_obj.solid_geometry = deepcopy(solid_geo)
 
             geo_obj.tools.update({
@@ -717,6 +725,7 @@ class CutOut(AppTool):
 
         # first subtract geometry for the total solid_geometry
         new_solid_geometry = CutOut.subtract_polygon(self.man_cutout_obj.solid_geometry, cut_poly)
+        new_solid_geometry = linemerge(new_solid_geometry)
         self.man_cutout_obj.solid_geometry = new_solid_geometry
 
         # then do it or each tool in the manual cutout Geometry object
