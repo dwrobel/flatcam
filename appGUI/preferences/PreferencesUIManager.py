@@ -437,6 +437,7 @@ class PreferencesUIManager:
             "tools_panelize_spacing_rows": self.ui.tools_defaults_form.tools_panelize_group.pspacing_rows,
             "tools_panelize_columns": self.ui.tools_defaults_form.tools_panelize_group.pcolumns,
             "tools_panelize_rows": self.ui.tools_defaults_form.tools_panelize_group.prows,
+            "tools_panelize_optimization": self.ui.tools_defaults_form.tools_panelize_group.poptimization_cb,
             "tools_panelize_constrain": self.ui.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.ui.tools_defaults_form.tools_panelize_group.px_width_entry,
             "tools_panelize_constrainy": self.ui.tools_defaults_form.tools_panelize_group.py_height_entry,

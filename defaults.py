@@ -506,6 +506,7 @@ class FlatCAMDefaults:
         "tools_panelize_spacing_rows": 0.0,
         "tools_panelize_columns": 1,
         "tools_panelize_rows": 1,
+        "tools_panelize_optimization": True,
         "tools_panelize_constrain": False,
         "tools_panelize_constrainx": 200.0,
         "tools_panelize_constrainy": 290.0,

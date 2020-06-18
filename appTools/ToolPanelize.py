@@ -15,8 +15,8 @@ from copy import deepcopy
 import numpy as np
 
 import shapely.affinity as affinity
-from shapely.ops import unary_union
-from shapely.geometry import LineString
+from shapely.ops import unary_union, linemerge, snap
+from shapely.geometry import LineString, MultiLineString
 
 import gettext
 import appTranslation as fcTranslate
@@ -112,6 +112,10 @@ class Panelize(AppTool):
             self.app.defaults["tools_panelize_columns"] else 0.0
         self.ui.columns.set_value(int(cc))
 
+        optimized_path_cb = self.app.defaults["tools_panelize_optimization"] if \
+            self.app.defaults["tools_panelize_optimization"] else True
+        self.ui.optimization_cb.set_value(optimized_path_cb)
+
         c_cb = self.app.defaults["tools_panelize_constrain"] if \
             self.app.defaults["tools_panelize_constrain"] else False
         self.ui.constrain_cb.set_value(c_cb)
@@ -127,6 +131,8 @@ class Panelize(AppTool):
         panel_type = self.app.defaults["tools_panelize_panel_type"] if \
             self.app.defaults["tools_panelize_panel_type"] else 'gerber'
         self.ui.panel_type_radio.set_value(panel_type)
+
+        self.ui.on_panel_type(val=panel_type)
 
         # run once the following so the obj_type attribute is updated in the FCComboBoxes
         # such that the last loaded object is populated in the combo boxes
@@ -145,10 +151,12 @@ class Panelize(AppTool):
         if self.ui.type_obj_combo.currentText() != 'Excellon':
             self.ui.panel_type_label.setDisabled(False)
             self.ui.panel_type_radio.setDisabled(False)
+            self.ui.on_panel_type(val=self.ui.panel_type_radio.get_value())
         else:
             self.ui.panel_type_label.setDisabled(True)
             self.ui.panel_type_radio.setDisabled(True)
             self.ui.panel_type_radio.set_value('geometry')
+            self.ui.optimization_cb.setDisabled(True)
 
     def on_type_box_index_changed(self):
         obj_type = self.ui.type_box_combo.currentIndex()
@@ -256,6 +264,8 @@ class Panelize(AppTool):
             copied_apertures = {}
             for tt, tt_val in list(panel_source_obj.apertures.items()):
                 copied_apertures[tt] = deepcopy(tt_val)
+
+        to_optimize = self.ui.optimization_cb.get_value()
 
         def panelize_worker():
             if panel_source_obj is not None:
@@ -370,7 +380,7 @@ class Panelize(AppTool):
                         obj_fin.tools = copied_tools
                         if panel_source_obj.multigeo is True:
                             for tool in panel_source_obj.tools:
-                                obj_fin.tools[tool]['solid_geometry'][:] = []
+                                obj_fin.tools[tool]['solid_geometry'] = []
                     elif panel_source_obj.kind == 'gerber':
                         obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
@@ -385,11 +395,6 @@ class Panelize(AppTool):
                                     geo_len += len(panel_source_obj.tools[tool]['solid_geometry'])
                                 except TypeError:
                                     geo_len += 1
-                        # else:
-                        #     try:
-                        #         geo_len = len(panel_source_obj.solid_geometry)
-                        #     except TypeError:
-                        #         geo_len = 1
                     elif panel_source_obj.kind == 'gerber':
                         for ap in panel_source_obj.apertures:
                             if 'geometry' in panel_source_obj.apertures[ap]:
@@ -410,17 +415,20 @@ class Panelize(AppTool):
                             if panel_source_obj.kind == 'geometry':
                                 if panel_source_obj.multigeo is True:
                                     for tool in panel_source_obj.tools:
+                                        # graceful abort requested by the user
                                         if app_obj.abort_flag:
-                                            # graceful abort requested by the user
                                             raise grace
 
                                         # calculate the number of polygons
                                         geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
+
+                                        # panelization
                                         pol_nr = 0
                                         for geo_el in panel_source_obj.tools[tool]['solid_geometry']:
                                             trans_geo = translate_recursion(geo_el)
                                             obj_fin.tools[tool]['solid_geometry'].append(trans_geo)
 
+                                            # update progress
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                                             if old_disp_number < disp_number <= 100:
@@ -428,15 +436,17 @@ class Panelize(AppTool):
                                                     ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
                                                 old_disp_number = disp_number
                                 else:
+                                    # graceful abort requested by the user
                                     if app_obj.abort_flag:
-                                        # graceful abort requested by the user
                                         raise grace
 
+                                    # calculate the number of polygons
                                     try:
-                                        # calculate the number of polygons
                                         geo_len = len(panel_source_obj.solid_geometry)
                                     except TypeError:
                                         geo_len = 1
+
+                                    # panelization
                                     pol_nr = 0
                                     try:
                                         for geo_el in panel_source_obj.solid_geometry:
@@ -447,9 +457,9 @@ class Panelize(AppTool):
                                             trans_geo = translate_recursion(geo_el)
                                             obj_fin.solid_geometry.append(trans_geo)
 
+                                            # update progress
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
                                             if old_disp_number < disp_number <= 100:
                                                 app_obj.proc_container.update_view_text(
                                                     ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
@@ -460,14 +470,15 @@ class Panelize(AppTool):
                                         obj_fin.solid_geometry.append(trans_geo)
                             # Will panelize a Gerber Object
                             else:
+                                # graceful abort requested by the user
                                 if self.app.abort_flag:
-                                    # graceful abort requested by the user
                                     raise grace
 
+                                # panelization solid_geometry
                                 try:
                                     for geo_el in panel_source_obj.solid_geometry:
+                                        # graceful abort requested by the user
                                         if app_obj.abort_flag:
-                                            # graceful abort requested by the user
                                             raise grace
 
                                         trans_geo = translate_recursion(geo_el)
@@ -477,15 +488,18 @@ class Panelize(AppTool):
                                     obj_fin.solid_geometry.append(trans_geo)
 
                                 for apid in panel_source_obj.apertures:
+                                    # graceful abort requested by the user
                                     if app_obj.abort_flag:
-                                        # graceful abort requested by the user
                                         raise grace
+
                                     if 'geometry' in panel_source_obj.apertures[apid]:
+                                        # calculate the number of polygons
                                         try:
-                                            # calculate the number of polygons
                                             geo_len = len(panel_source_obj.apertures[apid]['geometry'])
                                         except TypeError:
                                             geo_len = 1
+
+                                        # panelization -> tools
                                         pol_nr = 0
                                         for el in panel_source_obj.apertures[apid]['geometry']:
                                             if app_obj.abort_flag:
@@ -496,20 +510,17 @@ class Panelize(AppTool):
                                             if 'solid' in el:
                                                 geo_aper = translate_recursion(el['solid'])
                                                 new_el['solid'] = geo_aper
-
                                             if 'clear' in el:
                                                 geo_aper = translate_recursion(el['clear'])
                                                 new_el['clear'] = geo_aper
-
                                             if 'follow' in el:
                                                 geo_aper = translate_recursion(el['follow'])
                                                 new_el['follow'] = geo_aper
-
                                             obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
+                                            # update progress
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
                                             if old_disp_number < disp_number <= 100:
                                                 app_obj.proc_container.update_view_text(
                                                     ' %s: %d %d%%' % (_("Copy"), int(element), disp_number))
@@ -522,16 +533,41 @@ class Panelize(AppTool):
                         # I'm going to do this only here as a fix for panelizing cutouts
                         # I'm going to separate linestrings out of the solid geometry from other
                         # possible type of elements and apply unary_union on them to fuse them
+
+                        if to_optimize is True:
+                            app_obj.inform.emit('%s' % _("Optimizing the overlapping paths."))
+
                         for tool in obj_fin.tools:
                             lines = []
                             other_geo = []
                             for geo in obj_fin.tools[tool]['solid_geometry']:
                                 if isinstance(geo, LineString):
                                     lines.append(geo)
+                                elif isinstance(geo, MultiLineString):
+                                    for line in geo:
+                                        lines.append(line)
                                 else:
                                     other_geo.append(geo)
-                            fused_lines = list(unary_union(lines))
+
+                            if to_optimize is True:
+                                for idx, line in enumerate(lines):
+                                    for idx_s in range(idx+1, len(lines)):
+                                        line_mod = lines[idx_s]
+                                        dist = line.distance(line_mod)
+                                        if dist < 1e-8:
+                                            print("Disjoint %d: %d -> %s" % (idx, idx_s, str(dist)))
+                                            print("Distance %f" % dist)
+                                        res = snap(line_mod, line, tolerance=1e-7)
+                                        if res and not res.is_empty:
+                                            lines[idx_s] = res
+
+                            fused_lines = linemerge(lines)
+                            fused_lines = [unary_union(fused_lines)]
+
                             obj_fin.tools[tool]['solid_geometry'] = fused_lines + other_geo
+
+                        if to_optimize is True:
+                            app_obj.inform.emit('%s' % _("Optimization complete."))
 
                     if panel_type == 'gerber':
                         app_obj.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
@@ -766,6 +802,16 @@ class PanelizeUI:
         form_layout.addRow(self.panel_type_label)
         form_layout.addRow(self.panel_type_radio)
 
+        # Path optimization
+        self.optimization_cb = FCCheckBox('%s' % _("Path Optimization"))
+        self.optimization_cb.setToolTip(
+            _("Active only for Geometry panel type.\n"
+              "When checked the application will find\n"
+              "any two overlapping Line elements in the panel\n"
+              "and remove the overlapping parts, keeping only one of them.")
+        )
+        form_layout.addRow(self.optimization_cb)
+
         # Constrains
         self.constrain_cb = FCCheckBox('%s:' % _("Constrain panel within"))
         self.constrain_cb.setToolTip(
@@ -839,6 +885,13 @@ class PanelizeUI:
 
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
+        self.panel_type_radio.activated_custom.connect(self.on_panel_type)
+
+    def on_panel_type(self, val):
+        if val == 'geometry':
+            self.optimization_cb.setDisabled(False)
+        else:
+            self.optimization_cb.setDisabled(True)
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
