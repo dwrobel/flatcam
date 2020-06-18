@@ -273,9 +273,11 @@ class Panelize(AppTool):
 
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
+                    # init the storage for drills and for slots
+                    for tool in copied_tools:
+                        copied_tools[tool]['drills'] = []
+                        copied_tools[tool]['slots'] = []
                     obj_fin.tools = copied_tools
-                    obj_fin.drills = []
-                    obj_fin.slots = []
                     obj_fin.solid_geometry = []
 
                     for option in panel_source_obj.options:
@@ -285,9 +287,14 @@ class Panelize(AppTool):
                             except KeyError:
                                 log.warning("Failed to copy option. %s" % str(option))
 
-                    geo_len_drills = len(panel_source_obj.drills) if panel_source_obj.drills else 0
-                    geo_len_slots = len(panel_source_obj.slots) if panel_source_obj.slots else 0
+                    # calculate the total number of drills and slots
+                    geo_len_drills = 0
+                    geo_len_slots = 0
+                    for tool in copied_tools:
+                        geo_len_drills += len(copied_tools[tool]['drills'])
+                        geo_len_slots += len(copied_tools[tool]['slots'])
 
+                    # panelization
                     element = 0
                     for row in range(rows):
                         currentx = 0.0
@@ -295,57 +302,53 @@ class Panelize(AppTool):
                             element += 1
                             old_disp_number = 0
 
-                            if panel_source_obj.drills:
-                                drill_nr = 0
-                                for tool_dict in panel_source_obj.drills:
-                                    if self.app.abort_flag:
+                            for tool in panel_source_obj.tools:
+                                if panel_source_obj.tools[tool]['drills']:
+                                    drill_nr = 0
+                                    for drill in panel_source_obj.tools[tool]['drills']:
                                         # graceful abort requested by the user
-                                        raise grace
+                                        if self.app.abort_flag:
+                                            raise grace
 
-                                    point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
-                                    obj_fin.drills.append(
-                                        {
-                                            "point": point_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
-                                    )
+                                        # offset / panelization
+                                        point_offseted = affinity.translate(drill, currentx, currenty)
+                                        obj_fin.tools[tool]['drills'].append(point_offseted)
 
-                                    drill_nr += 1
-                                    disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
+                                        # update progress
+                                        drill_nr += 1
+                                        disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
+                                        if old_disp_number < disp_number <= 100:
+                                            self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
+                                                                                     (_("Copy"),
+                                                                                      int(element),
+                                                                                      disp_number))
+                                            old_disp_number = disp_number
 
-                                    if old_disp_number < disp_number <= 100:
-                                        self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
-                                                                                 (_("Copy"),
-                                                                                  int(element),
-                                                                                  disp_number))
-                                        old_disp_number = disp_number
-
-                            if panel_source_obj.slots:
-                                slot_nr = 0
-                                for tool_dict in panel_source_obj.slots:
-                                    if self.app.abort_flag:
+                                if panel_source_obj.tools[tool]['slots']:
+                                    slot_nr = 0
+                                    for slot in panel_source_obj.tools[tool]['slots']:
                                         # graceful abort requested by the user
-                                        raise grace
+                                        if self.app.abort_flag:
+                                            raise grace
 
-                                    start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
-                                    stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
-                                    obj_fin.slots.append(
-                                        {
-                                            "start": start_offseted,
-                                            "stop": stop_offseted,
-                                            "tool": tool_dict['tool']
-                                        }
-                                    )
+                                        # offset / panelization
+                                        start_offseted = affinity.translate(slot[0], currentx, currenty)
+                                        stop_offseted = affinity.translate(slot[1], currentx, currenty)
+                                        offseted_slot = (
+                                            start_offseted,
+                                            stop_offseted
+                                        )
+                                        obj_fin.tools[tool]['slots'].append(offseted_slot)
 
-                                    slot_nr += 1
-                                    disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
-
-                                    if old_disp_number < disp_number <= 100:
-                                        self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
-                                                                                 (_("Copy"),
-                                                                                  int(element),
-                                                                                  disp_number))
-                                        old_disp_number = disp_number
+                                        # update progress
+                                        slot_nr += 1
+                                        disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
+                                        if old_disp_number < disp_number <= 100:
+                                            self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
+                                                                                     (_("Copy"),
+                                                                                      int(element),
+                                                                                      disp_number))
+                                            old_disp_number = disp_number
 
                             currentx += lenghtx
                         currenty += lenghty
@@ -420,7 +423,10 @@ class Panelize(AppTool):
                                             raise grace
 
                                         # calculate the number of polygons
-                                        geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
+                                        try:
+                                            geo_len = len(panel_source_obj.tools[tool]['solid_geometry'])
+                                        except TypeError:
+                                            geo_len = 1
 
                                         # panelization
                                         pol_nr = 0

@@ -957,6 +957,15 @@ class Excellon(Geometry):
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
 
+            # the data structure of the Excellon object has to include bot the 'drills' and the 'slots' keys otherwise
+            # I will need to test for them everywhere.
+            # Even if there are not drills or slots I just add the storage there with an empty list
+            for tool in self.tools:
+                if 'drills' not in self.tools[tool]:
+                    self.tools[tool]['drills'] = []
+                if 'slots' not in self.tools[tool]:
+                    self.tools[tool]['slots'] = []
+
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
