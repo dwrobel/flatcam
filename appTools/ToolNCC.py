@@ -557,7 +557,10 @@ class NonCopperClear(AppTool, Gerber):
         try:
             dias = [float(self.app.defaults["tools_ncctools"])]
         except (ValueError, TypeError):
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
+            try:
+                dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
+            except AttributeError:
+                dias = self.app.defaults["tools_ncctools"]
         except Exception:
             dias = []
 

@@ -174,4 +174,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.convex_box, 7, 0, 1, 2)
 
+        self.big_cursor_cb = FCCheckBox('%s' % _("Big cursor"))
+        self.big_cursor_cb.setToolTip(
+            _("Use a big cursor when adding manual gaps."))
+        grid0.addWidget(self.big_cursor_cb, 8, 0, 1, 2)
+
         self.layout.addStretch()

@@ -457,6 +457,7 @@ class FlatCAMDefaults:
         "tools_cutoutgapsize": 4,
         "tools_gaps_ff": "4",
         "tools_cutout_convexshape": False,
+        "tools_cutout_big_cursor": True,
 
         # Paint Tool
         "tools_painttooldia": 0.3,

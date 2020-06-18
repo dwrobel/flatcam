@@ -269,7 +269,12 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         sort = []
         for k, v in list(self.tools.items()):
-            sort.append((k, v['tooldia']))
+            try:
+                sort.append((k, v['tooldia']))
+            except KeyError:
+                # for old projects to be opened
+                sort.append((k, v['C']))
+
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
         tools = [i[0] for i in sorted_tools]
 
@@ -278,11 +283,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
             new_options[opt] = self.options[opt]
 
         for tool_no in tools:
+            try:
+                dia_val = self.tools[tool_no]['tooldia']
+            except KeyError:
+                # for old projects to be opened
+                dia_val = self.tools[tool_no]['C']
 
             # add the data dictionary for each tool with the default values
             self.tools[tool_no]['data'] = deepcopy(new_options)
-            # self.tools[tool_no]['data']["tooldia"] = self.tools[tool_no]["C"]
-            # self.tools[tool_no]['data']["slot_tooldia"] = self.tools[tool_no]["C"]
 
             drill_cnt = 0  # variable to store the nr of drills per tool
             slot_cnt = 0  # variable to store the nr of slots per tool
@@ -301,32 +309,38 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 slot_cnt = 0
             self.tot_slot_cnt += slot_cnt
 
+            # Tool ID
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
             exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)  # Tool name/id
 
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['tooldia']))
+            # Diameter
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, dia_val))
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
 
+            # Drill count
             drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
             drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
 
+            # Slot Count
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
             slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
 
+            # Empty Plot Item
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
+
+            # Plot Item
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
-
-            self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)  # Tool name/id
-            self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
-            self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
-            self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
-            empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
             self.ui.tools_table.setCellWidget(self.tool_row, 5, plot_item)
 
             self.tool_row += 1

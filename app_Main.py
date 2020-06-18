@@ -6068,6 +6068,10 @@ class App(QtCore.QObject):
 
                 self.mouse = [pos[0], pos[1]]
 
+                if self.defaults['global_selection_shape'] is False:
+                    self.selection_type = None
+                    return
+
                 # if the mouse is moved and the LMB is clicked then the action is a selection
                 if self.event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
@@ -9104,26 +9108,26 @@ class App(QtCore.QObject):
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            try:
-                def obj_init(obj_inst, app_inst):
-
+            def obj_init(obj_inst, app_inst):
+                try:
                     obj_inst.from_dict(obj)
+                except Exception as e:
+                    print('App.open_project() --> ' + str(e))
+                    return 'fail'
 
-                App.log.debug("Recreating from opened project an %s object: %s" %
-                              (obj['kind'].capitalize(), obj['options']['name']))
+            App.log.debug("Recreating from opened project an %s object: %s" %
+                          (obj['kind'].capitalize(), obj['options']['name']))
 
-                # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-                # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-                if cli is None:
-                    self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                              obj['kind'].upper(),
-                                                              obj['options']['name']
-                                                              )
-                                      )
+            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+            if cli is None:
+                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                          obj['kind'].upper(),
+                                                          obj['options']['name']
+                                                          )
+                                  )
 
-                self.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
-            except Exception as e:
-                print('App.open_project() --> ' + str(e))
+            self.app_obj.new_object(obj['kind'], obj['options']['name'], obj_init, plot=plot)
 
         self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
 

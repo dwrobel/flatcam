@@ -378,15 +378,16 @@ class PreferencesUIManager:
             "tools_ncc_plotting":       self.ui.tools_defaults_form.tools_ncc_group.plotting_radio,
 
             # CutOut Tool
-            "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
-            "tools_cutoutkind": self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
-            "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
-            "tools_cutout_z": self.ui.tools_defaults_form.tools_cutout_group.cutz_entry,
-            "tools_cutout_depthperpass": self.ui.tools_defaults_form.tools_cutout_group.maxdepth_entry,
-            "tools_cutout_mdepth": self.ui.tools_defaults_form.tools_cutout_group.mpass_cb,
-            "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
-            "tools_cutout_convexshape": self.ui.tools_defaults_form.tools_cutout_group.convex_box,
+            "tools_cutouttooldia":          self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutkind":             self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
+            "tools_cutoutmargin":           self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutout_z":               self.ui.tools_defaults_form.tools_cutout_group.cutz_entry,
+            "tools_cutout_depthperpass":    self.ui.tools_defaults_form.tools_cutout_group.maxdepth_entry,
+            "tools_cutout_mdepth":          self.ui.tools_defaults_form.tools_cutout_group.mpass_cb,
+            "tools_cutoutgapsize":          self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
+            "tools_gaps_ff":                self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
+            "tools_cutout_convexshape":     self.ui.tools_defaults_form.tools_cutout_group.convex_box,
+            "tools_cutout_big_cursor":      self.ui.tools_defaults_form.tools_cutout_group.big_cursor_cb,
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,

@@ -592,8 +592,7 @@ class Geometry(object):
         if isinstance(self.solid_geometry, list):
             return len(self.solid_geometry) == 0
 
-        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                             _("self.solid_geometry is neither BaseGeometry or list."))
+        self.app.inform.emit('[ERROR_NOTCL] %s' % _("self.solid_geometry is neither BaseGeometry or list."))
         return
 
     def subtract_polygon(self, points):
@@ -610,15 +609,20 @@ class Geometry(object):
         # pathonly should be allways True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
-        polygon = Polygon(points)
+
+        if not isinstance(points, Polygon):
+            polygon = Polygon(points)
+        else:
+            polygon = points
         toolgeo = cascaded_union(polygon)
         diffs = []
         for target in flat_geometry:
-            if type(target) == LineString or type(target) == LinearRing:
+            if isinstance(target, LineString) or isinstance(target, LineString) or isinstance(target, MultiLineString):
                 diffs.append(target.difference(toolgeo))
             else:
                 log.warning("Not implemented.")
-        self.solid_geometry = cascaded_union(diffs)
+
+        self.solid_geometry = unary_union(diffs)
 
     def bounds(self, flatten=False):
         """

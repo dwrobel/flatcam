@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.06.2020
+
+- fixed bug in the Cutout Tool that did not allowed the manual cutous to be added on a Geometry created in the Tool
+- fixed bug that made the selection box show in the stage of adding manual gaps
+- updated Cutout Tool UI
+- Cutout Tool - in manual gap adding there is now an option to automatically turn on the big cursor which could help
+- Cutout Tool - fixed errors when trying to add a manual gap without having a geometry object selected in the combobox
+
 17.06.2020
 
 - added the multi-save capability if multiple CNCJob objects are selected in Project tab but only if all are of type CNCJob
