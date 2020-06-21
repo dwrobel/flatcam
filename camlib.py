@@ -3040,16 +3040,17 @@ class CNCjob(Geometry):
         # #############################################################################################################
         points = {}
         for tool, tool_dict in self.exc_tools.items():
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise grace
+            if tool in tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
 
-            if 'drills' in tool_dict and tool_dict['drills']:
-                for drill_pt in tool_dict['drills']:
-                    try:
-                        points[tool].append(drill_pt)
-                    except KeyError:
-                        points[tool] = [drill_pt]
+                if 'drills' in tool_dict and tool_dict['drills']:
+                    for drill_pt in tool_dict['drills']:
+                        try:
+                            points[tool].append(drill_pt)
+                        except KeyError:
+                            points[tool] = [drill_pt]
         log.debug("Found %d TOOLS with drills." % len(points))
 
         # check if there are drill points in the exclusion areas.

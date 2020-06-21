@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.06.2020
+
+- wip
+
 18.06.2020
 
 - fixed bug in the Cutout Tool that did not allowed the manual cutous to be added on a Geometry created in the Tool

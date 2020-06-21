@@ -552,6 +552,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "milling_type": self.ui.milling_type_radio,
 
             "milling_dia": self.ui.mill_dia_entry,
+
             "cutz": self.ui.cutz_entry,
             "multidepth": self.ui.mpass_cb,
             "depthperpass": self.ui.maxdepth_entry,
