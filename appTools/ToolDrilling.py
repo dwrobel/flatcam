@@ -186,14 +186,10 @@ class ToolDrilling(AppTool, Excellon):
                 self.app.ui.splitter.setSizes([1, 1])
 
         AppTool.run(self)
+
+        self.on_object_changed()
         self.set_tool_ui()
-
-        # reset those objects on a new run
-        self.excellon_obj = None
-        self.obj_name = ''
-
         self.build_ui()
-
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
@@ -243,7 +239,6 @@ class ToolDrilling(AppTool, Excellon):
                 continue
             self.ui.pp_excellon_name_cb.addItem(name)
 
-
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_excellon_name_cb combobox
@@ -278,7 +273,7 @@ class ToolDrilling(AppTool, Excellon):
         # init the working variables
         self.default_data.clear()
         self.default_data = {
-            "name":                         outname + '_iso',
+            "name":                         outname + '_drill',
             "plot":                self.app.defaults["excellon_plot"],
             "solid":               self.app.defaults["excellon_solid"],
             "multicolored":        self.app.defaults["excellon_multicolored"],
@@ -350,12 +345,6 @@ class ToolDrilling(AppTool, Excellon):
         for opt_key, opt_val in self.app.options.items():
             if opt_key.find('excellon_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('geometry_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
-
-        self.obj_name = ""
-        self.excellon_obj = None
 
         self.first_click = False
         self.cursor_pos = None
@@ -367,15 +356,47 @@ class ToolDrilling(AppTool, Excellon):
         # #######3 TEMP SETTINGS #################
         # ########################################
 
-        self.on_object_changed()
+        self.ui.tools_table.setRowCount(0)
+        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
+        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
+
         if self.excellon_obj:
+            # make sure to update the UI on init
+            self.excellon_tools = self.excellon_obj.tools
             self.build_ui()
 
+        # ########################################
+        # ########################################
+        # ####### Fill in the parameters #########
+        # ########################################
+        # ########################################
+        self.ui.cutz_entry.set_value(self.app.defaults["excellon_cutz"])
+        self.ui.mpass_cb.set_value(self.app.defaults["excellon_multidepth"])
+        self.ui.maxdepth_entry.set_value(self.app.defaults["excellon_depthperpass"])
+        self.ui.travelz_entry.set_value(self.app.defaults["excellon_travelz"])
+        self.ui.feedrate_z_entry.set_value(self.app.defaults["excellon_feedrate_z"])
+        self.ui.feedrate_rapid_entry.set_value(self.app.defaults["excellon_feedrate_rapid"])
+        self.ui.spindlespeed_entry.set_value(self.app.defaults["excellon_spindlespeed"])
+        self.ui.dwell_cb.set_value(self.app.defaults["excellon_dwell"])
+        self.ui.dwelltime_entry.set_value(self.app.defaults["excellon_dwelltime"])
+        self.ui.offset_entry.set_value(self.app.defaults["excellon_offset"])
+        self.ui.toolchange_cb.set_value(self.app.defaults["excellon_toolchange"])
+        self.ui.toolchangez_entry.set_value(self.app.defaults["excellon_toolchangez"])
+        self.ui.estartz_entry.set_value(self.app.defaults["excellon_startz"])
+        self.ui.endz_entry.set_value(self.app.defaults["excellon_endz"])
+        self.ui.endxy_entry.set_value(self.app.defaults["excellon_endxy"])
+        self.ui.pdepth_entry.set_value(self.app.defaults["excellon_z_pdepth"])
+        self.ui.feedrate_probe_entry.set_value(self.app.defaults["excellon_feedrate_probe"])
+        self.ui.exclusion_cb.set_value(self.app.defaults["excellon_area_exclusion"])
+        self.ui.strategy_radio.set_value(self.app.defaults["excellon_area_strategy"])
+        self.ui.over_z_entry.set_value(self.app.defaults["excellon_area_overz"])
+        self.ui.area_shape_radio.set_value(self.app.defaults["excellon_area_shape"])
+
         try:
-            self.ui.object_combo.currentIndexChanged.disconnect()
+            self.ui.object_combo.currentTextChanged.disconnect()
         except (AttributeError, TypeError):
             pass
-        self.ui.object_combo.currentIndexChanged.connect(self.on_object_changed)
+        self.ui.object_combo.currentTextChanged.connect(self.on_object_changed)
 
     def rebuild_ui(self):
         # read the table tools uid
@@ -388,20 +409,21 @@ class ToolDrilling(AppTool, Excellon):
         new_uid = 1
 
         for current_uid in current_uid_list:
-            new_tools[new_uid] = deepcopy(self.iso_tools[current_uid])
+            new_tools[new_uid] = deepcopy(self.excellon_tools[current_uid])
             new_uid += 1
 
-        self.iso_tools = new_tools
+        self.excellon_tools = new_tools
 
         # the tools table changed therefore we need to rebuild it
         QtCore.QTimer.singleShot(20, self.build_ui)
 
     def build_ui(self):
+        log.debug("ToolDrilling.build_ui()")
+
         self.ui_disconnect()
 
         # updated units
         self.units = self.app.defaults['units'].upper()
-
         self.obj_name = self.ui.object_combo.currentText()
 
         # Get source object.
@@ -411,13 +433,13 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
-
-        if self.excellon_obj:
+        if self.excellon_obj and self.excellon_obj.tools:
             self.ui.exc_param_frame.setDisabled(False)
-
             tools = [k for k in self.excellon_tools]
 
         else:
+            self.ui.exc_param_frame.setDisabled(True)
+            self.ui.tools_table.setRowCount(0)
             tools = []
 
         n = len(tools)
@@ -425,24 +447,24 @@ class ToolDrilling(AppTool, Excellon):
         self.ui.tools_table.setRowCount(n + 2)
         self.tool_row = 0
 
-        for tool_no in tools:
+        tot_drill_cnt = 0
+        tot_slot_cnt = 0
 
-            drill_cnt = 0  # variable to store the nr of drills per tool
-            slot_cnt = 0  # variable to store the nr of slots per tool
+        for tool_no in tools:
 
             # Find no of drills for the current tool
             try:
-                drill_cnt = len(self.excellon_tools[tool_no]["drills"])
+                drill_cnt = len(self.excellon_tools[tool_no]["drills"]) # variable to store the nr of drills per tool
             except KeyError:
                 drill_cnt = 0
-            self.tot_drill_cnt += drill_cnt
+            tot_drill_cnt += drill_cnt
 
             # Find no of slots for the current tool
             try:
-                slot_cnt = len(self.excellon_tools[tool_no]["slots"])
+                slot_cnt = len(self.excellon_tools[tool_no]["slots"])   # variable to store the nr of slots per tool
             except KeyError:
                 slot_cnt = 0
-            self.tot_slot_cnt += slot_cnt
+            tot_slot_cnt += slot_cnt
 
             # Tool name/id
             exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
@@ -482,7 +504,7 @@ class ToolDrilling(AppTool, Excellon):
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-        tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
+        tot_drill_count = QtWidgets.QTableWidgetItem('%d' % tot_drill_cnt)
         tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
@@ -507,7 +529,7 @@ class ToolDrilling(AppTool, Excellon):
         empty_2_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
-        tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
+        tot_slot_count = QtWidgets.QTableWidgetItem('%d' % tot_slot_cnt)
         label_tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
         tot_slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -623,17 +645,30 @@ class ToolDrilling(AppTool, Excellon):
         # Get source object.
         try:
             self.excellon_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
         if self.excellon_obj is None:
             self.ui.exc_param_frame.setDisabled(True)
+            self.set_tool_ui()
         else:
             self.ui.exc_param_frame.setDisabled(False)
             self.excellon_tools = self.excellon_obj.tools
 
             self.build_ui()
+
+        sel_rows = set()
+        table_items = self.ui.tools_table.selectedItems()
+        if table_items:
+            for it in table_items:
+                sel_rows.add(it.row())
+
+        if not sel_rows or len(sel_rows) == 0:
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
 
     def ui_connect(self):
 
@@ -892,14 +927,14 @@ class ToolDrilling(AppTool, Excellon):
         tooluid_item = int(self.ui.tools_table.item(row, 3).text())
         temp_tool_data = {}
 
-        for tooluid_key, tooluid_val in self.iso_tools.items():
+        for tooluid_key, tooluid_val in self.excellon_tools.items():
             if int(tooluid_key) == tooluid_item:
                 # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
                 # the current row in the tool table
                 temp_tool_data = tooluid_val['data']
                 break
 
-        for tooluid_key, tooluid_val in self.iso_tools.items():
+        for tooluid_key, tooluid_val in self.excellon_tools.items():
             tooluid_val['data'] = deepcopy(temp_tool_data)
 
         self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
@@ -925,7 +960,7 @@ class ToolDrilling(AppTool, Excellon):
             tt = cw.currentText()
             typ = 'Iso' if tt == 'V' else "Rough"
 
-            self.iso_tools[current_uid].update({
+            self.excellon_tools[current_uid].update({
                 'type': typ,
                 'tool_type': tt,
             })
@@ -1409,7 +1444,7 @@ class ToolDrilling(AppTool, Excellon):
         # Get source object.
         try:
             self.excellon_obj = self.app.collection.get_by_name(obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
             return
 
@@ -1668,7 +1703,8 @@ class ToolDrilling(AppTool, Excellon):
         return optimized_path
         # ############################################# ##
 
-    def optimized_travelling_salesman(self, points, start=None):
+    @staticmethod
+    def optimized_travelling_salesman(points, start=None):
         """
         As solving the problem in the brute force way is too slow,
         this function implements a simple heuristic: always

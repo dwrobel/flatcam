@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.06.2020
+
+- working on Tool Drilling
+
 21.06.2020
 
 - wip
