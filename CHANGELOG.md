@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.06.2020
+
+- made sure that when trying to view the source but no object is selected, the messages are correct
+
 23.06.2020
 
 - working on Tool Drilling

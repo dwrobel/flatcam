@@ -7509,9 +7509,6 @@ class App(QtCore.QObject):
         :return:
         """
 
-        self.inform.emit('%s' % _("Viewing the source code of the selected object."))
-        self.proc_container.view.set_busy(_("Loading..."))
-
         try:
             obj = self.collection.get_active()
         except Exception as e:
@@ -7522,6 +7519,9 @@ class App(QtCore.QObject):
         if obj is None:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
+
+        self.inform.emit('%s' % _("Viewing the source code of the selected object."))
+        self.proc_container.view.set_busy(_("Loading..."))
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
