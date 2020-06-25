@@ -190,6 +190,7 @@ class ToolDrilling(AppTool, Excellon):
         self.on_object_changed()
         self.set_tool_ui()
         self.build_ui()
+
         # all the tools are selected by default
         self.ui.tools_table.selectAll()
 
@@ -454,7 +455,7 @@ class ToolDrilling(AppTool, Excellon):
 
             # Find no of drills for the current tool
             try:
-                drill_cnt = len(self.excellon_tools[tool_no]["drills"]) # variable to store the nr of drills per tool
+                drill_cnt = len(self.excellon_tools[tool_no]["drills"])  # variable to store the nr of drills per tool
             except KeyError:
                 drill_cnt = 0
             tot_drill_cnt += drill_cnt
@@ -639,6 +640,7 @@ class ToolDrilling(AppTool, Excellon):
             )
 
     def on_object_changed(self):
+        log.debug("ToolDrilling.on_object_changed()")
         # load the Excellon object
         self.obj_name = self.ui.object_combo.currentText()
 
@@ -669,6 +671,8 @@ class ToolDrilling(AppTool, Excellon):
             self.ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
+        else:
+            self.ui.generate_cnc_button.setDisabled(False)
 
     def ui_connect(self):
 
