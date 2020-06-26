@@ -406,6 +406,7 @@ class ExclusionAreas(QtCore.QObject):
             # since the exclusion areas should apply to all objects in the app collection, this check is limited to
             # only the current object therefore it will not guarantee success
             self.app.inform.emit("%s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
+
             for el in self.exclusion_areas_storage:
                 if el["shape"].intersects(unary_union(self.solid_geometry)):
                     self.on_clear_area_click()
@@ -413,8 +414,7 @@ class ExclusionAreas(QtCore.QObject):
                         "[ERROR_NOTCL] %s" % _("Failed. Exclusion areas intersects the object geometry ..."))
                     return
 
-            self.app.inform.emit(
-                "[success] %s" % _("Exclusion areas added."))
+            self.app.inform.emit("[success] %s" % _("Exclusion areas added."))
             self.cnc_button.setStyleSheet("""
                                     QPushButton
                                     {

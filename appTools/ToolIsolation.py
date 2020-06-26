@@ -46,20 +46,20 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
-        self.ui = IsoUI(layout=self.layout, app=self.app)
-        self.toolName = self.ui.toolName
+        self.t_ui = IsoUI(layout=self.layout, app=self.app)
+        self.toolName = self.t_ui.toolName
 
         # #############################################################################
         # ###################### Setup CONTEXT MENU ###################################
         # #############################################################################
-        self.ui.tools_table.setupContextMenu()
-        self.ui.tools_table.addContextMenu(
+        self.t_ui.tools_table.setupContextMenu()
+        self.t_ui.tools_table.addContextMenu(
             _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
         )
-        self.ui.tools_table.addContextMenu(
+        self.t_ui.tools_table.addContextMenu(
             _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
         )
-        self.ui.tools_table.addContextMenu(
+        self.t_ui.tools_table.addContextMenu(
             _("Delete"), lambda:
             self.on_tool_delete(rows_to_delete=None, all_tools=None),
             icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
@@ -122,12 +122,12 @@ class ToolIsolation(AppTool, Gerber):
         self.poly_sel_disconnect_flag = False
 
         self.form_fields = {
-            "tools_iso_passes":         self.ui.passes_entry,
-            "tools_iso_overlap":        self.ui.iso_overlap_entry,
-            "tools_iso_milling_type":   self.ui.milling_type_radio,
-            "tools_iso_combine":        self.ui.combine_passes_cb,
-            "tools_iso_follow":         self.ui.follow_cb,
-            "tools_iso_isotype":        self.ui.iso_type_radio
+            "tools_iso_passes":         self.t_ui.passes_entry,
+            "tools_iso_overlap":        self.t_ui.iso_overlap_entry,
+            "tools_iso_milling_type":   self.t_ui.milling_type_radio,
+            "tools_iso_combine":        self.t_ui.combine_passes_cb,
+            "tools_iso_follow":         self.t_ui.follow_cb,
+            "tools_iso_isotype":        self.t_ui.iso_type_radio
         }
 
         self.name2option = {
@@ -179,7 +179,7 @@ class ToolIsolation(AppTool, Gerber):
         self.build_ui()
 
         # all the tools are selected by default
-        self.ui.tools_table.selectAll()
+        self.t_ui.tools_table.selectAll()
 
         self.app.ui.notebook.setTabText(2, _("Isolation Tool"))
 
@@ -187,34 +187,34 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
-        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.ui.addtool_entry.returnPressed.connect(self.on_tooldia_updated)
-        self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
+        self.t_ui.addtool_btn.clicked.connect(self.on_tool_add)
+        self.t_ui.addtool_entry.returnPressed.connect(self.on_tooldia_updated)
+        self.t_ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
-        self.ui.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
+        self.t_ui.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
+        self.t_ui.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
+        self.t_ui.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
 
-        self.ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
-        self.ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
+        self.t_ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
+        self.t_ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
 
-        self.ui.type_excobj_radio.activated_custom.connect(self.on_type_excobj_index_changed)
-        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
-        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
+        self.t_ui.type_excobj_radio.activated_custom.connect(self.on_type_excobj_index_changed)
+        self.t_ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        self.t_ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
-        self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
-        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+        self.t_ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
+        self.t_ui.reset_button.clicked.connect(self.set_tool_ui)
 
         # Cleanup on Graceful exit (CTRL+ALT+X combo key)
         self.app.cleanup.connect(self.set_tool_ui)
 
     def on_type_excobj_index_changed(self, val):
         obj_type = 0 if val == 'gerber' else 2
-        self.ui.exc_obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.ui.exc_obj_combo.setCurrentIndex(0)
-        self.ui.exc_obj_combo.obj_type = {
+        self.t_ui.exc_obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.t_ui.exc_obj_combo.setCurrentIndex(0)
+        self.t_ui.exc_obj_combo.obj_type = {
             "gerber": "Gerber", "geometry": "Geometry"
-        }[self.ui.type_excobj_radio.get_value()]
+        }[self.t_ui.type_excobj_radio.get_value()]
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
@@ -225,7 +225,7 @@ class ToolIsolation(AppTool, Gerber):
             selected_obj = self.app.collection.get_active()
             if selected_obj.kind == 'gerber':
                 current_name = selected_obj.options['name']
-                self.ui.object_combo.set_value(current_name)
+                self.t_ui.object_combo.set_value(current_name)
         except Exception:
             pass
 
@@ -233,101 +233,101 @@ class ToolIsolation(AppTool, Gerber):
 
         # Show/Hide Advanced Options
         if app_mode == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.t_ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
-            self.ui.tool_type_radio.set_value('C1')
-            self.ui.tool_type_label.hide()
-            self.ui.tool_type_radio.hide()
+            self.t_ui.tool_type_radio.set_value('C1')
+            self.t_ui.tool_type_label.hide()
+            self.t_ui.tool_type_radio.hide()
 
-            self.ui.milling_type_label.hide()
-            self.ui.milling_type_radio.hide()
+            self.t_ui.milling_type_label.hide()
+            self.t_ui.milling_type_radio.hide()
 
-            self.ui.iso_type_label.hide()
-            self.ui.iso_type_radio.set_value('full')
-            self.ui.iso_type_radio.hide()
+            self.t_ui.iso_type_label.hide()
+            self.t_ui.iso_type_radio.set_value('full')
+            self.t_ui.iso_type_radio.hide()
 
-            self.ui.follow_cb.set_value(False)
-            self.ui.follow_cb.hide()
-            self.ui.follow_label.hide()
+            self.t_ui.follow_cb.set_value(False)
+            self.t_ui.follow_cb.hide()
+            self.t_ui.follow_label.hide()
 
-            self.ui.rest_cb.set_value(False)
-            self.ui.rest_cb.hide()
+            self.t_ui.rest_cb.set_value(False)
+            self.t_ui.rest_cb.hide()
 
-            self.ui.except_cb.set_value(False)
-            self.ui.except_cb.hide()
+            self.t_ui.except_cb.set_value(False)
+            self.t_ui.except_cb.hide()
 
-            self.ui.type_excobj_radio.hide()
-            self.ui.exc_obj_combo.hide()
+            self.t_ui.type_excobj_radio.hide()
+            self.t_ui.exc_obj_combo.hide()
 
-            self.ui.select_combo.setCurrentIndex(0)
-            self.ui.select_combo.hide()
-            self.ui.select_label.hide()
+            self.t_ui.select_combo.setCurrentIndex(0)
+            self.t_ui.select_combo.hide()
+            self.t_ui.select_label.hide()
         else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.t_ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
-            self.ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
-            self.ui.tool_type_label.show()
-            self.ui.tool_type_radio.show()
+            self.t_ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
+            self.t_ui.tool_type_label.show()
+            self.t_ui.tool_type_radio.show()
 
-            self.ui.milling_type_label.show()
-            self.ui.milling_type_radio.show()
+            self.t_ui.milling_type_label.show()
+            self.t_ui.milling_type_radio.show()
 
-            self.ui.iso_type_label.show()
-            self.ui.iso_type_radio.set_value(self.app.defaults["tools_iso_isotype"])
-            self.ui.iso_type_radio.show()
+            self.t_ui.iso_type_label.show()
+            self.t_ui.iso_type_radio.set_value(self.app.defaults["tools_iso_isotype"])
+            self.t_ui.iso_type_radio.show()
 
-            self.ui.follow_cb.set_value(self.app.defaults["tools_iso_follow"])
-            self.ui.follow_cb.show()
-            self.ui.follow_label.show()
+            self.t_ui.follow_cb.set_value(self.app.defaults["tools_iso_follow"])
+            self.t_ui.follow_cb.show()
+            self.t_ui.follow_label.show()
 
-            self.ui.rest_cb.set_value(self.app.defaults["tools_iso_rest"])
-            self.ui.rest_cb.show()
+            self.t_ui.rest_cb.set_value(self.app.defaults["tools_iso_rest"])
+            self.t_ui.rest_cb.show()
 
-            self.ui.except_cb.set_value(self.app.defaults["tools_iso_isoexcept"])
-            self.ui.except_cb.show()
+            self.t_ui.except_cb.set_value(self.app.defaults["tools_iso_isoexcept"])
+            self.t_ui.except_cb.show()
 
-            self.ui.select_combo.set_value(self.app.defaults["tools_iso_selection"])
-            self.ui.select_combo.show()
-            self.ui.select_label.show()
+            self.t_ui.select_combo.set_value(self.app.defaults["tools_iso_selection"])
+            self.t_ui.select_combo.show()
+            self.t_ui.select_label.show()
 
         if self.app.defaults["gerber_buffering"] == 'no':
-            self.ui.create_buffer_button.show()
+            self.t_ui.create_buffer_button.show()
             try:
-                self.ui.create_buffer_button.clicked.disconnect(self.on_generate_buffer)
+                self.t_ui.create_buffer_button.clicked.disconnect(self.on_generate_buffer)
             except TypeError:
                 pass
-            self.ui.create_buffer_button.clicked.connect(self.on_generate_buffer)
+            self.t_ui.create_buffer_button.clicked.connect(self.on_generate_buffer)
         else:
-            self.ui.create_buffer_button.hide()
+            self.t_ui.create_buffer_button.hide()
 
-        self.ui.tools_frame.show()
+        self.t_ui.tools_frame.show()
 
-        self.ui.type_excobj_radio.set_value('gerber')
+        self.t_ui.type_excobj_radio.set_value('gerber')
 
         # run those once so the obj_type attribute is updated for the FCComboboxes
         # so the last loaded object is displayed
         self.on_type_excobj_index_changed(val="gerber")
         self.on_reference_combo_changed()
 
-        self.ui.order_radio.set_value(self.app.defaults["tools_iso_order"])
-        self.ui.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
-        self.ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
-        self.ui.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
-        self.ui.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
-        self.ui.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
-        self.ui.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
-        self.ui.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
+        self.t_ui.order_radio.set_value(self.app.defaults["tools_iso_order"])
+        self.t_ui.passes_entry.set_value(self.app.defaults["tools_iso_passes"])
+        self.t_ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
+        self.t_ui.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
+        self.t_ui.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
+        self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
+        self.t_ui.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
+        self.t_ui.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
 
-        self.ui.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
-        self.ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
-        self.ui.tipdia_entry.set_value(self.app.defaults["tools_iso_tool_vtipdia"])
-        self.ui.tipangle_entry.set_value(self.app.defaults["tools_iso_tool_vtipangle"])
-        self.ui.addtool_entry.set_value(self.app.defaults["tools_iso_newdia"])
+        self.t_ui.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
+        self.t_ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
+        self.t_ui.tipdia_entry.set_value(self.app.defaults["tools_iso_tool_vtipdia"])
+        self.t_ui.tipangle_entry.set_value(self.app.defaults["tools_iso_tool_vtipangle"])
+        self.t_ui.addtool_entry.set_value(self.app.defaults["tools_iso_newdia"])
 
-        self.on_tool_type(val=self.ui.tool_type_radio.get_value())
+        self.on_tool_type(val=self.t_ui.tool_type_radio.get_value())
 
-        loaded_obj = self.app.collection.get_by_name(self.ui.object_combo.get_value())
+        loaded_obj = self.app.collection.get_by_name(self.t_ui.object_combo.get_value())
         if loaded_obj:
             outname = loaded_obj.options['name']
         else:
@@ -401,7 +401,7 @@ class ToolIsolation(AppTool, Gerber):
                     'offset':           'Path',
                     'offset_value':     0.0,
                     'type':             'Iso',
-                    'tool_type':        self.ui.tool_type_radio.get_value(),
+                    'tool_type':        self.t_ui.tool_type_radio.get_value(),
                     'data':             deepcopy(self.default_data),
                     'solid_geometry':   []
                 }
@@ -425,13 +425,13 @@ class ToolIsolation(AppTool, Gerber):
 
         self.on_rest_machining_check(state=self.app.defaults["tools_iso_rest"])
 
-        self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
+        self.t_ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
 
     def rebuild_ui(self):
         # read the table tools uid
         current_uid_list = []
-        for row in range(self.ui.tools_table.rowCount()):
-            uid = int(self.ui.tools_table.item(row, 3).text())
+        for row in range(self.t_ui.tools_table.rowCount()):
+            uid = int(self.t_ui.tools_table.item(row, 3).text())
             current_uid_list.append(uid)
 
         new_tools = {}
@@ -456,7 +456,7 @@ class ToolIsolation(AppTool, Gerber):
         for k, v in self.iso_tools.items():
             sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
-        order = self.ui.order_radio.get_value()
+        order = self.t_ui.order_radio.get_value()
         if order == 'fwd':
             sorted_tools.sort(reverse=False)
         elif order == 'rev':
@@ -465,86 +465,89 @@ class ToolIsolation(AppTool, Gerber):
             pass
 
         n = len(sorted_tools)
-        self.ui.tools_table.setRowCount(n)
+        self.t_ui.tools_table.setRowCount(n)
         tool_id = 0
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.iso_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
+
+                    # Tool name/id
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                     row_no = tool_id - 1
-                    self.ui.tools_table.setItem(row_no, 0, id_)  # Tool name/id
+                    self.t_ui.tools_table.setItem(row_no, 0, id_)
 
-
+                    # Diameter
                     dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
-                    self.ui.tools_table.setItem(row_no, 1, dia)  # Diameter
+                    self.t_ui.tools_table.setItem(row_no, 1, dia)
 
+                    # Tool Type
                     tool_type_item = FCComboBox()
                     tool_type_item.addItems(self.tool_type_item_options)
-                    # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
-                    self.ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
+                    self.t_ui.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
+                    # Tool unique ID
+                    # REMEMBER: THIS COLUMN IS HIDDEN
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
-                    # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
-                    self.ui.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID
+                    self.t_ui.tools_table.setItem(row_no, 3, tool_uid_item)
 
         # make the diameter column editable
         for row in range(tool_id):
-            self.ui.tools_table.item(row, 1).setFlags(
+            self.t_ui.tools_table.item(row, 1).setFlags(
                 QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         # all the tools are selected by default
-        self.ui.tools_table.selectColumn(0)
+        self.t_ui.tools_table.selectColumn(0)
         #
-        self.ui.tools_table.resizeColumnsToContents()
-        self.ui.tools_table.resizeRowsToContents()
+        self.t_ui.tools_table.resizeColumnsToContents()
+        self.t_ui.tools_table.resizeRowsToContents()
 
-        vertical_header = self.ui.tools_table.verticalHeader()
+        vertical_header = self.t_ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.t_ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        horizontal_header = self.ui.tools_table.horizontalHeader()
+        horizontal_header = self.t_ui.tools_table.horizontalHeader()
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
-        # self.ui.tools_table.setSortingEnabled(True)
+        # self.t_ui.tools_table.setSortingEnabled(True)
         # sort by tool diameter
-        # self.ui.tools_table.sortItems(1)
+        # self.t_ui.tools_table.sortItems(1)
 
-        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
-        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
+        self.t_ui.tools_table.setMinimumHeight(self.t_ui.tools_table.getHeight())
+        self.t_ui.tools_table.setMaximumHeight(self.t_ui.tools_table.getHeight())
 
         self.ui_connect()
 
         # set the text on tool_data_label after loading the object
         sel_rows = set()
-        sel_items = self.ui.tools_table.selectedItems()
+        sel_items = self.t_ui.tools_table.selectedItems()
         for it in sel_items:
             sel_rows.add(it.row())
         if len(sel_rows) > 1:
-            self.ui.tool_data_label.setText(
+            self.t_ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
 
     def ui_connect(self):
-        self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
-        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
+        self.t_ui.tools_table.itemChanged.connect(self.on_tool_edit)
+        self.t_ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
 
         # rows selected
-        self.ui.tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        self.t_ui.tools_table.clicked.connect(self.on_row_selection_change)
+        self.t_ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
         # tool table widgets
-        for row in range(self.ui.tools_table.rowCount()):
+        for row in range(self.t_ui.tools_table.rowCount()):
             try:
-                self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+                self.t_ui.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
             except AttributeError:
                 pass
 
@@ -560,38 +563,38 @@ class ToolIsolation(AppTool, Gerber):
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
-        self.ui.rest_cb.stateChanged.connect(self.on_rest_machining_check)
-        self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.t_ui.rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.t_ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.tools_table.itemChanged.disconnect()
+            self.t_ui.tools_table.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.tool_type_radio.activated_custom.disconnect()
+            self.t_ui.tool_type_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
         # rows selected
         try:
-            self.ui.tools_table.clicked.disconnect()
+            self.t_ui.tools_table.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+            self.t_ui.tools_table.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
         # tool table widgets
-        for row in range(self.ui.tools_table.rowCount()):
+        for row in range(self.t_ui.tools_table.rowCount()):
 
             try:
-                self.ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
+                self.t_ui.tools_table.cellWidget(row, 2).currentIndexChanged.disconnect()
             except (TypeError, AttributeError):
                 pass
 
@@ -620,11 +623,11 @@ class ToolIsolation(AppTool, Gerber):
                     pass
 
         try:
-            self.ui.rest_cb.stateChanged.disconnect()
+            self.t_ui.rest_cb.stateChanged.disconnect()
         except (TypeError, ValueError):
             pass
         try:
-            self.ui.order_radio.activated_custom[str].disconnect()
+            self.t_ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
             pass
 
@@ -634,7 +637,7 @@ class ToolIsolation(AppTool, Gerber):
 
         :return:
         """
-        sel_model = self.ui.tools_table.selectionModel()
+        sel_model = self.t_ui.tools_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -642,10 +645,10 @@ class ToolIsolation(AppTool, Gerber):
         for idx in sel_indexes:
             sel_rows.add(idx.row())
 
-        if len(sel_rows) == self.ui.tools_table.rowCount():
-            self.ui.tools_table.clearSelection()
+        if len(sel_rows) == self.t_ui.tools_table.rowCount():
+            self.t_ui.tools_table.clearSelection()
         else:
-            self.ui.tools_table.selectAll()
+            self.t_ui.tools_table.selectAll()
         self.update_ui()
 
     def on_row_selection_change(self):
@@ -655,26 +658,26 @@ class ToolIsolation(AppTool, Gerber):
         self.blockSignals(True)
 
         sel_rows = set()
-        table_items = self.ui.tools_table.selectedItems()
+        table_items = self.t_ui.tools_table.selectedItems()
         if table_items:
             for it in table_items:
                 sel_rows.add(it.row())
-            # sel_rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+            # sel_rows = sorted(set(index.row() for index in self.t_ui.tools_table.selectedIndexes()))
 
         if not sel_rows or len(sel_rows) == 0:
-            self.ui.generate_iso_button.setDisabled(True)
-            self.ui.tool_data_label.setText(
+            self.t_ui.generate_iso_button.setDisabled(True)
+            self.t_ui.tool_data_label.setText(
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
             )
             self.blockSignals(False)
             return
         else:
-            self.ui.generate_iso_button.setDisabled(False)
+            self.t_ui.generate_iso_button.setDisabled(False)
 
         for current_row in sel_rows:
             # populate the form with the data from the tool associated with the row parameter
             try:
-                item = self.ui.tools_table.item(current_row, 3)
+                item = self.t_ui.tools_table.item(current_row, 3)
                 if item is not None:
                     tooluid = int(item.text())
                 else:
@@ -686,7 +689,7 @@ class ToolIsolation(AppTool, Gerber):
             # update the QLabel that shows for which Tool we have the parameters in the UI form
             if len(sel_rows) == 1:
                 cr = current_row + 1
-                self.ui.tool_data_label.setText(
+                self.t_ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), cr)
                 )
                 try:
@@ -699,7 +702,7 @@ class ToolIsolation(AppTool, Gerber):
                 except Exception as e:
                     log.debug("ToolIsolation ---> update_ui() " + str(e))
             else:
-                self.ui.tool_data_label.setText(
+                self.t_ui.tool_data_label.setText(
                     "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
                 )
 
@@ -716,7 +719,7 @@ class ToolIsolation(AppTool, Gerber):
                         pass
 
     def form_to_storage(self):
-        if self.ui.tools_table.rowCount() == 0:
+        if self.t_ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             return
 
@@ -726,12 +729,12 @@ class ToolIsolation(AppTool, Gerber):
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
-        # row = self.ui.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
+        # row = self.t_ui.tools_table.currentRow()
+        rows = sorted(set(index.row() for index in self.t_ui.tools_table.selectedIndexes()))
         for row in rows:
             if row < 0:
                 row = 0
-            tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+            tooluid_item = int(self.t_ui.tools_table.item(row, 3).text())
 
             for tooluid_key, tooluid_val in self.iso_tools.items():
                 if int(tooluid_key) == tooluid_item:
@@ -744,18 +747,18 @@ class ToolIsolation(AppTool, Gerber):
         self.blockSignals(False)
 
     def on_apply_param_to_all_clicked(self):
-        if self.ui.tools_table.rowCount() == 0:
+        if self.t_ui.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("ToolIsolation.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
         self.blockSignals(True)
 
-        row = self.ui.tools_table.currentRow()
+        row = self.t_ui.tools_table.currentRow()
         if row < 0:
             row = 0
 
-        tooluid_item = int(self.ui.tools_table.item(row, 3).text())
+        tooluid_item = int(self.t_ui.tools_table.item(row, 3).text())
         temp_tool_data = {}
 
         for tooluid_key, tooluid_val in self.iso_tools.items():
@@ -788,62 +791,62 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def on_tooldia_updated(self):
-        if self.ui.tool_type_radio.get_value() == 'C1':
-            self.old_tool_dia = self.ui.addtool_entry.get_value()
+        if self.t_ui.tool_type_radio.get_value() == 'C1':
+            self.old_tool_dia = self.t_ui.addtool_entry.get_value()
 
     def on_reference_combo_changed(self):
-        obj_type = self.ui.reference_combo_type.currentIndex()
-        self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.ui.reference_combo.setCurrentIndex(0)
-        self.ui.reference_combo.obj_type = {
+        obj_type = self.t_ui.reference_combo_type.currentIndex()
+        self.t_ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.t_ui.reference_combo.setCurrentIndex(0)
+        self.t_ui.reference_combo.obj_type = {
             _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ui.reference_combo_type.get_value()]
+        }[self.t_ui.reference_combo_type.get_value()]
 
     def on_toggle_reference(self):
-        val = self.ui.select_combo.get_value()
+        val = self.t_ui.select_combo.get_value()
 
         if val == _("All"):
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_combo_type.hide()
-            self.ui.reference_combo_type_label.hide()
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-            self.ui.poly_int_cb.hide()
+            self.t_ui.reference_combo.hide()
+            self.t_ui.reference_combo_label.hide()
+            self.t_ui.reference_combo_type.hide()
+            self.t_ui.reference_combo_type_label.hide()
+            self.t_ui.area_shape_label.hide()
+            self.t_ui.area_shape_radio.hide()
+            self.t_ui.poly_int_cb.hide()
 
             # disable rest-machining for area painting
-            self.ui.rest_cb.setDisabled(False)
+            self.t_ui.rest_cb.setDisabled(False)
         elif val == _("Area Selection"):
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_combo_type.hide()
-            self.ui.reference_combo_type_label.hide()
-            self.ui.area_shape_label.show()
-            self.ui.area_shape_radio.show()
-            self.ui.poly_int_cb.hide()
+            self.t_ui.reference_combo.hide()
+            self.t_ui.reference_combo_label.hide()
+            self.t_ui.reference_combo_type.hide()
+            self.t_ui.reference_combo_type_label.hide()
+            self.t_ui.area_shape_label.show()
+            self.t_ui.area_shape_radio.show()
+            self.t_ui.poly_int_cb.hide()
 
             # disable rest-machining for area isolation
-            self.ui.rest_cb.set_value(False)
-            self.ui.rest_cb.setDisabled(True)
+            self.t_ui.rest_cb.set_value(False)
+            self.t_ui.rest_cb.setDisabled(True)
         elif val == _("Polygon Selection"):
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_combo_type.hide()
-            self.ui.reference_combo_type_label.hide()
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-            self.ui.poly_int_cb.show()
+            self.t_ui.reference_combo.hide()
+            self.t_ui.reference_combo_label.hide()
+            self.t_ui.reference_combo_type.hide()
+            self.t_ui.reference_combo_type_label.hide()
+            self.t_ui.area_shape_label.hide()
+            self.t_ui.area_shape_radio.hide()
+            self.t_ui.poly_int_cb.show()
         else:
-            self.ui.reference_combo.show()
-            self.ui.reference_combo_label.show()
-            self.ui.reference_combo_type.show()
-            self.ui.reference_combo_type_label.show()
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-            self.ui.poly_int_cb.hide()
+            self.t_ui.reference_combo.show()
+            self.t_ui.reference_combo_label.show()
+            self.t_ui.reference_combo_type.show()
+            self.t_ui.reference_combo_type_label.show()
+            self.t_ui.area_shape_label.hide()
+            self.t_ui.area_shape_radio.hide()
+            self.t_ui.poly_int_cb.hide()
 
             # disable rest-machining for area painting
-            self.ui.rest_cb.setDisabled(False)
+            self.t_ui.rest_cb.setDisabled(False)
 
     def on_order_changed(self, order):
         if order != 'no':
@@ -851,34 +854,34 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_rest_machining_check(self, state):
         if state:
-            self.ui.order_radio.set_value('rev')
-            self.ui.order_label.setDisabled(True)
-            self.ui.order_radio.setDisabled(True)
+            self.t_ui.order_radio.set_value('rev')
+            self.t_ui.order_label.setDisabled(True)
+            self.t_ui.order_radio.setDisabled(True)
 
-            self.old_combine_state = self.ui.combine_passes_cb.get_value()
-            self.ui.combine_passes_cb.set_value(True)
-            self.ui.combine_passes_cb.setDisabled(True)
+            self.old_combine_state = self.t_ui.combine_passes_cb.get_value()
+            self.t_ui.combine_passes_cb.set_value(True)
+            self.t_ui.combine_passes_cb.setDisabled(True)
 
-            self.ui.forced_rest_iso_cb.setDisabled(False)
+            self.t_ui.forced_rest_iso_cb.setDisabled(False)
         else:
-            self.ui.order_label.setDisabled(False)
-            self.ui.order_radio.setDisabled(False)
+            self.t_ui.order_label.setDisabled(False)
+            self.t_ui.order_radio.setDisabled(False)
 
-            self.ui.combine_passes_cb.set_value(self.old_combine_state)
-            self.ui.combine_passes_cb.setDisabled(False)
+            self.t_ui.combine_passes_cb.set_value(self.old_combine_state)
+            self.t_ui.combine_passes_cb.setDisabled(False)
 
-            self.ui.forced_rest_iso_cb.setDisabled(True)
+            self.t_ui.forced_rest_iso_cb.setDisabled(True)
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
         assert isinstance(cw, QtWidgets.QComboBox), \
             "Expected a QtWidgets.QComboBox, got %s" % isinstance(cw, QtWidgets.QComboBox)
 
-        cw_index = self.ui.tools_table.indexAt(cw.pos())
+        cw_index = self.t_ui.tools_table.indexAt(cw.pos())
         cw_row = cw_index.row()
         cw_col = cw_index.column()
 
-        current_uid = int(self.ui.tools_table.item(cw_row, 3).text())
+        current_uid = int(self.t_ui.tools_table.item(cw_row, 3).text())
 
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
@@ -892,29 +895,29 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_tool_type(self, val):
         if val == 'V':
-            self.ui.addtool_entry_lbl.setDisabled(True)
-            self.ui.addtool_entry.setDisabled(True)
-            self.ui.tipdialabel.show()
-            self.ui.tipdia_entry.show()
-            self.ui.tipanglelabel.show()
-            self.ui.tipangle_entry.show()
+            self.t_ui.addtool_entry_lbl.setDisabled(True)
+            self.t_ui.addtool_entry.setDisabled(True)
+            self.t_ui.tipdialabel.show()
+            self.t_ui.tipdia_entry.show()
+            self.t_ui.tipanglelabel.show()
+            self.t_ui.tipangle_entry.show()
 
             self.on_calculate_tooldia()
         else:
-            self.ui.addtool_entry_lbl.setDisabled(False)
-            self.ui.addtool_entry.setDisabled(False)
-            self.ui.tipdialabel.hide()
-            self.ui.tipdia_entry.hide()
-            self.ui.tipanglelabel.hide()
-            self.ui.tipangle_entry.hide()
+            self.t_ui.addtool_entry_lbl.setDisabled(False)
+            self.t_ui.addtool_entry.setDisabled(False)
+            self.t_ui.tipdialabel.hide()
+            self.t_ui.tipdia_entry.hide()
+            self.t_ui.tipanglelabel.hide()
+            self.t_ui.tipangle_entry.hide()
 
-            self.ui.addtool_entry.set_value(self.old_tool_dia)
+            self.t_ui.addtool_entry.set_value(self.old_tool_dia)
 
     def on_calculate_tooldia(self):
-        if self.ui.tool_type_radio.get_value() == 'V':
-            tip_dia = float(self.ui.tipdia_entry.get_value())
-            tip_angle = float(self.ui.tipangle_entry.get_value()) / 2.0
-            cut_z = float(self.ui.cutz_entry.get_value())
+        if self.t_ui.tool_type_radio.get_value() == 'V':
+            tip_dia = float(self.t_ui.tipdia_entry.get_value())
+            tip_angle = float(self.t_ui.tipangle_entry.get_value()) / 2.0
+            cut_z = float(self.t_ui.cutz_entry.get_value())
             cut_z = -cut_z if cut_z < 0 else cut_z
 
             # calculated tool diameter so the cut_z parameter is obeyed
@@ -926,11 +929,11 @@ class ToolIsolation(AppTool, Gerber):
                 "vtipangle":    (tip_angle * 2),
             })
 
-            self.ui.addtool_entry.set_value(tool_dia)
+            self.t_ui.addtool_entry.set_value(tool_dia)
 
             return tool_dia
         else:
-            return float(self.ui.addtool_entry.get_value())
+            return float(self.t_ui.addtool_entry.get_value())
 
     def on_tool_add(self, dia=None, muted=None):
         self.blockSignals(True)
@@ -975,7 +978,7 @@ class ToolIsolation(AppTool, Gerber):
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
-            # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
+            # self.t_ui.tools_table.itemChanged.connect(self.on_tool_edit)
             self.blockSignals(False)
 
             return
@@ -988,7 +991,7 @@ class ToolIsolation(AppTool, Gerber):
                     'offset':           'Path',
                     'offset_value':     0.0,
                     'type': '           Iso',
-                    'tool_type':        self.ui.tool_type_radio.get_value(),
+                    'tool_type':        self.t_ui.tool_type_radio.get_value(),
                     'data':             deepcopy(self.default_data),
                     'solid_geometry':   []
                 }
@@ -998,24 +1001,24 @@ class ToolIsolation(AppTool, Gerber):
         self.build_ui()
 
         # select the tool just added
-        for row in range(self.ui.tools_table.rowCount()):
-            if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
-                self.ui.tools_table.selectRow(row)
+        for row in range(self.t_ui.tools_table.rowCount()):
+            if int(self.t_ui.tools_table.item(row, 3).text()) == self.tooluid:
+                self.t_ui.tools_table.selectRow(row)
                 break
 
     def on_tool_edit(self, item):
         self.blockSignals(True)
 
         edited_row = item.row()
-        editeduid = int(self.ui.tools_table.item(edited_row, 3).text())
+        editeduid = int(self.t_ui.tools_table.item(edited_row, 3).text())
         tool_dias = []
 
         try:
-            new_tool_dia = float(self.ui.tools_table.item(edited_row, 1).text())
+            new_tool_dia = float(self.t_ui.tools_table.item(edited_row, 1).text())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                new_tool_dia = float(self.ui.tools_table.item(edited_row, 1).text().replace(',', '.'))
+                new_tool_dia = float(self.t_ui.tools_table.item(edited_row, 1).text().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, use a number."))
                 self.blockSignals(False)
@@ -1036,7 +1039,7 @@ class ToolIsolation(AppTool, Gerber):
         for k, v in self.iso_tools.items():
             if k == editeduid:
                 old_tool_dia = v['tooldia']
-                restore_dia_item = self.ui.tools_table.item(edited_row, 1)
+                restore_dia_item = self.t_ui.tools_table.item(edited_row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
                 break
 
@@ -1065,10 +1068,10 @@ class ToolIsolation(AppTool, Gerber):
         if rows_to_delete:
             try:
                 for row in rows_to_delete:
-                    tooluid_del = int(self.ui.tools_table.item(row, 3).text())
+                    tooluid_del = int(self.t_ui.tools_table.item(row, 3).text())
                     deleted_tools_list.append(tooluid_del)
             except TypeError:
-                tooluid_del = int(self.ui.tools_table.item(rows_to_delete, 3).text())
+                tooluid_del = int(self.t_ui.tools_table.item(rows_to_delete, 3).text())
                 deleted_tools_list.append(tooluid_del)
 
             for t in deleted_tools_list:
@@ -1079,12 +1082,12 @@ class ToolIsolation(AppTool, Gerber):
             return
 
         try:
-            if self.ui.tools_table.selectedItems():
-                for row_sel in self.ui.tools_table.selectedItems():
+            if self.t_ui.tools_table.selectedItems():
+                for row_sel in self.t_ui.tools_table.selectedItems():
                     row = row_sel.row()
                     if row < 0:
                         continue
-                    tooluid_del = int(self.ui.tools_table.item(row, 3).text())
+                    tooluid_del = int(self.t_ui.tools_table.item(row, 3).text())
                     deleted_tools_list.append(tooluid_del)
 
                 for t in deleted_tools_list:
@@ -1104,7 +1107,7 @@ class ToolIsolation(AppTool, Gerber):
     def on_generate_buffer(self):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
 
-        self.obj_name = self.ui.object_combo.currentText()
+        self.obj_name = self.t_ui.object_combo.currentText()
 
         # Get source object.
         try:
@@ -1131,7 +1134,7 @@ class ToolIsolation(AppTool, Gerber):
 
     def on_iso_button_click(self):
 
-        self.obj_name = self.ui.object_combo.currentText()
+        self.obj_name = self.t_ui.object_combo.currentText()
 
         # Get source object.
         try:
@@ -1193,7 +1196,7 @@ class ToolIsolation(AppTool, Gerber):
         :type isolated_obj:     AppObjects.FlatCAMGerber.GerberObject
         :return: None
         """
-        selection = self.ui.select_combo.get_value()
+        selection = self.t_ui.select_combo.get_value()
 
         if selection == _("All"):
             self.isolate(isolated_obj=isolated_obj)
@@ -1238,7 +1241,7 @@ class ToolIsolation(AppTool, Gerber):
             self.poly_sel_disconnect_flag = True
 
         elif selection == _("Reference Object"):
-            ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
+            ref_obj = self.app.collection.get_by_name(self.t_ui.reference_combo.get_value())
             ref_geo = cascaded_union(ref_obj.solid_geometry)
             use_geo = cascaded_union(isolated_obj.solid_geometry).difference(ref_geo)
             self.isolate(isolated_obj=isolated_obj, geometry=use_geo)
@@ -1260,14 +1263,14 @@ class ToolIsolation(AppTool, Gerber):
         :return: None
         """
 
-        combine = self.ui.combine_passes_cb.get_value()
+        combine = self.t_ui.combine_passes_cb.get_value()
         tools_storage = self.iso_tools
 
         sorted_tools = []
-        table_items = self.ui.tools_table.selectedItems()
+        table_items = self.t_ui.tools_table.selectedItems()
         sel_rows = {t.row() for t in table_items}
         for row in sel_rows:
-            tid = int(self.ui.tools_table.item(row, 3).text())
+            tid = int(self.t_ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
@@ -1277,14 +1280,14 @@ class ToolIsolation(AppTool, Gerber):
         for tool_iso in self.iso_tools:
             for key in self.iso_tools[tool_iso]:
                 if key == 'data':
-                    self.iso_tools[tool_iso][key]["tools_iso_rest"] = self.ui.rest_cb.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_rest"] = self.t_ui.rest_cb.get_value()
                     self.iso_tools[tool_iso][key]["tools_iso_combine_passes"] = combine
-                    self.iso_tools[tool_iso][key]["tools_iso_isoexcept"] = self.ui.except_cb.get_value()
-                    self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.ui.select_combo.get_value()
-                    self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.ui.area_shape_radio.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_isoexcept"] = self.t_ui.except_cb.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_selection"] = self.t_ui.select_combo.get_value()
+                    self.iso_tools[tool_iso][key]["tools_iso_area_shape"] = self.t_ui.area_shape_radio.get_value()
 
         if combine:
-            if self.ui.rest_cb.get_value():
+            if self.t_ui.rest_cb.get_value():
                 self.combined_rest(iso_obj=isolated_obj, iso2geo=geometry, tools_storage=tools_storage,
                                    lim_area=limited_area, negative_dia=negative_dia, plot=plot)
             else:
@@ -1314,7 +1317,7 @@ class ToolIsolation(AppTool, Gerber):
 
                 milling_type = tool_data['tools_iso_milling_type']
 
-                iso_except = self.ui.except_cb.get_value()
+                iso_except = self.t_ui.except_cb.get_value()
 
                 for i in range(passes):
                     tool_dia = tools_storage[tool]['tooldia']
@@ -1374,7 +1377,7 @@ class ToolIsolation(AppTool, Gerber):
                         # ############################################################
                         # ########## AREA SUBTRACTION ################################
                         # ############################################################
-                        if self.ui.except_cb.get_value():
+                        if self.t_ui.except_cb.get_value():
                             self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                             geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
@@ -1457,15 +1460,15 @@ class ToolIsolation(AppTool, Gerber):
         #     sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         sorted_tools = []
-        table_items = self.ui.tools_table.selectedItems()
+        table_items = self.t_ui.tools_table.selectedItems()
         sel_rows = {t.row() for t in table_items}
         for row in sel_rows:
             try:
-                tdia = float(self.ui.tools_table.item(row, 1).text())
+                tdia = float(self.t_ui.tools_table.item(row, 1).text())
             except ValueError:
                 # try to convert comma to decimal point. if it's still not working error message and return
                 try:
-                    tdia = float(self.ui.tools_table.item(row, 1).text().replace(',', '.'))
+                    tdia = float(self.t_ui.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     continue
@@ -1475,7 +1478,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return 'fail'
 
-        order = self.ui.order_radio.get_value()
+        order = self.t_ui.order_radio.get_value()
         if order == 'fwd':
             sorted_tools.sort(reverse=False)
         elif order == 'rev':
@@ -1507,8 +1510,8 @@ class ToolIsolation(AppTool, Gerber):
                         'full': 2
                     }[tool_data['tools_iso_isotype']]
 
-                    forced_rest = self.ui.forced_rest_iso_cb.get_value()
-                    iso_except = self.ui.except_cb.get_value()
+                    forced_rest = self.t_ui.forced_rest_iso_cb.get_value()
+                    iso_except = self.t_ui.except_cb.get_value()
 
                     outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
                     internal_name = outname + "_iso"
@@ -1653,10 +1656,10 @@ class ToolIsolation(AppTool, Gerber):
         prog_plot = self.app.defaults["tools_iso_plotting"]
 
         sorted_tools = []
-        table_items = self.ui.tools_table.selectedItems()
+        table_items = self.t_ui.tools_table.selectedItems()
         sel_rows = {t.row() for t in table_items}
         for row in sel_rows:
-            tid = int(self.ui.tools_table.item(row, 3).text())
+            tid = int(self.t_ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
@@ -1687,7 +1690,7 @@ class ToolIsolation(AppTool, Gerber):
 
             milling_type = tool_data['tools_iso_milling_type']
 
-            iso_except = self.ui.except_cb.get_value()
+            iso_except = self.t_ui.except_cb.get_value()
 
             outname = "%s_%.*f" % (iso_obj.options["name"], self.decimals, float(tool_dia))
 
@@ -1815,7 +1818,7 @@ class ToolIsolation(AppTool, Gerber):
         if subtraction_geo:
             sub_union = cascaded_union(subtraction_geo)
         else:
-            name = self.ui.exc_obj_combo.currentText()
+            name = self.t_ui.exc_obj_combo.currentText()
             subtractor_obj = self.app.collection.get_by_name(name)
             sub_union = cascaded_union(subtractor_obj.solid_geometry)
 
@@ -1938,7 +1941,7 @@ class ToolIsolation(AppTool, Gerber):
             curr_pos = (curr_pos[0], curr_pos[1])
 
         if event.button == 1:
-            if self.ui.poly_int_cb.get_value() is True:
+            if self.t_ui.poly_int_cb.get_value() is True:
                 clicked_poly = self.find_polygon_ignore_interiors(point=(curr_pos[0], curr_pos[1]),
                                                                   geoset=self.grb_obj.solid_geometry)
 
@@ -2000,7 +2003,7 @@ class ToolIsolation(AppTool, Gerber):
 
             if self.poly_dict:
                 poly_list = deepcopy(list(self.poly_dict.values()))
-                if self.ui.poly_int_cb.get_value() is True:
+                if self.t_ui.poly_int_cb.get_value() is True:
                     # isolate the interior polygons with a negative tool
                     self.isolate(isolated_obj=self.grb_obj, geometry=poly_list, negative_dia=True)
                 else:
@@ -2138,7 +2141,7 @@ class ToolIsolation(AppTool, Gerber):
                 return ""
         elif event.button == right_button and self.mouse_is_dragging is False:
 
-            shape_type = self.ui.area_shape_radio.get_value()
+            shape_type = self.t_ui.area_shape_radio.get_value()
 
             if shape_type == "square":
                 self.first_click = False
@@ -2198,7 +2201,7 @@ class ToolIsolation(AppTool, Gerber):
 
     # called on mouse move
     def on_mouse_move(self, event):
-        shape_type = self.ui.area_shape_radio.get_value()
+        shape_type = self.t_ui.area_shape_radio.get_value()
 
         if self.app.is_legacy is False:
             event_pos = event.pos
@@ -2352,9 +2355,9 @@ class ToolIsolation(AppTool, Gerber):
 
         # select last tool added
         toolid = res
-        for row in range(self.ui.tools_table.rowCount()):
-            if int(self.ui.tools_table.item(row, 3).text()) == toolid:
-                self.ui.tools_table.selectRow(row)
+        for row in range(self.t_ui.tools_table.rowCount()):
+            if int(self.t_ui.tools_table.item(row, 3).text()) == toolid:
+                self.t_ui.tools_table.selectRow(row)
         self.on_row_selection_change()
 
     def on_tool_from_db_inserted(self, tool):
@@ -2415,12 +2418,12 @@ class ToolIsolation(AppTool, Gerber):
         self.build_ui()
 
         # select the tool just added
-        for row in range(self.ui.tools_table.rowCount()):
-            if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
-                self.ui.tools_table.selectRow(row)
+        for row in range(self.t_ui.tools_table.rowCount()):
+            if int(self.t_ui.tools_table.item(row, 3).text()) == self.tooluid:
+                self.t_ui.tools_table.selectRow(row)
                 break
 
-        # if self.ui.tools_table.rowCount() != 0:
+        # if self.t_ui.tools_table.rowCount() != 0:
         #     self.param_frame.setDisabled(False)
 
     def on_tool_add_from_db_clicked(self):

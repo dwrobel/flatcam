@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.06.2020
+
+- Drilling Tool - UI is working as expected; I will have to propagate the changes to other tools too, to increase likeness between different parts of the app
+
 25.06.2020
 
 - made sure that when trying to view the source but no object is selected, the messages are correct
