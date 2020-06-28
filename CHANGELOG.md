@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.06.2020
+
+- fixed the DXF parser to work with the latest version of ezdxf module (issues for the ellipse entity and modified attribute name for the knots_values to knots)
+- fixed the DXF parser to parse correctly the b-splines by not adding automatically a knot value 0f (0, 0) when the spline is not closed
+
 27.06.2020
 
 - Drilling Tool - UI is working as expected; I will have to propagate the changes to other tools too, to increase likeness between different parts of the app

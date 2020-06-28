@@ -7,6 +7,7 @@
 
 from shapely.geometry import LineString
 from shapely.affinity import rotate
+from ezdxf.math.vector import Vector as ezdxf_vector
 
 import logging
 
@@ -175,8 +176,7 @@ def dxfellipse2shapely(ellipse, ellipse_segments=100):
     ratio = ellipse.dxf.ratio
 
     points_list = []
-
-    major_axis = Vector(major_axis)
+    major_axis = Vector(list(major_axis))
 
     major_x = major_axis[0]
     major_y = major_axis[1]
@@ -248,9 +248,17 @@ def dxfsolid2shapely(solid):
 
 
 def dxfspline2shapely(spline):
-    with spline.edit_data() as spline_data:
-        ctrl_points = spline_data.control_points
-        knot_values = spline_data.knot_values
+    # for old version of ezdxf
+    # with spline.edit_data() as spline_data:
+    #     ctrl_points = spline_data.control_points
+    #     try:
+    #         # required if using old version of ezdxf
+    #         knot_values = spline_data.knot_values
+    #     except AttributeError:
+    #         knot_values = spline_data.knots
+
+    ctrl_points = spline.control_points
+    knot_values = spline.knots
     is_closed = spline.closed
     degree = spline.dxf.degree
 
@@ -322,6 +330,10 @@ def get_geo_from_insert(dxf_object, insert):
         if sx != 1 or sy != 1:
             geo = scale(geo, sx, sy)
         if phi != 0:
+            if isinstance(tr, str) and tr.lower() == 'c':
+                tr = 'center'
+            elif isinstance(tr, ezdxf_vector):
+                tr = list(tr)
             geo = rotate(geo, phi, origin=tr)
 
         geo_block_transformed.append(geo)

@@ -22,18 +22,16 @@ def normalize_2(v):
 
 # ------------------------------------------------------------------------------
 # Convert a B-spline to polyline with a fixed number of segments
-#
-# FIXME to become adaptive
 # ------------------------------------------------------------------------------
 def spline2Polyline(xyz, degree, closed, segments, knots):
     """
-    :param xyz: DXF spline control points
-    :param degree: degree of the Spline curve
-    :param closed: closed Spline
-    :type closed: bool
-    :param segments: how many lines to use for Spline approximation
-    :param knots: DXF spline knots
-    :return: x,y,z coordinates (each is a list)
+    :param xyz:         DXF spline control points
+    :param degree:      degree of the Spline curve
+    :param closed:      closed Spline
+    :type closed:       bool
+    :param segments:    how many lines to use for Spline approximation
+    :param knots:       DXF spline knots
+    :return:            x,y,z coordinates (each is a list)
     """
 
     # Check if last point coincide with the first one
@@ -48,7 +46,8 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
         knots = None
     else:
         # make base-1
-        knots.insert(0, 0)
+        # knots.insert(0, 0)
+        pass
 
     npts = len(xyz)
 
