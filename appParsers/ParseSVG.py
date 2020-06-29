@@ -48,9 +48,12 @@ def svgparselength(lengthstr):
                     r'(?:' + integer_re_str + r'(?:[Ee]' + integer_re_str + r')?)'
     length_re_str = r'(' + number_re_str + r')(em|ex|px|in|cm|mm|pt|pc|%)?'
 
-    match = re.search(length_re_str, lengthstr)
-    if match:
-        return float(match.group(1)), match.group(2)
+    if lengthstr:
+        match = re.search(length_re_str, lengthstr)
+        if match:
+            return float(match.group(1)), match.group(2)
+    else:
+        return 0, 0
 
     return
 

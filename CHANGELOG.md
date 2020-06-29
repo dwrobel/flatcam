@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+30.06.2020
+
+- fixed the SVG parser so the SVG files with no information regarding the 'height' can be opened in FlatCAM; fixed issue #433
+
 29.06.2020
 
 - fixed the DXF parser to work with the latest version of ezdxf module (issues for the ellipse entity and modified attribute name for the knots_values to knots)
