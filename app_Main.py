@@ -2964,6 +2964,11 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 8, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 8, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 8, 3)
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Turkish"), 9, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mehmet Kaya"), 9, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<malatyakaya480@gmail.com>"), 9, 3)
+
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
 
