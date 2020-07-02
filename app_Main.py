@@ -8617,7 +8617,7 @@ class App(QtCore.QObject):
         :param plot:        If True then the resulting object will be plotted on canvas
         :return:
         """
-        self.defaults.report_usage("import_dxf()")
+        log.debug(" ********* Importing SVG as: %s ********* " % geo_type.capitalize())
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -8632,8 +8632,13 @@ class App(QtCore.QObject):
         units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
-            geo_obj.import_dxf(filename, obj_type, units=units)
-            geo_obj.multigeo = False
+            if obj_type == "geometry":
+                geo_obj.import_dxf_as_geo(filename, units=units)
+            elif obj_type == "gerber":
+                geo_obj.import_dxf_as_gerber(filename, units=units)
+            else:
+                return "fail"
+            geo_obj.multigeo = True
 
         with self.proc_container.new(_("Importing DXF")):
 

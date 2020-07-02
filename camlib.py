@@ -22,7 +22,7 @@ from rtree import index as rtindex
 from lxml import etree as ET
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
+from shapely.geometry import Polygon, Point, LinearRing
 
 from shapely.geometry import box as shply_box
 from shapely.ops import cascaded_union, unary_union, substring, linemerge
@@ -1087,16 +1087,16 @@ class Geometry(object):
             if geos_text_f:
                 self.solid_geometry = self.solid_geometry + geos_text_f
 
-    def import_dxf(self, filename, object_type=None, units='MM'):
+    def import_dxf_as_geo(self, filename, units='MM'):
         """
         Imports shapes from an DXF file into the object's geometry.
 
         :param filename:    Path to the DXF file.
         :type filename:     str
-        :param object_type:
         :param units:       Application units
         :return: None
         """
+        log.debug("Parsing DXF file geometry into a Geometry object solid geometry.")
 
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
@@ -1115,13 +1115,6 @@ class Geometry(object):
                 self.solid_geometry.append(geos)
         else:  # It's shapely geometry
             self.solid_geometry = [self.solid_geometry, geos]
-
-        # flatten the self.solid_geometry list for import_dxf() to import DXF as Gerber
-        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        if self.solid_geometry is not None:
-            self.solid_geometry = cascaded_union(self.solid_geometry)
-        else:
-            return
 
         # commented until this function is ready
         # geos_text = getdxftext(dxf, object_type, units=units)

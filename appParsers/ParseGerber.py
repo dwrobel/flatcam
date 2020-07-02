@@ -2,20 +2,22 @@ from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
-import re
-import logging
+# import re
+# import logging
 import traceback
 from copy import deepcopy
-import sys
+# import sys
 
-from shapely.ops import cascaded_union
-from shapely.affinity import scale, translate
+from shapely.ops import unary_union, linemerge
+# from shapely.affinity import scale, translate
 import shapely.affinity as affinity
-from shapely.geometry import box as shply_box, Polygon, LineString, Point, MultiPolygon
+from shapely.geometry import box as shply_box
 
 from lxml import etree as ET
+import ezdxf
+
+from appParsers.ParseDXF import *
 from appParsers.ParseSVG import svgparselength, getsvggeo
-import appTranslation as fcTranslate
 
 import gettext
 import builtins
@@ -502,10 +504,10 @@ class Gerber(Geometry):
 
                     if buff_length > 0:
                         if current_polarity == 'D':
-                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.union(unary_union(poly_buffer))
 
                         else:
-                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.difference(unary_union(poly_buffer))
 
                         # follow_buffer = []
                         poly_buffer = []
@@ -1497,7 +1499,7 @@ class Gerber(Geometry):
 
             else:
                 log.debug("Union by union()...")
-                new_poly = cascaded_union(poly_buffer)
+                new_poly = unary_union(poly_buffer)
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
                 log.warning("Union done.")
 
@@ -1601,7 +1603,7 @@ class Gerber(Geometry):
                 p2 = Point(loc[0], loc[1] - 0.5 * (height - width))
                 c1 = p1.buffer(width * 0.5, int(steps_per_circle / 4))
                 c2 = p2.buffer(width * 0.5, int(steps_per_circle / 4))
-            return cascaded_union([c1, c2]).convex_hull
+            return unary_union([c1, c2]).convex_hull
 
         if aperture['type'] == 'P':  # Regular polygon
             loc = location.coords[0]
@@ -1835,6 +1837,56 @@ class Gerber(Geometry):
             new_el['solid'] = pol
             new_el['follow'] = pol.exterior
             self.apertures['0']['geometry'].append(new_el)
+
+    def import_dxf_as_gerber(self, filename, units='MM'):
+        """
+        Imports shapes from an DXF file into the Gerberobject geometry.
+
+        :param filename:    Path to the DXF file.
+        :type filename:     str
+        :param units:       Application units
+        :return: None
+        """
+
+        log.debug("Parsing DXF file geometry into a Gerber object geometry.")
+        # Parse into list of shapely objects
+        dxf = ezdxf.readfile(filename)
+        geos = getdxfgeo(dxf)
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = linemerge(geos)
+
+        # Add to object
+        if self.solid_geometry is None:
+            self.solid_geometry = []
+
+        if type(self.solid_geometry) is list:
+            if type(geos) is list:
+                self.solid_geometry += geos
+            else:
+                self.solid_geometry.append(geos)
+        else:  # It's shapely geometry
+            self.solid_geometry = [self.solid_geometry, geos]
+
+        # flatten the self.solid_geometry list for import_dxf() to import DXF as Gerber
+        flat_geo = list(self.flatten_list(self.solid_geometry))
+        if flat_geo:
+            self.solid_geometry = unary_union(flat_geo)
+            self.follow_geometry = self.solid_geometry
+        else:
+            return "fail"
+
+        # create the self.apertures data structure
+        if '0' not in self.apertures:
+            self.apertures['0'] = {}
+            self.apertures['0']['type'] = 'REG'
+            self.apertures['0']['size'] = 0.0
+            self.apertures['0']['geometry'] = []
+
+        for pol in flat_geo:
+            new_el = {}
+            new_el['solid'] = pol
+            new_el['follow'] = pol
+            self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
         """
