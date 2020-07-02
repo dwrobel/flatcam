@@ -675,12 +675,12 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
-        self.excellon_tools = self.excellon_obj.tools
-
         if self.excellon_obj is None:
+            self.excellon_tools = []
             self.t_ui.exc_param_frame.setDisabled(True)
             self.set_tool_ui()
         else:
+            self.excellon_tools = self.excellon_obj.tools
             self.app.collection.set_active(self.obj_name)
             self.t_ui.exc_param_frame.setDisabled(False)
             self.excellon_tools = self.excellon_obj.tools
