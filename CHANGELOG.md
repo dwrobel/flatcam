@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - trying to optimize the resulting geometry in DXF import (and in SVG import) by merging contiguous lines; reduced the lines to about one third of the original
 - fixed importing DXF file as Gerber method such that now the resulting Gerber object is correctly created having the geometry attributes like self.apertures and self.follow_geometry
 - added Turkish translation - courtesy of Mehmet Kaya
+- modified the Gerber export method to take care of the situation where the exported Gerber file is a SVG/DXF file imported as Gerber
 
 30.06.2020
 
