@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.07.2020
+
+- trying to optimize the resulting geometry in DXF import (and in SVG import) by merging contiguous lines; reduced the lines to about one third of the original
+
 30.06.2020
 
 - fixed the SVG parser so the SVG files with no information regarding the 'height' can be opened in FlatCAM; fixed issue #433

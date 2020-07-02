@@ -25,7 +25,7 @@ from lxml import etree as ET
 from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, substring
+from shapely.ops import cascaded_union, unary_union, substring, linemerge
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -1057,6 +1057,9 @@ class Geometry(object):
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = linemerge(geos)
+
         # Add to object
         if self.solid_geometry is None:
             self.solid_geometry = []
@@ -1098,6 +1101,8 @@ class Geometry(object):
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = linemerge(geos)
 
         # Add to object
         if self.solid_geometry is None:
