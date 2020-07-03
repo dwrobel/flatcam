@@ -326,31 +326,12 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menueditedit.setDisabled(False)
         self.menueditok.setDisabled(True)
 
+        # ############################ EDIT -> CONVERSION ######################################################
         # Separator
         self.menuedit.addSeparator()
         self.menuedit_convert = self.menuedit.addMenu(
             QtGui.QIcon(self.app.resource_location + '/convert24.png'), _('Conversion'))
-        self.menuedit_convertjoin = self.menuedit_convert.addAction(
-            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
-        self.menuedit_convertjoin.setToolTip(
-            _("Merge a selection of objects, which can be of type:\n"
-              "- Gerber\n"
-              "- Excellon\n"
-              "- Geometry\n"
-              "into a new combo Geometry object.")
-        )
-        self.menuedit_convertjoinexc = self.menuedit_convert.addAction(
-            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Excellon(s) -> Excellon'))
-        self.menuedit_convertjoinexc.setToolTip(
-            _("Merge a selection of Excellon objects into a new combo Excellon object.")
-        )
-        self.menuedit_convertjoingrb = self.menuedit_convert.addAction(
-            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Gerber(s) -> Gerber'))
-        self.menuedit_convertjoingrb.setToolTip(
-            _("Merge a selection of Gerber objects into a new combo Gerber object.")
-        )
-        # Separator
-        self.menuedit_convert.addSeparator()
+
         self.menuedit_convert_sg2mg = self.menuedit_convert.addAction(
             QtGui.QIcon(self.app.resource_location + '/convert24.png'), _('Convert Single to MultiGeo'))
         self.menuedit_convert_sg2mg.setToolTip(
@@ -371,8 +352,36 @@ class MainGUI(QtWidgets.QMainWindow):
         self.menueditconvert_any2gerber = self.menuedit_convert.addAction(
             QtGui.QIcon(self.app.resource_location + '/copy_geo.png'),
             _('Convert Any to Gerber'))
+        self.menueditconvert_any2excellon = self.menuedit_convert.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy_geo.png'),
+            _('Convert Any to Excellon'))
         self.menuedit_convert.setToolTipsVisible(True)
 
+        # ############################ EDIT -> JOIN        ######################################################
+        self.menuedit_join = self.menuedit.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Objects'))
+        self.menuedit_join2geo = self.menuedit_join.addAction(
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
+        self.menuedit_join2geo.setToolTip(
+            _("Merge a selection of objects, which can be of type:\n"
+              "- Gerber\n"
+              "- Excellon\n"
+              "- Geometry\n"
+              "into a new combo Geometry object.")
+        )
+        self.menuedit_join_exc2exc = self.menuedit_join.addAction(
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Excellon(s) -> Excellon'))
+        self.menuedit_join_exc2exc.setToolTip(
+            _("Merge a selection of Excellon objects into a new combo Excellon object.")
+        )
+        self.menuedit_join_grb2grb = self.menuedit_join.addAction(
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Gerber(s) -> Gerber'))
+        self.menuedit_join_grb2grb.setToolTip(
+            _("Merge a selection of Gerber objects into a new combo Gerber object.")
+        )
+        self.menuedit_join.setToolTipsVisible(True)
+
+        # ############################ EDIT -> COPY        ######################################################
         # Separator
         self.menuedit.addSeparator()
         self.menueditcopyobject = self.menuedit.addAction(

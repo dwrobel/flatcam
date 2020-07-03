@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - fixed importing DXF file as Gerber method such that now the resulting Gerber object is correctly created having the geometry attributes like self.apertures and self.follow_geometry
 - added Turkish translation - courtesy of Mehmet Kaya
 - modified the Gerber export method to take care of the situation where the exported Gerber file is a SVG/DXF file imported as Gerber
+- working in making a new functionality: Convert Any to Excellon. Finished Geometry object conversion to Excellon.
 
 30.06.2020
 

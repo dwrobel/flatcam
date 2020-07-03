@@ -22,6 +22,7 @@ import ctypes
 import traceback
 
 from shapely.geometry import Point, MultiPolygon
+from shapely.ops import unary_union
 from io import StringIO
 
 from reportlab.graphics import renderPDF
@@ -835,9 +836,9 @@ class App(QtCore.QObject):
         self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
         self.ui.menueditok.triggered.connect(lambda: self.editor2object())
 
-        self.ui.menuedit_convertjoin.triggered.connect(self.on_edit_join)
-        self.ui.menuedit_convertjoinexc.triggered.connect(self.on_edit_join_exc)
-        self.ui.menuedit_convertjoingrb.triggered.connect(self.on_edit_join_grb)
+        self.ui.menuedit_join2geo.triggered.connect(self.on_edit_join)
+        self.ui.menuedit_join_exc2exc.triggered.connect(self.on_edit_join_exc)
+        self.ui.menuedit_join_grb2grb.triggered.connect(self.on_edit_join_grb)
 
         self.ui.menuedit_convert_sg2mg.triggered.connect(self.on_convert_singlegeo_to_multigeo)
         self.ui.menuedit_convert_mg2sg.triggered.connect(self.on_convert_multigeo_to_singlegeo)
@@ -847,6 +848,7 @@ class App(QtCore.QObject):
         self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
         self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
         self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
+        self.ui.menueditconvert_any2excellon.triggered.connect(self.convert_any2excellon)
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
@@ -5180,7 +5182,7 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, ExcellonObject):
+                if obj.kind == 'excellon':
                     self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
                     self.app_obj.new_object("geometry", str(obj_name) + "_conv", initialize)
@@ -5193,8 +5195,6 @@ class App(QtCore.QObject):
 
         :return:
         """
-
-        self.defaults.report_usage("convert_any2gerber()")
 
         def initialize_geometry(obj_init, app):
             apertures = {}
@@ -5258,12 +5258,115 @@ class App(QtCore.QObject):
             obj_name = obj.options["name"]
 
             try:
-                if isinstance(obj, ExcellonObject):
+                if obj.kind == 'excellon':
                     self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
-                elif isinstance(obj, GeometryObject):
+                elif obj.kind == 'geometry':
                     self.app_obj.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
-                    log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
+                    log.warning("App.convert_any2gerber --> This is no valid object for conversion.")
+
+            except Exception as e:
+                return "Operation failed: %s" % str(e)
+
+    def convert_any2excellon(self):
+        """
+        Will convert any object out of Gerber, Excellon, Geometry to an Excellon object.
+
+        :return:
+        """
+
+        def initialize_geometry(obj_init, app):
+            tools = {}
+            tooluid = 1
+
+            obj_init.solid_geometry = []
+
+            for geo in obj.solid_geometry:
+                if not isinstance(geo, (Polygon, MultiPolygon, LinearRing)):
+                    continue
+
+                minx, miny, maxx, maxy = geo.bounds
+                new_dia = min([maxx-minx, maxy-miny])
+
+                new_drill = geo.centroid
+                new_drill_geo = new_drill.buffer(new_dia / 2.0)
+
+                current_tooldias = []
+                if tools:
+                    for tool in tools:
+                        if tools[tool] and 'tooldia' in tools[tool]:
+                            current_tooldias.append(tools[tool]['tooldia'])
+
+                if new_dia in current_tooldias:
+                    for tool in tools:
+                        if float('%.*f' % (self.decimals, tools[tool]["tooldia"])) == float('%.*f' % (self.decimals,
+                                                                                            new_dia)):
+                            tools[tool]['drills'].append(new_drill)
+                            tools[tool]['solid_geometry'].append(deepcopy(new_drill_geo))
+                else:
+                    tools[tooluid] = {}
+                    tools[tooluid]['tooldia'] = new_dia
+                    tools[tooluid]['drills'] = [new_drill]
+                    tools[tooluid]['slots'] = []
+                    tools[tooluid]['solid_geometry'] = [new_drill_geo]
+                    tooluid += 1
+
+                try:
+                    obj_init.solid_geometry.append(new_drill_geo)
+                except (TypeError, AttributeError):
+                    obj_init.solid_geometry = [new_drill_geo]
+
+            obj_init.tools = deepcopy(tools)
+            obj_init.solid_geometry = unary_union(obj_init.solid_geometry)
+
+        def initialize_gerber(obj_init, app):
+            apertures = {}
+
+            apid = 10
+            for tool in obj.tools:
+                apertures[str(apid)] = {}
+                apertures[str(apid)]['geometry'] = []
+                for geo in obj.tools[tool]['solid_geometry']:
+                    new_el = {}
+                    new_el['solid'] = geo
+                    new_el['follow'] = geo.exterior
+                    apertures[str(apid)]['geometry'].append(deepcopy(new_el))
+
+                apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
+                apertures[str(apid)]['type'] = 'C'
+                apid += 1
+
+            # create solid_geometry
+            solid_geometry = []
+            for apid in apertures:
+                for geo_el in apertures[apid]['geometry']:
+                    solid_geometry.append(geo_el['solid'])
+
+            solid_geometry = MultiPolygon(solid_geometry)
+            solid_geometry = solid_geometry.buffer(0.0000001)
+
+            obj_init.solid_geometry = deepcopy(solid_geometry)
+            obj_init.apertures = deepcopy(apertures)
+            # clear the working objects (perhaps not necessary due of Python GC)
+            apertures.clear()
+
+        if not self.collection.get_selected():
+            log.warning("App.convert_any2excellon--> No object selected")
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("No object is selected. Select an object and try again."))
+            return
+
+        for obj in self.collection.get_selected():
+
+            obj_name = obj.options["name"]
+
+            try:
+                if obj.kind == 'gerber':
+                    self.app_obj.new_object("excellon", str(obj_name) + "_conv", initialize_gerber)
+                elif obj.kind == 'geometry':
+                    self.app_obj.new_object("excellon", str(obj_name) + "_conv", initialize_geometry)
+                else:
+                    log.warning("App.convert_any2excellon --> This is no valid object for conversion.")
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
