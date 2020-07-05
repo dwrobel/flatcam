@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+6.07.2020
+
+- Convert Any to Excellon. Finished Gerber object conversion to Excellon. Flash's are converted to drills. Traces in the form of a linear LineString (no changes in direction) are converted to slots.
+
 2.07.2020
 
 - trying to optimize the resulting geometry in DXF import (and in SVG import) by merging contiguous lines; reduced the lines to about one third of the original

@@ -5320,40 +5320,100 @@ class App(QtCore.QObject):
             obj_init.solid_geometry = unary_union(obj_init.solid_geometry)
 
         def initialize_gerber(obj_init, app):
-            apertures = {}
+            tools = {}
+            tooluid = 1
 
-            apid = 10
-            for tool in obj.tools:
-                apertures[str(apid)] = {}
-                apertures[str(apid)]['geometry'] = []
-                for geo in obj.tools[tool]['solid_geometry']:
-                    new_el = {}
-                    new_el['solid'] = geo
-                    new_el['follow'] = geo.exterior
-                    apertures[str(apid)]['geometry'].append(deepcopy(new_el))
+            obj_init.solid_geometry = []
 
-                apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
-                apertures[str(apid)]['type'] = 'C'
-                apid += 1
+            for apid in obj.apertures:
+                if 'geometry' in obj.apertures[apid]:
+                    for geo_dict in obj.apertures[apid]['geometry']:
+                        if 'follow' in geo_dict:
+                            if isinstance(geo_dict['follow'], Point):
+                                geo = geo_dict['solid']
+                                minx, miny, maxx, maxy = geo.bounds
+                                new_dia = min([maxx - minx, maxy - miny])
 
-            # create solid_geometry
-            solid_geometry = []
-            for apid in apertures:
-                for geo_el in apertures[apid]['geometry']:
-                    solid_geometry.append(geo_el['solid'])
+                                new_drill = geo.centroid
+                                new_drill_geo = new_drill.buffer(new_dia / 2.0)
 
-            solid_geometry = MultiPolygon(solid_geometry)
-            solid_geometry = solid_geometry.buffer(0.0000001)
+                                current_tooldias = []
+                                if tools:
+                                    for tool in tools:
+                                        if tools[tool] and 'tooldia' in tools[tool]:
+                                            current_tooldias.append(
+                                                float('%.*f' % (self.decimals, tools[tool]['tooldia']))
+                                            )
 
-            obj_init.solid_geometry = deepcopy(solid_geometry)
-            obj_init.apertures = deepcopy(apertures)
-            # clear the working objects (perhaps not necessary due of Python GC)
-            apertures.clear()
+                                if float('%.*f' % (self.decimals, new_dia)) in current_tooldias:
+                                    for tool in tools:
+                                        if float('%.*f' % (self.decimals, tools[tool]["tooldia"])) == float(
+                                                '%.*f' % (self.decimals, new_dia)):
+                                            if new_drill not in tools[tool]['drills']:
+                                                tools[tool]['drills'].append(new_drill)
+                                                tools[tool]['solid_geometry'].append(deepcopy(new_drill_geo))
+                                else:
+                                    tools[tooluid] = {}
+                                    tools[tooluid]['tooldia'] = new_dia
+                                    tools[tooluid]['drills'] = [new_drill]
+                                    tools[tooluid]['slots'] = []
+                                    tools[tooluid]['solid_geometry'] = [new_drill_geo]
+                                    tooluid += 1
+
+                                try:
+                                    obj_init.solid_geometry.append(new_drill_geo)
+                                except (TypeError, AttributeError):
+                                    obj_init.solid_geometry = [new_drill_geo]
+                            elif isinstance(geo_dict['follow'], LineString):
+                                geo_coords = list(geo_dict['follow'].coords)
+
+                                # slots can have only a start and stop point and no intermediate points
+                                if len(geo_coords) != 2:
+                                    continue
+
+                                geo = geo_dict['solid']
+                                try:
+                                    new_dia = obj.apertures[apid]['size']
+                                except Exception:
+                                    continue
+
+                                new_slot = (Point(geo_coords[0]), Point(geo_coords[1]))
+                                new_slot_geo = geo
+
+                                current_tooldias = []
+                                if tools:
+                                    for tool in tools:
+                                        if tools[tool] and 'tooldia' in tools[tool]:
+                                            current_tooldias.append(
+                                                float('%.*f' % (self.decimals, tools[tool]['tooldia']))
+                                            )
+
+                                if float('%.*f' % (self.decimals, new_dia)) in current_tooldias:
+                                    for tool in tools:
+                                        if float('%.*f' % (self.decimals, tools[tool]["tooldia"])) == float(
+                                                '%.*f' % (self.decimals, new_dia)):
+                                            if new_slot not in tools[tool]['slots']:
+                                                tools[tool]['slots'].append(new_slot)
+                                                tools[tool]['solid_geometry'].append(deepcopy(new_slot_geo))
+                                else:
+                                    tools[tooluid] = {}
+                                    tools[tooluid]['tooldia'] = new_dia
+                                    tools[tooluid]['drills'] = []
+                                    tools[tooluid]['slots'] = [new_slot]
+                                    tools[tooluid]['solid_geometry'] = [new_slot_geo]
+                                    tooluid += 1
+
+                                try:
+                                    obj_init.solid_geometry.append(new_slot_geo)
+                                except (TypeError, AttributeError):
+                                    obj_init.solid_geometry = [new_slot_geo]
+
+            obj_init.tools = deepcopy(tools)
+            obj_init.solid_geometry = unary_union(obj_init.solid_geometry)
 
         if not self.collection.get_selected():
             log.warning("App.convert_any2excellon--> No object selected")
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object is selected. Select an object and try again."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("No object is selected. Select an object and try again."))
             return
 
         for obj in self.collection.get_selected():

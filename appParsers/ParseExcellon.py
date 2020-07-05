@@ -42,7 +42,7 @@ class Excellon(Geometry):
     ================  ====================================
     tooldia           Diameter of the tool
     drills            List that store the Shapely Points for drill points
-    slots             List that store the Shapely Points for slots. Each is a tuple: (start_point, stop_point
+    slots             List that store the Shapely Points for slots. Each is a tuple: (start_point, stop_point)
     data              dictionary which holds the options for each tool
     solid_geometry    Geometry list for each tool
     ================  ====================================
