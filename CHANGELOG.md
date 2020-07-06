@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 6.07.2020
 
 - Convert Any to Excellon. Finished Gerber object conversion to Excellon. Flash's are converted to drills. Traces in the form of a linear LineString (no changes in direction) are converted to slots.
+- Turkish translation updated by Mehmet Kaya for the 8.993 version of strings
 
 2.07.2020
 
