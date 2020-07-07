@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated the Panelize Tool to save the source code for the panelized Excellon objects so it can be saved from the Save project tab context menu entry
 - updated the Panelize Tool to save the source code for the panelized Geometry objects as DXF file
+- fixed the Panelize Tool so the box object stay as selected on new objects are loaded; any selection shape on canvas is deleted when clicking Panelize
 
 6.07.2020
 

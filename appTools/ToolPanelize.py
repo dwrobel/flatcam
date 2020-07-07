@@ -180,6 +180,9 @@ class Panelize(AppTool):
     def on_panelize(self):
         name = self.ui.object_combo.currentText()
 
+        # delete any selection box
+        self.app.delete_selection_shape()
+
         # Get source object to be panelized.
         try:
             panel_source_obj = self.app.collection.get_by_name(str(name))
@@ -729,7 +732,7 @@ class PanelizeUI:
         self.box_combo = FCComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.is_last = True
+        # self.box_combo.is_last = True
 
         self.box_combo.setToolTip(
             _("The actual object that is used as container for the\n "
