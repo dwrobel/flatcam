@@ -1101,6 +1101,7 @@ class Geometry(object):
         # Parse into list of shapely objects
         dxf = ezdxf.readfile(filename)
         geos = getdxfgeo(dxf)
+
         # trying to optimize the resulting geometry by merging contiguous lines
         geos = linemerge(geos)
 
@@ -1115,6 +1116,25 @@ class Geometry(object):
                 self.solid_geometry.append(geos)
         else:  # It's shapely geometry
             self.solid_geometry = [self.solid_geometry, geos]
+
+        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        new_data = {k: v for k, v in self.options.items()}
+
+        self.tools.update({
+            1: {
+                'tooldia': tooldia,
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': _('Rough'),
+                'tool_type': 'C1',
+                'data': deepcopy(new_data),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+
+        self.tools[1]['data']['name'] = self.options['name']
 
         # commented until this function is ready
         # geos_text = getdxftext(dxf, object_type, units=units)

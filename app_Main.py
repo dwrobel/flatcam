@@ -8363,7 +8363,7 @@ class App(QtCore.QObject):
 
         if file_string.getvalue() == '':
             self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Save cancelled because source file is empty. Try to export the Gerber file."))
+                             _("Save cancelled because source file is empty. Try to export the file."))
             return 'fail'
 
         try:
@@ -8544,11 +8544,12 @@ class App(QtCore.QObject):
         """
         Exports a Gerber Object to an Gerber file.
 
-        :param obj_name: the name of the FlatCAM object to be saved as Gerber
-        :param filename: Path to the Gerber file to save to.
-        :param local_use: if the Gerber code is to be saved to a file (None) or used within FlatCAM.
-        When not None, the value will be the actual Gerber object for which to create the Gerber code
-        :param use_thread: if to be run in a separate thread
+        :param obj_name:    the name of the FlatCAM object to be saved as Gerber
+        :param filename:    Path to the Gerber file to save to.
+        :param local_use:   if the Gerber code is to be saved to a file (None) or used within FlatCAM.
+                            When not None, the value will be the actual Gerber object for which to create
+                            the Gerber code
+        :param use_thread:  if to be run in a separate thread
         :return:
         """
         self.defaults.report_usage("export_gerber()")
@@ -8563,7 +8564,7 @@ class App(QtCore.QObject):
             try:
                 obj = self.collection.get_by_name(str(obj_name))
             except Exception:
-                return "Could not retrieve object: %s" % obj_name
+                return 'fail'
         else:
             obj = local_use
 
@@ -8675,13 +8676,16 @@ class App(QtCore.QObject):
             if local_use is not None:
                 return gret
 
-    def export_dxf(self, obj_name, filename, use_thread=True):
+    def export_dxf(self, obj_name, filename, local_use=None, use_thread=True):
         """
         Exports a Geometry Object to an DXF file.
 
-        :param obj_name: the name of the FlatCAM object to be saved as DXF
-        :param filename: Path to the DXF file to save to.
-        :param use_thread: if to be run in a separate thread
+        :param obj_name:    the name of the FlatCAM object to be saved as DXF
+        :param filename:    Path to the DXF file to save to.
+        :param local_use:   if the Gerber code is to be saved to a file (None) or used within FlatCAM.
+                            When not None, the value will be the actual Geometry object for which to create
+                            the Geometry/DXF code
+        :param use_thread:  if to be run in a separate thread
         :return:
         """
         self.defaults.report_usage("export_dxf()")
@@ -8692,21 +8696,34 @@ class App(QtCore.QObject):
 
         self.log.debug("export_dxf()")
 
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
+        if local_use is None:
+            try:
+                obj = self.collection.get_by_name(str(obj_name))
+            except Exception:
+                return 'fail'
+        else:
+            obj = local_use
 
         def make_dxf():
             try:
                 dxf_code = obj.export_dxf()
-                dxf_code.saveas(filename)
-                if self.defaults["global_open_style"] is False:
-                    self.file_opened.emit("DXF", filename)
-                self.file_saved.emit("DXF", filename)
-                self.inform.emit('[success] %s: %s' % (_("DXF file exported to"), filename))
-            except Exception:
+                if local_use is None:
+                    try:
+                        dxf_code.saveas(filename)
+                    except PermissionError:
+                        self.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                        return 'fail'
+
+                    if self.defaults["global_open_style"] is False:
+                        self.file_opened.emit("DXF", filename)
+                    self.file_saved.emit("DXF", filename)
+                    self.inform.emit('[success] %s: %s' % (_("DXF file exported to"), filename))
+                else:
+                    return dxf_code
+            except Exception as e:
+                log.debug("App.export_dxf.make_dxf() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -8725,6 +8742,8 @@ class App(QtCore.QObject):
             if ret == 'fail':
                 self.inform.emit('[WARNING_NOTCL] %s' % _('Could not export DXF file.'))
                 return
+            if local_use is not None:
+                return ret
 
     def import_svg(self, filename, geo_type='geometry', outname=None, plot=True):
         """
@@ -8785,7 +8804,7 @@ class App(QtCore.QObject):
         :param plot:        If True then the resulting object will be plotted on canvas
         :return:
         """
-        log.debug(" ********* Importing SVG as: %s ********* " % geo_type.capitalize())
+        log.debug(" ********* Importing DXF as: %s ********* " % geo_type.capitalize())
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":

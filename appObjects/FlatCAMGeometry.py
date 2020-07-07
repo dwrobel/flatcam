@@ -938,20 +938,12 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         self.ui_connect()
 
-    def on_tool_add(self, dia=None):
+    def on_tool_add(self, dia=None, new_geo=None):
         self.ui_disconnect()
 
         self.units = self.app.defaults['units'].upper()
 
-        if dia is not None:
-            tooldia = dia
-        else:
-            tooldia = float(self.ui.addtool_entry.get_value())
-
-        # construct a list of all 'tooluid' in the self.tools
-        # tool_uid_list = []
-        # for tooluid_key in self.tools:
-        #     tool_uid_list.append(int(tooluid_key))
+        tooldia = dia if dia is not None else float(self.ui.addtool_entry.get_value())
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
@@ -968,7 +960,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             last_offset_value = self.tools[max_uid]['offset_value']
             last_type = self.tools[max_uid]['type']
             last_tool_type = self.tools[max_uid]['tool_type']
-            last_solid_geometry = self.tools[max_uid]['solid_geometry']
+
+            last_solid_geometry = self.tools[max_uid]['solid_geometry'] if new_geo is None else new_geo
 
             # if previous geometry was empty (it may happen for the first tool added)
             # then copy the object.solid_geometry

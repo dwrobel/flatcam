@@ -356,6 +356,9 @@ class Panelize(AppTool):
                     obj_fin.create_geometry()
                     obj_fin.zeros = panel_source_obj.zeros
                     obj_fin.units = panel_source_obj.units
+                    app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
+                    obj_fin.source_file = self.app.export_excellon(obj_name=self.outname, filename=None,
+                                                                 local_use=obj_fin, use_thread=False)
                     app_obj.proc_container.update_view_text('')
 
                 def job_init_geometry(obj_fin, app_obj):
@@ -575,9 +578,12 @@ class Panelize(AppTool):
                         if to_optimize is True:
                             app_obj.inform.emit('%s' % _("Optimization complete."))
 
+                    app_obj.inform.emit('%s' % _("Generating panel ... Adding the source code."))
                     if panel_type == 'gerber':
-                        app_obj.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
                         obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
+                                                                     local_use=obj_fin, use_thread=False)
+                    if panel_type == 'geometry':
+                        obj_fin.source_file = self.app.export_dxf(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
 
                     # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
