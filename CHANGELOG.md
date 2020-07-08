@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - Tool Drilling - working on the UI
 - Tool Drilling - added more tool parameters; laying the ground for adding "Drilling Slots" feature
 - added as ToolTip for the the Preprocessor combobox items, the actual name of the items
+- working on Tool Drilling - remaking the way that the GCode is stored, each tool will store it's own GCode
 
 7.07.2020
 

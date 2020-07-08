@@ -275,6 +275,14 @@ class ToolDrilling(AppTool, Excellon):
 
         else:
             self.t_ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.t_ui.estartz_label.show()
+            self.t_ui.estartz_entry.show()
+            self.t_ui.feedrate_rapid_label.show()
+            self.t_ui.feedrate_rapid_entry.show()
+            self.t_ui.pdepth_label.show()
+            self.t_ui.pdepth_entry.show()
+            self.t_ui.feedrate_probe_label.show()
+            self.t_ui.feedrate_probe_entry.show()
 
         self.t_ui.tools_frame.show()
 
@@ -427,6 +435,11 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.drill_overlap_label.hide()
             self.t_ui.drill_overlap_entry.hide()
             self.t_ui.last_drill_cb.hide()
+        else:
+            self.t_ui.drill_slots_cb.show()
+            self.t_ui.drill_overlap_label.show()
+            self.t_ui.drill_overlap_entry.show()
+            self.t_ui.last_drill_cb.show()
 
         try:
             self.t_ui.object_combo.currentTextChanged.disconnect()
@@ -1507,17 +1520,20 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.exclusion_table.selectAll()
             self.draw_sel_shape()
 
+    def process_slots_as_drills(self):
+        pass
+
     def on_cnc_button_click(self):
         obj_name = self.t_ui.object_combo.currentText()
 
         # Get source object.
         try:
-            self.excellon_obj = self.app.collection.get_by_name(obj_name)
+            obj = self.app.collection.get_by_name(obj_name)
         except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
             return
 
-        if self.excellon_obj is None:
+        if obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s.' % _("Object not found"))
             return
 
@@ -1526,33 +1542,228 @@ class ToolDrilling(AppTool, Excellon):
         for it in self.t_ui.tools_table.selectedItems():
             uid = self.t_ui.tools_table.item(it.row(), 3).text()
             selected_uid.add(uid)
-        tools = list(selected_uid)
+        sel_tools = list(selected_uid)
 
-        if len(tools) == 0:
+        if len(sel_tools) == 0:
             # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
             # tool number) it means that there are 3 rows (1 tool and 2 totals).
             # in this case regardless of the selection status of that tool, use it.
-            if self.t_ui.tools_table.rowCount() == 3:
-                tools.append(self.t_ui.tools_table.item(0, 0).text())
+            if self.t_ui.tools_table.rowCount() >= 3:
+                sel_tools.append(self.t_ui.tools_table.item(0, 0).text())
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Please select one or more tools from the list and try again."))
                 return
 
-        xmin = self.excellon_obj.options['xmin']
-        ymin = self.excellon_obj.options['ymin']
-        xmax = self.excellon_obj.options['xmax']
-        ymax = self.excellon_obj.options['ymax']
+        # add slots as drills
+        self.process_slots_as_drills()
 
-        job_name = self.excellon_obj.options["name"] + "_cnc"
+        xmin = obj.options['xmin']
+        ymin = obj.options['ymin']
+        xmax = obj.options['xmax']
+        ymax = obj.options['ymax']
+
+        job_name = obj.options["name"] + "_cnc"
         pp_excellon_name = self.t_ui.pp_excellon_name_cb.get_value()
-        # z_pdepth = self.t_ui.pdepth_entry.get_value()
-        # feedrate_probe = self.t_ui.feedrate_probe_entry.get_value()
-        # toolchange = self.t_ui.toolchange_cb.get_value()
-        # z_toolchange = self.t_ui.toolchangez_entry.get_value()
-        # startz = self.t_ui.estartz_entry.get_value()
-        # endz = self.t_ui.endz_entry.get_value()
-        # xy_end = self.t_ui.endxy_entry.get_value()
+
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("machinist"):
+            machinist_setting = settings.value('machinist', type=int)
+        else:
+            machinist_setting = 0
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # TOOLS
+        # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
+        # so we actually are sorting the tools by diameter
+        # #############################################################################################################
+        # #############################################################################################################
+        all_tools = []
+        for tool_as_key, v in list(obj.tools.items()):
+            all_tools.append((int(tool_as_key), float(v['tooldia'])))
+
+        if order == 'fwd':
+            sorted_tools = sorted(all_tools, key=lambda t1: t1[1])
+        elif order == 'rev':
+            sorted_tools = sorted(all_tools, key=lambda t1: t1[1], reverse=True)
+        else:
+            sorted_tools = all_tools
+
+        if sel_tools == "all":
+            selected_tools = [i[0] for i in all_tools]  # we get a array of ordered sel_tools
+        else:
+            selected_tools = eval(sel_tools)
+
+        # Create a sorted list of selected sel_tools from the sorted_tools list
+        sel_tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
+
+        log.debug("Tools sorted are: %s" % str(sel_tools))
+        # #############################################################################################################
+        # #############################################################################################################
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+        # running this method from a Tcl Command
+        # #############################################################################################################
+        # #############################################################################################################
+        build_tools_in_use_list = False
+        if 'Tools_in_use' not in self.excellon_obj.options:
+            self.excellon_obj.options['Tools_in_use'] = []
+
+        # if the list is empty (either we just added the key or it was already there but empty) signal to build it
+        if not self.excellon_obj.options['Tools_in_use']:
+            build_tools_in_use_list = True
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # fill the data into the self.exc_cnc_tools dictionary
+        # #############################################################################################################
+        # #############################################################################################################
+        for it in all_tools:
+            for to_ol in sel_tools:
+                if to_ol == it[0]:
+                    sol_geo = []
+
+                    drill_no = 0
+                    if 'drills' in tools[to_ol]:
+                        drill_no = len(tools[to_ol]['drills'])
+                        for drill in tools[to_ol]['drills']:
+                            sol_geo.append(drill.buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle))
+
+                    slot_no = 0
+                    if 'slots' in tools[to_ol]:
+                        slot_no = len(tools[to_ol]['slots'])
+                        for slot in tools[to_ol]['slots']:
+                            start = (slot[0].x, slot[0].y)
+                            stop = (slot[1].x, slot[1].y)
+                            sol_geo.append(
+                                LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
+                            )
+
+                    if self.use_ui:
+                        try:
+                            z_off = float(tools[it[0]]['data']['offset']) * (-1)
+                        except KeyError:
+                            z_off = 0
+                    else:
+                        z_off = 0
+
+                    default_data = {}
+                    for k, v in list(self.options.items()):
+                        default_data[k] = deepcopy(v)
+
+                    self.exc_cnc_tools[it[1]] = {}
+                    self.exc_cnc_tools[it[1]]['tool'] = it[0]
+                    self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
+                    self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
+                    self.exc_cnc_tools[it[1]]['offset_z'] = z_off
+                    self.exc_cnc_tools[it[1]]['data'] = default_data
+                    self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
+
+                    # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+                    # running this method from a Tcl Command
+                    if build_tools_in_use_list is True:
+                        self.options['Tools_in_use'].append(
+                            [it[0], it[1], drill_no, slot_no]
+                        )
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # Points (Group by tool): a dictionary of shapely Point geo elements grouped by tool number
+        # #############################################################################################################
+        # #############################################################################################################
+        self.app.inform.emit(_("Creating a list of points to drill..."))
+
+        points = {}
+        for tool, tl_dict in tools.items():
+            if tool in sel_tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                if 'drills' in tl_dict and tl_dict['drills']:
+                    for drill_pt in tl_dict['drills']:
+                        try:
+                            points[tool].append(drill_pt)
+                        except KeyError:
+                            points[tool] = [drill_pt]
+        log.debug("Found %d TOOLS with drills." % len(points))
+
+        # check if there are drill points in the exclusion areas.
+        # If we find any within the exclusion areas return 'fail'
+        for tool in points:
+            for pt in points[tool]:
+                for area in self.app.exc_areas.exclusion_areas_storage:
+                    pt_buf = pt.buffer(self.exc_tools[tool]['tooldia'] / 2.0)
+                    if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
+                        self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
+                        return 'fail'
+
+        # #############################################################################################################
+        # General Parameters
+        # #############################################################################################################
+        used_excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
+        self.f_plunge = self.app.defaults["excellon_f_plunge"]
+        self.f_retract = self.app.defaults["excellon_f_retract"]
+
+        # Prepprocessor
+        self.pp_excellon_name = self.default_data["excellon_ppname_e"]
+        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
+        p = self.pp_excellon
+
+        # this holds the resulting GCode
+        gcode = ''
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # Initialization
+        # #############################################################################################################
+        # #############################################################################################################
+        gcode += self.doformat(p.start_code)
+
+        if self.toolchange is False:
+            if self.xy_toolchange is not None:
+                gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+                gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+            else:
+                gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+                gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
+
+        if self.xy_toolchange is not None:
+            self.oldx = self.xy_toolchange[0]
+            self.oldy = self.xy_toolchange[1]
+        else:
+            self.oldx = 0.0
+            self.oldy = 0.0
+
+        measured_distance = 0.0
+        measured_down_distance = 0.0
+        measured_up_to_zero_distance = 0.0
+        measured_lift_distance = 0.0
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # GCODE creation
+        # #############################################################################################################
+        # #############################################################################################################
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
+
+        has_drills = None
+        for tool, tool_dict in self.exc_tools.items():
+            if 'drills' in tool_dict and tool_dict['drills']:
+                has_drills = True
+                break
+        if not has_drills:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                      "The loaded Excellon file has no drills ...")
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+            return 'fail'
+
+        current_platform = platform.architecture()[0]
+        if current_platform != '64bit':
+            used_excellon_optimization_type = 'T'
 
         # Object initialization function for app.app_obj.new_object()
         def job_init(job_obj, app_obj):
@@ -1595,7 +1806,7 @@ class ToolDrilling(AppTool, Excellon):
             tools_csv = ','.join(tools)
 
             job_obj.gcode = self.generate_from_excellon_by_tool(tools_csv, self.tools)
-            print(job_obj.gcode)
+
             if job_obj.gcode == 'fail':
                 return 'fail'
 
@@ -1821,7 +2032,7 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
             return 'fail'
 
-    def generate_from_excellon_by_tool(self, sel_tools, tools, order='fwd'):
+    def generate_from_excellon_by_tool(self, sel_tools, tools, used_excellon_optimization_type='T'):
         """
         Creates Gcode for this object from an Excellon object
         for the specified tools.
@@ -1830,205 +2041,6 @@ class ToolDrilling(AppTool, Excellon):
         :rtype:             str
         """
         log.debug("Creating CNC Job from Excellon...")
-
-        settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if settings.contains("machinist"):
-            machinist_setting = settings.value('machinist', type=int)
-        else:
-            machinist_setting = 0
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # TOOLS
-        # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
-        # so we actually are sorting the tools by diameter
-        # #############################################################################################################
-        # #############################################################################################################
-        all_tools = []
-        for tool_as_key, v in list(tools.items()):
-            all_tools.append((int(tool_as_key), float(v['tooldia'])))
-
-        if order == 'fwd':
-            sorted_tools = sorted(all_tools, key=lambda t1: t1[1])
-        elif order == 'rev':
-            sorted_tools = sorted(all_tools, key=lambda t1: t1[1], reverse=True)
-        else:
-            sorted_tools = all_tools
-
-        if sel_tools == "all":
-            selected_tools = [i[0] for i in all_tools]  # we get a array of ordered sel_tools
-        else:
-            selected_tools = eval(sel_tools)
-
-        # Create a sorted list of selected sel_tools from the sorted_tools list
-        sel_tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
-
-        log.debug("Tools sorted are: %s" % str(sel_tools))
-        # #############################################################################################################
-        # #############################################################################################################
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
-        # running this method from a Tcl Command
-        # #############################################################################################################
-        # #############################################################################################################
-        build_tools_in_use_list = False
-        if 'Tools_in_use' not in self.excellon_obj.options:
-            self.excellon_obj.options['Tools_in_use'] = []
-
-        # if the list is empty (either we just added the key or it was already there but empty) signal to build it
-        if not self.excellon_obj.options['Tools_in_use']:
-            build_tools_in_use_list = True
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # fill the data into the self.exc_cnc_tools dictionary
-        # #############################################################################################################
-        # #############################################################################################################
-        for it in all_tools:
-            for to_ol in sel_tools:
-                if to_ol == it[0]:
-                    sol_geo = []
-
-                    drill_no = 0
-                    if 'drills' in tools[to_ol]:
-                        drill_no = len(tools[to_ol]['drills'])
-                        for drill in tools[to_ol]['drills']:
-                            sol_geo.append(drill.buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle))
-
-                    slot_no = 0
-                    if 'slots' in tools[to_ol]:
-                        slot_no = len(tools[to_ol]['slots'])
-                        for slot in tools[to_ol]['slots']:
-                            start = (slot[0].x, slot[0].y)
-                            stop = (slot[1].x, slot[1].y)
-                            sol_geo.append(
-                                LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
-                            )
-
-                    if self.use_ui:
-                        try:
-                            z_off = float(tools[it[0]]['data']['offset']) * (-1)
-                        except KeyError:
-                            z_off = 0
-                    else:
-                        z_off = 0
-
-                    default_data = {}
-                    for k, v in list(self.options.items()):
-                        default_data[k] = deepcopy(v)
-
-                    self.exc_cnc_tools[it[1]] = {}
-                    self.exc_cnc_tools[it[1]]['tool'] = it[0]
-                    self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
-                    self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
-                    self.exc_cnc_tools[it[1]]['offset_z'] = z_off
-                    self.exc_cnc_tools[it[1]]['data'] = default_data
-                    self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
-
-                    # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
-                    # running this method from a Tcl Command
-                    if build_tools_in_use_list is True:
-                        self.options['Tools_in_use'].append(
-                            [it[0], it[1], drill_no, slot_no]
-                        )
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # Points (Group by tool): a dictionary of shapely Point geo elements grouped by tool number
-        # #############################################################################################################
-        # #############################################################################################################
-        self.app.inform.emit(_("Creating a list of points to drill..."))
-
-        points = {}
-        for tool, tl_dict in tools.items():
-            if tool in sel_tools:
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise grace
-
-                if 'drills' in tl_dict and tl_dict['drills']:
-                    for drill_pt in tl_dict['drills']:
-                        try:
-                            points[tool].append(drill_pt)
-                        except KeyError:
-                            points[tool] = [drill_pt]
-        log.debug("Found %d TOOLS with drills." % len(points))
-
-        # check if there are drill points in the exclusion areas.
-        # If we find any within the exclusion areas return 'fail'
-        for tool in points:
-            for pt in points[tool]:
-                for area in self.app.exc_areas.exclusion_areas_storage:
-                    pt_buf = pt.buffer(self.exc_tools[tool]['tooldia'] / 2.0)
-                    if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
-                        self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
-                        return 'fail'
-
-        # #############################################################################################################
-        # General Parameters
-        # #############################################################################################################
-        used_excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
-        self.f_plunge = self.app.defaults["excellon_f_plunge"]
-        self.f_retract = self.app.defaults["excellon_f_retract"]
-
-        # Prepprocessor
-        self.pp_excellon_name = self.default_data["excellon_ppname_e"]
-        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
-        p = self.pp_excellon
-
-        # this holds the resulting GCode
-        gcode = ''
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # Initialization
-        # #############################################################################################################
-        # #############################################################################################################
-        gcode += self.doformat(p.start_code)
-
-        if self.toolchange is False:
-            if self.xy_toolchange is not None:
-                gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-                gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-            else:
-                gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
-                gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
-
-        if self.xy_toolchange is not None:
-            self.oldx = self.xy_toolchange[0]
-            self.oldy = self.xy_toolchange[1]
-        else:
-            self.oldx = 0.0
-            self.oldy = 0.0
-
-        measured_distance = 0.0
-        measured_down_distance = 0.0
-        measured_up_to_zero_distance = 0.0
-        measured_lift_distance = 0.0
-
-        # #############################################################################################################
-        # #############################################################################################################
-        # GCODE creation
-        # #############################################################################################################
-        # #############################################################################################################
-        self.app.inform.emit('%s...' % _("Starting G-Code"))
-
-        has_drills = None
-        for tool, tool_dict in self.exc_tools.items():
-            if 'drills' in tool_dict and tool_dict['drills']:
-                has_drills = True
-                break
-        if not has_drills:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                      "The loaded Excellon file has no drills ...")
-            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
-            return 'fail'
-
-        current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
-            used_excellon_optimization_type = 'T'
 
         # #############################################################################################################
         # #############################################################################################################
