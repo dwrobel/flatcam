@@ -96,10 +96,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                           'nr_drills': int,
                           'nr_slots': int,
                           'offset': float,
-                          'data': {} # a dict to hold the parameters
-                          'gcode': "" # a string with the actual GCODE
-                          'gcode_parsed': {} # dictionary holding the CNCJob geometry and type of geometry (cut or move)
-                          'solid_geometry': []
+                          'data': {},           a dict to hold the parameters
+                          'gcode': "",          a string with the actual GCODE
+                          'gcode_parsed': [],   list of dicts holding the CNCJob geometry and 
+                                                type of geometry (cut or move)
+                          'solid_geometry': [],
                           },
                           ...
               }

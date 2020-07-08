@@ -5396,7 +5396,7 @@ class CNCjob(Geometry):
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
 
-        Will return a dict in the format:
+        Will return a list of dict in the format:
         {
             "geom": LineString(path),
             "kind": kind
