@@ -399,9 +399,15 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
+        # make sure the preprocessor combobox is clear
+        self.ui.pp_geometry_name_cb.clear()
         # populate preprocessor names in the combobox
         for name in list(self.app.preprocessors.keys()):
             self.ui.pp_geometry_name_cb.addItem(name)
+        # add tooltips
+        for it in range(self.ui.pp_geometry_name_cb.count()):
+            self.ui.pp_geometry_name_cb.setItemData(
+                it, self.ui.pp_geometry_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,

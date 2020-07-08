@@ -242,12 +242,18 @@ class ToolDrilling(AppTool, Excellon):
         except Exception:
             pass
 
+        # reset the Excellon preprocessor combo
+        self.t_ui.pp_excellon_name_cb.clear()
         # populate Excellon preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
             # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
             if name == 'hpgl':
                 continue
             self.t_ui.pp_excellon_name_cb.addItem(name)
+        # add tooltips
+        for it in range(self.t_ui.pp_excellon_name_cb.count()):
+            self.t_ui.pp_excellon_name_cb.setItemData(
+                it, self.t_ui.pp_excellon_name_cb.itemText(it), QtCore.Qt.ToolTipRole)
 
         # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the

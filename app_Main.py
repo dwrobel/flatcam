@@ -561,6 +561,7 @@ class App(QtCore.QObject):
             # and now put back the ordered dict with 'default' key first
             self.preprocessors = new_ppp_dict
 
+        # populate the Preprocessor ComboBoxes in the PREFERENCES
         for name in list(self.preprocessors.keys()):
             # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
             if name.partition('_')[0] == 'Paste':
@@ -573,6 +574,19 @@ class App(QtCore.QObject):
                 continue
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
+
+        # add ToolTips for the Preprocessor ComboBoxes in Preferences
+        for it in range(self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.count()):
+            self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.setItemData(
+                it, self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.itemText(it), QtCore.Qt.ToolTipRole)
+        for it in range(self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.count()):
+            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.setItemData(
+                it, self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.itemText(it),
+                QtCore.Qt.ToolTipRole)
+        for it in range(self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.count()):
+            self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.setItemData(
+                it, self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.itemText(it),
+                QtCore.Qt.ToolTipRole)
 
         # ###########################################################################################################
         # ##################################### UPDATE PREFERENCES GUI FORMS ########################################
