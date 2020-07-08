@@ -152,4 +152,42 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
         grid1.addWidget(self.fretract_cb, 8, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 9, 0, 1, 2)
+
+        # DRILL SLOTS LABEL
+        self.dslots_label = QtWidgets.QLabel('<b>%s:</b>' % _('Drilling Slots'))
+        grid1.addWidget(self.dslots_label, 10, 0, 1, 2)
+
+        # Drill slots
+        self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
+        self.drill_slots_cb.setToolTip(
+            _("If the selected tool has slots then they will be drilled.")
+        )
+        grid1.addWidget(self.drill_slots_cb, 11, 0, 1, 2)
+
+        # Drill Overlap
+        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label.setToolTip(
+            _("How much (percentage) of the tool diameter to overlap previous drill hole.")
+        )
+
+        self.drill_overlap_entry = FCDoubleSpinner()
+        self.drill_overlap_entry.set_precision(self.decimals)
+        self.drill_overlap_entry.set_range(0.0, 9999.9999)
+        self.drill_overlap_entry.setSingleStep(0.1)
+
+        grid1.addWidget(self.drill_overlap_label, 12, 0)
+        grid1.addWidget(self.drill_overlap_entry, 12, 1)
+
+        # Last drill in slot
+        self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
+        self.last_drill_cb.setToolTip(
+            _("If the slot length is not completely covered by drill holes,\n"
+              "add a drill hole on the slot end point.")
+        )
+        grid1.addWidget(self.last_drill_cb, 14, 0, 1, 2)
+
         self.layout.addStretch()

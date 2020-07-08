@@ -138,22 +138,30 @@ class ToolDrilling(AppTool, Excellon):
             "dwell":            self.t_ui.dwell_cb,
             "dwelltime":        self.t_ui.dwelltime_entry,
 
-            "offset":           self.t_ui.offset_entry
+            "offset":           self.t_ui.offset_entry,
+
+            "drill_slots":      self.t_ui.drill_slots_cb,
+            "drill_overlap":    self.t_ui.drill_overlap_entry,
+            "last_drill":       self.t_ui.last_drill_cb
         }
 
         self.name2option = {
-            "e_cutz":           "cutz",
-            "e_multidepth":     "multidepth",
-            "e_depthperpass":   "depthperpass",
-            "e_travelz":        "travelz",
-            "e_feedratez":      "feedrate_z",
-            "e_fr_rapid":       "feedrate_rapid",
+            "e_cutz":                   "cutz",
+            "e_multidepth":             "multidepth",
+            "e_depthperpass":           "depthperpass",
+            "e_travelz":                "travelz",
+            "e_feedratez":              "feedrate_z",
+            "e_fr_rapid":               "feedrate_rapid",
 
-            "e_spindlespeed":   "spindlespeed",
-            "e_dwell":          "dwell",
-            "e_dwelltime":      "dwelltime",
+            "e_spindlespeed":           "spindlespeed",
+            "e_dwell":                  "dwell",
+            "e_dwelltime":              "dwelltime",
 
-            "e_offset":         "offset"
+            "e_offset":                 "offset",
+
+            "e_drill_slots":            "drill_slots",
+            "e_drill_slots_overlap":    "drill_overlap",
+            "e_drill_last_drill":       "last_drill",
         }
 
         self.old_tool_dia = None
@@ -188,9 +196,9 @@ class ToolDrilling(AppTool, Excellon):
 
         AppTool.run(self)
 
-        self.on_object_changed()
         self.set_tool_ui()
-        self.build_ui()
+        self.on_object_changed()
+        # self.build_tool_ui()
 
         # all the tools are selected by default
         self.t_ui.tools_table.selectAll()
@@ -338,6 +346,11 @@ class ToolDrilling(AppTool, Excellon):
             "f_plunge":            self.app.defaults["excellon_f_plunge"],
             "f_retract":           self.app.defaults["excellon_f_retract"],
 
+            # Drill Slots
+            "drill_slots":          self.app.defaults["excellon_drill_slots"],
+            "drill_overlap":        self.app.defaults["excellon_drill_overlap"],
+            "last_drill":           self.app.defaults["excellon_last_drill"],
+
             "gcode":                        '',
             "gcode_parsed":                 '',
             "geometry":                     [],
@@ -362,10 +375,13 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.tools_table.setMinimumHeight(self.t_ui.tools_table.getHeight())
         self.t_ui.tools_table.setMaximumHeight(self.t_ui.tools_table.getHeight())
 
-        if self.excellon_obj:
-            # make sure to update the UI on init
+        # make sure to update the UI on init
+        try:
             self.excellon_tools = self.excellon_obj.tools
-            self.build_ui()
+        except AttributeError:
+            # no object loaded
+            pass
+        self.build_tool_ui()
 
         # ########################################
         # ########################################
@@ -394,6 +410,18 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.over_z_entry.set_value(self.app.defaults["excellon_area_overz"])
         self.t_ui.area_shape_radio.set_value(self.app.defaults["excellon_area_shape"])
 
+        # Drill slots - part of the Advanced Excellon params
+        self.t_ui.drill_slots_cb.set_value(self.app.defaults["excellon_drill_slots"])
+        self.t_ui.drill_overlap_entry.set_value(self.app.defaults["excellon_drill_overlap"])
+        self.t_ui.last_drill_cb.set_value(self.app.defaults["excellon_last_drill"])
+        # if the app mode is Basic then disable this feature
+        if app_mode == 'b':
+            self.t_ui.drill_slots_cb.set_value(False)
+            self.t_ui.drill_slots_cb.hide()
+            self.t_ui.drill_overlap_label.hide()
+            self.t_ui.drill_overlap_entry.hide()
+            self.t_ui.last_drill_cb.hide()
+
         try:
             self.t_ui.object_combo.currentTextChanged.disconnect()
         except (AttributeError, TypeError):
@@ -420,10 +448,10 @@ class ToolDrilling(AppTool, Excellon):
         self.excellon_tools = new_tools
 
         # the tools table changed therefore we need to rebuild it
-        QtCore.QTimer.singleShot(20, self.build_ui)
+        QtCore.QTimer.singleShot(20, self.build_tool_ui)
 
-    def build_ui(self):
-        log.debug("ToolDrilling.build_ui()")
+    def build_tool_ui(self):
+        log.debug("ToolDrilling.build_tool_ui()")
         self.ui_disconnect()
 
         # order the tools by tool diameter if it's the case
@@ -588,7 +616,7 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.tools_table.setMaximumHeight(self.t_ui.tools_table.getHeight())
 
         # all the tools are selected by default
-        # self.t_ui.tools_table.selectAll()
+        self.t_ui.tools_table.selectAll()
 
         # Build Exclusion Areas section
         e_len = len(self.app.exc_areas.exclusion_areas_storage)
@@ -676,7 +704,7 @@ class ToolDrilling(AppTool, Excellon):
             return
 
         if self.excellon_obj is None:
-            self.excellon_tools = []
+            self.excellon_tools = {}
             self.t_ui.exc_param_frame.setDisabled(True)
             self.set_tool_ui()
         else:
@@ -685,7 +713,7 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.exc_param_frame.setDisabled(False)
             self.excellon_tools = self.excellon_obj.tools
 
-            self.build_ui()
+            self.build_tool_ui()
 
         sel_rows = set()
         table_items = self.t_ui.tools_table.selectedItems()
@@ -709,7 +737,7 @@ class ToolDrilling(AppTool, Excellon):
             self.app.exc_areas.e_shape_modified.disconnect()
         except (TypeError, AttributeError):
             pass
-        # then connect it to the current build_ui() method
+        # then connect it to the current build_tool_ui() method
         self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
 
         # rows selected
@@ -977,7 +1005,7 @@ class ToolDrilling(AppTool, Excellon):
 
     def on_order_changed(self, order):
         if order != 'no':
-            self.build_ui()
+            self.build_tool_ui()
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
@@ -1441,7 +1469,7 @@ class ToolDrilling(AppTool, Excellon):
     def update_exclusion_table(self):
         self.exclusion_area_cb_is_checked = True if self.t_ui.exclusion_cb.isChecked() else False
 
-        self.build_ui()
+        self.build_tool_ui()
         self.t_ui.exclusion_cb.set_value(self.exclusion_area_cb_is_checked)
 
     def on_strategy(self, val):
@@ -2144,7 +2172,7 @@ class ToolDrilling(AppTool, Excellon):
 
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # APPLY Offset only when using the appGUI, for TclCommand this will create an error
-                # because the values for Z offset are created in build_ui()
+                # because the values for Z offset are created in build_tool_ui()
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 try:
                     z_offset = float(tool_dict['offset']) * (-1)
@@ -2373,7 +2401,7 @@ class ToolDrilling(AppTool, Excellon):
 
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             # APPLY Offset only when using the appGUI, for TclCommand this will create an error
-            # because the values for Z offset are created in build_ui()
+            # because the values for Z offset are created in build_tool_ui()
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             try:
                 z_offset = float(self.exc_tools[one_tool]['data']['offset']) * (-1)
@@ -2878,6 +2906,48 @@ class DrillingUI:
 
         self.grid1.addWidget(self.tool_offset_label, 25, 0)
         self.grid1.addWidget(self.offset_entry, 25, 1)
+
+        # Drill slots
+        self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
+        self.drill_slots_cb.setToolTip(
+            _("If the selected tool has slots then they will be drilled.")
+        )
+        self.drill_slots_cb.setObjectName("e_drill_slots")
+        self.grid1.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
+
+        # Drill Overlap
+        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label.setToolTip(
+            _("How much (percentage) of the tool diameter to overlap previous drill hole.")
+        )
+
+        self.drill_overlap_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_overlap_entry.set_precision(self.decimals)
+        self.drill_overlap_entry.set_range(0.0, 9999.9999)
+        self.drill_overlap_entry.setSingleStep(0.1)
+
+        self.drill_overlap_entry.setObjectName("e_drill_slots_overlap")
+
+        self.grid1.addWidget(self.drill_overlap_label, 28, 0)
+        self.grid1.addWidget(self.drill_overlap_entry, 28, 1)
+
+        # Last drill in slot
+        self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
+        self.last_drill_cb.setToolTip(
+            _("If the slot length is not completely covered by drill holes,\n"
+              "add a drill hole on the slot end point.")
+        )
+        self.last_drill_cb.setObjectName("e_drill_last_drill")
+        self.grid1.addWidget(self.last_drill_cb, 30, 0, 1, 2)
+
+        self.ois_drill_overlap = OptionalInputSection(
+            self.drill_slots_cb,
+            [
+                self.drill_overlap_label,
+                self.drill_overlap_entry,
+                self.last_drill_cb
+            ]
+        )
 
         # #################################################################
         # ################# GRID LAYOUT 5   ###############################

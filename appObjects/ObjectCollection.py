@@ -570,6 +570,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         obj.options["name"] = name
 
         obj.set_ui(obj.ui_type(app=self.app))
+        # a way to signal that the object was fully loaded
+        obj.load_complete = True
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]

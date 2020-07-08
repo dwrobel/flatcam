@@ -67,6 +67,9 @@ class FlatCAMObj(QtCore.QObject):
         # View
         self.ui = None
 
+        # set True by the collection.append() when the object load is complete
+        self.load_complete = None
+
         self.options = LoudDict(name=name)
         self.options.set_change_callback(self.on_options_change)
 

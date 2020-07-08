@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.07.2020
+
+- Tool Drilling - working on the UI
+- Tool Drilling - added more tool parameters; laying the ground for adding "Drilling Slots" feature
+
 7.07.2020
 
 - updated the Panelize Tool to save the source code for the panelized Excellon objects so it can be saved from the Save project tab context menu entry

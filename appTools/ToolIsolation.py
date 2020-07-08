@@ -3160,7 +3160,7 @@ class IsoUI:
         self.exc_obj_combo.setModel(self.app.collection)
         self.exc_obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.exc_obj_combo.is_last = True
-        self.exc_obj_combo.obj_type = self.type_excobj_radio.get_value()
+        self.exc_obj_combo.obj_type = "gerber"
 
         self.grid3.addWidget(self.exc_obj_combo, 29, 0, 1, 2)
 

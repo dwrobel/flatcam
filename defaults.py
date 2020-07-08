@@ -287,6 +287,9 @@ class FlatCAMDefaults:
         "excellon_spindledir": 'CW',
         "excellon_f_plunge": False,
         "excellon_f_retract": False,
+        "excellon_drill_slots": False,
+        "excellon_drill_overlap": 0.0,
+        "excellon_last_drill": True,
 
         # Excellon Export
         "excellon_exp_units": 'INCH',

@@ -222,6 +222,9 @@ class PreferencesUIManager:
             "excellon_spindledir":      self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
             "excellon_f_plunge":        self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
             "excellon_f_retract":       self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
+            "excellon_drill_slots":     self.ui.excellon_defaults_form.excellon_adv_opt_group.drill_slots_cb,
+            "excellon_drill_overlap":   self.ui.excellon_defaults_form.excellon_adv_opt_group.drill_overlap_entry,
+            "excellon_last_drill":      self.ui.excellon_defaults_form.excellon_adv_opt_group.last_drill_cb,
 
             # Excellon Export
             "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
