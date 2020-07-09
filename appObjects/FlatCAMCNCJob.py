@@ -283,7 +283,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
-            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset_z']) + self.z_cut))
+            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset']) + self.z_cut))
 
             t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -876,11 +876,18 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # detect if using multi-tool and make the Gcode summation correctly for each case
             if self.multitool is True:
-                for tooluid_key in self.cnc_tools:
-                    for key, value in self.cnc_tools[tooluid_key].items():
-                        if key == 'gcode':
-                            gcode += value
-                            break
+                if self.origin_kind == 'excellon':
+                    for tooluid_key in self.exc_cnc_tools:
+                        for key, value in self.exc_cnc_tools[tooluid_key].items():
+                            if key == 'gcode' and value:
+                                gcode += value
+                                break
+                else:
+                    for tooluid_key in self.cnc_tools:
+                        for key, value in self.cnc_tools[tooluid_key].items():
+                            if key == 'gcode' and value:
+                                gcode += value
+                                break
             else:
                 gcode += self.gcode
 
@@ -1127,8 +1134,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     if self.exc_cnc_tools:
                         for tooldia_key in self.exc_cnc_tools:
                             tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
-                            # gcode_parsed = self.exc_cnc_tools[tooldia_key]['gcode_parsed']
-                            gcode_parsed = self.gcode_parsed
+                            gcode_parsed = self.exc_cnc_tools[tooldia_key]['gcode_parsed']
+                            if not gcode_parsed:
+                                continue
+                            # gcode_parsed = self.gcode_parsed
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
             self.shapes.redraw()

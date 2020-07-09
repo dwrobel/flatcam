@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+9.07.2020
+
+- Tool Drilling - remade the methods used to generate GCode from Excellon, to parse the GCode. Now the GCode and GCode_parsed are stored individually for each tool and also they are plotted individually
+- Tool Drilling now works - I still need to add the method for converting slots to drill holes
+
 8.07.2020
 
 - Tool Drilling - working on the UI
