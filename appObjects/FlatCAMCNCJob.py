@@ -308,9 +308,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
 
-            # TODO until the feature of individual plot for an Excellon tool is implemented
-            plot_item.setDisabled(True)
-
             self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
             self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
             self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
@@ -454,11 +451,23 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
             self.ui.cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+        for row in range(self.ui.exc_cnc_tools_table.rowCount()):
+            self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
     def ui_disconnect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
-            self.ui.cnc_tools_table.cellWidget(row, 6).clicked.disconnect(self.on_plot_cb_click_table)
+            try:
+                self.ui.cnc_tools_table.cellWidget(row, 6).clicked.disconnect(self.on_plot_cb_click_table)
+            except (TypeError, AttributeError):
+                pass
+
+        for row in range(self.ui.exc_cnc_tools_table.rowCount()):
+            try:
+                self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.disconnect(self.on_plot_cb_click_table)
+            except (TypeError, AttributeError):
+                pass
+
         try:
             self.ui.plot_cb.stateChanged.disconnect(self.on_plot_cb_click)
         except (TypeError, AttributeError):
@@ -1061,16 +1070,25 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         kind = self.ui.cncplot_method_combo.get_value()
 
         self.shapes.clear(update=True)
+        if self.origin_kind == "excellon":
+            for r in range(self.ui.exc_cnc_tools_table.rowCount()):
+                row_dia = float('%.*f' % (self.decimals, float(self.ui.exc_cnc_tools_table.item(r, 1).text())))
+                for tooluid_key in self.exc_cnc_tools:
+                    tooldia = float('%.*f' % (self.decimals, float(tooluid_key)))
+                    if row_dia == tooldia:
+                        gcode_parsed = self.exc_cnc_tools[tooluid_key]['gcode_parsed']
+                        if self.ui.exc_cnc_tools_table.cellWidget(r, 6).isChecked():
+                            self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed, kind=kind)
+        else:
+            for tooluid_key in self.cnc_tools:
+                tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
+                gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+                # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
-        for tooluid_key in self.cnc_tools:
-            tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
-            gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-            # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
-
-            for r in range(self.ui.cnc_tools_table.rowCount()):
-                if int(self.ui.cnc_tools_table.item(r, 5).text()) == int(tooluid_key):
-                    if self.ui.cnc_tools_table.cellWidget(r, 6).isChecked():
-                        self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed, kind=kind)
+                for r in range(self.ui.cnc_tools_table.rowCount()):
+                    if int(self.ui.cnc_tools_table.item(r, 5).text()) == int(tooluid_key):
+                        if self.ui.cnc_tools_table.cellWidget(r, 6).isChecked():
+                            self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed, kind=kind)
 
         self.shapes.redraw()
 
@@ -1126,7 +1144,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                         self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
-                # TODO: until the gcode parsed will be stored on each Excellon tool this will not get executed
                 # I do this so the travel lines thickness will reflect the tool diameter
                 # may work only for objects created within the app and not Gcode imported from elsewhere for which we
                 # don't know the origin
