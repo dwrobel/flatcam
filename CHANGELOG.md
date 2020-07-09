@@ -12,6 +12,8 @@ CHANGELOG for FlatCAM beta
 - Tool Drilling - remade the methods used to generate GCode from Excellon, to parse the GCode. Now the GCode and GCode_parsed are stored individually for each tool and also they are plotted individually
 - Tool Drilling now works - I still need to add the method for converting slots to drill holes
 - CNCJob object - now it is possible for CNCJob objects originated from Excellon objects, to toggle the plot for a selection of tools
+- working in cleaning up the Excellon UI (Selected Tab)
+- finished the clean-up in Excellon UI
 
 8.07.2020
 

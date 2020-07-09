@@ -128,10 +128,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.outline_color = self.app.defaults['excellon_plot_line']
         self.alpha_level = 'bf'
 
-        # store here the state of the exclusion checkbox state to be restored after building the UI
-        # TODO add this in the sel.app.defaults dict and in Preferences
-        self.exclusion_area_cb_is_checked = False
-
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -239,15 +235,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         """
         FlatCAMObj.build_ui(self)
 
-        # Area Exception - exclusion shape added signal
-        # first disconnect it from any other object
-        try:
-            self.app.exc_areas.e_shape_modified.disconnect()
-        except (TypeError, AttributeError):
-            pass
-        # then connect it to the current build_ui() method
-        self.app.exc_areas.e_shape_modified.connect(self.update_exclusion_table)
-
         self.units = self.app.defaults['units'].upper()
 
         for row in range(self.ui.tools_table.rowCount()):
@@ -316,7 +303,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # Diameter
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, dia_val))
-            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
 
             # Drill count
@@ -333,7 +320,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # Empty Plot Item
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
 
             # Plot Item
@@ -447,11 +434,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 has_drills = True
                 break
         if has_drills is None:
-            self.ui.tooldia_entry.hide()
-            self.ui.generate_milling_button.hide()
+            self.ui.tooldia_entry.setDisabled(True)
+            self.ui.generate_milling_button.setDisabled(True)
         else:
-            self.ui.tooldia_entry.show()
-            self.ui.generate_milling_button.show()
+            self.ui.tooldia_entry.setDisabled(False)
+            self.ui.generate_milling_button.setDisabled(False)
 
         # find if we have slots
         has_slots = None
@@ -460,71 +447,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 has_slots = True
                 break
         if has_slots is None:
-            self.ui.slot_tooldia_entry.hide()
-            self.ui.generate_milling_slots_button.hide()
+            self.ui.slot_tooldia_entry.setDisabled(True)
+            self.ui.generate_milling_slots_button.setDisabled(True)
         else:
-            self.ui.slot_tooldia_entry.show()
-            self.ui.generate_milling_slots_button.show()
-
-        # set the text on tool_data_label after loading the object
-        sel_items = self.ui.tools_table.selectedItems()
-        sel_rows = [it.row() for it in sel_items]
-        if len(sel_rows) > 1:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
-
-        # Build Exclusion Areas section
-        e_len = len(self.app.exc_areas.exclusion_areas_storage)
-        self.ui.exclusion_table.setRowCount(e_len)
-
-        area_id = 0
-
-        for area in range(e_len):
-            area_id += 1
-
-            area_dict = self.app.exc_areas.exclusion_areas_storage[area]
-
-            area_id_item = QtWidgets.QTableWidgetItem('%d' % int(area_id))
-            area_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 0, area_id_item)  # Area id
-
-            object_item = QtWidgets.QTableWidgetItem('%s' % area_dict["obj_type"])
-            object_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 1, object_item)  # Origin Object
-
-            strategy_item = QtWidgets.QTableWidgetItem('%s' % area_dict["strategy"])
-            strategy_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 2, strategy_item)  # Strategy
-
-            overz_item = QtWidgets.QTableWidgetItem('%s' % area_dict["overz"])
-            overz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.exclusion_table.setItem(area, 3, overz_item)  # Over Z
-
-        self.ui.exclusion_table.resizeColumnsToContents()
-        self.ui.exclusion_table.resizeRowsToContents()
-
-        area_vheader = self.ui.exclusion_table.verticalHeader()
-        area_vheader.hide()
-        self.ui.exclusion_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        area_hheader = self.ui.exclusion_table.horizontalHeader()
-        area_hheader.setMinimumSectionSize(10)
-        area_hheader.setDefaultSectionSize(70)
-
-        area_hheader.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        area_hheader.resizeSection(0, 20)
-        area_hheader.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        area_hheader.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        area_hheader.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-
-        # area_hheader.setStretchLastSection(True)
-        self.ui.exclusion_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        self.ui.exclusion_table.setColumnWidth(0, 20)
-
-        self.ui.exclusion_table.setMinimumHeight(self.ui.exclusion_table.getHeight())
-        self.ui.exclusion_table.setMaximumHeight(self.ui.exclusion_table.getHeight())
+            self.ui.slot_tooldia_entry.setDisabled(False)
+            self.ui.generate_milling_slots_button.setDisabled(False)
 
         self.ui_connect()
 
@@ -548,84 +475,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "solid": self.ui.solid_cb,
             "multicolored": self.ui.multicolored_cb,
 
-            "operation": self.ui.operation_radio,
-            "milling_type": self.ui.milling_type_radio,
-
-            "milling_dia": self.ui.mill_dia_entry,
-
-            "cutz": self.ui.cutz_entry,
-            "multidepth": self.ui.mpass_cb,
-            "depthperpass": self.ui.maxdepth_entry,
-            "travelz": self.ui.travelz_entry,
-            "feedrate_z": self.ui.feedrate_z_entry,
-            "feedrate": self.ui.xyfeedrate_entry,
-            "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "tooldia": self.ui.tooldia_entry,
             "slot_tooldia": self.ui.slot_tooldia_entry,
-            "toolchange": self.ui.toolchange_cb,
-            "toolchangez": self.ui.toolchangez_entry,
-            "extracut": self.ui.extracut_cb,
-            "extracut_length": self.ui.e_cut_entry,
-
-            "spindlespeed": self.ui.spindlespeed_entry,
-            "dwell": self.ui.dwell_cb,
-            "dwelltime": self.ui.dwelltime_entry,
-
-            "startz": self.ui.estartz_entry,
-            "endz": self.ui.endz_entry,
-            "endxy": self.ui.endxy_entry,
-
-            "offset": self.ui.offset_entry,
-
-            "ppname_e": self.ui.pp_excellon_name_cb,
-            "ppname_g": self.ui.pp_geo_name_cb,
-            "z_pdepth": self.ui.pdepth_entry,
-            "feedrate_probe": self.ui.feedrate_probe_entry,
-            # "gcode_type": self.ui.excellon_gcode_type_radio,
-            "area_exclusion": self.ui.exclusion_cb,
-            "area_shape": self.ui.area_shape_radio,
-            "area_strategy": self.ui.strategy_radio,
-            "area_overz": self.ui.over_z_entry,
         })
 
-        self.name2option = {
-            "e_operation": "operation",
-            "e_milling_type": "milling_type",
-            "e_milling_dia": "milling_dia",
-            "e_cutz": "cutz",
-            "e_multidepth": "multidepth",
-            "e_depthperpass": "depthperpass",
-
-            "e_travelz": "travelz",
-            "e_feedratexy": "feedrate",
-            "e_feedratez": "feedrate_z",
-            "e_fr_rapid": "feedrate_rapid",
-            "e_extracut": "extracut",
-            "e_extracut_length": "extracut_length",
-            "e_spindlespeed": "spindlespeed",
-            "e_dwell": "dwell",
-            "e_dwelltime": "dwelltime",
-            "e_offset": "offset",
-        }
-
-        # populate Excellon preprocessor combobox list
-        for name in list(self.app.preprocessors.keys()):
-            # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
-            if name == 'hpgl':
-                continue
-            self.ui.pp_excellon_name_cb.addItem(name)
-
-        # populate Geometry (milling) preprocessor combobox list
-        for name in list(self.app.preprocessors.keys()):
-            self.ui.pp_geo_name_cb.addItem(name)
-
-        # Fill form fields
         self.to_form()
-
-        # update the changes in UI depending on the selected preprocessor in Preferences
-        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
-        # self.ui.pp_excellon_name_cb combobox
-        self.on_pp_changed()
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -633,14 +487,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.tools_table.setColumnHidden(5, True)
-            self.ui.estartz_label.hide()
-            self.ui.estartz_entry.hide()
-            self.ui.feedrate_rapid_label.hide()
-            self.ui.feedrate_rapid_entry.hide()
-            self.ui.pdepth_label.hide()
-            self.ui.pdepth_entry.hide()
-            self.ui.feedrate_probe_label.hide()
-            self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
@@ -651,33 +497,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
-        self.ui.generate_cnc_button.clicked.connect(self.on_create_cncjob_button_click)
+        self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
+        # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
+
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
-        # Exclusion areas signals
-        self.ui.exclusion_table.horizontalHeader().sectionClicked.connect(self.exclusion_table_toggle_all)
-        self.ui.exclusion_table.lost_focus.connect(self.clear_selection)
-        self.ui.exclusion_table.itemClicked.connect(self.draw_sel_shape)
-        self.ui.add_area_button.clicked.connect(self.on_add_area_click)
-        self.ui.delete_area_button.clicked.connect(self.on_clear_area_click)
-        self.ui.delete_sel_area_button.clicked.connect(self.on_delete_sel_areas)
-        self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
-
-        self.on_operation_type(val='drill')
-        self.ui.operation_radio.activated_custom.connect(self.on_operation_type)
-
-        self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
-
-        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
 
         self.units_found = self.app.defaults['units']
-
-        # ########################################
-        # #######3 TEMP SETTINGS #################
-        # ########################################
-        self.ui.operation_radio.set_value("drill")
-        self.ui.operation_radio.setEnabled(False)
 
     def ui_connect(self):
         """
@@ -694,18 +522,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
-        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
 
-        # value changed in the particular parameters of a tool
-        for key, option in self.name2option.items():
-            current_widget = self.form_fields[option]
-
-            if isinstance(current_widget, FCCheckBox):
-                current_widget.stateChanged.connect(self.form_to_storage)
-            if isinstance(current_widget, RadioSet):
-                current_widget.activated_custom.connect(self.form_to_storage)
-            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
-                current_widget.returnPressed.connect(self.form_to_storage)
 
     def ui_disconnect(self):
         """
@@ -730,30 +547,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.tools_table.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
-        try:
-            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
 
-        # value changed in the particular parameters of a tool
-        for key, option in self.name2option.items():
-            current_widget = self.form_fields[option]
-
-            if isinstance(current_widget, FCCheckBox):
-                try:
-                    current_widget.stateChanged.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
-                    pass
-            if isinstance(current_widget, RadioSet):
-                try:
-                    current_widget.activated_custom.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
-                    pass
-            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
-                try:
-                    current_widget.returnPressed.disconnect(self.form_to_storage)
-                except (TypeError, ValueError):
-                    pass
 
     def on_row_selection_change(self):
         """
@@ -764,139 +558,68 @@ class ExcellonObject(FlatCAMObj, Excellon):
         """
         self.ui_disconnect()
 
-        sel_rows = []
-        sel_items = self.ui.tools_table.selectedItems()
-        for it in sel_items:
-            sel_rows.append(it.row())
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
 
         if not sel_rows:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
-            )
-            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.tooldia_entry.setDisabled(True)
             self.ui.generate_milling_button.setDisabled(True)
+            self.ui.slot_tooldia_entry.setDisabled(True)
             self.ui.generate_milling_slots_button.setDisabled(True)
             self.ui_connect()
             return
         else:
-            self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.tooldia_entry.setDisabled(False)
             self.ui.generate_milling_button.setDisabled(False)
+            self.ui.slot_tooldia_entry.setDisabled(False)
             self.ui.generate_milling_slots_button.setDisabled(False)
 
-        if len(sel_rows) == 1:
-            # update the QLabel that shows for which Tool we have the parameters in the UI form
-            tooluid = int(self.ui.tools_table.item(sel_rows[0], 0).text())
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
-            )
-        else:
-            self.ui.tool_data_label.setText(
-                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
-            )
+            # find if we have drills:
+            has_drills = None
+            for tt in self.tools:
+                if 'drills' in self.tools[tt] and self.tools[tt]['drills']:
+                    has_drills = True
+                    break
+            if has_drills is None:
+                self.ui.tooldia_entry.setDisabled(True)
+                self.ui.generate_milling_button.setDisabled(True)
+            else:
+                self.ui.tooldia_entry.setDisabled(False)
+                self.ui.generate_milling_button.setDisabled(False)
 
-        for c_row in sel_rows:
-            # populate the form with the data from the tool associated with the row parameter
-            try:
-                item = self.ui.tools_table.item(c_row, 0)
-                if type(item) is not None:
-                    tooluid = item.text()
-                    self.storage_to_form(self.tools[str(tooluid)]['data'])
-                else:
-                    self.ui_connect()
-                    return
-            except Exception as e:
-                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
-                self.ui_connect()
-                return
-
-        self.ui_connect()
-
-    def storage_to_form(self, dict_storage):
-        """
-        Will update the GUI with data from the "storage" in this case the dict self.tools
-
-        :param dict_storage:    A dictionary holding the data relevant for gnerating Gcode from Excellon
-        :type dict_storage:     dict
-        :return:                None
-        :rtype:
-        """
-        for form_key in self.form_fields:
-            for storage_key in dict_storage:
-                if form_key == storage_key and form_key not in \
-                        ["toolchange", "toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
-                    try:
-                        self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception as e:
-                        log.debug("ExcellonObject.storage_to_form() --> %s" % str(e))
-                        pass
-
-    def form_to_storage(self):
-        """
-        Will update the 'storage' attribute which is the dict self.tools with data collected from GUI
-
-        :return:    None
-        :rtype:
-        """
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            return
-
-        self.ui_disconnect()
-
-        widget_changed = self.sender()
-        wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
-
-        # row = self.ui.tools_table.currentRow()
-        rows = sorted(set(index.row() for index in self.ui.tools_table.selectedIndexes()))
-        for row in rows:
-            if row < 0:
-                row = 0
-            tooluid_item = int(self.ui.tools_table.item(row, 0).text())
-
-            for tooluid_key, tooluid_val in self.tools.items():
-                if int(tooluid_key) == tooluid_item:
-                    new_option_value = self.form_fields[option_changed].get_value()
-                    if option_changed in tooluid_val:
-                        tooluid_val[option_changed] = new_option_value
-                    if option_changed in tooluid_val['data']:
-                        tooluid_val['data'][option_changed] = new_option_value
+            # find if we have slots
+            has_slots = None
+            for tt in self.tools:
+                if 'slots' in self.tools[tt] and self.tools[tt]['slots']:
+                    has_slots = True
+                    break
+            if has_slots is None:
+                self.ui.slot_tooldia_entry.setDisabled(True)
+                self.ui.generate_milling_slots_button.setDisabled(True)
+            else:
+                self.ui.slot_tooldia_entry.setDisabled(False)
+                self.ui.generate_milling_slots_button.setDisabled(False)
 
         self.ui_connect()
 
-    def on_operation_type(self, val):
-        """
-        Called by a RadioSet activated_custom signal
+    def on_toggle_rows(self):
+        sel_model = self.ui.tools_table.selectionModel()
+        sel_indexes = sel_model.selectedIndexes()
 
-        :param val:     Parameter passes by the signal that called this method
-        :type val:      str
-        :return:        None
-        :rtype:
-        """
-        if val == 'mill':
-            self.ui.mill_type_label.show()
-            self.ui.milling_type_radio.show()
-            self.ui.mill_dia_label.show()
-            self.ui.mill_dia_entry.show()
-            self.ui.frxylabel.show()
-            self.ui.xyfeedrate_entry.show()
-            self.ui.extracut_cb.show()
-            self.ui.e_cut_entry.show()
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
 
-            # if 'laser' not in self.ui.pp_excellon_name_cb.get_value().lower():
-            #     self.ui.mpass_cb.show()
-            #     self.ui.maxdepth_entry.show()
+        if len(sel_rows) == self.ui.tools_table.rowCount():
+            self.ui.tools_table.clearSelection()
         else:
-            self.ui.mill_type_label.hide()
-            self.ui.milling_type_radio.hide()
-            self.ui.mill_dia_label.hide()
-            self.ui.mill_dia_entry.hide()
-            # self.ui.mpass_cb.hide()
-            # self.ui.maxdepth_entry.hide()
-            self.ui.frxylabel.hide()
-            self.ui.xyfeedrate_entry.hide()
-            self.ui.extracut_cb.hide()
-            self.ui.e_cut_entry.hide()
+            self.ui.tools_table.selectAll()
 
     def get_selected_tools_list(self):
         """
@@ -906,8 +629,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
         :return:    List of tools.
         :rtype:     list
         """
+        rows = set()
+        for item in self.ui.tools_table.selectedItems():
+            rows.add(item.row())
 
-        return [x.text() for x in self.ui.tools_table.selectedItems()]
+        tool_ids = []
+        for row in rows:
+            tool_ids.append(int(self.ui.tools_table.item(row, 0).text()))
+        return tool_ids
+        # return [x.text() for x in self.ui.tools_table.selectedItems()]
 
     def get_selected_tools_table_items(self):
         """
@@ -1166,7 +896,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             outname = self.options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = float(self.options["tooldia"])
+            tooldia = self.ui.tooldia_entry.get_value()
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
@@ -1369,198 +1099,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.generate_milling_slots(use_thread=False, plot=True)
 
-    def on_pp_changed(self):
-        current_pp = self.ui.pp_excellon_name_cb.get_value()
-
-        if "toolchange_probe" in current_pp.lower():
-            self.ui.pdepth_entry.setVisible(True)
-            self.ui.pdepth_label.show()
-
-            self.ui.feedrate_probe_entry.setVisible(True)
-            self.ui.feedrate_probe_label.show()
-        else:
-            self.ui.pdepth_entry.setVisible(False)
-            self.ui.pdepth_label.hide()
-
-            self.ui.feedrate_probe_entry.setVisible(False)
-            self.ui.feedrate_probe_label.hide()
-
-        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
-            self.ui.feedrate_rapid_label.show()
-            self.ui.feedrate_rapid_entry.show()
-        else:
-            self.ui.feedrate_rapid_label.hide()
-            self.ui.feedrate_rapid_entry.hide()
-
-        if 'laser' in current_pp.lower():
-            self.ui.cutzlabel.hide()
-            self.ui.cutz_entry.hide()
-            try:
-                self.ui.mpass_cb.hide()
-                self.ui.maxdepth_entry.hide()
-            except AttributeError:
-                pass
-
-            if 'marlin' in current_pp.lower():
-                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
-                self.ui.endz_label.show()
-                self.ui.endz_entry.show()
-            else:
-                self.ui.travelzlabel.hide()
-                self.ui.travelz_entry.hide()
-
-                self.ui.endz_label.hide()
-                self.ui.endz_entry.hide()
-
-            try:
-                self.ui.frzlabel.hide()
-                self.ui.feedrate_z_entry.hide()
-            except AttributeError:
-                pass
-
-            self.ui.dwell_cb.hide()
-            self.ui.dwelltime_entry.hide()
-
-            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
-
-            try:
-                self.ui.tool_offset_label.hide()
-                self.ui.offset_entry.hide()
-            except AttributeError:
-                pass
-        else:
-            self.ui.cutzlabel.show()
-            self.ui.cutz_entry.show()
-            try:
-                self.ui.mpass_cb.show()
-                self.ui.maxdepth_entry.show()
-            except AttributeError:
-                pass
-
-            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
-
-            self.ui.travelzlabel.show()
-            self.ui.travelz_entry.show()
-
-            self.ui.endz_label.show()
-            self.ui.endz_entry.show()
-
-            try:
-                self.ui.frzlabel.show()
-                self.ui.feedrate_z_entry.show()
-            except AttributeError:
-                pass
-            self.ui.dwell_cb.show()
-            self.ui.dwelltime_entry.show()
-
-            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
-
-            try:
-                self.ui.tool_offset_lbl.show()
-                self.ui.offset_entry.show()
-            except AttributeError:
-                pass
-
-    def on_create_cncjob_button_click(self, *args):
-        self.app.defaults.report_usage("excellon_on_create_cncjob_button")
-        self.read_form()
-
-        # Get the tools from the list
-        tools = self.get_selected_tools_list()
-
-        if len(tools) == 0:
-            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
-            # tool number) it means that there are 3 rows (1 tool and 2 totals).
-            # in this case regardless of the selection status of that tool, use it.
-            if self.ui.tools_table.rowCount() == 3:
-                tools.append(int(self.ui.tools_table.item(0, 0).text()))
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Please select one or more tools from the list and try again."))
-                return
-
-        xmin = self.options['xmin']
-        ymin = self.options['ymin']
-        xmax = self.options['xmax']
-        ymax = self.options['ymax']
-
-        job_name = self.options["name"] + "_cnc"
-        pp_excellon_name = self.options["ppname_e"]
-
-        # Object initialization function for app.app_obj.new_object()
-        def job_init(job_obj, app_obj):
-            assert job_obj.kind == 'cncjob', "Initializer expected a CNCJobObject, got %s" % type(job_obj)
-
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            # ## Add properties to the object
-
-            job_obj.origin_kind = 'excellon'
-
-            job_obj.options['Tools_in_use'] = tool_table_items
-            job_obj.options['type'] = 'Excellon'
-            job_obj.options['ppname_e'] = pp_excellon_name
-
-            job_obj.multidepth = self.options["multidepth"]
-            job_obj.z_depthpercut = self.options["depthperpass"]
-
-            job_obj.z_move = float(self.options["travelz"])
-            job_obj.feedrate = float(self.options["feedrate_z"])
-            job_obj.z_feedrate = float(self.options["feedrate_z"])
-            job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
-
-            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
-            job_obj.spindledir = self.app.defaults['excellon_spindledir']
-            job_obj.dwell = self.options["dwell"]
-            job_obj.dwelltime = float(self.options["dwelltime"])
-
-            job_obj.pp_excellon_name = pp_excellon_name
-
-            job_obj.toolchange_xy_type = "excellon"
-            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
-
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
-
-            job_obj.z_pdepth = float(self.options["z_pdepth"])
-            job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-
-            job_obj.z_cut = float(self.options['cutz'])
-            job_obj.toolchange = self.options["toolchange"]
-            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
-            job_obj.z_toolchange = float(self.options["toolchangez"])
-            job_obj.startz = float(self.options["startz"]) if self.options["startz"] else None
-            job_obj.endz = float(self.options["endz"])
-            job_obj.xy_end = self.options["endxy"]
-            job_obj.excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
-
-            tools_csv = ','.join(tools)
-            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv, use_ui=True)
-
-            if ret_val == 'fail':
-                return 'fail'
-
-            job_obj.gcode_parse()
-            job_obj.create_geometry()
-
-        # To be run in separate thread
-        def job_thread(a_obj):
-            with self.app.proc_container.new(_("Generating CNC Code")):
-                a_obj.app_obj.new_object("cncjob", job_name, job_init)
-
-        # Create promise for the new name.
-        self.app.collection.promise(job_name)
-
-        # Send to worker
-        # self.app.worker.add_task(job_thread, [self.app])
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-
     def convert_units(self, units):
         log.debug("FlatCAMObj.ExcellonObject.convert_units()")
 
@@ -1589,110 +1127,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # if self.options['startz'] is not None:
         #     self.options['startz'] = float(self.options['startz']) * factor
         # self.options['endz'] = float(self.options['endz']) * factor
-
-    def on_add_area_click(self):
-        shape_button = self.ui.area_shape_radio
-        overz_button = self.ui.over_z_entry
-        strategy_radio = self.ui.strategy_radio
-        cnc_button = self.ui.generate_cnc_button
-        solid_geo = self.solid_geometry
-        obj_type = self.kind
-
-        self.app.exc_areas.on_add_area_click(
-            shape_button=shape_button, overz_button=overz_button, cnc_button=cnc_button, strategy_radio=strategy_radio,
-            solid_geo=solid_geo, obj_type=obj_type)
-
-    def on_clear_area_click(self):
-        if not self.app.exc_areas.exclusion_areas_storage:
-            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Delete failed. There are no exclusion areas to delete."))
-            return
-
-        self.app.exc_areas.on_clear_area_click()
-        self.app.exc_areas.e_shape_modified.emit()
-
-    def on_delete_sel_areas(self):
-        sel_model = self.ui.exclusion_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
-
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        # so the duplicate rows will not be added
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
-
-        if not sel_rows:
-            self.app.inform.emit("[WARNING_NOTCL] %s" % _("Delete failed. Nothing is selected."))
-            return
-
-        self.app.exc_areas.delete_sel_shapes(idxs=list(sel_rows))
-        self.app.exc_areas.e_shape_modified.emit()
-
-    def draw_sel_shape(self):
-        sel_model = self.ui.exclusion_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
-
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
-
-        self.delete_sel_shape()
-
-        if self.app.is_legacy is False:
-            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
-            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
-        else:
-            face = self.app.defaults['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
-            outline = self.app.defaults['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
-
-        for row in sel_rows:
-            sel_rect = self.app.exc_areas.exclusion_areas_storage[row]['shape']
-            self.app.move_tool.sel_shapes.add(sel_rect, color=outline, face_color=face, update=True, layer=0,
-                                              tolerance=None)
-        if self.app.is_legacy is True:
-            self.app.move_tool.sel_shapes.redraw()
-
-    def clear_selection(self):
-        self.app.delete_selection_shape()
-        # self.ui.exclusion_table.clearSelection()
-
-    def delete_sel_shape(self):
-        self.app.delete_selection_shape()
-
-    def update_exclusion_table(self):
-        self.exclusion_area_cb_is_checked = True if self.ui.exclusion_cb.isChecked() else False
-
-        self.build_ui()
-        self.ui.exclusion_cb.set_value(self.exclusion_area_cb_is_checked)
-
-    def on_strategy(self, val):
-        if val == 'around':
-            self.ui.over_z_label.setDisabled(True)
-            self.ui.over_z_entry.setDisabled(True)
-        else:
-            self.ui.over_z_label.setDisabled(False)
-            self.ui.over_z_entry.setDisabled(False)
-
-    def exclusion_table_toggle_all(self):
-        """
-        will toggle the selection of all rows in Exclusion Areas table
-
-        :return:
-        """
-        sel_model = self.ui.exclusion_table.selectionModel()
-        sel_indexes = sel_model.selectedIndexes()
-
-        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
-        sel_rows = set()
-        for idx in sel_indexes:
-            sel_rows.add(idx.row())
-
-        if sel_rows:
-            self.ui.exclusion_table.clearSelection()
-            self.delete_sel_shape()
-        else:
-            self.ui.exclusion_table.selectAll()
-            self.draw_sel_shape()
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -1826,11 +1260,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
         except TypeError:
             self.solid_geometry = [self.solid_geometry]
 
-        visible = visible if visible else self.options['plot']
+        visible = visible if visible else self.ui.plot_cb.get_value()
 
         try:
             # Plot Excellon (All polygons?)
-            if self.options["solid"]:
+            if self.ui.solid_cb.get_value():
                 # for geo in self.solid_geometry:
                 #     self.add_shape(shape=geo,
                 #                    color=self.outline_color,
@@ -1842,12 +1276,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 for tool in self.tools:
                     # set the color here so we have one color for each tool
                     geo_color = random_color()
+                    multicolored = self.ui.multicolored_cb.get_value()
 
                     # tool is a dict also
                     for geo in self.tools[tool]["solid_geometry"]:
                         self.add_shape(shape=geo,
-                                       color=geo_color if self.options['multicolored'] else self.outline_color,
-                                       face_color=geo_color if self.options['multicolored'] else self.fill_color,
+                                       color=geo_color if multicolored else self.outline_color,
+                                       face_color=geo_color if multicolored else self.fill_color,
                                        visible=visible,
                                        layer=2)
 
@@ -1860,32 +1295,3 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-
-    def on_apply_param_to_all_clicked(self):
-        if self.ui.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("ExcellonObject.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
-            return
-
-        self.ui_disconnect()
-
-        row = self.ui.tools_table.currentRow()
-        if row < 0:
-            row = 0
-
-        tooluid_item = int(self.ui.tools_table.item(row, 0).text())
-        temp_tool_data = {}
-
-        for tooluid_key, tooluid_val in self.tools.items():
-            if int(tooluid_key) == tooluid_item:
-                # this will hold the 'data' key of the self.tools[tool] dictionary that corresponds to
-                # the current row in the tool table
-                temp_tool_data = tooluid_val['data']
-                break
-
-        for tooluid_key, tooluid_val in self.tools.items():
-            tooluid_val['data'] = deepcopy(temp_tool_data)
-
-        self.app.inform.emit('[success] %s' % _("Current Tool parameters were applied to all tools."))
-
-        self.ui_connect()
