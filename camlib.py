@@ -2890,7 +2890,6 @@ class CNCjob(Geometry):
             self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
             return 'fail'
 
-
     def gcode_from_excellon_by_tool(self, tool, points, tools, opt_type='T', toolchange=False):
         """
         Creates Gcode for this object from an Excellon object
@@ -2922,7 +2921,7 @@ class CNCjob(Geometry):
 
         tool_dict = tools[tool]['data']
         # check if it has drills
-        if not tools[tool]['drills']:
+        if not points:
             log.debug("Failed. No drills for tool: %s" % str(tool))
             return 'fail'
 

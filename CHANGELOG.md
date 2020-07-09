@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - CNCJob object - now it is possible for CNCJob objects originated from Excellon objects, to toggle the plot for a selection of tools
 - working in cleaning up the Excellon UI (Selected Tab)
 - finished the clean-up in Excellon UI
+- Tool Drilling - added new feature to drill the slots
 
 8.07.2020
 
