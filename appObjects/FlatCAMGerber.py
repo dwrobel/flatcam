@@ -207,6 +207,9 @@ class GerberObject(FlatCAMObj, Gerber):
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
+        # Editor
+        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+
         # Tools
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
         self.ui.generate_ncc_button.clicked.connect(self.app.ncclear_tool.run)

@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - Tool Drilling - moved some of the Excellon Preferences related to drilling operation to it's own group Drilling Tool Options
 - optimized the CNCJob UI to look like other parts of the app 
+- in Gerber and Excellon UI added buttons to start the Editor
+- in all Editors Selected Tab added a button to Exit the Editor
 
 9.07.2020
 

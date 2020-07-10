@@ -311,6 +311,19 @@ class GerberObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.create_buffer_button)
 
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
+        self.editor_button.setToolTip(
+            _("Edit an Gerber object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        self.custom_box.addWidget(self.editor_button)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -583,6 +596,19 @@ class ExcellonObjectUI(ObjectUI):
 
         # this column is not used; reserved for future usage
         self.tools_table.setColumnHidden(4, True)
+
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Excellon Editor'))
+        self.editor_button.setToolTip(
+            _("Edit an Excellon object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        self.tools_box.addWidget(self.editor_button)
 
         # #################################################################
         # ########## TOOLS GRID ###########################################

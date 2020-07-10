@@ -2892,7 +2892,22 @@ class AppGerberEditor(QtCore.QObject):
 
         self.array_frame.hide()
 
-        self.custom_box.addStretch()
+        layout.addStretch()
+
+        # Editor
+        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button.setToolTip(
+            _("Exit from Editor.")
+        )
+        self.exit_editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        layout.addWidget(self.exit_editor_button)
+
+        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # Toolbar events and properties
         self.tools_gerber = {

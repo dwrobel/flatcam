@@ -268,6 +268,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
+        # Editor
+        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+        
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
         # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
 

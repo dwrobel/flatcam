@@ -3295,6 +3295,23 @@ class AppGeoEditor(QtCore.QObject):
 
         self.geo_parent = self.tw.invisibleRootItem()
 
+        layout.addStretch()
+
+        # Editor
+        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button.setToolTip(
+            _("Exit from Editor.")
+        )
+        self.exit_editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        layout.addWidget(self.exit_editor_button)
+
+        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
         # ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
