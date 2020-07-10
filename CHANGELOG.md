@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - optimized the CNCJob UI to look like other parts of the app 
 - in Gerber and Excellon UI added buttons to start the Editor
 - in all Editors Selected Tab added a button to Exit the Editor
+- Tool Drilling - fixed incorrect annotations in CNCJob objects generated; one drawback is that now each tool (when Toolchange is ON) has it's own annotation order which lead to overlapping in the start point of one tool and the end of previous tool
+- Tool Drilling - refactoring methods and optimizations
 
 9.07.2020
 

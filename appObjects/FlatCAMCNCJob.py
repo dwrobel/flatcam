@@ -1137,13 +1137,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
                 self.plot2(tooldia=dia_plot, obj=self, visible=visible, kind=kind)
             else:
-                # multiple tools usage
-                if self.cnc_tools:
-                    for tooluid_key in self.cnc_tools:
-                        tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
-                        gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
-
                 # I do this so the travel lines thickness will reflect the tool diameter
                 # may work only for objects created within the app and not Gcode imported from elsewhere for which we
                 # don't know the origin
@@ -1155,6 +1148,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                             if not gcode_parsed:
                                 continue
                             # gcode_parsed = self.gcode_parsed
+                            self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                else:
+                    # multiple tools usage
+                    if self.cnc_tools:
+                        for tooluid_key in self.cnc_tools:
+                            tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
+                            gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                             self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
 
             self.shapes.redraw()

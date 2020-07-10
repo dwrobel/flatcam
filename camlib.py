@@ -2721,11 +2721,7 @@ class CNCjob(Geometry):
     @staticmethod
     def create_tool_data_array(points):
         # Create the data.
-        loc_list = []
-
-        for pt in points:
-            loc_list.append((pt.coords.xy[0][0], pt.coords.xy[1][0]))
-        return loc_list
+        return [(pt.coords.xy[0][0], pt.coords.xy[1][0]) for pt in points]
 
     def optimized_ortools_meta(self, locations, start=None):
         optimized_path = []
@@ -2890,13 +2886,16 @@ class CNCjob(Geometry):
             self.app.inform.emit('[WARNING] %s.' % _("The Cut Z parameter is zero. There will be no cut, aborting"))
             return 'fail'
 
-    def gcode_from_excellon_by_tool(self, tool, points, tools, opt_type='T', toolchange=False):
+    def excellon_tool_gcode_gen(self, tool, points, tools, first_pt, is_first=False, is_last=False, opt_type='T',
+                                toolchange=False):
         """
         Creates Gcode for this object from an Excellon object
         for the specified tools.
 
-        :return:            Tool GCode
-        :rtype:             str
+
+
+        :return:            A tuple made from tool_gcode and another tuple holding the coordinates of the last point
+        :rtype:             tuple
         """
         log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
 
@@ -2904,6 +2903,10 @@ class CNCjob(Geometry):
         t_gcode = ''
         p = self.pp_excellon
         self.toolchange = toolchange
+
+        # holds the temporary coordinates of the processed drill point
+        locx, locy = first_pt
+        temp_locx, temp_locy = first_pt
 
         # #############################################################################################################
         # #############################################################################################################
@@ -2936,12 +2939,10 @@ class CNCjob(Geometry):
         # #########################################################################################################
         self.tool = str(tool)
         self.tooldia = tools[tool]["tooldia"]
-        self.postdata['toolC'] = self.tooldia
+        self.postdata['toolC'] = tools[tool]["tooldia"]
 
         self.z_feedrate = tool_dict['feedrate_z']
         self.feedrate = tool_dict['feedrate']
-
-        t_gcode += self.doformat(p.z_feedrate_code)
 
         # Z_cut parameter
         if self.machinist_setting == 0:
@@ -2996,10 +2997,9 @@ class CNCjob(Geometry):
         # #########################################################################################################
 
         # #########################################################################################################
-        # ############ Create the data. #################
+        # ############ Create the data. ###########################################################################
         # #########################################################################################################
         locations = []
-        altPoints = []
         optimized_path = []
 
         if opt_type == 'M':
@@ -3015,12 +3015,11 @@ class CNCjob(Geometry):
                 return 'fail'
             optimized_path = self.optimized_ortools_basic(locations=locations)
         elif opt_type == 'T':
-            for point in points:
-                altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+            locations = self.create_tool_data_array(points=points)
             # if there are no locations then go to the next tool
-            if not altPoints:
+            if not locations:
                 return 'fail'
-            optimized_path = self.optimized_travelling_salesman(altPoints)
+            optimized_path = self.optimized_travelling_salesman(locations)
         else:
             # it's actually not optimized path but here we build a list of (x,y) coordinates
             # out of the tool's drills
@@ -3041,16 +3040,25 @@ class CNCjob(Geometry):
             # graceful abort requested by the user
             raise grace
 
+        start_gcode = self.doformat(p.start_code)
+        if is_first:
+            t_gcode += start_gcode
+
+        t_gcode += self.doformat(p.z_feedrate_code)
+
         # Tool change sequence (optional)
-        if toolchange:
-            t_gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-        else:
-            if self.xy_toolchange is not None and isinstance(self.xy_toolchange, (tuple, list)):
-                t_gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-                t_gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-            else:
-                t_gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
-                t_gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
+        # if toolchange:
+        #     t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
+        # else:
+        #     if self.xy_toolchange is not None and isinstance(self.xy_toolchange, (tuple, list)):
+        #         t_gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+        #         t_gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+        #     else:
+        #         t_gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+        #         t_gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
+
+        # do the ToolChange event
+        t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
 
         # Spindle start
         t_gcode += self.doformat(p.spindle_code)
@@ -3098,7 +3106,7 @@ class CNCjob(Geometry):
                     locx = locations[point][0]
                     locy = locations[point][1]
 
-                travels = self.app.exc_areas.travel_coordinates(start_point=(self.oldx, self.oldy),
+                travels = self.app.exc_areas.travel_coordinates(start_point=(temp_locx, temp_locy),
                                                                 end_point=(locx, locy),
                                                                 tooldia=current_tooldia)
                 prev_z = None
@@ -3170,7 +3178,9 @@ class CNCjob(Geometry):
 
                     t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
-                self.measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                self.measured_distance += abs(distance_euclidian(locx, locy, temp_locx, temp_locy))
+                temp_locx = locx
+                temp_locy = locy
                 self.oldx = locx
                 self.oldy = locy
 
@@ -3186,12 +3196,13 @@ class CNCjob(Geometry):
             return 'fail'
         self.z_cut = deepcopy(old_zcut)
 
-        t_gcode += self.doformat(p.spindle_stop_code)
-        # Move to End position
-        t_gcode += self.doformat(p.end_code, x=0, y=0)
+        if is_last:
+            t_gcode += self.doformat(p.spindle_stop_code)
+            # Move to End position
+            t_gcode += self.doformat(p.end_code, x=0, y=0)
 
         self.app.inform.emit(_("Finished G-Code generation for tool: %s" % str(tool)))
-        return t_gcode
+        return t_gcode, (locx, locy)
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', use_ui=False):
         """
@@ -5879,13 +5890,13 @@ class CNCjob(Geometry):
         self.gcode_parsed = geometry
         return geometry
 
-    def excellon_tool_gcode_parse(self, dia, start_pt=(0, 0), force_parsing=None):
+    def excellon_tool_gcode_parse(self, dia, gcode, start_pt=(0, 0), force_parsing=None):
         """
         G-Code parser (from self.exc_cnc_tools['tooldia']['gcode']). Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
 
-        Will return a list of dict in the format:
+        Will return the Geometry as a list of dict in the format:
         {
             "geom": LineString(path),
             "kind": kind
@@ -5894,11 +5905,13 @@ class CNCjob(Geometry):
 
         :param dia:             the dia is a tool diameter which is the key in self.exc_cnc_tools dict
         :type dia:              float
+        :param gcode:           Gcode to parse
+        :type gcode:            str
         :param start_pt:        the point coordinates from where to start the parsing
         :type start_pt:         tuple
         :param force_parsing:
         :type force_parsing:    bool
-        :return:                list of dictionaries
+        :return:                Geometry as a list of dictionaries
         :rtype:                 list
         """
 
@@ -5917,7 +5930,7 @@ class CNCjob(Geometry):
         path = [pos_xy]
         # path = [(0, 0)]
 
-        gcode_lines_list = self.exc_cnc_tools[dia]['gcode'].splitlines()
+        gcode_lines_list = gcode.splitlines()
         self.app.inform.emit(
             '%s: %s. %s: %d' % (_("Parsing GCode file for tool diameter"),
                                 str(dia), _("Number of lines"),
@@ -5964,20 +5977,19 @@ class CNCjob(Geometry):
                     path = [path[-1]]  # Start with the last point of last path.
 
                 # create the geometry for the holes created when drilling Excellon drills
-                if self.origin_kind == 'excellon':
-                    if current['Z'] < 0:
-                        current_drill_point_coords = (
-                            float('%.*f' % (self.decimals, current['X'])),
-                            float('%.*f' % (self.decimals, current['Y']))
-                        )
+                if current['Z'] < 0:
+                    current_drill_point_coords = (
+                        float('%.*f' % (self.decimals, current['X'])),
+                        float('%.*f' % (self.decimals, current['Y']))
+                    )
 
-                        kind = ['C', 'F']
-                        geometry.append(
-                            {
-                                "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
-                                "kind": kind
-                            }
-                        )
+                    kind = ['C', 'F']
+                    geometry.append(
+                        {
+                            "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
+                            "kind": kind
+                        }
+                    )
 
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])
@@ -6147,8 +6159,8 @@ class CNCjob(Geometry):
                     # plot the geometry of Excellon objects
                     if self.origin_kind == 'excellon':
                         try:
+                            # if the geos are travel lines
                             if geo['kind'][0] == 'T':
-                                # if the geos are travel lines it will enter into Exception
                                 poly = geo['geom'].buffer(distance=(tooldia / 1.99999999),
                                                           resolution=self.steps_per_circle)
                             else:
@@ -6158,16 +6170,6 @@ class CNCjob(Geometry):
                         except Exception:
                             # deal here with unexpected plot errors due of LineStrings not valid
                             continue
-
-                        # try:
-                        #     poly = Polygon(geo['geom'])
-                        # except ValueError:
-                        #     # if the geos are travel lines it will enter into Exception
-                        #     poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                        #     poly = poly.simplify(tool_tolerance)
-                        # except Exception:
-                        #     # deal here with unexpected plot errors due of LineStrings not valid
-                        #     continue
                     else:
                         # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)

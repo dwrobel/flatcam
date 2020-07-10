@@ -10351,6 +10351,14 @@ class App(QtCore.QObject):
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
+    def dec_format(self, val, dec=None):
+        """
+        Returns a formatted float value with a certain number of decimals
+        """
+        dec_nr = dec if dec is not None else self.decimals
+
+        return float('%.*f' % (dec_nr, val))
+
 
 class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)

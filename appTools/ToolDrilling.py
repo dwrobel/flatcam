@@ -45,7 +45,7 @@ class ToolDrilling(AppTool, Excellon):
 
     def __init__(self, app):
         self.app = app
-        self.decimals = self.app.decimals
+        self.dec_format = self.app.dec_format
 
         AppTool.__init__(self, app)
         Excellon.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
@@ -465,7 +465,7 @@ class ToolDrilling(AppTool, Excellon):
         # order the tools by tool diameter if it's the case
         sorted_tools = []
         for k, v in self.excellon_tools.items():
-            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+            sorted_tools.append(self.dec_format(float(v['tooldia'])))
 
         order = self.t_ui.order_radio.get_value()
         if order == 'fwd':
@@ -480,7 +480,7 @@ class ToolDrilling(AppTool, Excellon):
         new_tools = {}
         for tooldia in sorted_tools:
             for old_tool in self.excellon_tools:
-                if float('%.*f' % (self.decimals, float(self.excellon_tools[old_tool]['tooldia']))) == tooldia:
+                if self.dec_format(float(self.excellon_tools[old_tool]['tooldia'])) == tooldia:
                     new_tools[new_id] = deepcopy(self.excellon_tools[old_tool])
                     new_id += 1
 
@@ -524,7 +524,7 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.tools_table.setItem(self.tool_row, 0, exc_id_item)
 
             # Tool Diameter
-            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.excellon_tools[tool_no]['tooldia']))
+            dia_item = QtWidgets.QTableWidgetItem(str(self.dec_format(self.excellon_tools[tool_no]['tooldia'])))
             dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDragEnabled)
             self.t_ui.tools_table.setItem(self.tool_row, 1, dia_item)
 
@@ -1305,6 +1305,86 @@ class ToolDrilling(AppTool, Excellon):
             drills_list.append(stop_pt)
         return drills_list
 
+    def is_valid_excellon(self):
+        slots_as_drills = self.t_ui.drill_slots_cb.get_value()
+
+        has_drills = None
+        for tool_key, tool_dict in self.excellon_tools.items():
+            if 'drills' in tool_dict and tool_dict['drills']:
+                has_drills = True
+                break
+        has_slots = None
+        for tool_key, tool_dict in self.excellon_tools.items():
+            if 'slots' in tool_dict and tool_dict['slots']:
+                has_slots = True
+                break
+
+        if not has_drills:
+            if slots_as_drills and has_slots:
+                return True
+            else:
+                return False
+
+    def get_selected_tools_uid(self):
+        """
+        Return a list of the selected tools UID from the Tool Table
+        """
+        selected_uid = set()
+        for sel_it in self.t_ui.tools_table.selectedItems():
+            uid = int(self.t_ui.tools_table.item(sel_it.row(), 3).text())
+            selected_uid.add(uid)
+        return list(selected_uid)
+
+    def create_drill_points(self, selected_tools, selected_sorted_tools, convert_slots=False):
+        points = {}
+
+        # create drill points out of the drills locations
+        for tool_key, tl_dict in self.excellon_tools.items():
+            if tool_key in selected_tools:
+                if 'drills' in tl_dict and tl_dict['drills']:
+                    for drill_pt in tl_dict['drills']:
+                        try:
+                            points[tool_key].append(drill_pt)
+                        except KeyError:
+                            points[tool_key] = [drill_pt]
+        log.debug("Found %d TOOLS with drills." % len(points))
+
+        # convert slots to a sequence of drills and add them to drill points
+        should_add_last_pt = self.t_ui.last_drill_cb.get_value()
+        if convert_slots:
+            for tool_key, tl_dict in self.excellon_tools.items():
+                if tool_key in selected_tools:
+                    overlap = 1 - (self.t_ui.drill_overlap_entry.get_value() / 100.0)
+                    drill_overlap = 0.0
+                    for i in selected_sorted_tools:
+                        if i[0] == tool_key:
+                            slot_tool_dia = i[1]
+                            drill_overlap = overlap * slot_tool_dia
+                            break
+
+                    new_drills = []
+                    if 'slots' in tl_dict and tl_dict['slots']:
+                        for slot in tl_dict['slots']:
+                            new_drills += self.process_slot_as_drills(slot=slot, overlap=drill_overlap,
+                                                                      add_last_pt=should_add_last_pt)
+                        if new_drills:
+                            try:
+                                points[tool_key] += new_drills
+                            except Exception:
+                                points[tool_key] = new_drills
+            log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
+
+        return points
+
+    def check_intersection(self, points):
+        for tool_key in points:
+            for pt in points[tool_key]:
+                for area in self.app.exc_areas.exclusion_areas_storage:
+                    pt_buf = pt.buffer(self.excellon_tools[tool_key]['tooldia'] / 2.0)
+                    if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
+                        return True
+        return False
+
     def on_cnc_button_click(self):
         obj_name = self.t_ui.object_combo.currentText()
         toolchange = self.t_ui.toolchange_cb.get_value()
@@ -1320,45 +1400,6 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR_NOTCL] %s.' % _("Object not found"))
             return
 
-        slots_as_drills = self.t_ui.drill_slots_cb.get_value()
-
-        has_drills = None
-        for tool_key, tool_dict in self.excellon_tools.items():
-            if 'drills' in tool_dict and tool_dict['drills']:
-                has_drills = True
-                break
-        has_slots = None
-        for tool_key, tool_dict in self.excellon_tools.items():
-            if 'slots' in tool_dict and tool_dict['slots']:
-                has_slots = True
-                break
-        if not has_drills:
-            if slots_as_drills and has_slots:
-                pass
-            else:
-                log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                          "The loaded Excellon file has no drills ...")
-                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
-                return
-
-        # Get the tools from the Tool Table
-        selected_uid = set()
-        for sel_it in self.t_ui.tools_table.selectedItems():
-            uid = int(self.t_ui.tools_table.item(sel_it.row(), 3).text())
-            selected_uid.add(uid)
-        selected_tools_id = list(selected_uid)
-
-        if len(selected_tools_id) == 0:
-            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
-            # tool number) it means that there are 3 rows (1 tool and 2 totals).
-            # in this case regardless of the selection status of that tool, use it.
-            if self.t_ui.tools_table.rowCount() >= 3:
-                selected_tools_id.append(int(self.t_ui.tools_table.item(0, 3).text()))
-            else:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Please select one or more tools from the list and try again."))
-                return
-
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
         xmax = obj.options['xmax']
@@ -1366,6 +1407,27 @@ class ToolDrilling(AppTool, Excellon):
 
         job_name = obj.options["name"] + "_cnc"
         obj.pp_excellon_name = self.t_ui.pp_excellon_name_cb.get_value()
+
+        convert_slots = self.t_ui.drill_slots_cb.get_value()
+
+        if self.is_valid_excellon() is False:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                      "The loaded Excellon file has no drills ...")
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
+            return
+
+        # Get the tools from the Tool Table
+        selected_tools_id = self.get_selected_tools_uid()
+        if not selected_tools_id:
+            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
+            # tool number) it means that there are 3 rows (1 tool and 2 totals).
+            # in this case regardless of the selection status of that tool, use it.
+            if self.t_ui.tools_table.rowCount() >= 3:
+                selected_tools_id.append(int(self.t_ui.tools_table.item(0, 3).text()))
+            else:
+                msg = '[ERROR_NOTCL] %s' % _("Please select one or more tools from the list and try again.")
+                self.app.inform.emit(msg)
+                return
 
         # #############################################################################################################
         # #############################################################################################################
@@ -1400,59 +1462,14 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################################################
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
-        points = {}
-        for tool_key, tl_dict in self.excellon_tools.items():
-            if tool_key in sel_tools:
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise grace
+        # points is a dictionary: keys are tools ad values are lists of Shapely Points
+        points = self.create_drill_points(selected_tools=sel_tools, selected_sorted_tools=sorted_tools,
+                                          convert_slots=convert_slots)
 
-                if 'drills' in tl_dict and tl_dict['drills']:
-                    for drill_pt in tl_dict['drills']:
-                        try:
-                            points[tool_key].append(drill_pt)
-                        except KeyError:
-                            points[tool_key] = [drill_pt]
-        log.debug("Found %d TOOLS with drills." % len(points))
-
-        # add slots as drills
-        should_add_last_pt = self.t_ui.last_drill_cb.get_value()
-        if slots_as_drills:
-            for tool_key, tl_dict in self.excellon_tools.items():
-                if tool_key in sel_tools:
-                    if self.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise grace
-
-                    overlap = 1 - (self.t_ui.drill_overlap_entry.get_value() / 100.0)
-                    drill_overlap = 0.0
-                    for i in sorted_tools:
-                        if i[0] == tool_key:
-                            slot_tool_dia = i[1]
-                            drill_overlap = overlap * slot_tool_dia
-                            break
-
-                    new_drills = []
-                    if 'slots' in tl_dict and tl_dict['slots']:
-                        for slot in tl_dict['slots']:
-                            new_drills += self.process_slot_as_drills(slot=slot, overlap=drill_overlap,
-                                                                      add_last_pt=should_add_last_pt)
-                        if new_drills:
-                            try:
-                                points[tool_key] += new_drills
-                            except Exception:
-                                points[tool_key] = new_drills
-            log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
-
-        # check if there are drill points in the exclusion areas.
-        # If we find any within the exclusion areas return 'fail'
-        for tool_key in points:
-            for pt in points[tool_key]:
-                for area in self.app.exc_areas.exclusion_areas_storage:
-                    pt_buf = pt.buffer(self.exc_tools[tool_key]['tooldia'] / 2.0)
-                    if pt_buf.within(area['shape']) or pt_buf.intersects(area['shape']):
-                        self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
-                        return 'fail'
+        # check if there are drill points in the exclusion areas (if any areas)
+        if self.app.exc_areas.exclusion_areas_storage and self.check_intersection(points) is True:
+            self.app.inform.emit("[ERROR_NOTCL] %s" % _("Failed. Drill points inside the exclusion zones."))
+            return 'fail'
 
         # #############################################################################################################
         # General Parameters
@@ -1549,15 +1566,6 @@ class ToolDrilling(AppTool, Excellon):
             # Prepprocessor
             job_obj.pp_excellon_name = self.default_data["tools_drill_ppname_e"]
             job_obj.pp_excellon = self.app.preprocessors[job_obj.pp_excellon_name]
-            p = job_obj.pp_excellon
-
-            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
-            if job_obj.xy_toolchange is not None:
-                job_obj.oldx = job_obj.xy_toolchange[0]
-                job_obj.oldy = job_obj.xy_toolchange[1]
-            else:
-                job_obj.oldx = 0.0
-                job_obj.oldy = 0.0
 
             # get the tool_table items in a list of row items
             tool_table_items = self.get_selected_tools_table_items()
@@ -1565,58 +1573,70 @@ class ToolDrilling(AppTool, Excellon):
             tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
             # ## Add properties to the object
-            job_obj.origin_kind = 'excellon'
-
             job_obj.options['Tools_in_use'] = tool_table_items
             job_obj.options['type'] = 'Excellon'
-
             job_obj.options['ppname_e'] = obj.pp_excellon_name
-
-            job_obj.toolchange_xy_type = "excellon"
-
-            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
-            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
 
             job_obj.options['xmin'] = xmin
             job_obj.options['ymin'] = ymin
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-            start_gcode = job_obj.doformat(p.start_code)
-
+            job_obj.origin_kind = 'excellon'
+            job_obj.toolchange_xy_type = "excellon"
+            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
+            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
             job_obj.multitool = True
+
+            # first drill point
+            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
+            if job_obj.xy_toolchange is not None:
+                job_obj.oldx = job_obj.xy_toolchange[0]
+                job_obj.oldy = job_obj.xy_toolchange[1]
+            else:
+                job_obj.oldx = 0.0
+                job_obj.oldy = 0.0
+            first_drill_point = (job_obj.oldx, job_obj.oldy)
+
+            # ####################### TOOLCHANGE ######################################################
             if toolchange is True:
-                add_start_gcode = True
                 for tool in sel_tools:
                     tool_points = points[tool]
                     used_tooldia = self.excellon_tools[tool]['tooldia']
 
-                    if slots_as_drills is True:
+                    if convert_slots is True:
                         nr_drills = len(points[tool])
                         nr_slots = 0
                         job_obj.exc_cnc_tools[used_tooldia]['nr_drills'] = nr_drills
                         job_obj.exc_cnc_tools[used_tooldia]['nr_slots'] = nr_slots
 
                         for line in range(1, len(job_obj.options['Tools_in_use'])):
-                            if float('%.*f' % (self.decimals, float(job_obj.options['Tools_in_use'][line][1]))) == \
-                                    float('%.*f' % (self.decimals, used_tooldia)):
+                            if self.dec_format(float(job_obj.options['Tools_in_use'][line][1])) == \
+                                    self.dec_format(used_tooldia):
                                 job_obj.options['Tools_in_use'][line][2] = str(nr_drills)
                                 job_obj.options['Tools_in_use'][line][3] = str(nr_slots)
 
-                    tool_gcode = job_obj.gcode_from_excellon_by_tool(tool, tool_points, self.excellon_tools,
-                                                                     opt_type=used_excellon_optimization_type,
-                                                                     toolchange=True)
-                    if add_start_gcode is True:
-                        tool_gcode = start_gcode + tool_gcode
-                        add_start_gcode = False
-                    job_obj.exc_cnc_tools[used_tooldia]['gcode'] = tool_gcode
+                    is_last_tool = True if tool == sel_tools[-1] else False
+                    is_first_tool = True if tool == sel_tools[0] else False
+                    tool_gcode, last_pt = job_obj.excellon_tool_gcode_gen(tool, tool_points, self.excellon_tools,
+                                                                          first_pt=first_drill_point,
+                                                                          is_first=is_first_tool,
+                                                                          is_last=is_last_tool,
+                                                                          opt_type=used_excellon_optimization_type,
+                                                                          toolchange=True)
 
-                    tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia,
-                                                                          start_pt=(job_obj.oldx, job_obj.oldy))
+                    tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                          start_pt=first_drill_point)
+                    first_drill_point = last_pt
+
+                    # store the results
+                    job_obj.exc_cnc_tools[used_tooldia]['gcode'] = tool_gcode
                     job_obj.exc_cnc_tools[used_tooldia]['gcode_parsed'] = tool_gcode_parsed
 
                     self.total_gcode += tool_gcode
                     self.total_gcode_parsed += tool_gcode_parsed
+
+            # ####################### NO TOOLCHANGE ######################################################
             else:
 
                 tool_points = []
@@ -1634,7 +1654,7 @@ class ToolDrilling(AppTool, Excellon):
                 # process all in one go with no toolchange and with only one tool
                 nr_drills = 0
                 nr_slots = 0
-                if slots_as_drills is False:
+                if convert_slots is False:
                     for line in range(1, len(tool_table_items)):
                         # we may have exception ValueError if there are no drills/slots for the current tool/line
                         try:
@@ -1659,17 +1679,21 @@ class ToolDrilling(AppTool, Excellon):
                 tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
                 job_obj.options['Tools_in_use'] = tool_table_items
 
-                tool_gcode = start_gcode
+                # tool_gcode = start_gcode
                 # TODO set the oldx and oldy to start values
                 # add a Toolchange event here to load the first tool
-                tool_gcode += job_obj.doformat(p.toolchange_code, toolchangexy=(job_obj.oldx, job_obj.oldy))
-                tool_gcode += job_obj.gcode_from_excellon_by_tool(used_tool, tool_points, self.excellon_tools,
-                                                                  opt_type=used_excellon_optimization_type,
-                                                                  toolchange=False)
-                job_obj.exc_cnc_tools[used_tooldia]['gcode'] = tool_gcode
+                # tool_gcode += job_obj.doformat(p.toolchange_code, toolchangexy=(job_obj.oldx, job_obj.oldy))
+                tool_gcode, __ = job_obj.excellon_tool_gcode_gen(used_tool, tool_points, self.excellon_tools,
+                                                                 first_pt=first_drill_point,
+                                                                 is_first=True,
+                                                                 is_last=True,
+                                                                 opt_type=used_excellon_optimization_type,
+                                                                 toolchange=True)
 
-                tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia,
-                                                                      start_pt=(job_obj.oldx, job_obj.oldy))
+                tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
+                                                                      start_pt=first_drill_point)
+                # store the results
+                job_obj.exc_cnc_tools[used_tooldia]['gcode'] = tool_gcode
                 job_obj.exc_cnc_tools[used_tooldia]['gcode_parsed'] = tool_gcode_parsed
 
                 self.total_gcode = tool_gcode
