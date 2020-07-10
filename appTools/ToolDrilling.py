@@ -398,21 +398,18 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_shape"])
 
         # Drill slots - part of the Advanced Excellon params
-        self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
         self.t_ui.drill_overlap_entry.set_value(self.app.defaults["tools_drill_drill_overlap"])
         self.t_ui.last_drill_cb.set_value(self.app.defaults["tools_drill_last_drill"])
+        self.t_ui.drill_overlap_label.hide()
+        self.t_ui.drill_overlap_entry.hide()
+        self.t_ui.last_drill_cb.hide()
         # if the app mode is Basic then disable this feature
         if app_mode == 'b':
             self.t_ui.drill_slots_cb.set_value(False)
             self.t_ui.drill_slots_cb.hide()
-            self.t_ui.drill_overlap_label.hide()
-            self.t_ui.drill_overlap_entry.hide()
-            self.t_ui.last_drill_cb.hide()
         else:
             self.t_ui.drill_slots_cb.show()
-            self.t_ui.drill_overlap_label.show()
-            self.t_ui.drill_overlap_entry.show()
-            self.t_ui.last_drill_cb.show()
+            self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
 
         try:
             self.t_ui.object_combo.currentTextChanged.disconnect()
@@ -1866,10 +1863,29 @@ class DrillingUI:
         grid0.addWidget(self.order_label, 4, 0)
         grid0.addWidget(self.order_radio, 4, 1)
 
+        # Auto Load Tools from DB
+        self.autoload_db_cb = FCCheckBox('%s:' % _("Auto Load DB"))
+        self.autoload_db_cb.setToolTip(
+            _("Automatic replacement of the tools from Tools Table\n"
+              "with tools from DB that have a close diameter value.")
+        )
+
+        # Manual Load of Tools from DB
+        self.manual_load_db_btn = FCButton(_("Manual Load DB"))
+        self.manual_load_db_btn.setToolTip(
+            _("Manual replacement of the tools from Tools Table\n"
+              "with tools from DB that have a close diameter value.")
+        )
+
+        grid0.addWidget(self.autoload_db_cb, 5, 0)
+        grid0.addWidget(self.manual_load_db_btn, 5, 1)
+
+        self.l_ois = OptionalInputSection(self.autoload_db_cb, [self.manual_load_db_btn], logic=False)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         # ###########################################################
         # ############# Create CNC Job ##############################
@@ -1882,11 +1898,11 @@ class DrillingUI:
                 "Each tool store it's own set of such data."
             )
         )
-        grid0.addWidget(self.tool_data_label, 6, 0, 1, 2)
+        grid0.addWidget(self.tool_data_label, 8, 0, 1, 2)
 
         self.exc_param_frame = QtWidgets.QFrame()
         self.exc_param_frame.setContentsMargins(0, 0, 0, 0)
-        grid0.addWidget(self.exc_param_frame, 7, 0, 1, 2)
+        grid0.addWidget(self.exc_param_frame, 10, 0, 1, 2)
 
         self.exc_tools_box = QtWidgets.QVBoxLayout()
         self.exc_tools_box.setContentsMargins(0, 0, 0, 0)
@@ -2095,7 +2111,11 @@ class DrillingUI:
         self.last_drill_cb.setObjectName("e_drill_last_drill")
         self.grid1.addWidget(self.last_drill_cb, 30, 0, 1, 2)
 
-        self.ois_drill_overlap = OptionalInputSection(
+        self.drill_overlap_label.hide()
+        self.drill_overlap_entry.hide()
+        self.last_drill_cb.hide()
+
+        self.ois_drill_overlap = OptionalHideInputSection(
             self.drill_slots_cb,
             [
                 self.drill_overlap_label,

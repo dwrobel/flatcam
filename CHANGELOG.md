@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Excellon Editor: added a new functionality: conversion of slots to drills
 - Excellon UI: added a new feature that is grouped in Advanced Settings: a toggle tools table visibility checkbox 
 - Drilling Tool - minor fixes
+- Drilling Tool - changes in UI
 
 10.07.2020
 
