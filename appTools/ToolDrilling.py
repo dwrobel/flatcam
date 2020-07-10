@@ -26,8 +26,6 @@ import appTranslation as fcTranslate
 import builtins
 import platform
 
-from Common import GracefulException as grace
-
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -303,36 +301,6 @@ class ToolDrilling(AppTool, Excellon):
             "format_upper_mm":              self.app.defaults["excellon_format_upper_mm"],
             "lower_mm":                     self.app.defaults["excellon_format_lower_mm"],
             "zeros":                        self.app.defaults["excellon_zeros"],
-            "excellon_units":               self.app.defaults["excellon_units"],
-            "excellon_update":              self.app.defaults["excellon_update"],
-
-            "excellon_optimization_type":   self.app.defaults["excellon_optimization_type"],
-
-            "excellon_search_time":         self.app.defaults["excellon_search_time"],
-
-            "excellon_plot_fill":           self.app.defaults["excellon_plot_fill"],
-            "excellon_plot_line":           self.app.defaults["excellon_plot_line"],
-
-            # Excellon Options
-            "tooldia":                      self.app.defaults["excellon_tooldia"],
-            "slot_tooldia":                 self.app.defaults["excellon_slot_tooldia"],
-
-            # Excellon Advanced Options
-            "offset":                       self.app.defaults["excellon_offset"],
-            "toolchangexy":                 self.app.defaults["excellon_toolchangexy"],
-            "startz":                       self.app.defaults["excellon_startz"],
-            "feedrate_rapid":               self.app.defaults["excellon_feedrate_rapid"],
-            "z_pdepth":                     self.app.defaults["excellon_z_pdepth"],
-            "feedrate_probe":               self.app.defaults["excellon_feedrate_probe"],
-            "spindledir":                   self.app.defaults["excellon_spindledir"],
-            "f_plunge":                     self.app.defaults["excellon_f_plunge"],
-            "f_retract":                    self.app.defaults["excellon_f_retract"],
-
-            "excellon_area_exclusion":      self.app.defaults["excellon_area_exclusion"],
-            "excellon_area_shape":          self.app.defaults["excellon_area_shape"],
-            "excellon_area_strategy":       self.app.defaults["excellon_area_strategy"],
-            "excellon_area_overz":          self.app.defaults["excellon_area_overz"],
-
 
             "tools_drill_tool_order":       self.app.defaults["tools_drill_tool_order"],
             "tools_drill_cutz":             self.app.defaults["tools_drill_cutz"],
@@ -357,6 +325,21 @@ class ToolDrilling(AppTool, Excellon):
             "tools_drill_drill_overlap":    self.app.defaults["tools_drill_drill_overlap"],
             "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
 
+            # Advanced Options
+            "tools_drill_offset":           self.app.defaults["tools_drill_offset"],
+            "tools_drill_toolchangexy":     self.app.defaults["tools_drill_toolchangexy"],
+            "tools_drill_startz":           self.app.defaults["tools_drill_startz"],
+            "tools_drill_feedrate_rapid":   self.app.defaults["tools_drill_feedrate_rapid"],
+            "tools_drill_z_pdepth":         self.app.defaults["tools_drill_z_pdepth"],
+            "tools_drill_feedrate_probe":   self.app.defaults["tools_drill_feedrate_probe"],
+            "tools_drill_spindledir":       self.app.defaults["tools_drill_spindledir"],
+            "tools_drill_f_plunge":         self.app.defaults["tools_drill_f_plunge"],
+            "tools_drill_f_retract":        self.app.defaults["tools_drill_f_retract"],
+
+            "tools_drill_area_exclusion":   self.app.defaults["tools_drill_area_exclusion"],
+            "tools_drill_area_shape":       self.app.defaults["tools_drill_area_shape"],
+            "tools_drill_area_strategy":    self.app.defaults["tools_drill_area_strategy"],
+            "tools_drill_area_overz":       self.app.defaults["tools_drill_area_overz"],
         }
 
         # fill in self.default_data values from self.options
@@ -396,22 +379,23 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.maxdepth_entry.set_value(self.app.defaults["tools_drill_depthperpass"])
         self.t_ui.travelz_entry.set_value(self.app.defaults["tools_drill_travelz"])
         self.t_ui.feedrate_z_entry.set_value(self.app.defaults["tools_drill_feedrate_z"])
-        self.t_ui.feedrate_rapid_entry.set_value(self.app.defaults["excellon_feedrate_rapid"])
+        self.t_ui.feedrate_rapid_entry.set_value(self.app.defaults["tools_drill_feedrate_rapid"])
         self.t_ui.spindlespeed_entry.set_value(self.app.defaults["tools_drill_spindlespeed"])
         self.t_ui.dwell_cb.set_value(self.app.defaults["tools_drill_dwell"])
         self.t_ui.dwelltime_entry.set_value(self.app.defaults["tools_drill_dwelltime"])
-        self.t_ui.offset_entry.set_value(self.app.defaults["excellon_offset"])
+        self.t_ui.offset_entry.set_value(self.app.defaults["tools_drill_offset"])
         self.t_ui.toolchange_cb.set_value(self.app.defaults["tools_drill_toolchange"])
         self.t_ui.toolchangez_entry.set_value(self.app.defaults["tools_drill_toolchangez"])
-        self.t_ui.estartz_entry.set_value(self.app.defaults["excellon_startz"])
+        self.t_ui.estartz_entry.set_value(self.app.defaults["tools_drill_startz"])
         self.t_ui.endz_entry.set_value(self.app.defaults["tools_drill_endz"])
         self.t_ui.endxy_entry.set_value(self.app.defaults["tools_drill_endxy"])
-        self.t_ui.pdepth_entry.set_value(self.app.defaults["excellon_z_pdepth"])
-        self.t_ui.feedrate_probe_entry.set_value(self.app.defaults["excellon_feedrate_probe"])
-        self.t_ui.exclusion_cb.set_value(self.app.defaults["excellon_area_exclusion"])
-        self.t_ui.strategy_radio.set_value(self.app.defaults["excellon_area_strategy"])
-        self.t_ui.over_z_entry.set_value(self.app.defaults["excellon_area_overz"])
-        self.t_ui.area_shape_radio.set_value(self.app.defaults["excellon_area_shape"])
+        self.t_ui.pdepth_entry.set_value(self.app.defaults["tools_drill_z_pdepth"])
+        self.t_ui.feedrate_probe_entry.set_value(self.app.defaults["tools_drill_feedrate_probe"])
+
+        self.t_ui.exclusion_cb.set_value(self.app.defaults["tools_drill_area_exclusion"])
+        self.t_ui.strategy_radio.set_value(self.app.defaults["tools_drill_area_shape"])
+        self.t_ui.over_z_entry.set_value(self.app.defaults["tools_drill_area_strategy"])
+        self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_overz"])
 
         # Drill slots - part of the Advanced Excellon params
         self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])

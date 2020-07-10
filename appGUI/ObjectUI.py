@@ -255,9 +255,7 @@ class GerberObjectUI(ObjectUI):
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox()
         self.aperture_table_visibility_cb.setToolTip(
-            _("Toggle the display of the Gerber Apertures Table.\n"
-              "When unchecked, it will delete all mark shapes\n"
-              "that are drawn on canvas.")
+            _("Toggle the display of the Tools Table.")
         )
         # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         hlay_plot.addWidget(self.aperture_table_visibility_cb)
@@ -507,7 +505,7 @@ class ExcellonObjectUI(ObjectUI):
         grid_h.setColumnStretch(1, 1)
 
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
-        self.plot_options_label.setMinimumWidth(90)
+        # self.plot_options_label.setMinimumWidth(90)
 
         grid_h.addWidget(self.plot_options_label, 0, 0)
 
@@ -516,7 +514,7 @@ class ExcellonObjectUI(ObjectUI):
         self.solid_cb.setToolTip(
             _("Solid circles.")
         )
-        self.solid_cb.setMinimumWidth(50)
+        # self.solid_cb.setMinimumWidth(50)
         grid_h.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
@@ -524,18 +522,46 @@ class ExcellonObjectUI(ObjectUI):
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        self.multicolored_cb.setMinimumWidth(55)
+        # self.multicolored_cb.setMinimumWidth(55)
         grid_h.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        grid_h.addLayout(self.name_hlay, 1, 0, 1, 3)
 
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
+
+        grid_h.addLayout(self.name_hlay, 1, 0, 1, 3)
+
+        # ### Tools Drills ####
+        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label.setToolTip(
+            _("Tools in this Excellon object\n"
+              "when are used for drilling.")
+        )
+
+        # Table Visibility CB
+        self.table_visibility_cb = FCCheckBox()
+        self.table_visibility_cb.setToolTip(
+            _("Toggle the display of the Tools Table.")
+        )
+
+        # Plot CB
+        hlay_plot = QtWidgets.QHBoxLayout()
+        self.plot_cb = FCCheckBox(_('Plot'))
+        self.plot_cb.setToolTip(
+            _("Plot (show) this object.")
+        )
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addStretch()
+        hlay_plot.addWidget(self.plot_cb)
+
+        grid_h.addWidget(self.tools_table_label, 2, 0)
+        grid_h.addWidget(self.table_visibility_cb, 2, 1)
+        grid_h.addLayout(hlay_plot, 2, 2)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
         # this way I can hide/show the frame
@@ -545,26 +571,6 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box = QtWidgets.QVBoxLayout()
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
-
-        hlay_plot = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(hlay_plot)
-
-        # ### Tools Drills ####
-        self.tools_table_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tools Table'))
-        self.tools_table_label.setToolTip(
-            _("Tools in this Excellon object\n"
-              "when are used for drilling.")
-        )
-        hlay_plot.addWidget(self.tools_table_label)
-
-        # Plot CB
-        self.plot_cb = FCCheckBox(_('Plot'))
-        self.plot_cb.setToolTip(
-            _("Plot (show) this object.")
-        )
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        hlay_plot.addStretch()
-        hlay_plot.addWidget(self.plot_cb)
 
         self.tools_table = FCTable()
         self.tools_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)

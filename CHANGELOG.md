@@ -7,6 +7,14 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.07.2020
+
+- moved all Excellon Advanced Prefeences to Drilling Tool Preferences
+- updated Drilling Tool to use the new settings
+- updated the Excellon Editor: the default_data dict is populated now on Editor entry
+- Excellon Editor: added a new functionality: conversion of slots to drills
+- Excellon UI: added a new feature that is grouped in Advanced Settings: a toggle tools table visibility checkbox 
+
 10.07.2020
 
 - Tool Drilling - moved some of the Excellon Preferences related to drilling operation to it's own group Drilling Tool Options

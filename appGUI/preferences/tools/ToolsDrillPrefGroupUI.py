@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection
+    OptionalInputSection, NumericalEvalEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -267,5 +267,126 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
               "add a drill hole on the slot end point.")
         )
         grid0.addWidget(self.last_drill_cb, 24, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 26, 0, 1, 3)
+
+        self.exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
+        self.exc_label.setToolTip(
+            _("A list of advanced parameters.")
+        )
+        grid0.addWidget(self.exc_label, 28, 0, 1, 3)
+
+        # Offset Z
+        offsetlabel = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        offsetlabel.setToolTip(
+            _("Some drill bits (the larger ones) need to drill deeper\n"
+              "to create the desired exit hole diameter due of the tip shape.\n"
+              "The value here can compensate the Cut Z parameter."))
+        self.offset_entry = FCDoubleSpinner()
+        self.offset_entry.set_precision(self.decimals)
+        self.offset_entry.set_range(-999.9999, 999.9999)
+
+        grid0.addWidget(offsetlabel, 29, 0)
+        grid0.addWidget(self.offset_entry, 29, 1, 1, 2)
+
+        # ToolChange X,Y
+        toolchange_xy_label = QtWidgets.QLabel('%s:' % _('Toolchange X,Y'))
+        toolchange_xy_label.setToolTip(
+            _("Toolchange X,Y position.")
+        )
+        self.toolchangexy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
+
+        grid0.addWidget(toolchange_xy_label, 31, 0)
+        grid0.addWidget(self.toolchangexy_entry, 31, 1, 1, 2)
+
+        # Start Z
+        startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
+        startzlabel.setToolTip(
+            _("Height of the tool just after start.\n"
+              "Delete the value if you don't need this feature.")
+        )
+        self.estartz_entry = NumericalEvalEntry(border_color='#0069A9')
+
+        grid0.addWidget(startzlabel, 33, 0)
+        grid0.addWidget(self.estartz_entry, 33, 1, 1, 2)
+
+        # Feedrate Rapids
+        fr_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        fr_rapid_label.setToolTip(
+            _("Tool speed while drilling\n"
+              "(in units per minute).\n"
+              "This is for the rapid move G00.\n"
+              "It is useful only for Marlin,\n"
+              "ignore for any other cases.")
+        )
+        self.feedrate_rapid_entry = FCDoubleSpinner()
+        self.feedrate_rapid_entry.set_precision(self.decimals)
+        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(fr_rapid_label, 35, 0)
+        grid0.addWidget(self.feedrate_rapid_entry, 35, 1, 1, 2)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label.setToolTip(
+            _("The maximum depth that the probe is allowed\n"
+              "to probe. Negative value, in current units.")
+        )
+        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry.set_precision(self.decimals)
+        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+
+        grid0.addWidget(self.pdepth_label, 37, 0)
+        grid0.addWidget(self.pdepth_entry, 37, 1, 1, 2)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label.setToolTip(
+           _("The feedrate used while the probe is probing.")
+        )
+        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry.set_precision(self.decimals)
+        self.feedrate_probe_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.feedrate_probe_label, 38, 0)
+        grid0.addWidget(self.feedrate_probe_entry, 38, 1, 1, 2)
+
+        # Spindle direction
+        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle direction'))
+        spindle_dir_label.setToolTip(
+            _("This sets the direction that the spindle is rotating.\n"
+              "It can be either:\n"
+              "- CW = clockwise or\n"
+              "- CCW = counter clockwise")
+        )
+
+        self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                          {'label': _('CCW'), 'value': 'CCW'}])
+        grid0.addWidget(spindle_dir_label, 40, 0)
+        grid0.addWidget(self.spindledir_radio, 40, 1, 1, 2)
+
+        self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
+        self.fplunge_cb.setToolTip(
+            _("By checking this, the vertical move from\n"
+              "Z_Toolchange to Z_move is done with G0,\n"
+              "meaning the fastest speed available.\n"
+              "WARNING: the move is done at Toolchange X,Y coords.")
+        )
+        grid0.addWidget(self.fplunge_cb, 42, 0, 1, 3)
+
+        self.fretract_cb = FCCheckBox('%s' % _('Fast Retract'))
+        self.fretract_cb.setToolTip(
+            _("Exit hole strategy.\n"
+              " - When uncheked, while exiting the drilled hole the drill bit\n"
+              "will travel slow, with set feedrate (G1), up to zero depth and then\n"
+              "travel as fast as possible (G0) to the Z Move (travel height).\n"
+              " - When checked the travel from Z cut (cut depth) to Z_move\n"
+              "(travel height) is done as fast as possible (G0) in one move.")
+        )
+
+        grid0.addWidget(self.fretract_cb, 45, 0, 1, 3)
 
         self.layout.addStretch()

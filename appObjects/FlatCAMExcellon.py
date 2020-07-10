@@ -241,13 +241,18 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.units = self.app.defaults['units'].upper()
 
-        self.form_fields.update({
-            "plot": self.ui.plot_cb,
-            "solid": self.ui.solid_cb,
-            "multicolored": self.ui.multicolored_cb,
+        # fill in self.options values  for the Drilling Tool from self.app.options
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('tools_drill_') == 0:
+                self.options[opt_key] = deepcopy(opt_val)
 
-            "tooldia": self.ui.tooldia_entry,
-            "slot_tooldia": self.ui.slot_tooldia_entry,
+        self.form_fields.update({
+            "plot":             self.ui.plot_cb,
+            "solid":            self.ui.solid_cb,
+            "multicolored":     self.ui.multicolored_cb,
+
+            "tooldia":          self.ui.tooldia_entry,
+            "slot_tooldia":     self.ui.slot_tooldia_entry,
         })
 
         self.to_form()
@@ -258,8 +263,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.tools_table.setColumnHidden(5, True)
+            self.ui.table_visibility_cb.set_value(True)
+            self.ui.table_visibility_cb.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.ui.table_visibility_cb.show()
+            self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
+            self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -278,6 +288,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
+        self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
 
         self.units_found = self.app.defaults['units']
 
@@ -526,7 +537,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # rows selected
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
 
-
     def ui_disconnect(self):
         """
         Will disconnect all signals in the Excellon UI that needs to be disconnected
@@ -670,6 +680,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
+
+    def on_table_visibility_toggle(self, state):
+        self.ui.tools_table.show() if state else self.ui.tools_table.hide()
 
     def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """

@@ -198,15 +198,7 @@ class PreferencesUIManager:
             "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
 
             # Excellon Advanced Options
-            "excellon_offset":          self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
-            "excellon_toolchangexy":    self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
-            "excellon_startz":          self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_feedrate_rapid":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
-            "excellon_z_pdepth":        self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
-            "excellon_feedrate_probe":  self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
-            "excellon_spindledir":      self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
-            "excellon_f_plunge":        self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
-            "excellon_f_retract":       self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
+            "excellon_tools_table_display": self.ui.excellon_defaults_form.excellon_adv_opt_group.table_visibility_cb,
 
             # Excellon Export
             "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
@@ -358,9 +350,20 @@ class PreferencesUIManager:
             "tools_drill_toolchangez":  self.ui.tools_defaults_form.tools_drill_group.toolchangez_entry,
             "tools_drill_ppname_e":     self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb,
 
-            "tools_drill_drill_slots":  self.ui.tools_defaults_form.tools_drill_group.drill_slots_cb,
-            "tools_drill_drill_overlap": self.ui.tools_defaults_form.tools_drill_group.drill_overlap_entry,
-            "tools_drill_last_drill":   self.ui.tools_defaults_form.tools_drill_group.last_drill_cb,
+            "tools_drill_drill_slots":      self.ui.tools_defaults_form.tools_drill_group.drill_slots_cb,
+            "tools_drill_drill_overlap":    self.ui.tools_defaults_form.tools_drill_group.drill_overlap_entry,
+            "tools_drill_last_drill":       self.ui.tools_defaults_form.tools_drill_group.last_drill_cb,
+
+            # Advanced Options
+            "tools_drill_offset":           self.ui.tools_defaults_form.tools_drill_group.offset_entry,
+            "tools_drill_toolchangexy":     self.ui.tools_defaults_form.tools_drill_group.toolchangexy_entry,
+            "tools_drill_startz":           self.ui.tools_defaults_form.tools_drill_group.estartz_entry,
+            "tools_drill_feedrate_rapid":   self.ui.tools_defaults_form.tools_drill_group.feedrate_rapid_entry,
+            "tools_drill_z_pdepth":         self.ui.tools_defaults_form.tools_drill_group.pdepth_entry,
+            "tools_drill_feedrate_probe":   self.ui.tools_defaults_form.tools_drill_group.feedrate_probe_entry,
+            "tools_drill_spindledir":       self.ui.tools_defaults_form.tools_drill_group.spindledir_radio,
+            "tools_drill_f_plunge":         self.ui.tools_defaults_form.tools_drill_group.fplunge_cb,
+            "tools_drill_f_retract":        self.ui.tools_defaults_form.tools_drill_group.fretract_cb,
 
             # NCC Tool
             "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,

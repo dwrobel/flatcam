@@ -258,21 +258,8 @@ class FlatCAMDefaults:
         "excellon_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
 
-        # Excellon Advanced Options
-        "excellon_offset": 0.0,
-        "excellon_toolchangexy": "0.0, 0.0",
-        "excellon_startz": None,
-        "excellon_feedrate_rapid": 1500,
-        "excellon_z_pdepth": -0.02,
-        "excellon_feedrate_probe": 75,
-        "excellon_spindledir": 'CW',
-        "excellon_f_plunge": False,
-        "excellon_f_retract": False,
-
-        "excellon_area_exclusion": False,
-        "excellon_area_shape": "polygon",
-        "excellon_area_strategy": "over",
-        "excellon_area_overz": 1.0,
+        # Excellon Advanced options
+        "excellon_tools_table_display": True,
 
         # Excellon Export
         "excellon_exp_units": 'INCH',
@@ -431,6 +418,22 @@ class FlatCAMDefaults:
         "tools_drill_drill_slots": False,
         "tools_drill_drill_overlap": 0.0,
         "tools_drill_last_drill": True,
+
+        # Advanced Options
+        "tools_drill_offset": 0.0,
+        "tools_drill_toolchangexy": "0.0, 0.0",
+        "tools_drill_startz": None,
+        "tools_drill_feedrate_rapid": 1500,
+        "tools_drill_z_pdepth": -0.02,
+        "tools_drill_feedrate_probe": 75,
+        "tools_drill_spindledir": 'CW',
+        "tools_drill_f_plunge": False,
+        "tools_drill_f_retract": False,
+
+        "tools_drill_area_exclusion": False,
+        "tools_drill_area_shape": "polygon",
+        "tools_drill_area_strategy": "over",
+        "tools_drill_area_overz": 1.0,
 
         # NCC Tool
         "tools_ncctools": "1.0, 0.5",
