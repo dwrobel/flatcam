@@ -15,9 +15,7 @@ from appParsers.ParseExcellon import Excellon
 from copy import deepcopy
 
 import numpy as np
-import math
 
-from shapely.ops import unary_union
 from shapely.geometry import Point, LineString
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -27,18 +25,12 @@ import gettext
 import appTranslation as fcTranslate
 import builtins
 import platform
-import re
-import traceback
 
 from Common import GracefulException as grace
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-if platform.architecture()[0] == '64bit':
-    from ortools.constraint_solver import pywrapcp
-    from ortools.constraint_solver import routing_enums_pb2
 
 log = logging.getLogger('base')
 
@@ -170,7 +162,6 @@ class ToolDrilling(AppTool, Excellon):
             "e_drill_last_drill":       "last_drill",
         }
 
-        self.old_tool_dia = None
         self.poly_drawn = False
         self.connect_signals_at_init()
 
@@ -237,7 +228,6 @@ class ToolDrilling(AppTool, Excellon):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
-        self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
         # try to select in the Excellon combobox the active object
         try:
@@ -292,7 +282,7 @@ class ToolDrilling(AppTool, Excellon):
 
         self.t_ui.tools_frame.show()
 
-        self.t_ui.order_radio.set_value(self.app.defaults["excellon_tool_order"])
+        self.t_ui.order_radio.set_value(self.app.defaults["tools_drill_tool_order"])
 
         loaded_obj = self.app.collection.get_by_name(self.t_ui.object_combo.get_value())
         if loaded_obj:
@@ -324,56 +314,49 @@ class ToolDrilling(AppTool, Excellon):
             "excellon_plot_line":           self.app.defaults["excellon_plot_line"],
 
             # Excellon Options
-            "excellon_tool_order":          self.app.defaults["excellon_tool_order"],
+            "tooldia":                      self.app.defaults["excellon_tooldia"],
+            "slot_tooldia":                 self.app.defaults["excellon_slot_tooldia"],
 
-            "cutz":                self.app.defaults["excellon_cutz"],
-            "multidepth":          self.app.defaults["excellon_multidepth"],
-            "depthperpass":        self.app.defaults["excellon_depthperpass"],
-
-            "travelz":             self.app.defaults["excellon_travelz"],
-            "endz":                self.app.defaults["excellon_endz"],
-            "endxy":               self.app.defaults["excellon_endxy"],
-
-            "feedrate_z":          self.app.defaults["excellon_feedrate_z"],
-
-            "spindlespeed":        self.app.defaults["excellon_spindlespeed"],
-            "dwell":               self.app.defaults["excellon_dwell"],
-            "dwelltime":           self.app.defaults["excellon_dwelltime"],
-
-            "toolchange":          self.app.defaults["excellon_toolchange"],
-            "toolchangez":         self.app.defaults["excellon_toolchangez"],
-
-            "ppname_e":            self.app.defaults["excellon_ppname_e"],
-
-            "tooldia":             self.app.defaults["excellon_tooldia"],
-            "slot_tooldia":        self.app.defaults["excellon_slot_tooldia"],
-
-            "gcode_type":          self.app.defaults["excellon_gcode_type"],
+            # Excellon Advanced Options
+            "offset":                       self.app.defaults["excellon_offset"],
+            "toolchangexy":                 self.app.defaults["excellon_toolchangexy"],
+            "startz":                       self.app.defaults["excellon_startz"],
+            "feedrate_rapid":               self.app.defaults["excellon_feedrate_rapid"],
+            "z_pdepth":                     self.app.defaults["excellon_z_pdepth"],
+            "feedrate_probe":               self.app.defaults["excellon_feedrate_probe"],
+            "spindledir":                   self.app.defaults["excellon_spindledir"],
+            "f_plunge":                     self.app.defaults["excellon_f_plunge"],
+            "f_retract":                    self.app.defaults["excellon_f_retract"],
 
             "excellon_area_exclusion":      self.app.defaults["excellon_area_exclusion"],
             "excellon_area_shape":          self.app.defaults["excellon_area_shape"],
             "excellon_area_strategy":       self.app.defaults["excellon_area_strategy"],
             "excellon_area_overz":          self.app.defaults["excellon_area_overz"],
 
-            # Excellon Advanced Options
-            "offset":              self.app.defaults["excellon_offset"],
-            "toolchangexy":        self.app.defaults["excellon_toolchangexy"],
-            "startz":              self.app.defaults["excellon_startz"],
-            "feedrate_rapid":      self.app.defaults["excellon_feedrate_rapid"],
-            "z_pdepth":            self.app.defaults["excellon_z_pdepth"],
-            "feedrate_probe":      self.app.defaults["excellon_feedrate_probe"],
-            "spindledir":          self.app.defaults["excellon_spindledir"],
-            "f_plunge":            self.app.defaults["excellon_f_plunge"],
-            "f_retract":           self.app.defaults["excellon_f_retract"],
+
+            "tools_drill_tool_order":       self.app.defaults["tools_drill_tool_order"],
+            "tools_drill_cutz":             self.app.defaults["tools_drill_cutz"],
+            "tools_drill_multidepth":       self.app.defaults["tools_drill_multidepth"],
+            "tools_drill_depthperpass":     self.app.defaults["tools_drill_depthperpass"],
+
+            "tools_drill_travelz":          self.app.defaults["tools_drill_travelz"],
+            "tools_drill_endz":             self.app.defaults["tools_drill_endz"],
+            "tools_drill_endxy":            self.app.defaults["tools_drill_endxy"],
+            "tools_drill_feedrate_z":       self.app.defaults["tools_drill_feedrate_z"],
+
+            "tools_drill_spindlespeed":     self.app.defaults["tools_drill_spindlespeed"],
+            "tools_drill_dwell":            self.app.defaults["tools_drill_dwell"],
+            "tools_drill_dwelltime":        self.app.defaults["tools_drill_dwelltime"],
+
+            "tools_drill_toolchange":       self.app.defaults["tools_drill_toolchange"],
+            "tools_drill_toolchangez":      self.app.defaults["tools_drill_toolchangez"],
+            "tools_drill_ppname_e":         self.app.defaults["tools_drill_ppname_e"],
 
             # Drill Slots
-            "drill_slots":          self.app.defaults["excellon_drill_slots"],
-            "drill_overlap":        self.app.defaults["excellon_drill_overlap"],
-            "last_drill":           self.app.defaults["excellon_last_drill"],
+            "tools_drill_drill_slots":      self.app.defaults["tools_drill_drill_slots"],
+            "tools_drill_drill_overlap":    self.app.defaults["tools_drill_drill_overlap"],
+            "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
 
-            "gcode":                        '',
-            "gcode_parsed":                 '',
-            "geometry":                     [],
         }
 
         # fill in self.default_data values from self.options
@@ -408,21 +391,21 @@ class ToolDrilling(AppTool, Excellon):
         # ####### Fill in the parameters #########
         # ########################################
         # ########################################
-        self.t_ui.cutz_entry.set_value(self.app.defaults["excellon_cutz"])
-        self.t_ui.mpass_cb.set_value(self.app.defaults["excellon_multidepth"])
-        self.t_ui.maxdepth_entry.set_value(self.app.defaults["excellon_depthperpass"])
-        self.t_ui.travelz_entry.set_value(self.app.defaults["excellon_travelz"])
-        self.t_ui.feedrate_z_entry.set_value(self.app.defaults["excellon_feedrate_z"])
+        self.t_ui.cutz_entry.set_value(self.app.defaults["tools_drill_cutz"])
+        self.t_ui.mpass_cb.set_value(self.app.defaults["tools_drill_multidepth"])
+        self.t_ui.maxdepth_entry.set_value(self.app.defaults["tools_drill_depthperpass"])
+        self.t_ui.travelz_entry.set_value(self.app.defaults["tools_drill_travelz"])
+        self.t_ui.feedrate_z_entry.set_value(self.app.defaults["tools_drill_feedrate_z"])
         self.t_ui.feedrate_rapid_entry.set_value(self.app.defaults["excellon_feedrate_rapid"])
-        self.t_ui.spindlespeed_entry.set_value(self.app.defaults["excellon_spindlespeed"])
-        self.t_ui.dwell_cb.set_value(self.app.defaults["excellon_dwell"])
-        self.t_ui.dwelltime_entry.set_value(self.app.defaults["excellon_dwelltime"])
+        self.t_ui.spindlespeed_entry.set_value(self.app.defaults["tools_drill_spindlespeed"])
+        self.t_ui.dwell_cb.set_value(self.app.defaults["tools_drill_dwell"])
+        self.t_ui.dwelltime_entry.set_value(self.app.defaults["tools_drill_dwelltime"])
         self.t_ui.offset_entry.set_value(self.app.defaults["excellon_offset"])
-        self.t_ui.toolchange_cb.set_value(self.app.defaults["excellon_toolchange"])
-        self.t_ui.toolchangez_entry.set_value(self.app.defaults["excellon_toolchangez"])
+        self.t_ui.toolchange_cb.set_value(self.app.defaults["tools_drill_toolchange"])
+        self.t_ui.toolchangez_entry.set_value(self.app.defaults["tools_drill_toolchangez"])
         self.t_ui.estartz_entry.set_value(self.app.defaults["excellon_startz"])
-        self.t_ui.endz_entry.set_value(self.app.defaults["excellon_endz"])
-        self.t_ui.endxy_entry.set_value(self.app.defaults["excellon_endxy"])
+        self.t_ui.endz_entry.set_value(self.app.defaults["tools_drill_endz"])
+        self.t_ui.endxy_entry.set_value(self.app.defaults["tools_drill_endxy"])
         self.t_ui.pdepth_entry.set_value(self.app.defaults["excellon_z_pdepth"])
         self.t_ui.feedrate_probe_entry.set_value(self.app.defaults["excellon_feedrate_probe"])
         self.t_ui.exclusion_cb.set_value(self.app.defaults["excellon_area_exclusion"])
@@ -431,9 +414,9 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.area_shape_radio.set_value(self.app.defaults["excellon_area_shape"])
 
         # Drill slots - part of the Advanced Excellon params
-        self.t_ui.drill_slots_cb.set_value(self.app.defaults["excellon_drill_slots"])
-        self.t_ui.drill_overlap_entry.set_value(self.app.defaults["excellon_drill_overlap"])
-        self.t_ui.last_drill_cb.set_value(self.app.defaults["excellon_last_drill"])
+        self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
+        self.t_ui.drill_overlap_entry.set_value(self.app.defaults["tools_drill_drill_overlap"])
+        self.t_ui.last_drill_cb.set_value(self.app.defaults["tools_drill_last_drill"])
         # if the app mode is Basic then disable this feature
         if app_mode == 'b':
             self.t_ui.drill_slots_cb.set_value(False)
@@ -917,7 +900,7 @@ class ToolDrilling(AppTool, Excellon):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key and form_key not in \
-                        ["toolchange", "toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
+                        ["tools_drill_toolchange", "tools_drill_toolchangez", "startz", "endz", "tools_drill_ppname_e"]:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
@@ -1059,239 +1042,6 @@ class ToolDrilling(AppTool, Excellon):
                 'type': typ,
                 'tool_type': tt,
             })
-
-    def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
-        """
-        Will generate an Geometry Object allowing to cut a drill hole instead of drilling it.
-
-        Note: This method is a good template for generic operations as
-        it takes it's options from parameters or otherwise from the
-        object's options and returns a (success, msg) tuple as feedback
-        for shell operations.
-
-        :param tools:       A list of tools where the drills are to be milled or a string: "all"
-        :type tools:
-        :param outname:     the name of the resulting Geometry object
-        :type outname:      str
-        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
-        :type tooldia:      float
-        :param plot:        if to plot the resulting object
-        :type plot:         bool
-        :param use_thread:  if to use threading for creation of the Geometry object
-        :type use_thread:   bool
-        :return:            Success/failure condition tuple (bool, str).
-        :rtype:             tuple
-        """
-
-        # Get the tools from the list. These are keys
-        # to self.tools
-        if tools is None:
-            tools = self.get_selected_tools_list()
-
-        if outname is None:
-            outname = self.options["name"] + "_mill"
-
-        if tooldia is None:
-            tooldia = float(self.options["tooldia"])
-
-        # Sort tools by diameter. items() -> [('name', diameter), ...]
-        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
-
-        sort = []
-        for k, v in self.tools.items():
-            sort.append((k, v.get('tooldia')))
-        sorted_tools = sorted(sort, key=lambda t1: t1[1])
-
-        if tools == "all":
-            tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
-            log.debug("Tools 'all' and sorted are: %s" % str(tools))
-
-        if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
-            return False, "Error: No tools."
-
-        for tool in tools:
-            if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit(
-                    '[ERROR_NOTCL] %s %s: %s' % (
-                        _("Milling tool for DRILLS is larger than hole size. Cancelled."),
-                        _("Tool"),
-                        str(tool)
-                    )
-                )
-                return False, "Error: Milling tool is larger than hole."
-
-        def geo_init(geo_obj, app_obj):
-            """
-
-            :param geo_obj:     New object
-            :type geo_obj:      GeometryObject
-            :param app_obj:     App
-            :type app_obj:      FlatCAMApp.App
-            :return:
-            :rtype:
-            """
-            assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
-
-            app_obj.inform.emit(_("Generating drills milling geometry..."))
-
-            # ## Add properties to the object
-
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            geo_obj.options['Tools_in_use'] = tool_table_items
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
-            geo_obj.solid_geometry = []
-
-            # in case that the tool used has the same diameter with the hole, and since the maximum resolution
-            # for FlatCAM is 6 decimals,
-            # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for hole in self.drills:
-                if hole['tool'] in tools:
-                    buffer_value = self.tools[hole['tool']]["C"] / 2 - tooldia / 2
-                    if buffer_value == 0:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(0.0000001).exterior)
-                    else:
-                        geo_obj.solid_geometry.append(
-                            Point(hole['point']).buffer(buffer_value).exterior)
-
-        if use_thread:
-            def geo_thread(a_obj):
-                a_obj.app_obj.new_object("geometry", outname, geo_init, plot=plot)
-
-            # Create a promise with the new name
-            self.app.collection.promise(outname)
-
-            # Send to worker
-            self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
-        else:
-            self.app.app_obj.new_object("geometry", outname, geo_init, plot=plot)
-
-        return True, ""
-
-    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
-        """
-        Will generate an Geometry Object allowing to cut/mill a slot hole.
-
-        Note: This method is a good template for generic operations as
-        it takes it's options from parameters or otherwise from the
-        object's options and returns a (success, msg) tuple as feedback
-        for shell operations.
-
-        :param tools:       A list of tools where the drills are to be milled or a string: "all"
-        :type tools:
-        :param outname:     the name of the resulting Geometry object
-        :type outname:      str
-        :param tooldia:     the tool diameter to be used in creation of the milling path (Geometry Object)
-        :type tooldia:      float
-        :param plot:        if to plot the resulting object
-        :type plot:         bool
-        :param use_thread:  if to use threading for creation of the Geometry object
-        :type use_thread:   bool
-        :return:            Success/failure condition tuple (bool, str).
-        :rtype:             tuple
-        """
-
-        # Get the tools from the list. These are keys
-        # to self.tools
-        if tools is None:
-            tools = self.get_selected_tools_list()
-
-        if outname is None:
-            outname = self.options["name"] + "_mill"
-
-        if tooldia is None:
-            tooldia = float(self.options["slot_tooldia"])
-
-        # Sort tools by diameter. items() -> [('name', diameter), ...]
-        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
-
-        sort = []
-        for k, v in self.tools.items():
-            sort.append((k, v.get('tooldia')))
-        sorted_tools = sorted(sort, key=lambda t1: t1[1])
-
-        if tools == "all":
-            tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
-            log.debug("Tools 'all' and sorted are: %s" % str(tools))
-
-        if len(tools) == 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Please select one or more tools from the list and try again."))
-            return False, "Error: No tools."
-
-        for tool in tools:
-            # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
-            adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
-            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
-            if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Milling tool for SLOTS is larger than hole size. Cancelled."))
-                return False, "Error: Milling tool is larger than hole."
-
-        def geo_init(geo_obj, app_obj):
-            assert geo_obj.kind == 'geometry', "Initializer expected a GeometryObject, got %s" % type(geo_obj)
-
-            app_obj.inform.emit(_("Generating slot milling geometry..."))
-
-            # ## Add properties to the object
-            # get the tool_table items in a list of row items
-            tool_table_items = self.get_selected_tools_table_items()
-            # insert an information only element in the front
-            tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
-
-            geo_obj.options['Tools_in_use'] = tool_table_items
-            geo_obj.options['type'] = 'Excellon Geometry'
-            geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
-            geo_obj.solid_geometry = []
-
-            # in case that the tool used has the same diameter with the hole, and since the maximum resolution
-            # for FlatCAM is 6 decimals,
-            # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for slot in self.slots:
-                if slot['tool'] in tools:
-                    toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
-                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
-
-                    # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
-                    # for the file_tool (tooldia actually)
-                    buffer_value = float(file_tool / 2) - float(toolstable_tool / 2) + 0.0001
-                    if buffer_value == 0:
-                        start = slot['start']
-                        stop = slot['stop']
-
-                        lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(0.0000001, int(self.geo_steps_per_circle)).exterior
-                        geo_obj.solid_geometry.append(poly)
-                    else:
-                        start = slot['start']
-                        stop = slot['stop']
-
-                        lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
-                        geo_obj.solid_geometry.append(poly)
-
-        if use_thread:
-            def geo_thread(a_obj):
-                a_obj.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
-
-            # Create a promise with the new name
-            self.app.collection.promise(outname)
-
-            # Send to worker
-            self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
-        else:
-            self.app.app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
-
-        return True, ""
 
     def on_pp_changed(self):
         current_pp = self.t_ui.pp_excellon_name_cb.get_value()
@@ -1533,7 +1283,8 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.exclusion_table.selectAll()
             self.draw_sel_shape()
 
-    def process_slot_as_drills(self, slot, overlap, add_last_pt=False):
+    @staticmethod
+    def process_slot_as_drills(slot, overlap, add_last_pt=False):
 
         drills_list = []
         start_pt = slot[0]
@@ -1756,9 +1507,9 @@ class ToolDrilling(AppTool, Excellon):
                         slot_no = 0
                         if 'slots' in self.excellon_tools[to_ol]:
                             slot_no = len(self.excellon_tools[to_ol]['slots'])
-                            for slot in self.excellon_tools[to_ol]['slots']:
-                                start = (slot[0].x, slot[0].y)
-                                stop = (slot[1].x, slot[1].y)
+                            for eslot in self.excellon_tools[to_ol]['slots']:
+                                start = (eslot[0].x, eslot[0].y)
+                                stop = (eslot[1].x, eslot[1].y)
                                 sol_geo.append(
                                     LineString([start, stop]).buffer((it[1] / 2.0),
                                                                      resolution=job_obj.geo_steps_per_circle)
@@ -1796,7 +1547,7 @@ class ToolDrilling(AppTool, Excellon):
             # #########################################################################################################
             # #########################################################################################################
             # Prepprocessor
-            job_obj.pp_excellon_name = self.default_data["excellon_ppname_e"]
+            job_obj.pp_excellon_name = self.default_data["tools_drill_ppname_e"]
             job_obj.pp_excellon = self.app.preprocessors[job_obj.pp_excellon_name]
             p = job_obj.pp_excellon
 

@@ -200,7 +200,8 @@ class GerberObject(FlatCAMObj, Gerber):
         # Fill form fields only on object create
         self.to_form()
 
-        assert isinstance(self.ui, GerberObjectUI)
+        assert isinstance(self.ui, GerberObjectUI), \
+            "Expected a GerberObjectUI, got %s" % type(self.ui)
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)

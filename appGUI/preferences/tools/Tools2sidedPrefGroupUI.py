@@ -71,8 +71,11 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
             _("Mirror vertically (X) or horizontally (Y).")
         )
 
-        self.empty_lb1 = QtWidgets.QLabel("")
-        grid0.addWidget(self.empty_lb1, 2, 0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
         grid0.addWidget(self.mirax_label, 3, 0)
         grid0.addWidget(self.mirror_axis_radio, 3, 1)
 

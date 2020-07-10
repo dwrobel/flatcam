@@ -194,23 +194,8 @@ class PreferencesUIManager:
 
             "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
 
-            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
-            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_endxy": self.ui.excellon_defaults_form.excellon_opt_group.endxy_entry,
-
-            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
-            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
             "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
             "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
             # Excellon Advanced Options
             "excellon_offset":          self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
@@ -222,9 +207,6 @@ class PreferencesUIManager:
             "excellon_spindledir":      self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
             "excellon_f_plunge":        self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
             "excellon_f_retract":       self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
-            "excellon_drill_slots":     self.ui.excellon_defaults_form.excellon_adv_opt_group.drill_slots_cb,
-            "excellon_drill_overlap":   self.ui.excellon_defaults_form.excellon_adv_opt_group.drill_overlap_entry,
-            "excellon_last_drill":      self.ui.excellon_defaults_form.excellon_adv_opt_group.last_drill_cb,
 
             # Excellon Export
             "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
@@ -355,9 +337,30 @@ class PreferencesUIManager:
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_poly_ints":      self.ui.tools_defaults_form.tools_iso_group.poly_int_cb,
-            "tools_iso_force":      self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
+            "tools_iso_force":          self.ui.tools_defaults_form.tools_iso_group.force_iso_cb,
             "tools_iso_area_shape":     self.ui.tools_defaults_form.tools_iso_group.area_shape_radio,
             "tools_iso_plotting":       self.ui.tools_defaults_form.tools_iso_group.plotting_radio,
+
+            # Drilling Tool
+            "tools_drill_tool_order":   self.ui.tools_defaults_form.tools_drill_group.order_radio,
+            "tools_drill_cutz":         self.ui.tools_defaults_form.tools_drill_group.cutz_entry,
+            "tools_drill_multidepth":   self.ui.tools_defaults_form.tools_drill_group.mpass_cb,
+            "tools_drill_depthperpass": self.ui.tools_defaults_form.tools_drill_group.maxdepth_entry,
+            "tools_drill_travelz":      self.ui.tools_defaults_form.tools_drill_group.travelz_entry,
+            "tools_drill_endz":         self.ui.tools_defaults_form.tools_drill_group.endz_entry,
+            "tools_drill_endxy":        self.ui.tools_defaults_form.tools_drill_group.endxy_entry,
+
+            "tools_drill_feedrate_z":   self.ui.tools_defaults_form.tools_drill_group.feedrate_z_entry,
+            "tools_drill_spindlespeed": self.ui.tools_defaults_form.tools_drill_group.spindlespeed_entry,
+            "tools_drill_dwell":        self.ui.tools_defaults_form.tools_drill_group.dwell_cb,
+            "tools_drill_dwelltime":    self.ui.tools_defaults_form.tools_drill_group.dwelltime_entry,
+            "tools_drill_toolchange":   self.ui.tools_defaults_form.tools_drill_group.toolchange_cb,
+            "tools_drill_toolchangez":  self.ui.tools_defaults_form.tools_drill_group.toolchangez_entry,
+            "tools_drill_ppname_e":     self.ui.tools_defaults_form.tools_drill_group.pp_excellon_name_cb,
+
+            "tools_drill_drill_slots":  self.ui.tools_defaults_form.tools_drill_group.drill_slots_cb,
+            "tools_drill_drill_overlap": self.ui.tools_defaults_form.tools_drill_group.drill_overlap_entry,
+            "tools_drill_last_drill":   self.ui.tools_defaults_form.tools_drill_group.last_drill_cb,
 
             # NCC Tool
             "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,

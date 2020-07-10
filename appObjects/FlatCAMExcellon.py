@@ -131,7 +131,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind']
+        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level']
 
     @staticmethod
     def merge(exc_list, exc_final, decimals=None, fuse_tools=True):
@@ -225,6 +225,58 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # create the geometry for the exc_final object
         exc_final.create_geometry()
+
+    def set_ui(self, ui):
+        """
+        Configures the user interface for this object.
+        Connects options to form fields.
+
+        :param ui:  User interface object.
+        :type ui:   ExcellonObjectUI
+        :return:    None
+        """
+        FlatCAMObj.set_ui(self, ui)
+
+        log.debug("ExcellonObject.set_ui()")
+
+        self.units = self.app.defaults['units'].upper()
+
+        self.form_fields.update({
+            "plot": self.ui.plot_cb,
+            "solid": self.ui.solid_cb,
+            "multicolored": self.ui.multicolored_cb,
+
+            "tooldia": self.ui.tooldia_entry,
+            "slot_tooldia": self.ui.slot_tooldia_entry,
+        })
+
+        self.to_form()
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+
+            self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.tools_table.setColumnHidden(5, True)
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+
+        assert isinstance(self.ui, ExcellonObjectUI), \
+            "Expected a ExcellonObjectUI, got %s" % type(self.ui)
+
+        self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
+        self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
+        self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
+        self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
+        # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
+
+        self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
+        self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
+
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
+
+        self.units_found = self.app.defaults['units']
 
     def build_ui(self):
         """
@@ -455,58 +507,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui_connect()
 
-    def set_ui(self, ui):
-        """
-        Configures the user interface for this object.
-        Connects options to form fields.
-
-        :param ui:  User interface object.
-        :type ui:   ExcellonObjectUI
-        :return:    None
-        """
-        FlatCAMObj.set_ui(self, ui)
-
-        log.debug("ExcellonObject.set_ui()")
-
-        self.units = self.app.defaults['units'].upper()
-
-        self.form_fields.update({
-            "plot": self.ui.plot_cb,
-            "solid": self.ui.solid_cb,
-            "multicolored": self.ui.multicolored_cb,
-
-            "tooldia": self.ui.tooldia_entry,
-            "slot_tooldia": self.ui.slot_tooldia_entry,
-        })
-
-        self.to_form()
-
-        # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-
-            self.ui.tools_table.setColumnHidden(4, True)
-            self.ui.tools_table.setColumnHidden(5, True)
-        else:
-            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-
-        assert isinstance(self.ui, ExcellonObjectUI), \
-            "Expected a ExcellonObjectUI, got %s" % type(self.ui)
-
-        self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
-        self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
-        self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
-
-        self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
-        # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
-
-        self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
-        self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
-
-        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
-
-        self.units_found = self.app.defaults['units']
-
     def ui_connect(self):
         """
         Will connect all signals in the Excellon UI that needs to be connected
@@ -547,7 +547,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.tools_table.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
-
 
     def on_row_selection_change(self):
         """
@@ -950,9 +949,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
             # for FlatCAM is 6 decimals,
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
-            for tool in tools:
-                for drill in self.tools[tool]['drills']:
-                    buffer_value = self.tools[tool]['tooldia'] / 2 - tooldia / 2
+            for etool in tools:
+                for drill in self.tools[etool]['drills']:
+                    buffer_value = self.tools[etool]['tooldia'] / 2 - tooldia / 2
                     if buffer_value == 0:
                         geo_obj.solid_geometry.append(drill.buffer(0.0000001).exterior)
                     else:

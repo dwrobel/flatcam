@@ -1555,11 +1555,13 @@ class CNCObjectUI(ObjectUI):
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
 
-        # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
-        self.custom_box.addWidget(self.plot_options_label)
+        f_lay = QtWidgets.QGridLayout()
+        f_lay.setColumnStretch(0, 0)
+        f_lay.setColumnStretch(1, 1)
+        self.custom_box.addLayout(f_lay)
 
-        self.cncplot_method_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot kind"))
+        # Plot Options
+        self.cncplot_method_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.cncplot_method_label.setToolTip(
             _(
                 "This selects the kind of geometries on the canvas to plot.\n"
@@ -1575,72 +1577,69 @@ class CNCObjectUI(ObjectUI):
             {"label": _("Cut"), "value": "cut"}
         ], stretch=False)
 
-        self.annotation_label = QtWidgets.QLabel("<b>%s:</b>" % _("Display Annotation"))
-        self.annotation_label.setToolTip(
+        f_lay.addWidget(self.cncplot_method_label, 0, 0)
+        f_lay.addWidget(self.cncplot_method_combo, 0, 1, 1, 2)
+
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        f_lay.addLayout(self.name_hlay, 1, 0, 1, 3)
+
+        # ## Object name
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
+
+        # Annotation
+        self.annotation_cb = FCCheckBox(_("Display Annotation"))
+        self.annotation_cb.setToolTip(
             _("This selects if to display text annotation on the plot.\n"
               "When checked it will display numbers in order for each end\n"
               "of a travel line.")
         )
-        self.annotation_cb = FCCheckBox()
+        f_lay.addWidget(self.annotation_cb, 2, 0, 1, 3)
 
-        # ## Object name
-        self.name_hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(self.name_hlay)
-        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
-        self.name_entry = FCEntry()
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.name_hlay.addWidget(name_label)
-        self.name_hlay.addWidget(self.name_entry)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        f_lay.addWidget(separator_line, 3, 0, 1, 3)
 
-        self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled dist."))
+        # Travelled Distance
+        self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled distance"))
         self.t_distance_label.setToolTip(
             _("This is the total travelled distance on X-Y plane.\n"
               "In current units.")
         )
         self.t_distance_entry = FCEntry()
-        self.t_distance_entry.setToolTip(
-            _("This is the total travelled distance on X-Y plane.\n"
-              "In current units.")
-        )
         self.units_label = QtWidgets.QLabel()
 
+        f_lay.addWidget(self.t_distance_label, 5, 0)
+        f_lay.addWidget(self.t_distance_entry, 5, 1)
+        f_lay.addWidget(self.units_label, 5, 2)
+
+        # Estimated Time
         self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
         self.t_time_label.setToolTip(
             _("This is the estimated time to do the routing/drilling,\n"
               "without the time spent in ToolChange events.")
         )
         self.t_time_entry = FCEntry()
-        self.t_time_entry.setToolTip(
-            _("This is the estimated time to do the routing/drilling,\n"
-              "without the time spent in ToolChange events.")
-        )
         self.units_time_label = QtWidgets.QLabel()
 
-        f_lay = QtWidgets.QGridLayout()
-        f_lay.setColumnStretch(1, 1)
-        f_lay.setColumnStretch(2, 1)
-
-        self.custom_box.addLayout(f_lay)
-        f_lay.addWidget(self.cncplot_method_label, 0, 0)
-        f_lay.addWidget(self.cncplot_method_combo, 0, 1)
-        f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
-        f_lay.addWidget(self.annotation_label, 1, 0)
-        f_lay.addWidget(self.annotation_cb, 1, 1)
-        f_lay.addWidget(QtWidgets.QLabel(''), 1, 2)
-        f_lay.addWidget(self.t_distance_label, 2, 0)
-        f_lay.addWidget(self.t_distance_entry, 2, 1)
-        f_lay.addWidget(self.units_label, 2, 2)
-        f_lay.addWidget(self.t_time_label, 3, 0)
-        f_lay.addWidget(self.t_time_entry, 3, 1)
-        f_lay.addWidget(self.units_time_label, 3, 2)
+        f_lay.addWidget(self.t_time_label, 7, 0)
+        f_lay.addWidget(self.t_time_entry, 7, 1)
+        f_lay.addWidget(self.units_time_label, 7, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
         self.t_time_label.hide()
         self.t_time_entry.setVisible(False)
 
-        e1_lbl = QtWidgets.QLabel('')
-        self.custom_box.addWidget(e1_lbl)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        f_lay.addWidget(separator_line, 9, 0, 1, 3)
 
         hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay)

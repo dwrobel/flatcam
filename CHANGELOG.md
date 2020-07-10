@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+10.07.2020
+
+- Tool Drilling - moved some of the Excellon Preferences related to drilling operation to it's own group Drilling Tool Options
+- optimized the CNCJob UI to look like other parts of the app 
+
 9.07.2020
 
 - Tool Drilling - remade the methods used to generate GCode from Excellon, to parse the GCode. Now the GCode and GCode_parsed are stored individually for each tool and also they are plotted individually

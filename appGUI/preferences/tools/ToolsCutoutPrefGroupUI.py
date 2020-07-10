@@ -164,7 +164,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
             self.gaps_combo.addItem(it)
-            self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
+            # self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
 
         # Surrounding convex box shape
         self.convex_box = FCCheckBox('%s' % _("Convex Shape"))

@@ -251,31 +251,12 @@ class FlatCAMDefaults:
 
         # Excellon Options
         "excellon_operation": "drill",
-        "excellon_tool_order": 'no',
         "excellon_milling_type": "drills",
 
         "excellon_milling_dia": 0.8,
 
-        "excellon_cutz": -1.7,
-        "excellon_multidepth": False,
-        "excellon_depthperpass": 0.7,
-        "excellon_travelz": 2,
-        "excellon_endz": 0.5,
-        "excellon_endxy": None,
-        "excellon_feedrate_z": 300,
-        "excellon_spindlespeed": 0,
-        "excellon_dwell": False,
-        "excellon_dwelltime": 1,
-        "excellon_toolchange": False,
-        "excellon_toolchangez": 15,
-        "excellon_ppname_e": 'default',
         "excellon_tooldia": 0.8,
         "excellon_slot_tooldia": 1.8,
-        "excellon_gcode_type": "drills",
-        "excellon_area_exclusion": False,
-        "excellon_area_shape": "polygon",
-        "excellon_area_strategy": "over",
-        "excellon_area_overz": 1.0,
 
         # Excellon Advanced Options
         "excellon_offset": 0.0,
@@ -287,9 +268,11 @@ class FlatCAMDefaults:
         "excellon_spindledir": 'CW',
         "excellon_f_plunge": False,
         "excellon_f_retract": False,
-        "excellon_drill_slots": False,
-        "excellon_drill_overlap": 0.0,
-        "excellon_last_drill": True,
+
+        "excellon_area_exclusion": False,
+        "excellon_area_shape": "polygon",
+        "excellon_area_strategy": "over",
+        "excellon_area_overz": 1.0,
 
         # Excellon Export
         "excellon_exp_units": 'INCH',
@@ -427,6 +410,27 @@ class FlatCAMDefaults:
         "tools_iso_force":          True,
         "tools_iso_area_shape":     "square",
         "tools_iso_plotting":       'normal',
+
+        # Drilling Tool
+        "tools_drill_tool_order": 'no',
+        "tools_drill_cutz": -1.7,
+        "tools_drill_multidepth": False,
+        "tools_drill_depthperpass": 0.7,
+        "tools_drill_travelz": 2,
+        "tools_drill_endz": 0.5,
+        "tools_drill_endxy": None,
+
+        "tools_drill_feedrate_z": 300,
+        "tools_drill_spindlespeed": 0,
+        "tools_drill_dwell": False,
+        "tools_drill_dwelltime": 1,
+        "tools_drill_toolchange": False,
+        "tools_drill_toolchangez": 15,
+        "tools_drill_ppname_e": 'default',
+
+        "tools_drill_drill_slots": False,
+        "tools_drill_drill_overlap": 0.0,
+        "tools_drill_last_drill": True,
 
         # NCC Tool
         "tools_ncctools": "1.0, 0.5",
