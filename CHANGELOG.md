@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - updated the Excellon Editor: the default_data dict is populated now on Editor entry
 - Excellon Editor: added a new functionality: conversion of slots to drills
 - Excellon UI: added a new feature that is grouped in Advanced Settings: a toggle tools table visibility checkbox 
+- Drilling Tool - minor fixes
 
 10.07.2020
 

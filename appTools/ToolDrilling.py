@@ -393,9 +393,9 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.feedrate_probe_entry.set_value(self.app.defaults["tools_drill_feedrate_probe"])
 
         self.t_ui.exclusion_cb.set_value(self.app.defaults["tools_drill_area_exclusion"])
-        self.t_ui.strategy_radio.set_value(self.app.defaults["tools_drill_area_shape"])
-        self.t_ui.over_z_entry.set_value(self.app.defaults["tools_drill_area_strategy"])
-        self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_overz"])
+        self.t_ui.strategy_radio.set_value(self.app.defaults["tools_drill_area_strategy"])
+        self.t_ui.over_z_entry.set_value(self.app.defaults["tools_drill_area_overz"])
+        self.t_ui.area_shape_radio.set_value(self.app.defaults["tools_drill_area_shape"])
 
         # Drill slots - part of the Advanced Excellon params
         self.t_ui.drill_slots_cb.set_value(self.app.defaults["tools_drill_drill_slots"])
