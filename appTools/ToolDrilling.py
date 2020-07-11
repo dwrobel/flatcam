@@ -2092,7 +2092,7 @@ class DrillingUI:
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
 
-        self.drill_overlap_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_overlap_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
         self.drill_overlap_entry.set_precision(self.decimals)
         self.drill_overlap_entry.set_range(0.0, 100.0000)
         self.drill_overlap_entry.setSingleStep(0.1)

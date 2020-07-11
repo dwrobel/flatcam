@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - Excellon UI: added a new feature that is grouped in Advanced Settings: a toggle tools table visibility checkbox 
 - Drilling Tool - minor fixes
 - Drilling Tool - changes in UI
+- Isolation Tool - modified the UI; preparing to add new feature of polishing at the end of the milling job
+- Tool Paint - fixed an issue when launching the tool and an object other than Geometry or Excellon is selected
 
 10.07.2020
 

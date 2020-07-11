@@ -590,9 +590,10 @@ class ToolPaint(AppTool, Gerber):
             active = self.app.collection.get_active()
             kind = active.kind
             if kind == 'gerber':
-                self.ui.type_obj_radio.set_value('gerber')
+                self.ui.type_obj_radio.set_value(kind)
             else:
-                self.ui.type_obj_radio.set_value('geometry')
+                kind = 'geometry'
+                self.ui.type_obj_radio.set_value(kind)
 
             # run those once so the obj_type attribute is updated in the FCComboBoxes
             # to make sure that the last loaded object is displayed in the combobox

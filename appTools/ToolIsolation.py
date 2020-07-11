@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner
+    FCComboBox, OptionalInputSection, FCSpinner, OptionalHideInputSection
 from appParsers.ParseGerber import Gerber
 
 from copy import deepcopy
@@ -3162,13 +3162,86 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        self.grid3.addWidget(self.exc_obj_combo, 29, 0, 1, 2)
+        self.grid3.addWidget(self.exc_obj_combo, 28, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
                                               self.type_excobj_radio,
                                               self.exc_obj_combo
                                           ])
+
+        # Add Polish
+        self.polish_cb = FCCheckBox(label=_('Add Polish'))
+        self.polish_cb.setToolTip(_(
+            "Will add a Paint section at the end of the GCode.\n"
+            "It will clean the material after milling."))
+        self.polish_cb.setObjectName("i_polish")
+        self.grid3.addWidget(self.polish_cb, 29, 0, 1, 2)
+
+        # Polish Tool Diameter
+        self.polish_dia_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
+        self.polish_dia_lbl.setToolTip(
+            _("Diameter for the polishing tool.")
+        )
+        self.polish_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_dia_entry.set_precision(self.decimals)
+        self.polish_dia_entry.set_range(0.000, 9999.9999)
+        self.polish_dia_entry.setObjectName("i_polish_dia")
+
+        self.grid3.addWidget(self.polish_dia_lbl, 30, 0)
+        self.grid3.addWidget(self.polish_dia_entry, 30, 1)
+
+        # Polish Overlap
+        self.polish_over_lbl = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.polish_over_lbl.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.")
+        )
+        self.polish_over_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
+        self.polish_over_entry.set_precision(self.decimals)
+        self.polish_over_entry.setWrapping(True)
+        self.polish_over_entry.set_range(0.0000, 99.9999)
+        self.polish_over_entry.setSingleStep(0.1)
+        self.polish_over_entry.setObjectName("i_polish_overlap")
+
+        self.grid3.addWidget(self.polish_over_lbl, 31, 0)
+        self.grid3.addWidget(self.polish_over_entry, 31, 1)
+
+        # Polish Method
+        self.polish_method_lbl = QtWidgets.QLabel('%s:' % _('Method'))
+        self.polish_method_lbl.setToolTip(
+            _("Algorithm for polishing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
+        )
+
+        self.polish_method_combo = FCComboBox()
+        self.polish_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
+        self.polish_method_combo.setObjectName('i_polish_method')
+
+        self.grid3.addWidget(self.polish_method_lbl, 32, 0)
+        self.grid3.addWidget(self.polish_method_combo, 32, 1)
+
+        self.polish_dia_lbl.hide()
+        self.polish_dia_entry.hide()
+        self.polish_over_lbl.hide()
+        self.polish_over_entry.hide()
+        self.polish_method_lbl.hide()
+        self.polish_method_combo.hide()
+
+        self.ois_polish = OptionalHideInputSection(
+            self.polish_cb,
+            [
+                self.polish_dia_lbl,
+                self.polish_dia_entry,
+                self.polish_over_lbl,
+                self.polish_over_entry,
+                self.polish_method_lbl,
+                self.polish_method_combo
+            ]
+        )
 
         # Isolation Scope
         self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
@@ -3185,8 +3258,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        self.grid3.addWidget(self.select_label, 30, 0)
-        self.grid3.addWidget(self.select_combo, 30, 1)
+        self.grid3.addWidget(self.select_label, 33, 0)
+        self.grid3.addWidget(self.select_combo, 33, 1)
 
         self.reference_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
@@ -3196,8 +3269,8 @@ class IsoUI:
         self.reference_combo_type = FCComboBox()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.grid3.addWidget(self.reference_combo_type_label, 31, 0)
-        self.grid3.addWidget(self.reference_combo_type, 31, 1)
+        self.grid3.addWidget(self.reference_combo_type_label, 34, 0)
+        self.grid3.addWidget(self.reference_combo_type, 34, 1)
 
         self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
@@ -3208,8 +3281,8 @@ class IsoUI:
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo_label, 32, 0)
-        self.grid3.addWidget(self.reference_combo, 32, 1)
+        self.grid3.addWidget(self.reference_combo_label, 35, 0)
+        self.grid3.addWidget(self.reference_combo, 35, 1)
 
         self.reference_combo.hide()
         self.reference_combo_label.hide()
@@ -3223,7 +3296,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        self.grid3.addWidget(self.poly_int_cb, 33, 0)
+        self.grid3.addWidget(self.poly_int_cb, 36, 0)
 
         self.poly_int_cb.hide()
 
@@ -3236,8 +3309,8 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 35, 0)
-        self.grid3.addWidget(self.area_shape_radio, 35, 1)
+        self.grid3.addWidget(self.area_shape_label, 38, 0)
+        self.grid3.addWidget(self.area_shape_radio, 38, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -3245,7 +3318,7 @@ class IsoUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 36, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 39, 0, 1, 2)
 
         self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
         self.generate_iso_button.setStyleSheet("""
