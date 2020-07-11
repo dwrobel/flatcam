@@ -2215,7 +2215,6 @@ class App(QtCore.QObject):
 
             # reset the following variables so the UI is built again after edit
             edited_object.ui_build = False
-            edited_object.build_aperture_storage = False
 
         elif isinstance(edited_object, CNCJobObject):
 
@@ -4505,11 +4504,9 @@ class App(QtCore.QObject):
                     for obj_active in self.collection.get_selected():
                         # if the deleted object is GerberObject then make sure to delete the possible mark shapes
                         if obj_active.kind == 'gerber':
-                            for el in obj_active.mark_shapes:
-                                obj_active.mark_shapes[el].clear(update=True)
-                                obj_active.mark_shapes[el].enabled = False
-                                # obj_active.mark_shapes[el] = None
-                                del el
+                            obj_active.mark_shapes_storage.clear()
+                            obj_active.mark_shapes.clear(update=True)
+                            obj_active.mark_shapes.enabled = False
                         elif obj_active.kind == 'cncjob':
                             try:
                                 obj_active.text_col.enabled = False
@@ -6814,10 +6811,9 @@ class App(QtCore.QObject):
             # delete shapes left drawn from mark shape_collections, if any
             if isinstance(obj, GerberObject):
                 try:
-                    for el in obj.mark_shapes:
-                        obj.mark_shapes[el].clear(update=True)
-                        obj.mark_shapes[el].enabled = False
-                        del el
+                    obj.mark_shapes_storage.clear()
+                    obj.mark_shapes.clear(update=True)
+                    obj.mark_shapes.enabled = False
                 except AttributeError:
                     pass
 

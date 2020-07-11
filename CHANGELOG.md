@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool - modified the UI; preparing to add new feature of polishing at the end of the milling job
 - Tool Paint - fixed an issue when launching the tool and an object other than Geometry or Excellon is selected
 - Geometry UI - moved the UI for polishing from Isolation Tool to Geometry UI (actually in the future Milling Tool) where it belongs
+- Gerber UI - optimized the mark shapes to use only on ShapeCollection
 
 10.07.2020
 

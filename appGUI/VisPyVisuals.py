@@ -147,6 +147,12 @@ class ShapeGroup(object):
         """
         self._indexes.append(self._collection.add(**kwargs))
 
+    def remove(self, idx, update=False):
+        self._indexes.remove(idx)
+        self._collection.remove(idx, False)
+        if update:
+            self._collection.redraw([])             # Skip waiting results
+
     def clear(self, update=False):
         """
         Removes group shapes from collection, clear indexes
@@ -667,7 +673,7 @@ class TextCollectionVisual(TextVisual):
 
     def clear(self, update=False):
         """
-        Removes all shapes from colleciton
+        Removes all shapes from collection
         :param update: bool
             Set True to redraw collection
         """

@@ -161,8 +161,8 @@ class GerberObject(FlatCAMObj, Gerber):
         # keep track if the UI is built so we don't have to build it every time
         self.ui_build = False
 
-        # build only once the aperture storage (takes time)
-        self.build_aperture_storage = False
+        # aperture marking storage
+        self.mark_shapes_storage = {}
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -848,27 +848,17 @@ class GerberObject(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             # add the shapes storage for marking apertures
-            if self.build_aperture_storage is False:
-                self.build_aperture_storage = True
-
-                if self.app.is_legacy is False:
-                    for ap_code in self.apertures:
-                        self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=1)
-                else:
-                    for ap_code in self.apertures:
-                        self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
-                                                                          name=self.options['name'] + str(ap_code))
+            for ap_code in self.apertures:
+                self.mark_shapes_storage[ap_code] = []
 
             self.ui.apertures_table.setVisible(True)
-            for ap in self.mark_shapes:
-                self.mark_shapes[ap].enabled = True
+            self.mark_shapes.enabled = True
 
             self.ui.mark_all_cb.setVisible(True)
             self.ui.mark_all_cb.setChecked(False)
             self.build_ui()
         else:
             self.ui.apertures_table.setVisible(False)
-
             self.ui.mark_all_cb.setVisible(False)
 
             # on hide disable all mark plots
@@ -876,10 +866,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 for row in range(self.ui.apertures_table.rowCount()):
                     self.ui.apertures_table.cellWidget(row, 5).set_value(False)
                 self.clear_plot_apertures()
-
-                # for ap in list(self.mark_shapes.keys()):
-                #     # self.mark_shapes[ap].enabled = False
-                #     del self.mark_shapes[ap]
+                self.mark_shapes.enabled = False
             except Exception as e:
                 log.debug(" GerberObject.on_aperture_visibility_changed() --> %s" % str(e))
 
@@ -1009,7 +996,7 @@ class GerberObject(FlatCAMObj, Gerber):
             log.debug("GerberObject.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, run_thread=True, **kwargs):
+    def plot_aperture(self, run_thread=False, **kwargs):
         """
 
         :param run_thread: if True run the aperture plot as a thread in a worker
@@ -1030,12 +1017,12 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             color = self.app.defaults['gerber_plot_fill']
 
-        if 'marked_aperture' not in kwargs:
-            return
-        else:
+        if 'marked_aperture' in kwargs:
             aperture_to_plot_mark = kwargs['marked_aperture']
             if aperture_to_plot_mark is None:
                 return
+        else:
+            return
 
         if 'visible' not in kwargs:
             visibility = True
@@ -1050,15 +1037,17 @@ class GerberObject(FlatCAMObj, Gerber):
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
                                 geo = elem['solid']
-                                if type(geo) == Polygon or type(geo) == LineString:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                        face_color=color, visible=visibility)
-                                else:
+                                try:
                                     for el in geo:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
-                                                            face_color=color, visible=visibility)
+                                        shape_key = self.add_mark_shape(shape=el, color=color, face_color=color,
+                                                                        visible=visibility)
+                                        self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                except TypeError:
+                                    shape_key = self.add_mark_shape(shape=geo, color=color, face_color=color,
+                                                                    visible=visibility)
+                                    self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
 
-                    self.mark_shapes[aperture_to_plot_mark].redraw()
+                    self.mark_shapes.redraw()
 
                 except (ObjectDeleted, AttributeError):
                     self.clear_plot_apertures()
@@ -1077,24 +1066,19 @@ class GerberObject(FlatCAMObj, Gerber):
         :return:
         """
 
-        if self.mark_shapes:
+        if self.mark_shapes_storage:
             if aperture == 'all':
-                for apid in list(self.apertures.keys()):
-                    try:
-                        if self.app.is_legacy is True:
-                            self.mark_shapes[apid].clear(update=False)
-                        else:
-                            self.mark_shapes[apid].clear(update=True)
-                    except Exception as e:
-                        log.debug("GerberObject.clear_plot_apertures() 'all' --> %s" % str(e))
+                val = False if self.app.is_legacy is True else True
+                self.mark_shapes.clear(update=val)
             else:
-                try:
-                    if self.app.is_legacy is True:
-                        self.mark_shapes[aperture].clear(update=False)
-                    else:
-                        self.mark_shapes[aperture].clear(update=True)
-                except Exception as e:
-                    log.debug("GerberObject.clear_plot_apertures() 'aperture' --> %s" % str(e))
+                for shape_key in self.mark_shapes_storage[aperture]:
+                    try:
+                        self.mark_shapes.remove(shape_key)
+                    except Exception as e:
+                        log.debug("GerberObject.clear_plot_apertures() -> %s" % str(e))
+
+                self.mark_shapes_storage[aperture] = []
+                self.mark_shapes.redraw()
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
@@ -1118,17 +1102,13 @@ class GerberObject(FlatCAMObj, Gerber):
 
         self.marked_rows[:] = []
 
-        try:
-            aperture = self.ui.apertures_table.item(cw_row, 1).text()
-        except AttributeError:
-            return
+        aperture = self.ui.apertures_table.item(cw_row, 1).text()
 
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
             self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
                                marked_aperture=aperture, visible=True, run_thread=True)
-            # self.mark_shapes[aperture].redraw()
         else:
             self.marked_rows.append(False)
             self.clear_plot_apertures(aperture=aperture)

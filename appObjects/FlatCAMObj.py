@@ -16,6 +16,7 @@ from appGUI.ObjectUI import *
 
 from Common import LoudDict
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+from appGUI.VisPyVisuals import ShapeCollection
 
 import sys
 
@@ -85,11 +86,11 @@ class FlatCAMObj(QtCore.QObject):
 
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
+            self.mark_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
             # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, pool=self.app.pool, layers=2)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
-
-        self.mark_shapes = {}
+            self.mark_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_mark_shapes")
 
         self.item = None  # Link with project view item
 
@@ -411,11 +412,11 @@ class FlatCAMObj(QtCore.QObject):
             key = self.shapes.add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
-    def add_mark_shape(self, apid, **kwargs):
+    def add_mark_shape(self, **kwargs):
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
+            key = self.mark_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
         return key
 
     def update_filters(self, last_ext, filter_string):
