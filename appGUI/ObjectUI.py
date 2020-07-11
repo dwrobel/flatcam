@@ -1488,10 +1488,101 @@ class GeometryObjectUI(ObjectUI):
         # -------------------------- EXCLUSION AREAS END -------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------
 
+        # Add Polish
+        self.polish_cb = FCCheckBox(label=_('Add Polish'))
+        self.polish_cb.setToolTip(_(
+            "Will add a Paint section at the end of the GCode.\n"
+            "A metallic brush will clean the material after milling."))
+        self.polish_cb.setObjectName("g_polish")
+        grid4.addWidget(self.polish_cb, 15, 0, 1, 2)
+
+        # Polish Tool Diameter
+        self.polish_dia_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
+        self.polish_dia_lbl.setToolTip(
+            _("Diameter for the polishing tool.")
+        )
+        self.polish_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_dia_entry.set_precision(self.decimals)
+        self.polish_dia_entry.set_range(0.000, 9999.9999)
+        self.polish_dia_entry.setObjectName("g_polish_dia")
+
+        grid4.addWidget(self.polish_dia_lbl, 16, 0)
+        grid4.addWidget(self.polish_dia_entry, 16, 1)
+
+        # Polish Pressure
+        self.polish_pressure_lbl = QtWidgets.QLabel('%s:' % _('Pressure'))
+        self.polish_pressure_lbl.setToolTip(
+            _("Negative value. The higher the absolute value\n"
+              "the stronger the pressure of the brush on the material.")
+        )
+        self.polish_pressure_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.polish_pressure_entry.set_precision(self.decimals)
+        self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
+        self.polish_pressure_entry.setObjectName("g_polish_pressure")
+
+        grid4.addWidget(self.polish_pressure_lbl, 17, 0)
+        grid4.addWidget(self.polish_pressure_entry, 17, 1)
+
+        # Polish Overlap
+        self.polish_over_lbl = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.polish_over_lbl.setToolTip(
+            _("How much (percentage) of the tool width to overlap each tool pass.")
+        )
+        self.polish_over_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
+        self.polish_over_entry.set_precision(self.decimals)
+        self.polish_over_entry.setWrapping(True)
+        self.polish_over_entry.set_range(0.0000, 99.9999)
+        self.polish_over_entry.setSingleStep(0.1)
+        self.polish_over_entry.setObjectName("g_polish_overlap")
+
+        grid4.addWidget(self.polish_over_lbl, 18, 0)
+        grid4.addWidget(self.polish_over_entry, 18, 1)
+
+        # Polish Method
+        self.polish_method_lbl = QtWidgets.QLabel('%s:' % _('Method'))
+        self.polish_method_lbl.setToolTip(
+            _("Algorithm for polishing:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.")
+        )
+
+        self.polish_method_combo = FCComboBox()
+        self.polish_method_combo.addItems(
+            [_("Standard"), _("Seed"), _("Lines")]
+        )
+        self.polish_method_combo.setObjectName('g_polish_method')
+
+        grid4.addWidget(self.polish_method_lbl, 20, 0)
+        grid4.addWidget(self.polish_method_combo, 20, 1)
+
+        self.polish_dia_lbl.hide()
+        self.polish_dia_entry.hide()
+        self.polish_pressure_lbl.hide()
+        self.polish_pressure_entry.hide()
+        self.polish_over_lbl.hide()
+        self.polish_over_entry.hide()
+        self.polish_method_lbl.hide()
+        self.polish_method_combo.hide()
+
+        self.ois_polish = OptionalHideInputSection(
+            self.polish_cb,
+            [
+                self.polish_dia_lbl,
+                self.polish_dia_entry,
+                self.polish_pressure_lbl,
+                self.polish_pressure_entry,
+                self.polish_over_lbl,
+                self.polish_over_entry,
+                self.polish_method_lbl,
+                self.polish_method_combo
+            ]
+        )
+
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line2, 15, 0, 1, 2)
+        grid4.addWidget(separator_line2, 22, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -1508,9 +1599,9 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_cnc_button, 17, 0, 1, 2)
+        grid4.addWidget(self.generate_cnc_button, 24, 0, 1, 2)
 
-        grid4.addWidget(QtWidgets.QLabel(''), 19, 0, 1, 2)
+        grid4.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
 
         # ##############
         # Paint area ##
@@ -1519,7 +1610,7 @@ class GeometryObjectUI(ObjectUI):
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
-        grid4.addWidget(self.tools_label, 20, 0, 1, 2)
+        grid4.addWidget(self.tools_label, 28, 0, 1, 2)
 
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
@@ -1537,7 +1628,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.paint_tool_button, 22, 0, 1, 2)
+        grid4.addWidget(self.paint_tool_button, 30, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -1551,7 +1642,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_ncc_button, 24, 0, 1, 2)
+        grid4.addWidget(self.generate_ncc_button, 32, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):

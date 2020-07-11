@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - changes in UI
 - Isolation Tool - modified the UI; preparing to add new feature of polishing at the end of the milling job
 - Tool Paint - fixed an issue when launching the tool and an object other than Geometry or Excellon is selected
+- Geometry UI - moved the UI for polishing from Isolation Tool to Geometry UI (actually in the future Milling Tool) where it belongs
 
 10.07.2020
 
