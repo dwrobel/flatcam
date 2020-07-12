@@ -2298,7 +2298,7 @@ class ToolsDB2(QtWidgets.QWidget):
         delete_tool = menu.addAction(QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete from DB"))
         delete_tool.triggered.connect(self.on_tool_delete)
 
-        sep = menu.addSeparator()
+        # sep = menu.addSeparator()
 
         save_changes = menu.addAction(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _("Save changes"))
         save_changes.triggered.connect(self.on_save_changes)
