@@ -67,18 +67,19 @@ class AppObject(QtCore.QObject):
               when appending it to the collection. There is no need to handle
               name conflicts here.
 
-        :param kind: The kind of object to create. One of 'gerber', 'excellon', 'cncjob' and 'geometry'.
-        :type kind: str
-        :param name: Name for the object.
-        :type name: str
-        :param initialize: Function to run after creation of the object but before it is attached to the application.
-        The function is called with 2 parameters: the new object and the App instance.
-        :type initialize: function
-        :param plot: If to plot the resulting object
-        :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
-        self.collection
-        :return: None
-        :rtype: None
+        :param kind:            The kind of object to create. One of 'gerber', 'excellon', 'cncjob' and 'geometry'.
+        :type kind:             str
+        :param name:            Name for the object.
+        :type name:             str
+        :param initialize:      Function to run after creation of the object but before it is attached to the
+                                application.
+                                The function is called with 2 parameters: the new object and the App instance.
+        :type initialize:       function
+        :param plot:            If to plot the resulting object
+        :param autoselected:    if the resulting object is autoselected in the Project tab and therefore in the
+                                self.collection
+        :return:                Either the object or the string 'fail'
+        :rtype:                 object
         """
 
         log.debug("AppObject.new_object()")
@@ -102,7 +103,12 @@ class AppObject(QtCore.QObject):
         # Object creation/instantiation
         obj = classdict[kind](name)
 
+        # ############################################################################################################
+        # adding object PROPERTIES
+        # ############################################################################################################
         obj.units = self.app.options["units"]
+        obj.isHovering = False
+        obj.notHovering = True
 
         # IMPORTANT
         # The key names in defaults and options dictionary's are not random:
@@ -113,13 +119,29 @@ class AppObject(QtCore.QObject):
         # let's say "excellon_toolchange", it will strip the excellon_) and to the obj.options the key will become
         # "toolchange"
 
+        # ############################################################################################################
+        # this section copies the application defaults related to the object to the object OPTIONS
+        # ############################################################################################################
         for option in self.app.options:
             if option.find(kind + "_") == 0:
                 oname = option[len(kind) + 1:]
                 obj.options[oname] = self.app.options[option]
 
-        obj.isHovering = False
-        obj.notHovering = True
+        # add some of the FlatCAM Tools related properties
+        if kind == 'excellon':
+            for option in self.app.options:
+                if option.find('tools_drill_') == 0 or option.find('tools_mill_') == 0:
+                    obj.options[option] = self.app.options[option]
+        if kind == 'gerber':
+            for option in self.app.options:
+                if option.find('tools_iso_') == 0:
+                    obj.options[option] = self.app.options[option]
+        if kind == 'geometry':
+            for option in self.app.options:
+                if option.find('tools_mill_') == 0:
+                    obj.options[option] = self.app.options[option]
+        # ############################################################################################################
+        # ############################################################################################################
 
         # Initialize as per user request
         # User must take care to implement initialize
@@ -127,6 +149,7 @@ class AppObject(QtCore.QObject):
         # have been invoked in a separate thread.
         t1 = time.time()
         log.debug("%f seconds before initialize()." % (t1 - t0))
+
         try:
             return_value = initialize(obj, self.app)
         except Exception as e:
@@ -145,16 +168,20 @@ class AppObject(QtCore.QObject):
             log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
             return "fail"
 
+        # ############################################################################################################
         # Check units and convert if necessary
         # This condition CAN be true because initialize() can change obj.units
+        # ############################################################################################################
         if self.app.options["units"].upper() != obj.units.upper():
             self.app.inform.emit('%s: %s' % (_("Converting units to "), self.app.options["units"]))
             obj.convert_units(self.app.options["units"])
             t3 = time.time()
             log.debug("%f seconds converting units." % (t3 - t2))
 
+        # ############################################################################################################
         # Create the bounding box for the object and then add the results to the obj.options
         # But not for Scripts or for Documents
+        # ############################################################################################################
         if kind != 'document' and kind != 'script':
             try:
                 xmin, ymin, xmax, ymax = obj.bounds()
@@ -177,12 +204,16 @@ class AppObject(QtCore.QObject):
             except Exception as e:
                 log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
 
+        # ############################################################################################################
         # update the KeyWords list with the name of the file
+        # ############################################################################################################
         self.app.myKeywords.append(obj.options['name'])
 
         log.debug("Moving new object back to main thread.")
 
+        # ############################################################################################################
         # Move the object to the main thread and let the app know that it is available.
+        # ############################################################################################################
         obj.moveToThread(self.app.main_thread)
         self.object_created.emit(obj, obj_plot, obj_autoselected)
 

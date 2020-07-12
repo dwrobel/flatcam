@@ -3577,9 +3577,9 @@ class NonCopperClear(AppTool, Gerber):
                 break
         self.app.on_tools_database(source='ncc')
         self.app.tools_db_tab.ok_to_add = True
-        self.app.tools_db_tab.buttons_frame.hide()
-        self.app.tools_db_tab.add_tool_from_db.show()
-        self.app.tools_db_tab.cancel_tool_from_db.show()
+        self.app.tools_db_tab.ui.buttons_frame.hide()
+        self.app.tools_db_tab.ui.add_tool_from_db.show()
+        self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

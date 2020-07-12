@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+12.07.2020
+
+- when creating a new FlatCAM object, the options will be updated with FlatCAM tools properties that relate to them
+- updated the Tools DB class by separating the Tools DB UI into it's own class
+- Tools DB - added the parameters for Drilling Tool
+
 11.07.2020
 
 - moved all Excellon Advanced Prefeences to Drilling Tool Preferences
