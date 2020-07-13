@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - working in adding tools auto-load from Tools DB
 - some updates to the Excellon Object options
 - Drilling Tool - manual add from Tools DB is working
+- Drilling Tool - now slots are converted to drills if the checkbox is ON for the tool investigated
+- Drilling Tool - fixes due of changes in properties (preferences)
+- fixed the Drillcncjob TCL command
 
 12.07.2020
 

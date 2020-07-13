@@ -2941,28 +2941,28 @@ class CNCjob(Geometry):
         self.tooldia = tools[tool]["tooldia"]
         self.postdata['toolC'] = tools[tool]["tooldia"]
 
-        self.z_feedrate = tool_dict['feedrate_z']
-        self.feedrate = tool_dict['feedrate']
+        self.z_feedrate = tool_dict['tools_drill_feedrate_z']
+        self.feedrate = tool_dict['tools_drill_feedrate_z']
 
         # Z_cut parameter
         if self.machinist_setting == 0:
-            self.z_cut = self.check_zcut(zcut=tool_dict["excellon_cutz"])
+            self.z_cut = self.check_zcut(zcut=tool_dict["tools_drill_cutz"])
             if self.z_cut == 'fail':
                 return 'fail'
 
-        self.z_cut = tool_dict['cutz']
+        self.z_cut = tool_dict['tools_drill_cutz']
         # multidepth use this
-        old_zcut = tool_dict["cutz"]
+        old_zcut = tool_dict["tools_drill_cutz"]
 
-        self.z_move = tool_dict['travelz']
-        self.spindlespeed = tool_dict['spindlespeed']
-        self.dwell = tool_dict['dwell']
-        self.dwelltime = tool_dict['dwelltime']
-        self.multidepth = tool_dict['multidepth']
-        self.z_depthpercut = tool_dict['depthperpass']
+        self.z_move = tool_dict['tools_drill_travelz']
+        self.spindlespeed = tool_dict['tools_drill_spindlespeed']
+        self.dwell = tool_dict['tools_drill_dwell']
+        self.dwelltime = tool_dict['tools_drill_dwelltime']
+        self.multidepth = tool_dict['tools_drill_multidepth']
+        self.z_depthpercut = tool_dict['tools_drill_depthperpass']
 
         # XY_toolchange parameter
-        self.xy_toolchange = tool_dict["toolchangexy"]
+        self.xy_toolchange = tool_dict["tools_drill_toolchangexy"]
         try:
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
@@ -2984,7 +2984,7 @@ class CNCjob(Geometry):
             pass
 
         # XY_end parameter
-        self.xy_end = tool_dict["endxy"]
+        self.xy_end = tool_dict["tools_drill_endxy"]
         self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
         if self.xy_end and self.xy_end != '':
             self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
@@ -3079,7 +3079,7 @@ class CNCjob(Geometry):
         # because the values for Z offset are created in build_tool_ui()
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         try:
-            z_offset = float(tool_dict['offset']) * (-1)
+            z_offset = float(tool_dict['tools_drill_offset']) * (-1)
         except KeyError:
             z_offset = 0
         self.z_cut = z_offset + old_zcut
@@ -3123,7 +3123,7 @@ class CNCjob(Geometry):
                         t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                         # restore z_move
-                        self.z_move = tool_dict['travelz']
+                        self.z_move = tool_dict['tools_drill_travelz']
                     else:
                         if prev_z is not None:
                             # move to next point
@@ -3131,7 +3131,7 @@ class CNCjob(Geometry):
 
                             # we assume that previously the z_move was altered therefore raise to
                             # the travel_z (z_move)
-                            self.z_move = tool_dict['travelz']
+                            self.z_move = tool_dict['tools_drill_travelz']
                             t_gcode += self.doformat(p.lift_code, x=locx, y=locy)
                         else:
                             # move to next point
@@ -3343,7 +3343,7 @@ class CNCjob(Geometry):
 
                     if self.use_ui:
                         try:
-                            z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
+                            z_off = float(exobj.tools[it[0]]['data']['tools_drill_offset']) * (-1)
                         except KeyError:
                             z_off = 0
                     else:
@@ -3403,8 +3403,8 @@ class CNCjob(Geometry):
         # this holds the resulting GCode
         self.gcode = []
 
-        self.f_plunge = self.app.defaults["excellon_f_plunge"]
-        self.f_retract = self.app.defaults["excellon_f_retract"]
+        self.f_plunge = self.app.defaults["tools_drill_f_plunge"]
+        self.f_retract = self.app.defaults["tools_drill_f_retract"]
 
         # #############################################################################################################
         # #############################################################################################################
@@ -3488,9 +3488,9 @@ class CNCjob(Geometry):
                 self.postdata['toolC'] = self.tooldia
 
                 if self.use_ui:
-                    self.z_feedrate = self.exc_tools[tool]['data']['feedrate_z']
-                    self.feedrate = self.exc_tools[tool]['data']['feedrate']
-                    self.z_cut = self.exc_tools[tool]['data']['cutz']
+                    self.z_feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
+                    self.feedrate = self.exc_tools[tool]['data']['tools_drill_feedrate_z']
+                    self.z_cut = self.exc_tools[tool]['data']['tools_drill_cutz']
                     gcode += self.doformat(p.z_feedrate_code)
 
                     if self.machinist_setting == 0:
@@ -3513,12 +3513,12 @@ class CNCjob(Geometry):
 
                     old_zcut = deepcopy(self.z_cut)
 
-                    self.z_move = self.exc_tools[tool]['data']['travelz']
-                    self.spindlespeed = self.exc_tools[tool]['data']['spindlespeed']
-                    self.dwell = self.exc_tools[tool]['data']['dwell']
-                    self.dwelltime = self.exc_tools[tool]['data']['dwelltime']
-                    self.multidepth = self.exc_tools[tool]['data']['multidepth']
-                    self.z_depthpercut = self.exc_tools[tool]['data']['depthperpass']
+                    self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
+                    self.spindlespeed = self.exc_tools[tool]['data']['tools_drill_spindlespeed']
+                    self.dwell = self.exc_tools[tool]['data']['tools_drill_dwell']
+                    self.dwelltime = self.exc_tools[tool]['data']['tools_drill_dwelltime']
+                    self.multidepth = self.exc_tools[tool]['data']['tools_drill_multidepth']
+                    self.z_depthpercut = self.exc_tools[tool]['data']['tools_drill_depthperpass']
                 else:
                     old_zcut = deepcopy(self.z_cut)
 
@@ -3589,7 +3589,7 @@ class CNCjob(Geometry):
                 # because the values for Z offset are created in build_ui()
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 try:
-                    z_offset = float(self.exc_tools[tool]['data']['offset']) * (-1)
+                    z_offset = float(self.exc_tools[tool]['data']['tools_drill_offset']) * (-1)
                 except KeyError:
                     z_offset = 0
                 self.z_cut = z_offset + old_zcut
@@ -3633,7 +3633,7 @@ class CNCjob(Geometry):
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                                 # restore z_move
-                                self.z_move = self.exc_tools[tool]['data']['travelz']
+                                self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
                             else:
                                 if prev_z is not None:
                                     # move to next point
@@ -3641,7 +3641,7 @@ class CNCjob(Geometry):
 
                                     # we assume that previously the z_move was altered therefore raise to
                                     # the travel_z (z_move)
-                                    self.z_move = self.exc_tools[tool]['data']['travelz']
+                                    self.z_move = self.exc_tools[tool]['data']['tools_drill_travelz']
                                     gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 else:
                                     # move to next point
@@ -3723,9 +3723,9 @@ class CNCjob(Geometry):
             self.postdata['toolC'] = self.tooldia
 
             if self.use_ui:
-                self.z_feedrate = self.exc_tools[one_tool]['data']['feedrate_z']
-                self.feedrate = self.exc_tools[one_tool]['data']['feedrate']
-                self.z_cut = self.exc_tools[one_tool]['data']['cutz']
+                self.z_feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
+                self.feedrate = self.exc_tools[one_tool]['data']['tools_drill_feedrate_z']
+                self.z_cut = self.exc_tools[one_tool]['data']['tools_drill_cutz']
                 gcode += self.doformat(p.z_feedrate_code)
 
                 if self.machinist_setting == 0:
@@ -3748,12 +3748,12 @@ class CNCjob(Geometry):
 
                 old_zcut = deepcopy(self.z_cut)
 
-                self.z_move = self.exc_tools[one_tool]['data']['travelz']
-                self.spindlespeed = self.exc_tools[one_tool]['data']['spindlespeed']
-                self.dwell = self.exc_tools[one_tool]['data']['dwell']
-                self.dwelltime = self.exc_tools[one_tool]['data']['dwelltime']
-                self.multidepth = self.exc_tools[one_tool]['data']['multidepth']
-                self.z_depthpercut = self.exc_tools[one_tool]['data']['depthperpass']
+                self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
+                self.spindlespeed = self.exc_tools[one_tool]['data']['tools_drill_spindlespeed']
+                self.dwell = self.exc_tools[one_tool]['data']['tools_drill_dwell']
+                self.dwelltime = self.exc_tools[one_tool]['data']['tools_drill_dwelltime']
+                self.multidepth = self.exc_tools[one_tool]['data']['tools_drill_multidepth']
+                self.z_depthpercut = self.exc_tools[one_tool]['data']['tools_drill_depthperpass']
             else:
                 old_zcut = deepcopy(self.z_cut)
 
@@ -3821,7 +3821,7 @@ class CNCjob(Geometry):
             # because the values for Z offset are created in build_ui()
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             try:
-                z_offset = float(self.exc_tools[one_tool]['data']['offset']) * (-1)
+                z_offset = float(self.exc_tools[one_tool]['data']['tools_drill_offset']) * (-1)
             except KeyError:
                 z_offset = 0
             self.z_cut = z_offset + old_zcut
@@ -3865,7 +3865,7 @@ class CNCjob(Geometry):
                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
 
                             # restore z_move
-                            self.z_move = self.exc_tools[one_tool]['data']['travelz']
+                            self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
                         else:
                             if prev_z is not None:
                                 # move to next point
@@ -3873,7 +3873,7 @@ class CNCjob(Geometry):
 
                                 # we assume that previously the z_move was altered therefore raise to
                                 # the travel_z (z_move)
-                                self.z_move = self.exc_tools[one_tool]['data']['travelz']
+                                self.z_move = self.exc_tools[one_tool]['data']['tools_drill_travelz']
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                             else:
                                 # move to next point

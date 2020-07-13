@@ -1392,7 +1392,7 @@ class ToolDrilling(AppTool, Excellon):
             selected_uid.add(uid)
         return list(selected_uid)
 
-    def create_drill_points(self, selected_tools, selected_sorted_tools, convert_slots=False):
+    def create_drill_points(self, selected_tools, selected_sorted_tools):
         points = {}
 
         # create drill points out of the drills locations
@@ -1408,8 +1408,10 @@ class ToolDrilling(AppTool, Excellon):
 
         # convert slots to a sequence of drills and add them to drill points
         should_add_last_pt = self.t_ui.last_drill_cb.get_value()
-        if convert_slots:
-            for tool_key, tl_dict in self.excellon_tools.items():
+
+        for tool_key, tl_dict in self.excellon_tools.items():
+            convert_slots = tl_dict['data']['tools_drill_drill_slots']
+            if convert_slots:
                 if tool_key in selected_tools:
                     overlap = 1 - (self.t_ui.drill_overlap_entry.get_value() / 100.0)
                     drill_overlap = 0.0
@@ -1429,7 +1431,7 @@ class ToolDrilling(AppTool, Excellon):
                                 points[tool_key] += new_drills
                             except Exception:
                                 points[tool_key] = new_drills
-            log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
+        log.debug("Found %d TOOLS with drills after converting slots to drills." % len(points))
 
         return points
 
@@ -1464,8 +1466,6 @@ class ToolDrilling(AppTool, Excellon):
 
         job_name = obj.options["name"] + "_cnc"
         obj.pp_excellon_name = self.t_ui.pp_excellon_name_cb.get_value()
-
-        convert_slots = self.t_ui.drill_slots_cb.get_value()
 
         if self.is_valid_excellon() is False:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -1520,8 +1520,7 @@ class ToolDrilling(AppTool, Excellon):
         self.app.inform.emit(_("Creating a list of points to drill..."))
 
         # points is a dictionary: keys are tools ad values are lists of Shapely Points
-        points = self.create_drill_points(selected_tools=sel_tools, selected_sorted_tools=sorted_tools,
-                                          convert_slots=convert_slots)
+        points = self.create_drill_points(selected_tools=sel_tools, selected_sorted_tools=sorted_tools)
 
         # check if there are drill points in the exclusion areas (if any areas)
         if self.app.exc_areas.exclusion_areas_storage and self.check_intersection(points) is True:
@@ -1661,6 +1660,7 @@ class ToolDrilling(AppTool, Excellon):
                     tool_points = points[tool]
                     used_tooldia = self.excellon_tools[tool]['tooldia']
 
+                    convert_slots = self.excellon_tools[tool]['data']['tools_drill_drill_slots']
                     if convert_slots is True:
                         nr_drills = len(points[tool])
                         nr_slots = 0
@@ -1711,6 +1711,8 @@ class ToolDrilling(AppTool, Excellon):
                 # process all in one go with no toolchange and with only one tool
                 nr_drills = 0
                 nr_slots = 0
+
+                convert_slots = self.excellon_tools[used_tool]['data']['tools_drill_drill_slots']
                 if convert_slots is False:
                     for line in range(1, len(tool_table_items)):
                         # we may have exception ValueError if there are no drills/slots for the current tool/line
@@ -1811,9 +1813,6 @@ class ToolDrilling(AppTool, Excellon):
         # Send to worker
         # self.app.worker.add_task(job_thread, [self.app])
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-
-    def drilling_handler(self, obj):
-        pass
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -2521,9 +2520,3 @@ def distance(pt1, pt2):
 
 def distance_euclidian(x1, y1, x2, y2):
     return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-
-
-class AttrDict(dict):
-    def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
