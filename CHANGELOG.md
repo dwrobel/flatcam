@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+13.07.2020
+
+- fixed a bug in Tools Database: due of not disconnecting the signals it created a race that was concluded into a RuntimeError exception (an dict changed size during iteration)
+- Drilling Tool - working in adding tools auto-load from Tools DB
+- some updates to the Excellon Object options
+- Drilling Tool - manual add from Tools DB is working
+
 12.07.2020
 
 - when creating a new FlatCAM object, the options will be updated with FlatCAM tools properties that relate to them

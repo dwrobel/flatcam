@@ -1146,6 +1146,43 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tool_object_label, 2, 0)
         self.grid_tool.addWidget(self.object_type_combo, 2, 1)
 
+        # Tool Tolerance
+        self.tol_label = QtWidgets.QLabel("<b>%s:</b>" % _("Tolerance"))
+        self.tol_label.setToolTip(
+            _("Tool tolerance. If there is a tool in the Excellon object with\n"
+              "the value within the limits then this tool from DB will be used.\n"
+              "This behavior is enabled in the Drilling Tool.")
+        )
+        self.grid_tool.addWidget(self.tol_label, 4, 0, 1, 2)
+
+        # Tolerance Min Limit
+        self.min_limit_label = QtWidgets.QLabel('%s:' % _("Min"))
+        self.min_limit_label.setToolTip(
+            _("Set the tool tolerance minimum.")
+        )
+        self.tol_min_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tol_min_entry.set_precision(self.decimals)
+        self.tol_min_entry.set_range(0, 9999.9999)
+        self.tol_min_entry.setSingleStep(0.1)
+        self.tol_min_entry.setObjectName("gdb_tol_min")
+
+        self.grid_tool.addWidget(self.min_limit_label, 6, 0)
+        self.grid_tool.addWidget(self.tol_min_entry, 6, 1)
+
+        # Tolerance Min Limit
+        self.max_limit_label = QtWidgets.QLabel('%s:' % _("Max"))
+        self.max_limit_label.setToolTip(
+            _("Set the tool tolerance maximum.")
+        )
+        self.tol_max_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.tol_max_entry.set_precision(self.decimals)
+        self.tol_max_entry.set_range(0, 9999.9999)
+        self.tol_max_entry.setSingleStep(0.1)
+        self.tol_max_entry.setObjectName("gdb_tol_max")
+
+        self.grid_tool.addWidget(self.max_limit_label, 7, 0)
+        self.grid_tool.addWidget(self.tol_max_entry, 7, 1)
+
         # ###########################################################################
         # ############### BASIC GEOMETRY UI form ####################################
         # ###########################################################################
@@ -1872,10 +1909,6 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.feedrate_rapid_label, 16, 0)
         self.grid5.addWidget(self.feedrate_rapid_entry, 16, 1)
 
-        # default values is to hide
-        self.feedrate_rapid_label.hide()
-        self.feedrate_rapid_entry.hide()
-
         # Spindlespeed
         self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
@@ -2117,6 +2150,8 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.form_fields = {
             "object_type":      self.ui.object_type_combo,
+            "tol_min":          self.ui.tol_min_entry,
+            "tol_max":          self.ui.tol_max_entry,
             # Basic
             "name":             self.ui.name_entry,
             "tooldia":          self.ui.dia_entry,
@@ -2187,6 +2222,8 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.name2option = {
             "gdb_object_type":      "object_type",
+            "gdb_tol_min":          "tol_min",
+            "gdb_tol_max":          "tol_max",
 
             # Basic
             "gdb_name":             "name",
@@ -2319,8 +2356,10 @@ class ToolsDB2(QtWidgets.QWidget):
             self.on_tool_requested_from_app()
 
     def on_list_selection_change(self, current, previous):
+        self.ui_disconnect()
         self.current_toolid = int(current.text(0))
         self.storage_to_form(self.db_tool_dict[current.text(0)])
+        self.ui_connect()
 
     def on_list_item_edited(self, item, column):
         if column == 0:
@@ -2504,6 +2543,8 @@ class ToolsDB2(QtWidgets.QWidget):
             "endz":             float(self.app.defaults["geometry_endz"]),
 
             "object_type":      _("General"),
+            "tol_min":          0.0,
+            "tol_max":          0.0,
 
             # NCC
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
@@ -2750,7 +2791,7 @@ class ToolsDB2(QtWidgets.QWidget):
         for idx in range(self.app_ui.plot_tab_area.count()):
             if self.app_ui.plot_tab_area.tabText(idx) == _("Tools Database"):
                 self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
-                self.save_db_btn.setStyleSheet("")
+                self.ui.save_db_btn.setStyleSheet("")
 
                 # Save Tools DB in a file
                 try:
@@ -2927,6 +2968,11 @@ class ToolsDB2(QtWidgets.QWidget):
         else:
             if wdg_name == "gdb_object_type":
                 self.db_tool_dict[tool_id]['data']['object_type'] = val
+            elif wdg_name == "gdb_tol_min":
+                self.db_tool_dict[tool_id]['data']['tol_min'] = val
+            elif wdg_name == "gdb_tol_max":
+                self.db_tool_dict[tool_id]['data']['tol_max'] = val
+
             elif wdg_name == "gdb_cutz":
                 self.db_tool_dict[tool_id]['data']['cutz'] = val
             elif wdg_name == "gdb_multidepth":
@@ -3001,6 +3047,36 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.db_tool_dict[tool_id]['data']['tools_iso_follow'] = val
             elif wdg_name == "gdb_i_iso_type":
                 self.db_tool_dict[tool_id]['data']['tools_iso_isotype'] = val
+
+            # Drilling Tool
+            elif wdg_name == "gdb_e_cutz":
+                self.db_tool_dict[tool_id]['data']['tools_drill_cutz'] = val
+            elif wdg_name == "gdb_e_multidepth":
+                self.db_tool_dict[tool_id]['data']['tools_drill_multidepth'] = val
+            elif wdg_name == "gdb_e_depthperpass":
+                self.db_tool_dict[tool_id]['data']['tools_drill_depthperpass'] = val
+            elif wdg_name == "gdb_e_travelz":
+                self.db_tool_dict[tool_id]['data']['tools_drill_travelz'] = val
+
+            elif wdg_name == "gdb_e_feedratez":
+                self.db_tool_dict[tool_id]['data']['tools_drill_feedrate_z'] = val
+            elif wdg_name == "gdb_e_fr_rapid":
+                self.db_tool_dict[tool_id]['data']['tools_drill_feedrate_rapid'] = val
+            elif wdg_name == "gdb_e_spindlespeed":
+                self.db_tool_dict[tool_id]['data']['tools_drill_spindlespeed'] = val
+            elif wdg_name == "gdb_e_dwell":
+                self.db_tool_dict[tool_id]['data']['tools_drill_dwell'] = val
+            elif wdg_name == "gdb_e_dwelltime":
+                self.db_tool_dict[tool_id]['data']['tools_drill_dwelltime'] = val
+
+            elif wdg_name == "gdb_e_offset":
+                self.db_tool_dict[tool_id]['data']['tools_drill_offset'] = val
+            elif wdg_name == "gdb_e_drill_slots":
+                self.db_tool_dict[tool_id]['data']['tools_drill_drill_slots'] = val
+            elif wdg_name == "gdb_e_drill_slots_over":
+                self.db_tool_dict[tool_id]['data']['tools_drill_drill_overlap'] = val
+            elif wdg_name == "gdb_e_drill_last_drill":
+                self.db_tool_dict[tool_id]['data']['tools_drill_last_drill'] = val
 
         self.callback_app()
 

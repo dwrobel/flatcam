@@ -53,39 +53,22 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "plot": True,
             "solid": False,
             "multicolored": False,
+            "merge_fuse_tools": True,
 
-            "operation": "drill",
-            "milling_type": "drills",
-
-            "milling_dia": 0.04,
-
-            "cutz": -0.1,
-            "multidepth": False,
-            "depthperpass": 0.7,
-            "travelz": 0.1,
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": 5.0,
-            "feedrate_rapid": 5.0,
             "tooldia": 0.1,
+            "milling_dia": 0.04,
             "slot_tooldia": 0.1,
-            "toolchange": False,
-            "toolchangez": 1.0,
-            "toolchangexy": "0.0, 0.0",
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "endz": 2.0,
-            "endxy": '',
 
-            "startz": None,
-            "offset": 0.0,
-            "spindlespeed": 0,
-            "dwell": True,
-            "dwelltime": 1000,
-            "ppname_e": 'default',
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "z_pdepth": -0.02,
-            "feedrate_probe": 3.0,
+            "format_upper_in": 2,
+            "format_lower_in": 4,
+            "format_upper_mm": 3,
+            "lower_mm": 3,
+            "zeros": "T",
+            "units": "INCH",
+            "update": True,
+
             "optimization_type": "B",
+            "search_time": 3
         })
 
         # TODO: Document this.
@@ -98,14 +81,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
         self.default_data = {}
-
-        # fill in self.default_data values from self.options
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('geometry_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
 
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
@@ -133,99 +108,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level']
 
-    @staticmethod
-    def merge(exc_list, exc_final, decimals=None, fuse_tools=True):
-        """
-        Merge Excellon objects found in exc_list parameter into exc_final object.
-        Options are always copied from source .
-
-        Tools are disregarded, what is taken in consideration is the unique drill diameters found as values in the
-        exc_list tools dict's. In the reconstruction section for each unique tool diameter it will be created a
-        tool_name to be used in the final Excellon object, exc_final.
-
-        If only one object is in exc_list parameter then this function will copy that object in the exc_final
-
-        :param exc_list:    List or one object of ExcellonObject Objects to join.
-        :type exc_list:     list
-        :param exc_final:   Destination ExcellonObject object.
-        :type exc_final:    class
-        :param decimals:    The number of decimals to be used for diameters
-        :type decimals:     int
-        :param fuse_tools:  If True will try to fuse tools of the same diameter for the Excellon objects
-        :type fuse_tools:   bool
-        :return:            None
-        """
-
-        if exc_final.tools is None:
-            exc_final.tools = {}
-
-        if decimals is None:
-            decimals = 4
-        decimals_exc = decimals
-
-        try:
-            flattened_list = list(itertools.chain(*exc_list))
-        except TypeError:
-            flattened_list = exc_list
-
-        new_tools = {}
-        total_geo = []
-        toolid = 0
-        for exc in flattened_list:
-            # copy options of the current excellon obj to the final excellon obj
-            # only the last object options will survive
-            for option in exc.options:
-                if option != 'name':
-                    try:
-                        exc_final.options[option] = exc.options[option]
-                    except Exception:
-                        exc.app.log.warning("Failed to copy option.", option)
-
-            for tool in exc.tools:
-                toolid += 1
-                new_tools[toolid] = exc.tools[tool]
-
-            exc_final.tools = deepcopy(new_tools)
-            # add the zeros and units to the exc_final object
-            exc_final.zeros = exc.zeros
-            exc_final.units = exc.units
-            total_geo += exc.solid_geometry
-
-        exc_final.solid_geometry = total_geo
-
-        fused_tools_dict = {}
-        if exc_final.tools and fuse_tools:
-            toolid = 0
-            for tool, tool_dict in exc_final.tools.items():
-                current_tooldia = float('%.*f' % (decimals_exc, tool_dict['tooldia']))
-                toolid += 1
-
-                # calculate all diameters in fused_tools_dict
-                all_dia = []
-                if fused_tools_dict:
-                    for f_tool in fused_tools_dict:
-                        all_dia.append(float('%.*f' % (decimals_exc, fused_tools_dict[f_tool]['tooldia'])))
-
-                if current_tooldia in all_dia:
-                    # find tool for current_tooldia in fuse_tools
-                    t = None
-                    for f_tool in fused_tools_dict:
-                        if fused_tools_dict[f_tool]['tooldia'] == current_tooldia:
-                            t = f_tool
-                            break
-                    if t:
-                        fused_tools_dict[t]['drills'] += tool_dict['drills']
-                        fused_tools_dict[t]['slots'] += tool_dict['slots']
-                        fused_tools_dict[t]['solid_geometry'] += tool_dict['solid_geometry']
-                else:
-                    fused_tools_dict[toolid] = tool_dict
-                    fused_tools_dict[toolid]['tooldia'] = current_tooldia
-
-            exc_final.tools = fused_tools_dict
-
-        # create the geometry for the exc_final object
-        exc_final.create_geometry()
-
     def set_ui(self, ui):
         """
         Configures the user interface for this object.
@@ -245,6 +127,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
         for opt_key, opt_val in self.app.options.items():
             if opt_key.find('tools_drill_') == 0:
                 self.options[opt_key] = deepcopy(opt_val)
+
+        # fill in self.default_data values from self.options
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('excellon_') == 0 or opt_key.find('tools_drill_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
 
         self.form_fields.update({
             "plot":             self.ui.plot_cb,
@@ -1310,3 +1197,96 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+
+    @staticmethod
+    def merge(exc_list, exc_final, decimals=None, fuse_tools=True):
+        """
+        Merge Excellon objects found in exc_list parameter into exc_final object.
+        Options are always copied from source .
+
+        Tools are disregarded, what is taken in consideration is the unique drill diameters found as values in the
+        exc_list tools dict's. In the reconstruction section for each unique tool diameter it will be created a
+        tool_name to be used in the final Excellon object, exc_final.
+
+        If only one object is in exc_list parameter then this function will copy that object in the exc_final
+
+        :param exc_list:    List or one object of ExcellonObject Objects to join.
+        :type exc_list:     list
+        :param exc_final:   Destination ExcellonObject object.
+        :type exc_final:    class
+        :param decimals:    The number of decimals to be used for diameters
+        :type decimals:     int
+        :param fuse_tools:  If True will try to fuse tools of the same diameter for the Excellon objects
+        :type fuse_tools:   bool
+        :return:            None
+        """
+
+        if exc_final.tools is None:
+            exc_final.tools = {}
+
+        if decimals is None:
+            decimals = 4
+        decimals_exc = decimals
+
+        try:
+            flattened_list = list(itertools.chain(*exc_list))
+        except TypeError:
+            flattened_list = exc_list
+
+        new_tools = {}
+        total_geo = []
+        toolid = 0
+        for exc in flattened_list:
+            # copy options of the current excellon obj to the final excellon obj
+            # only the last object options will survive
+            for option in exc.options:
+                if option != 'name':
+                    try:
+                        exc_final.options[option] = exc.options[option]
+                    except Exception:
+                        exc.app.log.warning("Failed to copy option.", option)
+
+            for tool in exc.tools:
+                toolid += 1
+                new_tools[toolid] = exc.tools[tool]
+
+            exc_final.tools = deepcopy(new_tools)
+            # add the zeros and units to the exc_final object
+            exc_final.zeros = exc.zeros
+            exc_final.units = exc.units
+            total_geo += exc.solid_geometry
+
+        exc_final.solid_geometry = total_geo
+
+        fused_tools_dict = {}
+        if exc_final.tools and fuse_tools:
+            toolid = 0
+            for tool, tool_dict in exc_final.tools.items():
+                current_tooldia = float('%.*f' % (decimals_exc, tool_dict['tooldia']))
+                toolid += 1
+
+                # calculate all diameters in fused_tools_dict
+                all_dia = []
+                if fused_tools_dict:
+                    for f_tool in fused_tools_dict:
+                        all_dia.append(float('%.*f' % (decimals_exc, fused_tools_dict[f_tool]['tooldia'])))
+
+                if current_tooldia in all_dia:
+                    # find tool for current_tooldia in fuse_tools
+                    t = None
+                    for f_tool in fused_tools_dict:
+                        if fused_tools_dict[f_tool]['tooldia'] == current_tooldia:
+                            t = f_tool
+                            break
+                    if t:
+                        fused_tools_dict[t]['drills'] += tool_dict['drills']
+                        fused_tools_dict[t]['slots'] += tool_dict['slots']
+                        fused_tools_dict[t]['solid_geometry'] += tool_dict['solid_geometry']
+                else:
+                    fused_tools_dict[toolid] = tool_dict
+                    fused_tools_dict[toolid]['tooldia'] = current_tooldia
+
+            exc_final.tools = fused_tools_dict
+
+        # create the geometry for the exc_final object
+        exc_final.create_geometry()

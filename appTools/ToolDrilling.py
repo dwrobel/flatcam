@@ -16,7 +16,10 @@ from copy import deepcopy
 
 import numpy as np
 
-from shapely.geometry import Point, LineString
+from shapely.geometry import LineString
+
+import json
+import sys
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -122,42 +125,45 @@ class ToolDrilling(AppTool, Excellon):
         self.area_sel_disconnect_flag = False
         self.poly_sel_disconnect_flag = False
 
+        # Tools Database
+        self.tools_db_dict = None
+
         self.form_fields = {
-            "cutz":             self.t_ui.cutz_entry,
-            "multidepth":       self.t_ui.mpass_cb,
-            "depthperpass":     self.t_ui.maxdepth_entry,
-            "travelz":          self.t_ui.travelz_entry,
-            "feedrate_z":       self.t_ui.feedrate_z_entry,
-            "feedrate_rapid":   self.t_ui.feedrate_rapid_entry,
+            "tools_drill_cutz":             self.t_ui.cutz_entry,
+            "tools_drill_multidepth":       self.t_ui.mpass_cb,
+            "tools_drill_depthperpass":     self.t_ui.maxdepth_entry,
+            "tools_drill_travelz":          self.t_ui.travelz_entry,
+            "tools_drill_feedrate_z":       self.t_ui.feedrate_z_entry,
+            "tools_drill_feedrate_rapid":   self.t_ui.feedrate_rapid_entry,
 
-            "spindlespeed":     self.t_ui.spindlespeed_entry,
-            "dwell":            self.t_ui.dwell_cb,
-            "dwelltime":        self.t_ui.dwelltime_entry,
+            "tools_drill_spindlespeed":     self.t_ui.spindlespeed_entry,
+            "tools_drill_dwell":            self.t_ui.dwell_cb,
+            "tools_drill_dwelltime":        self.t_ui.dwelltime_entry,
 
-            "offset":           self.t_ui.offset_entry,
+            "tools_drill_offset":           self.t_ui.offset_entry,
 
-            "drill_slots":      self.t_ui.drill_slots_cb,
-            "drill_overlap":    self.t_ui.drill_overlap_entry,
-            "last_drill":       self.t_ui.last_drill_cb
+            "tools_drill_drill_slots":      self.t_ui.drill_slots_cb,
+            "tools_drill_drill_overlap":    self.t_ui.drill_overlap_entry,
+            "tools_drill_last_drill":       self.t_ui.last_drill_cb
         }
 
         self.name2option = {
-            "e_cutz":                   "cutz",
-            "e_multidepth":             "multidepth",
-            "e_depthperpass":           "depthperpass",
-            "e_travelz":                "travelz",
-            "e_feedratez":              "feedrate_z",
-            "e_fr_rapid":               "feedrate_rapid",
+            "e_cutz":                   "tools_drill_cutz",
+            "e_multidepth":             "tools_drill_multidepth",
+            "e_depthperpass":           "tools_drill_depthperpass",
+            "e_travelz":                "tools_drill_travelz",
+            "e_feedratez":              "tools_drill_feedrate_z",
+            "e_fr_rapid":               "tools_drill_feedrate_rapid",
 
-            "e_spindlespeed":           "spindlespeed",
-            "e_dwell":                  "dwell",
-            "e_dwelltime":              "dwelltime",
+            "e_spindlespeed":           "tools_drill_spindlespeed",
+            "e_dwell":                  "tools_drill_dwell",
+            "e_dwelltime":              "tools_drill_dwelltime",
 
-            "e_offset":                 "offset",
+            "e_offset":                 "tools_drill_offset",
 
-            "e_drill_slots":            "drill_slots",
-            "e_drill_slots_overlap":    "drill_overlap",
-            "e_drill_last_drill":       "last_drill",
+            "e_drill_slots":            "tools_drill_drill_slots",
+            "e_drill_slots_overlap":    "tools_drill_drill_overlap",
+            "e_drill_last_drill":       "tools_drill_last_drill",
         }
 
         self.poly_drawn = False
@@ -204,6 +210,8 @@ class ToolDrilling(AppTool, Excellon):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
+
+        self.t_ui.manual_load_db_btn.clicked.connect(self.on_tool_db_load)
 
         self.t_ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.t_ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
@@ -344,7 +352,7 @@ class ToolDrilling(AppTool, Excellon):
 
         # fill in self.default_data values from self.options
         for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0:
+            if opt_key.find('excellon_') == 0 or opt_key.find('tools_drill_') == 0:
                 self.default_data[opt_key] = deepcopy(opt_val)
 
         self.first_click = False
@@ -403,6 +411,7 @@ class ToolDrilling(AppTool, Excellon):
         self.t_ui.drill_overlap_label.hide()
         self.t_ui.drill_overlap_entry.hide()
         self.t_ui.last_drill_cb.hide()
+
         # if the app mode is Basic then disable this feature
         if app_mode == 'b':
             self.t_ui.drill_slots_cb.set_value(False)
@@ -697,12 +706,16 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.exc_param_frame.setDisabled(True)
             self.set_tool_ui()
         else:
-            self.excellon_tools = self.excellon_obj.tools
             self.app.collection.set_active(self.obj_name)
             self.t_ui.exc_param_frame.setDisabled(False)
-            self.excellon_tools = self.excellon_obj.tools
 
-            self.build_tool_ui()
+            if self.t_ui.autoload_db_cb.get_value():
+                self.excellon_tools = self.excellon_obj.tools
+                self.on_tool_db_load()
+            else:
+                # self.on_tool_db_load() already build once the tool UI, no need to do it twice
+                self.excellon_tools = self.excellon_obj.tools
+                self.build_tool_ui()
 
         sel_rows = set()
         table_items = self.t_ui.tools_table.selectedItems()
@@ -794,6 +807,71 @@ class ToolDrilling(AppTool, Excellon):
             self.t_ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
             pass
+
+    def on_tool_db_load(self):
+
+        filename = self.app.data_path + '\\geo_tools_db.FlatDB'
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            return
+
+        try:
+            self.tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            return
+
+        self.replace_tools()
+
+    def replace_tools(self):
+        log.debug("ToolDrilling.replace_tools()")
+
+        if self.excellon_obj:
+            new_tools_dict = deepcopy(self.excellon_tools)
+
+            for orig_tool, orig_tool_val in self.excellon_tools.items():
+                orig_tooldia = orig_tool_val['tooldia']
+
+                # look in database tools
+                for db_tool, db_tool_val in self.tools_db_dict.items():
+                    db_tooldia = db_tool_val['tooldia']
+                    low_limit = float(db_tool_val['data']['tol_min'])
+                    high_limit = float(db_tool_val['data']['tol_max'])
+
+                    # if we find a tool with the same diameter in the Tools DB just update it's data
+                    if orig_tooldia == db_tooldia:
+                        for d in db_tool_val['data']:
+                            if d.find('tools_drill') == 0:
+                                new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
+                            elif d.find('tools_') == 0:
+                                # don't need data for other App Tools; this tests after 'tools_drill_'
+                                continue
+                            else:
+                                new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
+                    # search for a tool that has a tolerance that the tool fits in
+                    elif high_limit >= orig_tooldia >= low_limit:
+                        new_tools_dict[orig_tool]['tooldia'] = db_tooldia
+                        for d in db_tool_val['data']:
+                            if d.find('tools_drill') == 0:
+                                new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
+                            elif d.find('tools_') == 0:
+                                # don't need data for other App Tools; this tests after 'tools_drill_'
+                                continue
+                            else:
+                                new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
+
+            self.excellon_tools = new_tools_dict
+            for td in self.excellon_tools:
+                print(td, self.excellon_tools[td])
+            self.build_tool_ui()
 
     def on_toggle_all_rows(self):
         """

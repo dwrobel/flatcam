@@ -8935,22 +8935,18 @@ class App(QtCore.QObject):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
-
             try:
                 ret = excellon_obj.parse_file(filename=filename)
                 if ret == "fail":
                     log.debug("Excellon parsing failed.")
-                    self.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("This is not Excellon file."))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("This is not Excellon file."))
                     return "fail"
             except IOError:
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                    (_("Cannot open file"), filename))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Cannot open file"), filename))
                 log.debug("Could not open Excellon object.")
                 return "fail"
             except Exception:
-                msg = '[ERROR_NOTCL] %s' % \
-                      _("An internal error has occurred. See shell.\n")
+                msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
