@@ -16,6 +16,8 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - now slots are converted to drills if the checkbox is ON for the tool investigated
 - Drilling Tool - fixes due of changes in properties (preferences)
 - fixed the Drillcncjob TCL command
+- Multiple Tools fix - fixed issue with converting slots to drills selection being cleared when togglinh all rows by clicking on the header
+- Multiple Tools fix - fixes for when having multiple tools selected which created issues in tool tables for many tools
 
 12.07.2020
 
