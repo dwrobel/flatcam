@@ -869,8 +869,6 @@ class ToolDrilling(AppTool, Excellon):
                                 new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
 
             self.excellon_tools = new_tools_dict
-            for td in self.excellon_tools:
-                print(td, self.excellon_tools[td])
             self.build_tool_ui()
 
     def on_toggle_all_rows(self):
