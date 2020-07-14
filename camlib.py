@@ -478,9 +478,6 @@ class Geometry(object):
         # Final geometry: MultiLineString or list (of LineString or Points)
         self.follow_geometry = None
 
-        # Attributes to be included in serialization
-        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry']
-
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
 
@@ -502,6 +499,9 @@ class Geometry(object):
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
+
+        # Attributes to be included in serialization
+        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry', 'tools']
 
     def plot_temp_shapes(self, element, color='red'):
 

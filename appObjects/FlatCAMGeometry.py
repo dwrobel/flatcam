@@ -161,7 +161,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'tools', 'multigeo']
+        self.ser_attrs += ['options', 'kind', 'multigeo', 'fill_color', 'outline_color', 'alpha_level']
 
     def build_ui(self):
         self.ui_disconnect()

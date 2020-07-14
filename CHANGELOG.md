@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 14.07.2020
 
 - Drilling Tool - now there is an Excellon preference that control the autoload of tools from the Tools Database
+- Tools Database - remade the UI
+- made sure that the serializable attributes are added correctly and only once (self.ser_attrs)
 
 13.07.2020
 

@@ -41,66 +41,6 @@ class GerberObject(FlatCAMObj, Gerber):
 
     ui_type = GerberObjectUI
 
-    @staticmethod
-    def merge(grb_list, grb_final):
-        """
-        Merges the geometry of objects in geo_list into
-        the geometry of geo_final.
-
-        :param grb_list: List of GerberObject Objects to join.
-        :param grb_final: Destination GeometryObject object.
-        :return: None
-        """
-
-        if grb_final.solid_geometry is None:
-            grb_final.solid_geometry = []
-            grb_final.follow_geometry = []
-
-        if not grb_final.apertures:
-            grb_final.apertures = {}
-
-        if type(grb_final.solid_geometry) is not list:
-            grb_final.solid_geometry = [grb_final.solid_geometry]
-            grb_final.follow_geometry = [grb_final.follow_geometry]
-
-        for grb in grb_list:
-
-            # Expand lists
-            if type(grb) is list:
-                GerberObject.merge(grb_list=grb, grb_final=grb_final)
-            else:   # If not list, just append
-                for option in grb.options:
-                    if option != 'name':
-                        try:
-                            grb_final.options[option] = grb.options[option]
-                        except KeyError:
-                            log.warning("Failed to copy option.", option)
-
-                try:
-                    for geos in grb.solid_geometry:
-                        grb_final.solid_geometry.append(geos)
-                        grb_final.follow_geometry.append(geos)
-                except TypeError:
-                    grb_final.solid_geometry.append(grb.solid_geometry)
-                    grb_final.follow_geometry.append(grb.solid_geometry)
-
-                for ap in grb.apertures:
-                    if ap not in grb_final.apertures:
-                        grb_final.apertures[ap] = grb.apertures[ap]
-                    else:
-                        # create a list of integers out of the grb.apertures keys and find the max of that value
-                        # then, the aperture duplicate is assigned an id value incremented with 1,
-                        # and finally made string because the apertures dict keys are strings
-                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
-                        grb_final.apertures[max_ap] = {}
-                        grb_final.apertures[max_ap]['geometry'] = []
-
-                        for k, v in grb.apertures[ap].items():
-                            grb_final.apertures[max_ap][k] = deepcopy(v)
-
-        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
-        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
-
     def __init__(self, name):
         self.decimals = self.app.decimals
 
@@ -1514,6 +1454,66 @@ class GerberObject(FlatCAMObj, Gerber):
             return 'fail'
 
         return gerber_code
+
+    @staticmethod
+    def merge(grb_list, grb_final):
+        """
+        Merges the geometry of objects in geo_list into
+        the geometry of geo_final.
+
+        :param grb_list: List of GerberObject Objects to join.
+        :param grb_final: Destination GeometryObject object.
+        :return: None
+        """
+
+        if grb_final.solid_geometry is None:
+            grb_final.solid_geometry = []
+            grb_final.follow_geometry = []
+
+        if not grb_final.apertures:
+            grb_final.apertures = {}
+
+        if type(grb_final.solid_geometry) is not list:
+            grb_final.solid_geometry = [grb_final.solid_geometry]
+            grb_final.follow_geometry = [grb_final.follow_geometry]
+
+        for grb in grb_list:
+
+            # Expand lists
+            if type(grb) is list:
+                GerberObject.merge(grb_list=grb, grb_final=grb_final)
+            else:   # If not list, just append
+                for option in grb.options:
+                    if option != 'name':
+                        try:
+                            grb_final.options[option] = grb.options[option]
+                        except KeyError:
+                            log.warning("Failed to copy option.", option)
+
+                try:
+                    for geos in grb.solid_geometry:
+                        grb_final.solid_geometry.append(geos)
+                        grb_final.follow_geometry.append(geos)
+                except TypeError:
+                    grb_final.solid_geometry.append(grb.solid_geometry)
+                    grb_final.follow_geometry.append(grb.solid_geometry)
+
+                for ap in grb.apertures:
+                    if ap not in grb_final.apertures:
+                        grb_final.apertures[ap] = grb.apertures[ap]
+                    else:
+                        # create a list of integers out of the grb.apertures keys and find the max of that value
+                        # then, the aperture duplicate is assigned an id value incremented with 1,
+                        # and finally made string because the apertures dict keys are strings
+                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
+                        grb_final.apertures[max_ap] = {}
+                        grb_final.apertures[max_ap]['geometry'] = []
+
+                        for k, v in grb.apertures[ap].items():
+                            grb_final.apertures[max_ap][k] = deepcopy(v)
+
+        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
+        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
 
     def mirror(self, axis, point):
         Gerber.mirror(self, axis=axis, point=point)

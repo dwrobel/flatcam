@@ -941,15 +941,15 @@ class ToolsDB2UI:
     def __init__(self, app, grid_layout):
         self.app = app
         self.decimals = self.app.decimals
-        
+
         settings = QtCore.QSettings("Open Source", "FlatCAM")
         if settings.contains("machinist"):
             self.machinist_setting = settings.value('machinist', type=int)
         else:
             self.machinist_setting = 0
-        
+
         g_lay = grid_layout
-        
+
         tree_layout = QtWidgets.QVBoxLayout()
         g_lay.addLayout(tree_layout, 0, 0)
 
@@ -995,31 +995,18 @@ class ToolsDB2UI:
         self.tool_description_box.setTitle(_("Tool Description"))
         self.tool_description_box.setFixedWidth(250)
 
-        # Geometry Basic box
-        self.basic_box = QtWidgets.QGroupBox()
-        self.basic_box.setStyleSheet("""
+        # Milling box
+        self.milling_box = QtWidgets.QGroupBox()
+        self.milling_box.setStyleSheet("""
         QGroupBox
         {
             font-size: 16px;
             font-weight: bold;
         }
         """)
-        self.basic_vlay = QtWidgets.QVBoxLayout()
-        self.basic_box.setTitle(_("Basic Geo Parameters"))
-        self.basic_box.setFixedWidth(250)
-
-        # Geometry Advanced box
-        self.advanced_box = QtWidgets.QGroupBox()
-        self.advanced_box.setStyleSheet("""
-                QGroupBox
-                {
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-                """)
-        self.advanced_vlay = QtWidgets.QVBoxLayout()
-        self.advanced_box.setTitle(_("Advanced Geo Parameters"))
-        self.advanced_box.setFixedWidth(250)
+        self.milling_vlay = QtWidgets.QVBoxLayout()
+        self.milling_box.setTitle(_("Milling Parameters"))
+        self.milling_box.setFixedWidth(250)
 
         # NCC TOOL BOX
         self.ncc_box = QtWidgets.QGroupBox()
@@ -1075,28 +1062,37 @@ class ToolsDB2UI:
 
         # Layout Constructor
         self.tool_description_box.setLayout(self.description_vlay)
-        self.basic_box.setLayout(self.basic_vlay)
-        self.advanced_box.setLayout(self.advanced_vlay)
+        self.milling_box.setLayout(self.milling_vlay)
         self.ncc_box.setLayout(self.ncc_vlay)
         self.paint_box.setLayout(self.paint_vlay)
         self.iso_box.setLayout(self.iso_vlay)
         self.drill_box.setLayout(self.drill_vlay)
 
-        geo_vlay = QtWidgets.QVBoxLayout()
-        geo_vlay.addWidget(self.tool_description_box)
-        geo_vlay.addWidget(self.basic_box)
-        geo_vlay.addWidget(self.advanced_box)
-        geo_vlay.addStretch()
+        descript_vlay = QtWidgets.QVBoxLayout()
+        descript_vlay.addWidget(self.tool_description_box)
+        descript_vlay.addStretch()
 
-        tools_vlay = QtWidgets.QVBoxLayout()
-        tools_vlay.addWidget(self.ncc_box)
-        tools_vlay.addWidget(self.paint_box)
-        tools_vlay.addWidget(self.iso_box)
-        tools_vlay.addWidget(self.drill_box)
-        tools_vlay.addStretch()
+        milling_vlay = QtWidgets.QVBoxLayout()
+        milling_vlay.addWidget(self.milling_box)
+        milling_vlay.addStretch()
 
-        param_hlay.addLayout(geo_vlay)
-        param_hlay.addLayout(tools_vlay)
+        tools1_vlay = QtWidgets.QVBoxLayout()
+        tools1_vlay.addWidget(self.drill_box)
+        tools1_vlay.addWidget(self.iso_box)
+        tools1_vlay.addStretch()
+
+        tools2_vlay = QtWidgets.QVBoxLayout()
+        tools2_vlay.addWidget(self.paint_box)
+        tools2_vlay.addWidget(self.ncc_box)
+        tools2_vlay.addStretch()
+
+        param_hlay.addLayout(descript_vlay)
+        param_hlay.addLayout(tools1_vlay)
+        param_hlay.addLayout(tools2_vlay)
+
+        # always visible, always to be included last
+        param_hlay.addLayout(milling_vlay)
+
         param_hlay.addStretch()
 
         # ###########################################################################
@@ -1109,7 +1105,7 @@ class ToolsDB2UI:
         self.description_vlay.addStretch()
 
         # Tool Name
-        self.name_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Tool Name'))
+        self.name_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Name'))
         self.name_label.setToolTip(
             _("Tool name.\n"
               "This is not used in the app, it's function\n"
@@ -1122,7 +1118,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.name_entry, 0, 1)
 
         # Tool Dia
-        self.dia_label = QtWidgets.QLabel('%s:' % _('Tool Dia'))
+        self.dia_label = QtWidgets.QLabel('%s:' % _('Diameter'))
         self.dia_label.setToolTip(
             _("Tool Diameter."))
 
@@ -1134,26 +1130,13 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.dia_label, 1, 0)
         self.grid_tool.addWidget(self.dia_entry, 1, 1)
 
-        # Tool Object Type
-        self.tool_object_label = QtWidgets.QLabel('<b>%s:</b>' % _('Object Type'))
-        self.tool_object_label.setToolTip(
-            _("The kind of application object where the tool is to be used."))
-
-        self.object_type_combo = FCComboBox()
-        self.object_type_combo.addItems([_("General"), _("Milling"), _("Drilling")])
-        self.object_type_combo.setObjectName('gdb_object_type')
-
-        self.grid_tool.addWidget(self.tool_object_label, 2, 0)
-        self.grid_tool.addWidget(self.object_type_combo, 2, 1)
-
         # Tool Tolerance
-        self.tol_label = QtWidgets.QLabel("<b>%s:</b>" % _("Tolerance"))
+        self.tol_label = QtWidgets.QLabel("<b>%s:</b>" % _("Diameter Tolerance"))
         self.tol_label.setToolTip(
-            _("Tool tolerance. If there is a tool in the Excellon object with\n"
-              "the value within the limits then this tool from DB will be used.\n"
-              "This behavior is enabled in the Drilling Tool.")
+            _("Tool tolerance. If there is a tool in the targeted tools table with\n"
+              "the value within the limits then this tool from DB will be used.")
         )
-        self.grid_tool.addWidget(self.tol_label, 4, 0, 1, 2)
+        self.grid_tool.addWidget(self.tol_label, 2, 0, 1, 2)
 
         # Tolerance Min Limit
         self.min_limit_label = QtWidgets.QLabel('%s:' % _("Min"))
@@ -1166,8 +1149,8 @@ class ToolsDB2UI:
         self.tol_min_entry.setSingleStep(0.1)
         self.tol_min_entry.setObjectName("gdb_tol_min")
 
-        self.grid_tool.addWidget(self.min_limit_label, 6, 0)
-        self.grid_tool.addWidget(self.tol_min_entry, 6, 1)
+        self.grid_tool.addWidget(self.min_limit_label, 4, 0)
+        self.grid_tool.addWidget(self.tol_min_entry, 4, 1)
 
         # Tolerance Min Limit
         self.max_limit_label = QtWidgets.QLabel('%s:' % _("Max"))
@@ -1180,20 +1163,32 @@ class ToolsDB2UI:
         self.tol_max_entry.setSingleStep(0.1)
         self.tol_max_entry.setObjectName("gdb_tol_max")
 
-        self.grid_tool.addWidget(self.max_limit_label, 7, 0)
-        self.grid_tool.addWidget(self.tol_max_entry, 7, 1)
+        self.grid_tool.addWidget(self.max_limit_label, 6, 0)
+        self.grid_tool.addWidget(self.tol_max_entry, 6, 1)
+
+        # Tool Object Type
+        self.tool_op_label = QtWidgets.QLabel('<b>%s:</b>' % _('Operation'))
+        self.tool_op_label.setToolTip(
+            _("The kind of Application Tool where this tool is to be used."))
+
+        self.tool_op_combo = FCComboBox()
+        self.tool_op_combo.addItems([_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC')])
+        self.tool_op_combo.setObjectName('gdb_tool_target')
+
+        self.grid_tool.addWidget(self.tool_op_label, 8, 0)
+        self.grid_tool.addWidget(self.tool_op_combo, 8, 1)
 
         # ###########################################################################
-        # ############### BASIC GEOMETRY UI form ####################################
+        # ############### MILLING UI form ####################################
         # ###########################################################################
         self.grid0 = QtWidgets.QGridLayout()
-        self.basic_vlay.addLayout(self.grid0)
+        self.milling_vlay.addLayout(self.grid0)
         self.grid0.setColumnStretch(0, 0)
         self.grid0.setColumnStretch(1, 1)
-        self.basic_vlay.addStretch()
+        self.milling_vlay.addStretch()
 
         # Tool Shape
-        self.shape_label = QtWidgets.QLabel('%s:' % _('Tool Shape'))
+        self.shape_label = QtWidgets.QLabel('%s:' % _('Shape'))
         self.shape_label.setToolTip(
             _("Tool Shape. \n"
               "Can be:\n"
@@ -1208,141 +1203,38 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.shape_label, 2, 0)
         self.grid0.addWidget(self.shape_combo, 2, 1)
 
-        # Cut Z
-        self.cutz_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
-        self.cutz_label.setToolTip(
-            _("Cutting Depth.\n"
-              "The depth at which to cut into material."))
+        # V-Dia
+        self.vdia_label = QtWidgets.QLabel('%s:' % _("V-Dia"))
+        self.vdia_label.setToolTip(
+            _("V-Dia.\n"
+              "Diameter of the tip for V-Shape Tools."))
 
-        self.cutz_entry = FCDoubleSpinner()
-        self.cutz_entry.set_range(-9999.9999, 9999.9999)
-        self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setObjectName('gdb_cutz')
+        self.vdia_entry = FCDoubleSpinner()
+        self.vdia_entry.set_range(0.0000, 9999.9999)
+        self.vdia_entry.set_precision(self.decimals)
+        self.vdia_entry.setObjectName('gdb_vdia')
 
-        self.grid0.addWidget(self.cutz_label, 4, 0)
-        self.grid0.addWidget(self.cutz_entry, 4, 1)
+        self.grid0.addWidget(self.vdia_label, 4, 0)
+        self.grid0.addWidget(self.vdia_entry, 4, 1)
 
-        # Multi Depth
-        self.multidepth_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
-        self.multidepth_label.setToolTip(
-            _("Multi Depth.\n"
-              "Selecting this will allow cutting in multiple passes,\n"
-              "each pass adding a DPP parameter depth."))
+        # V-Angle
+        self.vangle_label = QtWidgets.QLabel('%s:' % _("V-Angle"))
+        self.vangle_label.setToolTip(
+            _("V-Agle.\n"
+              "Angle at the tip for the V-Shape Tools."))
 
-        self.multidepth_cb = FCCheckBox()
-        self.multidepth_cb.setObjectName('gdb_multidepth')
+        self.vangle_entry = FCDoubleSpinner()
+        self.vangle_entry.set_range(-360.0, 360.0)
+        self.vangle_entry.set_precision(self.decimals)
+        self.vangle_entry.setObjectName('gdb_vangle')
 
-        self.grid0.addWidget(self.multidepth_label, 5, 0)
-        self.grid0.addWidget(self.multidepth_cb, 5, 1)
+        self.grid0.addWidget(self.vangle_label, 6, 0)
+        self.grid0.addWidget(self.vangle_entry, 6, 1)
 
-        # Depth Per Pass
-        self.dpp_label = QtWidgets.QLabel('%s:' % _("DPP"))
-        self.dpp_label.setToolTip(
-            _("DPP. Depth per Pass.\n"
-              "The value used to cut into material on each pass."))
-
-        self.multidepth_entry = FCDoubleSpinner()
-        self.multidepth_entry.set_range(-9999.9999, 9999.9999)
-        self.multidepth_entry.set_precision(self.decimals)
-        self.multidepth_entry.setObjectName('gdb_multidepth_entry')
-
-        self.grid0.addWidget(self.dpp_label, 7, 0)
-        self.grid0.addWidget(self.multidepth_entry, 7, 1)
-
-        # Travel Z
-        self.travelz_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
-        self.travelz_label.setToolTip(
-            _("Clearance Height.\n"
-              "Height at which the milling bit will travel between cuts,\n"
-              "above the surface of the material, avoiding all fixtures."))
-
-        self.travelz_entry = FCDoubleSpinner()
-        self.travelz_entry.set_range(-9999.9999, 9999.9999)
-        self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setObjectName('gdb_travel')
-
-        self.grid0.addWidget(self.travelz_label, 9, 0)
-        self.grid0.addWidget(self.travelz_entry, 9, 1)
-
-        # Feedrate X-Y
-        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
-        self.frxy_label.setToolTip(
-            _("Feedrate X-Y. Feedrate\n"
-              "The speed on XY plane used while cutting into material."))
-
-        self.frxy_entry = FCDoubleSpinner()
-        self.frxy_entry.set_range(-999999.9999, 999999.9999)
-        self.frxy_entry.set_precision(self.decimals)
-        self.frxy_entry.setObjectName('gdb_frxy')
-
-        self.grid0.addWidget(self.frxy_label, 12, 0)
-        self.grid0.addWidget(self.frxy_entry, 12, 1)
-
-        # Feedrate Z
-        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
-        self.frz_label.setToolTip(
-            _("Feedrate Z\n"
-              "The speed on Z plane."))
-
-        self.frz_entry = FCDoubleSpinner()
-        self.frz_entry.set_range(-999999.9999, 999999.9999)
-        self.frz_entry.set_precision(self.decimals)
-        self.frz_entry.setObjectName('gdb_frz')
-
-        self.grid0.addWidget(self.frz_label, 14, 0)
-        self.grid0.addWidget(self.frz_entry, 14, 1)
-
-        # Spindle Spped
-        self.spindle_label = QtWidgets.QLabel('%s:' % _("Spindle Speed"))
-        self.spindle_label.setToolTip(
-            _("Spindle Speed.\n"
-              "If it's left empty it will not be used.\n"
-              "The speed of the spindle in RPM."))
-
-        self.spindle_entry = FCDoubleSpinner()
-        self.spindle_entry.set_range(-999999.9999, 999999.9999)
-        self.spindle_entry.set_precision(self.decimals)
-        self.spindle_entry.setObjectName('gdb_spindle')
-
-        self.grid0.addWidget(self.spindle_label, 15, 0)
-        self.grid0.addWidget(self.spindle_entry, 15, 1)
-
-        # Dwell
-        self.dwell_label = QtWidgets.QLabel('%s:' % _("Dwell"))
-        self.dwell_label.setToolTip(
-            _("Dwell.\n"
-              "Check this if a delay is needed to allow\n"
-              "the spindle motor to reach it's set speed."))
-
-        self.dwell_cb = FCCheckBox()
-        self.dwell_cb.setObjectName('gdb_dwell')
-
-        self.grid0.addWidget(self.dwell_label, 16, 0)
-        self.grid0.addWidget(self.dwell_cb, 16, 1)
-
-        # Dwell Time
-        self.dwelltime_label = QtWidgets.QLabel('%s:' % _("Dwelltime"))
-        self.dwelltime_label.setToolTip(
-            _("Dwell Time.\n"
-              "A delay used to allow the motor spindle reach it's set speed."))
-
-        self.dwelltime_entry = FCDoubleSpinner()
-        self.dwelltime_entry.set_range(0.0000, 9999.9999)
-        self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.setObjectName('gdb_dwelltime')
-
-        self.grid0.addWidget(self.dwelltime_label, 17, 0)
-        self.grid0.addWidget(self.dwelltime_entry, 17, 1)
-
-        # ###########################################################################
-        # ############### ADVANCED GEOMETRY UI form #################################
-        # ###########################################################################
-
-        self.grid1 = QtWidgets.QGridLayout()
-        self.advanced_vlay.addLayout(self.grid1)
-        self.grid1.setColumnStretch(0, 0)
-        self.grid1.setColumnStretch(1, 1)
-        self.advanced_vlay.addStretch()
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Tool Type
         self.type_label = QtWidgets.QLabel('%s:' % _("Tool Type"))
@@ -1357,8 +1249,8 @@ class ToolsDB2UI:
         self.type_combo.addItems(["Iso", "Rough", "Finish"])
         self.type_combo.setObjectName('gdb_type')
 
-        self.grid1.addWidget(self.type_label, 0, 0)
-        self.grid1.addWidget(self.type_combo, 0, 1)
+        self.grid0.addWidget(self.type_label, 10, 0)
+        self.grid0.addWidget(self.type_combo, 10, 1)
 
         # Tool Offset
         self.tooloffset_label = QtWidgets.QLabel('%s:' % _('Tool Offset'))
@@ -1374,8 +1266,8 @@ class ToolsDB2UI:
         self.tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
         self.tooloffset_combo.setObjectName('gdb_tool_offset')
 
-        self.grid1.addWidget(self.tooloffset_label, 2, 0)
-        self.grid1.addWidget(self.tooloffset_combo, 2, 1)
+        self.grid0.addWidget(self.tooloffset_label, 12, 0)
+        self.grid0.addWidget(self.tooloffset_combo, 12, 1)
 
         # Custom Offset
         self.custom_offset_label = QtWidgets.QLabel('%s:' % _("Custom Offset"))
@@ -1388,52 +1280,69 @@ class ToolsDB2UI:
         self.custom_offset_entry.set_precision(self.decimals)
         self.custom_offset_entry.setObjectName('gdb_custom_offset')
 
-        self.grid1.addWidget(self.custom_offset_label, 5, 0)
-        self.grid1.addWidget(self.custom_offset_entry, 5, 1)
+        self.grid0.addWidget(self.custom_offset_label, 14, 0)
+        self.grid0.addWidget(self.custom_offset_entry, 14, 1)
 
-        # V-Dia
-        self.vdia_label = QtWidgets.QLabel('%s:' % _("V-Dia"))
-        self.vdia_label.setToolTip(
-            _("V-Dia.\n"
-              "Diameter of the tip for V-Shape Tools."))
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid0.addWidget(separator_line, 16, 0, 1, 2)
 
-        self.vdia_entry = FCDoubleSpinner()
-        self.vdia_entry.set_range(0.0000, 9999.9999)
-        self.vdia_entry.set_precision(self.decimals)
-        self.vdia_entry.setObjectName('gdb_vdia')
+        # Cut Z
+        self.cutz_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
+        self.cutz_label.setToolTip(
+            _("Cutting Depth.\n"
+              "The depth at which to cut into material."))
 
-        self.grid1.addWidget(self.vdia_label, 7, 0)
-        self.grid1.addWidget(self.vdia_entry, 7, 1)
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_range(-9999.9999, 9999.9999)
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.setObjectName('gdb_cutz')
 
-        # V-Angle
-        self.vangle_label = QtWidgets.QLabel('%s:' % _("V-Angle"))
-        self.vangle_label.setToolTip(
-            _("V-Agle.\n"
-              "Angle at the tip for the V-Shape Tools."))
+        self.grid0.addWidget(self.cutz_label, 18, 0)
+        self.grid0.addWidget(self.cutz_entry, 18, 1)
 
-        self.vangle_entry = FCDoubleSpinner()
-        self.vangle_entry.set_range(-360.0, 360.0)
-        self.vangle_entry.set_precision(self.decimals)
-        self.vangle_entry.setObjectName('gdb_vangle')
+        # Multi Depth
+        self.multidepth_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
+        self.multidepth_label.setToolTip(
+            _("Multi Depth.\n"
+              "Selecting this will allow cutting in multiple passes,\n"
+              "each pass adding a DPP parameter depth."))
 
-        self.grid1.addWidget(self.vangle_label, 8, 0)
-        self.grid1.addWidget(self.vangle_entry, 8, 1)
+        self.multidepth_cb = FCCheckBox()
+        self.multidepth_cb.setObjectName('gdb_multidepth')
 
-        # Feedrate Rapids
-        self.frapids_label = QtWidgets.QLabel('%s:' % _("FR Rapids"))
-        self.frapids_label.setToolTip(
-            _("FR Rapids. Feedrate Rapids\n"
-              "Speed used while moving as fast as possible.\n"
-              "This is used only by some devices that can't use\n"
-              "the G0 g-code command. Mostly 3D printers."))
+        self.grid0.addWidget(self.multidepth_label, 20, 0)
+        self.grid0.addWidget(self.multidepth_cb, 20, 1)
 
-        self.frapids_entry = FCDoubleSpinner()
-        self.frapids_entry.set_range(0.0000, 9999.9999)
-        self.frapids_entry.set_precision(self.decimals)
-        self.frapids_entry.setObjectName('gdb_frapids')
+        # Depth Per Pass
+        self.dpp_label = QtWidgets.QLabel('%s:' % _("DPP"))
+        self.dpp_label.setToolTip(
+            _("DPP. Depth per Pass.\n"
+              "The value used to cut into material on each pass."))
 
-        self.grid1.addWidget(self.frapids_label, 10, 0)
-        self.grid1.addWidget(self.frapids_entry, 10, 1)
+        self.multidepth_entry = FCDoubleSpinner()
+        self.multidepth_entry.set_range(-9999.9999, 9999.9999)
+        self.multidepth_entry.set_precision(self.decimals)
+        self.multidepth_entry.setObjectName('gdb_multidepth_entry')
+
+        self.grid0.addWidget(self.dpp_label, 22, 0)
+        self.grid0.addWidget(self.multidepth_entry, 22, 1)
+
+        # Travel Z
+        self.travelz_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        self.travelz_label.setToolTip(
+            _("Clearance Height.\n"
+              "Height at which the milling bit will travel between cuts,\n"
+              "above the surface of the material, avoiding all fixtures."))
+
+        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.travelz_entry.set_precision(self.decimals)
+        self.travelz_entry.setObjectName('gdb_travel')
+
+        self.grid0.addWidget(self.travelz_label, 24, 0)
+        self.grid0.addWidget(self.travelz_entry, 24, 1)
 
         # Extra Cut
         self.ecut_label = QtWidgets.QLabel('%s:' % _("ExtraCut"))
@@ -1447,8 +1356,8 @@ class ToolsDB2UI:
         self.ecut_cb = FCCheckBox()
         self.ecut_cb.setObjectName('gdb_ecut')
 
-        self.grid1.addWidget(self.ecut_label, 12, 0)
-        self.grid1.addWidget(self.ecut_cb, 12, 1)
+        self.grid0.addWidget(self.ecut_label, 26, 0)
+        self.grid0.addWidget(self.ecut_cb, 26, 1)
 
         # Extra Cut Length
         self.ecut_length_label = QtWidgets.QLabel('%s:' % _("E-Cut Length"))
@@ -1465,8 +1374,104 @@ class ToolsDB2UI:
         self.ecut_length_entry.set_precision(self.decimals)
         self.ecut_length_entry.setObjectName('gdb_ecut_length')
 
-        self.grid1.addWidget(self.ecut_length_label, 13, 0)
-        self.grid1.addWidget(self.ecut_length_entry, 13, 1)
+        self.grid0.addWidget(self.ecut_length_label, 28, 0)
+        self.grid0.addWidget(self.ecut_length_entry, 28, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid0.addWidget(separator_line, 30, 0, 1, 2)
+
+        # Feedrate X-Y
+        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
+        self.frxy_label.setToolTip(
+            _("Feedrate X-Y. Feedrate\n"
+              "The speed on XY plane used while cutting into material."))
+
+        self.frxy_entry = FCDoubleSpinner()
+        self.frxy_entry.set_range(-999999.9999, 999999.9999)
+        self.frxy_entry.set_precision(self.decimals)
+        self.frxy_entry.setObjectName('gdb_frxy')
+
+        self.grid0.addWidget(self.frxy_label, 32, 0)
+        self.grid0.addWidget(self.frxy_entry, 32, 1)
+
+        # Feedrate Z
+        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
+        self.frz_label.setToolTip(
+            _("Feedrate Z\n"
+              "The speed on Z plane."))
+
+        self.frz_entry = FCDoubleSpinner()
+        self.frz_entry.set_range(-999999.9999, 999999.9999)
+        self.frz_entry.set_precision(self.decimals)
+        self.frz_entry.setObjectName('gdb_frz')
+
+        self.grid0.addWidget(self.frz_label, 34, 0)
+        self.grid0.addWidget(self.frz_entry, 34, 1)
+
+        # Feedrate Rapids
+        self.frapids_label = QtWidgets.QLabel('%s:' % _("FR Rapids"))
+        self.frapids_label.setToolTip(
+            _("FR Rapids. Feedrate Rapids\n"
+              "Speed used while moving as fast as possible.\n"
+              "This is used only by some devices that can't use\n"
+              "the G0 g-code command. Mostly 3D printers."))
+
+        self.frapids_entry = FCDoubleSpinner()
+        self.frapids_entry.set_range(0.0000, 9999.9999)
+        self.frapids_entry.set_precision(self.decimals)
+        self.frapids_entry.setObjectName('gdb_frapids')
+
+        self.grid0.addWidget(self.frapids_label, 36, 0)
+        self.grid0.addWidget(self.frapids_entry, 36, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid0.addWidget(separator_line, 38, 0, 1, 2)
+
+        # Spindle Spped
+        self.spindle_label = QtWidgets.QLabel('%s:' % _("Spindle Speed"))
+        self.spindle_label.setToolTip(
+            _("Spindle Speed.\n"
+              "If it's left empty it will not be used.\n"
+              "The speed of the spindle in RPM."))
+
+        self.spindle_entry = FCDoubleSpinner()
+        self.spindle_entry.set_range(-999999.9999, 999999.9999)
+        self.spindle_entry.set_precision(self.decimals)
+        self.spindle_entry.setObjectName('gdb_spindle')
+
+        self.grid0.addWidget(self.spindle_label, 40, 0)
+        self.grid0.addWidget(self.spindle_entry, 40, 1)
+
+        # Dwell
+        self.dwell_label = QtWidgets.QLabel('%s:' % _("Dwell"))
+        self.dwell_label.setToolTip(
+            _("Dwell.\n"
+              "Check this if a delay is needed to allow\n"
+              "the spindle motor to reach it's set speed."))
+
+        self.dwell_cb = FCCheckBox()
+        self.dwell_cb.setObjectName('gdb_dwell')
+
+        self.grid0.addWidget(self.dwell_label, 42, 0)
+        self.grid0.addWidget(self.dwell_cb, 42, 1)
+
+        # Dwell Time
+        self.dwelltime_label = QtWidgets.QLabel('%s:' % _("Dwelltime"))
+        self.dwelltime_label.setToolTip(
+            _("Dwell Time.\n"
+              "A delay used to allow the motor spindle reach it's set speed."))
+
+        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.set_range(0.0000, 9999.9999)
+        self.dwelltime_entry.set_precision(self.decimals)
+        self.dwelltime_entry.setObjectName('gdb_dwelltime')
+
+        self.grid0.addWidget(self.dwelltime_label, 44, 0)
+        self.grid0.addWidget(self.dwelltime_entry, 44, 1)
 
         # ###########################################################################
         # ############### NCC UI form ###############################################
@@ -2149,7 +2154,7 @@ class ToolsDB2(QtWidgets.QWidget):
         # ##############################################################################
 
         self.form_fields = {
-            "object_type":      self.ui.object_type_combo,
+            "tool_target":      self.ui.tool_op_combo,
             "tol_min":          self.ui.tol_min_entry,
             "tol_max":          self.ui.tol_max_entry,
             # Basic
@@ -2221,7 +2226,7 @@ class ToolsDB2(QtWidgets.QWidget):
         }
 
         self.name2option = {
-            "gdb_object_type":      "object_type",
+            "gdb_tool_target":      "tool_target",
             "gdb_tol_min":          "tol_min",
             "gdb_tol_max":          "tol_max",
 
@@ -2319,7 +2324,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui.tree_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
 
-        self.ui.object_type_combo.currentIndexChanged.connect(self.on_object_type_changed)
+        self.ui.tool_op_combo.currentIndexChanged.connect(self.on_object_type_changed)
 
         self.setup_db_ui()
 
@@ -2454,22 +2459,25 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.storage_to_form(self.db_tool_dict['1'])
 
                 # Enable appGUI
-                self.ui.tool_description_box.setEnabled(True)
-                self.ui.basic_box.setEnabled(True)
-                self.ui.advanced_box.setEnabled(True)
-                self.ui.ncc_box.setEnabled(True)
-                self.ui.paint_box.setEnabled(True)
-                self.ui.iso_box.setEnabled(True)
-                self.ui.drill_box.setEnabled(True)
+                try:
+                    self.on_object_type_changed(val=self.db_tool_dict['1']['data']['tool_target'])
+                except KeyError:
+                    self.on_object_type_changed(val=_("General"))
 
                 self.ui.tree_widget.setCurrentItem(self.ui.tree_widget.topLevelItem(0))
                 # self.ui.tree_widget.setFocus()
 
             else:
                 # Disable appGUI
+                self.ui.tool_description_box.show()
+                self.ui.milling_box.show()
+                self.ui.ncc_box.show()
+                self.ui.paint_box.show()
+                self.ui.iso_box.show()
+                self.ui.drill_box.show()
+
                 self.ui.tool_description_box.setEnabled(False)
-                self.ui.basic_box.setEnabled(False)
-                self.ui.advanced_box.setEnabled(False)
+                self.ui.milling_box.setEnabled(False)
                 self.ui.ncc_box.setEnabled(False)
                 self.ui.paint_box.setEnabled(False)
                 self.ui.iso_box.setEnabled(False)
@@ -2482,35 +2490,49 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_object_type_changed(self, index=None, val=None):
 
         if val is None:
-            object_type = self.ui.object_type_combo.get_value()
+            tool_target = self.ui.tool_op_combo.get_value()
         else:
-            object_type = val
+            tool_target = val
 
         self.ui.tool_description_box.setEnabled(True)
         if self.db_tool_dict:
-            if object_type == _("General"):
-                self.ui.basic_box.setEnabled(True)
-                self.ui.advanced_box.setEnabled(True)
+            if tool_target == _("General"):
+                self.ui.milling_box.setEnabled(True)
                 self.ui.ncc_box.setEnabled(True)
                 self.ui.paint_box.setEnabled(True)
                 self.ui.iso_box.setEnabled(True)
                 self.ui.drill_box.setEnabled(True)
 
-            if object_type == _("Milling"):
-                self.ui.basic_box.setEnabled(True)
-                self.ui.advanced_box.setEnabled(True)
-                self.ui.ncc_box.setEnabled(False)
-                self.ui.paint_box.setEnabled(False)
-                self.ui.iso_box.setEnabled(False)
-                self.ui.drill_box.setEnabled(False)
+                self.ui.milling_box.show()
+                self.ui.ncc_box.show()
+                self.ui.paint_box.show()
+                self.ui.iso_box.show()
+                self.ui.drill_box.show()
+            else:
+                self.ui.ncc_box.hide()
+                self.ui.paint_box.hide()
+                self.ui.iso_box.hide()
+                self.ui.drill_box.hide()
 
-            if object_type == _("Drilling"):
-                self.ui.basic_box.setEnabled(False)
-                self.ui.advanced_box.setEnabled(False)
-                self.ui.ncc_box.setEnabled(False)
-                self.ui.paint_box.setEnabled(False)
-                self.ui.iso_box.setEnabled(False)
-                self.ui.drill_box.setEnabled(True)
+                if tool_target == _("Milling"):
+                    self.ui.milling_box.setEnabled(True)
+                    self.ui.milling_box.show()
+
+                if tool_target == _("Drilling"):
+                    self.ui.drill_box.setEnabled(True)
+                    self.ui.drill_box.show()
+
+                if tool_target == _("Isolation"):
+                    self.ui.iso_box.setEnabled(True)
+                    self.ui.iso_box.show()
+
+                if tool_target == _("Paint"):
+                    self.ui.paint_box.setEnabled(True)
+                    self.ui.paint_box.show()
+
+                if tool_target == _("NCC"):
+                    self.ui.ncc_box.setEnabled(True)
+                    self.ui.ncc_box.show()
 
     def on_tool_add(self):
         """
@@ -2542,7 +2564,7 @@ class ToolsDB2(QtWidgets.QWidget):
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
 
-            "object_type":      _("General"),
+            "tool_target":      _("General"),
             "tol_min":          0.0,
             "tol_max":          0.0,
 
@@ -2632,7 +2654,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.ui.tree_widget.setCurrentItem(last_item)
             last_item.setSelected(True)
 
-        self.on_object_type_changed(val=dict_elem['data']['object_type'])
+        self.on_object_type_changed(val=dict_elem['data']['tool_target'])
         self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
@@ -2966,8 +2988,8 @@ class ToolsDB2(QtWidgets.QWidget):
         elif wdg_name == "gdb_shape":
             self.db_tool_dict[tool_id]['tool_type'] = val
         else:
-            if wdg_name == "gdb_object_type":
-                self.db_tool_dict[tool_id]['data']['object_type'] = val
+            if wdg_name == "gdb_tool_target":
+                self.db_tool_dict[tool_id]['data']['tool_target'] = val
             elif wdg_name == "gdb_tol_min":
                 self.db_tool_dict[tool_id]['data']['tol_min'] = val
             elif wdg_name == "gdb_tol_max":

@@ -118,7 +118,7 @@ class Excellon(Geometry):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
-        self.ser_attrs += ['tools', 'zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
+        self.ser_attrs += ['zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
                            'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'source_file']
 
         # ### Patterns ####

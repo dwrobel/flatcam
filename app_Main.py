@@ -10181,9 +10181,11 @@ class App(QtCore.QObject):
                 pass
 
             # Serialize the whole project
-            d = {"objs": [obj.to_dict() for obj in self.collection.get_list()],
-                 "options": self.options,
-                 "version": self.version}
+            d = {
+                "objs":     [obj.to_dict() for obj in self.collection.get_list()],
+                "options":  self.options,
+                "version":  self.version
+            }
 
             if self.defaults["global_save_compressed"] is True:
                 with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:

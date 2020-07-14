@@ -142,12 +142,6 @@ class Gerber(Geometry):
 
         self.source_file = ''
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from Geometry.
-        self.ser_attrs += ['int_digits', 'frac_digits', 'apertures',
-                           'aperture_macros', 'solid_geometry', 'source_file']
-
         # ### Parser patterns ## ##
         # FS - Format Specification
         # The format of X and Y must be the same!
@@ -233,6 +227,11 @@ class Gerber(Geometry):
         self.conversion_done = False
 
         self.use_buffer_for_union = self.app.defaults["gerber_use_buffer_for_union"]
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from Geometry.
+        self.ser_attrs += ['apertures', 'int_digits', 'frac_digits', 'aperture_macros', 'solid_geometry', 'source_file']
 
     def aperture_parse(self, apertureId, apertureType, apParameters):
         """
