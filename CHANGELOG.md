@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - Tools Database - some fixes in the UI (some of the widgets had duplicated names)
 - Tools Database - made sure the on save the tools are saved only with the properties that relate to their targeted area of the app
 - Tools Database - changes can be done only for one tool at a time
+- Tool Database - more changes to the UI
 
 13.07.2020
 

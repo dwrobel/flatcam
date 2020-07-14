@@ -253,10 +253,10 @@ class ToolsDB(QtWidgets.QWidget):
         self.table_widget.horizontalHeaderItem(17).setToolTip(
             _("Dwell.\n"
               "Check this if a delay is needed to allow\n"
-              "the spindle motor to reach it's set speed."))
+              "the spindle motor to reach its set speed."))
         self.table_widget.horizontalHeaderItem(18).setToolTip(
             _("Dwell Time.\n"
-              "A delay used to allow the motor spindle reach it's set speed."))
+              "A delay used to allow the motor spindle reach its set speed."))
         self.table_widget.horizontalHeaderItem(19).setToolTip(
             _("Preprocessor.\n"
               "A selection of files that will alter the generated G-code\n"
@@ -1179,7 +1179,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tool_op_combo, 8, 1)
 
         # ###########################################################################
-        # ############### MILLING UI form ####################################
+        # ############### MILLING UI form ###########################################
         # ###########################################################################
         self.grid0 = QtWidgets.QGridLayout()
         self.milling_vlay.addLayout(self.grid0)
@@ -1451,7 +1451,7 @@ class ToolsDB2UI:
         self.dwell_label.setToolTip(
             _("Dwell.\n"
               "Check this if a delay is needed to allow\n"
-              "the spindle motor to reach it's set speed."))
+              "the spindle motor to reach its set speed."))
 
         self.dwell_cb = FCCheckBox()
         self.dwell_cb.setObjectName('gdb_dwell')
@@ -1463,7 +1463,7 @@ class ToolsDB2UI:
         self.dwelltime_label = QtWidgets.QLabel('%s:' % _("Dwelltime"))
         self.dwelltime_label.setToolTip(
             _("Dwell Time.\n"
-              "A delay used to allow the motor spindle reach it's set speed."))
+              "A delay used to allow the motor spindle reach its set speed."))
 
         self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_range(0.0000, 9999.9999)
@@ -1835,9 +1835,25 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.cutzlabel, 4, 0)
         self.grid5.addWidget(self.cutz_drill_entry, 4, 1)
 
+        # Tool Offset
+        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        self.tool_offset_label.setToolTip(
+            _("Some drill bits (the larger ones) need to drill deeper\n"
+              "to create the desired exit hole diameter due of the tip shape.\n"
+              "The value here can compensate the Cut Z parameter.")
+        )
+
+        self.offset_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_drill_entry.set_precision(self.decimals)
+        self.offset_drill_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_drill_entry.setObjectName("gdb_e_offset")
+
+        self.grid5.addWidget(self.tool_offset_label, 6, 0)
+        self.grid5.addWidget(self.offset_drill_entry, 6, 1)
+
         # Multi-Depth
-        self.mpass_drill_cb = FCCheckBox('%s:' % _("Multi-Depth"))
-        self.mpass_drill_cb.setToolTip(
+        self.multidepth_drill_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
+        self.multidepth_drill_label.setToolTip(
             _(
                 "Use multiple passes to limit\n"
                 "the cut depth in each pass. Will\n"
@@ -1845,8 +1861,17 @@ class ToolsDB2UI:
                 "reached."
             )
         )
+        self.mpass_drill_cb = FCCheckBox()
         self.mpass_drill_cb.setObjectName("gdb_e_multidepth")
 
+        self.grid5.addWidget(self.multidepth_drill_label, 7, 0)
+        self.grid5.addWidget(self.mpass_drill_cb, 7, 1)
+
+        # Depth Per Pass
+        self.dpp_drill_label = QtWidgets.QLabel('%s:' % _("DPP"))
+        self.dpp_drill_label.setToolTip(
+            _("DPP. Depth per Pass.\n"
+              "The value used to cut into material on each pass."))
         self.maxdepth_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_drill_entry.set_precision(self.decimals)
         self.maxdepth_drill_entry.set_range(0, 9999.9999)
@@ -1855,8 +1880,8 @@ class ToolsDB2UI:
         self.maxdepth_drill_entry.setToolTip(_("Depth of each pass (positive)."))
         self.maxdepth_drill_entry.setObjectName("gdb_e_depthperpass")
 
-        self.grid5.addWidget(self.mpass_drill_cb, 5, 0)
-        self.grid5.addWidget(self.maxdepth_drill_entry, 5, 1)
+        self.grid5.addWidget(self.dpp_drill_label, 8, 0)
+        self.grid5.addWidget(self.maxdepth_drill_entry, 8, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
@@ -1876,8 +1901,13 @@ class ToolsDB2UI:
         self.travelz_drill_entry.setSingleStep(0.1)
         self.travelz_drill_entry.setObjectName("gdb_e_travelz")
 
-        self.grid5.addWidget(self.travelzlabel, 6, 0)
-        self.grid5.addWidget(self.travelz_drill_entry, 6, 1)
+        self.grid5.addWidget(self.travelzlabel, 10, 0)
+        self.grid5.addWidget(self.travelz_drill_entry, 10, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid5.addWidget(separator_line, 12, 0, 1, 2)
 
         # Excellon Feedrate Z
         self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -1914,6 +1944,11 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.feedrate_rapid_label, 16, 0)
         self.grid5.addWidget(self.feedrate_rapid_drill_entry, 16, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid5.addWidget(separator_line, 18, 0, 1, 2)
+
         # Spindlespeed
         self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
@@ -1926,54 +1961,51 @@ class ToolsDB2UI:
         self.spindlespeed_drill_entry.set_step(100)
         self.spindlespeed_drill_entry.setObjectName("gdb_e_spindlespeed")
 
-        self.grid5.addWidget(self.spindle_label, 19, 0)
-        self.grid5.addWidget(self.spindlespeed_drill_entry, 19, 1)
+        self.grid5.addWidget(self.spindle_label, 20, 0)
+        self.grid5.addWidget(self.spindlespeed_drill_entry, 20, 1)
 
         # Dwell
-        self.dwell_drill_cb = FCCheckBox('%s:' % _('Dwell'))
-        self.dwell_drill_cb.setToolTip(
-            _("Pause to allow the spindle to reach its\n"
-              "speed before cutting.")
-        )
+        self.dwell_drill_label = QtWidgets.QLabel('%s:' % _("Dwell"))
+        self.dwell_drill_label.setToolTip(
+            _("Dwell.\n"
+              "Check this if a delay is needed to allow\n"
+              "the spindle motor to reach its set speed."))
+
+        self.dwell_drill_cb = FCCheckBox()
         self.dwell_drill_cb.setObjectName("gdb_e_dwell")
 
+        self.grid5.addWidget(self.dwell_drill_label, 21, 0)
+        self.grid5.addWidget(self.dwell_drill_cb, 21, 1)
+
         # Dwelltime
+        self.dwelltime_drill_lbl = QtWidgets.QLabel('%s:' % _('Dwelltime'))
+        self.dwelltime_drill_lbl.setToolTip(
+            _("Dwell Time.\n"
+              "A delay used to allow the motor spindle reach its set speed."))
         self.dwelltime_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_drill_entry.set_precision(self.decimals)
         self.dwelltime_drill_entry.set_range(0.0, 9999.9999)
         self.dwelltime_drill_entry.setSingleStep(0.1)
-
-        self.dwelltime_drill_entry.setToolTip(
-            _("Number of time units for spindle to dwell.")
-        )
         self.dwelltime_drill_entry.setObjectName("gdb_e_dwelltime")
 
-        self.grid5.addWidget(self.dwell_drill_cb, 20, 0)
-        self.grid5.addWidget(self.dwelltime_drill_entry, 20, 1)
+        self.grid5.addWidget(self.dwelltime_drill_lbl, 22, 0)
+        self.grid5.addWidget(self.dwelltime_drill_entry, 22, 1)
 
-        # Tool Offset
-        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
-        self.tool_offset_label.setToolTip(
-            _("Some drill bits (the larger ones) need to drill deeper\n"
-              "to create the desired exit hole diameter due of the tip shape.\n"
-              "The value here can compensate the Cut Z parameter.")
-        )
-
-        self.offset_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.offset_drill_entry.set_precision(self.decimals)
-        self.offset_drill_entry.set_range(-9999.9999, 9999.9999)
-        self.offset_drill_entry.setObjectName("gdb_e_offset")
-
-        self.grid5.addWidget(self.tool_offset_label, 25, 0)
-        self.grid5.addWidget(self.offset_drill_entry, 25, 1)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid5.addWidget(separator_line, 24, 0, 1, 2)
 
         # Drill slots
-        self.drill_slots_drill_cb = FCCheckBox('%s' % _('Drill slots'))
-        self.drill_slots_drill_cb.setToolTip(
+        self.drill_slots_drill_lbl = QtWidgets.QLabel('%s:' % _('Drill slots'))
+        self.drill_slots_drill_lbl.setToolTip(
             _("If the selected tool has slots then they will be drilled.")
         )
+        self.drill_slots_drill_cb = FCCheckBox()
         self.drill_slots_drill_cb.setObjectName("gdb_e_drill_slots")
-        self.grid5.addWidget(self.drill_slots_drill_cb, 27, 0, 1, 2)
+
+        self.grid5.addWidget(self.drill_slots_drill_lbl, 26, 0,)
+        self.grid5.addWidget(self.drill_slots_drill_cb, 26, 1)
 
         # Drill Overlap
         self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
@@ -1992,13 +2024,17 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_overlap_drill_entry, 28, 1)
 
         # Last drill in slot
-        self.last_drill_drill_cb = FCCheckBox('%s' % _('Last drill'))
-        self.last_drill_drill_cb.setToolTip(
+        self.last_drill_drill_lbl = QtWidgets.QLabel('%s:' % _('Last drill'))
+        self.last_drill_drill_lbl.setToolTip(
             _("If the slot length is not completely covered by drill holes,\n"
               "add a drill hole on the slot end point.")
         )
+
+        self.last_drill_drill_cb = FCCheckBox()
         self.last_drill_drill_cb.setObjectName("gdb_e_drill_last_drill")
-        self.grid5.addWidget(self.last_drill_drill_cb, 30, 0, 1, 2)
+
+        self.grid5.addWidget(self.last_drill_drill_lbl, 30, 0, 1, 2)
+        self.grid5.addWidget(self.last_drill_drill_cb, 30, 1)
 
         # ####################################################################
         # ####################################################################
