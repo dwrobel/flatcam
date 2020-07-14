@@ -709,7 +709,7 @@ class ToolDrilling(AppTool, Excellon):
             self.app.collection.set_active(self.obj_name)
             self.t_ui.exc_param_frame.setDisabled(False)
 
-            if self.t_ui.autoload_db_cb.get_value():
+            if self.app.defaults["excellon_autoload_db"]:
                 self.excellon_tools = self.excellon_obj.tools
                 self.on_tool_db_load()
             else:
@@ -1957,24 +1957,14 @@ class DrillingUI:
         grid0.addWidget(self.order_label, 4, 0)
         grid0.addWidget(self.order_radio, 4, 1)
 
-        # Auto Load Tools from DB
-        self.autoload_db_cb = FCCheckBox('%s:' % _("Auto Load DB"))
-        self.autoload_db_cb.setToolTip(
-            _("Automatic replacement of the tools from Tools Table\n"
-              "with tools from DB that have a close diameter value.")
-        )
-
         # Manual Load of Tools from DB
-        self.manual_load_db_btn = FCButton(_("Manual Load DB"))
+        self.manual_load_db_btn = FCButton(_("Manual Load from DB"))
         self.manual_load_db_btn.setToolTip(
             _("Manual replacement of the tools from Tools Table\n"
               "with tools from DB that have a close diameter value.")
         )
 
-        grid0.addWidget(self.autoload_db_cb, 5, 0)
-        grid0.addWidget(self.manual_load_db_btn, 5, 1)
-
-        self.l_ois = OptionalInputSection(self.autoload_db_cb, [self.manual_load_db_btn], logic=False)
+        grid0.addWidget(self.manual_load_db_btn, 5, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

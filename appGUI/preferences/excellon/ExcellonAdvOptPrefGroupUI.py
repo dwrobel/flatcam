@@ -51,4 +51,12 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.table_visibility_cb, 0, 0, 1, 2)
 
+        # Auto Load Tools from DB
+        self.autoload_db_cb = FCCheckBox('%s' % _("Auto load from DB"))
+        self.autoload_db_cb.setToolTip(
+            _("Automatic replacement of the tools from related application tools\n"
+              "with tools from DB that have a close diameter value.")
+        )
+        grid0.addWidget(self.autoload_db_cb, 1, 0, 1, 2)
+
         self.layout.addStretch()

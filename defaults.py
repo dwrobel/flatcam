@@ -260,6 +260,7 @@ class FlatCAMDefaults:
 
         # Excellon Advanced options
         "excellon_tools_table_display": True,
+        "excellon_autoload_db": False,
 
         # Excellon Export
         "excellon_exp_units": 'INCH',

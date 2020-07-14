@@ -199,6 +199,7 @@ class PreferencesUIManager:
 
             # Excellon Advanced Options
             "excellon_tools_table_display": self.ui.excellon_defaults_form.excellon_adv_opt_group.table_visibility_cb,
+            "excellon_autoload_db":         self.ui.excellon_defaults_form.excellon_adv_opt_group.autoload_db_cb,
 
             # Excellon Export
             "excellon_exp_units":       self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,

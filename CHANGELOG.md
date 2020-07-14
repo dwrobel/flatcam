@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+14.07.2020
+
+- Drilling Tool - now there is an Excellon preference that control the autoload of tools from the Tools Database
+
 13.07.2020
 
 - fixed a bug in Tools Database: due of not disconnecting the signals it created a race that was concluded into a RuntimeError exception (an dict changed size during iteration)
@@ -37,7 +41,7 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool - modified the UI; preparing to add new feature of polishing at the end of the milling job
 - Tool Paint - fixed an issue when launching the tool and an object other than Geometry or Excellon is selected
 - Geometry UI - moved the UI for polishing from Isolation Tool to Geometry UI (actually in the future Milling Tool) where it belongs
-- Gerber UI - optimized the mark shapes to use only on ShapeCollection
+- Gerber UI - optimized the mark shapes to use only one ShapeCollection
 
 10.07.2020
 

@@ -138,6 +138,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             "solid":            self.ui.solid_cb,
             "multicolored":     self.ui.multicolored_cb,
 
+            "autoload_db":      self.ui.autoload_db_cb,
             "tooldia":          self.ui.tooldia_entry,
             "slot_tooldia":     self.ui.slot_tooldia_entry,
         })
@@ -152,11 +153,14 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.tools_table.setColumnHidden(5, True)
             self.ui.table_visibility_cb.set_value(True)
             self.ui.table_visibility_cb.hide()
+            self.ui.autoload_db_cb.set_value(False)
+            self.ui.autoload_db_cb.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
             self.ui.table_visibility_cb.show()
             self.ui.table_visibility_cb.set_value(self.app.defaults["excellon_tools_table_display"])
             self.on_table_visibility_toggle(state=self.app.defaults["excellon_tools_table_display"])
+            self.ui.autoload_db_cb.show()
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -164,6 +168,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+        self.ui.autoload_db_cb.stateChanged.connect(self.on_autoload_db_toggled)
 
         # Editor
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
@@ -1041,6 +1046,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             return
         self.read_form_item('multicolored')
         self.plot()
+
+    def on_autoload_db_toggled(self, state):
+        self.app.defaults["excellon_autoload_db"] = True if state else False
 
     def on_plot_cb_click(self, *args):
         if self.muted_ui:

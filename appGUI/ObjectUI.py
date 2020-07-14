@@ -603,6 +603,16 @@ class ExcellonObjectUI(ObjectUI):
         # this column is not used; reserved for future usage
         self.tools_table.setColumnHidden(4, True)
 
+        # Excellon Tools autoload from DB
+
+        # Auto Load Tools from DB
+        self.autoload_db_cb = FCCheckBox('%s' % _("Auto load from DB"))
+        self.autoload_db_cb.setToolTip(
+            _("Automatic replacement of the tools from related application tools\n"
+              "with tools from DB that have a close diameter value.")
+        )
+        self.tools_box.addWidget(self.autoload_db_cb)
+
         # Editor
         self.editor_button = QtWidgets.QPushButton(_('Excellon Editor'))
         self.editor_button.setToolTip(
