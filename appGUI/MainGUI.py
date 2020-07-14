@@ -936,7 +936,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.drill_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drill16.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(
@@ -1385,8 +1385,8 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_1)
 
-        self.pref_defaults_button = QtWidgets.QPushButton()
-        self.pref_defaults_button.setText(_("Restore Defaults"))
+        self.pref_defaults_button = FCButton(_("Restore Defaults"))
+        self.pref_defaults_button.setIcon(QtGui.QIcon(self.app.resource_location + '/restore32.png'))
         self.pref_defaults_button.setMinimumWidth(130)
         self.pref_defaults_button.setToolTip(
             _("Restore the entire set of default values\n"
@@ -1395,6 +1395,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         self.pref_open_button = QtWidgets.QPushButton()
         self.pref_open_button.setText(_("Open Pref Folder"))
+        self.pref_open_button.setIcon(QtGui.QIcon(self.app.resource_location + '/pref.png'))
         self.pref_open_button.setMinimumWidth(130)
         self.pref_open_button.setToolTip(
             _("Open the folder where FlatCAM save the preferences files."))
@@ -1402,6 +1403,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
         # Clear Settings
         self.clear_btn = FCButton('%s' % _('Clear GUI Settings'))
+        self.clear_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         self.clear_btn.setMinimumWidth(130)
 
         self.clear_btn.setToolTip(
@@ -1416,6 +1418,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)
 
         self.pref_apply_button = FCButton()
+        self.pref_apply_button.setIcon(QtGui.QIcon(self.app.resource_location + '/apply32.png'))
         self.pref_apply_button.setText(_("Apply"))
         self.pref_apply_button.setMinimumWidth(130)
         self.pref_apply_button.setToolTip(
@@ -1423,6 +1426,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_2.addWidget(self.pref_apply_button)
 
         self.pref_save_button = QtWidgets.QPushButton()
+        self.pref_save_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.pref_save_button.setText(_("Save"))
         self.pref_save_button.setMinimumWidth(130)
         self.pref_save_button.setToolTip(
@@ -2087,7 +2091,7 @@ class MainGUI(QtWidgets.QMainWindow):
         self.isolation_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/iso_16.png'), _("Isolation Tool"))
         self.drill_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/drill16.png'), _("Drilling Tool"))
+            QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'), _("Drilling Tool"))
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(

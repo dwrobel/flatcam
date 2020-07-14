@@ -2054,6 +2054,7 @@ class ToolsDB2UI:
         self.buttons_frame.show()
 
         self.add_entry_btn = FCButton(_("Add Tool in DB"))
+        self.add_entry_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.add_entry_btn.setToolTip(
             _("Add a new tool in the Tools Database.\n"
               "It will be used in the Geometry UI.\n"
@@ -2070,24 +2071,28 @@ class ToolsDB2UI:
         # self.buttons_box.addWidget(add_fct_entry_btn)
 
         self.remove_entry_btn = FCButton(_("Delete Tool from DB"))
+        self.remove_entry_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.remove_entry_btn.setToolTip(
             _("Remove a selection of tools in the Tools Database.")
         )
         self.buttons_box.addWidget(self.remove_entry_btn)
 
         self.export_db_btn = FCButton(_("Export DB"))
+        self.export_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/export.png'))
         self.export_db_btn.setToolTip(
             _("Save the Tools Database to a custom text file.")
         )
         self.buttons_box.addWidget(self.export_db_btn)
 
         self.import_db_btn = FCButton(_("Import DB"))
+        self.import_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/import.png'))
         self.import_db_btn.setToolTip(
             _("Load the Tools Database information's from a custom text file.")
         )
         self.buttons_box.addWidget(self.import_db_btn)
 
         self.save_db_btn = FCButton(_("Save DB"))
+        self.save_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.save_db_btn.setToolTip(
             _("Save the Tools Database information's.")
         )

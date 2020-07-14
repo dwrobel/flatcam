@@ -872,6 +872,7 @@ class PreferencesUIManager:
 
         # restore the default stylesheet by setting a blank one
         self.ui.pref_apply_button.setStyleSheet("")
+        self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply32.png'))
 
         self.inform.emit('%s' % _("Preferences applied."))
 
@@ -1096,6 +1097,7 @@ class PreferencesUIManager:
                     self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
             self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+            self.ui.pref_apply_button.setIcon(QtGui.QIcon(self.ui.app.resource_location + '/apply_red32.png'))
 
             self.preferences_changed_flag = True
 

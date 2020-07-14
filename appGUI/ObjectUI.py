@@ -150,6 +150,7 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.offset_button, 4, 1)
 
             self.transformations_button = QtWidgets.QPushButton(_('Transformations'))
+            self.transformations_button.setIcon(QtGui.QIcon(self.app.resource_location + '/transform.png'))
             self.transformations_button.setToolTip(
                 _("Geometrical transformations of the current object.")
             )
@@ -311,6 +312,7 @@ class GerberObjectUI(ObjectUI):
 
         # Editor
         self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
         self.editor_button.setToolTip(
             _("Edit an Gerber object.")
         )
@@ -341,6 +343,7 @@ class GerberObjectUI(ObjectUI):
 
         # Isolation Tool - will create isolation paths around the copper features
         self.iso_button = QtWidgets.QPushButton(_('Isolation Routing'))
+        # self.iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/iso_16.png'))
         self.iso_button.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut around polygons.")
@@ -355,6 +358,7 @@ class GerberObjectUI(ObjectUI):
 
         # ## Clear non-copper regions
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
+        self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
               "for non-copper routing.")
@@ -369,6 +373,7 @@ class GerberObjectUI(ObjectUI):
 
         # ## Board cutout
         self.generate_cutout_button = QtWidgets.QPushButton(_('Cutout Tool'))
+        self.generate_cutout_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cut32_bis.png'))
         self.generate_cutout_button.setToolTip(
             _("Generate the geometry for\n"
               "the board cutout.")
@@ -615,6 +620,8 @@ class ExcellonObjectUI(ObjectUI):
 
         # Editor
         self.editor_button = QtWidgets.QPushButton(_('Excellon Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
         self.editor_button.setToolTip(
             _("Edit an Excellon object.")
         )
@@ -645,6 +652,7 @@ class ExcellonObjectUI(ObjectUI):
 
         # Drilling Tool - will create GCode for drill holes
         self.drill_button = QtWidgets.QPushButton(_('Drilling Tool'))
+        self.drill_button.setIcon(QtGui.QIcon(self.app.resource_location + '/drilling_tool32.png'))
         self.drill_button.setToolTip(
             _("Generate GCode out of drill holes in an Excellon object.")
         )
@@ -658,6 +666,7 @@ class ExcellonObjectUI(ObjectUI):
 
         # Milling Tool - will create GCode for slot holes
         self.milling_button = QtWidgets.QPushButton(_('Milling Tool'))
+        self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
         self.milling_button.setToolTip(
             _("Generate GCode out of slot holes in an Excellon object.")
         )
@@ -913,6 +922,21 @@ class GeometryObjectUI(ObjectUI):
 
         # self.geo_tools_table.setSortingEnabled(False)
         # self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Geometry Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
+        self.editor_button.setToolTip(
+            _("Edit an Geometry object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.editor_button, 3, 0, 1, 2)
 
         # Tool Offset
         grid1 = QtWidgets.QGridLayout()

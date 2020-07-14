@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+15.07.2020
+
+- added icons to some of the push buttons
+
 14.07.2020
 
 - Drilling Tool - now there is an Excellon preference that control the autoload of tools from the Tools Database
