@@ -948,10 +948,10 @@ class ToolsDB2UI:
         else:
             self.machinist_setting = 0
 
-        g_lay = grid_layout
+        self.g_lay = grid_layout
 
         tree_layout = QtWidgets.QVBoxLayout()
-        g_lay.addLayout(tree_layout, 0, 0)
+        self.g_lay.addLayout(tree_layout, 0, 0)
 
         self.tree_widget = FCTree(columns=2, header_hidden=False, protected_column=[0])
         self.tree_widget.setHeaderLabels(["ID", "Tool Name"])
@@ -976,7 +976,7 @@ class ToolsDB2UI:
         param_area.setWidget(param_widget)
         param_area.setWidgetResizable(True)
 
-        g_lay.addWidget(param_area, 0, 1)
+        self.g_lay.addWidget(param_area, 0, 1)
 
         # ###########################################################################
         # ############## The UI form ################################################
@@ -1339,7 +1339,7 @@ class ToolsDB2UI:
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_range(-9999.9999, 9999.9999)
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setObjectName('gdb_travel')
+        self.travelz_entry.setObjectName('gdb_travelz')
 
         self.grid0.addWidget(self.travelz_label, 24, 0)
         self.grid0.addWidget(self.travelz_entry, 24, 1)
@@ -1821,23 +1821,23 @@ class ToolsDB2UI:
               "below the copper surface.")
         )
 
-        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutz_drill_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, 0.0000)
+            self.cutz_drill_entry.set_range(-9999.9999, 0.0000)
         else:
-            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+            self.cutz_drill_entry.set_range(-9999.9999, 9999.9999)
 
-        self.cutz_entry.setSingleStep(0.1)
-        self.cutz_entry.setObjectName("gdb_e_cutz")
+        self.cutz_drill_entry.setSingleStep(0.1)
+        self.cutz_drill_entry.setObjectName("gdb_e_cutz")
 
         self.grid5.addWidget(self.cutzlabel, 4, 0)
-        self.grid5.addWidget(self.cutz_entry, 4, 1)
+        self.grid5.addWidget(self.cutz_drill_entry, 4, 1)
 
         # Multi-Depth
-        self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
-        self.mpass_cb.setToolTip(
+        self.mpass_drill_cb = FCCheckBox('%s:' % _("Multi-Depth"))
+        self.mpass_drill_cb.setToolTip(
             _(
                 "Use multiple passes to limit\n"
                 "the cut depth in each pass. Will\n"
@@ -1845,18 +1845,18 @@ class ToolsDB2UI:
                 "reached."
             )
         )
-        self.mpass_cb.setObjectName("gdb_e_multidepth")
+        self.mpass_drill_cb.setObjectName("gdb_e_multidepth")
 
-        self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.maxdepth_entry.set_precision(self.decimals)
-        self.maxdepth_entry.set_range(0, 9999.9999)
-        self.maxdepth_entry.setSingleStep(0.1)
+        self.maxdepth_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.maxdepth_drill_entry.set_precision(self.decimals)
+        self.maxdepth_drill_entry.set_range(0, 9999.9999)
+        self.maxdepth_drill_entry.setSingleStep(0.1)
 
-        self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
-        self.maxdepth_entry.setObjectName("gdb_e_depthperpass")
+        self.maxdepth_drill_entry.setToolTip(_("Depth of each pass (positive)."))
+        self.maxdepth_drill_entry.setObjectName("gdb_e_depthperpass")
 
-        self.grid5.addWidget(self.mpass_cb, 5, 0)
-        self.grid5.addWidget(self.maxdepth_entry, 5, 1)
+        self.grid5.addWidget(self.mpass_drill_cb, 5, 0)
+        self.grid5.addWidget(self.maxdepth_drill_entry, 5, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
@@ -1865,19 +1865,19 @@ class ToolsDB2UI:
               "across the XY plane.")
         )
 
-        self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.travelz_entry.set_precision(self.decimals)
+        self.travelz_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.travelz_drill_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.travelz_entry.set_range(0.00001, 9999.9999)
+            self.travelz_drill_entry.set_range(0.00001, 9999.9999)
         else:
-            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+            self.travelz_drill_entry.set_range(-9999.9999, 9999.9999)
 
-        self.travelz_entry.setSingleStep(0.1)
-        self.travelz_entry.setObjectName("gdb_e_travelz")
+        self.travelz_drill_entry.setSingleStep(0.1)
+        self.travelz_drill_entry.setObjectName("gdb_e_travelz")
 
         self.grid5.addWidget(self.travelzlabel, 6, 0)
-        self.grid5.addWidget(self.travelz_entry, 6, 1)
+        self.grid5.addWidget(self.travelz_drill_entry, 6, 1)
 
         # Excellon Feedrate Z
         self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -1887,14 +1887,14 @@ class ToolsDB2UI:
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
-        self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_z_entry.set_precision(self.decimals)
-        self.feedrate_z_entry.set_range(0.0, 99999.9999)
-        self.feedrate_z_entry.setSingleStep(0.1)
-        self.feedrate_z_entry.setObjectName("gdb_e_feedratez")
+        self.feedrate_z_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_z_drill_entry.set_precision(self.decimals)
+        self.feedrate_z_drill_entry.set_range(0.0, 99999.9999)
+        self.feedrate_z_drill_entry.setSingleStep(0.1)
+        self.feedrate_z_drill_entry.setObjectName("gdb_e_feedratez")
 
         self.grid5.addWidget(self.frzlabel, 14, 0)
-        self.grid5.addWidget(self.feedrate_z_entry, 14, 1)
+        self.grid5.addWidget(self.feedrate_z_drill_entry, 14, 1)
 
         # Excellon Rapid Feedrate
         self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
@@ -1905,14 +1905,14 @@ class ToolsDB2UI:
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0.0, 99999.9999)
-        self.feedrate_rapid_entry.setSingleStep(0.1)
-        self.feedrate_rapid_entry.setObjectName("gdb_e_fr_rapid")
+        self.feedrate_rapid_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_rapid_drill_entry.set_precision(self.decimals)
+        self.feedrate_rapid_drill_entry.set_range(0.0, 99999.9999)
+        self.feedrate_rapid_drill_entry.setSingleStep(0.1)
+        self.feedrate_rapid_drill_entry.setObjectName("gdb_e_fr_rapid")
 
         self.grid5.addWidget(self.feedrate_rapid_label, 16, 0)
-        self.grid5.addWidget(self.feedrate_rapid_entry, 16, 1)
+        self.grid5.addWidget(self.feedrate_rapid_drill_entry, 16, 1)
 
         # Spindlespeed
         self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
@@ -1921,35 +1921,35 @@ class ToolsDB2UI:
               "in RPM (optional)")
         )
 
-        self.spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.spindlespeed_entry.set_range(0, 1000000)
-        self.spindlespeed_entry.set_step(100)
-        self.spindlespeed_entry.setObjectName("gdb_e_spindlespeed")
+        self.spindlespeed_drill_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.spindlespeed_drill_entry.set_range(0, 1000000)
+        self.spindlespeed_drill_entry.set_step(100)
+        self.spindlespeed_drill_entry.setObjectName("gdb_e_spindlespeed")
 
         self.grid5.addWidget(self.spindle_label, 19, 0)
-        self.grid5.addWidget(self.spindlespeed_entry, 19, 1)
+        self.grid5.addWidget(self.spindlespeed_drill_entry, 19, 1)
 
         # Dwell
-        self.dwell_cb = FCCheckBox('%s:' % _('Dwell'))
-        self.dwell_cb.setToolTip(
+        self.dwell_drill_cb = FCCheckBox('%s:' % _('Dwell'))
+        self.dwell_drill_cb.setToolTip(
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        self.dwell_cb.setObjectName("gdb_e_dwell")
+        self.dwell_drill_cb.setObjectName("gdb_e_dwell")
 
         # Dwelltime
-        self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.set_range(0.0, 9999.9999)
-        self.dwelltime_entry.setSingleStep(0.1)
+        self.dwelltime_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.dwelltime_drill_entry.set_precision(self.decimals)
+        self.dwelltime_drill_entry.set_range(0.0, 9999.9999)
+        self.dwelltime_drill_entry.setSingleStep(0.1)
 
-        self.dwelltime_entry.setToolTip(
+        self.dwelltime_drill_entry.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
-        self.dwelltime_entry.setObjectName("gdb_e_dwelltime")
+        self.dwelltime_drill_entry.setObjectName("gdb_e_dwelltime")
 
-        self.grid5.addWidget(self.dwell_cb, 20, 0)
-        self.grid5.addWidget(self.dwelltime_entry, 20, 1)
+        self.grid5.addWidget(self.dwell_drill_cb, 20, 0)
+        self.grid5.addWidget(self.dwelltime_drill_entry, 20, 1)
 
         # Tool Offset
         self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
@@ -1959,21 +1959,21 @@ class ToolsDB2UI:
               "The value here can compensate the Cut Z parameter.")
         )
 
-        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.offset_entry.set_precision(self.decimals)
-        self.offset_entry.set_range(-9999.9999, 9999.9999)
-        self.offset_entry.setObjectName("gdb_e_offset")
+        self.offset_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.offset_drill_entry.set_precision(self.decimals)
+        self.offset_drill_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_drill_entry.setObjectName("gdb_e_offset")
 
         self.grid5.addWidget(self.tool_offset_label, 25, 0)
-        self.grid5.addWidget(self.offset_entry, 25, 1)
+        self.grid5.addWidget(self.offset_drill_entry, 25, 1)
 
         # Drill slots
-        self.drill_slots_cb = FCCheckBox('%s' % _('Drill slots'))
-        self.drill_slots_cb.setToolTip(
+        self.drill_slots_drill_cb = FCCheckBox('%s' % _('Drill slots'))
+        self.drill_slots_drill_cb.setToolTip(
             _("If the selected tool has slots then they will be drilled.")
         )
-        self.drill_slots_cb.setObjectName("gdb_e_drill_slots")
-        self.grid5.addWidget(self.drill_slots_cb, 27, 0, 1, 2)
+        self.drill_slots_drill_cb.setObjectName("gdb_e_drill_slots")
+        self.grid5.addWidget(self.drill_slots_drill_cb, 27, 0, 1, 2)
 
         # Drill Overlap
         self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
@@ -1981,24 +1981,24 @@ class ToolsDB2UI:
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
 
-        self.drill_overlap_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
-        self.drill_overlap_entry.set_precision(self.decimals)
-        self.drill_overlap_entry.set_range(0.0, 100.0000)
-        self.drill_overlap_entry.setSingleStep(0.1)
+        self.drill_overlap_drill_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
+        self.drill_overlap_drill_entry.set_precision(self.decimals)
+        self.drill_overlap_drill_entry.set_range(0.0, 100.0000)
+        self.drill_overlap_drill_entry.setSingleStep(0.1)
 
-        self.drill_overlap_entry.setObjectName("gdb_e_drill_slots_over")
+        self.drill_overlap_drill_entry.setObjectName("gdb_e_drill_slots_over")
 
         self.grid5.addWidget(self.drill_overlap_label, 28, 0)
-        self.grid5.addWidget(self.drill_overlap_entry, 28, 1)
+        self.grid5.addWidget(self.drill_overlap_drill_entry, 28, 1)
 
         # Last drill in slot
-        self.last_drill_cb = FCCheckBox('%s' % _('Last drill'))
-        self.last_drill_cb.setToolTip(
+        self.last_drill_drill_cb = FCCheckBox('%s' % _('Last drill'))
+        self.last_drill_drill_cb.setToolTip(
             _("If the slot length is not completely covered by drill holes,\n"
               "add a drill hole on the slot end point.")
         )
-        self.last_drill_cb.setObjectName("gdb_e_drill_last_drill")
-        self.grid5.addWidget(self.last_drill_cb, 30, 0, 1, 2)
+        self.last_drill_drill_cb.setObjectName("gdb_e_drill_last_drill")
+        self.grid5.addWidget(self.last_drill_drill_cb, 30, 0, 1, 2)
 
         # ####################################################################
         # ####################################################################
@@ -2007,7 +2007,7 @@ class ToolsDB2UI:
         # ####################################################################
 
         new_vlay = QtWidgets.QVBoxLayout()
-        g_lay.addLayout(new_vlay, 1, 0, 1, 2)
+        self.g_lay.addLayout(new_vlay, 1, 0, 1, 2)
 
         self.buttons_frame = QtWidgets.QFrame()
         self.buttons_frame.setContentsMargins(0, 0, 0, 0)
@@ -2157,9 +2157,10 @@ class ToolsDB2(QtWidgets.QWidget):
             "tool_target":      self.ui.tool_op_combo,
             "tol_min":          self.ui.tol_min_entry,
             "tol_max":          self.ui.tol_max_entry,
-            # Basic
             "name":             self.ui.name_entry,
             "tooldia":          self.ui.dia_entry,
+
+            # Milling
             "tool_type":        self.ui.shape_combo,
             "cutz":             self.ui.cutz_entry,
             "multidepth":       self.ui.multidepth_cb,
@@ -2171,7 +2172,6 @@ class ToolsDB2(QtWidgets.QWidget):
             "dwell":            self.ui.dwell_cb,
             "dwelltime":        self.ui.dwelltime_entry,
 
-            # Advanced
             "type":             self.ui.type_combo,
             "offset":           self.ui.tooloffset_combo,
             "offset_value":     self.ui.custom_offset_entry,
@@ -2207,21 +2207,21 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_iso_isotype":        self.ui.iso_type_radio,
 
             # Drilling
-            "tools_drill_cutz":             self.ui.cutz_entry,
-            "tools_drill_multidepth":       self.ui.mpass_cb,
-            "tools_drill_depthperpass":     self.ui.maxdepth_entry,
-            "tools_drill_travelz":          self.ui.travelz_entry,
-            "tools_drill_feedrate_z":       self.ui.feedrate_z_entry,
+            "tools_drill_cutz":             self.ui.cutz_drill_entry,
+            "tools_drill_multidepth":       self.ui.mpass_drill_cb,
+            "tools_drill_depthperpass":     self.ui.maxdepth_drill_entry,
+            "tools_drill_travelz":          self.ui.travelz_drill_entry,
+            "tools_drill_feedrate_z":       self.ui.feedrate_z_drill_entry,
 
-            "tools_drill_feedrate_rapid":   self.ui.feedrate_rapid_entry,
-            "tools_drill_spindlespeed":     self.ui.spindlespeed_entry,
-            "tools_drill_dwell":            self.ui.dwell_cb,
-            "tools_drill_dwelltime":        self.ui.dwelltime_entry,
+            "tools_drill_feedrate_rapid":   self.ui.feedrate_rapid_drill_entry,
+            "tools_drill_spindlespeed":     self.ui.spindlespeed_drill_entry,
+            "tools_drill_dwell":            self.ui.dwell_drill_cb,
+            "tools_drill_dwelltime":        self.ui.dwelltime_drill_entry,
 
-            "tools_drill_offset":           self.ui.offset_entry,
-            "tools_drill_drill_slots":      self.ui.drill_slots_cb,
-            "tools_drill_drill_overlap":    self.ui.drill_overlap_entry,
-            "tools_drill_last_drill":       self.ui.last_drill_cb,
+            "tools_drill_offset":           self.ui.offset_drill_entry,
+            "tools_drill_drill_slots":      self.ui.drill_slots_drill_cb,
+            "tools_drill_drill_overlap":    self.ui.drill_overlap_drill_entry,
+            "tools_drill_last_drill":       self.ui.last_drill_drill_cb,
 
         }
 
@@ -2230,21 +2230,21 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_tol_min":          "tol_min",
             "gdb_tol_max":          "tol_max",
 
-            # Basic
             "gdb_name":             "name",
             "gdb_dia":              "tooldia",
+
+            # Milling
             "gdb_shape":            "tool_type",
             "gdb_cutz":             "cutz",
             "gdb_multidepth":       "multidepth",
             "gdb_multidepth_entry": "depthperpass",
-            "gdb_travel":           "travelz",
+            "gdb_travelz":           "travelz",
             "gdb_frxy":             "feedrate",
             "gdb_frz":              "feedrate_z",
             "gdb_spindle":          "spindlespeed",
             "gdb_dwell":            "dwell",
             "gdb_dwelltime":        "dwelltime",
 
-            # Advanced
             "gdb_type":             "type",
             "gdb_tool_offset":      "offset",
             "gdb_custom_offset":    "offset_value",
@@ -2324,7 +2324,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui.tree_widget.itemDoubleClicked.connect(self.on_item_double_clicked)
 
-        self.ui.tool_op_combo.currentIndexChanged.connect(self.on_object_type_changed)
+        self.ui.tool_op_combo.currentIndexChanged.connect(self.on_tool_target_changed)
 
         self.setup_db_ui()
 
@@ -2373,6 +2373,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui.name_entry.set_value(item.text(1))
 
     def storage_to_form(self, dict_storage):
+        self.ui_disconnect()
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key:
@@ -2387,9 +2388,10 @@ class ToolsDB2(QtWidgets.QWidget):
                                 self.form_fields[form_key].set_value(dict_storage['data'][data_key])
                             except Exception as e:
                                 print(str(e))
+        self.ui_connect()
 
     def form_to_storage(self, tool):
-        self.blockSignals(True)
+        self.ui_disconnect()
 
         widget_changed = self.sender()
         wdg_objname = widget_changed.objectName()
@@ -2403,7 +2405,7 @@ class ToolsDB2(QtWidgets.QWidget):
                     tooluid_val[option_changed] = new_option_value
                 if option_changed in tooluid_val['data']:
                     tooluid_val['data'][option_changed] = new_option_value
-        self.blockSignals(False)
+        self.ui_connect()
 
     def setup_db_ui(self):
         filename = self.app.data_path + '\\geo_tools_db.FlatDB'
@@ -2460,9 +2462,9 @@ class ToolsDB2(QtWidgets.QWidget):
 
                 # Enable appGUI
                 try:
-                    self.on_object_type_changed(val=self.db_tool_dict['1']['data']['tool_target'])
+                    self.on_tool_target_changed(val=self.db_tool_dict['1']['data']['tool_target'])
                 except KeyError:
-                    self.on_object_type_changed(val=_("General"))
+                    self.on_tool_target_changed(val=_("General"))
 
                 self.ui.tree_widget.setCurrentItem(self.ui.tree_widget.topLevelItem(0))
                 # self.ui.tree_widget.setFocus()
@@ -2487,7 +2489,7 @@ class ToolsDB2(QtWidgets.QWidget):
 
         self.ui_connect()
 
-    def on_object_type_changed(self, index=None, val=None):
+    def on_tool_target_changed(self, index=None, val=None):
 
         if val is None:
             tool_target = self.ui.tool_op_combo.get_value()
@@ -2543,6 +2545,11 @@ class ToolsDB2(QtWidgets.QWidget):
         default_data = {}
         default_data.update({
             "plot":             True,
+            "tool_target": _("General"),
+            "tol_min": 0.0,
+            "tol_max": 0.0,
+
+            # Milling
             "cutz":             float(self.app.defaults["geometry_cutz"]),
             "multidepth":       self.app.defaults["geometry_multidepth"],
             "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
@@ -2563,10 +2570,6 @@ class ToolsDB2(QtWidgets.QWidget):
             "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
             "startz":           self.app.defaults["geometry_startz"],
             "endz":             float(self.app.defaults["geometry_endz"]),
-
-            "tool_target":      _("General"),
-            "tol_min":          0.0,
-            "tol_max":          0.0,
 
             # NCC
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
@@ -2654,7 +2657,7 @@ class ToolsDB2(QtWidgets.QWidget):
             self.ui.tree_widget.setCurrentItem(last_item)
             last_item.setSelected(True)
 
-        self.on_object_type_changed(val=dict_elem['data']['tool_target'])
+        self.on_tool_target_changed(val=dict_elem['data']['tool_target'])
         self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
@@ -2815,6 +2818,48 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.app_ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
                 self.ui.save_db_btn.setStyleSheet("")
 
+                # clean the dictionary and leave only keys of interest
+                for tool_id in self.db_tool_dict.keys():
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] != _('General'):
+                        continue
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Milling'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                self.db_tool_dict[tool_id]['data'].pop(k, None)
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Drilling'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_drill'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Isolation'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_iso'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('Paint'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_paint'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+                                    
+                    if self.db_tool_dict[tool_id]['data']['tool_target'] == _('NCC'):
+                        for k in list(self.db_tool_dict[tool_id]['data'].keys()):
+                            if str(k).startswith('tools_'):
+                                if str(k).startswith('tools_ncc'):
+                                    pass
+                                else:
+                                    self.db_tool_dict[tool_id]['data'].pop(k, None)
+
                 # Save Tools DB in a file
                 try:
                     f = open(filename, "w")
@@ -2959,6 +3004,7 @@ class ToolsDB2(QtWidgets.QWidget):
         Update the dictionary that is the storage of the tools 'database'
         :return:
         """
+
         tool_id = str(self.current_toolid)
 
         try:
@@ -2975,6 +3021,24 @@ class ToolsDB2(QtWidgets.QWidget):
         except AttributeError:
             return
 
+        # #############################################################################################################
+        # this might change in the future; it makes sense to change values at once for all tools
+        # for now change values only for one tool at once
+        sel_rows = []
+        for item in self.ui.tree_widget.selectedItems():
+            sel_rows.append(item.data(0, QtCore.Qt.DisplayRole))
+
+        len_sel_rows = len(sel_rows)
+        if len_sel_rows > 1:
+            msg = '[ERROR_NOTCL] %s: %s' % \
+                  (_("To change tool properties select only one tool. Tools currently selected"), str(len_sel_rows))
+            self.app.inform.emit(msg)
+            old_value = self.db_tool_dict[tool_id]['data'][self.name2option[wdg_name]]
+            wdg.set_value(old_value)
+            wdg.clearFocus()
+            return
+        # #############################################################################################################
+
         if wdg_name == "gdb_name":
             self.db_tool_dict[tool_id]['name'] = val
         elif wdg_name == "gdb_dia":
@@ -2988,6 +3052,7 @@ class ToolsDB2(QtWidgets.QWidget):
         elif wdg_name == "gdb_shape":
             self.db_tool_dict[tool_id]['tool_type'] = val
         else:
+            # Milling Tool
             if wdg_name == "gdb_tool_target":
                 self.db_tool_dict[tool_id]['data']['tool_target'] = val
             elif wdg_name == "gdb_tol_min":
@@ -3002,7 +3067,7 @@ class ToolsDB2(QtWidgets.QWidget):
             elif wdg_name == "gdb_multidepth_entry":
                 self.db_tool_dict[tool_id]['data']['depthperpass'] = val
 
-            elif wdg_name == "gdb_travel":
+            elif wdg_name == "gdb_travelz":
                 self.db_tool_dict[tool_id]['data']['travelz'] = val
             elif wdg_name == "gdb_frxy":
                 self.db_tool_dict[tool_id]['data']['feedrate'] = val
