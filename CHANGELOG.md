@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - Tool Drilling made sure that on Toolchange event after toolchange event the tool feedrate is set
 - added some icons to more push buttons inside the app
 - a change of layout in Tools Database
+- a new icon for Search in DB
 
 14.07.2020
 

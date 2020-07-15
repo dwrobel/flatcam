@@ -212,7 +212,7 @@ class ToolDrilling(AppTool, Excellon):
         # ############################ SIGNALS ########################################
         # #############################################################################
 
-        self.t_ui.manual_load_db_btn.clicked.connect(self.on_tool_db_load)
+        self.t_ui.search_load_db_btn.clicked.connect(self.on_tool_db_load)
 
         self.t_ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
         self.t_ui.generate_cnc_button.clicked.connect(self.on_cnc_button_click)
@@ -1982,13 +1982,14 @@ class DrillingUI:
         grid0.addWidget(self.order_radio, 4, 1)
 
         # Manual Load of Tools from DB
-        self.manual_load_db_btn = FCButton(_("Manual Load from DB"))
-        self.manual_load_db_btn.setToolTip(
-            _("Manual replacement of the tools from Tools Table\n"
+        self.search_load_db_btn = FCButton(_("Search DB"))
+        self.search_load_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
+        self.search_load_db_btn.setToolTip(
+            _("Will search and try to replace the tools from Tools Table\n"
               "with tools from DB that have a close diameter value.")
         )
 
-        grid0.addWidget(self.manual_load_db_btn, 5, 0, 1, 2)
+        grid0.addWidget(self.search_load_db_btn, 5, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
