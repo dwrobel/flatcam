@@ -765,95 +765,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # if this dict is not empty then the object is an Excellon object
         if self.exc_cnc_tools:
             first_key = next(iter(self.exc_cnc_tools))
-            include_header = self.app.preprocessors[self.exc_cnc_tools[first_key]['data']['ppname_e']].include_header
-
-        # # detect if using Roland preprocessor
-        # try:
-        #     for key in self.cnc_tools:
-        #         if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
-        #             roland = True
-        #             break
-        # except Exception:
-        #     try:
-        #         for key in self.cnc_tools:
-        #             if self.cnc_tools[key]['data']['ppname_e'] == 'Roland_MDX_20':
-        #                 roland = True
-        #                 break
-        #     except Exception:
-        #         pass
-        #
-        # # detect if using HPGL preprocessor
-        # try:
-        #     for key in self.cnc_tools:
-        #         if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
-        #             hpgl = True
-        #             break
-        # except Exception:
-        #     try:
-        #         for key in self.cnc_tools:
-        #             if self.cnc_tools[key]['data']['ppname_e'] == 'hpgl':
-        #                 hpgl = True
-        #                 break
-        #     except Exception:
-        #         pass
-        #
-        # # detect if using ISEL_ICP_CNC preprocessor
-        # try:
-        #     for key in self.cnc_tools:
-        #         if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_g'].upper():
-        #             isel_icp = True
-        #             break
-        # except Exception:
-        #     try:
-        #         for key in self.cnc_tools:
-        #             if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_e'].upper():
-        #                 isel_icp = True
-        #                 break
-        #     except Exception:
-        #         pass
-
-        # do not add gcode_header when using the Roland preprocessor, add it for every other preprocessor
-        # if roland is False and hpgl is False and isel_icp is False:
-        #     gcode = self.gcode_header()
-
-        # do not add gcode_header when using the Roland, HPGL or ISEP_ICP_CNC preprocessor (or any other preprocessor
-        # that has the include_header attribute set as False, add it for every other preprocessor
-        # if include_header:
-        #     gcode = self.gcode_header()
-        # else:
-        #     gcode = ''
-
-        # # detect if using multi-tool and make the Gcode summation correctly for each case
-        # if self.multitool is True:
-        #     for tooluid_key in self.cnc_tools:
-        #         for key, value in self.cnc_tools[tooluid_key].items():
-        #             if key == 'gcode':
-        #                 gcode += value
-        #                 break
-        # else:
-        #     gcode += self.gcode
-
-        # if roland is True:
-        #     g = preamble + gcode + postamble
-        # elif hpgl is True:
-        #     g = self.gcode_header() + preamble + gcode + postamble
-        # else:
-        #     # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
-        #     g_idx = gcode.rfind('G20')
-        #
-        #     # if it did not find 'G20' then search for 'G21'
-        #     if g_idx == -1:
-        #         g_idx = gcode.rfind('G21')
-        #
-        #     # if it did not find 'G20' and it did not find 'G21' then there is an error and return
-        #     # but only when the preprocessor is not ISEL_ICP who is allowed not to have the G20/G21 command
-        #     if g_idx == -1 and isel_icp is False:
-        #         self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
-        #         return
-        #
-        #     footer = self.app.defaults['cncjob_footer']
-        #     end_gcode = self.gcode_footer() if footer is True else ''
-        #     g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble + end_gcode
+            include_header = self.app.preprocessors[
+                self.exc_cnc_tools[first_key]['data']['tools_drill_ppname_e']
+            ].include_header
 
         gcode = ''
         if include_header is False:

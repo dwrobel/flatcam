@@ -1804,7 +1804,6 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.iso_type_label, 8, 0)
         self.grid4.addWidget(self.iso_type_radio, 8, 1)
 
-
         # ###########################################################################
         # ################ DRILLING UI form #########################################
         # ###########################################################################
@@ -2552,6 +2551,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.iso_box.show()
                 self.ui.drill_box.show()
             else:
+                self.ui.milling_box.hide()
                 self.ui.ncc_box.hide()
                 self.ui.paint_box.hide()
                 self.ui.iso_box.hide()
@@ -2568,14 +2568,20 @@ class ToolsDB2(QtWidgets.QWidget):
                 if tool_target == _("Isolation"):
                     self.ui.iso_box.setEnabled(True)
                     self.ui.iso_box.show()
+                    self.ui.milling_box.setEnabled(True)
+                    self.ui.milling_box.show()
 
                 if tool_target == _("Paint"):
                     self.ui.paint_box.setEnabled(True)
                     self.ui.paint_box.show()
+                    self.ui.milling_box.setEnabled(True)
+                    self.ui.milling_box.show()
 
                 if tool_target == _("NCC"):
                     self.ui.ncc_box.setEnabled(True)
                     self.ui.ncc_box.show()
+                    self.ui.milling_box.setEnabled(True)
+                    self.ui.milling_box.show()
 
     def on_tool_add(self):
         """

@@ -2499,6 +2499,8 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
+        self.multidepth = False
+        self.z_depthpercut = depthpercut
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -2506,19 +2508,15 @@ class CNCjob(Geometry):
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
+        self.toolC = tooldia
         self.toolchange = False
         self.z_toolchange = toolchangez
         self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
 
-        self.toolC = tooldia
-
         self.startz = None
         self.z_end = endz
         self.xy_end = endxy
-
-        self.multidepth = False
-        self.z_depthpercut = depthpercut
 
         self.extracut_length = None
 
@@ -2901,8 +2899,6 @@ class CNCjob(Geometry):
 
         self.exc_tools = deepcopy(tools)
         t_gcode = ''
-        p = self.pp_excellon
-        self.toolchange = toolchange
 
         # holds the temporary coordinates of the processed drill point
         locx, locy = first_pt
@@ -2934,15 +2930,12 @@ class CNCjob(Geometry):
 
         # #########################################################################################################
         # #########################################################################################################
-        # ############# PARAMETERS ################################################################################
+        # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
         # #########################################################################################################
         # #########################################################################################################
         self.tool = str(tool)
-        self.tooldia = tools[tool]["tooldia"]
-        self.postdata['toolC'] = tools[tool]["tooldia"]
-
-        self.z_feedrate = tool_dict['tools_drill_feedrate_z']
-        self.feedrate = tool_dict['tools_drill_feedrate_z']
+        # Preprocessor
+        p = self.pp_excellon
 
         # Z_cut parameter
         if self.machinist_setting == 0:
@@ -2950,49 +2943,81 @@ class CNCjob(Geometry):
             if self.z_cut == 'fail':
                 return 'fail'
 
+        # Depth parameters
         self.z_cut = tool_dict['tools_drill_cutz']
-        # multidepth use this
-        old_zcut = tool_dict["tools_drill_cutz"]
-
+        old_zcut = deepcopy(tool_dict["tools_drill_cutz"])  # multidepth use this
+        self.multidepth = tool_dict['tools_drill_multidepth']
+        self.z_depthpercut = tool_dict['tools_drill_depthperpass']
         self.z_move = tool_dict['tools_drill_travelz']
+        self.f_plunge = tool_dict["tools_drill_f_plunge"]   # used directly in the preprocessor Toolchange method
+        self.f_retract = tool_dict["tools_drill_f_retract"] # used in the current method
+
+        # Feedrate parameters
+        self.z_feedrate = tool_dict['tools_drill_feedrate_z']
+        self.feedrate = tool_dict['tools_drill_feedrate_z']
+        self.feedrate_rapid = tool_dict['tools_drill_feedrate_rapid']
+
+        # Spindle parameters
         self.spindlespeed = tool_dict['tools_drill_spindlespeed']
         self.dwell = tool_dict['tools_drill_dwell']
         self.dwelltime = tool_dict['tools_drill_dwelltime']
-        self.multidepth = tool_dict['tools_drill_multidepth']
-        self.z_depthpercut = tool_dict['tools_drill_depthperpass']
+        self.spindledir = tool_dict['tools_drill_spindledir']
 
+        self.tooldia = tools[tool]["tooldia"]
+        self.postdata['toolC'] = tools[tool]["tooldia"]
+        self.toolchange = toolchange
+
+        # Z_toolchange parameter
+        self.z_toolchange = tool_dict['tools_drill_toolchangez']
         # XY_toolchange parameter
         self.xy_toolchange = tool_dict["tools_drill_toolchangexy"]
         try:
             if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
+                # either originally it was a string or not, xy_toolchange will be made string
                 self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
 
+                # and now, xy_toolchange is made into a list of floats in format [x, y]
                 if self.xy_toolchange:
                     self.xy_toolchange = [
                         float(eval(a)) for a in self.xy_toolchange.split(",")
                     ]
 
                 if self.xy_toolchange and len(self.xy_toolchange) != 2:
-                    self.app.inform.emit('[ERROR]%s' %
-                                         _("The Toolchange X,Y field in Edit -> Preferences has to be "
-                                           "in the format (x, y) \nbut now there is only one value, not two. "))
+                    self.app.inform.emit('[ERROR]%s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
-            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
-            pass
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
+            self.xy_toolchange = [0, 0]
 
-        # XY_end parameter
+        # End position parameters
+        self.startz = tool_dict["tools_drill_startz"]
+        if self.startz == '':
+            self.startz = None
+        self.z_end = tool_dict["tools_drill_endz"]
         self.xy_end = tool_dict["tools_drill_endxy"]
-        self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
-        if self.xy_end and self.xy_end != '':
-            self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
-        if self.xy_end and len(self.xy_end) < 2:
-            self.app.inform.emit(
-                '[ERROR]  %s' % _("The End Move X,Y field in Edit -> Preferences has to be "
-                                  "in the format (x, y) but now there is only one value, not two."))
-            return 'fail'
+        try:
+            if self.xy_end == '':
+                self.xy_end = None
+            else:
+                # either originally it was a string or not, xy_end will be made string
+                self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+                # and now, xy_end is made into a list of floats in format [x, y]
+                if self.xy_end:
+                    self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
+                if self.xy_end and len(self.xy_end) != 2:
+                    self.app.inform.emit('[ERROR]%s' % _("The End X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
+            self.xy_end = [0, 0]
+
+        # Probe parameters
+        self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
         # #########################################################################################################
         # #########################################################################################################
 
@@ -3034,6 +3059,7 @@ class CNCjob(Geometry):
 
         # Only if there are locations to drill
         if not optimized_path:
+            log.debug("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
             return 'fail'
 
         if self.app.abort_flag:
@@ -3044,21 +3070,10 @@ class CNCjob(Geometry):
         if is_first:
             t_gcode += start_gcode
 
-        t_gcode += self.doformat(p.z_feedrate_code)
-
-        # Tool change sequence (optional)
-        # if toolchange:
-        #     t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
-        # else:
-        #     if self.xy_toolchange is not None and isinstance(self.xy_toolchange, (tuple, list)):
-        #         t_gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-        #         t_gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
-        #     else:
-        #         t_gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
-        #         t_gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
-
         # do the ToolChange event
+        t_gcode += self.doformat(p.z_feedrate_code)
         t_gcode += self.doformat(p.toolchange_code, toolchangexy=(temp_locx, temp_locy))
+        t_gcode += self.doformat(p.z_feedrate_code)
 
         # Spindle start
         t_gcode += self.doformat(p.spindle_code)
@@ -3067,7 +3082,6 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.dwell_code)
 
         current_tooldia = float('%.*f' % (self.decimals, float(tools[tool]["tooldia"])))
-
         self.app.inform.emit(
             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
                            str(current_tooldia),
@@ -3151,8 +3165,10 @@ class CNCjob(Geometry):
                         self.z_cut -= self.z_depthpercut
                         if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
                             self.z_cut = doc
+                        # Move down the drill bit
                         t_gcode += self.doformat(p.down_code, x=locx, y=locy)
 
+                        # Update the distance travelled down with the current one
                         self.measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
                         if self.f_retract is False:
@@ -3402,10 +3418,6 @@ class CNCjob(Geometry):
 
         # this holds the resulting GCode
         self.gcode = []
-
-        self.f_plunge = self.app.defaults["tools_drill_f_plunge"]
-        self.f_retract = self.app.defaults["tools_drill_f_retract"]
-
         # #############################################################################################################
         # #############################################################################################################
         # Initialization
@@ -5995,16 +6007,8 @@ class CNCjob(Geometry):
                 current['G'] = int(gobj['G'])
 
             if 'X' in gobj or 'Y' in gobj:
-                if 'X' in gobj:
-                    x = gobj['X']
-                    # current['X'] = x
-                else:
-                    x = current['X']
-
-                if 'Y' in gobj:
-                    y = gobj['Y']
-                else:
-                    y = current['Y']
+                x = gobj['X'] if 'X' in gobj else current['X']
+                y = gobj['Y'] if 'Y' in gobj else current['Y']
 
                 kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
 
@@ -6012,7 +6016,6 @@ class CNCjob(Geometry):
                     kind[0] = 'T'
                 if current['G'] > 0:
                     kind[1] = 'S'
-
                 if current['G'] in [0, 1]:  # line
                     path.append((x, y))
 
@@ -6032,9 +6035,7 @@ class CNCjob(Geometry):
                 current[code] = gobj[code]
 
         self.app.inform.emit('%s: %s' % (_("Creating Geometry from the parsed GCode file for tool diameter"), str(dia)))
-        # There might not be a change in height at the
-        # end, therefore, see here too if there is
-        # a final path.
+        # There might not be a change in height at the end, therefore, see here too if there is a final path.
         if len(path) > 1:
             geometry.append(
                 {
@@ -6042,7 +6043,6 @@ class CNCjob(Geometry):
                     "kind": kind
                 }
             )
-
         return geometry
 
     # def plot(self, tooldia=None, dpi=75, margin=0.1,

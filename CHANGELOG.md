@@ -12,6 +12,11 @@ CHANGELOG for FlatCAM beta
 - added icons to some of the push buttons
 - Tool Drilling - automatically switch to the Selected Tab after job finished
 - added Editor Push buttons in Geometry and CNCJob UI's
+- Tool Drilling - brushing through code and solved the report on estimation of execution time
+- Tool Drilling - more optimizations regarding of using Toolchange as opposed to not using it
+- modfied the preprocessors to work with the new properties for Excellon objects
+- added to preprocessors information regarding the X,Y position at the end of the job
+- Tool Drilling made sure that on Toolchange event after toolchange event the tool feedrate is set
 
 14.07.2020
 

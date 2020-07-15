@@ -19,6 +19,7 @@ class Marlin_laser_FAN_pin(PreProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
+        end_coords_xy = p['xy_end']
         gcode = ';This preprocessor is used with a motion controller loaded with MARLIN firmware.\n'
         gcode += ';It is for the case when it is used together with a LASER connected on one of the FAN pins.\n\n'
 
@@ -37,7 +38,13 @@ class Marlin_laser_FAN_pin(PreProc):
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += ';Preprocessor Excellon: ' + str(p['pp_excellon_name']) + '\n'
         else:
-            gcode += ';Preprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n' + '\n'
+            gcode += ';Preprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n'
+        if end_coords_xy is not None:
+            gcode += '(X,Y End: ' + "%.*f, %.*f" % (p.decimals, end_coords_xy[0],
+                                                    p.decimals, end_coords_xy[1]) + units + ')\n'
+        else:
+            gcode += '(X,Y End: ' + "None" + units + ')\n'
+        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
         gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
