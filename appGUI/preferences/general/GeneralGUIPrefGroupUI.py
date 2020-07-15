@@ -108,7 +108,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.style_combo, 5, 1)
 
         # Enable High DPI Support
-        self.hdpi_cb = FCCheckBox('%s' % _('Activate HDPI Support'))
+        self.hdpi_cb = FCCheckBox('%s' % _('HDPI Support'))
         self.hdpi_cb.setToolTip(
             _("Enable High DPI support for the application.\n"
               "It will be applied at the next app start.")
@@ -124,7 +124,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.hdpi_cb, 6, 0, 1, 3)
 
         # Enable Hover box
-        self.hover_cb = FCCheckBox('%s' % _('Display Hover Shape'))
+        self.hover_cb = FCCheckBox('%s' % _('Hover Shape'))
         self.hover_cb.setToolTip(
             _("Enable display of a hover shape for the application objects.\n"
               "It is displayed whenever the mouse cursor is hovering\n"
@@ -133,7 +133,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.hover_cb, 8, 0, 1, 3)
 
         # Enable Selection box
-        self.selection_cb = FCCheckBox('%s' % _('Display Selection Shape'))
+        self.selection_cb = FCCheckBox('%s' % _('Selection Shape'))
         self.selection_cb.setToolTip(
             _("Enable the display of a selection shape for the application objects.\n"
               "It is displayed whenever the mouse selects an object\n"
