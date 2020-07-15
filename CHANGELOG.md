@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 15.07.2020
 
 - added icons to some of the push buttons
+- Tool Drilling - automatically switch to the Selected Tab after job finished
+- added Editor Push buttons in Geometry and CNCJob UI's
 
 14.07.2020
 

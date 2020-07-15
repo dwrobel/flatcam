@@ -611,6 +611,8 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
+        self.ui.editor_button.clicked.connect(self.app.object2editor)
+
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))

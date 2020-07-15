@@ -3299,6 +3299,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # Editor
         self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.exit_editor_button.setToolTip(
             _("Exit from Editor.")
         )

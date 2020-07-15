@@ -1860,6 +1860,26 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.updateplot_button)
 
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('GCode Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
+        self.editor_button.setToolTip(
+            _("Edit an GCode object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                       QPushButton
+                                       {
+                                           font-weight: bold;
+                                       }
+                                       """)
+        self.custom_box.addWidget(self.editor_button)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
+
         # ####################
         # ## Export G-Code ##
         # ####################
@@ -1991,13 +2011,13 @@ class CNCObjectUI(ObjectUI):
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(h_lay)
-
-        # Edit GCode Button
-        self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
-        self.modify_gcode_button.setToolTip(
-            _("Opens TAB to view/modify/print G-Code\n"
-              "file.")
-        )
+        #
+        # # Edit GCode Button
+        # self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
+        # self.modify_gcode_button.setToolTip(
+        #     _("Opens TAB to view/modify/print G-Code\n"
+        #       "file.")
+        # )
 
         # GO Button
         self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
@@ -2006,7 +2026,7 @@ class CNCObjectUI(ObjectUI):
               "file.")
         )
 
-        h_lay.addWidget(self.modify_gcode_button)
+        # h_lay.addWidget(self.modify_gcode_button)
         h_lay.addWidget(self.export_gcode_button)
         # self.custom_box.addWidget(self.export_gcode_button)
 

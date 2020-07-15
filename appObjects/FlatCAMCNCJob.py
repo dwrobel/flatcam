@@ -436,7 +436,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.modify_gcode_button.clicked.connect(self.on_edit_code_click)
+        self.ui.editor_button.clicked.connect(self.on_edit_code_click)
 
         self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
