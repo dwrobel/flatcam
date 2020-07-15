@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCComboBox, FCButton
@@ -180,6 +180,7 @@ class ToolCorners(AppTool):
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

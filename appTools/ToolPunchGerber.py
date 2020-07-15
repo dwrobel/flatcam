@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, FCComboBox
@@ -991,6 +991,7 @@ class PunchUI:
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

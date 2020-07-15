@@ -887,6 +887,7 @@ class PanelizeUI:
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

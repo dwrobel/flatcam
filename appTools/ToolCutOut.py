@@ -1543,6 +1543,7 @@ class CutoutUI:
 
         # ## Reset Tool
         self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

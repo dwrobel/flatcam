@@ -1068,27 +1068,29 @@ class ToolsDB2UI:
         self.iso_box.setLayout(self.iso_vlay)
         self.drill_box.setLayout(self.drill_vlay)
 
+
+        tools_vlay = QtWidgets.QVBoxLayout()
+        tools_vlay.addWidget(self.iso_box)
+        tools_vlay.addWidget(self.paint_box)
+        tools_vlay.addWidget(self.ncc_box)
+        tools_vlay.addStretch()
+
         descript_vlay = QtWidgets.QVBoxLayout()
         descript_vlay.addWidget(self.tool_description_box)
+        descript_vlay.addLayout(tools_vlay)
         descript_vlay.addStretch()
 
         milling_vlay = QtWidgets.QVBoxLayout()
         milling_vlay.addWidget(self.milling_box)
         milling_vlay.addStretch()
 
-        tools1_vlay = QtWidgets.QVBoxLayout()
-        tools1_vlay.addWidget(self.drill_box)
-        tools1_vlay.addWidget(self.iso_box)
-        tools1_vlay.addStretch()
-
-        tools2_vlay = QtWidgets.QVBoxLayout()
-        tools2_vlay.addWidget(self.paint_box)
-        tools2_vlay.addWidget(self.ncc_box)
-        tools2_vlay.addStretch()
+        drilling_vlay = QtWidgets.QVBoxLayout()
+        drilling_vlay.addWidget(self.drill_box)
 
         param_hlay.addLayout(descript_vlay)
-        param_hlay.addLayout(tools1_vlay)
-        param_hlay.addLayout(tools2_vlay)
+        param_hlay.addLayout(milling_vlay)
+        param_hlay.addLayout(drilling_vlay)
+        param_hlay.addLayout(tools_vlay)
 
         # always visible, always to be included last
         param_hlay.addLayout(milling_vlay)

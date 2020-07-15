@@ -4053,6 +4053,7 @@ class NccUI:
         self.grid3.addWidget(separator_line, 21, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
@@ -4228,6 +4229,7 @@ class NccUI:
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

@@ -984,6 +984,7 @@ class GeometryObjectUI(ObjectUI):
         bhlay = QtWidgets.QHBoxLayout()
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "with the diameter specified above.")
@@ -1010,12 +1011,14 @@ class GeometryObjectUI(ObjectUI):
         self.geo_table_box.addLayout(grid2)
 
         self.copytool_btn = QtWidgets.QPushButton(_('Copy'))
+        self.copytool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/copy16.png'))
         self.copytool_btn.setToolTip(
             _("Copy a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
         )
 
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row in the Tool Table.")
@@ -1317,6 +1320,7 @@ class GeometryObjectUI(ObjectUI):
         grid4.addWidget(separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
@@ -1620,6 +1624,7 @@ class GeometryObjectUI(ObjectUI):
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
+        self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip('%s\n%s' % (
             _("Generate CNCJob object."),
             _(
@@ -1648,6 +1653,7 @@ class GeometryObjectUI(ObjectUI):
 
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
+        self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
         self.paint_tool_button.setToolTip(
             _(
                 "Creates tool paths to cover the\n"
@@ -1666,6 +1672,7 @@ class GeometryObjectUI(ObjectUI):
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
+        self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/eraser26.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
               "for non-copper routing.")

@@ -2040,6 +2040,7 @@ class MillingUI:
         self.grid3.addWidget(separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
@@ -2301,6 +2302,7 @@ class MillingUI:
         self.tools_box.addLayout(self.grid4)
 
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
+        self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.\n"
               "If milling then an additional Geometry object will be created.\n"
@@ -2320,6 +2322,7 @@ class MillingUI:
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

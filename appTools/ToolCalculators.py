@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from appTool import AppTool
 from appGUI.GUIElements import FCSpinner, FCDoubleSpinner, NumericalEvalEntry
 import math
@@ -244,6 +244,7 @@ class ToolCalculator(AppTool):
 
         # ## Reset Tool
         self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
         )

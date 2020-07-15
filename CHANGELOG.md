@@ -14,9 +14,11 @@ CHANGELOG for FlatCAM beta
 - added Editor Push buttons in Geometry and CNCJob UI's
 - Tool Drilling - brushing through code and solved the report on estimation of execution time
 - Tool Drilling - more optimizations regarding of using Toolchange as opposed to not using it
-- modfied the preprocessors to work with the new properties for Excellon objects
+- modified the preprocessors to work with the new properties for Excellon objects
 - added to preprocessors information regarding the X,Y position at the end of the job
 - Tool Drilling made sure that on Toolchange event after toolchange event the tool feedrate is set
+- added some icons to more push buttons inside the app
+- a change of layout in Tools Database
 
 14.07.2020
 
@@ -37,7 +39,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - now slots are converted to drills if the checkbox is ON for the tool investigated
 - Drilling Tool - fixes due of changes in properties (preferences)
 - fixed the Drillcncjob TCL command
-- Multiple Tools fix - fixed issue with converting slots to drills selection being cleared when togglinh all rows by clicking on the header
+- Multiple Tools fix - fixed issue with converting slots to drills selection being cleared when toggling all rows by clicking on the header
 - Multiple Tools fix - fixes for when having multiple tools selected which created issues in tool tables for many tools
 
 12.07.2020
@@ -48,7 +50,7 @@ CHANGELOG for FlatCAM beta
 
 11.07.2020
 
-- moved all Excellon Advanced Prefeences to Drilling Tool Preferences
+- moved all Excellon Advanced Preferences to Drilling Tool Preferences
 - updated Drilling Tool to use the new settings
 - updated the Excellon Editor: the default_data dict is populated now on Editor entry
 - Excellon Editor: added a new functionality: conversion of slots to drills
