@@ -5209,9 +5209,9 @@ class CNCjob(Geometry):
         # #########################################################################################################
         # #########################################################################################################
 
-        # Only if there are locations to drill
+        # Only if there are locations to mill
         if not optimized_path:
-            log.debug("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
+            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() -> Optimized path is empty.")
             return 'fail'
 
         if self.app.abort_flag:
