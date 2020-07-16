@@ -298,6 +298,8 @@ class FlatCAMDefaults:
         "geometry_cnctooldia": "2.4",
         "geometry_merge_fuse_tools": True,
         "geometry_plot_line": "#FF0000",
+        "geometry_optimization_type": 'R',
+        "geometry_search_time": 3,
 
         # Geometry Options
         "geometry_cutz": -2.4,

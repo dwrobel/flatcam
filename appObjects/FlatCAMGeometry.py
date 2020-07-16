@@ -474,41 +474,19 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         # store here the default data for Geometry Data
         self.default_data = {}
-        self.default_data.update({
-            "name": None,
-            "plot": None,
-            "cutz": None,
-            "vtipdia": None,
-            "vtipangle": None,
-            "travelz": None,
-            "feedrate": None,
-            "feedrate_z": None,
-            "feedrate_rapid": None,
-            "dwell": None,
-            "dwelltime": None,
-            "multidepth": None,
-            "ppname_g": None,
-            "depthperpass": None,
-            "extracut": None,
-            "extracut_length": None,
-            "toolchange": None,
-            "toolchangez": None,
-            "endz": None,
-            "endxy": '',
-            "area_exclusion": None,
-            "area_shape": None,
-            "area_strategy": None,
-            "area_overz": None,
-            "spindlespeed": 0,
-            "toolchangexy": None,
-            "startz": None
-        })
 
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('geometry' + "_") == 0:
+                oname = opt_key[len('geometry') + 1:]
+                self.default_data[oname] = self.app.options[opt_key]
+            if opt_key.find('tools_mill' + "_") == 0:
+                oname = opt_key[len('tools_mill') + 1:]
+                self.default_data[oname] = self.app.options[opt_key]
         # fill in self.default_data values from self.options
-        for def_key in self.default_data:
-            for opt_key, opt_val in self.options.items():
-                if def_key == opt_key:
-                    self.default_data[def_key] = deepcopy(opt_val)
+        # for def_key in self.default_data:
+        #     for opt_key, opt_val in self.options.items():
+        #         if def_key == opt_key:
+        #             self.default_data[def_key] = deepcopy(opt_val)
 
         if type(self.options["cnctooldia"]) == float:
             tools_list = [self.options["cnctooldia"]]
@@ -1809,16 +1787,6 @@ class GeometryObject(FlatCAMObj, Geometry):
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
-                # try:
-                #     tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text())
-                # except ValueError:
-                #     # try to convert comma to decimal point. if it's still not working error message and return
-                #     try:
-                #         tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
-                #     except ValueError:
-                #         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                #                              _("Wrong value format entered, use a number."))
-                #         return
                 tooluid = int(self.ui.geo_tools_table.item(x.row(), 5).text())
 
                 for tooluid_key, tooluid_value in self.tools.items():
@@ -1884,6 +1852,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             self.app.inform.emit(msg)
             return
 
+        self.multigeo = True
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
@@ -2134,17 +2103,21 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
                 tol = float(self.app.defaults['global_tolerance']) / 20
-                res = job_obj.generate_from_multitool_geometry(
-                    tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
-                    tolerance=tol, z_cut=z_cut, z_move=z_move,
-                    feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
-                    multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
-                    toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                    pp_geometry_name=pp_geometry_name,
-                    tool_no=tool_cnt)
-
+                # res = job_obj.generate_from_multitool_geometry(
+                #     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
+                #     tolerance=tol, z_cut=z_cut, z_move=z_move,
+                #     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                #     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
+                #     multidepth=multidepth, depthpercut=depthpercut,
+                #     extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
+                #     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
+                #     pp_geometry_name=pp_geometry_name,
+                #     tool_no=tool_cnt)
+                tool_lst = list(tools_dict.keys())
+                is_first = True if tooluid_key == tool_lst[0] else False
+                is_last = True if tooluid_key == tool_lst[-1] else False
+                res = job_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0), tolerance = tol,
+                                                      is_first=is_first, is_last=is_last, toolchange = True)
                 if res == 'fail':
                     log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'

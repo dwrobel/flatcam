@@ -345,8 +345,7 @@ class ToolIsolation(AppTool, Gerber):
             "feedrate":                 self.app.defaults["geometry_feedrate"],
             "feedrate_z":               self.app.defaults["geometry_feedrate_z"],
             "feedrate_rapid":           self.app.defaults["geometry_feedrate_rapid"],
-            "dwell":                    self.app.defaults["geometry_dwell"],
-            "dwelltime":                self.app.defaults["geometry_dwelltime"],
+
             "multidepth":               self.app.defaults["geometry_multidepth"],
             "ppname_g":                 self.app.defaults["geometry_ppname_g"],
             "depthperpass":             self.app.defaults["geometry_depthperpass"],
@@ -357,7 +356,13 @@ class ToolIsolation(AppTool, Gerber):
             "endz":                     self.app.defaults["geometry_endz"],
             "endxy":                    self.app.defaults["geometry_endxy"],
 
+            "dwell":                    self.app.defaults["geometry_dwell"],
+            "dwelltime":                self.app.defaults["geometry_dwelltime"],
             "spindlespeed":             self.app.defaults["geometry_spindlespeed"],
+            "spindledir":               self.app.defaults["geometry_spindledir"],
+
+            "optimization_type":        self.app.defaults["geometry_optimization_type"],
+            "search_time":              self.app.defaults["geometry_search_time"],
             "toolchangexy":             self.app.defaults["geometry_toolchangexy"],
             "startz":                   self.app.defaults["geometry_startz"],
 

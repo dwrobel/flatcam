@@ -207,7 +207,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 7, 0, 1, 2)
 
-        self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
+        self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Path Optimization"))
         grid2.addWidget(self.excellon_general_label, 8, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:'))

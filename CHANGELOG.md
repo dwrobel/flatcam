@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+16.07.2020
+
+- added a new method for GCode generation for Geometry objects
+- added multiple algorithms for path optimization when generating GCode from an Geometry object beside the original Rtree algorithm: TSA, OR-Tools Basic, OR-Tools metaheuristics
+- added controls for Geometry object path optimization in Preferences
+
 15.07.2020
 
 - added icons to some of the push buttons

@@ -246,6 +246,8 @@ class PreferencesUIManager:
             "geometry_cnctooldia":          self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_merge_fuse_tools":    self.ui.geometry_defaults_form.geometry_gen_group.fuse_tools_cb,
             "geometry_plot_line":           self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
+            "geometry_optimization_type":   self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio,
+            "geometry_search_time":         self.ui.geometry_defaults_form.geometry_gen_group.optimization_time_entry,
 
             # Geometry Options
             "geometry_cutz":            self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,

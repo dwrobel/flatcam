@@ -2518,7 +2518,10 @@ class CNCjob(Geometry):
         self.z_end = endz
         self.xy_end = endxy
 
+        self.extracut = False
         self.extracut_length = None
+
+        self.tolerance = self.drawing_tolerance
 
         # used by the self.generate_from_excellon_by_tool() method
         # but set directly before the actual usage of the method with obj.excellon_optimization_type = value
@@ -2721,7 +2724,7 @@ class CNCjob(Geometry):
         # Create the data.
         return [(pt.coords.xy[0][0], pt.coords.xy[1][0]) for pt in points]
 
-    def optimized_ortools_meta(self, locations, start=None):
+    def optimized_ortools_meta(self, locations, start=None, opt_time=0):
         optimized_path = []
 
         tsp_size = len(locations)
@@ -2731,56 +2734,57 @@ class CNCjob(Geometry):
         depot = 0 if start is None else start
 
         # Create routing model.
-        if tsp_size > 0:
-            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-            routing = pywrapcp.RoutingModel(manager)
-            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-            search_parameters.local_search_metaheuristic = (
-                routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
-
-            # Set search time limit in milliseconds.
-            if float(self.app.defaults["excellon_search_time"]) != 0:
-                search_parameters.time_limit.seconds = int(
-                    float(self.app.defaults["excellon_search_time"]))
-            else:
-                search_parameters.time_limit.seconds = 3
-
-            # Callback to the distance function. The callback takes two
-            # arguments (the from and to node indices) and returns the distance between them.
-            dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
-
-            # if there are no distances then go to the next tool
-            if not dist_between_locations:
-                return
-
-            dist_callback = dist_between_locations.Distance
-            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-            # Solve, returns a solution if any.
-            assignment = routing.SolveWithParameters(search_parameters)
-
-            if assignment:
-                # Solution cost.
-                log.info("OR-tools metaheuristics - Total distance: " + str(assignment.ObjectiveValue()))
-
-                # Inspect solution.
-                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                route_number = 0
-                node = routing.Start(route_number)
-                start_node = node
-
-                while not routing.IsEnd(node):
-                    if self.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise grace
-
-                    optimized_path.append(node)
-                    node = assignment.Value(routing.NextVar(node))
-            else:
-                log.warning('OR-tools metaheuristics - No solution found.')
-        else:
+        if tsp_size == 0:
             log.warning('OR-tools metaheuristics - Specify an instance greater than 0.')
+            return optimized_path
+
+        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+        routing = pywrapcp.RoutingModel(manager)
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+        search_parameters.local_search_metaheuristic = (
+            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+
+        # Set search time limit in milliseconds.
+        if float(opt_time) != 0:
+            search_parameters.time_limit.seconds = int(
+                float(opt_time))
+        else:
+            search_parameters.time_limit.seconds = 3
+
+        # Callback to the distance function. The callback takes two
+        # arguments (the from and to node indices) and returns the distance between them.
+        dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
+
+        # if there are no distances then go to the next tool
+        if not dist_between_locations:
+            return
+
+        dist_callback = dist_between_locations.Distance
+        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        # Solve, returns a solution if any.
+        assignment = routing.SolveWithParameters(search_parameters)
+
+        if assignment:
+            # Solution cost.
+            log.info("OR-tools metaheuristics - Total distance: " + str(assignment.ObjectiveValue()))
+
+            # Inspect solution.
+            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+            route_number = 0
+            node = routing.Start(route_number)
+            start_node = node
+
+            while not routing.IsEnd(node):
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise grace
+
+                optimized_path.append(node)
+                node = assignment.Value(routing.NextVar(node))
+        else:
+            log.warning('OR-tools metaheuristics - No solution found.')
 
         return optimized_path
         # ############################################# ##
@@ -2795,43 +2799,44 @@ class CNCjob(Geometry):
         depot = 0 if start is None else start
 
         # Create routing model.
-        if tsp_size > 0:
-            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-            routing = pywrapcp.RoutingModel(manager)
-            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-
-            # Callback to the distance function. The callback takes two
-            # arguments (the from and to node indices) and returns the distance between them.
-            dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
-
-            # if there are no distances then go to the next tool
-            if not dist_between_locations:
-                return
-
-            dist_callback = dist_between_locations.Distance
-            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-            # Solve, returns a solution if any.
-            assignment = routing.SolveWithParameters(search_parameters)
-
-            if assignment:
-                # Solution cost.
-                log.info("Total distance: " + str(assignment.ObjectiveValue()))
-
-                # Inspect solution.
-                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                route_number = 0
-                node = routing.Start(route_number)
-                start_node = node
-
-                while not routing.IsEnd(node):
-                    optimized_path.append(node)
-                    node = assignment.Value(routing.NextVar(node))
-            else:
-                log.warning('No solution found.')
-        else:
+        if tsp_size == 0:
             log.warning('Specify an instance greater than 0.')
+            return optimized_path
+
+        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+        routing = pywrapcp.RoutingModel(manager)
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+
+        # Callback to the distance function. The callback takes two
+        # arguments (the from and to node indices) and returns the distance between them.
+        dist_between_locations = self.CreateDistanceCallback(locs=locations, manager=manager)
+
+        # if there are no distances then go to the next tool
+        if not dist_between_locations:
+            return
+
+        dist_callback = dist_between_locations.Distance
+        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+        # Solve, returns a solution if any.
+        assignment = routing.SolveWithParameters(search_parameters)
+
+        if assignment:
+            # Solution cost.
+            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+            # Inspect solution.
+            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+            route_number = 0
+            node = routing.Start(route_number)
+            start_node = node
+
+            while not routing.IsEnd(node):
+                optimized_path.append(node)
+                node = assignment.Value(routing.NextVar(node))
+        else:
+            log.warning('No solution found.')
 
         return optimized_path
         # ############################################# ##
@@ -2870,6 +2875,46 @@ class CNCjob(Geometry):
             path.append(nearest)
             must_visit.remove(nearest)
         return path
+
+    def geo_optimized_rtree(self, geometry):
+        locations = []
+
+        # ## Index first and last points in paths. What points to index.
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
+
+        for geo_shape in geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            if geo_shape is not None:
+                storage.insert(geo_shape)
+
+        current_pt = (0, 0)
+        pt, geo = storage.nearest(current_pt)
+        try:
+            while True:
+                storage.remove(geo)
+                locations.append((pt, geo))
+                current_pt = geo.coords[-1]
+                pt, geo = storage.nearest(current_pt)
+        except StopIteration:
+            pass
+
+        # if there are no locations then go to the next tool
+        if not locations:
+            return 'fail'
+
+        return locations
 
     def check_zcut(self, zcut):
         if zcut > 0:
@@ -2980,12 +3025,10 @@ class CNCjob(Geometry):
 
                 # and now, xy_toolchange is made into a list of floats in format [x, y]
                 if self.xy_toolchange:
-                    self.xy_toolchange = [
-                        float(eval(a)) for a in self.xy_toolchange.split(",")
-                    ]
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
                 if self.xy_toolchange and len(self.xy_toolchange) != 2:
-                    self.app.inform.emit('[ERROR]%s' % _("The Toolchange X,Y format has to be (x, y)."))
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_toolchange --> %s" % str(e))
@@ -3032,7 +3075,8 @@ class CNCjob(Geometry):
             # if there are no locations then go to the next tool
             if not locations:
                 return 'fail'
-            optimized_path = self.optimized_ortools_meta(locations=locations)
+            opt_time = self.app.defaults["excellon_search_time"]
+            optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
         elif opt_type == 'B':
             locations = self.create_tool_data_array(points=points)
             # if there are no locations then go to the next tool
@@ -3547,7 +3591,8 @@ class CNCjob(Geometry):
                     # if there are no locations then go to the next tool
                     if not locations:
                         continue
-                    optimized_path = self.optimized_ortools_meta(locations=locations)
+                    opt_time = self.app.defaults["excellon_search_time"]
+                    optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
                 elif used_excellon_optimization_type == 'B':
                     if tool in points:
                         locations = self.create_tool_data_array(points=points[tool])
@@ -3782,7 +3827,8 @@ class CNCjob(Geometry):
                 # if there are no locations then go to the next tool
                 if not locations:
                     return 'fail'
-                optimized_path = self.optimized_ortools_meta(locations=locations)
+                opt_time = self.app.defaults["excellon_search_time"]
+                optimized_path = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
             elif used_excellon_optimization_type == 'B':
                 if all_points:
                     locations = self.create_tool_data_array(points=all_points)
@@ -4931,6 +4977,365 @@ class CNCjob(Geometry):
         )
         return self.gcode
 
+    def geometry_tool_gcode_gen(self, tool, tools, first_pt, tolerance, is_first=False, is_last=False,
+                                toolchange=False):
+        """
+        Algorithm to generate GCode from multitool Geometry.
+
+        :param tool:        tool number for which to generate GCode
+        :type tool:         int
+        :param tools:       a dictionary holding all the tools and data
+        :type tools:        dict
+        :param first_pt:    a tuple of coordinates for the first point of the current tool
+        :type first_pt:     tuple
+        :param tolerance:   geometry tolerance
+        :type tolerance:
+        :param is_first:    if the current tool is the first tool (for this we need to add start GCode)
+        :type is_first:     bool
+        :param is_last:     if the current tool is the last tool (for this we need to add the end GCode)
+        :type is_last:      bool
+        :param toolchange:  add toolchange event
+        :type toolchange:   bool
+        :return:            GCode
+        :rtype:             str
+        """
+
+        log.debug("Generate_from_multitool_geometry()")
+
+        t_gcode = ''
+        temp_solid_geometry = []
+
+        # The Geometry from which we create GCode
+        geometry = tools[tool]['solid_geometry']
+        # ## Flatten the geometry. Only linear elements (no polygons) remain.
+        flat_geometry = self.flatten(geometry, pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        # #########################################################################################################
+        # #########################################################################################################
+        # ############# PARAMETERS used in PREPROCESSORS so they need to be updated ###############################
+        # #########################################################################################################
+        # #########################################################################################################
+        self.tool = str(tool)
+        tool_dict = tools[tool]['data']
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
+        # given under the name 'toolC'
+        self.postdata['toolC'] = float(tools[tool]['tooldia'])
+        self.tooldia = float(tools[tool]['tooldia'])
+        self.use_ui = True
+        self.tolerance = tolerance
+
+        # Optimization type. Can be: 'M', 'B', 'T', 'R', 'No'
+        opt_type = tool_dict['optimization_type']
+        opt_time = tool_dict['search_time'] if 'search_time' in tool_dict else 'R'
+
+        if opt_type == 'M':
+            log.debug("Using OR-Tools Metaheuristic Guided Local Search path optimization.")
+        elif opt_type == 'B':
+            log.debug("Using OR-Tools Basic path optimization.")
+        elif opt_type == 'T':
+            log.debug("Using Travelling Salesman path optimization.")
+        elif opt_type == 'R':
+            log.debug("Using RTree path optimization.")
+        else:
+            log.debug("Using no path optimization.")
+
+        # Preprocessor
+        self.pp_geometry_name = tool_dict['ppname_g']
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
+        p = self.pp_geometry
+
+        # Offset the Geometry if it is the case
+        # FIXME need to test if in ["Path", "In", "Out", "Custom"]. For now only 'Custom' is somehow done
+        offset = tools[tool]['offset_value']
+        if offset != 0.0:
+            for it in flat_geometry:
+                # if the geometry is a closed shape then create a Polygon out of it
+                if isinstance(it, LineString):
+                    if it.is_ring:
+                        it = Polygon(it)
+                temp_solid_geometry.append(it.buffer(offset, join_style=2))
+        else:
+            temp_solid_geometry = flat_geometry
+
+        if self.z_cut is None:
+            if 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                           "other parameters."))
+                return 'fail'
+            else:
+                self.z_cut = 0
+        if self.machinist_setting == 0:
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
+                return 'fail'
+
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+        # made sure that depth_per_cut is no more then the z_cut
+        if abs(self.z_cut) < self.z_depthpercut:
+            self.z_depthpercut = abs(self.z_cut)
+
+        # Depth parameters
+        self.z_cut = float(tool_dict['cutz'])
+        self.multidepth = tool_dict['multidepth']
+        self.z_depthpercut = float(tool_dict['depthperpass'])
+        self.z_move = float(tool_dict['travelz'])
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
+
+        self.feedrate = float(tool_dict['feedrate'])
+        self.z_feedrate = float(tool_dict['feedrate_z'])
+        self.feedrate_rapid = float(tool_dict['feedrate_rapid'])
+
+        self.spindlespeed = float(tool_dict['spindlespeed'])
+        self.spindledir = tool_dict['spindledir']
+        self.dwell = tool_dict['dwell']
+        self.dwelltime = float(tool_dict['dwelltime'])
+
+        self.startz = float(tool_dict['startz']) if tool_dict['startz'] else None
+        if self.startz == '':
+            self.startz = None
+
+        self.z_end = float(tool_dict['endz'])
+        try:
+            if self.xy_end == '':
+                self.xy_end = None
+            else:
+                # either originally it was a string or not, xy_end will be made string
+                self.xy_end = re.sub('[()\[\]]', '', str(self.xy_end)) if self.xy_end else None
+
+                # and now, xy_end is made into a list of floats in format [x, y]
+                if self.xy_end:
+                    self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
+
+                if self.xy_end and len(self.xy_end) != 2:
+                    self.app.inform.emit('[ERROR]%s' % _("The End X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() xy_end --> %s" % str(e))
+            self.xy_end = [0, 0]
+
+        self.z_toolchange = tool_dict['toolchangez']
+        self.xy_toolchange = tool_dict["toolchangexy"]
+        try:
+            if self.xy_toolchange == '':
+                self.xy_toolchange = None
+            else:
+                # either originally it was a string or not, xy_toolchange will be made string
+                self.xy_toolchange = re.sub('[()\[\]]', '', str(self.xy_toolchange)) if self.xy_toolchange else None
+
+                # and now, xy_toolchange is made into a list of floats in format [x, y]
+                if self.xy_toolchange:
+                    self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
+
+                if self.xy_toolchange and len(self.xy_toolchange) != 2:
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.geometry_from_excellon_by_tool() --> %s" % str(e))
+            pass
+
+        self.extracut = tool_dict['extracut']
+        self.extracut_length = tool_dict['extracut_length']
+
+        # Probe parameters
+        # self.z_pdepth = tool_dict["tools_drill_z_pdepth"]
+        # self.feedrate_probe = tool_dict["tools_drill_feedrate_probe"]
+
+        # #########################################################################################################
+        # ############ Create the data. ###########################################################################
+        # #########################################################################################################
+        optimized_path = []
+
+        geo_storage = {}
+        for geo in temp_solid_geometry:
+            geo_storage[geo.coords[0]] = geo
+        locations = list(geo_storage.keys())
+
+        if opt_type == 'M':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_ortools_meta(locations=locations, opt_time=opt_time)
+            optimized_path = [(locations[loc], geo_storage[locations[loc]]) for loc in optimized_locations]
+        elif opt_type == 'B':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_ortools_basic(locations=locations)
+            optimized_path = [(locations[loc], geo_storage[locations[loc]]) for loc in optimized_locations]
+        elif opt_type == 'T':
+            # if there are no locations then go to the next tool
+            if not locations:
+                return 'fail'
+            optimized_locations = self.optimized_travelling_salesman(locations)
+            optimized_path = [(loc, geo_storage[loc]) for loc in optimized_locations]
+        elif opt_type == 'R':
+            optimized_path = self.geo_optimized_rtree(temp_solid_geometry)
+            if optimized_path == 'fail':
+                return 'fail'
+        else:
+            # it's actually not optimized path but here we build a list of (x,y) coordinates
+            # out of the tool's drills
+            for geo in temp_solid_geometry:
+                optimized_path.append(geo.coords[0])
+        # #########################################################################################################
+        # #########################################################################################################
+
+        # Only if there are locations to drill
+        if not optimized_path:
+            log.debug("CNCJob.excellon_tool_gcode_gen() -> Optimized path is empty.")
+            return 'fail'
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise grace
+
+        # #############################################################################################################
+        # #############################################################################################################
+        # ################# MILLING !!! ##############################################################################
+        # #############################################################################################################
+        # #############################################################################################################
+        log.debug("Starting G-Code...")
+
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
+        self.app.inform.emit('%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                            str(current_tooldia),
+                                            str(self.units)))
+
+        # Measurements
+        total_travel = 0.0
+        total_cut = 0.0
+
+        # Start GCode
+        if is_first:
+            t_gcode += self.doformat(p.start_code)
+
+        # Toolchange code
+        t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
+        if toolchange:
+            t_gcode += self.doformat(p.toolchange_code)
+
+            if 'laser' not in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.spindle_code)  # Spindle start
+            else:
+                # for laser this will disable the laser
+                t_gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+
+            if self.dwell:
+                t_gcode += self.doformat(p.dwell_code)  # Dwell time
+        else:
+            t_gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+            t_gcode += self.doformat(p.startz_code, x=0, y=0)
+
+            if 'laser' not in self.pp_geometry_name.lower():
+                t_gcode += self.doformat(p.spindle_code)  # Spindle start
+
+            if self.dwell is True:
+                t_gcode += self.doformat(p.dwell_code)  # Dwell time
+        t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
+
+        # ## Iterate over geometry paths getting the nearest each time.
+        path_count = 0
+
+        # variables to display the percentage of work done
+        geo_len = len(flat_geometry)
+        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+        old_disp_number = 0
+
+        current_pt = (0, 0)
+        for pt, geo in optimized_path:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise grace
+
+            path_count += 1
+
+            # If last point in geometry is the nearest but prefer the first one if last point == first point
+            # then reverse coordinates.
+            if pt != geo.coords[0] and pt == geo.coords[-1]:
+                geo.coords = list(geo.coords)[::-1]
+
+            # ---------- Single depth/pass --------
+            if not self.multidepth:
+                # calculate the cut distance
+                total_cut = total_cut + geo.length
+
+                t_gcode += self.create_gcode_single_pass(geo, current_tooldia, self.extracut,
+                                                         self.extracut_length, self.tolerance,
+                                                         z_move=self.z_move, old_point=current_pt)
+
+            # --------- Multi-pass ---------
+            else:
+                # calculate the cut distance
+                # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                nr_cuts = 0
+                depth = abs(self.z_cut)
+                while depth > 0:
+                    nr_cuts += 1
+                    depth -= float(self.z_depthpercut)
+
+                total_cut += (geo.length * nr_cuts)
+
+                t_gcode += self.create_gcode_multi_pass(geo, current_tooldia, self.extracut,
+                                                        self.extracut_length, self.tolerance,
+                                                        z_move=self.z_move, postproc=p, old_point=current_pt)
+
+            # calculate the total distance
+            total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
+            current_pt = geo.coords[-1]
+
+            disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
+            if old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                old_disp_number = disp_number
+
+        log.debug("Finished G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
+
+        # Finish
+        if is_last:
+            t_gcode += self.doformat(p.spindle_stop_code)
+            t_gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
+            t_gcode += self.doformat(p.end_code, x=0, y=0)
+            self.app.inform.emit(
+                '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
+            )
+
+        self.gcode = t_gcode
+        return self.gcode
+
     def generate_from_geometry_2(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
                                  spindledir='CW', dwell=False, dwelltime=None, multidepth=False, depthpercut=None,
@@ -4973,10 +5378,6 @@ class CNCjob(Geometry):
         :param tool_no:
         :return:                    None
         """
-
-        if not isinstance(geometry, Geometry):
-            self.app.inform.emit('[ERROR] %s: %s' % (_("Expected a Geometry, got"), type(geometry)))
-            return 'fail'
         log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
@@ -4984,8 +5385,7 @@ class CNCjob(Geometry):
             self.app.inform.emit(
                 '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
             )
-
-        temp_solid_geometry = []
+            return 'fail'
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -5013,6 +5413,8 @@ class CNCjob(Geometry):
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
 
+        # Create the solid geometry which will be used to generate GCode
+        temp_solid_geometry = []
         if offset != 0.0:
             offset_for_use = offset
 
@@ -5110,9 +5512,7 @@ class CNCjob(Geometry):
                     self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
 
                 if len(self.xy_toolchange) < 2:
-                    msg = _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y)\n"
-                            "but now there is only one value, not two.")
-                    self.app.inform.emit('[ERROR] %s' % msg)
+                    self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
