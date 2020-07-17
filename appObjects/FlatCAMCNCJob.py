@@ -579,10 +579,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.ui.position_label.setText("")
         self.app.ui.rel_position_label.setText("")
 
-        # first clear previous text in text editor (if any)
-        self.gcode_editor_tab.code_editor.clear()
-        self.gcode_editor_tab.code_editor.setReadOnly(False)
-
         self.gcode_editor_tab.code_editor.completer_enable = False
         self.gcode_editor_tab.buttonRun.hide()
 
@@ -592,20 +588,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
-            self.gcode_editor_tab.code_editor.setPlainText(self.app.gcode_edited.getvalue())
-            # for line in self.app.gcode_edited:
-            #     QtWidgets.QApplication.processEvents()
-            #
-            #     proc_line = str(line).strip('\n')
-            #     self.gcode_editor_tab.code_editor.append(proc_line)
+            self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' % ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
-        self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-        self.gcode_editor_tab.handleTextChanged()
         self.gcode_editor_tab.t_frame.show()
         self.app.proc_container.view.set_idle()
 

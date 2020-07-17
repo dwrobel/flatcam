@@ -3241,6 +3241,7 @@ class PaintUI:
 
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_paint_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_paint_button.setToolTip(
             _("Create a Geometry Object which paints the polygons.")
         )

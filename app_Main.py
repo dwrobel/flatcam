@@ -7668,9 +7668,6 @@ class App(QtCore.QObject):
         self.ui.coords_toolbar.hide()
         self.ui.delta_coords_toolbar.hide()
 
-        # first clear previous text in text editor (if any)
-        self.text_editor_tab.code_editor.clear()
-        self.text_editor_tab.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
         self.text_editor_tab.code_editor.completer_enable = False
         self.text_editor_tab.buttonRun.hide()
@@ -7722,10 +7719,6 @@ class App(QtCore.QObject):
         self.ui.coords_toolbar.hide()
         self.ui.delta_coords_toolbar.hide()
 
-        # first clear previous text in text editor (if any)
-        self.source_editor_tab.code_editor.clear()
-        self.source_editor_tab.code_editor.setReadOnly(False)
-
         self.source_editor_tab.code_editor.completer_enable = False
         self.source_editor_tab.buttonRun.hide()
 
@@ -7767,20 +7760,13 @@ class App(QtCore.QObject):
 
         self.source_editor_tab.t_frame.hide()
         try:
-            self.source_editor_tab.code_editor.setPlainText(file.getvalue())
-            # for line in file:
-            #     QtWidgets.QApplication.processEvents()
-            #     proc_line = str(line).strip('\n')
-            #     self.source_editor_tab.code_editor.append(proc_line)
+            self.source_editor_tab.load_text(file.getvalue(), clear_text=True, move_to_start=True)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))
             return
 
-        self.source_editor_tab.handleTextChanged()
         self.source_editor_tab.t_frame.show()
-
-        self.source_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
         self.proc_container.view.set_idle()
         # self.ui.show()
 
@@ -9205,7 +9191,7 @@ class App(QtCore.QObject):
                 if f.open(QtCore.QIODevice.ReadOnly):
                     stream = QtCore.QTextStream(f)
                     code_edited = stream.readAll()
-                    self.text_editor_tab.code_editor.setPlainText(code_edited)
+                    self.text_editor_tab.load_text(code_edited, clear_text=True, move_to_start=True)
                     f.close()
         except IOError:
             App.log.error("Failed to open config file: %s" % filename)

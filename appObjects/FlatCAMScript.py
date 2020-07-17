@@ -135,14 +135,11 @@ class ScriptObject(FlatCAMObj):
         self.script_editor_tab.t_frame.hide()
 
         try:
-            self.script_editor_tab.code_editor.setPlainText(self.source_file)
-            # for line in self.source_file.splitlines():
-            #     QtWidgets.QApplication.processEvents()
-            #     self.script_editor_tab.code_editor.append(line)
+            # self.script_editor_tab.code_editor.setPlainText(self.source_file)
+            self.script_editor_tab.load_text(self.source_file, move_to_end=True)
         except Exception as e:
             log.debug("ScriptObject.set_ui() --> %s" % str(e))
 
-        self.script_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.End)
         self.script_editor_tab.t_frame.show()
 
         self.app.proc_container.view.set_idle()

@@ -1072,10 +1072,6 @@ class ToolCalibration(AppTool):
         self.app.ui.position_label.setText("")
         self.app.ui.rel_position_label.setText("")
 
-        # first clear previous text in text editor (if any)
-        self.gcode_editor_tab.code_editor.clear()
-        self.gcode_editor_tab.code_editor.setReadOnly(False)
-
         self.gcode_editor_tab.code_editor.completer_enable = False
         self.gcode_editor_tab.buttonRun.hide()
 
@@ -1085,12 +1081,10 @@ class ToolCalibration(AppTool):
         self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
-            self.gcode_editor_tab.code_editor.setPlainText(gcode)
+            self.gcode_editor_tab.load_text(gcode, move_to_start=True, clear_text=True)
         except Exception as e:
             self.app.inform.emit('[ERROR] %s %s' % ('ERROR -->', str(e)))
             return
-
-        self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
         self.gcode_editor_tab.t_frame.show()
         self.app.proc_container.view.set_idle()

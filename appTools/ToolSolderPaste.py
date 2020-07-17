@@ -1019,18 +1019,14 @@ class SolderPaste(AppTool):
             return
 
         try:
-            for line in lines:
-                proc_line = str(line).strip('\n')
-                self.text_editor_tab.code_editor.append(proc_line)
+            # for line in lines:
+            #     proc_line = str(line).strip('\n')
+            #     self.text_editor_tab.code_editor.append(proc_line)
+            self.text_editor_tab.load_text(lines, move_to_start=True)
         except Exception as e:
             log.debug('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s --> %s' % ('ToolSolderPaste.on_view_gcode()', str(e)))
             return
-
-        self.text_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-        self.text_editor_tab.handleTextChanged()
-        # self.app.ui.show()
 
     def on_save_gcode(self):
         """

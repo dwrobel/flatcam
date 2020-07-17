@@ -2028,14 +2028,13 @@ class CNCObjectUI(ObjectUI):
 
         # GO Button
         self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
+        self.export_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.export_gcode_button.setToolTip(
             _("Opens dialog to save G-Code\n"
               "file.")
         )
 
-        # h_lay.addWidget(self.modify_gcode_button)
         h_lay.addWidget(self.export_gcode_button)
-        # self.custom_box.addWidget(self.export_gcode_button)
 
 
 class ScriptObjectUI(ObjectUI):

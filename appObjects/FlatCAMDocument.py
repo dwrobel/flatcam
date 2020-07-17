@@ -84,10 +84,6 @@ class DocumentObject(FlatCAMObj):
 
         self.document_editor_tab.code_editor.setStyleSheet(stylesheet)
 
-        # first clear previous text in text editor (if any)
-        self.document_editor_tab.code_editor.clear()
-        self.document_editor_tab.code_editor.setReadOnly(self._read_only)
-
         self.document_editor_tab.buttonRun.hide()
 
         self.ui.autocomplete_cb.set_value(self.app.defaults['document_autocompleter'])
@@ -138,14 +134,16 @@ class DocumentObject(FlatCAMObj):
 
         self.ui.font_size_cb.setCurrentIndex(int(self.app.defaults['document_font_size']))
 
-        self.document_editor_tab.handleTextChanged()
+        # self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
         if Qt.mightBeRichText(self.source_file):
-            self.document_editor_tab.code_editor.setHtml(self.source_file)
+            # self.document_editor_tab.code_editor.setHtml(self.source_file)
+            self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=True)
         else:
-            for line in self.source_file.splitlines():
-                self.document_editor_tab.code_editor.append(line)
+            # for line in self.source_file.splitlines():
+            #     self.document_editor_tab.code_editor.append(line)
+            self.document_editor_tab.load_text(self.source_file, move_to_start=True, clear_text=True, as_html=False)
 
         self.build_ui()
 

@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.07.2020
+
+- added some icons in the Code Editor
+- replaced some icons in the app
+- in Code Editor, when changing text, the Save Code button will change color (text and icon) to red and after save it will revert the color to the default one
+- in Code Editor some methods rework
+
 16.07.2020
 
 - added a new method for GCode generation for Geometry objects

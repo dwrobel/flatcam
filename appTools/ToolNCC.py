@@ -4214,6 +4214,7 @@ class NccUI:
         self.grid3.addWidget(separator_line, 32, 0, 1, 2)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
               "for non-copper routing.")

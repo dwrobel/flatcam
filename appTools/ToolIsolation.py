@@ -3269,7 +3269,8 @@ class IsoUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 39, 0, 1, 2)
 
-        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
+        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Geometry"))
+        self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_iso_button.setStyleSheet("""
                                 QPushButton
                                 {
