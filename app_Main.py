@@ -1578,11 +1578,16 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
-        # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
         current_platform = platform.architecture()[0]
         if current_platform != '64bit':
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
+            # set Excellon path optimizations algorithm to TSA if the app is run on a 32bit platform
+            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
+            if self.defaults['excellon_optimization_type'] in ['M', 'B']:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
+            # set Geometry path optimizations algorithm to Rtree if the app is run on a 32bit platform
+            # modes 'M' or 'B' are not allowed when the app is running in 32bit platform
+            if self.defaults['geometry_optimization_type'] in ['M', 'B']:
+                self.ui.geometry_defaults_form.geometry_gen_group.opt_algorithm_radio.set_value('R')
 
         # ###########################################################################################################
         # ########################################### EXCLUSION AREAS ###############################################

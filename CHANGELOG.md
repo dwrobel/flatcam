@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.07.2020
+
+- updated the FCRadio class with a method that allow disabling certain options
+- the Path optimization options for Excellon and Geometry objects are now available depending on the OS platform used (32bit vs 64bit)
+
 20.07.2020
 
 - fixed a bug in the FlatCAMGerber.on_mark_cb_click_table() method when moving a Gerber object

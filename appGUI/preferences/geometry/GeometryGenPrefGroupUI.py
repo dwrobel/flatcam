@@ -4,6 +4,8 @@ from PyQt5.QtCore import QSettings
 from appGUI.GUIElements import FCCheckBox, FCSpinner, FCEntry, FCColorEntry, RadioSet
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
+import platform
+
 import gettext
 import appTranslation as fcTranslate
 import builtins
@@ -98,8 +100,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
               "- Basic -> Using Google OR-Tools Basic algorithm\n"
               "- TSA -> Using Travelling Salesman algorithm\n"
               "\n"
-              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
-              "Travelling Salesman algorithm for path optimization.")
+              "Some options are disabled when FlatCAM works in 32bit mode.")
         )
 
         self.opt_algorithm_radio = RadioSet(
@@ -165,8 +166,28 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
+        current_platform = platform.architecture()[0]
+        if current_platform == '64bit':
+            self.opt_algorithm_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], False)
+            self.optimization_time_label.setDisabled(False)
+            self.optimization_time_entry.setDisabled(False)
+        else:
+            self.opt_algorithm_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], True)
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)
+
+        self.opt_algorithm_radio.activated_custom.connect(self.optimization_selection)
+
         # Setting plot colors signals
         self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
 
     def on_line_color_entry(self):
         self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
+
+    def optimization_selection(self, val):
+        if val == 'M':
+            self.optimization_time_label.setDisabled(False)
+            self.optimization_time_entry.setDisabled(False)
+        else:
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)

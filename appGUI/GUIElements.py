@@ -99,6 +99,11 @@ class RadioSet(QtWidgets.QWidget):
                 return
         log.error("Value given is not part of this RadioSet: %s" % str(val))
 
+    def setOptionsDisabled(self, options: list, val: bool) -> None:
+        for option in self.choices:
+            if option['label'] in options:
+                option['radio'].setDisabled(val)
+
 
 # class RadioGroupChoice(QtWidgets.QWidget):
 #     def __init__(self, label_1, label_2, to_check, hide_list, show_list, parent=None):

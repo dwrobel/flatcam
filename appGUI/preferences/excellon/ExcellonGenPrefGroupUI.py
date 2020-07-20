@@ -1,9 +1,9 @@
 import platform
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCSliderWithSpinner, FCColorEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -219,25 +219,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
               "drill path optimization.\n"
               "\n"
-              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
-              "Travelling Salesman algorithm for path optimization.")
+              "Some options are disabled when FlatCAM works in 32bit mode.")
         )
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'},
                                                      {'label': _('TSA'), 'value': 'T'}],
                                                     orientation='vertical', stretch=False)
-        self.excellon_optimization_radio.setToolTip(
-            _("This sets the optimization type for the Excellon drill path.\n"
-              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
-              "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-              "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
-              "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
-              "drill path optimization.\n"
-              "\n"
-              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
-              "Travelling Salesman algorithm for path optimization.")
-        )
 
         grid2.addWidget(self.excellon_optimization_label, 9, 0)
         grid2.addWidget(self.excellon_optimization_radio, 9, 1)
@@ -319,15 +307,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
-            self.excellon_optimization_label.setDisabled(False)
-            self.excellon_optimization_radio.setDisabled(False)
+            self.excellon_optimization_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], False)
             self.optimization_time_label.setDisabled(False)
             self.optimization_time_entry.setDisabled(False)
-            self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
-
         else:
-            self.excellon_optimization_label.setDisabled(True)
-            self.excellon_optimization_radio.setDisabled(True)
+            self.excellon_optimization_radio.setOptionsDisabled([_('MetaHeuristic'), _('Basic')], True)
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
@@ -345,6 +329,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         # call it once to make sure it is updated at startup
         self.on_update_exc_export(state=self.app.defaults["excellon_update"])
+
+        self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
 
     def optimization_selection(self):
         if self.excellon_optimization_radio.get_value() == 'M':
