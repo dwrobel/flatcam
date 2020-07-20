@@ -19,6 +19,7 @@ from appGUI.VisPyVisuals import ShapeCollection
 from appTool import AppTool
 
 from copy import deepcopy
+import collections
 
 import numpy as np
 
@@ -72,6 +73,84 @@ class LoudDict(dict):
         """
         Assigns a function as callback on item change. The callback
         will receive the key of the object that was changed.
+
+        :param callback: Function to call on item change.
+        :type callback: func
+        :return: None
+        """
+
+        self.callback = callback
+
+
+class LoudUniqueList(list, collections.MutableSequence):
+    """
+    A List with a callback for item changes, callback which returns the index where the items are added/modified.
+    A List that will allow adding only items that are not in the list.
+    """
+
+    def __init__(self, arg=None):
+        super().__init__()
+        self.callback = lambda x: None
+
+        if not arg is None:
+            if isinstance(arg, list):
+                self.extend(arg)
+            else:
+                self.extend([arg])
+
+    def insert(self, i, v):
+        if v in self:
+            raise ValueError("One of the added items is already in the list.")
+        self.callback(i)
+        return super().insert(i, v)
+
+    def append(self, v):
+        if v in self:
+            raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().append(v)
+
+    def extend(self, t):
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().extend(t)
+
+    def __add__(self, t):  # This is for something like `LoudUniqueList([1, 2, 3]) + list([4, 5, 6])`...
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().__add__(t)
+
+    def __iadd__(self, t):  # This is for something like `l = LoudUniqueList(); l += [1, 2, 3]`
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().__iadd__(t)
+
+    def __setitem__(self, i, v):
+        try:
+            for v1 in v:
+                if v1 in self:
+                    raise ValueError("One of the modified items is already in the list.")
+        except TypeError:
+            if v in self:
+                raise ValueError("One of the modified items is already in the list.")
+        if not v is None:
+            self.callback(i)
+        return super().__setitem__(i, v)
+
+    def set_callback(self, callback):
+        """
+        Assigns a function as callback on item change. The callback
+        will receive the index of the object that was changed.
 
         :param callback: Function to call on item change.
         :type callback: func

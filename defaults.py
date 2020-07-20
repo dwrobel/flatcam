@@ -2,7 +2,7 @@ import os
 import stat
 import sys
 from copy import deepcopy
-from Common import LoudDict
+from Common import LoudDict, LoudUniqueList
 from camlib import to_dict, CNCjob, Geometry
 import simplejson
 import logging
@@ -156,6 +156,8 @@ class FlatCAMDefaults:
         "gerber_plot": True,
         "gerber_solid": True,
         "gerber_multicolored": False,
+        "gerber_color_list": LoudUniqueList(),
+
         "gerber_circle_steps": 64,
         "gerber_use_buffer_for_union": True,
         "gerber_clean_apertures": True,

@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.07.2020
+
+- fixed a bug in the FlatCAMGerber.on_mark_cb_click_table() method when moving a Gerber object
+- added a way to remember the colors set for the Gerber objects; it will remember the order that they were loaded and set a color previously given
+
 18.07.2020
 
 - added some icons in the Code Editor

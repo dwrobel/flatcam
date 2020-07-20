@@ -193,14 +193,33 @@ class AppObject(QtCore.QObject):
                 log.warning("AppObject.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
 
+        # ############################################################################################################
+        # Set the colors for the objects that have geometry
+        # ############################################################################################################
+        if kind != 'document' and kind != 'script':
             try:
                 if kind == 'excellon':
                     obj.fill_color = self.app.defaults["excellon_plot_fill"]
                     obj.outline_color = self.app.defaults["excellon_plot_line"]
 
                 if kind == 'gerber':
-                    obj.fill_color = self.app.defaults["gerber_plot_fill"]
-                    obj.outline_color = self.app.defaults["gerber_plot_line"]
+                    group = self.app.collection.group_items["gerber"]
+                    index = group.child_count()
+
+                    # when loading a Gerber object always create a color tuple (line color, fill_color)
+                    # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
+                    try:
+                        colors = self.app.defaults["gerber_color_list"][index]
+                    except IndexError:
+                        obj.outline_color = self.app.defaults["gerber_plot_line"]
+                        obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                        self.app.defaults["gerber_color_list"].insert(index, (obj.outline_color, obj.fill_color))
+                        colors = self.app.defaults["gerber_color_list"][index]
+
+                    new_line_color = colors[0]
+                    new_color = colors[1]
+                    obj.outline_color = new_line_color
+                    obj.fill_color = new_color
             except Exception as e:
                 log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
 
@@ -319,6 +338,7 @@ class AppObject(QtCore.QObject):
         :param auto_select: if the newly created object to be autoselected after creation
         :return: None
         """
+
         t0 = time.time()  # DEBUG
         log.debug("on_object_created()")
 
@@ -330,6 +350,10 @@ class AppObject(QtCore.QObject):
 
         # self.app.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
+
+        # #############################################################################################################
+        # ######################  Set colors for the message in the Status Bar  #######################################
+        # #############################################################################################################
         if obj.kind == 'gerber':
             self.app.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
                 kind=obj.kind.capitalize(),
@@ -367,7 +391,9 @@ class AppObject(QtCore.QObject):
                 name=str(obj.options['name']), tx=_("created/selected"))
             )
 
+        # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object
+        # #############################################################################################################
         self.app.shell._edit.set_model_data(self.app.myKeywords)
 
         if auto_select:
@@ -382,6 +408,8 @@ class AppObject(QtCore.QObject):
             with self.app.proc_container.new(_("Plotting")):
                 if t_obj.kind == 'cncjob':
                     t_obj.plot(kind=self.app.defaults["cncjob_plot_kind"])
+                if t_obj.kind == 'gerber':
+                    t_obj.plot(color=t_obj.outline_color, face_color=t_obj.fill_color)
                 else:
                     t_obj.plot()
 

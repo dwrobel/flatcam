@@ -10127,6 +10127,19 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
 
+        # make sure to set the color in the Gerber colors storage self.defaults["gerber_color_list"]
+        group = self.collection.group_items["gerber"]
+        group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
+
+        new_c = (new_color, new_line_color)
+
+        for sel_obj in sel_obj_list:
+            if sel_obj.kind == 'gerber':
+                item = sel_obj.item
+                item_index = self.collection.index(item.row(), 0, group_index)
+                idx = item_index.row()
+                self.defaults["gerber_color_list"][idx] = new_c
+
     def generate_cnc_job(self, objects):
         """
         Slot that will be called by clicking an entry in the contextual menu generated in the Project Tab tree
