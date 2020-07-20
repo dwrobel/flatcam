@@ -119,6 +119,7 @@ class PreferencesUIManager:
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
+            "gerber_store_color_list": self.ui.gerber_defaults_form.gerber_gen_group.store_colors_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
             "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
             "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,

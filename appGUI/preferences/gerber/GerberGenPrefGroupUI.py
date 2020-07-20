@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCEntry, FCSliderWithSpinner, FCColorEntry
+from appGUI.GUIElements import FCCheckBox, FCSpinner, RadioSet, FCButton, FCSliderWithSpinner, FCColorEntry
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -140,14 +140,30 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.gerber_extra_buffering, 8, 0, 1, 3)
 
+        # Store colors
+        self.store_colors_cb = FCCheckBox(label='%s' % _('Store colors'))
+        self.store_colors_cb.setToolTip(
+            _("It will store the set colors for Gerber objects.\n"
+              "Those will be used each time the application is started.")
+        )
+        grid0.addWidget(self.store_colors_cb, 11, 0)
+
+        # Clear stored colors
+        self.clear_colors_button = FCButton('%s' % _('Clear Colors'))
+        self.clear_colors_button.setIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
+        self.clear_colors_button.setToolTip(
+            _("Reset the colors associated with Gerber objects.")
+        )
+        grid0.addWidget(self.clear_colors_button, 11, 1, 1, 2)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 9, 0, 1, 3)
+        grid0.addWidget(separator_line, 13, 0, 1, 3)
 
         # Gerber Object Color
         self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Color'))
-        grid0.addWidget(self.gerber_color_label, 10, 0, 1, 3)
+        grid0.addWidget(self.gerber_color_label, 15, 0, 1, 3)
 
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -156,8 +172,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.line_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.line_color_label, 11, 0)
-        grid0.addWidget(self.line_color_entry, 11, 1, 1, 2)
+        grid0.addWidget(self.line_color_label, 17, 0)
+        grid0.addWidget(self.line_color_entry, 17, 1, 1, 2)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -168,8 +184,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.fill_color_entry = FCColorEntry()
 
-        grid0.addWidget(self.fill_color_label, 12, 0)
-        grid0.addWidget(self.fill_color_entry, 12, 1, 1, 2)
+        grid0.addWidget(self.fill_color_label, 20, 0)
+        grid0.addWidget(self.fill_color_entry, 20, 1, 1, 2)
 
         # Plot Fill Transparency Level
         self.gerber_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -178,8 +194,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.gerber_alpha_entry = FCSliderWithSpinner(0, 255, 1)
 
-        grid0.addWidget(self.gerber_alpha_label, 13, 0)
-        grid0.addWidget(self.gerber_alpha_entry, 13, 1, 1, 2)
+        grid0.addWidget(self.gerber_alpha_label, 22, 0)
+        grid0.addWidget(self.gerber_alpha_entry, 22, 1, 1, 2)
 
         self.layout.addStretch()
 
@@ -188,6 +204,8 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.fill_color_entry.editingFinished.connect(self.on_fill_color_changed)
 
         self.gerber_alpha_entry.valueChanged.connect(self.on_gerber_alpha_changed)     # alpha
+
+        self.clear_colors_button.clicked.connect(self.on_colors_clear_clicked)
 
     # Setting plot colors handlers
     def on_fill_color_changed(self):
@@ -205,3 +223,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
     def on_line_color_changed(self):
         self.app.defaults['gerber_plot_line'] = self.line_color_entry.get_value()[:7] + \
                                                 self.app.defaults['gerber_plot_line'][7:9]
+
+    def on_colors_clear_clicked(self):
+        self.app.defaults['gerber_color_list'].clear()
+        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Stored colors for Gerber objects are deleted."))

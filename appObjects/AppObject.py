@@ -203,23 +203,27 @@ class AppObject(QtCore.QObject):
                     obj.outline_color = self.app.defaults["excellon_plot_line"]
 
                 if kind == 'gerber':
-                    group = self.app.collection.group_items["gerber"]
-                    index = group.child_count()
+                    if self.app.defaults["gerber_store_color_list"] is True:
+                        group = self.app.collection.group_items["gerber"]
+                        index = group.child_count()
 
-                    # when loading a Gerber object always create a color tuple (line color, fill_color)
-                    # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
-                    try:
-                        colors = self.app.defaults["gerber_color_list"][index]
-                    except IndexError:
+                        # when loading a Gerber object always create a color tuple (line color, fill_color)
+                        # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
+                        try:
+                            colors = self.app.defaults["gerber_color_list"][index]
+                        except IndexError:
+                            obj.outline_color = self.app.defaults["gerber_plot_line"]
+                            obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                            self.app.defaults["gerber_color_list"].insert(index, (obj.outline_color, obj.fill_color))
+                            colors = self.app.defaults["gerber_color_list"][index]
+
+                        new_line_color = colors[0]
+                        new_fill = colors[1]
+                        obj.outline_color = new_line_color
+                        obj.fill_color = new_fill
+                    else:
                         obj.outline_color = self.app.defaults["gerber_plot_line"]
                         obj.fill_color = self.app.defaults["gerber_plot_fill"]
-                        self.app.defaults["gerber_color_list"].insert(index, (obj.outline_color, obj.fill_color))
-                        colors = self.app.defaults["gerber_color_list"][index]
-
-                    new_line_color = colors[0]
-                    new_color = colors[1]
-                    obj.outline_color = new_line_color
-                    obj.fill_color = new_color
             except Exception as e:
                 log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
 

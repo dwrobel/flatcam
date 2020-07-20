@@ -94,7 +94,7 @@ class FlatCAMDefaults:
         "global_project_at_startup": False,
         "global_version_check": True,
         "global_send_stats": True,
-        "global_worker_number": 2,
+        "global_worker_number": int((os.cpu_count()) / 2) if os.cpu_count() > 4 else 2,
         "global_tolerance": 0.005,
 
         "global_save_compressed": True,
@@ -157,6 +157,7 @@ class FlatCAMDefaults:
         "gerber_solid": True,
         "gerber_multicolored": False,
         "gerber_color_list": LoudUniqueList(),
+        "gerber_store_color_list": True,
 
         "gerber_circle_steps": 64,
         "gerber_use_buffer_for_union": True,

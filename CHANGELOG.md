@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - fixed a bug in the FlatCAMGerber.on_mark_cb_click_table() method when moving a Gerber object
 - added a way to remember the colors set for the Gerber objects; it will remember the order that they were loaded and set a color previously given
+- added a control in Preferences -> Gerber Tab for Gerber colors storage usage
+- made sure that the defaults on first install will set the number of workers to half the number of CPU's on the system but no less than 2
 
 18.07.2020
 
