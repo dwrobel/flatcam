@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - updated the FCRadio class with a method that allow disabling certain options
 - the Path optimization options for Excellon and Geometry objects are now available depending on the OS platform used (32bit vs 64bit)
+- fixed MultiColor checkbox in Excellon Object to work in Legacy Mode (2D)
+- modified the visibility change in Excellon UI to no longer do plot() when doing visibility toggle for one of the tools but only a visibility change in the shapes properties
 
 20.07.2020
 

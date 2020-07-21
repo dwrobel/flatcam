@@ -103,6 +103,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.outline_color = self.app.defaults['excellon_plot_line']
         self.alpha_level = 'bf'
 
+        # the key is the tool id and the value is a list of shapes keys (indexes)
+        self.shape_indexes_dict = {}
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -1068,52 +1071,19 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui_connect()
 
     def on_plot_cb_click_table(self):
-        # self.ui.cnc_tools_table.cellWidget(row, 2).widget().setCheckState(QtCore.Qt.Unchecked)
         self.ui_disconnect()
-        # cw = self.sender()
-        # cw_index = self.ui.tools_table.indexAt(cw.pos())
-        # cw_row = cw_index.row()
         check_row = 0
 
-        self.shapes.clear(update=True)
         for tool_key in self.tools:
-            solid_geometry = self.tools[tool_key]['solid_geometry']
-
             # find the geo_tool_table row associated with the tool_key
             for row in range(self.ui.tools_table.rowCount()):
                 tool_item = int(self.ui.tools_table.item(row, 0).text())
                 if tool_item == int(tool_key):
                     check_row = row
                     break
-            if self.ui.tools_table.cellWidget(check_row, 5).isChecked():
-                self.options['plot'] = True
-                # self.plot_element(element=solid_geometry, visible=True)
-                # Plot excellon (All polygons?)
-                if self.options["solid"]:
-                    for geo in solid_geometry:
-                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-                                       visible=self.options['plot'],
-                                       layer=2)
-                else:
-                    for geo in solid_geometry:
-                        self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-                        for ints in geo.interiors:
-                            self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+            state = self.ui.tools_table.cellWidget(check_row, 5).isChecked()
+            self.shapes.update_visibility(state, indexes=self.shape_indexes_dict[tool_key])
         self.shapes.redraw()
-
-        # make sure that the general plot is disabled if one of the row plot's are disabled and
-        # if all the row plot's are enabled also enable the general plot checkbox
-        cb_cnt = 0
-        total_row = self.ui.tools_table.rowCount()
-        for row in range(total_row - 2):
-            if self.ui.tools_table.cellWidget(row, 5).isChecked():
-                cb_cnt += 1
-            else:
-                cb_cnt -= 1
-        if cb_cnt < total_row - 2:
-            self.ui.plot_cb.setChecked(False)
-        else:
-            self.ui.plot_cb.setChecked(True)
         self.ui_connect()
 
     def plot(self, visible=None, kind=None):
@@ -1144,26 +1114,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
                         break
                 return new_color
 
-        # try:
-        #     # Plot Excellon (All polygons?)
-        #     if self.options["solid"]:
-        #         for tool in self.tools:
-        #             for geo in self.tools[tool]['solid_geometry']:
-        #                 self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-        #                                visible=self.options['plot'],
-        #                                layer=2)
-        #     else:
-        #         for tool in self.tools:
-        #             for geo in self.tools[tool]['solid_geometry']:
-        #                 self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-        #                 for ints in geo.interiors:
-        #                     self.add_shape(shape=ints, color='orange', visible=self.options['plot'])
-        #
-        #     self.shapes.redraw()
-        #     return
-        # except (ObjectDeleted, AttributeError, KeyError):
-        #     self.shapes.clear(update=True)
-
         # this stays for compatibility reasons, in case we try to open old projects
         try:
             __ = iter(self.solid_geometry)
@@ -1175,13 +1125,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
         try:
             # Plot Excellon (All polygons?)
             if self.ui.solid_cb.get_value():
-                # for geo in self.solid_geometry:
-                #     self.add_shape(shape=geo,
-                #                    color=self.outline_color,
-                #                    face_color=random_color() if self.options['multicolored'] else self.fill_color,
-                #                    visible=visible,
-                #                    layer=2)
-
                 # plot polygons for each tool separately
                 for tool in self.tools:
                     # set the color here so we have one color for each tool
@@ -1190,20 +1133,37 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
                     # tool is a dict also
                     for geo in self.tools[tool]["solid_geometry"]:
-                        self.add_shape(shape=geo,
-                                       color=geo_color if multicolored else self.outline_color,
-                                       face_color=geo_color if multicolored else self.fill_color,
-                                       visible=visible,
-                                       layer=2)
-
+                        idx = self.add_shape(shape=geo,
+                                             color=geo_color if multicolored else self.outline_color,
+                                             face_color=geo_color if multicolored else self.fill_color,
+                                             visible=visible,
+                                             layer=2)
+                        try:
+                            self.shape_indexes_dict[tool].append(idx)
+                        except KeyError:
+                            self.shape_indexes_dict[tool] = [idx]
             else:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo.exterior, color='red', visible=visible)
-                    for ints in geo.interiors:
-                        self.add_shape(shape=ints, color='orange', visible=visible)
+                for tool in self.tools:
+                    for geo in self.tools[tool]['solid_geometry']:
+                        idx = self.add_shape(shape=geo.exterior, color='red', visible=visible)
+                        try:
+                            self.shape_indexes_dict[tool].append(idx)
+                        except KeyError:
+                            self.shape_indexes_dict[tool] = [idx]
+                        for ints in geo.interiors:
+                            idx = self.add_shape(shape=ints, color='orange', visible=visible)
+                            try:
+                                self.shape_indexes_dict[tool].append(idx)
+                            except KeyError:
+                                self.shape_indexes_dict[tool] = [idx]
+                # for geo in self.solid_geometry:
+                #     self.add_shape(shape=geo.exterior, color='red', visible=visible)
+                #     for ints in geo.interiors:
+                #         self.add_shape(shape=ints, color='orange', visible=visible)
 
             self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
+        except (ObjectDeleted, AttributeError) as e:
+            log.debug("ExcellonObject.plot() -> %s" % str(e))
             self.shapes.clear(update=True)
 
     @staticmethod

@@ -1272,6 +1272,7 @@ class ShapeCollectionLegacy:
                     'face_color': self._face_color,
                     'linewidth': line_width,
                     'alpha': self._alpha,
+                    'visible': self._visible,
                     'shape': sh
                 })
 
@@ -1285,6 +1286,7 @@ class ShapeCollectionLegacy:
                 'face_color': self._face_color,
                 'linewidth': line_width,
                 'alpha': self._alpha,
+                'visible': self._visible,
                 'shape': shape
             })
 
@@ -1336,19 +1338,20 @@ class ShapeCollectionLegacy:
         except AttributeError:
             obj_type = 'utility'
 
-        if self._visible:
-            # if we don't use this then when adding each new shape, the old ones will be added again, too
-            if obj_type == 'utility':
-                self.axes.patches.clear()
+        # if we don't use this then when adding each new shape, the old ones will be added again, too
+        # if obj_type == 'utility':
+        #     self.axes.patches.clear()
+        self.axes.patches.clear()
 
-            for element in local_shapes:
+        for element in local_shapes:
+            if local_shapes[element]['visible'] is True:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
                     if self.obj.options["solid"] and isinstance(local_shapes[element]['shape'], Polygon):
                         try:
                             patch = PolygonPatch(local_shapes[element]['shape'],
-                                                 facecolor="#C40000",
-                                                 edgecolor="#750000",
+                                                 facecolor=local_shapes[element]['face_color'],
+                                                 edgecolor=local_shapes[element]['color'],
                                                  alpha=local_shapes[element]['alpha'],
                                                  zorder=3,
                                                  linewidth=local_shapes[element]['linewidth']
@@ -1545,6 +1548,17 @@ class ShapeCollectionLegacy:
             if self._visible is False:
                 self.redraw()
         self._visible = value
+
+    def update_visibility(self, state, indexes=None):
+        if indexes:
+            for i in indexes:
+                if i in self._shapes:
+                    self._shapes[i]['visible'] = state
+        else:
+            for i in self._shapes:
+                self._shapes[i]['visible'] = state
+
+        self.redraw()
 
     @property
     def enabled(self):
