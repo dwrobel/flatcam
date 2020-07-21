@@ -1361,11 +1361,15 @@ class ShapeCollectionLegacy:
                             log.debug("ShapeCollectionLegacy.redraw() excellon poly --> %s" % str(e))
                     else:
                         try:
-                            x, y = local_shapes[element]['shape'].exterior.coords.xy
-                            self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
-                            for ints in local_shapes[element]['shape'].interiors:
-                                x, y = ints.coords.xy
-                                self.axes.plot(x, y, 'o-', linewidth=local_shapes[element]['linewidth'])
+                            if isinstance(local_shapes[element]['shape'], Polygon):
+                                x, y = local_shapes[element]['shape'].exterior.coords.xy
+                                self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
+                                for ints in local_shapes[element]['shape'].interiors:
+                                    x, y = ints.coords.xy
+                                    self.axes.plot(x, y, 'o-', linewidth=local_shapes[element]['linewidth'])
+                            elif isinstance(local_shapes[element]['shape'], LinearRing):
+                                x, y = local_shapes[element]['shape'].coords.xy
+                                self.axes.plot(x, y, 'r-', linewidth=local_shapes[element]['linewidth'])
                         except Exception as e:
                             log.debug("ShapeCollectionLegacy.redraw() excellon no poly --> %s" % str(e))
                 elif obj_type == 'geometry':
