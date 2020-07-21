@@ -38,6 +38,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     ui_type = ExcellonObjectUI
     optionChanged = QtCore.pyqtSignal(str)
+    multicolored_build_sig = QtCore.pyqtSignal()
 
     def __init__(self, name):
         self.decimals = self.app.decimals
@@ -184,6 +185,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_rows)
         self.ui.table_visibility_cb.stateChanged.connect(self.on_table_visibility_toggle)
+
+        self.multicolored_build_sig.connect(self.on_multicolored_build)
 
         self.units_found = self.app.defaults['units']
 
@@ -1194,7 +1197,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.shapes.clear(update=True)
 
         if multicolored:
-            self.build_ui()
+            self.multicolored_build_sig.emit()
+
+    def on_multicolored_build(self):
+        self.build_ui()
 
     @staticmethod
     def merge(exc_list, exc_final, decimals=None, fuse_tools=True):

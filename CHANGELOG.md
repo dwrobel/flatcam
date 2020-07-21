@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - fixed issues with detecting older Preferences files
 - fixed some issues in Excellon Editor due of recent changes
 - moved the Gerber colors fill in the AppObject.on_object_created() slot and fixed some minor issues here
+- made sure there are no issues when plotting the Excellon object in one thread and trying to build the UI in another by using a signal
 
 20.07.2020
 
