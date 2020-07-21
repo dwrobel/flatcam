@@ -284,12 +284,17 @@ class ExcellonObject(FlatCAMObj, Excellon):
             empty_plot_item.setFlags(QtCore.Qt.NoItemFlags)
             self.ui.tools_table.setItem(self.tool_row, 4, empty_plot_item)
 
-            if 'multicolor' in self.tools[tool_no]:
+            if 'multicolor' in self.tools[tool_no] and self.tools[tool_no]['multicolor'] is not None:
                 red = self.tools[tool_no]['multicolor'][0] * 255
                 green = self.tools[tool_no]['multicolor'][1] * 255
                 blue = self.tools[tool_no]['multicolor'][2] * 255
                 alpha = self.tools[tool_no]['multicolor'][3] * 255
                 h_color = QtGui.QColor(red, green, blue, alpha)
+                self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
+            else:
+                h1 = self.app.defaults["excellon_plot_fill"][1:7]
+                h2 = self.app.defaults["excellon_plot_fill"][7:9]
+                h_color = QtGui.QColor('#' + h2 + h1)
                 self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
 
             # Plot Item
@@ -303,13 +308,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # add a last row with the Total number of drills
         empty_1 = QtWidgets.QTableWidgetItem('')
-        empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1.setFlags(QtCore.Qt.NoItemFlags)
         empty_1_1 = QtWidgets.QTableWidgetItem('')
-        empty_1_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_1.setFlags(QtCore.Qt.NoItemFlags)
         empty_1_2 = QtWidgets.QTableWidgetItem('')
-        empty_1_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_2.setFlags(QtCore.Qt.NoItemFlags)
         empty_1_3 = QtWidgets.QTableWidgetItem('')
-        empty_1_3.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_3.setFlags(QtCore.Qt.NoItemFlags)
+        empty_1_4 = QtWidgets.QTableWidgetItem('')
+        empty_1_4.setFlags(QtCore.Qt.NoItemFlags)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
@@ -320,6 +327,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
         self.ui.tools_table.setItem(self.tool_row, 3, empty_1_1)
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_2)
         self.ui.tools_table.setItem(self.tool_row, 5, empty_1_3)
 
         font = QtGui.QFont()
@@ -334,13 +342,15 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
-        empty_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2.setFlags(QtCore.Qt.NoItemFlags)
         empty_2_1 = QtWidgets.QTableWidgetItem('')
-        empty_2_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_1.setFlags(QtCore.Qt.NoItemFlags)
         empty_2_2 = QtWidgets.QTableWidgetItem('')
-        empty_2_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_2.setFlags(QtCore.Qt.NoItemFlags)
         empty_2_3 = QtWidgets.QTableWidgetItem('')
-        empty_2_3.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_3.setFlags(QtCore.Qt.NoItemFlags)
+        empty_2_4 = QtWidgets.QTableWidgetItem('')
+        empty_2_4.setFlags(QtCore.Qt.NoItemFlags)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
@@ -351,7 +361,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
         self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
         self.ui.tools_table.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
-        self.ui.tools_table.setItem(self.tool_row, 5, empty_2_3)
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_2_3)
+        self.ui.tools_table.setItem(self.tool_row, 5, empty_2_4)
 
         for kl in [1, 2, 3]:
             self.ui.tools_table.item(self.tool_row, kl).setFont(font)
@@ -382,7 +393,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(4, 3)
+        horizontal_header.resizeSection(4, 17)
         horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(5, 17)
         self.ui.tools_table.setColumnWidth(5, 17)
@@ -1054,11 +1065,13 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.read_form_item('solid')
         self.plot()
 
-    def on_multicolored_cb_click(self, *args):
+    def on_multicolored_cb_click(self, val):
         if self.muted_ui:
             return
         self.read_form_item('multicolored')
         self.plot()
+        if not val:
+            self.build_ui()
 
     def on_autoload_db_toggled(self, state):
         self.app.defaults["excellon_autoload_db"] = True if state else False
@@ -1142,6 +1155,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                     geo_color = random_color()
                     if multicolored:
                         self.tools[tool]['multicolor'] = geo_color
+                    else:
+                        self.tools[tool]['multicolor'] = None
 
                     # tool is a dict also
                     for geo in self.tools[tool]["solid_geometry"]:

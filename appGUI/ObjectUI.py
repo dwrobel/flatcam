@@ -584,7 +584,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.tools_table.setColumnCount(6)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), _('Slots'),
-                                                    " ", 'P'])
+                                                    "C", 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -601,6 +601,8 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table.horizontalHeaderItem(3).setToolTip(
             _("The number of Slot holes. Holes that are created by\n"
               "milling them with an endmill bit."))
+        self.tools_table.horizontalHeaderItem(4).setToolTip(
+            _("Show the color of the drill holes when using multi-color."))
         self.tools_table.horizontalHeaderItem(5).setToolTip(
             _("Toggle display of the drills for the current tool.\n"
               "This does not select the tools for G-code generation."))
