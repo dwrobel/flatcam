@@ -1053,10 +1053,10 @@ class ExcellonObject(FlatCAMObj, Excellon):
     def on_autoload_db_toggled(self, state):
         self.app.defaults["excellon_autoload_db"] = True if state else False
 
-    def on_plot_cb_click(self, *args):
+    def on_plot_cb_click(self, val):
         if self.muted_ui:
             return
-        self.plot()
+        # self.plot()
         self.read_form_item('plot')
 
         self.ui_disconnect()
@@ -1067,7 +1067,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 table_cb.setChecked(True)
             else:
                 table_cb.setChecked(False)
-
         self.ui_connect()
 
     def on_plot_cb_click_table(self):
