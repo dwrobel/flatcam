@@ -10137,7 +10137,6 @@ class App(QtCore.QObject):
         group_index = self.collection.index(group.row(), 0, QtCore.QModelIndex())
 
         new_c = (new_line_color, new_color)
-
         for sel_obj in sel_obj_list:
             if sel_obj.kind == 'gerber':
                 item = sel_obj.item

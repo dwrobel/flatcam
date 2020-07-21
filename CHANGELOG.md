@@ -19,6 +19,8 @@ CHANGELOG for FlatCAM beta
 - Excellon UI: made sure that when the Multicolor checkbox is unchecked, the color is updated in the Color column of the tools table
 - made sure that the Preferences files are deleted on new version install, while the application is in Beta status
 - fixed issues with detecting older Preferences files
+- fixed some issues in Excellon Editor due of recent changes
+- moved the Gerber colors fill in the AppObject.on_object_created() slot and fixed some minor issues here
 
 20.07.2020
 

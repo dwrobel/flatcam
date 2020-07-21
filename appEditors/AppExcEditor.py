@@ -44,6 +44,7 @@ class FCDrillAdd(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'drill_add'
+        self.draw_app = draw_app
 
         self.selected_dia = None
         try:
@@ -52,8 +53,8 @@ class FCDrillAdd(FCShapeTool):
 
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a drill first select a tool"))
             self.draw_app.select_tool("drill_select")
@@ -124,7 +125,7 @@ class FCDrillAdd(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -169,8 +170,8 @@ class FCDrillArray(FCShapeTool):
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Drill Array first select a tool in Tool Table"))
@@ -359,7 +360,7 @@ class FCDrillArray(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -387,8 +388,8 @@ class FCSlot(FCShapeTool):
 
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a slot first select a tool"))
             self.draw_app.select_tool("drill_select")
@@ -561,7 +562,7 @@ class FCSlot(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -589,8 +590,8 @@ class FCSlotArray(FCShapeTool):
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
-            item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
-            self.draw_app.tools_table_exc.setCurrentItem(item)
+            item = self.draw_app.e_ui.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.e_ui.tools_table_exc.setCurrentItem(item)
         except KeyError:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("To add an Slot Array first select a tool in Tool Table"))
@@ -886,7 +887,7 @@ class FCSlotArray(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -922,7 +923,7 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.is_modified = True
 
         try:
-            self.draw_app.tools_table_exc.itemChanged.disconnect()
+            self.draw_app.e_ui.tools_table_exc.itemChanged.disconnect()
         except TypeError:
             pass
 
@@ -943,11 +944,11 @@ class FCDrillResize(FCShapeTool):
         else:
             self.destination_storage = self.draw_app.storage_dict[new_dia]
 
-        for index in self.draw_app.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.e_ui.tools_table_exc.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.e_ui.tools_table_exc.item(row, 1).text()
             self.selected_dia_set.add(float(dia_on_row))
 
         # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
@@ -1105,7 +1106,7 @@ class FCDrillResize(FCShapeTool):
             self.geometry = []
 
             # we reactivate the signals after the after the tool editing
-            self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
+            self.draw_app.e_ui.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
 
             self.draw_app.app.inform.emit('[success] %s' %
                                           _("Done. Drill/Slot Resize completed."))
@@ -1124,7 +1125,7 @@ class FCDrillResize(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -1153,11 +1154,11 @@ class FCDrillMove(FCShapeTool):
         self.current_storage = None
         self.geometry = []
 
-        for index in self.draw_app.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.e_ui.tools_table_exc.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.e_ui.tools_table_exc.item(row, 1).text()
             self.selected_dia_list.append(float(dia_on_row))
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
@@ -1264,7 +1265,7 @@ class FCDrillMove(FCShapeTool):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -1319,7 +1320,7 @@ class FCDrillCopy(FCDrillMove):
 
     def clean_up(self):
         self.draw_app.selected = []
-        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.e_ui.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
 
         try:
@@ -1369,7 +1370,7 @@ class FCDrillSelect(DrawTool):
             self.exc_editor_app.selected = []
 
     def click_release(self, pos):
-        self.exc_editor_app.tools_table_exc.clearSelection()
+        self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
         xmin, ymin, xmax, ymax = 0, 0, 0, 0
 
         try:
@@ -1425,12 +1426,12 @@ class FCDrillSelect(DrawTool):
 
             # select the diameter of the selected shape in the tool table
             try:
-                self.exc_editor_app.tools_table_exc.cellPressed.disconnect()
+                self.exc_editor_app.e_ui.tools_table_exc.cellPressed.disconnect()
             except (TypeError, AttributeError):
                 pass
 
             # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
-            #     self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            #     self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             self.sel_tools.clear()
 
             for shape_s in self.exc_editor_app.selected:
@@ -1438,17 +1439,17 @@ class FCDrillSelect(DrawTool):
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
                         self.sel_tools.add(storage)
 
-            self.exc_editor_app.tools_table_exc.clearSelection()
+            self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
             for storage in self.sel_tools:
                 for k, v in self.exc_editor_app.tool2tooldia.items():
                     if v == storage:
-                        self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)
+                        self.exc_editor_app.e_ui.tools_table_exc.selectRow(int(k) - 1)
                         self.exc_editor_app.last_tool_selected = int(k)
                         break
 
-            # self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.exc_editor_app.e_ui.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-            self.exc_editor_app.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
+            self.exc_editor_app.e_ui.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
 
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = AppExcEditor.make_storage()
@@ -1467,7 +1468,7 @@ class FCDrillSelect(DrawTool):
         #     if not over_shape_list:
         #         self.exc_editor_app.selected = []
         #         AppExcEditor.draw_shape_idx = -1
-        #         self.exc_editor_app.tools_table_exc.clearSelection()
+        #         self.exc_editor_app.e_ui.tools_table_exc.clearSelection()
         #     else:
         #         # if there are shapes under our click then advance through the list of them, one at the time in a
         #         # circular way
@@ -1500,9 +1501,9 @@ class FCDrillSelect(DrawTool):
         #             if shape in self.exc_editor_app.storage_dict[storage].get_objects():
         #                 for key in self.exc_editor_app.tool2tooldia:
         #                     if self.exc_editor_app.tool2tooldia[key] == storage:
-        #                         item = self.exc_editor_app.tools_table_exc.item((key - 1), 1)
+        #                         item = self.exc_editor_app.e_ui.tools_table_exc.item((key - 1), 1)
         #                         item.setSelected(True)
-        #                         # self.exc_editor_app.tools_table_exc.selectItem(key - 1)
+        #                         # self.exc_editor_app.e_ui.tools_table_exc.selectItem(key - 1)
         #
         # except Exception as e:
         #     log.error("[ERROR] Something went bad. %s" % str(e))
@@ -1536,7 +1537,7 @@ class AppExcEditor(QtCore.QObject):
         self.e_ui.addtool_btn.clicked.connect(self.on_tool_add)
         self.e_ui.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.e_ui.deltool_btn.clicked.connect(self.on_tool_delete)
-        # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        # self.e_ui.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.e_ui.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
         self.e_ui.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)

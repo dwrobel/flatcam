@@ -194,40 +194,6 @@ class AppObject(QtCore.QObject):
                 return "fail"
 
         # ############################################################################################################
-        # Set the colors for the objects that have geometry
-        # ############################################################################################################
-        if kind != 'document' and kind != 'script':
-            try:
-                if kind == 'excellon':
-                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
-                    obj.outline_color = self.app.defaults["excellon_plot_line"]
-
-                if kind == 'gerber':
-                    if self.app.defaults["gerber_store_color_list"] is True:
-                        group = self.app.collection.group_items["gerber"]
-                        index = group.child_count()
-
-                        # when loading a Gerber object always create a color tuple (line color, fill_color)
-                        # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
-                        try:
-                            colors = self.app.defaults["gerber_color_list"][index]
-                        except IndexError:
-                            obj.outline_color = self.app.defaults["gerber_plot_line"]
-                            obj.fill_color = self.app.defaults["gerber_plot_fill"]
-                            self.app.defaults["gerber_color_list"].insert(index, (obj.outline_color, obj.fill_color))
-                            colors = self.app.defaults["gerber_color_list"][index]
-
-                        new_line_color = colors[0]
-                        new_fill = colors[1]
-                        obj.outline_color = new_line_color
-                        obj.fill_color = new_fill
-                    else:
-                        obj.outline_color = self.app.defaults["gerber_plot_line"]
-                        obj.fill_color = self.app.defaults["gerber_plot_fill"]
-            except Exception as e:
-                log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
-
-        # ############################################################################################################
         # update the KeyWords list with the name of the file
         # ############################################################################################################
         self.app.myKeywords.append(obj.options['name'])
@@ -394,6 +360,41 @@ class AppObject(QtCore.QObject):
                 color='darkCyan',
                 name=str(obj.options['name']), tx=_("created/selected"))
             )
+
+
+        # ############################################################################################################
+        # Set the colors for the objects that have geometry
+        # ############################################################################################################
+        if obj.kind != 'document' and obj.kind != 'script':
+            try:
+                if obj.kind == 'excellon':
+                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
+                    obj.outline_color = self.app.defaults["excellon_plot_line"]
+
+                if obj.kind == 'gerber':
+                    if self.app.defaults["gerber_store_color_list"] is True:
+                        group = self.app.collection.group_items["gerber"]
+                        index = group.child_count() - 1
+
+                        # when loading a Gerber object always create a color tuple (line color, fill_color)
+                        # and add it to the self.app.defaults["gerber_color_list"] from where it will be picked and used
+                        try:
+                            colors = self.app.defaults["gerber_color_list"][index]
+                        except IndexError:
+                            obj.outline_color = self.app.defaults["gerber_plot_line"]
+                            obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                            colors = (obj.outline_color, obj.fill_color)
+                            self.app.defaults["gerber_color_list"].append(colors)
+
+                        new_line_color = colors[0]
+                        new_fill = colors[1]
+                        obj.outline_color = new_line_color
+                        obj.fill_color = new_fill
+                    else:
+                        obj.outline_color = self.app.defaults["gerber_plot_line"]
+                        obj.fill_color = self.app.defaults["gerber_plot_fill"]
+            except Exception as e:
+                log.warning("AppObject.new_object() -> setting colors error. %s" % str(e))
 
         # #############################################################################################################
         # update the SHELL auto-completer model with the name of the new object
