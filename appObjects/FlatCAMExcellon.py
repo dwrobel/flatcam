@@ -281,8 +281,16 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
             # Empty Plot Item
             empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
+            empty_plot_item.setFlags(QtCore.Qt.NoItemFlags)
+            self.ui.tools_table.setItem(self.tool_row, 4, empty_plot_item)
+
+            if 'multicolor' in self.tools[tool_no]:
+                red = self.tools[tool_no]['multicolor'][0] * 255
+                green = self.tools[tool_no]['multicolor'][1] * 255
+                blue = self.tools[tool_no]['multicolor'][2] * 255
+                alpha = self.tools[tool_no]['multicolor'][3] * 255
+                h_color = QtGui.QColor(red, green, blue, alpha)
+                self.ui.tools_table.item(self.tool_row, 4).setBackground(h_color)
 
             # Plot Item
             plot_item = FCCheckBox()
@@ -373,6 +381,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(4, 3)
         horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(5, 17)
         self.ui.tools_table.setColumnWidth(5, 17)
@@ -1087,6 +1097,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def plot(self, visible=None, kind=None):
 
+        multicolored = self.ui.multicolored_cb.get_value()
+
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
         if not FlatCAMObj.plot(self):
@@ -1128,7 +1140,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 for tool in self.tools:
                     # set the color here so we have one color for each tool
                     geo_color = random_color()
-                    multicolored = self.ui.multicolored_cb.get_value()
+                    if multicolored:
+                        self.tools[tool]['multicolor'] = geo_color
 
                     # tool is a dict also
                     for geo in self.tools[tool]["solid_geometry"]:
@@ -1164,6 +1177,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
         except (ObjectDeleted, AttributeError) as e:
             log.debug("ExcellonObject.plot() -> %s" % str(e))
             self.shapes.clear(update=True)
+
+        if multicolored:
+            self.build_ui()
 
     @staticmethod
     def merge(exc_list, exc_final, decimals=None, fuse_tools=True):

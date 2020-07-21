@@ -584,7 +584,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.tools_table.setColumnCount(6)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), _('Slots'),
-                                                    "NOT USED", 'P'])
+                                                    " ", 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -606,7 +606,7 @@ class ExcellonObjectUI(ObjectUI):
               "This does not select the tools for G-code generation."))
 
         # this column is not used; reserved for future usage
-        self.tools_table.setColumnHidden(4, True)
+        # self.tools_table.setColumnHidden(4, True)
 
         # Excellon Tools autoload from DB
 

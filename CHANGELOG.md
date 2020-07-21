@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - modified the visibility change in Excellon UI to no longer do plot() when doing visibility toggle for one of the tools but only a visibility change in the shapes properties
 - Excellon UI in Legacy Mode (2D): fixed the Solid checkbox functionality
 - Excellon UI: fixed plot checkbox performing an extra plot function which was not required
+- Excellon UI: added a column which will color each row/tool of that column in the color used when checking Multicolor checkbox
 
 20.07.2020
 
