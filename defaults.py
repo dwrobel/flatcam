@@ -770,7 +770,7 @@ class FlatCAMDefaults:
         except Exception as e:
             log.error("save_factory_defaults() -> %s" % str(e))
 
-    def __init__(self, callback=lambda x: None):
+    def __init__(self, callback=lambda x: None, beta=True):
         """
 
         :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
@@ -781,6 +781,7 @@ class FlatCAMDefaults:
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
+        self.beta = beta
         self.defaults.set_change_callback(callback)
 
     # #### Pass-through to the defaults LoudDict #####
@@ -840,7 +841,13 @@ class FlatCAMDefaults:
         # Perform migration if necessary but only if the defaults dict is not empty
         if self.__is_old_defaults(defaults) and defaults:
             self.old_defaults_found = True
-            defaults = self.__migrate_old_defaults(defaults=defaults)
+
+            # while the app is in Beta status, delete the older Preferences files
+            if self.beta is False:
+                defaults = self.__migrate_old_defaults(defaults=defaults)
+            else:
+                # wipeout the old defaults
+                self.reset_to_factory_defaults(defaults=defaults)
         else:
             self.old_defaults_found = False
 

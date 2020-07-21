@@ -420,7 +420,7 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
-        self.defaults = FlatCAMDefaults()
+        self.defaults = FlatCAMDefaults(beta=self.beta)
 
         self.defaults["root_folder_path"] = self.app_home
 
