@@ -296,7 +296,7 @@ class ToolsDB(QtWidgets.QWidget):
               "A position on Z plane to move immediately after job stop."))
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '/geo_tools_db.FlatDB'
+        filename = self.app.data_path + '/tools_db.FlatDB'
 
         # load the database tools from the file
         try:
@@ -733,7 +733,7 @@ class ToolsDB(QtWidgets.QWidget):
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 
-        filename = self.app.data_path + "/geo_tools_db.FlatDB"
+        filename = self.app.data_path + "/tools_db.FlatDB"
 
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app_ui.plot_tab_area.count()):
@@ -2450,7 +2450,7 @@ class ToolsDB2(QtWidgets.QWidget):
         self.ui_connect()
 
     def setup_db_ui(self):
-        filename = self.app.data_path + '\\geo_tools_db.FlatDB'
+        filename = self.app.data_path + '\\tools_db.FlatDB'
 
         # load the database tools from the file
         try:
@@ -2859,7 +2859,7 @@ class ToolsDB2(QtWidgets.QWidget):
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 
-        filename = self.app.data_path + "/geo_tools_db.FlatDB"
+        filename = self.app.data_path + "/tools_db.FlatDB"
 
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app_ui.plot_tab_area.count()):

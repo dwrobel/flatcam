@@ -361,13 +361,13 @@ class App(QtCore.QObject):
             os.makedirs(self.preprocessorpaths)
             App.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
-        # create geo_tools_db.FlatDB file if there is none
+        # create tools_db.FlatDB file if there is none
         try:
-            f = open(self.data_path + '/geo_tools_db.FlatDB')
+            f = open(self.data_path + '/tools_db.FlatDB')
             f.close()
         except IOError:
-            App.log.debug('Creating empty geo_tool_db.FlatDB')
-            f = open(self.data_path + '/geo_tools_db.FlatDB', 'w')
+            App.log.debug('Creating empty tools_db.FlatDB')
+            f = open(self.data_path + '/tools_db.FlatDB', 'w')
             json.dump({}, f)
             f.close()
 
@@ -420,7 +420,7 @@ class App(QtCore.QObject):
         # ############################################################################################################
         # ################################# DEFAULTS - PREFERENCES STORAGE ###########################################
         # ############################################################################################################
-        self.defaults = FlatCAMDefaults(beta=self.beta)
+        self.defaults = FlatCAMDefaults(beta=self.beta, version=self.version)
 
         self.defaults["root_folder_path"] = self.app_home
 

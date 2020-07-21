@@ -16,7 +16,8 @@ from appParsers.ParseGerber import Gerber
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-log = logging.getLogger('FlatCAMDefaults')
+# log = logging.getLogger('FlatCAMDefaults')
+log = logging.getLogger('base')
 
 
 class FlatCAMDefaults:
@@ -87,7 +88,6 @@ class FlatCAMDefaults:
 
         "global_portable": False,
         "global_language": 'English',
-
 
         "global_systray_icon": True,
         "global_shell_at_startup": False,  # Show the shell at startup.
@@ -741,19 +741,22 @@ class FlatCAMDefaults:
     }
 
     @classmethod
-    def save_factory_defaults(cls, file_path: str, version: float):
+    def save_factory_defaults(cls, file_path: str, version: (float, str)):
         """Writes the factory defaults to a file at the given path, overwriting any existing file."""
-        # Delete any existing factory defaults file
+        # If the file exists
         if os.path.isfile(file_path):
-            # check if it has content other than an empty dict, because if it does we don't need it to be updated
-            # each time the app starts
+            # tst if it is empty
             with open(file_path, "r") as file:
                 f_defaults = simplejson.loads(file.read())
-                if f_defaults:
-                    return
 
-            os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-            os.remove(file_path)
+                # if the file is not empty
+                if f_defaults:
+                    # if it has the same version do nothing
+                    if str(f_defaults['version']) == str(version):
+                        return
+                    # if the versions differ then remove the file
+                    os.chmod(file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                    os.remove(file_path)
 
         cls.factory_defaults['version'] = version
 
@@ -770,18 +773,22 @@ class FlatCAMDefaults:
         except Exception as e:
             log.error("save_factory_defaults() -> %s" % str(e))
 
-    def __init__(self, callback=lambda x: None, beta=True):
+    def __init__(self, callback=lambda x: None, beta=True, version=8.9):
         """
 
         :param callback:    A method called each time that one of the values are changed in the self.defaults LouDict
         """
         self.defaults = LoudDict()
+
+        self.beta = beta
+        self.version = version
+        self.factory_defaults['version'] = self.version
+
         self.defaults.update(self.factory_defaults)
         self.current_defaults = {}  # copy used for restoring after cancelled prefs changes
         self.current_defaults.update(self.factory_defaults)
         self.old_defaults_found = False
 
-        self.beta = beta
         self.defaults.set_change_callback(callback)
 
     # #### Pass-through to the defaults LoudDict #####
@@ -844,16 +851,21 @@ class FlatCAMDefaults:
 
             # while the app is in Beta status, delete the older Preferences files
             if self.beta is False:
+                log.debug("Found old preferences files. Migrating.")
                 defaults = self.__migrate_old_defaults(defaults=defaults)
+                # Save the resulting defaults
+                self.defaults.update(defaults)
+                self.current_defaults.update(self.defaults)
             else:
+                log.debug("Found old preferences files. Resetting the files.")
                 # wipeout the old defaults
-                self.reset_to_factory_defaults(defaults=defaults)
+                self.reset_to_factory_defaults()
         else:
             self.old_defaults_found = False
 
-        # Save the resulting defaults
-        self.defaults.update(defaults)
-        self.current_defaults.update(self.defaults)
+            # Save the resulting defaults
+            self.defaults.update(defaults)
+            self.current_defaults.update(self.defaults)
 
         log.debug("FlatCAM defaults loaded from: %s" % filename)
 

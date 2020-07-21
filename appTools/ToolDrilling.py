@@ -811,7 +811,7 @@ class ToolDrilling(AppTool, Excellon):
 
     def on_tool_db_load(self):
 
-        filename = self.app.data_path + '\\geo_tools_db.FlatDB'
+        filename = self.app.data_path + '\\tools_db.FlatDB'
 
         # load the database tools from the file
         try:

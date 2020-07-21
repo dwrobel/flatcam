@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Excellon UI: added a column which will color each row/tool of that column in the color used when checking Multicolor checkbox
 - Excellon UI: made sure that when the Multicolor checkbox is unchecked, the color is updated in the Color column of the tools table
 - made sure that the Preferences files are deleted on new version install, while the application is in Beta status
+- fixed issues with detecting older Preferences files
 
 20.07.2020
 
