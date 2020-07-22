@@ -913,6 +913,7 @@ class SolderPaste(AppTool):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
+            total_gcode = ''
             for tooluid_key, tooluid_value in obj.tools.items():
                 # find the tool_dia associated with the tooluid_key
                 tool_dia = tooluid_value['tooldia']
@@ -934,6 +935,7 @@ class SolderPaste(AppTool):
                     return 'fail'
                 else:
                     tool_cnc_dict['gcode'] = res
+                total_gcode += res
 
                 # ## PARSE GCODE # ##
                 tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
@@ -948,6 +950,8 @@ class SolderPaste(AppTool):
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
                 tool_cnc_dict.clear()
+
+            job_obj.source_file = total_gcode
 
         if use_thread:
             # To be run in separate thread

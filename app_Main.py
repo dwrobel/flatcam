@@ -83,6 +83,7 @@ from appEditors.AppGeoEditor import AppGeoEditor
 from appEditors.AppExcEditor import AppExcEditor
 from appEditors.AppGerberEditor import AppGerberEditor
 from appEditors.AppTextEditor import AppTextEditor
+from appEditors.appGCodeEditor import AppGCodeEditor
 from appParsers.ParseHPGL2 import HPGL2
 
 # FlatCAM Workers
@@ -1574,6 +1575,12 @@ class App(QtCore.QObject):
             self.grb_editor = AppGerberEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
+
+        try:
+            self.gcode_editor = AppGCodeEditor(self)
+        except Exception as es:
+            log.debug("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
+
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
@@ -2226,7 +2233,10 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
-            edited_object.on_edit_code_click()
+            # set call source to the Editor we go into
+            self.call_source = 'gcode_editor'
+
+            self.gcode_editor.edit_fcgcode(edited_object)
             return
 
         # make sure that we can't select another object while in Editor Mode:

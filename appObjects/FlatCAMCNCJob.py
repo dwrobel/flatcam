@@ -595,8 +595,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
-            self.app.inform.emit('[ERROR] %s %s' % ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
+            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
             return
 
         self.gcode_editor_tab.t_frame.show()

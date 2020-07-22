@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 22.07.2020
 
 - working on a proper GCode Editor
+- wip in the GCode Editor
 
 21.07.2020
 

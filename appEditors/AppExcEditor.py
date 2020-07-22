@@ -2569,7 +2569,7 @@ class AppExcEditor(QtCore.QObject):
 
         self.set_ui()
 
-        # now that we hava data, create the appGUI interface and add it to the Tool Tab
+        # now that we have data, create the appGUI interface and add it to the Tool Tab
         self.build_ui(first_run=True)
 
         # we activate this after the initial build as we don't need to see the tool been populated

@@ -332,6 +332,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.excellon_optimization_type = opt_type
 
             ret_val = job_obj.generate_from_excellon_by_tool(obj, tools, use_ui=False)
+            job_obj.source_file = ret_val
 
             if ret_val == 'fail':
                 return 'fail'
