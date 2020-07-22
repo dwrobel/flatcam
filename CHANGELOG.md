@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - made sure that optimizations of lines when importing SVG or DXF as lines will not encounter polygons but only LinesStrings or LinearRings, otherwise having crashes
 - fixed the import SVG and import DXF, when importing as Geometry to be imported as multigeo tool
 - fixed the import SVG and import DXF, the source files will be saved as loaded into the source_file attribute of the resulting object (be it Geometry or Gerber)
+- in import SVG and import DXF methods made sure that any polygons that are imported as polygons will survive and only the lines are optimized (changed the behavior of the above made modification)
 
 21.07.2020
 

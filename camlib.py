@@ -1058,8 +1058,19 @@ class Geometry(object):
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
         # trying to optimize the resulting geometry by merging contiguous lines
-        geos = self.flatten(geos, reset=True, pathonly=True)
-        geos = linemerge(geos)
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        for l in merged_lines:
+            geos.append(l)
 
         # Add to object
         if self.solid_geometry is None:
@@ -1123,8 +1134,19 @@ class Geometry(object):
         geos = getdxfgeo(dxf)
 
         # trying to optimize the resulting geometry by merging contiguous lines
-        geos = self.flatten(geos, reset=True, pathonly=True)
-        geos = linemerge(geos)
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        for l in merged_lines:
+            geos.append(l)
 
         # Add to object
         if self.solid_geometry is None:
