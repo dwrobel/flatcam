@@ -36,14 +36,15 @@ class AppGCodeEditor(QtCore.QObject):
 
         self.ui = AppGCodeEditorUI(app=self.app)
 
-        # #################################################################################
-        # ################### SIGNALS #####################################################
-        # #################################################################################
-
         self.gcode_obj = None
         self.code_edited = ''
 
     def set_ui(self):
+        """
+
+        :return:
+        :rtype:
+        """
         # #############################################################################################################
         # ############# ADD a new TAB in the PLot Tab Area
         # #############################################################################################################
@@ -73,9 +74,18 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.append_text.set_value(self.app.defaults["cncjob_append"])
         self.ui.prepend_text.set_value(self.app.defaults["cncjob_prepend"])
 
-        self.ui.exit_editor_button.buttonSave.clicked.connect(self.update_fcgcode)
+        # #################################################################################
+        # ################### SIGNALS #####################################################
+        # #################################################################################
+        self.ui.update_gcode_button.clicked.connect(self.insert_gcode)
+        self.ui.exit_editor_button.clicked.connect(self.update_fcgcode)
 
     def build_ui(self):
+        """
+
+        :return:
+        :rtype:
+        """
         # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
         # Put ourselves in the GUI Selected Tab
@@ -84,12 +94,27 @@ class AppGCodeEditor(QtCore.QObject):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
     def ui_connect(self):
+        """
+
+        :return:
+        :rtype:
+        """
         pass
 
     def ui_disconnect(self):
+        """
+
+        :return:
+        :rtype:
+        """
         pass
 
     def handleTextChanged(self):
+        """
+
+        :return:
+        :rtype:
+        """
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
@@ -97,7 +122,22 @@ class AppGCodeEditor(QtCore.QObject):
         self.buttonSave.setStyleSheet("QPushButton {color: red;}")
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
 
+    def insert_gcode(self):
+        """
+
+        :return:
+        :rtype:
+        """
+        pass
+
     def edit_fcgcode(self, cnc_obj):
+        """
+
+        :param cnc_obj:
+        :type cnc_obj:
+        :return:
+        :rtype:
+        """
         assert isinstance(cnc_obj, CNCJobObject)
         self.gcode_obj = cnc_obj
 
@@ -111,6 +151,11 @@ class AppGCodeEditor(QtCore.QObject):
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 
     def update_fcgcode(self):
+        """
+
+        :return:
+        :rtype:
+        """
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         my_gcode = self.ui.gcode_editor_tab.code_editor.toPlainText()
@@ -120,7 +165,11 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.gcode_editor_tab.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
 
     def on_open_gcode(self):
+        """
 
+        :return:
+        :rtype:
+        """
         _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
 

@@ -223,11 +223,37 @@ class AppObject(QtCore.QObject):
 
         :return: None
         """
+        outname = 'new_geo'
 
         def initialize(obj, app):
-            obj.multitool = False
+            obj.multitool = True
+            obj.multigeo = True
+            # store here the default data for Geometry Data
+            default_data = {}
 
-        self.new_object('geometry', 'new_geo', initialize, plot=False)
+            for opt_key, opt_val in app.options.items():
+                if opt_key.find('geometry' + "_") == 0:
+                    oname = opt_key[len('geometry') + 1:]
+                    default_data[oname] = self.app.options[opt_key]
+                if opt_key.find('tools_mill' + "_") == 0:
+                    oname = opt_key[len('tools_mill') + 1:]
+                    default_data[oname] = self.app.options[opt_key]
+
+            obj.tools = {}
+            obj.tools.update({
+                1: {
+                    'tooldia': float(app.defaults["geometry_cnctooldia"]),
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': deepcopy(default_data),
+                    'solid_geometry': []
+                }
+            })
+            obj.tools[1]['data']['name'] = outname
+
+        self.new_object('geometry', outname, initialize, plot=False)
 
     def new_gerber_object(self):
         """

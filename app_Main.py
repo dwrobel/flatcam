@@ -2193,9 +2193,10 @@ class App(QtCore.QObject):
                     if edited_object.tools[tool]['tooldia'] == selected_tooldia:
                         multi_tool = tool
                         break
-
+                log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:
+                log.debug("Editing SingleGeo Geometry with tool diameter.")
                 self.geo_editor.edit_fcgeometry(edited_object)
 
             # set call source to the Editor we go into
@@ -8780,9 +8781,15 @@ class App(QtCore.QObject):
         units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
-            geo_obj.import_svg(filename, obj_type, units=units)
-            geo_obj.multigeo = False
-            geo_obj.source_file = self.export_gerber(obj_name=name, filename=None, local_use=geo_obj, use_thread=False)
+            if obj_type == "geometry":
+                geo_obj.import_svg(filename, obj_type, units=units)
+            elif obj_type == "gerber":
+                geo_obj.import_svg(filename, obj_type, units=units)
+
+            geo_obj.multigeo = True
+            with open(filename) as f:
+                file_content = f.read()
+            geo_obj.source_file = file_content
 
         with self.proc_container.new(_("Importing SVG")) as proc:
 
@@ -8833,7 +8840,11 @@ class App(QtCore.QObject):
                 geo_obj.import_dxf_as_gerber(filename, units=units)
             else:
                 return "fail"
+
             geo_obj.multigeo = True
+            with open(filename) as f:
+                file_content = f.read()
+            geo_obj.source_file = file_content
 
         with self.proc_container.new(_("Importing DXF")):
 

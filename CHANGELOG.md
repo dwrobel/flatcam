@@ -11,6 +11,11 @@ CHANGELOG for FlatCAM beta
 
 - working on a proper GCode Editor
 - wip in the GCode Editor
+- added a Laser preprocessor named 'Z_laser' which will change the Z to the Travel Z on each ToolChange event allowing therefore control of the dot size
+- by default now a new blank Geometry object created by FlatCAM is of type multigeo
+- made sure that optimizations of lines when importing SVG or DXF as lines will not encounter polygons but only LinesStrings or LinearRings, otherwise having crashes
+- fixed the import SVG and import DXF, when importing as Geometry to be imported as multigeo tool
+- fixed the import SVG and import DXF, the source files will be saved as loaded into the source_file attribute of the resulting object (be it Geometry or Gerber)
 
 21.07.2020
 
