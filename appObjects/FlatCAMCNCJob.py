@@ -149,6 +149,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.gcode_editor_tab = None
 
+        self.source_file = ''
         self.units_found = self.app.defaults['units']
 
     def build_ui(self):
@@ -538,10 +539,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.name_entry.set_value(new_name)
         self.on_name_activate(silent=True)
 
-        preamble = str(self.ui.prepend_text.get_value())
-        postamble = str(self.ui.append_text.get_value())
+        try:
+            preamble = str(self.ui.prepend_text.get_value())
+            postamble = str(self.ui.append_text.get_value())
+            gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        except Exception as err:
+            log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
+            gc = self.export_gcode(filename)
 
-        gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
         if gc == 'fail':
             return
 
@@ -597,7 +602,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.show()
         self.app.proc_container.view.set_idle()
 
+        self.gcode_editor_tab.buttonSave.clicked.connect(self.on_update_source_file)
+
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
+
+    def on_update_source_file(self):
+        self.source_file = self.gcode_editor_tab.code_editor.toPlainText()
 
     def gcode_header(self, comment_start_symbol=None, comment_stop_symbol=None):
         """
@@ -734,6 +744,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # isel_icp = False
 
         include_header = True
+
+        if preamble == '':
+            preamble = self.app.defaults["cncjob_prepend"]
+        if postamble == '':
+            preamble = self.app.defaults["cncjob_append"]
 
         try:
             if self.special_group:

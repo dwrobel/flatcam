@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.07.2020
+
+- working on a proper GCode Editor
+
 21.07.2020
 
 - updated the FCRadio class with a method that allow disabling certain options

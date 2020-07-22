@@ -7745,10 +7745,7 @@ class App(QtCore.QObject):
         # then append the text from GCode to the text editor
         if obj.kind == 'cncjob':
             try:
-                file = obj.export_gcode(
-                    preamble=self.defaults["cncjob_prepend"],
-                    postamble=self.defaults["cncjob_append"],
-                    to_file=True)
+                file = obj.export_gcode(to_file=True)
                 if file == 'fail':
                     return 'fail'
             except AttributeError:
@@ -8665,14 +8662,14 @@ class App(QtCore.QObject):
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
+                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:
             gret = make_gerber()
             if gret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
                 return 'fail'
             if local_use is not None:
                 return gret
