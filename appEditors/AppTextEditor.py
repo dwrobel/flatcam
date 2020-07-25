@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber
+from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton
 from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -30,6 +30,7 @@ class AppTextEditor(QtWidgets.QWidget):
 
         self.app = app
         self.plain_text = plain_text
+        self.callback = lambda x: None
 
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
@@ -71,17 +72,17 @@ class AppTextEditor(QtWidgets.QWidget):
         if text:
             self.code_editor.setPlainText(text)
 
-        self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
+        self.buttonPreview = FCButton(_('Print Preview'))
         self.buttonPreview.setIcon(QtGui.QIcon(self.app.resource_location + '/preview32.png'))
         self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
         self.buttonPreview.setMinimumWidth(100)
 
-        self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
+        self.buttonPrint = FCButton(_('Print Code'))
         self.buttonPrint.setIcon(QtGui.QIcon(self.app.resource_location + '/printer32.png'))
         self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
         self.buttonPrint.setMinimumWidth(100)
 
-        self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
+        self.buttonFind = FCButton(_('Find in Code'))
         self.buttonFind.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
         self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
         self.buttonFind.setMinimumWidth(100)
@@ -89,7 +90,7 @@ class AppTextEditor(QtWidgets.QWidget):
         self.entryFind = FCEntry()
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
 
-        self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
+        self.buttonReplace = FCButton(_('Replace With'))
         self.buttonReplace.setIcon(QtGui.QIcon(self.app.resource_location + '/replace32.png'))
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
         self.buttonReplace.setMinimumWidth(100)
@@ -101,22 +102,22 @@ class AppTextEditor(QtWidgets.QWidget):
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
 
-        self.button_copy_all = QtWidgets.QPushButton(_('Copy All'))
+        self.button_copy_all = FCButton(_('Copy All'))
         self.button_copy_all.setIcon(QtGui.QIcon(self.app.resource_location + '/copy_file32.png'))
         self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
         self.button_copy_all.setMinimumWidth(100)
 
-        self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
+        self.buttonOpen = FCButton(_('Open Code'))
         self.buttonOpen.setIcon(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
         self.buttonOpen.setMinimumWidth(100)
 
-        self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
+        self.buttonSave = FCButton(_('Save Code'))
         self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
         self.buttonSave.setMinimumWidth(100)
 
-        self.buttonRun = QtWidgets.QPushButton(_('Run Code'))
+        self.buttonRun = FCButton(_('Run Code'))
         self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
         self.buttonRun.setMinimumWidth(100)
 
@@ -161,6 +162,9 @@ class AppTextEditor(QtWidgets.QWidget):
         self.code_editor.set_model_data(self.app.myKeywords)
 
         self.code_edited = ''
+
+    def set_callback(self, callback):
+        self.callback = callback
 
     def handlePrint(self):
         self.app.defaults.report_usage("handlePrint()")

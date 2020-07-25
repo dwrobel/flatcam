@@ -3979,77 +3979,6 @@ class AppGeoEditor(QtCore.QObject):
         # self.storage = AppGeoEditor.make_storage()
         self.replot()
 
-    def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
-        """
-        Imports the geometry from the given FlatCAM Geometry object
-        into the editor.
-
-        :param fcgeometry:      GeometryObject
-        :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
-        :return:                None
-        """
-        assert isinstance(fcgeometry, Geometry), "Expected a Geometry, got %s" % type(fcgeometry)
-
-        self.deactivate()
-        self.activate()
-
-        self.set_ui()
-
-        # Hide original geometry
-        self.fcgeometry = fcgeometry
-        fcgeometry.visible = False
-
-        # Set selection tolerance
-        DrawToolShape.tolerance = fcgeometry.drawing_tolerance * 10
-
-        self.select_tool("select")
-
-        if self.app.defaults['geometry_spindledir'] == 'CW':
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
-                milling_type = 1    # CCW motion = climb milling (spindle is rotating CW)
-            else:
-                milling_type = -1   # CW motion = conventional milling (spindle is rotating CW)
-        else:
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
-                milling_type = -1    # CCW motion = climb milling (spindle is rotating CCW)
-            else:
-                milling_type = 1   # CW motion = conventional milling (spindle is rotating CCW)
-
-        # Link shapes into editor.
-        if multigeo_tool:
-            self.multigeo_tool = multigeo_tool
-            geo_to_edit = self.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
-                                       orient_val=milling_type)
-            self.app.inform.emit(
-                '[WARNING_NOTCL] %s: %s %s: %s' % (
-                    _("Editing MultiGeo Geometry, tool"),
-                    str(self.multigeo_tool),
-                    _("with diameter"),
-                    str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
-                )
-            )
-        else:
-            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
-
-        for shape in geo_to_edit:
-            if shape is not None:
-                if type(shape) == Polygon:
-                    self.add_shape(DrawToolShape(shape.exterior))
-                    for inter in shape.interiors:
-                        self.add_shape(DrawToolShape(inter))
-                else:
-                    self.add_shape(DrawToolShape(shape))
-
-        self.replot()
-
-        # updated units
-        self.units = self.app.defaults['units'].upper()
-        self.decimals = self.app.decimals
-
-        # start with GRID toolbar activated
-        if self.app.ui.grid_snap_btn.isChecked() is False:
-            self.app.ui.grid_snap_btn.trigger()
-
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)
         buff_tool.run()
@@ -4699,6 +4628,77 @@ class AppGeoEditor(QtCore.QObject):
                 snap_x, snap_y = (snap_x_, snap_y_)
 
         return snap_x, snap_y
+
+    def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
+        """
+        Imports the geometry from the given FlatCAM Geometry object
+        into the editor.
+
+        :param fcgeometry:      GeometryObject
+        :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
+        :return:                None
+        """
+        assert isinstance(fcgeometry, Geometry), "Expected a Geometry, got %s" % type(fcgeometry)
+
+        self.deactivate()
+        self.activate()
+
+        self.set_ui()
+
+        # Hide original geometry
+        self.fcgeometry = fcgeometry
+        fcgeometry.visible = False
+
+        # Set selection tolerance
+        DrawToolShape.tolerance = fcgeometry.drawing_tolerance * 10
+
+        self.select_tool("select")
+
+        if self.app.defaults['geometry_spindledir'] == 'CW':
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = 1    # CCW motion = climb milling (spindle is rotating CW)
+            else:
+                milling_type = -1   # CW motion = conventional milling (spindle is rotating CW)
+        else:
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = -1    # CCW motion = climb milling (spindle is rotating CCW)
+            else:
+                milling_type = 1   # CW motion = conventional milling (spindle is rotating CCW)
+
+        # Link shapes into editor.
+        if multigeo_tool:
+            self.multigeo_tool = multigeo_tool
+            geo_to_edit = self.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
+                                       orient_val=milling_type)
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s: %s %s: %s' % (
+                    _("Editing MultiGeo Geometry, tool"),
+                    str(self.multigeo_tool),
+                    _("with diameter"),
+                    str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
+                )
+            )
+        else:
+            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
+
+        for shape in geo_to_edit:
+            if shape is not None:
+                if type(shape) == Polygon:
+                    self.add_shape(DrawToolShape(shape.exterior))
+                    for inter in shape.interiors:
+                        self.add_shape(DrawToolShape(inter))
+                else:
+                    self.add_shape(DrawToolShape(shape))
+
+        self.replot()
+
+        # updated units
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
+
+        # start with GRID toolbar activated
+        if self.app.ui.grid_snap_btn.isChecked() is False:
+            self.app.ui.grid_snap_btn.trigger()
 
     def update_fcgeometry(self, fcgeometry):
         """

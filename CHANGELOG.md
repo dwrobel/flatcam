@@ -11,6 +11,17 @@ CHANGELOG for FlatCAM beta
 
 - Tools Tab is hidden when entering into a Editor and showed on exit (this needs to be remade such that the toolbars state should be restored to whatever it was before entering in the Editor)
 
+22.07.2020
+
+- working on a proper GCode Editor
+- wip in the GCode Editor
+- added a Laser preprocessor named 'Z_laser' which will change the Z to the Travel Z on each ToolChange event allowing therefore control of the dot size
+- by default now a new blank Geometry object created by FlatCAM is of type multigeo
+- made sure that optimizations of lines when importing SVG or DXF as lines will not encounter polygons but only LinesStrings or LinearRings, otherwise having crashes
+- fixed the import SVG and import DXF, when importing as Geometry to be imported as multigeo tool
+- fixed the import SVG and import DXF, the source files will be saved as loaded into the source_file attribute of the resulting object (be it Geometry or Gerber)
+- in import SVG and import DXF methods made sure that any polygons that are imported as polygons will survive and only the lines are optimized (changed the behavior of the above made modification)
+
 21.07.2020
 
 - updated the FCRadio class with a method that allow disabling certain options

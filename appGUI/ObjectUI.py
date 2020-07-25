@@ -1870,7 +1870,7 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.updateplot_button)
 
         # Editor
-        self.editor_button = QtWidgets.QPushButton(_('GCode Editor'))
+        self.editor_button = FCButton(_('GCode Editor'))
         self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
 
         self.editor_button.setToolTip(

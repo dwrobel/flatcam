@@ -83,6 +83,7 @@ from appEditors.AppGeoEditor import AppGeoEditor
 from appEditors.AppExcEditor import AppExcEditor
 from appEditors.AppGerberEditor import AppGerberEditor
 from appEditors.AppTextEditor import AppTextEditor
+from appEditors.appGCodeEditor import AppGCodeEditor
 from appParsers.ParseHPGL2 import HPGL2
 
 # FlatCAM Workers
@@ -1574,6 +1575,12 @@ class App(QtCore.QObject):
             self.grb_editor = AppGerberEditor(self)
         except Exception as es:
             log.debug("app_Main.__init__() --> Gerber Editor Error: %s" % str(es))
+
+        try:
+            self.gcode_editor = AppGCodeEditor(self)
+        except Exception as es:
+            log.debug("app_Main.__init__() --> GCode Editor Error: %s" % str(es))
+
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
@@ -2186,9 +2193,10 @@ class App(QtCore.QObject):
                     if edited_object.tools[tool]['tooldia'] == selected_tooldia:
                         multi_tool = tool
                         break
-
+                log.debug("Editing MultiGeo Geometry with tool diameter: %s" % str(multi_tool))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:
+                log.debug("Editing SingleGeo Geometry with tool diameter.")
                 self.geo_editor.edit_fcgeometry(edited_object)
 
             # set call source to the Editor we go into
@@ -2226,7 +2234,10 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
-            edited_object.on_edit_code_click()
+            # set call source to the Editor we go into
+            self.call_source = 'gcode_editor'
+
+            self.gcode_editor.edit_fcgcode(edited_object)
             return
 
         # make sure that we can't select another object while in Editor Mode:
@@ -7762,10 +7773,7 @@ class App(QtCore.QObject):
         # then append the text from GCode to the text editor
         if obj.kind == 'cncjob':
             try:
-                file = obj.export_gcode(
-                    preamble=self.defaults["cncjob_prepend"],
-                    postamble=self.defaults["cncjob_append"],
-                    to_file=True)
+                file = obj.export_gcode(to_file=True)
                 if file == 'fail':
                     return 'fail'
             except AttributeError:
@@ -8682,14 +8690,14 @@ class App(QtCore.QObject):
                 def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
-                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
+                        self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:
             gret = make_gerber()
             if gret == 'fail':
-                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export Gerber file.'))
+                self.inform.emit('[ERROR_NOTCL] %s' % _('Could not export file.'))
                 return 'fail'
             if local_use is not None:
                 return gret
@@ -8790,9 +8798,15 @@ class App(QtCore.QObject):
         units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
-            geo_obj.import_svg(filename, obj_type, units=units)
-            geo_obj.multigeo = False
-            geo_obj.source_file = self.export_gerber(obj_name=name, filename=None, local_use=geo_obj, use_thread=False)
+            if obj_type == "geometry":
+                geo_obj.import_svg(filename, obj_type, units=units)
+            elif obj_type == "gerber":
+                geo_obj.import_svg(filename, obj_type, units=units)
+
+            geo_obj.multigeo = True
+            with open(filename) as f:
+                file_content = f.read()
+            geo_obj.source_file = file_content
 
         with self.proc_container.new(_("Importing SVG")) as proc:
 
@@ -8843,7 +8857,11 @@ class App(QtCore.QObject):
                 geo_obj.import_dxf_as_gerber(filename, units=units)
             else:
                 return "fail"
+
             geo_obj.multigeo = True
+            with open(filename) as f:
+                file_content = f.read()
+            geo_obj.source_file = file_content
 
         with self.proc_container.new(_("Importing DXF")):
 

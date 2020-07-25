@@ -1797,6 +1797,7 @@ class ToolDrilling(AppTool, Excellon):
                     self.total_gcode_parsed += tool_gcode_parsed
 
             job_obj.gcode = self.total_gcode
+            job_obj.source_file = self.total_gcode
             job_obj.gcode_parsed = self.total_gcode_parsed
             if job_obj.gcode == 'fail':
                 return 'fail'

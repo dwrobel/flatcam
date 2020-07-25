@@ -1557,8 +1557,13 @@ class FCInputDialog(QtWidgets.QInputDialog):
 
 
 class FCButton(QtWidgets.QPushButton):
-    def __init__(self, parent=None):
-        super(FCButton, self).__init__(parent)
+    def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
+        super(FCButton, self).__init__(text, parent)
+        if not checkable is None:
+            self.setCheckable(checkable)
+
+        if not click_callback is None:
+            self.clicked.connect(click_callback)
 
     def get_value(self):
         return self.isChecked()

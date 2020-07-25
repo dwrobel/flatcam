@@ -1881,6 +1881,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             job_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
             job_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
 
+            total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
 
@@ -1970,6 +1971,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 else:
                     dia_cnc_dict['gcode'] = res
 
+                total_gcode += res
+
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
@@ -1992,6 +1995,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
+
+            job_obj.source_file = total_gcode
 
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -2031,6 +2036,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
+            total_gcode = ''
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
@@ -2123,6 +2129,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                     return 'fail'
                 else:
                     dia_cnc_dict['gcode'] = res
+                total_gcode += res
 
                 self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
@@ -2148,6 +2155,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
+
+            job_obj.source_file = total_gcode
 
         if use_thread:
             # To be run in separate thread
@@ -2288,17 +2297,18 @@ class GeometryObject(FlatCAMObj, Geometry):
             # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
             # to a value of 0.0005 which is 20 times less than 0.01
             tol = float(self.app.defaults['global_tolerance']) / 20
-            job_obj.generate_from_geometry_2(
-                self, tooldia=tooldia, offset=offset, tolerance=tol,
-                z_cut=z_cut, z_move=z_move,
-                feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
-                multidepth=multidepth, depthpercut=depthperpass,
-                toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz, endxy=endxy,
-                pp_geometry_name=ppname_g
+            res = job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
+                                                   z_cut=z_cut, z_move=z_move, feedrate=feedrate,
+                                                   feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                                                   spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                                                   multidepth=multidepth, depthpercut=depthperpass,
+                                                   toolchange=toolchange, toolchangez=toolchangez,
+                                                   toolchangexy=toolchangexy,
+                                                   extracut=extracut, extracut_length=extracut_length,
+                                                   startz=startz, endz=endz, endxy=endxy,
+                                                   pp_geometry_name=ppname_g
             )
-
+            job_obj.source_file = res
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"

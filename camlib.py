@@ -1058,7 +1058,19 @@ class Geometry(object):
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
         # trying to optimize the resulting geometry by merging contiguous lines
-        geos = linemerge(geos)
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        for l in merged_lines:
+            geos.append(l)
 
         # Add to object
         if self.solid_geometry is None:
@@ -1081,11 +1093,30 @@ class Geometry(object):
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:
-                    _, minimy, _, maximy = i.bounds
+                    __, minimy, __, maximy = i.bounds
                     h2 = (maximy - minimy) * 0.5
                     geos_text_f.append(translate(scale(i, 1.0, -1.0, origin=(0, 0)), yoff=(h + h2)))
             if geos_text_f:
                 self.solid_geometry = self.solid_geometry + geos_text_f
+
+        tooldia = float(self.app.defaults["geometry_cnctooldia"])
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        new_data = {k: v for k, v in self.options.items()}
+
+        self.tools.update({
+            1: {
+                'tooldia': tooldia,
+                'offset': 'Path',
+                'offset_value': 0.0,
+                'type': _('Rough'),
+                'tool_type': 'C1',
+                'data': deepcopy(new_data),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+
+        self.tools[1]['data']['name'] = self.options['name']
 
     def import_dxf_as_geo(self, filename, units='MM'):
         """
@@ -1103,7 +1134,19 @@ class Geometry(object):
         geos = getdxfgeo(dxf)
 
         # trying to optimize the resulting geometry by merging contiguous lines
-        geos = linemerge(geos)
+        geos = list(self.flatten_list(geos))
+        geos_polys = []
+        geos_lines = []
+        for g in geos:
+            if isinstance(g, Polygon):
+                geos_polys.append(g)
+            else:
+                geos_lines.append(g)
+
+        merged_lines = linemerge(geos_lines)
+        geos = geos_polys
+        for l in merged_lines:
+            geos.append(l)
 
         # Add to object
         if self.solid_geometry is None:
@@ -5176,7 +5219,8 @@ class CNCjob(Geometry):
 
         geo_storage = {}
         for geo in temp_solid_geometry:
-            geo_storage[geo.coords[0]] = geo
+            if not geo is None:
+                geo_storage[geo.coords[0]] = geo
         locations = list(geo_storage.keys())
 
         if opt_type == 'M':
