@@ -7,10 +7,6 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
-25.07.2020
-
-- Tools Tab is hidden when entering into a Editor and showed on exit (this needs to be remade such that the toolbars state should be restored to whatever it was before entering in the Editor)
-
 22.07.2020
 
 - working on a proper GCode Editor
