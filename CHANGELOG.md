@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.07.2020
+
+- Tools Tab is hidden when entering into a Editor and showed on exit (this needs to be remade such that the toolbars state should be restored to whatever it was before entering in the Editor)
+
 21.07.2020
 
 - updated the FCRadio class with a method that allow disabling certain options

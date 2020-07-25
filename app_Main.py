@@ -2236,6 +2236,11 @@ class App(QtCore.QObject):
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
 
+        # hide the Tools Toolbar
+        tools_tb = self.ui.toolbartools
+        if tools_tb.isVisible():
+            tools_tb.hide()
+
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
         self.inform.emit('[WARNING_NOTCL] %s' % _("Editor is activated ..."))
@@ -2273,6 +2278,10 @@ class App(QtCore.QObject):
                 response = msgbox.clickedButton()
 
                 if response == bt_yes:
+                    # show the Tools Toolbar
+                    tools_tb = self.ui.toolbartools
+                    tools_tb.show()
+
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
@@ -2358,6 +2367,10 @@ class App(QtCore.QObject):
 
                     self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
                 elif response == bt_no:
+                    # show the Tools Toolbar
+                    tools_tb = self.ui.toolbartools
+                    tools_tb.show()
+
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
@@ -2387,6 +2400,10 @@ class App(QtCore.QObject):
                 # Switch notebook to Selected page
                 # self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
+                # show the Tools Toolbar
+                tools_tb = self.ui.toolbartools
+                tools_tb.show()
+
                 if isinstance(edited_obj, GeometryObject):
                     self.geo_editor.deactivate()
                 elif isinstance(edited_obj, GerberObject):
