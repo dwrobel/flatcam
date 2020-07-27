@@ -39,6 +39,10 @@ class AppGCodeEditor(QtCore.QObject):
         self.gcode_obj = None
         self.code_edited = ''
 
+        # store the status of the editor so the Delete at object level will not work until the edit is finished
+        self.editor_active = False
+        log.debug("Initialization of the GCode Editor is finished ...")
+
     def set_ui(self):
         """
 

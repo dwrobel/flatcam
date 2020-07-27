@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.06.2020
+
+- Gerber parser - a single move with pen up D2 followed by a pen down D1 at the same location is now treated as a Flash; fixed issue #441
+
 25.07.2020
 
 - Tools Tab is hidden when entering into a Editor and showed on exit (this needs to be remade such that the toolbars state should be restored to whatever it was before entering in the Editor)

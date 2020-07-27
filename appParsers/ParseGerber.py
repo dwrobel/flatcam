@@ -950,6 +950,41 @@ class Gerber(Geometry):
                             # only add the point if it's a new one otherwise skip it (harder to process)
                             if path[-1] != [current_x, current_y]:
                                 path.append([current_x, current_y])
+                            elif len(path) == 1:
+                                # it's a flash that is done by moving with pen up D2 and then just a pen down D1
+                                # Reset path starting point
+                                path = [[current_x, current_y]]
+
+                                # --- BUFFERED ---
+                                # Draw the flash
+                                # this treats the case when we are storing geometry as paths
+                                geo_dict = {}
+                                geo_flash = Point([current_x, current_y])
+                                follow_buffer.append(geo_flash)
+                                geo_dict['follow'] = geo_flash
+
+                                # this treats the case when we are storing geometry as solids
+                                flash = self.create_flash_geometry(
+                                    Point([current_x, current_y]),
+                                    self.apertures[current_aperture],
+                                    self.steps_per_circle
+                                )
+                                if not flash.is_empty:
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(flash.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(flash)
+
+                                    if self.is_lpc is True:
+                                        geo_dict['clear'] = flash
+                                    else:
+                                        geo_dict['solid'] = flash
+
+                                if current_aperture not in self.apertures:
+                                    self.apertures[current_aperture] = {}
+                                if 'geometry' not in self.apertures[current_aperture]:
+                                    self.apertures[current_aperture]['geometry'] = []
+                                self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
