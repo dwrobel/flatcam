@@ -5051,7 +5051,7 @@ class CNCjob(Geometry):
         # The Geometry from which we create GCode
         geometry = tools[tool]['solid_geometry']
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
-        flat_geometry = self.flatten(geometry, pathonly=True)
+        flat_geometry = self.flatten(geometry, reset=True, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
         # #########################################################################################################
@@ -5098,6 +5098,7 @@ class CNCjob(Geometry):
                     if it.is_ring:
                         it = Polygon(it)
                 temp_solid_geometry.append(it.buffer(offset, join_style=2))
+            temp_solid_geometry = self.flatten(temp_solid_geometry, reset=True, pathonly=True)
         else:
             temp_solid_geometry = flat_geometry
 

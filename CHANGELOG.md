@@ -7,7 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
-27.06.2020
+29.07.2020
+
+- fixed an exception that was raised in Geometry object when using an Offset
+
+27.07.2020
 
 - Gerber parser - a single move with pen up D2 followed by a pen down D1 at the same location is now treated as a Flash; fixed issue #441
 
