@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.07.2020
+
+- minor work in GCode Editor
+
 29.07.2020
 
 - fixed an exception that was raised in Geometry object when using an Offset

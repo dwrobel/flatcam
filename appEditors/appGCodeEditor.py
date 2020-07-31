@@ -36,6 +36,8 @@ class AppGCodeEditor(QtCore.QObject):
 
         self.ui = AppGCodeEditorUI(app=self.app)
 
+        self.edited_obj_name = ""
+
         self.gcode_obj = None
         self.code_edited = ''
 
@@ -81,8 +83,9 @@ class AppGCodeEditor(QtCore.QObject):
         # #################################################################################
         # ################### SIGNALS #####################################################
         # #################################################################################
+        self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         self.ui.update_gcode_button.clicked.connect(self.insert_gcode)
-        self.ui.exit_editor_button.clicked.connect(self.update_fcgcode)
+        self.ui.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
     def build_ui(self):
         """
@@ -96,6 +99,10 @@ class AppGCodeEditor(QtCore.QObject):
         self.app.ui.selected_scroll_area.setWidget(self.ui.edit_widget)
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+        # make a new name for the new Excellon object (the one with edited content)
+        self.edited_obj_name = self.gcode_obj.options['name']
+        self.ui.name_entry.set_value(self.edited_obj_name)
 
     def ui_connect(self):
         """
@@ -154,7 +161,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.gcode_editor_tab.load_text(gcode_text, move_to_start=True, clear_text=True)
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 
-    def update_fcgcode(self):
+    def update_fcgcode(self, edited_obj):
         """
 
         :return:
@@ -166,7 +173,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.gcode_obj.source_file = my_gcode
 
         self.ui.gcode_editor_tab.buttonSave.setStyleSheet("")
-        self.ui.gcode_editor_tab.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        self.ui.gcode_editor_tab.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
 
     def on_open_gcode(self):
         """
@@ -188,6 +195,8 @@ class AppGCodeEditor(QtCore.QObject):
                 self.ui.gcode_editor_tab.load_text(self.code_edited, move_to_start=True, clear_text=True)
                 file.close()
 
+    def on_name_activate(self):
+        self.edited_obj_name = self.ui.name_entry.get_value()
 
 class AppGCodeEditorUI:
     def __init__(self, app):

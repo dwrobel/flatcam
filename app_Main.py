@@ -2298,7 +2298,7 @@ class App(QtCore.QObject):
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
                     self.ui.notebook.setTabText(2, "Tool")
 
-                    if isinstance(edited_obj, GeometryObject):
+                    if edited_obj.kind == 'geometry':
                         obj_type = "Geometry"
                         self.geo_editor.update_fcgeometry(edited_obj)
                         # self.geo_editor.update_options(edited_obj)
@@ -2322,7 +2322,7 @@ class App(QtCore.QObject):
                         edited_obj.plot()
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
-                    elif isinstance(edited_obj, GerberObject):
+                    elif edited_obj.kind == 'gerber':
                         obj_type = "Gerber"
                         self.grb_editor.update_fcgerber()
                         # self.grb_editor.update_options(edited_obj)
@@ -2344,7 +2344,7 @@ class App(QtCore.QObject):
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
 
-                    elif isinstance(edited_obj, ExcellonObject):
+                    elif edited_obj.kind == 'excellon':
                         obj_type = "Excellon"
                         self.exc_editor.update_fcexcellon(edited_obj)
                         # self.exc_editor.update_options(edited_obj)
@@ -2371,12 +2371,24 @@ class App(QtCore.QObject):
                             self.collection.delete_by_name(name=old_name)
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
+                    elif edited_obj.kind == 'cncjob':
+                        obj_type = "CNCJob"
+                        self.gcode_editor.update_fcgcode(edited_obj)
+                        # self.exc_editor.update_options(edited_obj)
+
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.tool_scroll_area.takeWidget()
+
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry or Excellon Object to update."))
+                                         _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))
                         return
 
                     self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))
+
                 elif response == bt_no:
                     # show the Tools Toolbar
                     tools_tb = self.ui.toolbartools
@@ -2389,19 +2401,21 @@ class App(QtCore.QObject):
 
                     self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
-                    if isinstance(edited_obj, GeometryObject):
+                    if edited_obj.kind == 'geometry':
                         self.geo_editor.deactivate()
                         edited_obj.build_ui()
                         edited_obj.plot()
-                    elif isinstance(edited_obj, GerberObject):
+                    elif edited_obj.kind == 'gerber':
                         self.grb_editor.deactivate_grb_editor()
                         edited_obj.build_ui()
-                    elif isinstance(edited_obj, ExcellonObject):
+                    elif edited_obj.kind == 'excellon':
                         self.exc_editor.deactivate()
+                        edited_obj.build_ui()
+                    elif edited_obj.kind == 'cncjob':
                         edited_obj.build_ui()
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry or Excellon Object to update."))
+                                         _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))
                         return
                 elif response == bt_cancel:
                     return
