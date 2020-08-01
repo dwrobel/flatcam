@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 1.08.2020
 
 - Tools Database: added a Cutout Tool Parameters section
+- GCode Editor - work in the UI
 
 31.07.2020
 

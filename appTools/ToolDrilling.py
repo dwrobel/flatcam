@@ -1624,6 +1624,7 @@ class ToolDrilling(AppTool, Excellon):
                         default_data = {}
                         for kk, vv in list(obj.options.items()):
                             default_data[kk] = deepcopy(vv)
+                        default_data['tools_drill_cutz'] = float(self.excellon_tools[it[0]]['data']['tools_drill_cutz'])
 
                         # populate the Excellon CNC tools storage
                         job_obj.exc_cnc_tools[it[1]] = {}

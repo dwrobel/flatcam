@@ -7,7 +7,7 @@
 
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMCNCJob import CNCJobObject
-from appGUI.GUIElements import FCTextArea, FCEntry, FCButton
+from appGUI.GUIElements import FCTextArea, FCEntry, FCButton, FCTable
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 # from io import StringIO
@@ -31,6 +31,7 @@ class AppGCodeEditor(QtCore.QObject):
         super().__init__(parent=parent)
 
         self.app = app
+        self.decimals = self.app.decimals
         self.plain_text = ''
         self.callback = lambda x: None
 
@@ -51,6 +52,9 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
+
+        self.decimals = self.app.decimals
+
         # #############################################################################################################
         # ############# ADD a new TAB in the PLot Tab Area
         # #############################################################################################################
@@ -80,6 +84,17 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.append_text.set_value(self.app.defaults["cncjob_append"])
         self.ui.prepend_text.set_value(self.app.defaults["cncjob_prepend"])
 
+        # Remove anything else in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.takeWidget()
+        # Put ourselves in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.setWidget(self.ui.edit_widget)
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+        # make a new name for the new Excellon object (the one with edited content)
+        self.edited_obj_name = self.gcode_obj.options['name']
+        self.ui.name_entry.set_value(self.edited_obj_name)
+
         # #################################################################################
         # ################### SIGNALS #####################################################
         # #################################################################################
@@ -93,16 +108,177 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        # Remove anything else in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.setWidget(self.ui.edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-        # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.gcode_obj.options['name']
-        self.ui.name_entry.set_value(self.edited_obj_name)
+        self.ui_disconnect()
+
+        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
+        self.ui.cnc_tools_table.hide()
+        if self.gcode_obj.cnc_tools:
+            self.ui.cnc_tools_table.show()
+            self.build_cnc_tools_table()
+
+        self.ui.exc_cnc_tools_table.hide()
+        if self.gcode_obj.exc_cnc_tools:
+            self.ui.exc_cnc_tools_table.show()
+            self.build_excellon_cnc_tools()
+
+        self.ui_connect()
+
+    def build_cnc_tools_table(self):
+        tool_idx = 0
+        row_no = 0
+
+        n = len(self.gcode_obj.cnc_tools) + 2
+        self.ui.cnc_tools_table.setRowCount(n)
+
+        # add the Start Gcode selection
+        start_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.cnc_tools_table.setItem(row_no, 1, start_item)
+
+        for dia_key, dia_value in self.gcode_obj.cnc_tools.items():
+
+            tool_idx += 1
+            row_no += 1
+
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
+
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
+
+            offset_txt = list(str(dia_value['offset']))
+            offset_txt[0] = offset_txt[0].upper()
+            offset_item = QtWidgets.QTableWidgetItem(''.join(offset_txt))
+            type_item = QtWidgets.QTableWidgetItem(str(dia_value['type']))
+            tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['tool_type']))
+
+            t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            offset_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            tool_type_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+            self.ui.cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+            self.ui.cnc_tools_table.setItem(row_no, 2, offset_item)  # Offset
+            self.ui.cnc_tools_table.setItem(row_no, 3, type_item)  # Toolpath Type
+            self.ui.cnc_tools_table.setItem(row_no, 4, tool_type_item)  # Tool Type
+
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+            self.ui.cnc_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID)
+
+        # add the All Gcode selection
+        end_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
+        end_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.cnc_tools_table.setItem(row_no + 1, 1, end_item)
+
+        self.ui.cnc_tools_table.resizeColumnsToContents()
+        self.ui.cnc_tools_table.resizeRowsToContents()
+
+        vertical_header = self.ui.cnc_tools_table.verticalHeader()
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        vertical_header.hide()
+        self.ui.cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.cnc_tools_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(4, 40)
+
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.cnc_tools_table.setColumnWidth(0, 20)
+        self.ui.cnc_tools_table.setColumnWidth(4, 40)
+        self.ui.cnc_tools_table.setColumnWidth(6, 17)
+
+        # self.ui.geo_tools_table.setSortingEnabled(True)
+
+        self.ui.cnc_tools_table.setMinimumHeight(self.ui.cnc_tools_table.getHeight())
+        self.ui.cnc_tools_table.setMaximumHeight(self.ui.cnc_tools_table.getHeight())
+
+    def build_excellon_cnc_tools(self):
+        """
+
+        :return:
+        :rtype:
+        """
+
+        tool_idx = 0
+        row_no = 0
+
+        n = len(self.gcode_obj.exc_cnc_tools) + 2
+        self.ui.exc_cnc_tools_table.setRowCount(n)
+
+        # add the Start Gcode selection
+        start_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
+
+        for tooldia_key, dia_value in  self.gcode_obj.exc_cnc_tools.items():
+
+            tool_idx += 1
+            row_no += 1
+
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
+                self.decimals, float(dia_value['offset']) +  float(dia_value['data']['tools_drill_cutz'])))
+
+            t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+
+            self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
+            self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+            self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
+            self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
+
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_value['tool']))
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+            self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
+            self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
+
+        # add the All Gcode selection
+        end_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
+        end_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.exc_cnc_tools_table.setItem(row_no + 1, 1, end_item)
+
+        self.ui.exc_cnc_tools_table.resizeColumnsToContents()
+        self.ui.exc_cnc_tools_table.resizeRowsToContents()
+
+        vertical_header = self.ui.exc_cnc_tools_table.verticalHeader()
+        vertical_header.hide()
+        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.exc_cnc_tools_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeToContents)
+
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
+        self.ui.exc_cnc_tools_table.setColumnWidth(6, 17)
+
+        self.ui.exc_cnc_tools_table.setMinimumHeight(self.ui.exc_cnc_tools_table.getHeight())
+        self.ui.exc_cnc_tools_table.setMaximumHeight(self.ui.exc_cnc_tools_table.getHeight())
 
     def ui_connect(self):
         """
@@ -110,7 +286,13 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        pass
+        # rows selected
+        if self.gcode_obj.cnc_tools:
+            self.ui.cnc_tools_table.clicked.connect(self.on_row_selection_change)
+            self.ui.cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
+        if self.gcode_obj.exc_cnc_tools:
+            self.ui.exc_cnc_tools_table.clicked.connect(self.on_row_selection_change)
+            self.ui.exc_cnc_tools_table.horizontalHeader().sectionClicked.connect(self.on_toggle_all_rows)
 
     def ui_disconnect(self):
         """
@@ -118,7 +300,77 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        pass
+        # rows selected
+        if self.gcode_obj.cnc_tools:
+            try:
+                self.ui.cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
+            except (TypeError, AttributeError):
+                pass
+            try:
+                self.ui.cnc_tools_table.horizontalHeader().sectionClicked.disconnect(self.on_toggle_all_rows)
+            except (TypeError, AttributeError):
+                pass
+
+        if self.gcode_obj.exc_cnc_tools:
+            try:
+                self.ui.exc_cnc_tools_table.clicked.disconnect(self.on_row_selection_change)
+            except (TypeError, AttributeError):
+                pass
+            try:
+                self.ui.exc_cnc_tools_table.horizontalHeader().sectionClicked.disconnect(self.on_toggle_all_rows)
+            except (TypeError, AttributeError):
+                pass
+
+    def on_row_selection_change(self):
+        """
+
+        :return:
+        :rtype:
+        """
+        if self.gcode_obj.cnc_tools:
+            sel_model = self.ui.cnc_tools_table.selectionModel()
+        elif self.gcode_obj.exc_cnc_tools:
+            sel_model = self.ui.exc_cnc_tools_table.selectionModel()
+        else:
+            return
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+    def on_toggle_all_rows(self):
+        """
+
+        :return:
+        :rtype:
+        """
+        if self.gcode_obj.cnc_tools:
+            sel_model = self.ui.cnc_tools_table.selectionModel()
+        elif self.gcode_obj.exc_cnc_tools:
+            sel_model = self.ui.exc_cnc_tools_table.selectionModel()
+        else:
+            return
+        sel_indexes = sel_model.selectedIndexes()
+
+        # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
+        sel_rows = set()
+        for idx in sel_indexes:
+            sel_rows.add(idx.row())
+
+        if self.gcode_obj.cnc_tools:
+            if len(sel_rows) == self.ui.cnc_tools_table.rowCount():
+                self.ui.cnc_tools_table.clearSelection()
+            else:
+                self.ui.cnc_tools_table.selectAll()
+        elif self.gcode_obj.exc_cnc_tools:
+            if len(sel_rows) == self.ui.exc_cnc_tools_table.rowCount():
+                self.ui.exc_cnc_tools_table.clearSelection()
+            else:
+                self.ui.exc_cnc_tools_table.selectAll()
+        else:
+            return
 
     def handleTextChanged(self):
         """
@@ -252,6 +504,38 @@ class AppGCodeEditorUI:
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.edit_box.addWidget(separator_line)
+
+        # CNC Tools Table when made out of Geometry
+        self.cnc_tools_table = FCTable()
+        self.cnc_tools_table.setSortingEnabled(False)
+        self.cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.edit_box.addWidget(self.cnc_tools_table)
+
+        self.cnc_tools_table.setColumnCount(6)
+        self.cnc_tools_table.setColumnWidth(0, 20)
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), ''])
+        self.cnc_tools_table.setColumnHidden(5, True)
+
+        # CNC Tools Table when made out of Excellon
+        self.exc_cnc_tools_table = FCTable()
+        self.exc_cnc_tools_table.setSortingEnabled(False)
+        self.exc_cnc_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.edit_box.addWidget(self.exc_cnc_tools_table)
+
+        self.exc_cnc_tools_table.setColumnCount(6)
+        self.exc_cnc_tools_table.setColumnWidth(0, 20)
+        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Drills'), _('Slots'), '', _("Cut Z")])
+        self.exc_cnc_tools_table.setColumnHidden(4, True)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.edit_box.addWidget(separator_line)
 
         # Prepend text to GCode
         prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
