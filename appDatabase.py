@@ -1060,6 +1060,19 @@ class ToolsDB2UI:
         self.drill_box.setTitle(_("Drilling Parameters"))
         self.drill_box.setFixedWidth(250)
 
+        # CUTOUT TOOL BOX
+        self.cutout_box = QtWidgets.QGroupBox()
+        self.cutout_box.setStyleSheet("""
+                     QGroupBox
+                     {
+                         font-size: 16px;
+                         font-weight: bold;
+                     }
+                     """)
+        self.cutout_vlay = QtWidgets.QVBoxLayout()
+        self.cutout_box.setTitle(_("Cutout Parameters"))
+        self.cutout_box.setFixedWidth(250)
+
         # Layout Constructor
         self.tool_description_box.setLayout(self.description_vlay)
         self.milling_box.setLayout(self.milling_vlay)
@@ -1067,12 +1080,13 @@ class ToolsDB2UI:
         self.paint_box.setLayout(self.paint_vlay)
         self.iso_box.setLayout(self.iso_vlay)
         self.drill_box.setLayout(self.drill_vlay)
-
+        self.cutout_box.setLayout(self.cutout_vlay)
 
         tools_vlay = QtWidgets.QVBoxLayout()
         tools_vlay.addWidget(self.iso_box)
         tools_vlay.addWidget(self.paint_box)
         tools_vlay.addWidget(self.ncc_box)
+        tools_vlay.addWidget(self.cutout_box)
         tools_vlay.addStretch()
 
         descript_vlay = QtWidgets.QVBoxLayout()
@@ -1174,7 +1188,8 @@ class ToolsDB2UI:
             _("The kind of Application Tool where this tool is to be used."))
 
         self.tool_op_combo = FCComboBox()
-        self.tool_op_combo.addItems([_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC')])
+        self.tool_op_combo.addItems(
+            [_("General"), _("Milling"), _("Drilling"), _('Isolation'), _('Paint'), _('NCC'), _("Cutout")])
         self.tool_op_combo.setObjectName('gdb_tool_target')
 
         self.grid_tool.addWidget(self.tool_op_label, 8, 0)
@@ -2037,6 +2052,88 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.last_drill_drill_lbl, 30, 0, 1, 2)
         self.grid5.addWidget(self.last_drill_drill_cb, 30, 1)
 
+        # ###########################################################################
+        # ################### Cutout UI form ########################################
+        # ###########################################################################
+        self.grid6 = QtWidgets.QGridLayout()
+        self.cutout_vlay.addLayout(self.grid6)
+        self.grid6.setColumnStretch(0, 0)
+        self.grid6.setColumnStretch(1, 1)
+        self.cutout_vlay.addStretch()
+
+        # Margin
+        self.cutout_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutout_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.cutout_margin_entry.setSingleStep(0.1)
+        self.cutout_margin_entry.set_precision(self.decimals)
+        self.cutout_margin_entry.setObjectName('gdb_ct_margin')
+
+        self.cutout_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.cutout_margin_label.setToolTip(
+            _("Margin over bounds. A positive value here\n"
+              "will make the cutout of the PCB further from\n"
+              "the actual PCB border")
+        )
+        self.grid6.addWidget(self.cutout_margin_label, 11, 0)
+        self.grid6.addWidget(self.cutout_margin_entry, 11, 1)
+
+        # Gapsize
+        self.cutout_gapsize = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutout_gapsize.set_precision(self.decimals)
+        self.cutout_gapsize.setObjectName('gdb_ct_gapsize')
+
+        self.cutout_gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))
+        self.cutout_gapsize_label.setToolTip(
+            _("The size of the bridge gaps in the cutout\n"
+              "used to keep the board connected to\n"
+              "the surrounding material (the one \n"
+              "from which the PCB is cutout).")
+        )
+        self.grid6.addWidget(self.cutout_gapsize_label, 13, 0)
+        self.grid6.addWidget(self.cutout_gapsize, 13, 1)
+
+        # How gaps wil be rendered:
+        # lr    - left + right
+        # tb    - top + bottom
+        # 4     - left + right +top + bottom
+        # 2lr   - 2*left + 2*right
+        # 2tb   - 2*top + 2*bottom
+        # 8     - 2*left + 2*right +2*top + 2*bottom
+
+        # Surrounding convex box shape
+        self.cutout_convex_box = FCCheckBox('%s' % _("Convex Shape"))
+        # self.convex_box_label = QtWidgets.QLabel('%s' % _("Convex Sh."))
+        self.cutout_convex_box.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "Used only if the source object type is Gerber.")
+        )
+        self.cutout_convex_box.setObjectName('gdb_ct_convex')
+
+        self.grid6.addWidget(self.cutout_convex_box, 15, 0, 1, 2)
+
+        # Gaps
+        self.cutout_gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
+        self.cutout_gaps_label.setToolTip(
+            _("Number of gaps used for the Automatic cutout.\n"
+              "There can be maximum 8 bridges/gaps.\n"
+              "The choices are:\n"
+              "- None  - no gaps\n"
+              "- lr    - left + right\n"
+              "- tb    - top + bottom\n"
+              "- 4     - left + right +top + bottom\n"
+              "- 2lr   - 2*left + 2*right\n"
+              "- 2tb  - 2*top + 2*bottom\n"
+              "- 8     - 2*left + 2*right +2*top + 2*bottom")
+        )
+
+        self.cutout_gaps = FCComboBox()
+        gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
+        self.cutout_gaps.addItems(gaps_items)
+        self.cutout_gaps.setObjectName('gdb_ct_gaps')
+
+        self.grid6.addWidget(self.cutout_gaps_label, 19, 0)
+        self.grid6.addWidget(self.cutout_gaps, 19, 1)
+
         # ####################################################################
         # ####################################################################
         # GUI for the lower part of the window
@@ -2265,6 +2362,12 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_drill_drill_overlap":    self.ui.drill_overlap_drill_entry,
             "tools_drill_last_drill":       self.ui.last_drill_drill_cb,
 
+            # Cutout
+            "tools_cutoutmargin":           self.ui.cutout_margin_entry,
+            "tools_cutoutgapsize":          self.ui.cutout_gapsize,
+            "tools_gaps_ff":                self.ui.cutout_gaps,
+            "tools_cutout_convexshape":     self.ui.cutout_convex_box,
+
         }
 
         self.name2option = {
@@ -2337,6 +2440,12 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_e_drill_slots":        "tools_drill_drill_slots",
             "gdb_e_drill_slots_over":   "tools_drill_drill_overlap",
             "gdb_e_drill_last_drill":   "tools_drill_last_drill",
+
+            # Cutout
+            "gdb_ct_margin":            "tools_cutoutmargin",
+            "gdb_ct_gapsize":           "tools_cutoutgapsize",
+            "gdb_ct_gaps":              "tools_gaps_ff",
+            "gdb_ct_convex":            "tools_cutout_convexshape",
 
         }
 
@@ -2519,6 +2628,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.paint_box.show()
                 self.ui.iso_box.show()
                 self.ui.drill_box.show()
+                self.ui.cutout_box.show()
 
                 self.ui.tool_description_box.setEnabled(False)
                 self.ui.milling_box.setEnabled(False)
@@ -2526,6 +2636,7 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.paint_box.setEnabled(False)
                 self.ui.iso_box.setEnabled(False)
                 self.ui.drill_box.setEnabled(False)
+                self.ui.cutout_box.setEnabled(False)
         else:
             self.storage_to_form(self.db_tool_dict[str(self.current_toolid)])
 
@@ -2546,18 +2657,21 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.ui.paint_box.setEnabled(True)
                 self.ui.iso_box.setEnabled(True)
                 self.ui.drill_box.setEnabled(True)
+                self.ui.cutout_box.setEnabled(True)
 
                 self.ui.milling_box.show()
                 self.ui.ncc_box.show()
                 self.ui.paint_box.show()
                 self.ui.iso_box.show()
                 self.ui.drill_box.show()
+                self.ui.cutout_box.show()
             else:
                 self.ui.milling_box.hide()
                 self.ui.ncc_box.hide()
                 self.ui.paint_box.hide()
                 self.ui.iso_box.hide()
                 self.ui.drill_box.hide()
+                self.ui.cutout_box.hide()
 
                 if tool_target == _("Milling"):
                     self.ui.milling_box.setEnabled(True)
@@ -2582,6 +2696,12 @@ class ToolsDB2(QtWidgets.QWidget):
                 if tool_target == _("NCC"):
                     self.ui.ncc_box.setEnabled(True)
                     self.ui.ncc_box.show()
+                    self.ui.milling_box.setEnabled(True)
+                    self.ui.milling_box.show()
+
+                if tool_target == _("Cutout"):
+                    self.ui.cutout_box.setEnabled(True)
+                    self.ui.cutout_box.show()
                     self.ui.milling_box.setEnabled(True)
                     self.ui.milling_box.show()
 
@@ -2661,6 +2781,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_drill_drill_overlap":    float(self.app.defaults["tools_drill_drill_overlap"]),
             "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
 
+            # Cutout
+            "tools_cutoutmargin":           float(self.app.defaults["tools_cutoutmargin"]),
+            "tools_cutoutgapsize":          float(self.app.defaults["tools_cutoutgapsize"]),
+            "tools_gaps_ff":                self.app.defaults["tools_gaps_ff"],
+            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
         })
 
         temp = []
@@ -3213,6 +3338,16 @@ class ToolsDB2(QtWidgets.QWidget):
                 self.db_tool_dict[tool_id]['data']['tools_drill_drill_overlap'] = val
             elif wdg_name == "gdb_e_drill_last_drill":
                 self.db_tool_dict[tool_id]['data']['tools_drill_last_drill'] = val
+
+            # Cutout Tool
+            elif wdg_name == "gdb_ct_margin":
+                self.db_tool_dict[tool_id]['data']['tools_cutoutmargin'] = val
+            elif wdg_name == "gdb_ct_gapsize":
+                self.db_tool_dict[tool_id]['data']['tools_cutoutgapsize'] = val
+            elif wdg_name == "gdb_ct_gaps":
+                self.db_tool_dict[tool_id]['data']['tools_gaps_ff'] = val
+            elif wdg_name == "gdb_ct_convex":
+                self.db_tool_dict[tool_id]['data']['tools_cutout_convexshape'] = val
 
         self.callback_app()
 
