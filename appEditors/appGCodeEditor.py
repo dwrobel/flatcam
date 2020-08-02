@@ -407,8 +407,9 @@ class AppGCodeEditor(QtCore.QObject):
         for row in sel_rows:
             # those are special rows treated before so we except them
             if row not in [0, 1, 2]:
+                tool_no = int(t_table.item(row, 0).text())
+
                 if self.gcode_obj.cnc_tools:
-                    tool_no = int(t_table.item(row, 0).text())
                     text_to_be_found = self.gcode_obj.cnc_tools[tool_no]['gcode']
                 elif self.gcode_obj.exc_cnc_tools:
                     tool_dia = float(t_table.item(row, 1).text())
@@ -418,14 +419,28 @@ class AppGCodeEditor(QtCore.QObject):
 
                 text_list = [x for x in text_to_be_found.split("\n") if x != '']
 
-                self.edit_area.find(str(text_list[0]), flags)
+                # self.edit_area.find(str(text_list[0]), flags)
+                # my_text_cursor = self.edit_area.textCursor()
+                # start_sel = my_text_cursor.selectionStart()
+
+                found_tool = self.edit_area.find('T%d' % tool_no, flags)
+                if found_tool is False:
+                    return
+                my_text_cursor = self.edit_area.textCursor()
+                tool_pos = my_text_cursor.selectionStart()
+                my_text_cursor.setPosition(tool_pos)
+
+                f = self.edit_area.find(str(text_list[0]), flags)
+                if f is False:
+                    return
                 my_text_cursor = self.edit_area.textCursor()
                 start_sel = my_text_cursor.selectionStart()
 
                 end_sel = 0
                 while True:
                     f = self.edit_area.find(str(text_list[-1]), flags)
-                    if f is False:
+                    m6 = self.edit_area.find('M6', flags)
+                    if f is False or m6:
                         break
                     my_text_cursor = self.edit_area.textCursor()
                     end_sel = my_text_cursor.selectionEnd()
