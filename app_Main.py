@@ -2238,7 +2238,6 @@ class App(QtCore.QObject):
             self.call_source = 'gcode_editor'
 
             self.gcode_editor.edit_fcgcode(edited_object)
-            return
 
         # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
@@ -2379,7 +2378,12 @@ class App(QtCore.QObject):
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
+                        edited_obj.build_ui()
 
+                        # close the open tab
+                        for idx in range(self.ui.plot_tab_area.count()):
+                            if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
+                                self.ui.plot_tab_area.closeTab(idx)
                         self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     else:
@@ -2413,6 +2417,11 @@ class App(QtCore.QObject):
                         edited_obj.build_ui()
                     elif edited_obj.kind == 'cncjob':
                         edited_obj.build_ui()
+
+                        # close the open tab
+                        for idx in range(self.ui.plot_tab_area.count()):
+                            if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
+                                self.ui.plot_tab_area.closeTab(idx)
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))

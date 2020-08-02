@@ -1725,12 +1725,13 @@ class ToolDrilling(AppTool, Excellon):
                 job_obj.options['Tools_in_use'] = tool_table_items
 
                 # generate GCode
-                tool_gcode, __ = job_obj.excellon_tool_gcode_gen(used_tool, tool_points, self.excellon_tools,
-                                                                 first_pt=first_drill_point,
-                                                                 is_first=True,
-                                                                 is_last=True,
-                                                                 opt_type=used_excellon_optimization_type,
-                                                                 toolchange=True)
+                tool_gcode, __, start_gcode = job_obj.excellon_tool_gcode_gen(used_tool, tool_points,
+                                                                              self.excellon_tools,
+                                                                              first_pt=first_drill_point,
+                                                                              is_first=True,
+                                                                              is_last=True,
+                                                                              opt_type=used_excellon_optimization_type,
+                                                                              toolchange=True)
 
                 # parse the Gcode
                 tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
@@ -1747,6 +1748,9 @@ class ToolDrilling(AppTool, Excellon):
                 for e_tool_dia in list(job_obj.exc_cnc_tools.keys()):
                     if e_tool_dia != used_tooldia:
                         job_obj.exc_cnc_tools.pop(e_tool_dia, None)
+
+                if start_gcode != '':
+                    job_obj.gc_start = start_gcode
 
                 self.total_gcode = tool_gcode
                 self.total_gcode_parsed = tool_gcode_parsed
@@ -1778,12 +1782,13 @@ class ToolDrilling(AppTool, Excellon):
                     is_first_tool = True if tool == sel_tools[0] else False
 
                     # Generate Gcode for the current tool
-                    tool_gcode, last_pt = job_obj.excellon_tool_gcode_gen(tool, tool_points, self.excellon_tools,
-                                                                          first_pt=first_drill_point,
-                                                                          is_first=is_first_tool,
-                                                                          is_last=is_last_tool,
-                                                                          opt_type=used_excellon_optimization_type,
-                                                                          toolchange=True)
+                    tool_gcode, last_pt, start_gcode = job_obj.excellon_tool_gcode_gen(
+                        tool, tool_points, self.excellon_tools,
+                        first_pt=first_drill_point,
+                        is_first=is_first_tool,
+                        is_last=is_last_tool,
+                        opt_type=used_excellon_optimization_type,
+                        toolchange=True)
 
                     # parse Gcode for the current tool
                     tool_gcode_parsed = job_obj.excellon_tool_gcode_parse(used_tooldia, gcode=tool_gcode,
@@ -1793,6 +1798,9 @@ class ToolDrilling(AppTool, Excellon):
                     # store the results of GCode generation and parsing
                     job_obj.exc_cnc_tools[used_tooldia]['gcode'] = tool_gcode
                     job_obj.exc_cnc_tools[used_tooldia]['gcode_parsed'] = tool_gcode_parsed
+
+                    if start_gcode != '':
+                        job_obj.gc_start = start_gcode
 
                     self.total_gcode += tool_gcode
                     self.total_gcode_parsed += tool_gcode_parsed

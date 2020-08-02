@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+2.08.2020
+
+- GCode Editor - closing the Editor will close also the Code Editor Tab
+- cleanup of the CNCJob UI; added a checkbox to signal if any append/prepend gcode was set in Preferences (unchecking it will override and disable the usage of the append/prepend GCode)
+- the start Gcode is now stored in the CNCJob object attribute gc_start
+- GCode Editor - finished adding the ability to select a row in the Tools table and select the related GCode
+
 1.08.2020
 
 - Tools Database: added a Cutout Tool Parameters section

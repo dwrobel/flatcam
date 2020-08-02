@@ -323,7 +323,6 @@ class AppTextEditor(QtWidgets.QWidget):
             callback()
 
     def handleFindGCode(self):
-        self.app.defaults.report_usage("handleFindGCode()")
 
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.entryFind.get_value()
@@ -334,7 +333,6 @@ class AppTextEditor(QtWidgets.QWidget):
             r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
-        self.app.defaults.report_usage("handleReplaceGCode()")
 
         old = self.entryFind.get_value()
         new = self.entryReplace.get_value()

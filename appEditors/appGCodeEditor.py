@@ -59,10 +59,11 @@ class AppGCodeEditor(QtCore.QObject):
         # ############# ADD a new TAB in the PLot Tab Area
         # #############################################################################################################
         self.ui.gcode_editor_tab = AppTextEditor(app=self.app, plain_text=True)
+        self.edit_area = self.ui.gcode_editor_tab.code_editor
 
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.ui.gcode_editor_tab, '%s' % _("Code Editor"))
-        self.ui.gcode_editor_tab.setObjectName('code_editor_tab')
+        self.ui.gcode_editor_tab.setObjectName('gcode_editor_tab')
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
@@ -128,11 +129,23 @@ class AppGCodeEditor(QtCore.QObject):
         tool_idx = 0
         row_no = 0
 
-        n = len(self.gcode_obj.cnc_tools) + 2
+        n = len(self.gcode_obj.cnc_tools) + 3
         self.ui.cnc_tools_table.setRowCount(n)
 
+        # add the All Gcode selection
+        allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
+        allgcode_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.cnc_tools_table.setItem(row_no, 1, allgcode_item)
+        row_no += 1
+
+        # add the Header Gcode selection
+        header_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        header_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.cnc_tools_table.setItem(row_no, 1, header_item)
+        row_no += 1
+
         # add the Start Gcode selection
-        start_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        start_item = QtWidgets.QTableWidgetItem('%s' % _("Start GCode"))
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.cnc_tools_table.setItem(row_no, 1, start_item)
 
@@ -167,11 +180,6 @@ class AppGCodeEditor(QtCore.QObject):
             tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_key))
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.cnc_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID)
-
-        # add the All Gcode selection
-        end_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
-        end_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        self.ui.cnc_tools_table.setItem(row_no + 1, 1, end_item)
 
         self.ui.cnc_tools_table.resizeColumnsToContents()
         self.ui.cnc_tools_table.resizeRowsToContents()
@@ -213,11 +221,23 @@ class AppGCodeEditor(QtCore.QObject):
         tool_idx = 0
         row_no = 0
 
-        n = len(self.gcode_obj.exc_cnc_tools) + 2
+        n = len(self.gcode_obj.exc_cnc_tools) + 3
         self.ui.exc_cnc_tools_table.setRowCount(n)
 
+        # add the All Gcode selection
+        allgcode_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
+        allgcode_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.exc_cnc_tools_table.setItem(row_no, 1, allgcode_item)
+        row_no += 1
+
+        # add the Header Gcode selection
+        header_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        header_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        self.ui.exc_cnc_tools_table.setItem(row_no, 1, header_item)
+        row_no += 1
+
         # add the Start Gcode selection
-        start_item = QtWidgets.QTableWidgetItem('%s' % _("Header GCode"))
+        start_item = QtWidgets.QTableWidgetItem('%s' % _("Start GCode"))
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
 
@@ -248,11 +268,6 @@ class AppGCodeEditor(QtCore.QObject):
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
             self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
-
-        # add the All Gcode selection
-        end_item = QtWidgets.QTableWidgetItem('%s' % _("All GCode"))
-        end_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        self.ui.exc_cnc_tools_table.setItem(row_no + 1, 1, end_item)
 
         self.ui.exc_cnc_tools_table.resizeColumnsToContents()
         self.ui.exc_cnc_tools_table.resizeRowsToContents()
@@ -327,18 +342,98 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
+        flags = QtGui.QTextDocument.FindCaseSensitively
+        self.edit_area.moveCursor(QtGui.QTextCursor.Start)
+
         if self.gcode_obj.cnc_tools:
-            sel_model = self.ui.cnc_tools_table.selectionModel()
+            t_table = self.ui.cnc_tools_table
         elif self.gcode_obj.exc_cnc_tools:
-            sel_model = self.ui.exc_cnc_tools_table.selectionModel()
+            t_table = self.ui.exc_cnc_tools_table
         else:
             return
+
+        sel_model = t_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
         sel_rows = set()
         for idx in sel_indexes:
             sel_rows.add(idx.row())
+
+        if 0 in sel_rows:
+            self.edit_area.selectAll()
+            return
+
+        if 1 in sel_rows:
+            text_to_be_found = self.gcode_obj.gc_header
+            text_list = [x for x in text_to_be_found.split("\n") if x != '']
+
+            self.edit_area.find(str(text_list[0]), flags)
+            my_text_cursor = self.edit_area.textCursor()
+            start_sel = my_text_cursor.selectionStart()
+
+            end_sel = 0
+            while True:
+                f = self.edit_area.find(str(text_list[-1]), flags)
+                if f is False:
+                    break
+                my_text_cursor = self.edit_area.textCursor()
+                end_sel = my_text_cursor.selectionEnd()
+
+            my_text_cursor.setPosition(start_sel)
+            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+            self.edit_area.setTextCursor(my_text_cursor)
+
+        if 2 in sel_rows:
+            text_to_be_found = self.gcode_obj.gc_start
+            text_list = [x for x in text_to_be_found.split("\n") if x != '']
+
+            self.edit_area.find(str(text_list[0]), flags)
+            my_text_cursor = self.edit_area.textCursor()
+            start_sel = my_text_cursor.selectionStart()
+
+            end_sel = 0
+            while True:
+                f = self.edit_area.find(str(text_list[-1]), flags)
+                if f is False:
+                    break
+                my_text_cursor = self.edit_area.textCursor()
+                end_sel = my_text_cursor.selectionEnd()
+
+            my_text_cursor.setPosition(start_sel)
+            my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+            self.edit_area.setTextCursor(my_text_cursor)
+
+        for row in sel_rows:
+            # those are special rows treated before so we except them
+            if row not in [0, 1, 2]:
+                if self.gcode_obj.cnc_tools:
+                    tool_no = int(t_table.item(row, 0).text())
+                    text_to_be_found = self.gcode_obj.cnc_tools[tool_no]['gcode']
+                elif self.gcode_obj.exc_cnc_tools:
+                    tool_dia = float(t_table.item(row, 1).text())
+                    text_to_be_found = self.gcode_obj.exc_cnc_tools[tool_dia]['gcode']
+                else:
+                    return
+
+                text_list = [x for x in text_to_be_found.split("\n") if x != '']
+
+                self.edit_area.find(str(text_list[0]), flags)
+                my_text_cursor = self.edit_area.textCursor()
+                start_sel = my_text_cursor.selectionStart()
+
+                end_sel = 0
+                while True:
+                    f = self.edit_area.find(str(text_list[-1]), flags)
+                    if f is False:
+                        break
+                    my_text_cursor = self.edit_area.textCursor()
+                    end_sel = my_text_cursor.selectionEnd()
+
+                my_text_cursor.setPosition(start_sel)
+                my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
+                self.edit_area.setTextCursor(my_text_cursor)
+
 
     def on_toggle_all_rows(self):
         """
@@ -347,11 +442,13 @@ class AppGCodeEditor(QtCore.QObject):
         :rtype:
         """
         if self.gcode_obj.cnc_tools:
-            sel_model = self.ui.cnc_tools_table.selectionModel()
+            t_table = self.ui.cnc_tools_table
         elif self.gcode_obj.exc_cnc_tools:
-            sel_model = self.ui.exc_cnc_tools_table.selectionModel()
+            t_table = self.ui.exc_cnc_tools_table
         else:
             return
+
+        sel_model = t_table.selectionModel()
         sel_indexes = sel_model.selectedIndexes()
 
         # it will iterate over all indexes which means all items in all columns too but I'm interested only on rows
@@ -359,18 +456,12 @@ class AppGCodeEditor(QtCore.QObject):
         for idx in sel_indexes:
             sel_rows.add(idx.row())
 
-        if self.gcode_obj.cnc_tools:
-            if len(sel_rows) == self.ui.cnc_tools_table.rowCount():
-                self.ui.cnc_tools_table.clearSelection()
-            else:
-                self.ui.cnc_tools_table.selectAll()
-        elif self.gcode_obj.exc_cnc_tools:
-            if len(sel_rows) == self.ui.exc_cnc_tools_table.rowCount():
-                self.ui.exc_cnc_tools_table.clearSelection()
-            else:
-                self.ui.exc_cnc_tools_table.selectAll()
+        if len(sel_rows) == t_table.rowCount():
+            t_table.clearSelection()
+            my_text_cursor = self.edit_area.textCursor()
+            my_text_cursor.clearSelection()
         else:
-            return
+            t_table.selectAll()
 
     def handleTextChanged(self):
         """

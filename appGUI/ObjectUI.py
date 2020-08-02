@@ -1889,6 +1889,14 @@ class CNCObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.custom_box.addWidget(separator_line)
 
+        # CNC Code snippets
+        self.snippets_cb = FCCheckBox(_("Use CNC Code Snippets"))
+        self.snippets_cb.setToolTip(
+            _("When selected, it will include CNC Code snippets (append and prepend)\n"
+              "defined in the Preferences.")
+        )
+        self.custom_box.addWidget(self.snippets_cb)
+
         # ####################
         # ## Export G-Code ##
         # ####################
@@ -1899,128 +1907,128 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.export_gcode_label)
 
-        # Prepend text to GCode
-        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
-        prependlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to add at the beginning of the G-Code file.")
-        )
-        self.custom_box.addWidget(prependlabel)
-
-        self.prepend_text = FCTextArea()
-        self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would\n"
-              "like to add at the beginning of the G-Code file.")
-        )
-        self.custom_box.addWidget(self.prepend_text)
-
-        # Append text to GCode
-        appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
-        appendlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
-        )
-        self.custom_box.addWidget(appendlabel)
-
-        self.append_text = FCTextArea()
-        self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would\n"
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
-        )
-        self.custom_box.addWidget(self.append_text)
-
-        self.cnc_frame = QtWidgets.QFrame()
-        self.cnc_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.cnc_frame)
-        self.cnc_box = QtWidgets.QVBoxLayout()
-        self.cnc_box.setContentsMargins(0, 0, 0, 0)
-        self.cnc_frame.setLayout(self.cnc_box)
-
-        # Toolchange Custom G-Code
-        self.toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
-        self.toolchangelabel.setToolTip(
-            _(
-                "Type here any G-Code commands you would\n"
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode,\n"
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a preprocessor file\n"
-                "that has 'toolchange_custom' in it's name and this is built\n"
-                "having as template the 'Toolchange Custom' posprocessor file."
-            )
-        )
-        self.cnc_box.addWidget(self.toolchangelabel)
-
-        self.toolchange_text = FCTextArea()
-        self.toolchange_text.setPlaceholderText(
-            _(
-                "Type here any G-Code commands you would\n"
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode,\n"
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n"
-                "WARNING: it can be used only with a preprocessor file\n"
-                "that has 'toolchange_custom' in it's name."
-            )
-        )
-        self.cnc_box.addWidget(self.toolchange_text)
-
-        cnclay = QtWidgets.QHBoxLayout()
-        self.cnc_box.addLayout(cnclay)
-
-        # Toolchange Replacement Enable
-        self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
-        self.toolchange_cb.setToolTip(
-            _("Check this box if you want to use\n"
-              "a Custom Toolchange GCode (macro).")
-        )
-
-        # Variable list
-        self.tc_variable_combo = FCComboBox()
-        self.tc_variable_combo.setToolTip(
-            _(
-                "A list of the FlatCAM variables that can be used\n"
-                "in the Toolchange event.\n"
-                "They have to be surrounded by the '%' symbol"
-            )
-        )
-
-        # Populate the Combo Box
-        variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
-                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
-        self.tc_variable_combo.addItems(variables)
-        self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(1, "tool = " + _("tool number"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(2, "tooldia = " + _("tool diameter"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, "t_drills = " + _("for Excellon, total number of drills"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, "x_toolchange = " + _("X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, "y_toolchange = " + _("Y coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(6, "z_toolchange = " + _("Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, "z_cut = " + _("depth where to cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, "z_move = " + _("height where to travel"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(9, "z_depthpercut = " + _("the step value for multidepth cut"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(10, "spindlesspeed = " + _("the value for the spindle speed"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(11, "dwelltime = " + _("time to dwell to allow the "
-                                                                  "spindle to reach it's set RPM"),
-                                           Qt.ToolTipRole)
-
-        cnclay.addWidget(self.toolchange_cb)
-        cnclay.addStretch()
-        cnclay.addWidget(self.tc_variable_combo)
-
-        self.toolch_ois = OptionalInputSection(self.toolchange_cb,
-                                               [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
-
+        # # Prepend text to GCode
+        # prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
+        # prependlabel.setToolTip(
+        #     _("Type here any G-Code commands you would\n"
+        #       "like to add at the beginning of the G-Code file.")
+        # )
+        # self.custom_box.addWidget(prependlabel)
+        #
+        # self.prepend_text = FCTextArea()
+        # self.prepend_text.setPlaceholderText(
+        #     _("Type here any G-Code commands you would\n"
+        #       "like to add at the beginning of the G-Code file.")
+        # )
+        # self.custom_box.addWidget(self.prepend_text)
+        #
+        # # Append text to GCode
+        # appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
+        # appendlabel.setToolTip(
+        #     _("Type here any G-Code commands you would\n"
+        #       "like to append to the generated file.\n"
+        #       "I.e.: M2 (End of program)")
+        # )
+        # self.custom_box.addWidget(appendlabel)
+        #
+        # self.append_text = FCTextArea()
+        # self.append_text.setPlaceholderText(
+        #     _("Type here any G-Code commands you would\n"
+        #       "like to append to the generated file.\n"
+        #       "I.e.: M2 (End of program)")
+        # )
+        # self.custom_box.addWidget(self.append_text)
+        #
+        # self.cnc_frame = QtWidgets.QFrame()
+        # self.cnc_frame.setContentsMargins(0, 0, 0, 0)
+        # self.custom_box.addWidget(self.cnc_frame)
+        # self.cnc_box = QtWidgets.QVBoxLayout()
+        # self.cnc_box.setContentsMargins(0, 0, 0, 0)
+        # self.cnc_frame.setLayout(self.cnc_box)
+        #
+        # # Toolchange Custom G-Code
+        # self.toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
+        # self.toolchangelabel.setToolTip(
+        #     _(
+        #         "Type here any G-Code commands you would\n"
+        #         "like to be executed when Toolchange event is encountered.\n"
+        #         "This will constitute a Custom Toolchange GCode,\n"
+        #         "or a Toolchange Macro.\n"
+        #         "The FlatCAM variables are surrounded by '%' symbol.\n\n"
+        #         "WARNING: it can be used only with a preprocessor file\n"
+        #         "that has 'toolchange_custom' in it's name and this is built\n"
+        #         "having as template the 'Toolchange Custom' posprocessor file."
+        #     )
+        # )
+        # self.cnc_box.addWidget(self.toolchangelabel)
+        #
+        # self.toolchange_text = FCTextArea()
+        # self.toolchange_text.setPlaceholderText(
+        #     _(
+        #         "Type here any G-Code commands you would\n"
+        #         "like to be executed when Toolchange event is encountered.\n"
+        #         "This will constitute a Custom Toolchange GCode,\n"
+        #         "or a Toolchange Macro.\n"
+        #         "The FlatCAM variables are surrounded by '%' symbol.\n"
+        #         "WARNING: it can be used only with a preprocessor file\n"
+        #         "that has 'toolchange_custom' in it's name."
+        #     )
+        # )
+        # self.cnc_box.addWidget(self.toolchange_text)
+        #
+        # cnclay = QtWidgets.QHBoxLayout()
+        # self.cnc_box.addLayout(cnclay)
+        #
+        # # Toolchange Replacement Enable
+        # self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
+        # self.toolchange_cb.setToolTip(
+        #     _("Check this box if you want to use\n"
+        #       "a Custom Toolchange GCode (macro).")
+        # )
+        #
+        # # Variable list
+        # self.tc_variable_combo = FCComboBox()
+        # self.tc_variable_combo.setToolTip(
+        #     _(
+        #         "A list of the FlatCAM variables that can be used\n"
+        #         "in the Toolchange event.\n"
+        #         "They have to be surrounded by the '%' symbol"
+        #     )
+        # )
+        #
+        # # Populate the Combo Box
+        # variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
+        #              'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
+        # self.tc_variable_combo.addItems(variables)
+        # self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(1, "tool = " + _("tool number"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(2, "tooldia = " + _("tool diameter"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(3, "t_drills = " + _("for Excellon, total number of drills"),
+        #                                    Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(4, "x_toolchange = " + _("X coord for Toolchange"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(5, "y_toolchange = " + _("Y coord for Toolchange"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(6, "z_toolchange = " + _("Z coord for Toolchange"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(7, "z_cut = " + _("depth where to cut"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(8, "z_move = " + _("height where to travel"), Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(9, "z_depthpercut = " + _("the step value for multidepth cut"),
+        #                                    Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(10, "spindlesspeed = " + _("the value for the spindle speed"),
+        #                                    Qt.ToolTipRole)
+        # self.tc_variable_combo.setItemData(11, "dwelltime = " + _("time to dwell to allow the "
+        #                                                           "spindle to reach it's set RPM"),
+        #                                    Qt.ToolTipRole)
+        #
+        # cnclay.addWidget(self.toolchange_cb)
+        # cnclay.addStretch()
+        # cnclay.addWidget(self.tc_variable_combo)
+        #
+        # self.toolch_ois = OptionalInputSection(self.toolchange_cb,
+        #                                        [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
+        #
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(h_lay)
-        #
+
         # # Edit GCode Button
         # self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
         # self.modify_gcode_button.setToolTip(
@@ -2028,7 +2036,7 @@ class CNCObjectUI(ObjectUI):
         #       "file.")
         # )
 
-        # GO Button
+        # Save Button
         self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
         self.export_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.export_gcode_button.setToolTip(

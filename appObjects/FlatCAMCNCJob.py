@@ -63,8 +63,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             "dwell": False,
             "dwelltime": 1,
             "type": 'Geometry',
-            "toolchange_macro": '',
-            "toolchange_macro_enable": False
+            # "toolchange_macro": '',
+            # "toolchange_macro_enable": False
         })
 
         '''
@@ -137,11 +137,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         gcodenr_re_string = r'([+-]?\d*\.\d+)'
         self.g_nr_re = re.compile(gcodenr_re_string)
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'origin_kind', 'cnc_tools', 'exc_cnc_tools', 'multitool']
-
         if self.app.is_legacy is False:
             self.text_col = self.app.plotcanvas.new_text_collection()
             self.text_col.enabled = True
@@ -151,6 +146,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.source_file = ''
         self.units_found = self.app.defaults['units']
+
+        self.append_snippet = ''
+        self.prepend_snippet = ''
+        self.gc_header = self.gcode_header()
+        self.gc_start  = ''
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from predecessors.
+        self.ser_attrs += [
+            'options', 'kind', 'origin_kind', 'cnc_tools', 'exc_cnc_tools', 'multitool', 'append_snippet',
+            'prepend_snippet', 'gc_header'
+        ]
 
     def build_ui(self):
         self.ui_disconnect()
@@ -364,16 +372,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set below
-        self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
+        # self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "tooldia": self.ui.tooldia_entry,
-            "append": self.ui.append_text,
-            "prepend": self.ui.prepend_text,
-            "toolchange_macro": self.ui.toolchange_text,
-            "toolchange_macro_enable": self.ui.toolchange_cb
+            # "append": self.ui.append_text,
+            # "prepend": self.ui.prepend_text,
+            # "toolchange_macro": self.ui.toolchange_text,
+            # "toolchange_macro_enable": self.ui.toolchange_cb
         })
+
+        self.append_snippet = self.app.defaults['cncjob_append']
+        self.prepend_snippet = self.app.defaults['cncjob_prepend']
+
+        if self.append_snippet != '' or self.prepend_snippet:
+            self.ui.snippets_cb.set_value(True)
 
         # Fill form fields only on object create
         self.to_form()
@@ -428,26 +442,31 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 '<span style="color:green;"><b>Basic</b></span>'
             ))
 
-            self.ui.cnc_frame.hide()
+            # self.ui.cnc_frame.hide()
         else:
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-            self.ui.cnc_frame.show()
+            # self.ui.cnc_frame.show()
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.editor_button.clicked.connect(self.on_edit_code_click)
 
-        self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
+        # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
         self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
 
-    def on_cnc_custom_parameters(self, signal_text):
-        if signal_text == 'Parameters':
-            return
-        else:
-            self.ui.toolchange_text.insertPlainText('%%%s%%' % signal_text)
+        preamble = self.append_snippet
+        postamble = self.prepend_snippet
+        gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        self.source_file = gc.getvalue()
+
+    # def on_cnc_custom_parameters(self, signal_text):
+    #     if signal_text == 'Parameters':
+    #         return
+    #     else:
+    #         self.ui.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
@@ -525,6 +544,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.export_gcode_handler(filename, is_gcode=save_gcode)
 
     def export_gcode_handler(self, filename, is_gcode=True):
+        preamble = ''
+        postamble = ''
         filename = str(filename)
 
         if filename == '':
@@ -540,8 +561,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.on_name_activate(silent=True)
 
         try:
-            preamble = str(self.ui.prepend_text.get_value())
-            postamble = str(self.ui.append_text.get_value())
+            if self.ui.snippets_cb.get_value():
+                preamble = self.append_snippet
+                postamble = self.prepend_snippet
             gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
         except Exception as err:
             log.debug("CNCJobObject.export_gcode_handler() --> %s" % str(err))
@@ -565,8 +587,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.app.proc_container.view.set_busy(_("Loading..."))
 
-        preamble = str(self.ui.prepend_text.get_value())
-        postamble = str(self.ui.append_text.get_value())
+        preamble = self.append_snippet
+        postamble = self.prepend_snippet
 
         gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         if gco == 'fail':
@@ -622,6 +644,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         marlin = False
         hpgl = False
         probe_pp = False
+        gcode = ''
 
         start_comment = comment_start_symbol if comment_start_symbol is not None else '('
         stop_comment = comment_stop_symbol if comment_stop_symbol is not None else ')'
@@ -657,8 +680,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             pass
 
         if marlin is True:
-            gcode = ';Marlin(Repetier) G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s\n' % \
-                    (str(self.app.version), str(self.app.version_date)) + '\n'
+            gcode += ';Marlin(Repetier) G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s\n' % \
+                     (str(self.app.version), str(self.app.version_date)) + '\n'
 
             gcode += ';Name: ' + str(self.options['name']) + '\n'
             gcode += ';Type: ' + "G-code from " + str(self.options['type']) + '\n'
@@ -669,8 +692,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             gcode += ';Units: ' + self.units.upper() + '\n' + "\n"
             gcode += ';Created on ' + time_str + '\n' + '\n'
         elif hpgl is True:
-            gcode = 'CO "HPGL CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s' % \
-                    (str(self.app.version), str(self.app.version_date)) + '";\n'
+            gcode += 'CO "HPGL CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s' % \
+                     (str(self.app.version), str(self.app.version_date)) + '";\n'
 
             gcode += 'CO "Name: ' + str(self.options['name']) + '";\n'
             gcode += 'CO "Type: ' + "HPGL code from " + str(self.options['type']) + '";\n'
@@ -681,8 +704,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             gcode += 'CO "Units: ' + self.units.upper() + '";\n'
             gcode += 'CO "Created on ' + time_str + '";\n'
         elif probe_pp is True:
-            gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
-                    (str(self.app.version), str(self.app.version_date)) + '\n'
+            gcode += '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
+                     (str(self.app.version), str(self.app.version_date)) + '\n'
 
             gcode += '(This GCode tool change is done by using a Probe.)\n' \
                      '(Make sure that before you start the job you first do a rough zero for Z axis.)\n' \
@@ -699,8 +722,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
             gcode += '(Created on ' + time_str + ')\n' + '\n'
         else:
-            gcode = '%sG-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s%s\n' % \
-                    (start_comment, str(self.app.version), str(self.app.version_date), stop_comment) + '\n'
+            gcode += '%sG-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s%s\n' % \
+                     (start_comment, str(self.app.version), str(self.app.version_date), stop_comment) + '\n'
 
             gcode += '%sName: ' % start_comment + str(self.options['name']) + '%s\n' % stop_comment
             gcode += '%sType: ' % start_comment + "G-code from " + str(self.options['type']) + '%s\n' % stop_comment
@@ -847,31 +870,40 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                         processed_gcode += gline + '\n'
 
                 gcode = processed_gcode
-                g = self.gcode_header() + '\n' + preamble + '\n' + gcode + postamble + end_gcode
+                g = self.gc_header + '\n' + preamble + '\n' + gcode + postamble + end_gcode
             else:
                 try:
                     g_idx = gcode.index('G94')
-                    g = self.gcode_header() + gcode[:g_idx + 3] + '\n\n' + preamble + '\n' + \
-                        gcode[(g_idx + 3):] + postamble + end_gcode
+                    if preamble != '' and postamble != '':
+                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                            gcode[(g_idx + 3):] + postamble + end_gcode
+                    elif preamble == '':
+                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + \
+                            gcode[(g_idx + 3):] + postamble + end_gcode
+                    elif postamble == '':
+                        g = self.gc_header + gcode[:g_idx + 3] + '\n' + preamble + '\n' + \
+                            gcode[(g_idx + 3):] + end_gcode
+                    else:
+                        g = self.gc_header + gcode[:g_idx + 3] + gcode[(g_idx + 3):] + end_gcode
                 except ValueError:
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("G-code does not have a G94 code and we will not include the code in the "
-                                           "'Prepend to GCode' text box"))
-                    g = self.gcode_header() + '\n' + gcode + postamble + end_gcode
+                                         _("G-code does not have a G94 code.\n"
+                                           "Append Code snippet will not be used.."))
+                    g = self.gc_header + '\n' + gcode + postamble + end_gcode
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
-        if self.ui.toolchange_cb.get_value() is True:
-            # match = self.re_toolchange.search(g)
-            if 'M6' in g:
-                m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
-                if m6_code is None or m6_code == '':
-                    self.app.inform.emit(
-                        '[ERROR_NOTCL] %s' % _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
-                    )
-                    return 'fail'
-
-                g = g.replace('M6', m6_code)
-                self.app.inform.emit('[success] %s' % _("Toolchange G-code was replaced by a custom code."))
+        # if self.ui.toolchange_cb.get_value() is True:
+        #     # match = self.re_toolchange.search(g)
+        #     if 'M6' in g:
+        #         m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
+        #         if m6_code is None or m6_code == '':
+        #             self.app.inform.emit(
+        #                 '[ERROR_NOTCL] %s' % _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
+        #             )
+        #             return 'fail'
+        #
+        #         g = g.replace('M6', m6_code)
+        #         self.app.inform.emit('[success] %s' % _("Toolchange G-code was replaced by a custom code."))
 
         lines = StringIO(g)
 
@@ -906,32 +938,32 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         else:
             return lines
 
-    def on_toolchange_custom_clicked(self, signal):
-        """
-        Handler for clicking toolchange custom.
-
-        :param signal:
-        :return:
-        """
-
-        try:
-            if 'toolchange_custom' not in str(self.options['ppname_e']).lower():
-                if self.ui.toolchange_cb.get_value():
-                    self.ui.toolchange_cb.set_value(False)
-                    self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("The used preprocessor file has to have in it's name: 'toolchange_custom'"))
-        except KeyError:
-            try:
-                for key in self.cnc_tools:
-                    ppg = self.cnc_tools[key]['data']['ppname_g']
-                    if 'toolchange_custom' not in str(ppg).lower():
-                        if self.ui.toolchange_cb.get_value():
-                            self.ui.toolchange_cb.set_value(False)
-                            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("The used preprocessor file has to have in it's name: "
-                                                   "'toolchange_custom'"))
-            except KeyError:
-                self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
+    # def on_toolchange_custom_clicked(self, signal):
+    #     """
+    #     Handler for clicking toolchange custom.
+    #
+    #     :param signal:
+    #     :return:
+    #     """
+    #
+    #     try:
+    #         if 'toolchange_custom' not in str(self.options['ppname_e']).lower():
+    #             if self.ui.toolchange_cb.get_value():
+    #                 self.ui.toolchange_cb.set_value(False)
+    #                 self.app.inform.emit('[WARNING_NOTCL] %s' %
+    #                                      _("The used preprocessor file has to have in it's name: 'toolchange_custom'"))
+    #     except KeyError:
+    #         try:
+    #             for key in self.cnc_tools:
+    #                 ppg = self.cnc_tools[key]['data']['ppname_g']
+    #                 if 'toolchange_custom' not in str(ppg).lower():
+    #                     if self.ui.toolchange_cb.get_value():
+    #                         self.ui.toolchange_cb.set_value(False)
+    #                         self.app.inform.emit('[WARNING_NOTCL] %s' %
+    #                                              _("The used preprocessor file has to have in it's name: "
+    #                                                "'toolchange_custom'"))
+    #         except KeyError:
+    #             self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
         """

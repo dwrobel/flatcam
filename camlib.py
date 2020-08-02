@@ -2980,7 +2980,8 @@ class CNCjob(Geometry):
 
 
 
-        :return:            A tuple made from tool_gcode and another tuple holding the coordinates of the last point
+        :return:            A tuple made from tool_gcode,  another tuple holding the coordinates of the last point
+                            and the start gcode
         :rtype:             tuple
         """
         log.debug("Creating CNC Job from Excellon for tool: %s" % str(tool))
@@ -3153,8 +3154,9 @@ class CNCjob(Geometry):
             # graceful abort requested by the user
             raise grace
 
-        start_gcode = self.doformat(p.start_code)
+        start_gcode = ''
         if is_first:
+            start_gcode = self.doformat(p.start_code)
             t_gcode += start_gcode
 
         # do the ToolChange event
@@ -3305,7 +3307,7 @@ class CNCjob(Geometry):
             t_gcode += self.doformat(p.end_code, x=0, y=0)
 
         self.app.inform.emit(_("Finished G-Code generation for tool: %s" % str(tool)))
-        return t_gcode, (locx, locy)
+        return t_gcode, (locx, locy), start_gcode
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', use_ui=False):
         """
@@ -5280,8 +5282,10 @@ class CNCjob(Geometry):
         total_cut = 0.0
 
         # Start GCode
+        start_gcode = ''
         if is_first:
-            t_gcode += self.doformat(p.start_code)
+            start_gcode = self.doformat(p.start_code)
+            t_gcode += start_gcode
 
         # Toolchange code
         t_gcode += self.doformat(p.feedrate_code)  # sets the feed rate
@@ -5379,7 +5383,7 @@ class CNCjob(Geometry):
             )
 
         self.gcode = t_gcode
-        return self.gcode
+        return self.gcode, start_gcode
 
     def generate_from_geometry_2(self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None,
                                  z_move=None, feedrate=None, feedrate_z=None, feedrate_rapid=None, spindlespeed=None,
