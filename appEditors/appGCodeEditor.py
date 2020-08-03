@@ -38,6 +38,7 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui = AppGCodeEditorUI(app=self.app)
 
         self.edited_obj_name = ""
+        self.edit_area = None
 
         self.gcode_obj = None
         self.code_edited = ''
@@ -241,7 +242,7 @@ class AppGCodeEditor(QtCore.QObject):
         start_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         self.ui.exc_cnc_tools_table.setItem(row_no, 1, start_item)
 
-        for tooldia_key, dia_value in  self.gcode_obj.exc_cnc_tools.items():
+        for tooldia_key, dia_value in self.gcode_obj.exc_cnc_tools.items():
 
             tool_idx += 1
             row_no += 1
@@ -251,7 +252,7 @@ class AppGCodeEditor(QtCore.QObject):
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
             cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (
-                self.decimals, float(dia_value['offset']) +  float(dia_value['data']['tools_drill_cutz'])))
+                self.decimals, float(dia_value['offset']) + float(dia_value['data']['tools_drill_cutz'])))
 
             t_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -404,18 +405,24 @@ class AppGCodeEditor(QtCore.QObject):
             my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
             self.edit_area.setTextCursor(my_text_cursor)
 
+        sel_list = []
         for row in sel_rows:
             # those are special rows treated before so we except them
             if row not in [0, 1, 2]:
                 tool_no = int(t_table.item(row, 0).text())
 
+                text_to_be_found = None
                 if self.gcode_obj.cnc_tools:
                     text_to_be_found = self.gcode_obj.cnc_tools[tool_no]['gcode']
                 elif self.gcode_obj.exc_cnc_tools:
-                    tool_dia = float(t_table.item(row, 1).text())
-                    text_to_be_found = self.gcode_obj.exc_cnc_tools[tool_dia]['gcode']
+                    tool_dia = self.app.dec_format(float(t_table.item(row, 1).text()), dec=self.decimals)
+                    for tool_d in self.gcode_obj.exc_cnc_tools:
+                        if self.app.dec_format(tool_d, dec=self.decimals) == tool_dia:
+                            text_to_be_found = self.gcode_obj.exc_cnc_tools[tool_d]['gcode']
+                    if text_to_be_found is None:
+                        continue
                 else:
-                    return
+                    continue
 
                 text_list = [x for x in text_to_be_found.split("\n") if x != '']
 
@@ -423,32 +430,76 @@ class AppGCodeEditor(QtCore.QObject):
                 # my_text_cursor = self.edit_area.textCursor()
                 # start_sel = my_text_cursor.selectionStart()
 
+                # first I search for the tool
                 found_tool = self.edit_area.find('T%d' % tool_no, flags)
                 if found_tool is False:
-                    return
+                    continue
+
+                # once the tool found then I set the text Cursor position to the tool Tx position
                 my_text_cursor = self.edit_area.textCursor()
                 tool_pos = my_text_cursor.selectionStart()
                 my_text_cursor.setPosition(tool_pos)
 
+                # I search for the first finding of the first line in the Tool GCode
                 f = self.edit_area.find(str(text_list[0]), flags)
                 if f is False:
-                    return
+                    continue
+
+                # once found I set the text Cursor position here
                 my_text_cursor = self.edit_area.textCursor()
                 start_sel = my_text_cursor.selectionStart()
 
-                end_sel = 0
-                while True:
-                    f = self.edit_area.find(str(text_list[-1]), flags)
-                    m6 = self.edit_area.find('M6', flags)
-                    if f is False or m6:
-                        break
+                # I search for the next find of M6 (which belong to the next tool
+                m6 = self.edit_area.find('M6', flags)
+                if m6 is False:
+                    # this mean that we are in the last tool, we take all to the end
+                    self.edit_area.moveCursor(QtGui.QTextCursor.End)
                     my_text_cursor = self.edit_area.textCursor()
                     end_sel = my_text_cursor.selectionEnd()
+                else:
+                    pos_list = []
+                    end_sel = 0
+
+                    my_text_cursor = self.edit_area.textCursor()
+                    m6_pos = my_text_cursor.selectionEnd()
+
+                    # move cursor back to the start of the tool gcode so the find method will work on the tool gcode
+                    t_curs = self.edit_area.textCursor()
+                    t_curs.setPosition(start_sel)
+                    self.edit_area.setTextCursor(t_curs)
+
+                    # search for all findings of the last line in the tool gcode
+                    # yet, we may find in multiple locations or in the gcode that belong to other tools
+                    while True:
+                        f = self.edit_area.find(str(text_list[-1]), flags)
+                        if f is False:
+                            break
+                        my_text_cursor = self.edit_area.textCursor()
+                        pos_list.append(my_text_cursor.selectionEnd())
+
+                    # now we find a position that is less than the m6_pos but also the closest (maximum)
+                    belong_to_tool_list = []
+                    for last_line_pos in pos_list:
+                        if last_line_pos < m6_pos:
+                            belong_to_tool_list.append(last_line_pos)
+                    if belong_to_tool_list:
+                        end_sel = max(belong_to_tool_list)
+                    else:
+                        # this mean that we are in the last tool, we take all to the end
+                        self.edit_area.moveCursor(QtGui.QTextCursor.End)
+                        my_text_cursor = self.edit_area.textCursor()
+                        end_sel = my_text_cursor.selectionEnd()
 
                 my_text_cursor.setPosition(start_sel)
                 my_text_cursor.setPosition(end_sel, QtGui.QTextCursor.KeepAnchor)
                 self.edit_area.setTextCursor(my_text_cursor)
 
+                tool_selection = QtWidgets.QTextEdit.ExtraSelection()
+                tool_selection.cursor = self.edit_area.textCursor()
+                tool_selection.format.setFontUnderline(True)
+                sel_list.append(tool_selection)
+
+        self.edit_area.setExtraSelections(sel_list)
 
     def on_toggle_all_rows(self):
         """
@@ -525,8 +576,6 @@ class AppGCodeEditor(QtCore.QObject):
         :return:
         :rtype:
         """
-        preamble = str(self.ui.prepend_text.get_value())
-        postamble = str(self.ui.append_text.get_value())
         my_gcode = self.ui.gcode_editor_tab.code_editor.toPlainText()
         self.gcode_obj.source_file = my_gcode
 
@@ -555,6 +604,7 @@ class AppGCodeEditor(QtCore.QObject):
 
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
+
 
 class AppGCodeEditorUI:
     def __init__(self, app):

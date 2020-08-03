@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.08.2020
+
+- GCode Editor - GCode tool selection when clicking on tool in Tools table is working. The only issue is that the first tool gcode includes the start gcode which confuse the algorithm
+
 2.08.2020
 
 - GCode Editor - closing the Editor will close also the Code Editor Tab
