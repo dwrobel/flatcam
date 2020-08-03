@@ -451,7 +451,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.editor_button.clicked.connect(self.on_edit_code_click)
+        self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
+        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -623,7 +624,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.show()
         self.app.proc_container.view.set_idle()
 
-        self.gcode_editor_tab.buttonSave.clicked.connect(self.on_update_source_file)
+        self.gcode_editor_tab.buttonSave.hide()
+        self.gcode_editor_tab.buttonOpen.hide()
+        self.gcode_editor_tab.code_editor.setReadOnly(True)
 
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 

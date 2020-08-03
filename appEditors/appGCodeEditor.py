@@ -709,50 +709,48 @@ class AppGCodeEditorUI:
         self.edit_box.addWidget(separator_line)
 
         # Prepend text to GCode
-        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
+        prependlabel = QtWidgets.QLabel('%s 1:' % _('CNC Code Snippet'))
         prependlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to add at the beginning of the G-Code file.")
+            _("Code snippet defined in Preferences.")
         )
         self.edit_box.addWidget(prependlabel)
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
             _("Type here any G-Code commands you would\n"
-              "like to add at the beginning of the G-Code file.")
+              "like to insert at the cursor location.")
         )
         self.edit_box.addWidget(self.prepend_text)
 
+        # Insert Button
+        self.update_gcode_button = FCButton(_('Insert Code'))
+        # self.update_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        self.update_gcode_button.setToolTip(
+            _("Insert the code above at the cursor location.")
+        )
+        self.edit_box.addWidget(self.update_gcode_button)
+
         # Append text to GCode
-        appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
+        appendlabel = QtWidgets.QLabel('%s 2:' % _('CNC Code Snippet'))
         appendlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
+            _("Code snippet defined in Preferences.")
         )
         self.edit_box.addWidget(appendlabel)
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
             _("Type here any G-Code commands you would\n"
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
+              "like to insert at the cursor location.")
         )
         self.edit_box.addWidget(self.append_text)
 
-        h_lay = QtWidgets.QHBoxLayout()
-        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
-        self.edit_box.addLayout(h_lay)
-
-        # GO Button
-        self.update_gcode_button = FCButton(_('Update Code'))
+        # Insert Button
+        self.update_gcode_sec_button = FCButton(_('Insert Code'))
         # self.update_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
-        self.update_gcode_button.setToolTip(
-            _("Update the Gcode in the Editor with the values\n"
-              "in the 'Prepend' and 'Append' text boxes.")
+        self.update_gcode_sec_button.setToolTip(
+            _("Insert the code above at the cursor location.")
         )
-
-        h_lay.addWidget(self.update_gcode_button)
+        self.edit_box.addWidget(self.update_gcode_sec_button)
 
         layout.addStretch()
 

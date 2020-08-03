@@ -2025,16 +2025,16 @@ class CNCObjectUI(ObjectUI):
         # self.toolch_ois = OptionalInputSection(self.toolchange_cb,
         #                                        [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
         #
-        h_lay = QtWidgets.QHBoxLayout()
-        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
-        self.custom_box.addLayout(h_lay)
+        # h_lay = QtWidgets.QHBoxLayout()
+        # h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        # self.custom_box.addLayout(h_lay)
 
-        # # Edit GCode Button
-        # self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
-        # self.modify_gcode_button.setToolTip(
-        #     _("Opens TAB to view/modify/print G-Code\n"
-        #       "file.")
-        # )
+        # Review GCode Button
+        self.review_gcode_button = QtWidgets.QPushButton(_('Review'))
+        self.review_gcode_button.setToolTip(
+            _("Review CNC Code.")
+        )
+        self.custom_box.addWidget(self.review_gcode_button)
 
         # Save Button
         self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
@@ -2044,7 +2044,8 @@ class CNCObjectUI(ObjectUI):
               "file.")
         )
 
-        h_lay.addWidget(self.export_gcode_button)
+        self.custom_box.addWidget(self.export_gcode_button)
+        self.custom_box.addStretch()
 
 
 class ScriptObjectUI(ObjectUI):
