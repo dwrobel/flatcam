@@ -1485,6 +1485,9 @@ class App(QtCore.QObject):
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
 
+        # Variable to store old state of the Tools Toolbar; used in the Editor2Object and in Object2Editor methods
+        self.old_state_of_tools_toolbar = False
+
         self.text_editor_tab = None
 
         # reference for the self.ui.code_editor
@@ -2249,7 +2252,10 @@ class App(QtCore.QObject):
         # hide the Tools Toolbar
         tools_tb = self.ui.toolbartools
         if tools_tb.isVisible():
+            self.old_state_of_tools_toolbar = True
             tools_tb.hide()
+        else:
+            self.old_state_of_tools_toolbar = False
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
@@ -2290,7 +2296,8 @@ class App(QtCore.QObject):
                 if response == bt_yes:
                     # show the Tools Toolbar
                     tools_tb = self.ui.toolbartools
-                    tools_tb.show()
+                    if self.old_state_of_tools_toolbar is True:
+                        tools_tb.show()
 
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
@@ -2396,7 +2403,8 @@ class App(QtCore.QObject):
                 elif response == bt_no:
                     # show the Tools Toolbar
                     tools_tb = self.ui.toolbartools
-                    tools_tb.show()
+                    if self.old_state_of_tools_toolbar is True:
+                        tools_tb.show()
 
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
@@ -2437,7 +2445,8 @@ class App(QtCore.QObject):
             else:
                 # show the Tools Toolbar
                 tools_tb = self.ui.toolbartools
-                tools_tb.show()
+                if self.old_state_of_tools_toolbar is True:
+                    tools_tb.show()
 
                 if isinstance(edited_obj, GeometryObject):
                     self.geo_editor.deactivate()

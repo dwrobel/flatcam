@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - GCode Editor - GCode tool selection when clicking on tool in Tools table is working. The only issue is that the first tool gcode includes the start gcode which confuse the algorithm
 - GCode Editor - can not delete objects while in the Editor; can not close the Code Editor Tab except on Editor exit; activated the shortcut keys (for now only CTRL+S is working)
+- added a way to remember the old state of Tools toolbar before and after entering an Editor
 
 2.08.2020
 
