@@ -3514,6 +3514,22 @@ class MainGUI(QtWidgets.QMainWindow):
                         else:
                             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
                         return
+        elif self.app.call_source == 'gcode_editor':
+            # CTRL
+            if modifiers == QtCore.Qt.ControlModifier:
+                # save (update) the current geometry and return to the App
+                if key == QtCore.Qt.Key_S or key == 'S':
+                    self.app.editor2object()
+                    return
+            # SHIFT
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            # ALT
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            # NO MODIFIER
+            elif modifiers == QtCore.Qt.NoModifier:
+                pass
         elif self.app.call_source == 'measurement':
             if modifiers == QtCore.Qt.ControlModifier:
                 pass

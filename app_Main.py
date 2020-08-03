@@ -2416,6 +2416,7 @@ class App(QtCore.QObject):
                         self.exc_editor.deactivate()
                         edited_obj.build_ui()
                     elif edited_obj.kind == 'cncjob':
+                        self.gcode_editor.deactivate()
                         edited_obj.build_ui()
 
                         # close the open tab
@@ -4533,7 +4534,7 @@ class App(QtCore.QObject):
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
-                and self.grb_editor.editor_active is False:
+                and self.grb_editor.editor_active is False and self.gcode_editor.editor_active is False:
             if self.defaults["global_delete_confirmation"] is True and force_deletion is False:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))

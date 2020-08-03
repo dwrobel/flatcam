@@ -65,6 +65,10 @@ class AppGCodeEditor(QtCore.QObject):
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.ui.gcode_editor_tab, '%s' % _("Code Editor"))
         self.ui.gcode_editor_tab.setObjectName('gcode_editor_tab')
+        # protect the tab that was just added
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.ui.gcode_editor_tab.objectName():
+                self.app.ui.plot_tab_area.protectTab(idx)
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
@@ -96,6 +100,8 @@ class AppGCodeEditor(QtCore.QObject):
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gcode_obj.options['name']
         self.ui.name_entry.set_value(self.edited_obj_name)
+
+        self.activate()
 
         # #################################################################################
         # ################### SIGNALS #####################################################
@@ -578,6 +584,7 @@ class AppGCodeEditor(QtCore.QObject):
         """
         my_gcode = self.ui.gcode_editor_tab.code_editor.toPlainText()
         self.gcode_obj.source_file = my_gcode
+        self.deactivate()
 
         self.ui.gcode_editor_tab.buttonSave.setStyleSheet("")
         self.ui.gcode_editor_tab.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
@@ -601,6 +608,14 @@ class AppGCodeEditor(QtCore.QObject):
                 self.code_edited = stream.readAll()
                 self.ui.gcode_editor_tab.load_text(self.code_edited, move_to_start=True, clear_text=True)
                 file.close()
+
+    def activate(self):
+        self.editor_active = True
+        self.app.call_source = 'gcode_editor'
+
+    def deactivate(self):
+        self.editor_active = False
+        self.app.call_source = 'app'
 
     def on_name_activate(self):
         self.edited_obj_name = self.ui.name_entry.get_value()
