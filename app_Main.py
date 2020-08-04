@@ -2429,8 +2429,11 @@ class App(QtCore.QObject):
 
                         # close the open tab
                         for idx in range(self.ui.plot_tab_area.count()):
-                            if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
-                                self.ui.plot_tab_area.closeTab(idx)
+                            try:
+                                if self.ui.plot_tab_area.widget(idx).objectName() == 'gcode_editor_tab':
+                                    self.ui.plot_tab_area.closeTab(idx)
+                            except AttributeError:
+                                continue
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))
