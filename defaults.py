@@ -346,8 +346,6 @@ class FlatCAMDefaults:
 
         # CNC Job General
         "cncjob_plot": True,
-        "cncjob_plot_kind": 'all',
-        "cncjob_annotation": True,
         "cncjob_tooldia": 1.0,
         "cncjob_coords_type": "G90",
         "cncjob_coords_decimals": 4,
@@ -371,14 +369,16 @@ class FlatCAMDefaults:
         "cncjob_travel_fill": '#F0E24D4C',
 
         # CNC Job Options
-        "cncjob_prepend": "",
-        "cncjob_append": "",
+        "cncjob_plot_kind": 'all',
+        "cncjob_annotation": True,
 
         # CNC Job Advanced Options
-        "cncjob_toolchange_macro": "",
-        "cncjob_toolchange_macro_enable": False,
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
+
+        # CNC Job (GCode) Editor
+        "cncjob_prepend": "",
+        "cncjob_append": "",
 
         # Isolation Routing Tool
         "tools_iso_tooldia": "0.1",

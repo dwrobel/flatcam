@@ -289,8 +289,6 @@ class PreferencesUIManager:
 
             # CNCJob General
             "cncjob_plot":              self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind":         self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
 
             "cncjob_tooldia":           self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_type":       self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
@@ -304,14 +302,16 @@ class PreferencesUIManager:
             "cncjob_travel_fill":       self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
 
             # CNC Job Options
-            "cncjob_prepend":   self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append":    self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
+            "cncjob_plot_kind":         self.ui.cncjob_defaults_form.cncjob_opt_group.cncplot_method_radio,
+            "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_opt_group.annotation_cb,
 
             # CNC Job Advanced Options
-            "cncjob_toolchange_macro":          self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
-            "cncjob_toolchange_macro_enable":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
             "cncjob_annotation_fontsize":  self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
+
+            # CNC Job (GCode) Editor
+            "cncjob_prepend":               self.ui.cncjob_defaults_form.cncjob_editor_group.prepend_text,
+            "cncjob_append":                self.ui.cncjob_defaults_form.cncjob_editor_group.append_text,
 
             # Isolation Routing Tool
             "tools_iso_tooldia":        self.ui.tools_defaults_form.tools_iso_group.tool_dia_entry,

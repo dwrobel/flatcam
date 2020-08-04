@@ -34,108 +34,6 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_gcode_label)
 
-        # Prepend to G-Code
-        toolchangelabel = QtWidgets.QLabel('%s' % _('Toolchange G-Code'))
-        toolchangelabel.setToolTip(
-            _(
-                "Type here any G-Code commands you would\n"
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode,\n"
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a preprocessor file\n"
-                "that has 'toolchange_custom' in it's name and this is built\n"
-                "having as template the 'Toolchange Custom' posprocessor file."
-            )
-        )
-        self.layout.addWidget(toolchangelabel)
-
-        qsettings = QSettings("Open Source", "FlatCAM")
-        if qsettings.contains("textbox_font_size"):
-            tb_fsize = qsettings.value('textbox_font_size', type=int)
-        else:
-            tb_fsize = 10
-        font = QtGui.QFont()
-        font.setPointSize(tb_fsize)
-
-        self.toolchange_text = FCTextArea()
-        self.toolchange_text.setPlaceholderText(
-            _(
-                "Type here any G-Code commands you would "
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode, "
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n"
-                "WARNING: it can be used only with a preprocessor file "
-                "that has 'toolchange_custom' in it's name."
-            )
-        )
-        self.layout.addWidget(self.toolchange_text)
-        self.toolchange_text.setFont(font)
-
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
-
-        # Toolchange Replacement GCode
-        self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
-        self.toolchange_cb.setToolTip(
-            _("Check this box if you want to use\n"
-              "a Custom Toolchange GCode (macro).")
-        )
-        hlay.addWidget(self.toolchange_cb)
-        hlay.addStretch()
-
-        hlay1 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay1)
-
-        # Variable list
-        self.tc_variable_combo = FCComboBox()
-        self.tc_variable_combo.setToolTip(
-            _("A list of the FlatCAM variables that can be used\n"
-              "in the Toolchange event.\n"
-              "They have to be surrounded by the '%' symbol")
-        )
-        hlay1.addWidget(self.tc_variable_combo)
-
-        # Populate the Combo Box
-        variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
-                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
-        self.tc_variable_combo.addItems(variables)
-        self.tc_variable_combo.insertSeparator(1)
-
-        self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        fnt = QtGui.QFont()
-        fnt.setBold(True)
-        self.tc_variable_combo.setItemData(0, fnt, Qt.FontRole)
-
-        self.tc_variable_combo.setItemData(2, 'tool = %s' % _("tool number"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, 'tooldia = %s' % _("tool diameter"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, 't_drills = %s' % _("for Excellon, total number of drills"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(6, 'y_toolchange = %s' % _("Y coord for Toolchange"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(9, 'z_move = %s' % _("Z height for travel"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(10, 'z_depthpercut = %s' % _("the step value for multidepth cut"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(11, 'spindlesspeed = %s' % _("the value for the spindle speed"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(12,
-                                           _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
-                                           Qt.ToolTipRole)
-
-        # hlay1.addStretch()
-
-        # Insert Variable into the Toolchange G-Code Text Box
-        # self.tc_insert_buton = FCButton("Insert")
-        # self.tc_insert_buton.setToolTip(
-        #     "Insert the variable in the GCode Box\n"
-        #     "surrounded by the '%' symbol."
-        # )
-        # hlay1.addWidget(self.tc_insert_buton)
-
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
 
@@ -166,14 +64,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
         self.layout.addStretch()
 
-        self.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
         self.annotation_fontcolor_entry.editingFinished.connect(self.on_annotation_fontcolor_entry)
-
-    def on_cnc_custom_parameters(self, signal_text):
-        if signal_text == 'Parameters':
-            return
-        else:
-            self.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_annotation_fontcolor_entry(self):
         self.app.defaults['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()
