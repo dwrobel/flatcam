@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - removed the Toolchange Macro feature (in the future it will be replaced by full preprocessor customization)
 - modified GUI in Preferences
+- Tool Cutout - working in adding gaps suppression feature; added the UI in the Tool
 
 3.08.2020
 

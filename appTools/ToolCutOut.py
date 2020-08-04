@@ -1347,10 +1347,34 @@ class CutoutUI:
                 "Depth of each pass (positive)."
             )
         )
-        self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
         grid0.addWidget(self.mpass_cb, 10, 0)
         grid0.addWidget(self.maxdepth_entry, 10, 1)
+
+        # Suppress gaps
+        self.suppress_cb = FCCheckBox('%s:' % _("Suppress gaps"))
+        self.suppress_cb.setToolTip(
+            _("Active only when multi depth is active.\n"
+              "If used, the gaps will not be used until the specified depth."))
+
+        self.suppress_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.suppress_depth_entry.set_precision(self.decimals)
+        self.suppress_depth_entry.setRange(0, 9999.9999)
+        self.suppress_depth_entry.setSingleStep(0.1)
+
+        self.suppress_depth_entry.setToolTip(
+            _("Active only when multi depth is active.\n"
+              "If used, the gaps will not be used until the specified depth."))
+
+        grid0.addWidget(self.suppress_cb, 12, 0)
+        grid0.addWidget(self.suppress_depth_entry, 12, 1)
+
+        self.ois_mpass_geo = OptionalInputSection(self.mpass_cb,
+                                                  [
+                                                      self.maxdepth_entry,
+                                                      self.suppress_cb,
+                                                      self.suppress_depth_entry
+                                                  ])
 
         # Margin
         self.margin = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1364,8 +1388,8 @@ class CutoutUI:
               "will make the cutout of the PCB further from\n"
               "the actual PCB border")
         )
-        grid0.addWidget(self.margin_label, 11, 0)
-        grid0.addWidget(self.margin, 11, 1)
+        grid0.addWidget(self.margin_label, 14, 0)
+        grid0.addWidget(self.margin, 14, 1)
 
         # Gapsize
         self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1378,8 +1402,8 @@ class CutoutUI:
               "the surrounding material (the one \n"
               "from which the PCB is cutout).")
         )
-        grid0.addWidget(self.gapsize_label, 13, 0)
-        grid0.addWidget(self.gapsize, 13, 1)
+        grid0.addWidget(self.gapsize_label, 16, 0)
+        grid0.addWidget(self.gapsize, 16, 1)
 
         # How gaps wil be rendered:
         # lr    - left + right
@@ -1396,21 +1420,21 @@ class CutoutUI:
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
         )
-        grid0.addWidget(self.convex_box, 15, 0, 1, 2)
+        grid0.addWidget(self.convex_box, 18, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        grid0.addWidget(separator_line, 20, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 17, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 22, 0, 1, 2)
 
         # Title2
         title_param_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
         title_param_label.setToolTip(
             _("This section handle creation of automatic bridge gaps.")
         )
-        grid0.addWidget(title_param_label, 18, 0, 1, 2)
+        grid0.addWidget(title_param_label, 24, 0, 1, 2)
 
         # Gaps
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
@@ -1433,8 +1457,8 @@ class CutoutUI:
         for it in gaps_items:
             self.gaps.addItem(it)
             # self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        grid0.addWidget(gaps_label, 19, 0)
-        grid0.addWidget(self.gaps, 19, 1)
+        grid0.addWidget(gaps_label, 26, 0)
+        grid0.addWidget(self.gaps, 26, 1)
 
         # Buttons
         self.ff_cutout_object_btn = FCButton(_("Generate Freeform Geometry"))
@@ -1449,7 +1473,7 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.ff_cutout_object_btn, 20, 0, 1, 2)
+        grid0.addWidget(self.ff_cutout_object_btn, 28, 0, 1, 2)
 
         self.rect_cutout_object_btn = FCButton(_("Generate Rectangular Geometry"))
         self.rect_cutout_object_btn.setToolTip(
@@ -1464,14 +1488,14 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.rect_cutout_object_btn, 21, 0, 1, 2)
+        grid0.addWidget(self.rect_cutout_object_btn, 30, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 22, 0, 1, 2)
+        grid0.addWidget(separator_line, 32, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 24, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 34, 0, 1, 2)
 
         # MANUAL BRIDGE GAPS
         title_manual_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
@@ -1480,7 +1504,7 @@ class CutoutUI:
               "This is done by mouse clicking on the perimeter of the\n"
               "Geometry object that is used as a cutout object. ")
         )
-        grid0.addWidget(title_manual_label, 25, 0, 1, 2)
+        grid0.addWidget(title_manual_label, 36, 0, 1, 2)
 
         # Big Cursor
         big_cursor_label = QtWidgets.QLabel('%s:' % _("Big cursor"))
@@ -1488,8 +1512,8 @@ class CutoutUI:
             _("Use a big cursor when adding manual gaps."))
         self.big_cursor_cb = FCCheckBox()
 
-        grid0.addWidget(big_cursor_label, 27, 0)
-        grid0.addWidget(self.big_cursor_cb, 27, 1)
+        grid0.addWidget(big_cursor_label, 38, 0)
+        grid0.addWidget(self.big_cursor_cb, 38, 1)
 
         # Generate a surrounding Geometry object
         self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
@@ -1505,7 +1529,7 @@ class CutoutUI:
         #                             font-weight: bold;
         #                         }
         #                         """)
-        grid0.addWidget(self.man_geo_creation_btn, 28, 0, 1, 2)
+        grid0.addWidget(self.man_geo_creation_btn, 40, 0, 1, 2)
 
         # Manual Geo Object
         self.man_object_combo = FCComboBox()
@@ -1520,8 +1544,8 @@ class CutoutUI:
         )
         # self.man_object_label.setMinimumWidth(60)
 
-        grid0.addWidget(self.man_object_label, 30, 0, 1, 2)
-        grid0.addWidget(self.man_object_combo, 31, 0, 1, 2)
+        grid0.addWidget(self.man_object_label, 42, 0, 1, 2)
+        grid0.addWidget(self.man_object_combo, 44, 0, 1, 2)
 
         self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setToolTip(
@@ -1537,7 +1561,7 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.man_gaps_creation_btn, 35, 0, 1, 2)
+        grid0.addWidget(self.man_gaps_creation_btn, 46, 0, 1, 2)
 
         self.layout.addStretch()
 
