@@ -1355,7 +1355,7 @@ class CutoutUI:
         self.suppress_cb = FCCheckBox('%s:' % _("Suppress gaps"))
         self.suppress_cb.setToolTip(
             _("Active only when multi depth is active.\n"
-              "If used, the gaps will not be used until the specified depth."))
+              "If checked, the gaps will not be used until the specified depth."))
 
         self.suppress_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.suppress_depth_entry.set_precision(self.decimals)
@@ -1364,7 +1364,7 @@ class CutoutUI:
 
         self.suppress_depth_entry.setToolTip(
             _("Active only when multi depth is active.\n"
-              "If used, the gaps will not be used until the specified depth."))
+              "If checked, the gaps will not be used until the specified depth."))
 
         grid0.addWidget(self.suppress_cb, 12, 0)
         grid0.addWidget(self.suppress_depth_entry, 12, 1)
