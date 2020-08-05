@@ -191,6 +191,7 @@ class CutOut(AppTool):
             "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
             "dwell":            self.app.defaults["geometry_dwell"],
             "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
+            "spindledir":       self.app.defaults["geometry_spindledir"],
             "ppname_g":         self.app.defaults["geometry_ppname_g"],
             "extracut":         self.app.defaults["geometry_extracut"],
             "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
@@ -203,6 +204,7 @@ class CutOut(AppTool):
             "area_shape":       self.app.defaults["geometry_area_shape"],
             "area_strategy":    self.app.defaults["geometry_area_strategy"],
             "area_overz":       float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type":    self.app.defaults["geometry_optimization_type"],
 
             # NCC
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
@@ -518,6 +520,8 @@ class CutOut(AppTool):
 
         def geo_init(geo_obj, app_obj):
             solid_geo = []
+            gaps_solid_geo = None
+
             object_geo = cutout_obj.solid_geometry
 
             def cutout_rect_handler(geom):
@@ -604,6 +608,10 @@ class CutOut(AppTool):
                         geo = geo.buffer(margin - abs(dia / 2))
 
                 solid_geo = cutout_rect_handler(geom=geo)
+
+                if self.ui.thin_cb.get_value():
+                    gaps_solid_geo = self.invert_cutout(geo, solid_geo)
+
             else:
                 if cutout_obj.kind == 'geometry':
                     try:
@@ -617,6 +625,11 @@ class CutOut(AppTool):
                         geom_struct = box(xmin, ymin, xmax, ymax)
 
                         solid_geo += cutout_rect_handler(geom=geom_struct)
+                        if self.ui.thin_cb.get_value():
+                            try:
+                                gaps_solid_geo += self.invert_cutout(geom_struct, solid_geo)
+                            except TypeError:
+                                gaps_solid_geo.append(self.invert_cutout(geom_struct, solid_geo))
                 elif cutout_obj.kind == 'gerber' and margin >= 0:
                     try:
                         __ = iter(object_geo)
@@ -631,6 +644,11 @@ class CutOut(AppTool):
                         geom_struct = geom_struct.buffer(margin + abs(dia / 2))
 
                         solid_geo += cutout_rect_handler(geom=geom_struct)
+                        if self.ui.thin_cb.get_value():
+                            try:
+                                gaps_solid_geo += self.invert_cutout(geom_struct, solid_geo)
+                            except TypeError:
+                                gaps_solid_geo.append(self.invert_cutout(geom_struct, solid_geo))
                 elif cutout_obj.kind == 'gerber' and margin < 0:
                     app_obj.inform.emit(
                         '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible."))
@@ -655,7 +673,7 @@ class CutOut(AppTool):
                     'offset_value':     0.0,
                     'type':             _('Rough'),
                     'tool_type':        'C1',
-                    'data':             self.default_data,
+                    'data':             deepcopy(self.default_data),
                     'solid_geometry':   geo_obj.solid_geometry
                 }
             })
@@ -664,6 +682,23 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+            if gaps_solid_geo is not None:
+                geo_obj.tools.update({
+                    2: {
+                        'tooldia': str(dia),
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': 'C1',
+                        'data': deepcopy(self.default_data),
+                        'solid_geometry': gaps_solid_geo
+                    }
+                })
+                geo_obj.tools[2]['data']['name'] = outname
+                geo_obj.tools[2]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                geo_obj.tools[2]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                geo_obj.tools[2]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -1138,13 +1173,33 @@ class CutOut(AppTool):
 
         points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
-        # pathonly should be allways True, otherwise polygons are not subtracted
+        # pathonly should be always True, otherwise polygons are not subtracted
         flat_geometry = CutOut.flatten(geometry=solid_geo)
 
         log.debug("%d paths" % len(flat_geometry))
 
         polygon = Polygon(points)
         toolgeo = cascaded_union(polygon)
+        diffs = []
+        for target in flat_geometry:
+            if type(target) == LineString or type(target) == LinearRing:
+                diffs.append(target.difference(toolgeo))
+            else:
+                log.warning("Not implemented.")
+
+        return unary_union(diffs)
+
+    @staticmethod
+    def invert_cutout(target_geo, subtractor_geo):
+        """
+
+        :param target_geo:
+        :param subtractor_geo:
+        :return:
+        """
+        flat_geometry = CutOut.flatten(geometry=target_geo)
+
+        toolgeo = cascaded_union(subtractor_geo)
         diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
@@ -1432,17 +1487,20 @@ class CutoutUI:
         # Thin gaps
         self.thin_cb = FCCheckBox('%s:' % _("Thin gaps"))
         self.thin_cb.setToolTip(
-            _("Active only when multi depth is active.\n"
-              "If checked, the gaps will start at the specified depth."))
+            _("Active only when multi depth is active (negative value)\n"
+              "If checked, it will mill de gaps until the specified depth."))
 
         self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.thin_depth_entry.set_precision(self.decimals)
-        self.thin_depth_entry.setRange(0, 9999.9999)
+        if machinist_setting == 0:
+            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
         self.thin_depth_entry.setSingleStep(0.1)
 
         self.thin_depth_entry.setToolTip(
-            _("Active only when multi depth is active.\n"
-              "If checked, the gaps will start at the specified depth."))
+            _("Active only when multi depth is active (negative value)\n"
+              "If checked, it will mill de gaps until the specified depth."))
 
         grid0.addWidget(self.thin_cb, 12, 0)
         grid0.addWidget(self.thin_depth_entry, 12, 1)

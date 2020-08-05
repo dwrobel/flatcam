@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - Tool Cutout - more work in gaps thickness control feature
 - Tool Cutout - added some icons to buttons
+- Tool Cutout - done handling the gaps thickness control for the rectangular cutout; TODO: check all app for the usage of geometry_spindledir and geometry_optimization_type defaults in tools and in options
 
 4.08.2020
 
