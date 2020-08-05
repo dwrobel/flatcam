@@ -2436,7 +2436,7 @@ class App(QtCore.QObject):
                                 continue
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))
+                                         _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
                         return
                 elif response == bt_cancel:
                     return

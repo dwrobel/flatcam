@@ -7,11 +7,16 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.08.2020
+
+- Tool Cutout - more work in gaps thickness control feature
+- Tool Cutout - added some icons to buttons
+
 4.08.2020
 
 - removed the Toolchange Macro feature (in the future it will be replaced by full preprocessor customization)
 - modified GUI in Preferences
-- Tool Cutout - working in adding gaps suppression feature; added the UI in the Tool
+- Tool Cutout - working in adding gaps thickness control feature; added the UI in the Tool
 
 3.08.2020
 

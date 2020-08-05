@@ -320,42 +320,54 @@ class CutOut(AppTool):
                     pass
                 else:
                     if gaps == '8' or gaps == '2LR':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xxmin - gapsize,  # botleft_x
-                                                           py - gapsize + leny / 4,  # botleft_y
-                                                           xxmax + gapsize,  # topright_x
-                                                           py + gapsize + leny / 4)  # topright_y
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xxmin - gapsize,
-                                                           py - gapsize - leny / 4,
-                                                           xxmax + gapsize,
-                                                           py + gapsize - leny / 4)
+                        points = (
+                            xxmin - gapsize,  # botleft_x
+                            py - gapsize + leny / 4,  # botleft_y
+                            xxmax + gapsize,  # topright_x
+                            py + gapsize + leny / 4  # topright_y
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
+                        points = (
+                            xxmin - gapsize,
+                            py - gapsize - leny / 4,
+                            xxmax + gapsize,
+                            py + gapsize - leny / 4
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '8' or gaps == '2TB':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize + lenx / 4,
-                                                           yymin - gapsize,
-                                                           px + gapsize + lenx / 4,
-                                                           yymax + gapsize)
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize - lenx / 4,
-                                                           yymin - gapsize,
-                                                           px + gapsize - lenx / 4,
-                                                           yymax + gapsize)
+                        points = (
+                            px - gapsize + lenx / 4,
+                            yymin - gapsize,
+                            px + gapsize + lenx / 4,
+                            yymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
+                        points = (
+                            px - gapsize - lenx / 4,
+                            yymin - gapsize,
+                            px + gapsize - lenx / 4,
+                            yymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '4' or gaps == 'LR':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xxmin - gapsize,
-                                                           py - gapsize,
-                                                           xxmax + gapsize,
-                                                           py + gapsize)
+                        points = (
+                            xxmin - gapsize,
+                            py - gapsize,
+                            xxmax + gapsize,
+                            py + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '4' or gaps == 'TB':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize,
-                                                           yymin - gapsize,
-                                                           px + gapsize,
-                                                           yymax + gapsize)
+                        points = (
+                            px - gapsize,
+                            yymin - gapsize,
+                            px + gapsize,
+                            yymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                 try:
                     for g in geom:
@@ -520,42 +532,55 @@ class CutOut(AppTool):
                     pass
                 else:
                     if gaps == '8' or gaps == '2LR':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,  # botleft_x
-                                                           py - gapsize + leny / 4,  # botleft_y
-                                                           xmax + gapsize,  # topright_x
-                                                           py + gapsize + leny / 4)  # topright_y
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,
-                                                           py - gapsize - leny / 4,
-                                                           xmax + gapsize,
-                                                           py + gapsize - leny / 4)
+                        points = (
+                            xmin - gapsize,  # botleft_x
+                            py - gapsize + leny / 4,  # botleft_y
+                            xmax + gapsize,  # topright_x
+                            py + gapsize + leny / 4 # topright_y
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
+                        points = (
+                            xmin - gapsize,
+                            py - gapsize - leny / 4,
+                            xmax + gapsize,
+                            py + gapsize - leny / 4
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '8' or gaps == '2TB':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize + lenx / 4,
-                                                           ymin - gapsize,
-                                                           px + gapsize + lenx / 4,
-                                                           ymax + gapsize)
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize - lenx / 4,
-                                                           ymin - gapsize,
-                                                           px + gapsize - lenx / 4,
-                                                           ymax + gapsize)
+                        points = (
+                            px - gapsize + lenx / 4,
+                            ymin - gapsize,
+                            px + gapsize + lenx / 4,
+                            ymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
+                        points = (
+                            px - gapsize - lenx / 4,
+                            ymin - gapsize,
+                            px + gapsize - lenx / 4,
+                            ymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '4' or gaps == 'LR':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           xmin - gapsize,
-                                                           py - gapsize,
-                                                           xmax + gapsize,
-                                                           py + gapsize)
+                        points = (
+                            xmin - gapsize,
+                            py - gapsize,
+                            xmax + gapsize,
+                            py + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
 
                     if gaps == '4' or gaps == 'TB':
-                        geom = self.subtract_poly_from_geo(geom,
-                                                           px - gapsize,
-                                                           ymin - gapsize,
-                                                           px + gapsize,
-                                                           ymax + gapsize)
+                        points = (
+                            px - gapsize,
+                            ymin - gapsize,
+                            px + gapsize,
+                            ymax + gapsize
+                        )
+                        geom = self.subtract_poly_from_geo(geom, points)
+
                 try:
                     for g in geom:
                         proc_geometry.append(g)
@@ -1088,20 +1113,29 @@ class CutOut(AppTool):
             self.draw_utility_geometry(geo=geo)
 
     @staticmethod
-    def subtract_poly_from_geo(solid_geo, x0, y0, x1, y1):
+    def subtract_poly_from_geo(solid_geo, pts):
         """
         Subtract polygon made from points from the given object.
         This only operates on the paths in the original geometry,
         i.e. it converts polygons into paths.
 
-        :param x0: x coord for lower left vertex of the polygon.
-        :param y0: y coord for lower left vertex of the polygon.
-        :param x1: x coord for upper right vertex of the polygon.
-        :param y1: y coord for upper right vertex of the polygon.
+        :param solid_geo:   Geometry from which to subtract.
+        :param pts:         a tuple of coordinates in format (x0, y0, x1, y1)
+        :type pts:          tuple
 
-        :param solid_geo: Geometry from which to substract. If none, use the solid_geomety property of the object
+        x0: x coord for lower left vertex of the polygon.
+        y0: y coord for lower left vertex of the polygon.
+        x1: x coord for upper right vertex of the polygon.
+        y1: y coord for upper right vertex of the polygon.
+
         :return: none
         """
+
+        x0 = pts[0]
+        y0 = pts[1]
+        x1 = pts[2]
+        y1 = pts[3]
+
         points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
         # pathonly should be allways True, otherwise polygons are not subtracted
@@ -1119,6 +1153,50 @@ class CutOut(AppTool):
                 log.warning("Not implemented.")
 
         return unary_union(diffs)
+
+    @staticmethod
+    def intersect_poly_with_geo(solid_geo, pts, margin):
+        """
+        Intersections with a polygon made from points from the given object.
+        This only operates on the paths in the original geometry,
+        i.e. it converts polygons into paths.
+
+        :param solid_geo:   Geometry from which to get intersections.
+        :param pts:         a tuple of coordinates in format (x0, y0, x1, y1)
+        :type pts:          tuple
+        :param margin:      a distance (buffer) applied to each solid_geo
+
+        x0: x coord for lower left vertex of the polygon.
+        y0: y coord for lower left vertex of the polygon.
+        x1: x coord for upper right vertex of the polygon.
+        y1: y coord for upper right vertex of the polygon.
+
+        :return: none
+        """
+
+        x0 = pts[0]
+        y0 = pts[1]
+        x1 = pts[2]
+        y1 = pts[3]
+
+        points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+        # pathonly should be allways True, otherwise polygons are not subtracted
+        flat_geometry = CutOut.flatten(geometry=solid_geo)
+
+        log.debug("%d paths" % len(flat_geometry))
+
+        polygon = Polygon(points)
+        toolgeo = cascaded_union(polygon)
+
+        intersects = []
+        for target in flat_geometry:
+            if type(target) == LineString or type(target) == LinearRing:
+                intersects.append(target.intersection(toolgeo))
+            else:
+                log.warning("Not implemented.")
+
+        return unary_union(intersects)
 
     @staticmethod
     def flatten(geometry):
@@ -1351,29 +1429,29 @@ class CutoutUI:
         grid0.addWidget(self.mpass_cb, 10, 0)
         grid0.addWidget(self.maxdepth_entry, 10, 1)
 
-        # Suppress gaps
-        self.suppress_cb = FCCheckBox('%s:' % _("Suppress gaps"))
-        self.suppress_cb.setToolTip(
+        # Thin gaps
+        self.thin_cb = FCCheckBox('%s:' % _("Thin gaps"))
+        self.thin_cb.setToolTip(
             _("Active only when multi depth is active.\n"
-              "If checked, the gaps will not be used until the specified depth."))
+              "If checked, the gaps will start at the specified depth."))
 
-        self.suppress_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.suppress_depth_entry.set_precision(self.decimals)
-        self.suppress_depth_entry.setRange(0, 9999.9999)
-        self.suppress_depth_entry.setSingleStep(0.1)
+        self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.thin_depth_entry.set_precision(self.decimals)
+        self.thin_depth_entry.setRange(0, 9999.9999)
+        self.thin_depth_entry.setSingleStep(0.1)
 
-        self.suppress_depth_entry.setToolTip(
+        self.thin_depth_entry.setToolTip(
             _("Active only when multi depth is active.\n"
-              "If checked, the gaps will not be used until the specified depth."))
+              "If checked, the gaps will start at the specified depth."))
 
-        grid0.addWidget(self.suppress_cb, 12, 0)
-        grid0.addWidget(self.suppress_depth_entry, 12, 1)
+        grid0.addWidget(self.thin_cb, 12, 0)
+        grid0.addWidget(self.thin_depth_entry, 12, 1)
 
         self.ois_mpass_geo = OptionalInputSection(self.mpass_cb,
                                                   [
                                                       self.maxdepth_entry,
-                                                      self.suppress_cb,
-                                                      self.suppress_depth_entry
+                                                      self.thin_cb,
+                                                      self.thin_depth_entry
                                                   ])
 
         # Margin
@@ -1461,7 +1539,8 @@ class CutoutUI:
         grid0.addWidget(self.gaps, 26, 1)
 
         # Buttons
-        self.ff_cutout_object_btn = FCButton(_("Generate Freeform Geometry"))
+        self.ff_cutout_object_btn = FCButton(_("Generate Geometry"))
+        self.ff_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/irregular32.png'))
         self.ff_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
               "The cutout shape can be of any shape.\n"
@@ -1475,7 +1554,8 @@ class CutoutUI:
                                 """)
         grid0.addWidget(self.ff_cutout_object_btn, 28, 0, 1, 2)
 
-        self.rect_cutout_object_btn = FCButton(_("Generate Rectangular Geometry"))
+        self.rect_cutout_object_btn = FCButton(_("Generate Geometry"))
+        self.rect_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
         self.rect_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
               "The resulting cutout shape is\n"
@@ -1517,6 +1597,7 @@ class CutoutUI:
 
         # Generate a surrounding Geometry object
         self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
+        self.man_geo_creation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
         self.man_geo_creation_btn.setToolTip(
             _("If the object to be cutout is a Gerber\n"
               "first create a Geometry that surrounds it,\n"
@@ -1548,6 +1629,7 @@ class CutoutUI:
         grid0.addWidget(self.man_object_combo, 44, 0, 1, 2)
 
         self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
+        self.man_gaps_creation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/gaps32.png'))
         self.man_gaps_creation_btn.setToolTip(
             _("Use the left mouse button (LMB) click\n"
               "to create a bridge gap to separate the PCB from\n"
