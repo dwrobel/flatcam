@@ -292,6 +292,7 @@ class CutOut(AppTool):
 
         def geo_init(geo_obj, app_obj):
             solid_geo = []
+            gaps_solid_geo = None
 
             if cutout_obj.kind == 'gerber':
                 if isinstance(cutout_obj.solid_geometry, list):
@@ -397,7 +398,10 @@ class CutOut(AppTool):
                     geo = geo_buf.exterior
                 else:
                     geo = object_geo
+
                 solid_geo = cutout_handler(geom=geo)
+                if self.ui.thin_cb.get_value():
+                    gaps_solid_geo = self.subtract_geo(geo, solid_geo)
             else:
                 try:
                     __ = iter(object_geo)
@@ -412,7 +416,13 @@ class CutOut(AppTool):
                             geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
                             geom_struct = geom_struct_buff.interiors
 
-                    solid_geo += cutout_handler(geom=geom_struct)
+                    c_geo = cutout_handler(geom=geom_struct)
+                    solid_geo += c_geo
+                    if self.ui.thin_cb.get_value():
+                        try:
+                            gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
+                        except TypeError:
+                            gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
 
             if not solid_geo:
                 app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
@@ -438,7 +448,7 @@ class CutOut(AppTool):
                     'offset_value':     0.0,
                     'type':             _('Rough'),
                     'tool_type':        'C1',
-                    'data':             self.default_data,
+                    'data':             deepcopy(self.default_data),
                     'solid_geometry':   geo_obj.solid_geometry
                 }
             })
@@ -447,6 +457,23 @@ class CutOut(AppTool):
             geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+            if gaps_solid_geo is not None:
+                geo_obj.tools.update({
+                    2: {
+                        'tooldia': str(dia),
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': 'C1',
+                        'data': deepcopy(self.default_data),
+                        'solid_geometry': gaps_solid_geo
+                    }
+                })
+                geo_obj.tools[2]['data']['name'] = outname
+                geo_obj.tools[2]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                geo_obj.tools[2]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                geo_obj.tools[2]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -610,8 +637,7 @@ class CutOut(AppTool):
                 solid_geo = cutout_rect_handler(geom=geo)
 
                 if self.ui.thin_cb.get_value():
-                    gaps_solid_geo = self.invert_cutout(geo, solid_geo)
-
+                    gaps_solid_geo = self.subtract_geo(geo, solid_geo)
             else:
                 if cutout_obj.kind == 'geometry':
                     try:
@@ -624,12 +650,13 @@ class CutOut(AppTool):
                         xmin, ymin, xmax, ymax = geom_struct.bounds
                         geom_struct = box(xmin, ymin, xmax, ymax)
 
-                        solid_geo += cutout_rect_handler(geom=geom_struct)
+                        c_geo = cutout_rect_handler(geom=geom_struct)
+                        solid_geo += c_geo
                         if self.ui.thin_cb.get_value():
                             try:
-                                gaps_solid_geo += self.invert_cutout(geom_struct, solid_geo)
+                                gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
-                                gaps_solid_geo.append(self.invert_cutout(geom_struct, solid_geo))
+                                gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
                 elif cutout_obj.kind == 'gerber' and margin >= 0:
                     try:
                         __ = iter(object_geo)
@@ -643,12 +670,13 @@ class CutOut(AppTool):
 
                         geom_struct = geom_struct.buffer(margin + abs(dia / 2))
 
-                        solid_geo += cutout_rect_handler(geom=geom_struct)
+                        c_geo = cutout_rect_handler(geom=geom_struct)
+                        solid_geo += c_geo
                         if self.ui.thin_cb.get_value():
                             try:
-                                gaps_solid_geo += self.invert_cutout(geom_struct, solid_geo)
+                                gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
-                                gaps_solid_geo.append(self.invert_cutout(geom_struct, solid_geo))
+                                gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
                 elif cutout_obj.kind == 'gerber' and margin < 0:
                     app_obj.inform.emit(
                         '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible."))
@@ -784,7 +812,7 @@ class CutOut(AppTool):
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
         # first subtract geometry for the total solid_geometry
-        new_solid_geometry = CutOut.subtract_polygon(self.man_cutout_obj.solid_geometry, cut_poly)
+        new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
         new_solid_geometry = linemerge(new_solid_geometry)
         self.man_cutout_obj.solid_geometry = new_solid_geometry
 
@@ -1190,70 +1218,6 @@ class CutOut(AppTool):
         return unary_union(diffs)
 
     @staticmethod
-    def invert_cutout(target_geo, subtractor_geo):
-        """
-
-        :param target_geo:
-        :param subtractor_geo:
-        :return:
-        """
-        flat_geometry = CutOut.flatten(geometry=target_geo)
-
-        toolgeo = cascaded_union(subtractor_geo)
-        diffs = []
-        for target in flat_geometry:
-            if type(target) == LineString or type(target) == LinearRing:
-                diffs.append(target.difference(toolgeo))
-            else:
-                log.warning("Not implemented.")
-
-        return unary_union(diffs)
-
-    @staticmethod
-    def intersect_poly_with_geo(solid_geo, pts, margin):
-        """
-        Intersections with a polygon made from points from the given object.
-        This only operates on the paths in the original geometry,
-        i.e. it converts polygons into paths.
-
-        :param solid_geo:   Geometry from which to get intersections.
-        :param pts:         a tuple of coordinates in format (x0, y0, x1, y1)
-        :type pts:          tuple
-        :param margin:      a distance (buffer) applied to each solid_geo
-
-        x0: x coord for lower left vertex of the polygon.
-        y0: y coord for lower left vertex of the polygon.
-        x1: x coord for upper right vertex of the polygon.
-        y1: y coord for upper right vertex of the polygon.
-
-        :return: none
-        """
-
-        x0 = pts[0]
-        y0 = pts[1]
-        x1 = pts[2]
-        y1 = pts[3]
-
-        points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-
-        # pathonly should be allways True, otherwise polygons are not subtracted
-        flat_geometry = CutOut.flatten(geometry=solid_geo)
-
-        log.debug("%d paths" % len(flat_geometry))
-
-        polygon = Polygon(points)
-        toolgeo = cascaded_union(polygon)
-
-        intersects = []
-        for target in flat_geometry:
-            if type(target) == LineString or type(target) == LinearRing:
-                intersects.append(target.intersection(toolgeo))
-            else:
-                log.warning("Not implemented.")
-
-        return unary_union(intersects)
-
-    @staticmethod
     def flatten(geometry):
         """
         Creates a list of non-iterable linear geometry objects.
@@ -1310,7 +1274,7 @@ class CutOut(AppTool):
         return bounds_rec(geometry)
 
     @staticmethod
-    def subtract_polygon(target_geo, subtractor):
+    def subtract_geo(target_geo, subtractor):
         """
         Subtract subtractor polygon from the target_geo. This only operates on the paths in the target_geo,
         i.e. it converts polygons into paths.
