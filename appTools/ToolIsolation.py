@@ -253,6 +253,7 @@ class ToolIsolation(AppTool, Gerber):
 
             self.t_ui.rest_cb.set_value(False)
             self.t_ui.rest_cb.hide()
+            self.t_ui.forced_rest_iso_cb.hide()
 
             self.t_ui.except_cb.set_value(False)
             self.t_ui.except_cb.hide()
@@ -283,6 +284,7 @@ class ToolIsolation(AppTool, Gerber):
 
             self.t_ui.rest_cb.set_value(self.app.defaults["tools_iso_rest"])
             self.t_ui.rest_cb.show()
+            self.t_ui.forced_rest_iso_cb.show()
 
             self.t_ui.except_cb.set_value(self.app.defaults["tools_iso_isoexcept"])
             self.t_ui.except_cb.show()
@@ -1437,7 +1439,7 @@ class ToolIsolation(AppTool, Gerber):
                         else:
                             fc_obj.inform.emit('[success] %s: %s' %
                                                (_("Isolation geometry created"), geo_obj.options["name"]))
-                        geo_obj.multigeo = False
+                        geo_obj.multigeo = True
 
                     self.app.app_obj.new_object("geometry", iso_name, iso_init, plot=plot)
 
@@ -1610,7 +1612,7 @@ class ToolIsolation(AppTool, Gerber):
             else:
                 for ky in tools_storage.keys():
                     passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
-                    geo_obj.multigeo = True if passes_no > 1 else False
+                    geo_obj.multigeo = True
                     break
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
@@ -1798,9 +1800,9 @@ class ToolIsolation(AppTool, Gerber):
                     passes_no = 1
                     for ky in tools_storage.keys():
                         passes_no = float(tools_storage[ky]['data']['tools_iso_passes'])
-                        geo_obj.multigeo = True if passes_no > 1 else False
+                        geo_obj.multigeo = True
                         break
-                    geo_obj.multigeo = True if passes_no > 1 else False
+                    geo_obj.multigeo = True
 
             # detect if solid_geometry is empty and this require list flattening which is "heavy"
             # or just looking in the lists (they are one level depth) and if any is not empty
@@ -2775,18 +2777,12 @@ class IsoUI:
         self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.level)
 
-        # Grid Layout
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.tools_box.addLayout(grid0)
-
         self.obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
         self.obj_combo_label.setToolTip(
             _("Gerber object for isolation routing.")
         )
 
-        grid0.addWidget(self.obj_combo_label, 0, 0, 1, 2)
+        self.tools_box.addWidget(self.obj_combo_label)
 
         # ################################################
         # ##### The object to be copper cleaned ##########
@@ -2797,12 +2793,12 @@ class IsoUI:
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
-        grid0.addWidget(self.object_combo, 1, 0, 1, 2)
+        self.tools_box.addWidget(self.object_combo)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        self.tools_box.addWidget(separator_line)
 
         # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
@@ -2810,10 +2806,10 @@ class IsoUI:
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for copper clearing.")
         )
-        grid0.addWidget(self.tools_table_label, 3, 0, 1, 2)
+        self.tools_box.addWidget(self.tools_table_label)
 
         self.tools_table = FCTable(drag_drop=True)
-        grid0.addWidget(self.tools_table, 4, 0, 1, 2)
+        self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)
         # 3rd column is reserved (and hidden) for the tool ID

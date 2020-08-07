@@ -6498,6 +6498,9 @@ class App(QtCore.QObject):
                                         (obj.options['xmax'], obj.options['ymin']),
                                         (obj.options['xmax'], obj.options['ymax']),
                                         (obj.options['xmin'], obj.options['ymax'])])
+                    if poly_obj.is_empty or not poly_obj.is_valid:
+                        continue
+
                     if sel_type is True:
                         if poly_obj.within(poly_selection):
                             # create the selection box around the selected object

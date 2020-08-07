@@ -2891,6 +2891,7 @@ class AppGerberEditor(QtCore.QObject):
         self.linear_angle_label.hide()
 
         self.array_frame.hide()
+        self.custom_box.addStretch()
 
         layout.addStretch()
 

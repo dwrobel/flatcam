@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+7.08.2020
+
+- all Geometry objects resulted from Isolation Tool are now of type multi-geo
+- fixed minor glitch in the Isolation Tool UI
+- added an extra check when doing selection on canvas
+- fixed an UI problem in Gerber Editor
+
 5.08.2020
 
 - Tool Cutout - more work in gaps thickness control feature
