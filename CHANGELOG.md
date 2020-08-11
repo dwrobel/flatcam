@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+11.08.2020
+
+- CutOut Tool - finished handler for gaps thickness control for the free form cutout
+
 9.08.2020
 
 - small fix so the cx_freeze 6.2 module will work in building a frozen version of FlatCAM

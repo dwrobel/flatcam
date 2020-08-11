@@ -310,6 +310,11 @@ class CutOut(AppTool):
                 object_geo = cutout_obj.solid_geometry
 
             def cutout_handler(geom):
+                proc_geometry = []
+                rest_geometry = []
+                r_temp_geo = []
+                initial_geo = deepcopy(geom)
+
                 # Get min and max data for each object as we just cut rectangles across X or Y
                 xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
 
@@ -318,7 +323,6 @@ class CutOut(AppTool):
                 lenx = (xxmax - xxmin) + (margin * 2)
                 leny = (yymax - yymin) + (margin * 2)
 
-                proc_geometry = []
                 if gaps == 'None':
                     pass
                 else:
@@ -330,6 +334,10 @@ class CutOut(AppTool):
                             py + gapsize + leny / 4  # topright_y
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
+
                         points = (
                             xxmin - gapsize,
                             py - gapsize - leny / 4,
@@ -337,6 +345,9 @@ class CutOut(AppTool):
                             py + gapsize - leny / 4
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
 
                     if gaps == '8' or gaps == '2TB':
                         points = (
@@ -346,6 +357,10 @@ class CutOut(AppTool):
                             yymax + gapsize
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
+
                         points = (
                             px - gapsize - lenx / 4,
                             yymin - gapsize,
@@ -353,6 +368,9 @@ class CutOut(AppTool):
                             yymax + gapsize
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
 
                     if gaps == '4' or gaps == 'LR':
                         points = (
@@ -362,6 +380,9 @@ class CutOut(AppTool):
                             py + gapsize
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
 
                     if gaps == '4' or gaps == 'TB':
                         points = (
@@ -371,6 +392,9 @@ class CutOut(AppTool):
                             yymax + gapsize
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
+                        r_temp_geo.append(
+                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                        )
 
                 try:
                     for g in geom:
@@ -380,7 +404,12 @@ class CutOut(AppTool):
                     if geom and not geom.is_empty:
                         proc_geometry.append(geom)
 
-                return proc_geometry
+                r_temp_geo = CutOut.flatten(r_temp_geo)
+                for g in r_temp_geo:
+                    if g and not g.is_empty:
+                        rest_geometry.append(g)
+
+                return proc_geometry, rest_geometry
 
             if kind == 'single':
                 object_geo = unary_union(object_geo)
@@ -399,9 +428,9 @@ class CutOut(AppTool):
                 else:
                     geo = object_geo
 
-                solid_geo = cutout_handler(geom=geo)
+                solid_geo, rest_geo = cutout_handler(geom=geo)
                 if self.ui.thin_cb.get_value():
-                    gaps_solid_geo = self.subtract_geo(geo, solid_geo)
+                    gaps_solid_geo = rest_geo
             else:
                 try:
                     __ = iter(object_geo)
@@ -416,13 +445,10 @@ class CutOut(AppTool):
                             geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
                             geom_struct = geom_struct_buff.interiors
 
-                    c_geo = cutout_handler(geom=geom_struct)
+                    c_geo, r_geo = cutout_handler(geom=geom_struct)
                     solid_geo += c_geo
                     if self.ui.thin_cb.get_value():
-                        try:
-                            gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
-                        except TypeError:
-                            gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
+                        gaps_solid_geo += r_geo
 
             if not solid_geo:
                 app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
@@ -1230,13 +1256,13 @@ class CutOut(AppTool):
         flat_geo = []
         try:
             for geo in geometry:
-                if geo and not geo.is_empty:
+                if geo:
                     flat_geo += CutOut.flatten(geometry=geo)
         except TypeError:
-            if isinstance(geometry, Polygon):
+            if isinstance(geometry, Polygon) and not geometry.is_empty:
                 flat_geo.append(geometry.exterior)
                 CutOut.flatten(geometry=geometry.interiors)
-            else:
+            elif not geometry.is_empty:
                 flat_geo.append(geometry)
 
         return flat_geo
@@ -1301,6 +1327,30 @@ class CutOut(AppTool):
                 log.warning("Not implemented.")
 
         return unary_union(diffs)
+
+    @staticmethod
+    def intersect_geo(target_geo, second_geo):
+        """
+
+        :param target_geo:
+        :type target_geo:
+        :param second_geo:
+        :type second_geo:
+        :return:
+        :rtype:
+        """
+
+        results = []
+        try:
+            __ = iter(target_geo)
+        except TypeError:
+            target_geo = [target_geo]
+
+        for geo in target_geo:
+            if second_geo.intersects(geo):
+                results.append(second_geo.intersection(geo))
+
+        return  CutOut.flatten(results)
 
     def reset_fields(self):
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
