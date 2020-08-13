@@ -86,6 +86,9 @@ class CutOut(AppTool):
         # store the current selection shape status to be restored after manual geo
         self.old_selection_state = self.app.defaults['global_selection_shape']
 
+        # store original geometry for manual cutout
+        self.manual_solid_geo = None
+
         # Signals
         self.ui.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.ui.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
@@ -486,7 +489,7 @@ class CutOut(AppTool):
 
             if gaps_solid_geo is not None:
                 geo_obj.tools.update({
-                    2: {
+                    9999: {
                         'tooldia': str(dia),
                         'offset': 'Path',
                         'offset_value': 0.0,
@@ -496,10 +499,10 @@ class CutOut(AppTool):
                         'solid_geometry': gaps_solid_geo
                     }
                 })
-                geo_obj.tools[2]['data']['name'] = outname
-                geo_obj.tools[2]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                geo_obj.tools[2]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                geo_obj.tools[2]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                geo_obj.tools[9999]['data']['name'] = outname
+                geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -508,7 +511,7 @@ class CutOut(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
             return
 
-        cutout_obj.plot()
+        # cutout_obj.plot(plot_tool=1)
         self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
@@ -739,7 +742,7 @@ class CutOut(AppTool):
 
             if gaps_solid_geo is not None:
                 geo_obj.tools.update({
-                    2: {
+                    9999: {
                         'tooldia': str(dia),
                         'offset': 'Path',
                         'offset_value': 0.0,
@@ -749,10 +752,10 @@ class CutOut(AppTool):
                         'solid_geometry': gaps_solid_geo
                     }
                 })
-                geo_obj.tools[2]['data']['name'] = outname
-                geo_obj.tools[2]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                geo_obj.tools[2]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                geo_obj.tools[2]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                geo_obj.tools[9999]['data']['name'] = outname
+                geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -785,6 +788,8 @@ class CutOut(AppTool):
 
         self.app.inform.emit(_("Click on the selected geometry object perimeter to create a bridge gap ..."))
         self.app.geo_editor.tool_shape.enabled = True
+
+        self.manual_solid_geo = deepcopy(self.flatten(self.man_cutout_obj.solid_geometry))
 
         self.cutting_dia = float(self.ui.dia.get_value())
         if 0 in {self.cutting_dia}:
@@ -837,16 +842,47 @@ class CutOut(AppTool):
 
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
+        gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
+
         # first subtract geometry for the total solid_geometry
         new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
         new_solid_geometry = linemerge(new_solid_geometry)
         self.man_cutout_obj.solid_geometry = new_solid_geometry
 
         # then do it or each tool in the manual cutout Geometry object
-        for tool in self.man_cutout_obj.tools:
-            self.man_cutout_obj.tools[tool]['solid_geometry'] = new_solid_geometry
+        try:
+            self.man_cutout_obj.tools[1]['solid_geometry'] = new_solid_geometry
+            self.man_cutout_obj.multigeo = True
+            self.man_cutout_obj.tools[1]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
+            self.man_cutout_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
+            self.man_cutout_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+            self.man_cutout_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+        except KeyError:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No tool in the Geometry object."))
+            return
 
-        self.man_cutout_obj.plot()
+        dia = float(self.ui.dia.get_value())
+        if gaps_solid_geo:
+            if 9999 not in self.man_cutout_obj.tools:
+                self.man_cutout_obj.tools.update({
+                    9999: {
+                        'tooldia': str(dia),
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': 'C1',
+                        'data': deepcopy(self.default_data),
+                        'solid_geometry': [gaps_solid_geo]
+                    }
+                })
+                self.man_cutout_obj.tools[9999]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
+                self.man_cutout_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                self.man_cutout_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                self.man_cutout_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+            else:
+                self.man_cutout_obj.tools[9999]['solid_geometry'].append(gaps_solid_geo)
+
+        self.man_cutout_obj.plot(plot_tool=1)
         self.app.inform.emit('[success] %s' % _("Added manual Bridge Gap."))
 
         self.app.should_we_save = True
@@ -1016,6 +1052,9 @@ class CutOut(AppTool):
                 self.app.on_cursor_type(val=self.old_cursor_type)
             # restore selection
             self.app.defaults['global_selection_shape'] = self.old_selection_state
+
+            # rebuild the manual Geometry object
+            self.man_cutout_obj.build_ui()
 
     def on_mouse_move(self, event):
 

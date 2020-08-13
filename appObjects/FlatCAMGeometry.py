@@ -2728,13 +2728,15 @@ class GeometryObject(FlatCAMObj, Geometry):
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self, visible=None, kind=None):
+    def plot(self, visible=None, kind=None, plot_tool=None):
         """
         Plot the object.
 
-        :param visible: Controls if the added shape is visible of not
-        :param kind: added so there is no error when a project is loaded and it has both geometry and CNCJob, because
-        CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot() has to be rewrited
+        :param visible:     Controls if the added shape is visible of not
+        :param kind:        added so there is no error when a project is loaded and it has both geometry and CNCJob,
+                            because CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot()
+                            has to be rewritten
+        :param plot_tool:   plot a specif tool for multigeo objects
         :return:
         """
 
@@ -2768,8 +2770,14 @@ class GeometryObject(FlatCAMObj, Geometry):
             # plot solid geometries found as members of self.tools attribute dict
             # for MultiGeo
             if self.multigeo is True:  # geo multi tool usage
-                for tooluid_key in self.tools:
-                    solid_geometry = self.tools[tooluid_key]['solid_geometry']
+                if plot_tool is None:
+                    for tooluid_key in self.tools:
+                        solid_geometry = self.tools[tooluid_key]['solid_geometry']
+                        self.plot_element(solid_geometry, visible=visible,
+                                          color=random_color() if self.options['multicolored']
+                                          else self.app.defaults["geometry_plot_line"])
+                else:
+                    solid_geometry = self.tools[plot_tool]['solid_geometry']
                     self.plot_element(solid_geometry, visible=visible,
                                       color=random_color() if self.options['multicolored']
                                       else self.app.defaults["geometry_plot_line"])

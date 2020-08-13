@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in CNCJob UI added GUI for an eventual Autolevelling feature 
 - in CNCJob UI updated the GUI for Autolevelling
+- Cutout Tool - finished handler for gaps thickness control for the manual gaps
 
 11.08.2020
 
