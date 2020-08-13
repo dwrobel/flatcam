@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 13.08.2020
 
 - in CNCJob UI added GUI for an eventual Autolevelling feature 
+- in CNCJob UI updated the GUI for Autolevelling
 
 11.08.2020
 

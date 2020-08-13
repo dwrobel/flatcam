@@ -1946,53 +1946,56 @@ class CNCObjectUI(ObjectUI):
         grid0.addWidget(al_mode_lbl, 3, 0)
         grid0.addWidget(self.al_mode_radio, 3, 1)
 
-        self.al_manual_button = FCButton(_("Add testpoints"))
-        grid0.addWidget(self.al_manual_button, 4, 0, 1, 2)
+        # ## Columns
+        self.al_columns_entry = FCSpinner()
 
-        # ## Spacing Columns
-        self.al_spacing_columns = FCDoubleSpinner()
-        self.al_spacing_columns.set_range(0.000001, 9999.9999)
-        self.al_spacing_columns.set_precision(self.decimals)
-        self.al_spacing_columns.setSingleStep(0.1)
-
-        self.al_spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
-        self.al_spacing_columns_label.setToolTip(
-            _("Spacing between columns of the grid.\n"
-              "In current units.")
+        self.al_columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
+        self.al_columns_label.setToolTip(
+            _("The number of grid columns.")
         )
-        grid0.addWidget(self.al_spacing_columns_label, 5, 0)
-        grid0.addWidget(self.al_spacing_columns, 5, 1)
+        grid0.addWidget(self.al_columns_label, 5, 0)
+        grid0.addWidget(self.al_columns_entry, 5, 1)
 
-        # ## Spacing Rows
-        self.al_spacing_rows = FCDoubleSpinner()
-        self.al_spacing_rows.set_range(0.000001, 9999.9999)
-        self.al_spacing_rows.set_precision(self.decimals)
-        self.al_spacing_rows.setSingleStep(0.1)
+        # ## Rows
+        self.al_rows_entry = FCSpinner()
 
-        self.al_spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
-        self.al_spacing_rows_label.setToolTip(
-            _("Spacing between rows of the grid.\n"
-              "In current units.")
+        self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
+        self.al_rows_label.setToolTip(
+            _("The number of gird rows.")
         )
-        grid0.addWidget(self.al_spacing_rows_label, 6, 0)
-        grid0.addWidget(self.al_spacing_rows, 6, 1)
+        grid0.addWidget(self.al_rows_label, 6, 0)
+        grid0.addWidget(self.al_rows_entry, 6, 1)
+
+        self.al_manual_button = FCButton(_("Add test points"))
+        grid0.addWidget(self.al_manual_button, 8, 0, 1, 2)
+
+        self.al_controller_label = FCLabel('%s:' % _("Controller"))
+        self.al_rows_label.setToolTip(
+            _("The kind of controller for which to generate\n"
+              "height map gcode.")
+        )
+
+        self.al_controller_combo = FCComboBox()
+        self.al_controller_combo.addItems(["MACH", "LinuxCNC"])
+        grid0.addWidget(self.al_controller_label, 9, 0)
+        grid0.addWidget(self.al_controller_combo, 9, 1)
 
         self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
-        grid0.addWidget(self.h_gcode_button, 7, 0, 1, 2)
+        grid0.addWidget(self.h_gcode_button, 10, 0, 1, 2)
 
         self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
         self.voronoi_cb.setToolTip(
             _("Display Voronoi diagram.")
         )
-        grid0.addWidget(self.voronoi_cb, 8, 0, 1, 2)
+        grid0.addWidget(self.voronoi_cb, 12, 0, 1, 2)
 
         self.import_heights_button = FCButton(_("Import Height Map"))
-        grid0.addWidget(self.import_heights_button, 9, 0, 1, 2)
+        grid0.addWidget(self.import_heights_button, 14, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 2)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # ####################
         # ## Export G-Code ##
@@ -2164,7 +2167,25 @@ class CNCObjectUI(ObjectUI):
 
         # Signals
         self.sal_cb.stateChanged.connect(lambda state: self.al_frame.show() if state else self.al_frame.hide())
+        self.al_mode_radio.activated_custom.connect(self.on_mode_radio)
+
+        # Set initial UI
         self.al_frame.hide()
+        self.al_mode_radio.set_value('grid')
+        # self.on_mode_radio(val='grid')
+
+    def on_mode_radio(self, val):
+        if val == "manual":
+            self.al_rows_entry.setDisabled(True)
+            self.al_rows_label.setDisabled(True)
+            self.al_columns_entry.setDisabled(True)
+            self.al_columns_label.setDisabled(True)
+        else:
+            self.al_rows_entry.setDisabled(False)
+            self.al_rows_label.setDisabled(False)
+            self.al_columns_entry.setDisabled(False)
+            self.al_columns_label.setDisabled(False)
+
 
 class ScriptObjectUI(ObjectUI):
     """
