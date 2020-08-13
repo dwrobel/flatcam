@@ -1897,6 +1897,103 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.snippets_cb)
 
+        # Autolevelling
+        self.sal_cb = FCCheckBox(_("Autolevelling"))
+        self.sal_cb.setToolTip(
+            _("Enable the autolevelling feature.")
+        )
+        self.custom_box.addWidget(self.sal_cb)
+
+        self.al_frame = QtWidgets.QFrame()
+        self.al_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.al_frame)
+
+        self.al_box = QtWidgets.QVBoxLayout()
+        self.al_box.setContentsMargins(0, 0, 0, 0)
+        self.al_frame.setLayout(self.al_box)
+
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.al_box.addLayout(grid0)
+
+        al_title = FCLabel('<b>%s</b>' % _("Test Points Table"))
+        al_title.setToolTip(_("Generate GCode that will obtain the height map"))
+        grid0.addWidget(al_title, 0, 0, 1, 2)
+
+        self.al_testpoints_table = FCTable()
+        self.al_testpoints_table.setColumnCount(3)
+        self.al_testpoints_table.setColumnWidth(0, 20)
+        self.al_testpoints_table.setHorizontalHeaderLabels(['#', _('X-Y Coordinates'), _('Height')])
+
+        grid0.addWidget(self.al_testpoints_table, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
+        al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
+        al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
+                                 "- Manual: will pick a selection of test points by clicking on canvas\n"
+                                 "- Grid: will automatically generate a grid of test points"))
+
+        self.al_mode_radio = RadioSet(
+            [
+                {'label': _('Manual'), 'value': 'manual'},
+                {'label': _('Grid'), 'value': 'grid'}
+            ])
+        grid0.addWidget(al_mode_lbl, 3, 0)
+        grid0.addWidget(self.al_mode_radio, 3, 1)
+
+        self.al_manual_button = FCButton(_("Add testpoints"))
+        grid0.addWidget(self.al_manual_button, 4, 0, 1, 2)
+
+        # ## Spacing Columns
+        self.al_spacing_columns = FCDoubleSpinner()
+        self.al_spacing_columns.set_range(0.000001, 9999.9999)
+        self.al_spacing_columns.set_precision(self.decimals)
+        self.al_spacing_columns.setSingleStep(0.1)
+
+        self.al_spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
+        self.al_spacing_columns_label.setToolTip(
+            _("Spacing between columns of the grid.\n"
+              "In current units.")
+        )
+        grid0.addWidget(self.al_spacing_columns_label, 5, 0)
+        grid0.addWidget(self.al_spacing_columns, 5, 1)
+
+        # ## Spacing Rows
+        self.al_spacing_rows = FCDoubleSpinner()
+        self.al_spacing_rows.set_range(0.000001, 9999.9999)
+        self.al_spacing_rows.set_precision(self.decimals)
+        self.al_spacing_rows.setSingleStep(0.1)
+
+        self.al_spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
+        self.al_spacing_rows_label.setToolTip(
+            _("Spacing between rows of the grid.\n"
+              "In current units.")
+        )
+        grid0.addWidget(self.al_spacing_rows_label, 6, 0)
+        grid0.addWidget(self.al_spacing_rows, 6, 1)
+
+        self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
+        grid0.addWidget(self.h_gcode_button, 7, 0, 1, 2)
+
+        self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
+        self.voronoi_cb.setToolTip(
+            _("Display Voronoi diagram.")
+        )
+        grid0.addWidget(self.voronoi_cb, 8, 0, 1, 2)
+
+        self.import_heights_button = FCButton(_("Import Height Map"))
+        grid0.addWidget(self.import_heights_button, 9, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
+
         # ####################
         # ## Export G-Code ##
         # ####################
@@ -2047,6 +2144,27 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.export_gcode_button)
         self.custom_box.addStretch()
 
+        self.al_testpoints_table.setRowCount(0)
+        self.al_testpoints_table.resizeColumnsToContents()
+        self.al_testpoints_table.resizeRowsToContents()
+        v_header = self.al_testpoints_table.verticalHeader()
+        v_header.hide()
+        self.al_testpoints_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        h_header = self.al_testpoints_table.horizontalHeader()
+        h_header.setMinimumSectionSize(10)
+        h_header.setDefaultSectionSize(70)
+        h_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        h_header.resizeSection(0, 20)
+        h_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        h_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+
+        self.al_testpoints_table.setMinimumHeight(self.al_testpoints_table.getHeight())
+        self.al_testpoints_table.setMaximumHeight(self.al_testpoints_table.getHeight())
+
+        # Signals
+        self.sal_cb.stateChanged.connect(lambda state: self.al_frame.show() if state else self.al_frame.hide())
+        self.al_frame.hide()
 
 class ScriptObjectUI(ObjectUI):
     """
