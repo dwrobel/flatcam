@@ -1966,8 +1966,8 @@ class CNCObjectUI(ObjectUI):
         grid0.addWidget(self.al_rows_label, 6, 0)
         grid0.addWidget(self.al_rows_entry, 6, 1)
 
-        self.al_manual_button = FCButton(_("Add test points"))
-        grid0.addWidget(self.al_manual_button, 8, 0, 1, 2)
+        self.al_add_button = FCButton(_("Add test points"))
+        grid0.addWidget(self.al_add_button, 8, 0, 1, 2)
 
         self.al_controller_label = FCLabel('%s:' % _("Controller"))
         self.al_rows_label.setToolTip(

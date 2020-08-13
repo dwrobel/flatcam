@@ -19,6 +19,12 @@ from appObjects.FlatCAMObj import *
 
 from camlib import CNCjob
 
+from shapely.ops import unary_union
+try:
+    from shapely.ops import voronoi_diagram
+except Exception:
+    pass
+
 import os
 import sys
 import math
@@ -151,6 +157,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.prepend_snippet = ''
         self.gc_header = self.gcode_header()
         self.gc_start  = ''
+        self.gc_end = ''
+
+        '''
+        dictionary of dictionaries to store the informations for the autolevelling
+        format:
+        {
+            id: {
+                    'point': Shapely Point
+                    'geo': Shapely Polygon from Voronoi diagram,
+                    'height': float
+                }
+        }
+        '''
+        self.al_geometry_dict = {}
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -176,7 +196,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.exc_cnc_tools:
             self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
-        #
+
+        if self.ui.sal_cb.get_value():
+            self.build_al_table()
+
         self.ui_connect()
 
     def build_cnc_tools_table(self):
@@ -359,6 +382,34 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.exc_cnc_tools_table.setMinimumHeight(self.ui.exc_cnc_tools_table.getHeight())
         self.ui.exc_cnc_tools_table.setMaximumHeight(self.ui.exc_cnc_tools_table.getHeight())
 
+    def build_al_table(self):
+        tool_idx = 0
+
+        n = len(self.al_geometry_dict)
+        self.ui.al_testpoints_table.setRowCount(n)
+
+        for id_key, value in self.al_geometry_dict.items():
+            tool_idx += 1
+            row_no = tool_idx - 1
+
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            x = value['point'].x
+            y = value['point'].y
+            xy_coords = self.app.dec_format(x, dec=self.app.decimals), self.app.dec_format(y, dec=self.app.decimals)
+            coords_item = QtWidgets.QTableWidgetItem(str(xy_coords))
+            height = self.app.dec_format(value['height'], dec=self.app.decimals)
+            height_item = QtWidgets.QTableWidgetItem(str(height))
+
+            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
+            coords_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            height_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+        self.ui.al_testpoints_table.resizeColumnsToContents()
+        self.ui.al_testpoints_table.resizeRowsToContents()
+
+        self.ui.al_testpoints_table.setMinimumHeight(self.ui.al_testpoints_table.getHeight())
+        self.ui.al_testpoints_table.setMaximumHeight(self.ui.al_testpoints_table.getHeight())
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -476,6 +527,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
+        self.ui.al_add_button.clicked.connect(self.on_add_al_testpoints)
+
     def ui_disconnect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
             try:
@@ -493,6 +546,44 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.plot_cb.stateChanged.disconnect(self.on_plot_cb_click)
         except (TypeError, AttributeError):
             pass
+
+        try:
+            self.ui.al_add_button.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def on_add_al_testpoints(self):
+        # create the solid_geo
+        solid_geo = [geo['geom'] for geo in self.gcode_parsed]
+        solid_geo = unary_union(solid_geo)
+
+        xmin, ymin, xmax, ymax = solid_geo.bounds
+        print(solid_geo.bounds)
+
+        if self.ui.al_mode_radio.get_value() == 'grid':
+            width = abs(xmax - xmin)
+            height = abs(ymax - ymin)
+            cols = self.ui.al_columns_entry.get_value()
+            rows = self.ui.al_rows_entry.get_value()
+
+            dx = width / (cols + 1)
+            dy = height / (rows + 1)
+            print(width, height, cols, rows, dx, dy)
+            points = []
+            new_x = xmin
+            for x in range(cols):
+                new_x += dx
+                new_y = ymin
+                for x in range(rows):
+                    new_y += dy
+                    points.append((new_x, new_y))
+
+            print(points)
+        # self.calculate_voronoi_diagram()
+        self.build_al_table()
+
+    # def calculate_voronoi_diagram(self):
+    #     return voronoi_diagram()
 
     def on_updateplot_button_click(self, *args):
         """
