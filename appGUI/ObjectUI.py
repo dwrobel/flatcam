@@ -1919,7 +1919,17 @@ class CNCObjectUI(ObjectUI):
 
         al_title = FCLabel('<b>%s</b>' % _("Test Points Table"))
         al_title.setToolTip(_("Generate GCode that will obtain the height map"))
-        grid0.addWidget(al_title, 0, 0, 1, 2)
+
+        self.show_al_table = FCCheckBox(_("Show"))
+        self.show_al_table.setToolTip(_("Toggle the display of the Test Points table."))
+        self.show_al_table.setChecked(True)
+
+        hor_lay = QtWidgets.QHBoxLayout()
+        hor_lay.addWidget(al_title)
+        hor_lay.addStretch()
+        hor_lay.addWidget(self.show_al_table, alignment=QtCore.Qt.AlignRight)
+
+        grid0.addLayout(hor_lay, 0, 0, 1, 2)
 
         self.al_testpoints_table = FCTable()
         self.al_testpoints_table.setColumnCount(3)
@@ -1928,10 +1938,16 @@ class CNCObjectUI(ObjectUI):
 
         grid0.addWidget(self.al_testpoints_table, 1, 0, 1, 2)
 
+        self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
+        self.voronoi_cb.setToolTip(
+            _("Display Voronoi diagram if there are test points in the table.")
+        )
+        grid0.addWidget(self.voronoi_cb, 3, 0, 1, 2)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
+        grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
         al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
@@ -1943,8 +1959,8 @@ class CNCObjectUI(ObjectUI):
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        grid0.addWidget(al_mode_lbl, 3, 0)
-        grid0.addWidget(self.al_mode_radio, 3, 1)
+        grid0.addWidget(al_mode_lbl, 7, 0)
+        grid0.addWidget(self.al_mode_radio, 7, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -1953,8 +1969,8 @@ class CNCObjectUI(ObjectUI):
         self.al_columns_label.setToolTip(
             _("The number of grid columns.")
         )
-        grid0.addWidget(self.al_columns_label, 5, 0)
-        grid0.addWidget(self.al_columns_entry, 5, 1)
+        grid0.addWidget(self.al_columns_label, 9, 0)
+        grid0.addWidget(self.al_columns_entry, 9, 1)
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
@@ -1963,11 +1979,16 @@ class CNCObjectUI(ObjectUI):
         self.al_rows_label.setToolTip(
             _("The number of gird rows.")
         )
-        grid0.addWidget(self.al_rows_label, 6, 0)
-        grid0.addWidget(self.al_rows_entry, 6, 1)
+        grid0.addWidget(self.al_rows_label, 11, 0)
+        grid0.addWidget(self.al_rows_entry, 11, 1)
 
         self.al_add_button = FCButton(_("Add test points"))
-        grid0.addWidget(self.al_add_button, 8, 0, 1, 2)
+        grid0.addWidget(self.al_add_button, 13, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         self.al_controller_label = FCLabel('%s:' % _("Controller"))
         self.al_rows_label.setToolTip(
@@ -1977,25 +1998,19 @@ class CNCObjectUI(ObjectUI):
 
         self.al_controller_combo = FCComboBox()
         self.al_controller_combo.addItems(["MACH", "LinuxCNC"])
-        grid0.addWidget(self.al_controller_label, 9, 0)
-        grid0.addWidget(self.al_controller_combo, 9, 1)
+        grid0.addWidget(self.al_controller_label, 15, 0)
+        grid0.addWidget(self.al_controller_combo, 15, 1)
 
         self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
-        grid0.addWidget(self.h_gcode_button, 10, 0, 1, 2)
-
-        self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
-        self.voronoi_cb.setToolTip(
-            _("Display Voronoi diagram.")
-        )
-        grid0.addWidget(self.voronoi_cb, 12, 0, 1, 2)
+        grid0.addWidget(self.h_gcode_button, 17, 0, 1, 2)
 
         self.import_heights_button = FCButton(_("Import Height Map"))
-        grid0.addWidget(self.import_heights_button, 14, 0, 1, 2)
+        grid0.addWidget(self.import_heights_button, 19, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 16, 0, 1, 2)
+        grid0.addWidget(separator_line, 21, 0, 1, 2)
 
         # ####################
         # ## Export G-Code ##
@@ -2167,24 +2182,10 @@ class CNCObjectUI(ObjectUI):
 
         # Signals
         self.sal_cb.stateChanged.connect(lambda state: self.al_frame.show() if state else self.al_frame.hide())
-        self.al_mode_radio.activated_custom.connect(self.on_mode_radio)
 
         # Set initial UI
         self.al_frame.hide()
-        self.al_mode_radio.set_value('grid')
         # self.on_mode_radio(val='grid')
-
-    def on_mode_radio(self, val):
-        if val == "manual":
-            self.al_rows_entry.setDisabled(True)
-            self.al_rows_label.setDisabled(True)
-            self.al_columns_entry.setDisabled(True)
-            self.al_columns_label.setDisabled(True)
-        else:
-            self.al_rows_entry.setDisabled(False)
-            self.al_rows_label.setDisabled(False)
-            self.al_columns_entry.setDisabled(False)
-            self.al_columns_label.setDisabled(False)
 
 
 class ScriptObjectUI(ObjectUI):

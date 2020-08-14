@@ -20,6 +20,7 @@ from appObjects.FlatCAMObj import *
 from camlib import CNCjob
 
 from shapely.ops import unary_union
+from shapely.geometry import Point
 try:
     from shapely.ops import voronoi_diagram
 except Exception:
@@ -404,11 +405,28 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             coords_item.setFlags(QtCore.Qt.ItemIsEnabled)
             height_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
+            self.ui.al_testpoints_table.setItem(row_no, 0, t_id)  # Tool name/id
+            self.ui.al_testpoints_table.setItem(row_no, 1, coords_item)  # X-Y coords
+            self.ui.al_testpoints_table.setItem(row_no, 2, height_item)  # Determined Height
+
         self.ui.al_testpoints_table.resizeColumnsToContents()
         self.ui.al_testpoints_table.resizeRowsToContents()
 
+        h_header = self.ui.al_testpoints_table.horizontalHeader()
+        h_header.setMinimumSectionSize(10)
+        h_header.setDefaultSectionSize(70)
+        h_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        h_header.resizeSection(0, 20)
+        h_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        h_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+
         self.ui.al_testpoints_table.setMinimumHeight(self.ui.al_testpoints_table.getHeight())
         self.ui.al_testpoints_table.setMaximumHeight(self.ui.al_testpoints_table.getHeight())
+
+        if self.ui.al_testpoints_table.model().rowCount():
+            self.ui.voronoi_cb.setDisabled(False)
+        else:
+            self.ui.voronoi_cb.setDisabled(True)
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -504,6 +522,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+        self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
 
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -513,6 +532,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         postamble = self.prepend_snippet
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         self.source_file = gc.getvalue()
+
+        self.ui.al_mode_radio.set_value('grid')
 
     # def on_cnc_custom_parameters(self, signal_text):
     #     if signal_text == 'Parameters':
@@ -528,6 +549,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
         self.ui.al_add_button.clicked.connect(self.on_add_al_testpoints)
+        self.ui.show_al_table.stateChanged.connect(self.on_show_al_table)
 
     def ui_disconnect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
@@ -552,13 +574,24 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except (TypeError, AttributeError):
             pass
 
+        try:
+            self.ui.show_al_table.stateChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
     def on_add_al_testpoints(self):
         # create the solid_geo
-        solid_geo = [geo['geom'] for geo in self.gcode_parsed]
+
+        solid_geo = [geo['geom'] for geo in self.gcode_parsed if geo['kind'][0] == 'C']
         solid_geo = unary_union(solid_geo)
 
+        # reset al table
+        self.ui.al_testpoints_table.setRowCount(0)
+
+        # reset the al dict
+        self.al_geometry_dict.clear()
+
         xmin, ymin, xmax, ymax = solid_geo.bounds
-        print(solid_geo.bounds)
 
         if self.ui.al_mode_radio.get_value() == 'grid':
             width = abs(xmax - xmin)
@@ -568,22 +601,56 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             dx = width / (cols + 1)
             dy = height / (rows + 1)
-            print(width, height, cols, rows, dx, dy)
+
             points = []
-            new_x = xmin
-            for x in range(cols):
-                new_x += dx
-                new_y = ymin
-                for x in range(rows):
-                    new_y += dy
+            new_y = ymin
+            for x in range(rows):
+                new_y += dy
+                new_x = xmin
+                for x in range(cols):
+                    new_x += dx
                     points.append((new_x, new_y))
 
-            print(points)
+            pt_id = 0
+            for point in points:
+                pt_id += 1
+                new_dict = {
+                    'point': Point(point),
+                    'geo': None,
+                    'height': 0.0
+                }
+                self.al_geometry_dict[pt_id] = deepcopy(new_dict)
+
         # self.calculate_voronoi_diagram()
+
         self.build_al_table()
 
     # def calculate_voronoi_diagram(self):
     #     return voronoi_diagram()
+
+    def on_show_al_table(self, state):
+        self.ui.al_testpoints_table.show() if state else self.ui.al_testpoints_table.hide()
+
+    def on_mode_radio(self, val):
+        # reset al table
+        self.ui.al_testpoints_table.setRowCount(0)
+
+        # reset the al dict
+        self.al_geometry_dict.clear()
+
+        # build AL table
+        self.build_al_table()
+
+        if val == "manual":
+            self.ui.al_rows_entry.setDisabled(True)
+            self.ui.al_rows_label.setDisabled(True)
+            self.ui.al_columns_entry.setDisabled(True)
+            self.ui.al_columns_label.setDisabled(True)
+        else:
+            self.ui.al_rows_entry.setDisabled(False)
+            self.ui.al_rows_label.setDisabled(False)
+            self.ui.al_columns_entry.setDisabled(False)
+            self.ui.al_columns_label.setDisabled(False)
 
     def on_updateplot_button_click(self, *args):
         """
