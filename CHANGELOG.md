@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in CNCJob UI worked on the UI for the Autolevelling
 - in CNCJob UI finished working on adding test points in Grid mode
+- in CNCJob UI finished working on adding test points in Manual mode
 
 13.08.2020
 

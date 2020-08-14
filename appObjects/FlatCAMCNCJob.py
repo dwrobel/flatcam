@@ -17,6 +17,8 @@ from datetime import datetime
 from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
 from camlib import CNCjob
 
 from shapely.ops import unary_union
@@ -153,6 +155,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.source_file = ''
         self.units_found = self.app.defaults['units']
+
+        # store the current selection shape status to be restored after manual adding test points
+        self.old_selection_state = self.app.defaults['global_selection_shape']
+
+        # if mouse is dragging set the object True
+        self.mouse_is_dragging = False
+
+        # if mouse events are bound to local methods
+        self.mouse_events_connected = False
+
+        # event handlers references
+        self.kp = None
+        self.mm = None
+        self.mr = None
 
         self.append_snippet = ''
         self.prepend_snippet = ''
@@ -620,13 +636,163 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     'height': 0.0
                 }
                 self.al_geometry_dict[pt_id] = deepcopy(new_dict)
+        else:
+            self.app.inform.emit(_("Click on canvas to add a Test Point..."))
 
-        # self.calculate_voronoi_diagram()
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.kp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
+            self.mouse_events_connected = True
+
+            # self.calculate_voronoi_diagram()
 
         self.build_al_table()
 
     # def calculate_voronoi_diagram(self):
     #     return voronoi_diagram()
+
+    # To be called after clicking on the plot.
+    def on_mouse_click_release(self, event):
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            # event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+        event_pos = (x, y)
+
+        # do paint single only for left mouse clicks
+        if event.button == 1:
+            pos = self.app.plotcanvas.translate_coords(event_pos)
+
+            # use the snapped position as reference
+            snapped_pos = self.app.geo_editor.snap(pos[0], pos[1])
+
+            if not self.al_geometry_dict:
+                new_dict = {
+                    'point': Point(snapped_pos),
+                    'geo': None,
+                    'height': 0.0
+                }
+                self.al_geometry_dict[1] = deepcopy(new_dict)
+            else:
+                int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+                new_id = max(int_keys) + 1
+                new_dict = {
+                    'point': Point(snapped_pos),
+                    'geo': None,
+                    'height': 0.0
+                }
+                self.al_geometry_dict[new_id] = deepcopy(new_dict)
+
+            # rebuild the al table
+            self.build_al_table()
+            self.app.inform.emit(_("Added Test Point... Click again to add another or right click to finish ..."))
+
+        # if RMB then we exit
+        elif event.button == right_button and self.mouse_is_dragging is False:
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.kp = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            # signal that the mouse events are disconnected from local methods
+            self.mouse_events_connected = False
+
+            # restore selection
+            self.app.defaults['global_selection_shape'] = self.old_selection_state
+
+            self.app.inform.emit(_("Finished manual adding of Test Point..."))
+
+            # rebuild the al table
+            self.build_al_table()
+
+    def on_key_press(self, event):
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        elif type(event) == QtGui.QKeyEvent:
+            key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    # modifiers = QtCore.Qt.ControlModifier
+                    pass
+                elif mod.lower() == 'alt':
+                    # modifiers = QtCore.Qt.AltModifier
+                    pass
+                elif mod.lower() == 'shift':
+                    # modifiers = QtCore.Qt.ShiftModifier
+                    pass
+                else:
+                    # modifiers = QtCore.Qt.NoModifier
+                    pass
+                key = QtGui.QKeySequence(key_text)
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
+
+        # Escape = Deselect All
+        if key == QtCore.Qt.Key_Escape or key == 'Escape':
+            if self.mouse_events_connected is True:
+                self.mouse_events_connected = False
+                if self.app.is_legacy is False:
+                    self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+                else:
+                    self.app.plotcanvas.graph_event_disconnect(self.kp)
+                    self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+                self.app.kp = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+                self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                      self.app.on_mouse_click_release_over_plot)
+
+                if self.ui.big_cursor_cb.get_value():
+                    # restore cursor
+                    self.app.on_cursor_type(val=self.old_cursor_type)
+                # restore selection
+                self.app.defaults['global_selection_shape'] = self.old_selection_state
+
+        # Grid toggle
+        if key == QtCore.Qt.Key_G or key == 'G':
+            self.app.ui.grid_snap_btn.trigger()
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            l_x, l_y = self.app.on_jump_to()
 
     def on_show_al_table(self, state):
         self.ui.al_testpoints_table.show() if state else self.ui.al_testpoints_table.hide()
