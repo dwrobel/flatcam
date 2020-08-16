@@ -30,6 +30,8 @@ except Exception:
 
 import os
 import sys
+import serial
+import glob
 import math
 
 import gettext
@@ -130,6 +132,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # determine if the GCode was generated out of a Excellon object or a Geometry object
         self.origin_kind = None
 
+        self.coords_decimals = 4
+        self.fr_decimals = 2
+
         # used for parsing the GCode lines to adjust the GCode when the GCode is offseted or scaled
         gcodex_re_string = r'(?=.*(X[-\+]?\d*\.\d*))'
         self.g_x_re = re.compile(gcodex_re_string)
@@ -152,9 +157,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
         self.gcode_editor_tab = None
+        self.gcode_viewer_tab = None
 
         self.source_file = ''
         self.units_found = self.app.defaults['units']
+        self.probing_gcode_text = ''
 
         # store the current selection shape status to be restored after manual adding test points
         self.old_selection_state = self.app.defaults['global_selection_shape']
@@ -188,6 +195,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         }
         '''
         self.al_geometry_dict = {}
+        self.grbl_ser_port = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -403,7 +411,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         tool_idx = 0
 
         n = len(self.al_geometry_dict)
-        self.ui.al_testpoints_table.setRowCount(n)
+        self.ui.al_probe_points_table.setRowCount(n)
 
         for id_key, value in self.al_geometry_dict.items():
             tool_idx += 1
@@ -421,14 +429,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             coords_item.setFlags(QtCore.Qt.ItemIsEnabled)
             height_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.ui.al_testpoints_table.setItem(row_no, 0, t_id)  # Tool name/id
-            self.ui.al_testpoints_table.setItem(row_no, 1, coords_item)  # X-Y coords
-            self.ui.al_testpoints_table.setItem(row_no, 2, height_item)  # Determined Height
+            self.ui.al_probe_points_table.setItem(row_no, 0, t_id)  # Tool name/id
+            self.ui.al_probe_points_table.setItem(row_no, 1, coords_item)  # X-Y coords
+            self.ui.al_probe_points_table.setItem(row_no, 2, height_item)  # Determined Height
 
-        self.ui.al_testpoints_table.resizeColumnsToContents()
-        self.ui.al_testpoints_table.resizeRowsToContents()
+        self.ui.al_probe_points_table.resizeColumnsToContents()
+        self.ui.al_probe_points_table.resizeRowsToContents()
 
-        h_header = self.ui.al_testpoints_table.horizontalHeader()
+        h_header = self.ui.al_probe_points_table.horizontalHeader()
         h_header.setMinimumSectionSize(10)
         h_header.setDefaultSectionSize(70)
         h_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
@@ -436,13 +444,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         h_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         h_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
 
-        self.ui.al_testpoints_table.setMinimumHeight(self.ui.al_testpoints_table.getHeight())
-        self.ui.al_testpoints_table.setMaximumHeight(self.ui.al_testpoints_table.getHeight())
+        self.ui.al_probe_points_table.setMinimumHeight(self.ui.al_probe_points_table.getHeight())
+        self.ui.al_probe_points_table.setMaximumHeight(self.ui.al_probe_points_table.getHeight())
 
-        if self.ui.al_testpoints_table.model().rowCount():
+        if self.ui.al_probe_points_table.model().rowCount():
             self.ui.voronoi_cb.setDisabled(False)
+            self.ui.grbl_get_heightmap_button.setDisabled(False)
+            self.ui.h_gcode_button.setDisabled(False)
+            self.ui.view_h_gcode_button.setDisabled(False)
         else:
             self.ui.voronoi_cb.setDisabled(True)
+            self.ui.grbl_get_heightmap_button.setDisabled(True)
+            self.ui.h_gcode_button.setDisabled(True)
+            self.ui.view_h_gcode_button.setDisabled(True)
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -527,18 +541,27 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 '<span style="color:green;"><b>Basic</b></span>'
             ))
 
-            # self.ui.cnc_frame.hide()
+            self.ui.sal_cb.hide()
         else:
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-            # self.ui.cnc_frame.show()
+            self.ui.sal_cb.show()
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+
+        # autolevelling signals
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
+        self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
+        self.ui.com_search_button.clicked.connect(self.on_search_ports)
+        self.ui.add_bd_button.clicked.connect(self.on_add_baudrate_grbl)
+        self.ui.del_bd_button.clicked.connect(self.on_delete_baudrate_grbl)
+        self.ui.com_connect_button.clicked.connect(self.on_connect_grbl)
+        self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
+        self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
 
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -550,6 +573,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.source_file = gc.getvalue()
 
         self.ui.al_mode_radio.set_value('grid')
+        self.on_controller_change()
 
     # def on_cnc_custom_parameters(self, signal_text):
     #     if signal_text == 'Parameters':
@@ -564,7 +588,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.exc_cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
-        self.ui.al_add_button.clicked.connect(self.on_add_al_testpoints)
+        self.ui.al_add_button.clicked.connect(self.on_add_al_probepoints)
         self.ui.show_al_table.stateChanged.connect(self.on_show_al_table)
 
     def ui_disconnect(self):
@@ -595,14 +619,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except (TypeError, AttributeError):
             pass
 
-    def on_add_al_testpoints(self):
+    def on_add_al_probepoints(self):
         # create the solid_geo
 
         solid_geo = [geo['geom'] for geo in self.gcode_parsed if geo['kind'][0] == 'C']
         solid_geo = unary_union(solid_geo)
 
         # reset al table
-        self.ui.al_testpoints_table.setRowCount(0)
+        self.ui.al_probe_points_table.setRowCount(0)
 
         # reset the al dict
         self.al_geometry_dict.clear()
@@ -795,11 +819,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             l_x, l_y = self.app.on_jump_to()
 
     def on_show_al_table(self, state):
-        self.ui.al_testpoints_table.show() if state else self.ui.al_testpoints_table.hide()
+        self.ui.al_probe_points_table.show() if state else self.ui.al_probe_points_table.hide()
 
     def on_mode_radio(self, val):
         # reset al table
-        self.ui.al_testpoints_table.setRowCount(0)
+        self.ui.al_probe_points_table.setRowCount(0)
 
         # reset the al dict
         self.al_geometry_dict.clear()
@@ -817,6 +841,269 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.al_rows_label.setDisabled(False)
             self.ui.al_columns_entry.setDisabled(False)
             self.ui.al_columns_label.setDisabled(False)
+
+    def on_controller_change(self):
+        if self.ui.al_controller_combo.get_value() == 'GRBL':
+            self.ui.h_gcode_button.hide()
+            self.ui.view_h_gcode_button.hide()
+
+            self.ui.import_heights_button.hide()
+            self.ui.grbl_frame.show()
+            self.on_search_ports(muted=True)
+        else:
+            self.ui.h_gcode_button.show()
+            self.ui.view_h_gcode_button.show()
+
+            self.ui.import_heights_button.show()
+            self.ui.grbl_frame.hide()
+
+    def list_serial_ports(self):
+        """
+        Lists serial port names.
+        From here: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+
+        :raises EnvironmentError:   On unsupported or unknown platforms
+        :returns:                   A list of the serial ports available on the system
+        """
+
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        s = serial.Serial()
+
+        for port in ports:
+            s.port = port
+
+            try:
+                s.open()
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                # result.append(port + " (in use)")
+                pass
+
+        return result
+
+    def on_search_ports(self, muted=None):
+        port_list = self.list_serial_ports()
+        self.ui.com_list_combo.clear()
+        self.ui.com_list_combo.addItems(port_list)
+        if muted is not True:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("COM list updated ..."))
+
+    def on_connect_grbl(self):
+        port_name = self.ui.com_list_combo.currentText()
+        if " (" in port_name:
+            port_name = port_name.rpartition(" (")[0]
+
+        baudrate = int(self.ui.baudrates_list_combo.currentText())
+
+        try:
+            self.grbl_ser_port = serial.serial_for_url(port_name, baudrate,
+                                                       bytesize=serial.EIGHTBITS,
+                                                       parity=serial.PARITY_NONE,
+                                                       stopbits=serial.STOPBITS_ONE,
+                                                       timeout=0.1,
+                                                       xonxoff=False,
+                                                       rtscts=False)
+
+            self.app.inform.emit("%s: %s" % (_("Port connected"), port_name))
+            self.ui.com_connect_button.setStyleSheet("QPushButton {color: seagreen;}")
+
+            # Toggle DTR to reset the controller loaded with GRBL (Arduino, ESP32, etc)
+            try:
+                self.grbl_ser_port.dtr = False
+            except IOError:
+                pass
+
+            self.grbl_ser_port.reset_input_buffer()
+
+            try:
+                self.grbl_ser_port.dtr = True
+            except IOError:
+                pass
+        except serial.SerialException:
+            self.grbl_ser_port = serial.Serial()
+            self.grbl_ser_port.port = port_name
+            self.grbl_ser_port.close()
+            self.ui.com_connect_button.setStyleSheet("")
+            self.app.inform.emit("%s: %s" % (_("Port is connected. Disconnecting"), port_name))
+        except Exception:
+            self.app.inform.emit("[ERROR_NOTCL] %s: %s" % (_("Could not connect to port"), port_name))
+
+    def on_add_baudrate_grbl(self):
+        new_bd = str(self.ui.new_baudrate_entry.get_value())
+        if int(new_bd) >= 40 and new_bd not in self.ui.baudrates_list_combo.model().stringList():
+            self.ui.baudrates_list_combo.addItem(new_bd)
+            self.ui.baudrates_list_combo.setCurrentText(new_bd)
+
+    def on_delete_baudrate_grbl(self):
+        current_idx = self.ui.baudrates_list_combo.currentIndex()
+        self.ui.baudrates_list_combo.removeItem(current_idx)
+
+    def probing_gcode(self, coords, pr_travel, probe_fr, pr_depth, controller):
+        """
+
+        :param coords:          a list of (x, y) tuples of probe points coordinates
+        :type coords:           list
+        :param pr_travel:       the height (z) where the probe travel between probe points
+        :type pr_travel:        float
+        :param probe_fr:        feedrate when probing
+        :type probe_fr:         float
+        :param pr_depth:        how much to lower the probe searching for contact
+        :type pr_depth:         float
+        :param controller:      a string with the name of the GCode sender for which to create the probing GCode.
+                                Can be: 'MACH3', 'MACH4', 'LinuxCNC', 'GRBL'
+        :type controller:       str
+        :return:                Probing GCode
+        :rtype:                 str
+        """
+
+        p_gcode = ''
+        header = ''
+
+        # commands
+        if controller == 'MACH3':
+            probing_command = 'G31'
+            probing_var = '#2002'
+            openfile_command = 'M40'
+            closefile_command = 'M41'
+        elif controller == 'MACH4':
+            probing_command = 'G31'
+            probing_var = '#5063'
+            openfile_command = 'M40'
+            closefile_command = 'M41'
+        elif controller == 'LinuxCNC':
+            probing_command = 'G38.2'
+            probing_var = '#5422'
+            openfile_command = '(PROBEOPEN a_probing_points_file.txt)'
+            closefile_command = '(PROBECLOSE)'
+        else:
+            log.debug("CNCJobObject.probing_gcode() -> controller not supported")
+            return
+
+        # #############################################################################################################
+        # ########################### GCODE construction ##############################################################
+        # #############################################################################################################
+
+        # header
+        p_gcode += header + '\n\n'
+        # supplementary message for LinuxCNC
+        if controller == 'LinuxCNC':
+            probing_var += "The file with the stored probing points can be found\n" \
+                           "in the configuration folder for LinuxCNC.\n" \
+                           "The name of the file is: a_probing_points_file.txt.\n"
+        # units
+        p_gcode += 'G21\n' if self.units == 'MM' else 'G20\n'
+        # reference mode = absolute
+        p_gcode += 'G90\n'
+        # open a new file
+        p_gcode += openfile_command + '\n'
+        # move to safe height (probe travel Z)
+        p_gcode += 'G0 Z%s\n' % str(self.app.dec_format(pr_travel, self.coords_decimals))
+
+        # probing points
+        for idx, xy_tuple in enumerate(coords, 1):  # index starts from 1
+            x = xy_tuple[0]
+            y = xy_tuple[1]
+            # move to probing point
+            p_gcode += "G0 X%sY%s\n" % (
+                str(self.app.dec_format(x, self.coords_decimals)),
+                str(self.app.dec_format(y, self.coords_decimals))
+            )
+            # do the probing
+            p_gcode += "%s Z%s F%s\n" % (
+                probing_command,
+                str(self.app.dec_format(pr_depth, self.coords_decimals)),
+                str(self.app.dec_format(probe_fr, self.fr_decimals)),
+            )
+            # store in a global numeric variable the value of the detected probe Z
+            # I offset the global numeric variable by 500 so it does not conflict with something else
+            temp_var = int(idx + 500)
+            p_gcode += "#%d = %s\n" % (temp_var, probing_var)
+
+            # move to safe height (probe travel Z)
+            p_gcode += 'G0 Z%s\n' % str(self.app.dec_format(pr_travel, self.coords_decimals))
+
+        # close the file
+        p_gcode += closefile_command + '\n'
+        # finish the GCode
+        p_gcode += 'M2'
+
+        return  p_gcode
+
+    def on_generate_probing_gcode(self):
+        coords = []
+        for id_key, value in self.al_geometry_dict.items():
+            x = value['point'].x
+            y = value['point'].y
+            coords.append(
+                (
+                    self.app.dec_format(x, dec=self.app.decimals),
+                    self.app.dec_format(y, dec=self.app.decimals)
+                )
+            )
+
+        pr_travel = self.ui.ptravelz_entry.get_value()
+        probe_fr = self.ui.feedrate_probe_entry.get_value()
+        pr_depth = self.ui.pdepth_entry.get_value()
+        controller = self.ui.al_controller_combo.get_value()
+        self.probing_gcode_text = self.probing_gcode(coords, pr_travel, probe_fr, pr_depth, controller)
+
+    def on_view_probing_gcode(self):
+        self.app.proc_container.view.set_busy(_("Loading..."))
+
+        gco = self.probing_gcode_text
+        if gco is None or gco == '':
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _('There is nothing to view'))
+            return
+
+        self.gcode_viewer_tab = AppTextEditor(app=self.app, plain_text=True)
+
+        # add the tab if it was closed
+        self.app.ui.plot_tab_area.addTab(self.gcode_viewer_tab, '%s' % _("Code Viewer"))
+        self.gcode_viewer_tab.setObjectName('code_viewer_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.app.ui.position_label.setText("")
+        self.app.ui.rel_position_label.setText("")
+
+        self.gcode_viewer_tab.code_editor.completer_enable = False
+        self.gcode_viewer_tab.buttonRun.hide()
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.gcode_viewer_tab)
+
+        self.gcode_viewer_tab.t_frame.hide()
+        # then append the text from GCode to the text editor
+        try:
+            self.gcode_viewer_tab.load_text(gco, move_to_start=True, clear_text=True)
+        except Exception as e:
+            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
+            return
+
+        self.gcode_viewer_tab.t_frame.show()
+        self.app.proc_container.view.set_idle()
+
+        self.gcode_viewer_tab.buttonSave.hide()
+        self.gcode_viewer_tab.buttonOpen.hide()
+        self.gcode_viewer_tab.buttonPrint.hide()
+        self.gcode_viewer_tab.buttonPreview.hide()
+        self.gcode_viewer_tab.buttonReplace.hide()
+        self.gcode_viewer_tab.sel_all_cb.hide()
+        self.gcode_viewer_tab.entryReplace.hide()
+
+        self.gcode_viewer_tab.code_editor.setReadOnly(True)
+
+        self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Viewer'))
 
     def on_updateplot_button_click(self, *args):
         """
@@ -904,7 +1191,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def on_edit_code_click(self, *args):
         """
-        Handler activated by a button clicked when editing GCode.
+        Handler activated by a button clicked when reviewing GCode.
 
         :param args:
         :return:

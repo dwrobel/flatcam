@@ -365,7 +365,7 @@ class AppTextEditor(QtWidgets.QWidget):
     def handleCopyAll(self):
         text = self.code_editor.toPlainText()
         self.app.clipboard.setText(text)
-        self.app.inform.emit(_("Code Editor content copied to clipboard ..."))
+        self.app.inform.emit(_("Content copied to clipboard ..."))
 
     # def closeEvent(self, QCloseEvent):
     #     super().closeEvent(QCloseEvent)

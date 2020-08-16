@@ -1917,11 +1917,11 @@ class CNCObjectUI(ObjectUI):
         grid0.setColumnStretch(1, 1)
         self.al_box.addLayout(grid0)
 
-        al_title = FCLabel('<b>%s</b>' % _("Test Points Table"))
+        al_title = FCLabel('<b>%s</b>' % _("Probe Points Table"))
         al_title.setToolTip(_("Generate GCode that will obtain the height map"))
 
         self.show_al_table = FCCheckBox(_("Show"))
-        self.show_al_table.setToolTip(_("Toggle the display of the Test Points table."))
+        self.show_al_table.setToolTip(_("Toggle the display of the Probe Points table."))
         self.show_al_table.setChecked(True)
 
         hor_lay = QtWidgets.QHBoxLayout()
@@ -1931,16 +1931,16 @@ class CNCObjectUI(ObjectUI):
 
         grid0.addLayout(hor_lay, 0, 0, 1, 2)
 
-        self.al_testpoints_table = FCTable()
-        self.al_testpoints_table.setColumnCount(3)
-        self.al_testpoints_table.setColumnWidth(0, 20)
-        self.al_testpoints_table.setHorizontalHeaderLabels(['#', _('X-Y Coordinates'), _('Height')])
+        self.al_probe_points_table = FCTable()
+        self.al_probe_points_table.setColumnCount(3)
+        self.al_probe_points_table.setColumnWidth(0, 20)
+        self.al_probe_points_table.setHorizontalHeaderLabels(['#', _('X-Y Coordinates'), _('Height')])
 
-        grid0.addWidget(self.al_testpoints_table, 1, 0, 1, 2)
+        grid0.addWidget(self.al_probe_points_table, 1, 0, 1, 2)
 
         self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
         self.voronoi_cb.setToolTip(
-            _("Display Voronoi diagram if there are test points in the table.")
+            _("Display Voronoi diagram if there are probe points in the table.")
         )
         grid0.addWidget(self.voronoi_cb, 3, 0, 1, 2)
 
@@ -1951,8 +1951,8 @@ class CNCObjectUI(ObjectUI):
 
         al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
         al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
-                                 "- Manual: will pick a selection of test points by clicking on canvas\n"
-                                 "- Grid: will automatically generate a grid of test points"))
+                                 "- Manual: will pick a selection of probe points by clicking on canvas\n"
+                                 "- Grid: will automatically generate a grid of probe points"))
 
         self.al_mode_radio = RadioSet(
             [
@@ -1982,7 +1982,7 @@ class CNCObjectUI(ObjectUI):
         grid0.addWidget(self.al_rows_label, 11, 0)
         grid0.addWidget(self.al_rows_entry, 11, 1)
 
-        self.al_add_button = FCButton(_("Add test points"))
+        self.al_add_button = FCButton(_("Add Probe Points"))
         grid0.addWidget(self.al_add_button, 13, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
@@ -1990,27 +1990,232 @@ class CNCObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
-        self.al_controller_label = FCLabel('%s:' % _("Controller"))
+        # #############################################################################################################
+        # ############### Probe GCode Generation ######################################################################
+        # #############################################################################################################
+
+        self.probe_gc_label = FCLabel('<b>%s</b>:' % _("Probe GCode Generation"))
+        self.probe_gc_label.setToolTip(
+            _("Will create a GCode which will be sent to the controller,\n"
+              "either through a file or directly, with the intent to get the height map\n"
+              "that is to modify the original GCode to level the cutting height.")
+        )
+        grid0.addWidget(self.probe_gc_label, 16, 0, 1, 2)
+
+        # Travel Z Probe
+        self.ptravelz_label = QtWidgets.QLabel('%s:' % _("Probe Z travel"))
+        self.ptravelz_label.setToolTip(
+            _("The safe Z for probe travelling between probe points.")
+        )
+        self.ptravelz_entry = FCDoubleSpinner()
+        self.ptravelz_entry.set_precision(self.decimals)
+        self.ptravelz_entry.set_range(0.0000, 9999.9999)
+
+        grid0.addWidget(self.ptravelz_label, 18, 0)
+        grid0.addWidget(self.ptravelz_entry, 18, 1)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label.setToolTip(
+            _("The maximum depth that the probe is allowed\n"
+              "to probe. Negative value, in current units.")
+        )
+        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry.set_precision(self.decimals)
+        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+
+        grid0.addWidget(self.pdepth_label, 20, 0)
+        grid0.addWidget(self.pdepth_entry, 20, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label.setToolTip(
+           _("The feedrate used while the probe is probing.")
+        )
+        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry.set_precision(self.decimals)
+        self.feedrate_probe_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.feedrate_probe_label, 22, 0)
+        grid0.addWidget(self.feedrate_probe_entry, 22, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 23, 0, 1, 2)
+
+        self.al_controller_label = FCLabel('<b>%s</b>:' % _("Controller"))
         self.al_rows_label.setToolTip(
             _("The kind of controller for which to generate\n"
               "height map gcode.")
         )
 
         self.al_controller_combo = FCComboBox()
-        self.al_controller_combo.addItems(["MACH", "LinuxCNC"])
-        grid0.addWidget(self.al_controller_label, 15, 0)
-        grid0.addWidget(self.al_controller_combo, 15, 1)
+        self.al_controller_combo.addItems(["MACH3", "MACH4", "LinuxCNC", "GRBL"])
+        grid0.addWidget(self.al_controller_label, 24, 0)
+        grid0.addWidget(self.al_controller_combo, 24, 1)
 
-        self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
-        grid0.addWidget(self.h_gcode_button, 17, 0, 1, 2)
+        # #############################################################################################################
+        # ########################## GRBL frame #######################################################################
+        # #############################################################################################################
+        self.grbl_frame = QtWidgets.QFrame()
+        self.grbl_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.grbl_frame, 26, 0, 1, 2)
 
-        self.import_heights_button = FCButton(_("Import Height Map"))
-        grid0.addWidget(self.import_heights_button, 19, 0, 1, 2)
+        self.grbl_box = QtWidgets.QVBoxLayout()
+        self.grbl_box.setContentsMargins(0, 0, 0, 0)
+        self.grbl_frame.setLayout(self.grbl_box)
+
+        grbl_grid = QtWidgets.QGridLayout()
+        grbl_grid.setColumnStretch(0, 0)
+        grbl_grid.setColumnStretch(1, 1)
+        grbl_grid.setColumnStretch(2, 0)
+        self.grbl_box.addLayout(grbl_grid)
+
+        # GRBL CONNECT
+        self.grbl_connect_label = FCLabel('<b>%s</b>:' % _("GRBL Connect"))
+        self.grbl_connect_label.setToolTip(
+            _("Setup and connect to GRBL controller.")
+        )
+        grbl_grid.addWidget(self.grbl_connect_label, 0, 0, 1, 2)
+
+        # COM list
+        self.com_list_label = FCLabel('%s:' % _("COM list"))
+        self.com_list_label.setToolTip(
+            _("Lists the available serial ports.")
+        )
+
+        self.com_list_combo = FCComboBox()
+        self.com_search_button = FCButton(_("Search"))
+        self.com_search_button.setToolTip(
+            _("Search for the available serial ports.")
+        )
+        grbl_grid.addWidget(self.com_list_label, 2, 0)
+        grbl_grid.addWidget(self.com_list_combo, 2, 1)
+        grbl_grid.addWidget(self.com_search_button, 2, 2)
+
+        # BAUDRATES list
+        self.baudrates_list_label = FCLabel('%s:' % _("Baud rates"))
+        self.baudrates_list_label.setToolTip(
+            _("Lists the available serial ports.")
+        )
+
+        self.baudrates_list_combo = FCComboBox()
+        cbmodel = QtCore.QStringListModel()
+        self.baudrates_list_combo.setModel(cbmodel)
+        self.baudrates_list_combo.addItems(
+            ['9600', '19200', '38400', '57600', '115200', '230400', '460800', '500000', '576000', '921600', '1000000',
+             '1152000', '1500000', '2000000'])
+        self.baudrates_list_combo.setCurrentText('115200')
+
+        self.com_connect_button = FCButton(_("(Dis)Connect"))
+        self.com_connect_button.setToolTip(
+            _("Connect to the selected port with the selected baud rate.")
+        )
+        grbl_grid.addWidget(self.baudrates_list_label, 4, 0)
+        grbl_grid.addWidget(self.baudrates_list_combo, 4, 1)
+        grbl_grid.addWidget(self.com_connect_button, 4, 2)
+
+        # New baudrate
+        self.new_bd_label = FCLabel('%s:' % _("New"))
+        self.new_bd_label.setToolTip(
+            _("New, custom baudrate.")
+        )
+
+        self.new_baudrate_entry = FCSpinner()
+        self.new_baudrate_entry.set_range(40, 9999999)
+
+        self.add_bd_button = FCButton(_("Add"))
+        self.add_bd_button.setToolTip(
+            _("Add the specified custom baudrate to the list.")
+        )
+        grbl_grid.addWidget(self.new_bd_label, 6, 0)
+        grbl_grid.addWidget(self.new_baudrate_entry, 6, 1)
+        grbl_grid.addWidget(self.add_bd_button, 6, 2)
+
+        self.del_bd_button = FCButton(_("Delete selected baudrate"))
+        grbl_grid.addWidget(self.del_bd_button, 8, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 2)
+        grbl_grid.addWidget(separator_line, 10, 0, 1, 3)
+
+        # GRBL CONTROL
+        self.grbl_control_label = FCLabel('<b>%s</b>:' % _("GRBL Control"))
+        self.grbl_control_label.setToolTip(
+            _("Send commands to GRBL controller.")
+        )
+        grbl_grid.addWidget(self.grbl_control_label, 12, 0, 1, 3)
+
+        # CUSTOM COMMAND
+        self.grbl_command_label = FCLabel('%s:' % _("Command"))
+        self.grbl_command_label.setToolTip(
+            _("Send a custom command to GRBL.")
+        )
+
+        self.grbl_command_entry = FCEntry()
+
+        self.grbl_send_button = FCButton(_("Send"))
+        self.grbl_send_button.setToolTip(
+            _("Send a custom command to GRBL.")
+        )
+        grbl_grid.addWidget(self.grbl_command_label, 14, 0)
+        grbl_grid.addWidget(self.grbl_command_entry, 14, 1)
+        grbl_grid.addWidget(self.grbl_send_button, 14, 2)
+
+        # ZERO ALL AXES
+        self.grbl_zero_button = FCButton(_("ZERO all axes"))
+        self.grbl_zero_button.setToolTip(
+            _("Zero all CNC axes at current position.")
+        )
+        grbl_grid.addWidget(self.grbl_zero_button, 16, 0, 1, 3)
+
+        # GET HEIGHT MAP
+        self.grbl_get_heightmap_button = FCButton(_("Get Height Map"))
+        self.grbl_get_heightmap_button.setToolTip(
+            _("Will send the probing GCode to the GRBL controller\n"
+              "and wait for the Z probing data.")
+        )
+        grbl_grid.addWidget(self.grbl_get_heightmap_button, 18, 0, 1, 3)
+
+        self.grbl_frame.hide()
+        # #############################################################################################################
+
+        height_lay = QtWidgets.QHBoxLayout()
+        self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
+        self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
+
+        height_lay.addWidget(self.h_gcode_button)
+        self.view_h_gcode_button = QtWidgets.QToolButton()
+        self.view_h_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
+        # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        self.view_h_gcode_button.setToolTip(
+            _("View the probing GCode.")
+        )
+        # height_lay.addStretch()
+        height_lay.addWidget(self.view_h_gcode_button)
+
+        grid0.addLayout(height_lay, 28, 0, 1, 2)
+
+        self.import_heights_button = FCButton(_("Import Height Map"))
+        grid0.addWidget(self.import_heights_button, 30, 0, 1, 2)
+
+        self.h_gcode_button.hide()
+        self.import_heights_button.hide()
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 31, 0, 1, 2)
+
+        self.al_button = FCButton(_("Apply Autolevel map"))
+        grid0.addWidget(self.al_button, 32, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 34, 0, 1, 2)
 
         # ####################
         # ## Export G-Code ##
@@ -2162,14 +2367,14 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.export_gcode_button)
         self.custom_box.addStretch()
 
-        self.al_testpoints_table.setRowCount(0)
-        self.al_testpoints_table.resizeColumnsToContents()
-        self.al_testpoints_table.resizeRowsToContents()
-        v_header = self.al_testpoints_table.verticalHeader()
+        self.al_probe_points_table.setRowCount(0)
+        self.al_probe_points_table.resizeColumnsToContents()
+        self.al_probe_points_table.resizeRowsToContents()
+        v_header = self.al_probe_points_table.verticalHeader()
         v_header.hide()
-        self.al_testpoints_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.al_probe_points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        h_header = self.al_testpoints_table.horizontalHeader()
+        h_header = self.al_probe_points_table.horizontalHeader()
         h_header.setMinimumSectionSize(10)
         h_header.setDefaultSectionSize(70)
         h_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
@@ -2177,8 +2382,8 @@ class CNCObjectUI(ObjectUI):
         h_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         h_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
 
-        self.al_testpoints_table.setMinimumHeight(self.al_testpoints_table.getHeight())
-        self.al_testpoints_table.setMaximumHeight(self.al_testpoints_table.getHeight())
+        self.al_probe_points_table.setMinimumHeight(self.al_probe_points_table.getHeight())
+        self.al_probe_points_table.setMaximumHeight(self.al_probe_points_table.getHeight())
 
         # Signals
         self.sal_cb.stateChanged.connect(lambda state: self.al_frame.show() if state else self.al_frame.hide())
