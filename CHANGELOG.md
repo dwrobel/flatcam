@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling finished the probing GCode generation for MACH/LinuxCNC controllers; this GCode can also be viewed
 - in CNCJob UI Autolevelling - Probing GCode has now a header
 - in CNCJob UI Autolevelling - Added entries in Preferences
+- in CNCJob UI Autolevelling - finished the Import Height Map method
 
 14.08.2020
 

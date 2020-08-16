@@ -48,6 +48,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     Represents G-Code.
     """
     optionChanged = QtCore.pyqtSignal(str)
+    build_al_table_sig = QtCore.pyqtSignal()
+
     ui_type = CNCObjectUI
 
     def __init__(self, name, units="in", kind="generic", z_move=0.1,
@@ -569,6 +571,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.com_connect_button.clicked.connect(self.on_connect_grbl)
         self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
         self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
+        self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
+        self.build_al_table_sig.connect(self.build_al_table)
 
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -686,7 +690,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # self.calculate_voronoi_diagram()
 
-        self.build_al_table()
+        self.build_al_table_sig.emit()
 
     # def calculate_voronoi_diagram(self):
     #     return voronoi_diagram()
@@ -735,7 +739,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.al_geometry_dict[new_id] = deepcopy(new_dict)
 
             # rebuild the al table
-            self.build_al_table()
+            self.build_al_table_sig.emit()
             self.app.inform.emit(_("Added Test Point... Click again to add another or right click to finish ..."))
 
         # if RMB then we exit
@@ -761,7 +765,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.app.inform.emit(_("Finished manual adding of Test Point..."))
 
             # rebuild the al table
-            self.build_al_table()
+            self.build_al_table_sig.emit()
 
     def on_key_press(self, event):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
@@ -1124,6 +1128,65 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_viewer_tab.code_editor.setReadOnly(True)
 
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Viewer'))
+
+    def on_import_height_map(self):
+        """
+        Import the height map file into the app
+        :return:
+        :rtype:
+        """
+
+        _filter_ = "Text File .txt (*.txt);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import Height Map"),
+                                                                 directory=self.app.get_last_folder(),
+                                                                 filter=_filter_)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import Height Map"),
+                                                                 filter=_filter_)
+
+        filename = str(filename)
+
+        if filename == '':
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+        else:
+            self.app.worker_task.emit({'fcn': self.import_height_map, 'params': [filename]})
+
+    def import_height_map(self, filename):
+        """
+
+        :param filename:
+        :type filename:
+        :return:
+        :rtype:
+        """
+        stream = ''
+
+        try:
+            if filename:
+                with open(filename, 'r') as f:
+                    stream = f.readlines()
+            else:
+                return
+        except IOError:
+            log.error("Failed to open height map file: %s" % filename)
+            self.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open height map file"), filename))
+            return
+
+        idx = 0
+        for line in stream:
+            if line != '':
+                idx += 1
+                line = line.replace(' ', ',').replace('\n', '').split(',')
+                if idx not in self.al_geometry_dict:
+                    self.al_geometry_dict[idx] = {}
+                self.al_geometry_dict[idx]['height'] = float(line[2])
+                if 'point' not in self.al_geometry_dict[idx]:
+                    x = float(line[0])
+                    y = float(line[1])
+                    self.al_geometry_dict[idx]['point'] = Point((x, y))
+
+        self.build_al_table_sig.emit()
 
     def on_updateplot_button_click(self, *args):
         """
