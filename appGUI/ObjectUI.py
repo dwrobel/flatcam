@@ -2028,7 +2028,7 @@ class CNCObjectUI(ObjectUI):
         grid0.addWidget(self.pdepth_entry, 20, 1)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Probe Feedrate"))
         self.feedrate_probe_label.setToolTip(
            _("The feedrate used while the probe is probing.")
         )
@@ -2045,7 +2045,7 @@ class CNCObjectUI(ObjectUI):
         grid0.addWidget(separator_line, 23, 0, 1, 2)
 
         self.al_controller_label = FCLabel('<b>%s</b>:' % _("Controller"))
-        self.al_rows_label.setToolTip(
+        self.al_controller_label.setToolTip(
             _("The kind of controller for which to generate\n"
               "height map gcode.")
         )
@@ -2350,21 +2350,25 @@ class CNCObjectUI(ObjectUI):
         # self.custom_box.addLayout(h_lay)
 
         # Review GCode Button
-        self.review_gcode_button = QtWidgets.QPushButton(_('Review'))
-        self.review_gcode_button.setToolTip(
-            _("Review CNC Code.")
-        )
-        self.custom_box.addWidget(self.review_gcode_button)
 
+        g_export_lay = QtWidgets.QHBoxLayout()
         # Save Button
-        self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
+        self.export_gcode_button = FCButton(_('Save CNC Code'))
         self.export_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.export_gcode_button.setToolTip(
             _("Opens dialog to save G-Code\n"
               "file.")
         )
+        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
 
-        self.custom_box.addWidget(self.export_gcode_button)
+        g_export_lay.addWidget(self.export_gcode_button)
+
+        self.review_gcode_button = QtWidgets.QToolButton()
+        self.review_gcode_button.setToolTip(_("Review CNC Code."))
+        self.review_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
+        g_export_lay.addWidget(self.review_gcode_button)
+
+        self.custom_box.addLayout(g_export_lay)
         self.custom_box.addStretch()
 
         self.al_probe_points_table.setRowCount(0)

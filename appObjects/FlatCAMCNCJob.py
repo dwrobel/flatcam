@@ -474,12 +474,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
 
         self.form_fields.update({
-            "plot": self.ui.plot_cb,
-            "tooldia": self.ui.tooldia_entry,
-            # "append": self.ui.append_text,
-            # "prepend": self.ui.prepend_text,
+            "plot":             self.ui.plot_cb,
+            "tooldia":          self.ui.tooldia_entry,
+            # "append":         self.ui.append_text,
+            # "prepend":        self.ui.prepend_text,
             # "toolchange_macro": self.ui.toolchange_text,
-            # "toolchange_macro_enable": self.ui.toolchange_cb
+            # "toolchange_macro_enable": self.ui.toolchange_cb,
+            "al_travelz":       self.ui.ptravelz_entry,
+            "al_probe_depth":   self.ui.pdepth_entry,
+            "al_probe_fr":      self.ui.feedrate_probe_entry,
+            "al_controller":    self.ui.al_controller_combo,
+            "al_mode":          self.ui.al_mode_radio,
+            "al_rows":          self.ui.al_rows_entry,
+            "al_columns":       self.ui.al_columns_entry,
         })
 
         self.append_snippet = self.app.defaults['cncjob_append']
@@ -572,7 +579,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
         self.source_file = gc.getvalue()
 
-        self.ui.al_mode_radio.set_value('grid')
+        self.ui.al_mode_radio.set_value(self.options['al_mode'])
         self.on_controller_change()
 
     # def on_cnc_custom_parameters(self, signal_text):

@@ -375,6 +375,14 @@ class FlatCAMDefaults:
         # CNC Job Advanced Options
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
+        # Autolevelling
+        "cncjob_al_mode": 'grid',
+        "cncjob_al_rows": 4,
+        "cncjob_al_columns": 4,
+        "cncjob_al_travelz": 2.0,
+        "cncjob_al_probe_depth": -1.0,
+        "cncjob_al_probe_fr": 120,
+        "cncjob_al_controller": 'MACH3',
 
         # CNC Job (GCode) Editor
         "cncjob_prepend": "",

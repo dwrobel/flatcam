@@ -306,8 +306,16 @@ class PreferencesUIManager:
             "cncjob_annotation":        self.ui.cncjob_defaults_form.cncjob_opt_group.annotation_cb,
 
             # CNC Job Advanced Options
-            "cncjob_annotation_fontsize":  self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
+            "cncjob_annotation_fontsize":   self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
+            # Autolevelling
+            "cncjob_al_mode":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_mode_radio,
+            "cncjob_al_rows":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_rows_entry,
+            "cncjob_al_columns":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_columns_entry,
+            "cncjob_al_travelz":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.ptravelz_entry,
+            "cncjob_al_probe_depth":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.pdepth_entry,
+            "cncjob_al_probe_fr":           self.ui.cncjob_defaults_form.cncjob_adv_opt_group.feedrate_probe_entry,
+            "cncjob_al_controller":         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_controller_combo,
 
             # CNC Job (GCode) Editor
             "cncjob_prepend":               self.ui.cncjob_defaults_form.cncjob_editor_group.prepend_text,
