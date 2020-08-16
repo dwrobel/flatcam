@@ -975,8 +975,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                   (str(self.app.version), str(self.app.version_date)) + '\n'
 
         header += '(This is a autolevelling probing GCode.)\n' \
-                  '(Make sure that before you start the job you first do a zero for all axis.)\n' \
-                  '(This means that you need to zero the CNC axis and then jog to the toolchange X, Y location,)\n\n'
+                  '(Make sure that before you start the job you first do a zero for all axis.)\n\n'
 
         header += '(Name: ' + str(self.options['name']) + ')\n'
         header += '(Type: ' + "Autolevelling Probing GCode " + ')\n'
