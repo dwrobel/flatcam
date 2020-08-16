@@ -2389,9 +2389,6 @@ class CNCObjectUI(ObjectUI):
         self.al_probe_points_table.setMinimumHeight(self.al_probe_points_table.getHeight())
         self.al_probe_points_table.setMaximumHeight(self.al_probe_points_table.getHeight())
 
-        # Signals
-        self.sal_cb.stateChanged.connect(lambda state: self.al_frame.show() if state else self.al_frame.hide())
-
         # Set initial UI
         self.al_frame.hide()
         # self.on_mode_radio(val='grid')

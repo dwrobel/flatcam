@@ -376,6 +376,7 @@ class FlatCAMDefaults:
         "cncjob_annotation_fontsize": 9,
         "cncjob_annotation_fontcolor": '#990000',
         # Autolevelling
+        "cncjob_al_status": False,
         "cncjob_al_mode": 'grid',
         "cncjob_al_rows": 4,
         "cncjob_al_columns": 4,

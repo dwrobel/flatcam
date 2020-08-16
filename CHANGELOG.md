@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - Probing GCode has now a header
 - in CNCJob UI Autolevelling - Added entries in Preferences
 - in CNCJob UI Autolevelling - finished the Import Height Map method
+- in CNCJob UI Autolevelling - made autolevelling checkbox state persistent between app restarts
 
 14.08.2020
 

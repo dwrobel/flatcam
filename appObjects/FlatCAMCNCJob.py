@@ -544,25 +544,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # set if to display text annotations
         self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
-        # Show/Hide Advanced Options
-        if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
-            ))
-
-            self.ui.sal_cb.hide()
-        else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
-            ))
-            self.ui.sal_cb.show()
-
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # autolevelling signals
+        self.ui.sal_cb.stateChanged.connect(self.on_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
         self.ui.com_search_button.clicked.connect(self.on_search_ports)
@@ -577,6 +565,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
         self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText(_(
+                '<span style="color:green;"><b>Basic</b></span>'
+            ))
+
+            self.ui.sal_cb.hide()
+            self.ui.sal_cb.set_value(False)
+        else:
+            self.ui.level.setText(_(
+                '<span style="color:red;"><b>Advanced</b></span>'
+            ))
+            self.ui.sal_cb.show()
+            self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
 
         preamble = self.append_snippet
         postamble = self.prepend_snippet
@@ -829,6 +832,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if key == QtCore.Qt.Key_J or key == 'J':
             l_x, l_y = self.app.on_jump_to()
 
+    def on_autolevelling(self, state):
+        self.ui.al_frame.show() if state else self.ui.al_frame.hide()
+        self.app.defaults["cncjob_al_status"] = True if state else False
+
     def on_show_al_table(self, state):
         self.ui.al_probe_points_table.show() if state else self.ui.al_probe_points_table.hide()
 
@@ -992,7 +999,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         header += '(Type: ' + "Autolevelling Probing GCode " + ')\n'
 
         header += '(Units: ' + self.units.upper() + ')\n'
-        header += '(Created on ' + time_str + ')\n\n'
+        header += '(Created on ' + time_str + ')\n'
 
         # commands
         if controller == 'MACH3':
@@ -1019,7 +1026,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # #############################################################################################################
 
         # header
-        p_gcode += header + '\n\n'
+        p_gcode += header + '\n'
         # supplementary message for LinuxCNC
         if controller == 'LinuxCNC':
             probing_var += "The file with the stored probing points can be found\n" \
