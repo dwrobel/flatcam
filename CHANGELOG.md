@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - updated the UI with controls for probing GCode parameters and added signals and slots for the UI
 - in CNCJob UI Autolevelling - added a mini gcode sender for the GRBL to be able to send the probing GCode and get the height map (I may make a small and light app for that so it does not need to have FlatCAM on the GCode sender PC)
 - in CNCJob UI Autolevelling finished the probing GCode generation for MACH/LinuxCNC controllers; this GCode can also be viewed
+- in CNCJob UI Autolevelling - Probing GCode has now a header
 
 14.08.2020
 
