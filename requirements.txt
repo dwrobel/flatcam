@@ -28,3 +28,4 @@ qrcode>=6.1
 reportlab>=3.5
 svglib
 gdal
+pyserial>=3.4
