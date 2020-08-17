@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.08.2020
+
+- in CNCJob UI Autolevelling - GRBL GUI controls are now organized in a tab widget
+
 16.08.2020
 
 - in CNCJob UI Autolevelling - updated the UI with controls for probing GCode parameters and added signals and slots for the UI

@@ -2066,18 +2066,52 @@ class CNCObjectUI(ObjectUI):
         self.grbl_box.setContentsMargins(0, 0, 0, 0)
         self.grbl_frame.setLayout(self.grbl_box)
 
-        grbl_grid = QtWidgets.QGridLayout()
-        grbl_grid.setColumnStretch(0, 0)
-        grbl_grid.setColumnStretch(1, 1)
-        grbl_grid.setColumnStretch(2, 0)
-        self.grbl_box.addLayout(grbl_grid)
+        # #############################################################################################################
+        # ########################## GRBL TOOLBAR #####################################################################
+        # #############################################################################################################
+        self.al_toolbar = FCDetachableTab(protect=True, parent=self)
+        self.al_toolbar.setTabsClosable(False)
+        self.al_toolbar.useOldIndex(True)
+
+        self.grbl_box.addWidget(self.al_toolbar)
+
+        # GRBL Connect TAB
+        self.gr_conn_tab = QtWidgets.QWidget()
+        self.gr_conn_tab.setObjectName("connect_tab")
+        self.gr_conn_tab_layout = QtWidgets.QVBoxLayout(self.gr_conn_tab)
+        self.gr_conn_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.gr_conn_scroll_area = VerticalScrollArea()
+        # self.gr_conn_tab_layout.addWidget(self.gr_conn_scroll_area)
+        self.al_toolbar.addTab(self.gr_conn_tab, _("Connect"))
+
+        # GRBL Control TAB
+        self.gr_ctrl_tab = QtWidgets.QWidget()
+        self.gr_ctrl_tab.setObjectName("connect_tab")
+        self.gr_ctrl_tab_layout = QtWidgets.QVBoxLayout(self.gr_ctrl_tab)
+        self.gr_ctrl_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+        # self.gr_ctrl_scroll_area = VerticalScrollArea()
+        # self.gr_ctrl_tab_layout.addWidget(self.gr_ctrl_scroll_area)
+        self.al_toolbar.addTab(self.gr_ctrl_tab, _("Control"))
+
+        # GRBL Sender TAB
+        self.gr_send_tab = QtWidgets.QWidget()
+        self.gr_send_tab.setObjectName("connect_tab")
+        self.gr_send_tab_layout = QtWidgets.QVBoxLayout(self.gr_send_tab)
+        self.gr_send_tab_layout.setContentsMargins(2, 2, 2, 2)
+
+        # self.gr_send_scroll_area = VerticalScrollArea()
+        # self.gr_send_tab_layout.addWidget(self.gr_send_scroll_area)
+        self.al_toolbar.addTab(self.gr_send_tab, _("Sender"))
+        # #############################################################################################################
 
         # GRBL CONNECT
-        self.grbl_connect_label = FCLabel('<b>%s</b>:' % _("GRBL Connect"))
-        self.grbl_connect_label.setToolTip(
-            _("Setup and connect to GRBL controller.")
-        )
-        grbl_grid.addWidget(self.grbl_connect_label, 0, 0, 1, 2)
+        grbl_conn_grid = QtWidgets.QGridLayout()
+        grbl_conn_grid.setColumnStretch(0, 0)
+        grbl_conn_grid.setColumnStretch(1, 1)
+        grbl_conn_grid.setColumnStretch(2, 0)
+        self.gr_conn_tab_layout.addLayout(grbl_conn_grid)
+        self.gr_conn_tab_layout.addStretch(1)
 
         # COM list
         self.com_list_label = FCLabel('%s:' % _("COM list"))
@@ -2090,9 +2124,9 @@ class CNCObjectUI(ObjectUI):
         self.com_search_button.setToolTip(
             _("Search for the available serial ports.")
         )
-        grbl_grid.addWidget(self.com_list_label, 2, 0)
-        grbl_grid.addWidget(self.com_list_combo, 2, 1)
-        grbl_grid.addWidget(self.com_search_button, 2, 2)
+        grbl_conn_grid.addWidget(self.com_list_label, 2, 0)
+        grbl_conn_grid.addWidget(self.com_list_combo, 2, 1)
+        grbl_conn_grid.addWidget(self.com_search_button, 2, 2)
 
         # BAUDRATES list
         self.baudrates_list_label = FCLabel('%s:' % _("Baud rates"))
@@ -2108,13 +2142,8 @@ class CNCObjectUI(ObjectUI):
              '1152000', '1500000', '2000000'])
         self.baudrates_list_combo.setCurrentText('115200')
 
-        self.com_connect_button = FCButton(_("(Dis)Connect"))
-        self.com_connect_button.setToolTip(
-            _("Connect to the selected port with the selected baud rate.")
-        )
-        grbl_grid.addWidget(self.baudrates_list_label, 4, 0)
-        grbl_grid.addWidget(self.baudrates_list_combo, 4, 1)
-        grbl_grid.addWidget(self.com_connect_button, 4, 2)
+        grbl_conn_grid.addWidget(self.baudrates_list_label, 4, 0)
+        grbl_conn_grid.addWidget(self.baudrates_list_combo, 4, 1)
 
         # New baudrate
         self.new_bd_label = FCLabel('%s:' % _("New"))
@@ -2129,47 +2158,67 @@ class CNCObjectUI(ObjectUI):
         self.add_bd_button.setToolTip(
             _("Add the specified custom baudrate to the list.")
         )
-        grbl_grid.addWidget(self.new_bd_label, 6, 0)
-        grbl_grid.addWidget(self.new_baudrate_entry, 6, 1)
-        grbl_grid.addWidget(self.add_bd_button, 6, 2)
+        grbl_conn_grid.addWidget(self.new_bd_label, 6, 0)
+        grbl_conn_grid.addWidget(self.new_baudrate_entry, 6, 1)
+        grbl_conn_grid.addWidget(self.add_bd_button, 6, 2)
 
         self.del_bd_button = FCButton(_("Delete selected baudrate"))
-        grbl_grid.addWidget(self.del_bd_button, 8, 0, 1, 3)
+        grbl_conn_grid.addWidget(self.del_bd_button, 8, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grbl_grid.addWidget(separator_line, 10, 0, 1, 3)
+        ctrl_hlay = QtWidgets.QHBoxLayout()
+        self.controller_reset_button = FCButton(_("Reset"))
+        self.controller_reset_button.setToolTip(
+            _("SW reset the controller. CTRL+X command.")
+        )
+        ctrl_hlay.addWidget(self.controller_reset_button)
+
+        self.com_connect_button = FCButton(_("(Dis)Connect"))
+        self.com_connect_button.setToolTip(
+            _("Connect to the selected port with the selected baud rate.")
+        )
+        ctrl_hlay.addWidget(self.com_connect_button)
+
+        grbl_conn_grid.addLayout(ctrl_hlay, 10, 0, 1, 3)
 
         # GRBL CONTROL
-        self.grbl_control_label = FCLabel('<b>%s</b>:' % _("GRBL Control"))
-        self.grbl_control_label.setToolTip(
-            _("Send commands to GRBL controller.")
+        grbl_ctrl_grid = QtWidgets.QGridLayout()
+        grbl_ctrl_grid.setColumnStretch(0, 0)
+        grbl_ctrl_grid.setColumnStretch(1, 1)
+        grbl_ctrl_grid.setColumnStretch(2, 0)
+        self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
+        self.gr_ctrl_tab_layout.addStretch(1)
+
+        # Zero the axes
+        self.grbl_zero_button = FCButton(_("ZERO all axes"))
+        self.grbl_zero_button.setToolTip(
+            _("Zero all CNC axes at current position.")
         )
-        grbl_grid.addWidget(self.grbl_control_label, 12, 0, 1, 3)
+        grbl_ctrl_grid.addWidget(self.grbl_zero_button, 2, 0, 1, 3)
+
+        # GRBL SENDER
+        grbl_send_grid = QtWidgets.QGridLayout()
+        grbl_send_grid.setColumnStretch(0, 0)
+        grbl_send_grid.setColumnStretch(1, 1)
+        grbl_send_grid.setColumnStretch(2, 0)
+        self.gr_send_tab_layout.addLayout(grbl_send_grid)
+        self.gr_send_tab_layout.addStretch(1)
 
         # CUSTOM COMMAND
-        self.grbl_command_label = FCLabel('%s:' % _("Command"))
+        self.grbl_command_label = FCLabel('%s:' % _("CMD"))
         self.grbl_command_label.setToolTip(
             _("Send a custom command to GRBL.")
         )
 
         self.grbl_command_entry = FCEntry()
 
-        self.grbl_send_button = FCButton(_("Send"))
+        self.grbl_send_button = QtWidgets.QToolButton()
+        self.grbl_send_button.setText(_("Send"))
         self.grbl_send_button.setToolTip(
             _("Send a custom command to GRBL.")
         )
-        grbl_grid.addWidget(self.grbl_command_label, 14, 0)
-        grbl_grid.addWidget(self.grbl_command_entry, 14, 1)
-        grbl_grid.addWidget(self.grbl_send_button, 14, 2)
-
-        # ZERO ALL AXES
-        self.grbl_zero_button = FCButton(_("ZERO all axes"))
-        self.grbl_zero_button.setToolTip(
-            _("Zero all CNC axes at current position.")
-        )
-        grbl_grid.addWidget(self.grbl_zero_button, 16, 0, 1, 3)
+        grbl_send_grid.addWidget(self.grbl_command_label, 2, 0)
+        grbl_send_grid.addWidget(self.grbl_command_entry, 2, 1)
+        grbl_send_grid.addWidget(self.grbl_send_button, 2, 2)
 
         # GET HEIGHT MAP
         self.grbl_get_heightmap_button = FCButton(_("Get Height Map"))
@@ -2177,7 +2226,7 @@ class CNCObjectUI(ObjectUI):
             _("Will send the probing GCode to the GRBL controller\n"
               "and wait for the Z probing data.")
         )
-        grbl_grid.addWidget(self.grbl_get_heightmap_button, 18, 0, 1, 3)
+        grbl_send_grid.addWidget(self.grbl_get_heightmap_button, 4, 0, 1, 3)
 
         self.grbl_frame.hide()
         # #############################################################################################################
@@ -2226,130 +2275,6 @@ class CNCObjectUI(ObjectUI):
               "make this object to a file.")
         )
         self.custom_box.addWidget(self.export_gcode_label)
-
-        # # Prepend text to GCode
-        # prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
-        # prependlabel.setToolTip(
-        #     _("Type here any G-Code commands you would\n"
-        #       "like to add at the beginning of the G-Code file.")
-        # )
-        # self.custom_box.addWidget(prependlabel)
-        #
-        # self.prepend_text = FCTextArea()
-        # self.prepend_text.setPlaceholderText(
-        #     _("Type here any G-Code commands you would\n"
-        #       "like to add at the beginning of the G-Code file.")
-        # )
-        # self.custom_box.addWidget(self.prepend_text)
-        #
-        # # Append text to GCode
-        # appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
-        # appendlabel.setToolTip(
-        #     _("Type here any G-Code commands you would\n"
-        #       "like to append to the generated file.\n"
-        #       "I.e.: M2 (End of program)")
-        # )
-        # self.custom_box.addWidget(appendlabel)
-        #
-        # self.append_text = FCTextArea()
-        # self.append_text.setPlaceholderText(
-        #     _("Type here any G-Code commands you would\n"
-        #       "like to append to the generated file.\n"
-        #       "I.e.: M2 (End of program)")
-        # )
-        # self.custom_box.addWidget(self.append_text)
-        #
-        # self.cnc_frame = QtWidgets.QFrame()
-        # self.cnc_frame.setContentsMargins(0, 0, 0, 0)
-        # self.custom_box.addWidget(self.cnc_frame)
-        # self.cnc_box = QtWidgets.QVBoxLayout()
-        # self.cnc_box.setContentsMargins(0, 0, 0, 0)
-        # self.cnc_frame.setLayout(self.cnc_box)
-        #
-        # # Toolchange Custom G-Code
-        # self.toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
-        # self.toolchangelabel.setToolTip(
-        #     _(
-        #         "Type here any G-Code commands you would\n"
-        #         "like to be executed when Toolchange event is encountered.\n"
-        #         "This will constitute a Custom Toolchange GCode,\n"
-        #         "or a Toolchange Macro.\n"
-        #         "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-        #         "WARNING: it can be used only with a preprocessor file\n"
-        #         "that has 'toolchange_custom' in it's name and this is built\n"
-        #         "having as template the 'Toolchange Custom' posprocessor file."
-        #     )
-        # )
-        # self.cnc_box.addWidget(self.toolchangelabel)
-        #
-        # self.toolchange_text = FCTextArea()
-        # self.toolchange_text.setPlaceholderText(
-        #     _(
-        #         "Type here any G-Code commands you would\n"
-        #         "like to be executed when Toolchange event is encountered.\n"
-        #         "This will constitute a Custom Toolchange GCode,\n"
-        #         "or a Toolchange Macro.\n"
-        #         "The FlatCAM variables are surrounded by '%' symbol.\n"
-        #         "WARNING: it can be used only with a preprocessor file\n"
-        #         "that has 'toolchange_custom' in it's name."
-        #     )
-        # )
-        # self.cnc_box.addWidget(self.toolchange_text)
-        #
-        # cnclay = QtWidgets.QHBoxLayout()
-        # self.cnc_box.addLayout(cnclay)
-        #
-        # # Toolchange Replacement Enable
-        # self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
-        # self.toolchange_cb.setToolTip(
-        #     _("Check this box if you want to use\n"
-        #       "a Custom Toolchange GCode (macro).")
-        # )
-        #
-        # # Variable list
-        # self.tc_variable_combo = FCComboBox()
-        # self.tc_variable_combo.setToolTip(
-        #     _(
-        #         "A list of the FlatCAM variables that can be used\n"
-        #         "in the Toolchange event.\n"
-        #         "They have to be surrounded by the '%' symbol"
-        #     )
-        # )
-        #
-        # # Populate the Combo Box
-        # variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
-        #              'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
-        # self.tc_variable_combo.addItems(variables)
-        # self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(1, "tool = " + _("tool number"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(2, "tooldia = " + _("tool diameter"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(3, "t_drills = " + _("for Excellon, total number of drills"),
-        #                                    Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(4, "x_toolchange = " + _("X coord for Toolchange"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(5, "y_toolchange = " + _("Y coord for Toolchange"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(6, "z_toolchange = " + _("Z coord for Toolchange"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(7, "z_cut = " + _("depth where to cut"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(8, "z_move = " + _("height where to travel"), Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(9, "z_depthpercut = " + _("the step value for multidepth cut"),
-        #                                    Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(10, "spindlesspeed = " + _("the value for the spindle speed"),
-        #                                    Qt.ToolTipRole)
-        # self.tc_variable_combo.setItemData(11, "dwelltime = " + _("time to dwell to allow the "
-        #                                                           "spindle to reach it's set RPM"),
-        #                                    Qt.ToolTipRole)
-        #
-        # cnclay.addWidget(self.toolchange_cb)
-        # cnclay.addStretch()
-        # cnclay.addWidget(self.tc_variable_combo)
-        #
-        # self.toolch_ois = OptionalInputSection(self.toolchange_cb,
-        #                                        [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
-        #
-        # h_lay = QtWidgets.QHBoxLayout()
-        # h_lay.setAlignment(QtCore.Qt.AlignVCenter)
-        # self.custom_box.addLayout(h_lay)
-
-        # Review GCode Button
 
         g_export_lay = QtWidgets.QHBoxLayout()
         # Save Button
