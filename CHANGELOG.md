@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 18.08.2020
 
 - in Doublesided Tool added some UI for Excellon hole snapping
+- in Doublesided Tool cleaned up the UI
 
 17.08.2020
 
