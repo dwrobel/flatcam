@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in Doublesided Tool added some UI for Excellon hole snapping
 - in Doublesided Tool cleaned up the UI
 - in CNCJob UI Autolevelling - in COntrol section added  buttons for Jog an individual axes zeroing
+- in CNCJob UI Autolevelling - added handlers for: jogging, reset, sending commands
 
 17.08.2020
 

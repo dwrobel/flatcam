@@ -2369,6 +2369,8 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.export_gcode_label)
 
         g_export_lay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(g_export_lay)
+
         # Save Button
         self.export_gcode_button = FCButton(_('Save CNC Code'))
         self.export_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
@@ -2376,8 +2378,7 @@ class CNCObjectUI(ObjectUI):
             _("Opens dialog to save G-Code\n"
               "file.")
         )
-        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
-
+        self.export_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         g_export_lay.addWidget(self.export_gcode_button)
 
         self.review_gcode_button = QtWidgets.QToolButton()
@@ -2385,7 +2386,6 @@ class CNCObjectUI(ObjectUI):
         self.review_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
         g_export_lay.addWidget(self.review_gcode_button)
 
-        self.custom_box.addLayout(g_export_lay)
         self.custom_box.addStretch()
 
         self.al_probe_points_table.setRowCount(0)

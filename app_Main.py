@@ -10394,7 +10394,7 @@ class App(QtCore.QObject):
         self.preferencesUiManager.defaults_read_form()
         self.options.update(self.defaults)
 
-    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False, new_line=True):
         """
         Shows a message on the FlatCAM Shell
 
@@ -10406,19 +10406,21 @@ class App(QtCore.QObject):
         :param selected:    Indicate that something was selected on canvas
         :return: None
         """
+        end = '\n' if new_line is True else ''
+
         if show:
             self.ui.shell_dock.show()
         try:
             if error:
-                self.shell.append_error(msg + "\n")
+                self.shell.append_error(msg + end)
             elif warning:
-                self.shell.append_warning(msg + "\n")
+                self.shell.append_warning(msg + end)
             elif success:
-                self.shell.append_success(msg + "\n")
+                self.shell.append_success(msg + end)
             elif selected:
-                self.shell.append_selected(msg + "\n")
+                self.shell.append_selected(msg + end)
             else:
-                self.shell.append_output(msg + "\n")
+                self.shell.append_output(msg + end)
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 

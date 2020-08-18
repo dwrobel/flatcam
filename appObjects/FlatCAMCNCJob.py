@@ -30,6 +30,7 @@ except Exception:
 
 import os
 import sys
+import time
 import serial
 import glob
 import math
@@ -553,10 +554,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.sal_cb.stateChanged.connect(self.on_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
+        # GRBL
         self.ui.com_search_button.clicked.connect(self.on_search_ports)
         self.ui.add_bd_button.clicked.connect(self.on_add_baudrate_grbl)
         self.ui.del_bd_button.clicked.connect(self.on_delete_baudrate_grbl)
+        self.ui.controller_reset_button.clicked.connect(self.on_grbl_reset)
         self.ui.com_connect_button.clicked.connect(self.on_connect_grbl)
+        self.ui.grbl_send_button.clicked.connect(self.on_send_grbl_command)
+
+        #Jog
+        self.ui.jog_up_button.clicked.connect(lambda: self.on_jog(dir='yplus', step=5.0))
+        self.ui.jog_down_button.clicked.connect(lambda: self.on_jog(dir='yminus', step=5.0))
+        self.ui.jog_right_button.clicked.connect(lambda: self.on_jog(dir='xplus', step=5.0))
+        self.ui.jog_left_button.clicked.connect(lambda: self.on_jog(dir='xminus', step=5.0))
+        self.ui.jog_z_up_button.clicked.connect(lambda: self.on_jog(dir='zplus', step=5.0))
+        self.ui.jog_z_down_button.clicked.connect(lambda: self.on_jog(dir='zminus', step=5.0))
+
         self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
         self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
@@ -967,6 +980,61 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def on_delete_baudrate_grbl(self):
         current_idx = self.ui.baudrates_list_combo.currentIndex()
         self.ui.baudrates_list_combo.removeItem(current_idx)
+
+    def wake_grbl(self):
+        # Wake up grbl
+        self.grbl_ser_port.write("\r\n\r\n".encode('utf-8'))
+        time.sleep(1)  # Wait for grbl to initialize
+        self.grbl_ser_port.flushInput()  # Flush startup text in serial input
+
+    def on_send_grbl_command(self):
+        cmd = self.ui.grbl_command_entry.get_value()
+        self.wake_grbl()
+        self.send_grbl_command(command=cmd)
+
+    def send_grbl_command(self, command, echo=True):
+        stripped_cmd = command.strip()  # Strip all EOL characters for consistency
+
+        for l in stripped_cmd.split('\n'):
+            if echo:
+                self.app.shell_message(l, show=True, new_line=False)
+
+            snd = l + '\n'
+            self.grbl_ser_port.write(snd.encode('utf-8'))  # Send g-code block to grbl
+            grbl_out = self.grbl_ser_port.readlines()  # Wait for grbl response with carriage return
+
+            for line in grbl_out:
+                if echo:
+                    try:
+                        self.app.shell_message(' : ' + line.decode('utf-8').strip().upper(), show=True)
+                    except Exception as e:
+                        log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
+
+    def on_jog(self, dir=None, step=5.0):
+        if dir is None:
+            return
+        cmd = ''
+
+        if dir == 'xplus':
+            cmd = "$J=G91 %s X%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+        if dir == 'xminus':
+            cmd = "$J=G91 %s X-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+        if dir == 'yplus':
+            cmd = "$J=G91 %s Y%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+        if dir == 'yminus':
+            cmd = "$J=G91 %s Y-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+
+        if dir == 'zplus':
+            cmd = "$J=G91 %s Z%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+        if dir == 'zminus':
+            cmd = "$J=G91 %s Z-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+
+        self.send_grbl_command(command=cmd, echo=False)
+
+    def on_grbl_reset(self):
+        cmd = '\x18'
+        self.wake_grbl()
+        self.send_grbl_command(command=cmd)
 
     def probing_gcode(self, coords, pr_travel, probe_fr, pr_depth, controller):
         """
