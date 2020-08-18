@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox, FCCheckBox
 
 from numpy import Inf
 
@@ -335,15 +335,20 @@ class DblSidedTool(AppTool):
         self.ui.alignment_holes.set_value(self.drill_values)
 
     def on_toggle_pointbox(self):
-        if self.ui.axis_location.get_value() == "point":
+        val = self.ui.axis_location.get_value()
+        if val == "point":
             self.ui.point_entry.show()
             self.ui.add_point_button.show()
             self.ui.box_type_label.hide()
             self.ui.box_type_radio.hide()
             self.ui.box_combo.hide()
 
+            self.ui.exc_hole_lbl.hide()
+            self.ui.exc_combo.hide()
+            self.ui.pick_hole_button.hide()
+
             self.ui.align_ref_label_val.set_value(self.ui.point_entry.get_value())
-        else:
+        elif val == 'box':
             self.ui.point_entry.hide()
             self.ui.add_point_button.hide()
 
@@ -351,7 +356,22 @@ class DblSidedTool(AppTool):
             self.ui.box_type_radio.show()
             self.ui.box_combo.show()
 
+            self.ui.exc_hole_lbl.hide()
+            self.ui.exc_combo.hide()
+            self.ui.pick_hole_button.hide()
+
             self.ui.align_ref_label_val.set_value("Box centroid")
+        elif val == 'hole':
+            self.ui.point_entry.show()
+            self.ui.add_point_button.hide()
+
+            self.ui.box_type_label.hide()
+            self.ui.box_type_radio.hide()
+            self.ui.box_combo.hide()
+
+            self.ui.exc_hole_lbl.show()
+            self.ui.exc_combo.show()
+            self.ui.pick_hole_button.show()
 
     def on_bbox_coordinates(self):
 
@@ -605,10 +625,16 @@ class DsidedUI:
               "Can be:\n"
               "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
               "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
-              "bounding box of another object selected below")
+              "bounding box of another object selected below\n"
+              "- Hole Snap -> a point defined by the center of a drill hone in a Excellon object")
         )
-        self.axis_location = RadioSet([{'label': _('Point'), 'value': 'point'},
-                                       {'label': _('Box'), 'value': 'box'}])
+        self.axis_location = RadioSet(
+            [
+                {'label': _('Point'), 'value': 'point'},
+                {'label': _('Box'), 'value': 'box'},
+                {'label': _('Hole Snap'), 'value': 'hole'},
+            ]
+        )
 
         grid_lay1.addWidget(self.axloc_label, 4, 0)
         grid_lay1.addWidget(self.axis_location, 4, 1, 1, 2)
@@ -636,11 +662,38 @@ class DsidedUI:
         grid_lay1.addWidget(self.point_entry, 7, 0, 1, 2)
         grid_lay1.addWidget(self.add_point_button, 7, 2)
 
+        self.exc_hole_lbl = QtWidgets.QLabel('%s:' % _("Excellon"))
+        self.exc_hole_lbl.setToolTip(
+            _("Object that holds holes that can be picked as reference for mirroing.")
+        )
+
+        # Excellon Object that holds the holes
+        self.exc_combo = FCComboBox()
+        self.exc_combo.setModel(self.app.collection)
+        self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.exc_combo.is_last = True
+
+        self.exc_hole_lbl.hide()
+        self.exc_combo.hide()
+
+        grid_lay1.addWidget(self.exc_hole_lbl, 10, 0)
+        grid_lay1.addWidget(self.exc_combo, 10, 1, 1, 2)
+
+        self.pick_hole_button = FCButton(_("Pick hole"))
+        self.pick_hole_button.setToolTip(
+            _("Click inside a drill hole that belong to the selected Excellon object,\n"
+              "and the hole center coordinates will be copied to the Point field.")
+        )
+
+        self.pick_hole_button.hide()
+
+        grid_lay1.addWidget(self.pick_hole_button, 12, 0, 1, 3)
+
         # ## Grid Layout
-        grid_lay2 = QtWidgets.QGridLayout()
-        grid_lay2.setColumnStretch(0, 0)
-        grid_lay2.setColumnStretch(1, 1)
-        self.layout.addLayout(grid_lay2)
+        grid_lay3 = QtWidgets.QGridLayout()
+        grid_lay3.setColumnStretch(0, 0)
+        grid_lay3.setColumnStretch(1, 1)
+        self.layout.addLayout(grid_lay3)
 
         self.box_type_label = QtWidgets.QLabel('%s:' % _("Reference Object"))
         self.box_type_label.setToolTip(
@@ -657,8 +710,8 @@ class DsidedUI:
         self.box_type_label.hide()
         self.box_type_radio.hide()
 
-        grid_lay2.addWidget(self.box_type_label, 0, 0, 1, 2)
-        grid_lay2.addWidget(self.box_type_radio, 1, 0, 1, 2)
+        grid_lay3.addWidget(self.box_type_label, 0, 0, 1, 2)
+        grid_lay3.addWidget(self.box_type_radio, 1, 0, 1, 2)
 
         # Object used as BOX reference
         self.box_combo = FCComboBox()
@@ -668,14 +721,14 @@ class DsidedUI:
 
         self.box_combo.hide()
 
-        grid_lay2.addWidget(self.box_combo, 3, 0, 1, 2)
+        grid_lay3.addWidget(self.box_combo, 3, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay2.addWidget(separator_line, 4, 0, 1, 2)
+        grid_lay3.addWidget(separator_line, 4, 0, 1, 2)
 
-        grid_lay2.addWidget(QtWidgets.QLabel(""), 5, 0, 1, 2)
+        grid_lay3.addWidget(QtWidgets.QLabel(""), 5, 0, 1, 2)
 
         # ## Title Bounds Values
         self.bv_label = QtWidgets.QLabel("<b>%s:</b>" % _('Bounds Values'))
@@ -683,7 +736,7 @@ class DsidedUI:
             _("Select on canvas the object(s)\n"
               "for which to calculate bounds values.")
         )
-        grid_lay2.addWidget(self.bv_label, 6, 0, 1, 2)
+        grid_lay3.addWidget(self.bv_label, 6, 0, 1, 2)
 
         # Xmin value
         self.xmin_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -696,8 +749,8 @@ class DsidedUI:
         )
         self.xmin_entry.setReadOnly(True)
 
-        grid_lay2.addWidget(self.xmin_btn, 7, 0)
-        grid_lay2.addWidget(self.xmin_entry, 7, 1)
+        grid_lay3.addWidget(self.xmin_btn, 7, 0)
+        grid_lay3.addWidget(self.xmin_entry, 7, 1)
 
         # Ymin value
         self.ymin_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -710,8 +763,8 @@ class DsidedUI:
         )
         self.ymin_entry.setReadOnly(True)
 
-        grid_lay2.addWidget(self.ymin_btn, 8, 0)
-        grid_lay2.addWidget(self.ymin_entry, 8, 1)
+        grid_lay3.addWidget(self.ymin_btn, 8, 0)
+        grid_lay3.addWidget(self.ymin_entry, 8, 1)
 
         # Xmax value
         self.xmax_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -724,8 +777,8 @@ class DsidedUI:
         )
         self.xmax_entry.setReadOnly(True)
 
-        grid_lay2.addWidget(self.xmax_btn, 9, 0)
-        grid_lay2.addWidget(self.xmax_entry, 9, 1)
+        grid_lay3.addWidget(self.xmax_btn, 9, 0)
+        grid_lay3.addWidget(self.xmax_entry, 9, 1)
 
         # Ymax value
         self.ymax_entry = FCDoubleSpinner(callback=self.confirmation_message)
@@ -738,8 +791,8 @@ class DsidedUI:
         )
         self.ymax_entry.setReadOnly(True)
 
-        grid_lay2.addWidget(self.ymax_btn, 10, 0)
-        grid_lay2.addWidget(self.ymax_entry, 10, 1)
+        grid_lay3.addWidget(self.ymax_btn, 10, 0)
+        grid_lay3.addWidget(self.ymax_entry, 10, 1)
 
         # Center point value
         self.center_entry = FCEntry()
@@ -752,8 +805,8 @@ class DsidedUI:
         )
         self.center_entry.setReadOnly(True)
 
-        grid_lay2.addWidget(self.center_btn, 12, 0)
-        grid_lay2.addWidget(self.center_entry, 12, 1)
+        grid_lay3.addWidget(self.center_btn, 12, 0)
+        grid_lay3.addWidget(self.center_entry, 12, 1)
 
         # Calculate Bounding box
         self.calculate_bb_button = QtWidgets.QPushButton(_("Calculate Bounds Values"))
@@ -768,14 +821,14 @@ class DsidedUI:
                                             font-weight: bold;
                                         }
                                         """)
-        grid_lay2.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
+        grid_lay3.addWidget(self.calculate_bb_button, 13, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay2.addWidget(separator_line, 14, 0, 1, 2)
+        grid_lay3.addWidget(separator_line, 14, 0, 1, 2)
 
-        grid_lay2.addWidget(QtWidgets.QLabel(""), 15, 0, 1, 2)
+        grid_lay3.addWidget(QtWidgets.QLabel(""), 15, 0, 1, 2)
 
         # ## Alignment holes
         self.alignment_label = QtWidgets.QLabel("<b>%s:</b>" % _('PCB Alignment'))
@@ -784,7 +837,7 @@ class DsidedUI:
               "specified alignment holes and their mirror\n"
               "images.")
         )
-        grid_lay2.addWidget(self.alignment_label, 25, 0, 1, 2)
+        grid_lay3.addWidget(self.alignment_label, 25, 0, 1, 2)
 
         # ## Drill diameter for alignment holes
         self.dt_label = QtWidgets.QLabel("%s:" % _('Drill Diameter'))
@@ -799,8 +852,8 @@ class DsidedUI:
         self.drill_dia.set_precision(self.decimals)
         self.drill_dia.set_range(0.0000, 9999.9999)
 
-        grid_lay2.addWidget(self.dt_label, 26, 0)
-        grid_lay2.addWidget(self.drill_dia, 26, 1)
+        grid_lay3.addWidget(self.dt_label, 26, 0)
+        grid_lay3.addWidget(self.drill_dia, 26, 1)
 
         # ## Alignment Axis
         self.align_ax_label = QtWidgets.QLabel('%s:' % _("Align Axis"))
@@ -810,8 +863,8 @@ class DsidedUI:
         self.align_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                           {'label': 'Y', 'value': 'Y'}])
 
-        grid_lay2.addWidget(self.align_ax_label, 27, 0)
-        grid_lay2.addWidget(self.align_axis_radio, 27, 1)
+        grid_lay3.addWidget(self.align_ax_label, 27, 0)
+        grid_lay3.addWidget(self.align_axis_radio, 27, 1)
 
         # ## Alignment Reference Point
         self.align_ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
@@ -829,8 +882,8 @@ class DsidedUI:
         )
         self.align_ref_label_val.setDisabled(True)
 
-        grid_lay2.addWidget(self.align_ref_label, 28, 0)
-        grid_lay2.addWidget(self.align_ref_label_val, 28, 1)
+        grid_lay3.addWidget(self.align_ref_label, 28, 0)
+        grid_lay3.addWidget(self.align_ref_label_val, 28, 1)
 
         grid_lay4 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay4)

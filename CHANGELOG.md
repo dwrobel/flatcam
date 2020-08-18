@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+18.08.2020
+
+- in Doublesided Tool added some UI for Excellon hole snapping
+
 17.08.2020
 
 - in CNCJob UI Autolevelling - GRBL GUI controls are now organized in a tab widget

@@ -691,12 +691,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.mouse_events_connected = True
 
-            # self.calculate_voronoi_diagram()
+            self.calculate_voronoi_diagram()
 
         self.build_al_table_sig.emit()
 
-    # def calculate_voronoi_diagram(self):
-    #     return voronoi_diagram()
+    def calculate_voronoi_diagram(self):
+        pass
+        # return voronoi_diagram()
 
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):

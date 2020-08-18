@@ -80,13 +80,21 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mirror_axis_radio, 3, 1)
 
         # ## Axis Location
-        self.axis_location_radio = RadioSet([{'label': _('Point'), 'value': 'point'},
-                                             {'label': _('Box'), 'value': 'box'}])
+        self.axis_location_radio = RadioSet(
+            [
+                {'label': _('Point'), 'value': 'point'},
+                {'label': _('Box'), 'value': 'box'},
+                {'label': _('Hole Snap'), 'value': 'hole'},
+            ]
+        )
         self.axloc_label = QtWidgets.QLabel('%s:' % _("Axis Ref"))
         self.axloc_label.setToolTip(
-            _("The axis should pass through a <b>point</b> or cut\n "
-              "a specified <b>box</b> (in a FlatCAM object) through \n"
-              "the center.")
+            _("The coordinates used as reference for the mirror operation.\n"
+              "Can be:\n"
+              "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
+              "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
+              "bounding box of another object selected below\n"
+              "- Hole Snap-> a point defined by the center of a drill hone in a Excellon object")
         )
 
         grid0.addWidget(self.axloc_label, 4, 0)
