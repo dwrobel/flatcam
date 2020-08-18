@@ -2188,12 +2188,104 @@ class CNCObjectUI(ObjectUI):
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
         self.gr_ctrl_tab_layout.addStretch(1)
 
+        # JOG axes
+        grbl_jog_grid = QtWidgets.QGridLayout()
+        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        grbl_jog_grid.setColumnStretch(0, 0)
+        grbl_jog_grid.setColumnStretch(1, 0)
+        grbl_jog_grid.setColumnStretch(2, 0)
+        grbl_jog_grid.setColumnStretch(3, 0)
+        grbl_jog_grid.setColumnStretch(4, 1)
+        grbl_jog_grid.setRowStretch(0, 0)
+        grbl_jog_grid.setRowStretch(1, 0)
+        grbl_jog_grid.setRowStretch(2, 0)
+        grbl_jog_grid.setRowStretch(3, 0)
+        grbl_jog_grid.setColumnStretch(4, 1)
+        grbl_ctrl_grid.addLayout(grbl_jog_grid, 8, 0, 1, 3)
+
+        # JOG Y Up
+        self.jog_up_button = QtWidgets.QToolButton()
+        self.jog_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_up_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_up_button, 0, 1)
+
+        # JOG Y Down
+        self.jog_down_button = QtWidgets.QToolButton()
+        self.jog_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_down_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_down_button, 2, 1)
+
+        # JOG X Left
+        self.jog_left_button = QtWidgets.QToolButton()
+        self.jog_left_button.setIcon(QtGui.QIcon(self.app.resource_location + '/left_arrow32.png'))
+        self.jog_left_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_left_button, 1, 0)
+
+        # JOG X Right
+        self.jog_right_button = QtWidgets.QToolButton()
+        self.jog_right_button.setIcon(QtGui.QIcon(self.app.resource_location + '/right_arrow32.png'))
+        self.jog_right_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_right_button, 1, 2)
+
+        # JOG Z Up
+        self.jog_z_up_button = QtWidgets.QPushButton()
+        self.jog_z_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_z_up_button.setText('Z+')
+        self.jog_z_up_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_up_button, 0, 3)
+
+        # JOG Z Down
+        self.jog_z_down_button = QtWidgets.QPushButton()
+        self.jog_z_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_z_down_button.setText('Z-')
+        self.jog_z_down_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_down_button, 2, 3)
+
+        grbl_ctrl_grid.addWidget(QtWidgets.QLabel(""))
+
         # Zero the axes
-        self.grbl_zero_button = FCButton(_("ZERO all axes"))
-        self.grbl_zero_button.setToolTip(
+        grbl_zero_grid = QtWidgets.QGridLayout()
+        grbl_zero_grid.setColumnStretch(0, 0)
+        grbl_zero_grid.setColumnStretch(1, 0)
+        grbl_zero_grid.setColumnStretch(2, 0)
+        grbl_ctrl_grid.addLayout(grbl_zero_grid, 10, 0, 1, 3)
+
+        # Zero X axis
+        self.grbl_zerox_button = FCButton(_("ZERO X axes"))
+        self.grbl_zerox_button.setToolTip(
+            _("Zero the CNC X axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zerox_button, 0, 0)
+        # Zero Y axis
+        self.grbl_zeroy_button = FCButton(_("ZERO Y axes"))
+        self.grbl_zeroy_button.setToolTip(
+            _("Zero the CNC Y axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 0, 1)
+        # Zero Z axis
+        self.grbl_zeroz_button = FCButton(_("ZERO Z axes"))
+        self.grbl_zeroz_button.setToolTip(
+            _("Zero the CNC Z axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 0, 2)
+        # Zeroo all axes
+        self.grbl_zero_all_button = FCButton(_("ZERO all axes"))
+        self.grbl_zero_all_button.setToolTip(
             _("Zero all CNC axes at current position.")
         )
-        grbl_ctrl_grid.addWidget(self.grbl_zero_button, 2, 0, 1, 3)
+        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 2, 0, 1, 3)
 
         # GRBL SENDER
         grbl_send_grid = QtWidgets.QGridLayout()
