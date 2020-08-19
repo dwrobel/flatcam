@@ -2072,7 +2072,7 @@ class CNCObjectUI(ObjectUI):
         self.al_toolbar = FCDetachableTab(protect=True, parent=self)
         self.al_toolbar.setTabsClosable(False)
         self.al_toolbar.useOldIndex(True)
-
+        self.al_toolbar.set_detachable(val=False)
         self.grbl_box.addWidget(self.al_toolbar)
 
         # GRBL Connect TAB
@@ -2176,8 +2176,9 @@ class CNCObjectUI(ObjectUI):
         ctrl_hlay = QtWidgets.QHBoxLayout()
         self.controller_reset_button = FCButton(_("Reset"))
         self.controller_reset_button.setToolTip(
-            _("SW reset the controller. CTRL+X command.")
+            _("Software reset of the controller.")
         )
+        self.controller_reset_button.setDisabled(True)
         ctrl_hlay.addWidget(self.controller_reset_button)
 
         self.com_connect_button = FCButton()
@@ -2206,11 +2207,13 @@ class CNCObjectUI(ObjectUI):
         grbl_jog_grid.setColumnStretch(2, 0)
         grbl_jog_grid.setColumnStretch(3, 0)
         grbl_jog_grid.setColumnStretch(4, 1)
+        grbl_jog_grid.setColumnStretch(5, 0)
+
         grbl_jog_grid.setRowStretch(0, 0)
         grbl_jog_grid.setRowStretch(1, 0)
         grbl_jog_grid.setRowStretch(2, 0)
         grbl_jog_grid.setRowStretch(3, 0)
-        grbl_jog_grid.setColumnStretch(4, 1)
+
         grbl_ctrl_grid.addLayout(grbl_jog_grid, 8, 0, 1, 3)
 
         # JOG Y Up
@@ -2270,45 +2273,52 @@ class CNCObjectUI(ObjectUI):
         grbl_zero_grid.setColumnStretch(0, 0)
         grbl_zero_grid.setColumnStretch(1, 0)
         grbl_zero_grid.setColumnStretch(2, 0)
-        grbl_ctrl_grid.addLayout(grbl_zero_grid, 10, 0, 1, 3)
+        grbl_jog_grid.addLayout(grbl_zero_grid, 0, 5, 3, 1)
 
         # Zero X axis
-        self.grbl_zerox_button = FCButton(_("ZERO X axes"))
+        self.grbl_zerox_button = QtWidgets.QToolButton()
+        self.grbl_zerox_button.setText(_("X"))
         self.grbl_zerox_button.setToolTip(
             _("Zero the CNC X axes at current position.")
         )
         grbl_zero_grid.addWidget(self.grbl_zerox_button, 0, 0)
         # Zero Y axis
-        self.grbl_zeroy_button = FCButton(_("ZERO Y axes"))
+        self.grbl_zeroy_button = QtWidgets.QToolButton()
+        self.grbl_zeroy_button.setText(_("Y"))
+
         self.grbl_zeroy_button.setToolTip(
             _("Zero the CNC Y axes at current position.")
         )
-        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 0, 1)
+        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 1, 0)
         # Zero Z axis
-        self.grbl_zeroz_button = FCButton(_("ZERO Z axes"))
+        self.grbl_zeroz_button = QtWidgets.QToolButton()
+        self.grbl_zeroz_button.setText(_("Z"))
+
         self.grbl_zeroz_button.setToolTip(
             _("Zero the CNC Z axes at current position.")
         )
-        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 0, 2)
+        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 2, 0)
         # Zeroo all axes
-        self.grbl_zero_all_button = FCButton(_("ZERO all axes"))
+        self.grbl_zero_all_button = QtWidgets.QToolButton()
+        self.grbl_zero_all_button.setText(_("All"))
+
         self.grbl_zero_all_button.setToolTip(
             _("Zero all CNC axes at current position.")
         )
-        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 2, 0, 1, 3)
+        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 0, 1, 3, 1)
 
         # GRBL SENDER
         grbl_send_grid = QtWidgets.QGridLayout()
-        grbl_send_grid.setColumnStretch(0, 0)
-        grbl_send_grid.setColumnStretch(1, 1)
-        grbl_send_grid.setColumnStretch(2, 0)
+        grbl_send_grid.setColumnStretch(0, 1)
+        grbl_send_grid.setColumnStretch(1, 0)
         self.gr_send_tab_layout.addLayout(grbl_send_grid)
 
-        # CUSTOM COMMAND
-        self.grbl_command_label = FCLabel('%s:' % _("CMD"))
+        # Send CUSTOM COMMAND
+        self.grbl_command_label = FCLabel('%s:' % _("Send Command"))
         self.grbl_command_label.setToolTip(
             _("Send a custom command to GRBL.")
         )
+        grbl_send_grid.addWidget(self.grbl_command_label, 2, 0, 1, 2)
 
         self.grbl_command_entry = FCEntry()
 
@@ -2317,37 +2327,15 @@ class CNCObjectUI(ObjectUI):
         self.grbl_send_button.setToolTip(
             _("Send a custom command to GRBL.")
         )
-        grbl_send_grid.addWidget(self.grbl_command_label, 2, 0)
-        grbl_send_grid.addWidget(self.grbl_command_entry, 2, 1)
-        grbl_send_grid.addWidget(self.grbl_send_button, 2, 2)
-
-        # GET HEIGHT MAP
-        self.grbl_get_heightmap_button = FCButton(_("Get Height Map"))
-        self.grbl_get_heightmap_button.setToolTip(
-            _("Will send the probing GCode to the GRBL controller\n"
-              "and wait for the Z probing data.")
-        )
-        grbl_send_grid.addWidget(self.grbl_get_heightmap_button, 4, 0, 1, 3)
-
-        # GET Report
-        self.grbl_report_button = FCButton(_("Get Report"))
-        self.grbl_report_button.setToolTip(
-            _("Print in shell the GRBL report.")
-        )
-        grbl_send_grid.addWidget(self.grbl_report_button, 5, 0, 1, 3)
-
-        grbl_send2_grid = QtWidgets.QGridLayout()
-        grbl_send2_grid.setColumnStretch(0, 0)
-        grbl_send2_grid.setColumnStretch(1, 1)
-        grbl_send2_grid.setColumnStretch(2, 0)
-        self.gr_send_tab_layout.addLayout(grbl_send2_grid)
-        self.gr_send_tab_layout.addStretch(1)
+        grbl_send_grid.addWidget(self.grbl_command_entry, 4, 0)
+        grbl_send_grid.addWidget(self.grbl_send_button, 4, 1)
 
         # Get Parameter
-        self.grbl_get_param_label = FCLabel('%s:' % _("Parameter"))
+        self.grbl_get_param_label = FCLabel('%s:' % _("Get Config parameter"))
         self.grbl_get_param_label.setToolTip(
             _("A GRBL parameter.")
         )
+        grbl_send_grid.addWidget(self.grbl_get_param_label, 6, 0, 1, 2)
 
         self.grbl_parameter_entry = FCEntry()
 
@@ -2356,9 +2344,23 @@ class CNCObjectUI(ObjectUI):
         self.grbl_get_param_button.setToolTip(
             _("Get the value of a specified GRBL parameter.")
         )
-        grbl_send2_grid.addWidget(self.grbl_get_param_label, 2, 0)
-        grbl_send2_grid.addWidget(self.grbl_parameter_entry, 2, 1)
-        grbl_send2_grid.addWidget(self.grbl_get_param_button, 2, 2)
+        grbl_send_grid.addWidget(self.grbl_parameter_entry, 8, 0)
+        grbl_send_grid.addWidget(self.grbl_get_param_button, 8, 1)
+
+        # GET Report
+        self.grbl_report_button = FCButton(_("Get Report"))
+        self.grbl_report_button.setToolTip(
+            _("Print in shell the GRBL report.")
+        )
+        grbl_send_grid.addWidget(self.grbl_report_button, 10, 0, 1, 2)
+
+        # GET HEIGHT MAP
+        self.grbl_get_heightmap_button = FCButton(_("Get Height Map"))
+        self.grbl_get_heightmap_button.setToolTip(
+            _("Will send the probing GCode to the GRBL controller\n"
+              "and wait for the Z probing data.")
+        )
+        grbl_send_grid.addWidget(self.grbl_get_heightmap_button, 12, 0, 1, 2)
 
         self.grbl_frame.hide()
         # #############################################################################################################

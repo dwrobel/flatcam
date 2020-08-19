@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - sending GCode/GRBL commands is now threaded
 - in CNCJob UI Autolevelling - Grbl Connect tab colors will change with the connection status
 - in CNCJob UI Autolevelling - GRBL Control and Sender tabs are disabled when the serial port is disconnected
+- in CNCJob UI Autolevelling - GRBL Sender - now only a single command can be sent 
+- in CNCJob UI Autolevelling - GRBL controller - changed the UI
+- in CNCJob UI Autolevelling - added some VOronoi poly calculations
 
 18.08.2020
 

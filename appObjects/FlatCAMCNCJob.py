@@ -198,6 +198,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         }
         '''
         self.al_geometry_dict = {}
+        self.solid_geo = None
         self.grbl_ser_port = None
 
         # Attributes to be included in serialization
@@ -554,6 +555,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.sal_cb.stateChanged.connect(self.on_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
+        self.ui.voronoi_cb.stateChanged.connect(self.show_voronoi_diagram)
         # GRBL
         self.ui.com_search_button.clicked.connect(self.on_search_ports)
         self.ui.add_bd_button.clicked.connect(self.on_add_baudrate_grbl)
@@ -654,8 +656,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def on_add_al_probepoints(self):
         # create the solid_geo
 
-        solid_geo = [geo['geom'] for geo in self.gcode_parsed if geo['kind'][0] == 'C']
-        solid_geo = unary_union(solid_geo)
+        self.solid_geo = unary_union([geo['geom'] for geo in self.gcode_parsed if geo['kind'][0] == 'C'])
 
         # reset al table
         self.ui.al_probe_points_table.setRowCount(0)
@@ -663,7 +664,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # reset the al dict
         self.al_geometry_dict.clear()
 
-        xmin, ymin, xmax, ymax = solid_geo.bounds
+        xmin, ymin, xmax, ymax = self.solid_geo.bounds
 
         if self.ui.al_mode_radio.get_value() == 'grid':
             width = abs(xmax - xmin)
@@ -684,14 +685,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     points.append((new_x, new_y))
 
             pt_id = 0
+            pts_list = []
             for point in points:
                 pt_id += 1
+                pt = Point(point)
+                pts_list.append(pt)
                 new_dict = {
-                    'point': Point(point),
+                    'point': pt,
                     'geo': None,
                     'height': 0.0
                 }
                 self.al_geometry_dict[pt_id] = deepcopy(new_dict)
+            self.calculate_voronoi_diagram(pts=pts_list)
+
         else:
             self.app.inform.emit(_("Click on canvas to add a Test Point..."))
 
@@ -709,13 +715,28 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.mouse_events_connected = True
 
-            self.calculate_voronoi_diagram()
-
         self.build_al_table_sig.emit()
 
-    def calculate_voronoi_diagram(self):
-        pass
-        # return voronoi_diagram()
+    def show_voronoi_diagram(self, state):
+        if state:
+            pass
+        else:
+            pass
+
+    def calculate_voronoi_diagram(self, pts):
+        pts_union = unary_union(pts)
+        env = self.solid_geo.envelope
+        try:
+            voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
+            print(voronoi_union)
+        except Exception as e:
+            log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
+            return
+
+        for pt_key in list(self.al_geometry_dict.keys()):
+            for poly in voronoi_union:
+                if self.al_geometry_dict[pt_key]['point'].within(poly):
+                    self.al_geometry_dict[pt_key]['geo'] = poly
 
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
@@ -785,6 +806,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.app.defaults['global_selection_shape'] = self.old_selection_state
 
             self.app.inform.emit(_("Finished manual adding of Test Point..."))
+
+            pts_list = []
+            for k in self.al_geometry_dict:
+                pts_list.append(self.al_geometry_dict[k]['point'])
+            self.calculate_voronoi_diagram(pts=pts_list)
 
             # rebuild the al table
             self.build_al_table_sig.emit()
@@ -952,17 +978,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                                        xonxoff=False,
                                                        rtscts=False)
 
-            self.app.inform.emit("%s: %s" % (_("Port connected"), port_name))
-            self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: seagreen;}")
-            self.ui.com_connect_button.setText(_("Connected"))
-
-            for idx in range(self.ui.al_toolbar.count()):
-                if self.ui.al_toolbar.tabText(idx) == _("Connect"):
-                    self.ui.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('seagreen'))
-                if self.ui.al_toolbar.tabText(idx) == _("Control"):
-                    self.ui.al_toolbar.tabBar.setTabEnabled(idx, True)
-                if self.ui.al_toolbar.tabText(idx) == _("Sender"):
-                    self.ui.al_toolbar.tabBar.setTabEnabled(idx, True)
             # Toggle DTR to reset the controller loaded with GRBL (Arduino, ESP32, etc)
             try:
                 self.grbl_ser_port.dtr = False
@@ -975,12 +990,36 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.grbl_ser_port.dtr = True
             except IOError:
                 pass
+
+            answer = self.wake_grbl()
+            answer = ['ok']   # hack for development without a GRBL controller connected
+            for line in answer:
+                if 'ok' in line.lower():
+                    self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: seagreen;}")
+                    self.ui.com_connect_button.setText(_("Connected"))
+                    self.ui.controller_reset_button.setDisabled(False)
+
+                    for idx in range(self.ui.al_toolbar.count()):
+                        if self.ui.al_toolbar.tabText(idx) == _("Connect"):
+                            self.ui.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('seagreen'))
+                        if self.ui.al_toolbar.tabText(idx) == _("Control"):
+                            self.ui.al_toolbar.tabBar.setTabEnabled(idx, True)
+                        if self.ui.al_toolbar.tabText(idx) == _("Sender"):
+                            self.ui.al_toolbar.tabBar.setTabEnabled(idx, True)
+
+                    self.app.inform.emit("%s: %s" % (_("Port connected"), port_name))
+                    return
+
+            self.grbl_ser_port.close()
+            self.app.inform.emit("[ERROR_NOTCL] %s: %s" % (_("Could not connect to GRBL on port"), port_name))
+
         except serial.SerialException:
             self.grbl_ser_port = serial.Serial()
             self.grbl_ser_port.port = port_name
             self.grbl_ser_port.close()
             self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: red;}")
             self.ui.com_connect_button.setText(_("Disconnected"))
+            self.ui.controller_reset_button.setDisabled(True)
 
             for idx in range(self.ui.al_toolbar.count()):
                 if self.ui.al_toolbar.tabText(idx) == _("Connect"):
@@ -1006,12 +1045,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def wake_grbl(self):
         # Wake up grbl
         self.grbl_ser_port.write("\r\n\r\n".encode('utf-8'))
-        time.sleep(1)  # Wait for grbl to initialize
-        self.grbl_ser_port.flushInput()  # Flush startup text in serial input
+        # Wait for GRBL controller to initialize
+        time.sleep(1)
+
+        grbl_out = deepcopy(self.grbl_ser_port.readlines())
+        self.grbl_ser_port.reset_input_buffer()
+
+        return grbl_out
 
     def on_send_grbl_command(self):
         cmd = self.ui.grbl_command_entry.get_value()
-        self.wake_grbl()
 
         # show the Shell Dock
         self.app.ui.shell_dock.show()
@@ -1023,22 +1066,47 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def send_grbl_command(self, command, echo=True):
-        stripped_cmd = command.strip()  # Strip all EOL characters for consistency
+        stripped_cmd = command.strip()
+
+        cmd = stripped_cmd.rpartition('\n')[0]
+        if echo:
+            self.app.inform_shell[str, bool].emit(cmd, False)
+
+        # Send Gcode command to GRBL
+        snd = cmd + '\n'
+        self.grbl_ser_port.write(snd.encode('utf-8'))
+        grbl_out = self.grbl_ser_port.readlines()
+
+        result = False
+        for line in grbl_out:
+            if echo:
+                try:
+                    self.app.inform_shell.emit(' : ' + line.decode('utf-8').strip().upper())
+                except Exception as e:
+                    log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
+            if 'ok' in line:
+                result = True
+
+        return result
+
+    def send_grbl_block(self, command, echo=True):
+        stripped_cmd = command.strip()
 
         for l in stripped_cmd.split('\n'):
             if echo:
                 self.app.inform_shell[str, bool].emit(l, False)
 
+            # Send Gcode block to GRBL
             snd = l + '\n'
-            self.grbl_ser_port.write(snd.encode('utf-8'))  # Send g-code block to grbl
-            grbl_out = self.grbl_ser_port.readlines()  # Wait for grbl response with carriage return
+            self.grbl_ser_port.write(snd.encode('utf-8'))
+            grbl_out = self.grbl_ser_port.readlines()
 
             for line in grbl_out:
                 if echo:
                     try:
                         self.app.inform_shell.emit(' : ' + line.decode('utf-8').strip().upper())
                     except Exception as e:
-                        log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
+                        log.debug("CNCJobObject.send_grbl_block() --> %s" % str(e))
 
     def get_grbl_parameter(self, param):
         if '$' in param:
@@ -1080,6 +1148,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         cmd = '\x18'
         self.wake_grbl()
         self.send_grbl_command(command=cmd)
+        self.app.inform.emit("%s" % _("GRBL software reset was sent."))
 
     def probing_gcode(self, coords, pr_travel, probe_fr, pr_depth, controller):
         """
