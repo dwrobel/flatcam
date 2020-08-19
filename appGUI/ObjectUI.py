@@ -2084,6 +2084,10 @@ class CNCObjectUI(ObjectUI):
         # self.gr_conn_tab_layout.addWidget(self.gr_conn_scroll_area)
         self.al_toolbar.addTab(self.gr_conn_tab, _("Connect"))
 
+        for idx in range(self.al_toolbar.count()):
+            if self.al_toolbar.tabText(idx) == _("Connect"):
+                self.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
         # GRBL Control TAB
         self.gr_ctrl_tab = QtWidgets.QWidget()
         self.gr_ctrl_tab.setObjectName("connect_tab")
@@ -2176,6 +2180,7 @@ class CNCObjectUI(ObjectUI):
         self.com_connect_button.setToolTip(
             _("Connect to the selected port with the selected baud rate.")
         )
+        self.com_connect_button.setStyleSheet("QPushButton {background-color: red;}")
         ctrl_hlay.addWidget(self.com_connect_button)
 
         grbl_conn_grid.addLayout(ctrl_hlay, 10, 0, 1, 3)

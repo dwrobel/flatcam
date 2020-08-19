@@ -953,8 +953,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                                                        rtscts=False)
 
             self.app.inform.emit("%s: %s" % (_("Port connected"), port_name))
-            self.ui.com_connect_button.setStyleSheet("QPushButton {color: seagreen;}")
-
+            self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: seagreen;}")
+            for idx in range(self.ui.al_toolbar.count()):
+                if self.ui.al_toolbar.tabText(idx) == _("Connect"):
+                    self.ui.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('seagreen'))
             # Toggle DTR to reset the controller loaded with GRBL (Arduino, ESP32, etc)
             try:
                 self.grbl_ser_port.dtr = False
@@ -971,7 +973,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.grbl_ser_port = serial.Serial()
             self.grbl_ser_port.port = port_name
             self.grbl_ser_port.close()
-            self.ui.com_connect_button.setStyleSheet("")
+            self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: red;}")
+            for idx in range(self.ui.al_toolbar.count()):
+                if self.ui.al_toolbar.tabText(idx) == _("Connect"):
+                    self.ui.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
             self.app.inform.emit("%s: %s" % (_("Port is connected. Disconnecting"), port_name))
         except Exception:
             self.app.inform.emit("[ERROR_NOTCL] %s: %s" % (_("Could not connect to port"), port_name))

@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 19.08.2020
 
 - in CNCJob UI Autolevelling - sending GCode/GRBL commands is now threaded
+- in CNCJob UI Autolevelling - Grbl Connect tab colors will change with the connection status
 
 18.08.2020
 
