@@ -682,7 +682,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 new_x = xmin
                 for x in range(cols):
                     new_x += dx
-                    points.append((new_x, new_y))
+                    formatted_point = (
+                        self.app.dec_format(new_x, self.app.decimals),
+                        self.app.dec_format(new_y, self.app.decimals)
+                    )
+                    points.append(formatted_point)
 
             pt_id = 0
             pts_list = []
