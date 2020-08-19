@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.08.2020
+
+- in CNCJob UI Autolevelling - sending GCode/GRBL commands is now threaded
+
 18.08.2020
 
 - in Doublesided Tool added some UI for Excellon hole snapping

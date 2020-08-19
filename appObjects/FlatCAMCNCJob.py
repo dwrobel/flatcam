@@ -995,14 +995,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def on_send_grbl_command(self):
         cmd = self.ui.grbl_command_entry.get_value()
         self.wake_grbl()
-        self.send_grbl_command(command=cmd)
+
+        # show the Shell Dock
+        self.app.ui.shell_dock.show()
+
+        def worker_task():
+            with self.app.proc_container.new(_("Sending GCode...")):
+                self.send_grbl_command(command=cmd)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def send_grbl_command(self, command, echo=True):
         stripped_cmd = command.strip()  # Strip all EOL characters for consistency
 
         for l in stripped_cmd.split('\n'):
             if echo:
-                self.app.shell_message(l, show=True, new_line=False)
+                self.app.inform_shell[str, bool].emit(l, False)
 
             snd = l + '\n'
             self.grbl_ser_port.write(snd.encode('utf-8'))  # Send g-code block to grbl
@@ -1011,7 +1019,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             for line in grbl_out:
                 if echo:
                     try:
-                        self.app.shell_message(' : ' + line.decode('utf-8').strip().upper(), show=True)
+                        self.app.inform_shell.emit(' : ' + line.decode('utf-8').strip().upper())
                     except Exception as e:
                         log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
 

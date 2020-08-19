@@ -208,7 +208,7 @@ class App(QtCore.QObject):
     # Handled by: App.info() --> Print on the status bar
     inform = QtCore.pyqtSignal([str], [str, bool])
     # Handled by: App.info_shell() --> Print on the shell
-    inform_shell = QtCore.pyqtSignal(str)
+    inform_shell = QtCore.pyqtSignal([str], [str, bool])
 
     app_quit = QtCore.pyqtSignal()
 
@@ -791,7 +791,8 @@ class App(QtCore.QObject):
         self.inform[str, bool].connect(self.info)
 
         # signal for displaying messages in the shell
-        self.inform_shell.connect(self.info_shell)
+        self.inform_shell[str].connect(self.info_shell)
+        self.inform_shell[str, bool].connect(self.info_shell)
 
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
@@ -2546,8 +2547,8 @@ class App(QtCore.QObject):
             if msg != '' and shell_echo is True:
                 self.shell_message(msg)
 
-    def info_shell(self, msg):
-        self.shell_message(msg=msg)
+    def info_shell(self, msg, new_line=True):
+        self.shell_message(msg=msg, new_line=new_line)
 
     def on_import_preferences(self):
         """
