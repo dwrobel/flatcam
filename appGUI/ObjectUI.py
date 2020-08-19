@@ -2084,10 +2084,6 @@ class CNCObjectUI(ObjectUI):
         # self.gr_conn_tab_layout.addWidget(self.gr_conn_scroll_area)
         self.al_toolbar.addTab(self.gr_conn_tab, _("Connect"))
 
-        for idx in range(self.al_toolbar.count()):
-            if self.al_toolbar.tabText(idx) == _("Connect"):
-                self.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
-
         # GRBL Control TAB
         self.gr_ctrl_tab = QtWidgets.QWidget()
         self.gr_ctrl_tab.setObjectName("connect_tab")
@@ -2107,6 +2103,14 @@ class CNCObjectUI(ObjectUI):
         # self.gr_send_scroll_area = VerticalScrollArea()
         # self.gr_send_tab_layout.addWidget(self.gr_send_scroll_area)
         self.al_toolbar.addTab(self.gr_send_tab, _("Sender"))
+
+        for idx in range(self.al_toolbar.count()):
+            if self.al_toolbar.tabText(idx) == _("Connect"):
+                self.al_toolbar.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+            if self.al_toolbar.tabText(idx) == _("Control"):
+                self.al_toolbar.tabBar.setTabEnabled(idx, False)
+            if self.al_toolbar.tabText(idx) == _("Sender"):
+                self.al_toolbar.tabBar.setTabEnabled(idx, False)
         # #############################################################################################################
 
         # GRBL CONNECT
@@ -2176,7 +2180,8 @@ class CNCObjectUI(ObjectUI):
         )
         ctrl_hlay.addWidget(self.controller_reset_button)
 
-        self.com_connect_button = FCButton(_("(Dis)Connect"))
+        self.com_connect_button = FCButton()
+        self.com_connect_button.setText(_("Disconnected"))
         self.com_connect_button.setToolTip(
             _("Connect to the selected port with the selected baud rate.")
         )
