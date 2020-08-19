@@ -561,15 +561,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.controller_reset_button.clicked.connect(self.on_grbl_reset)
         self.ui.com_connect_button.clicked.connect(self.on_connect_grbl)
         self.ui.grbl_send_button.clicked.connect(self.on_send_grbl_command)
+        self.ui.grbl_command_entry.returnPressed.connect(self.on_send_grbl_command)
 
         #Jog
-        self.ui.jog_up_button.clicked.connect(lambda: self.on_jog(dir='yplus', step=5.0))
-        self.ui.jog_down_button.clicked.connect(lambda: self.on_jog(dir='yminus', step=5.0))
-        self.ui.jog_right_button.clicked.connect(lambda: self.on_jog(dir='xplus', step=5.0))
-        self.ui.jog_left_button.clicked.connect(lambda: self.on_jog(dir='xminus', step=5.0))
-        self.ui.jog_z_up_button.clicked.connect(lambda: self.on_jog(dir='zplus', step=5.0))
-        self.ui.jog_z_down_button.clicked.connect(lambda: self.on_jog(dir='zminus', step=5.0))
+        self.ui.jog_up_button.clicked.connect(lambda: self.on_jog(direction='yplus', step=5.0))
+        self.ui.jog_down_button.clicked.connect(lambda: self.on_jog(direction='yminus', step=5.0))
+        self.ui.jog_right_button.clicked.connect(lambda: self.on_jog(direction='xplus', step=5.0))
+        self.ui.jog_left_button.clicked.connect(lambda: self.on_jog(direction='xminus', step=5.0))
+        self.ui.jog_z_up_button.clicked.connect(lambda: self.on_jog(direction='zplus', step=5.0))
+        self.ui.jog_z_down_button.clicked.connect(lambda: self.on_jog(direction='zminus', step=5.0))
 
+        # Sender
+        self.ui.grbl_report_button.clicked.connect(lambda: self.send_grbl_command(command='?'))
+        self.ui.grbl_get_param_button.clicked.connect(
+            lambda: self.get_grbl_parameter(param=self.ui.grbl_parameter_entry.get_value()))
         self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
         self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
@@ -1010,23 +1015,38 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     except Exception as e:
                         log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
 
-    def on_jog(self, dir=None, step=5.0):
-        if dir is None:
+    def get_grbl_parameter(self, param):
+        if '$' in param:
+            param = param.replace('$','')
+
+        snd = '$$\n'
+        self.grbl_ser_port.write(snd.encode('utf-8'))
+        grbl_out = self.grbl_ser_port.readlines()
+        for line in grbl_out:
+            decoded_line = line.decode('utf-8')
+            par = '$%s' % str(param)
+            if par in decoded_line:
+                result = float(decoded_line.rpartition('=')[2])
+                self.app.shell_message("GRBL Parameter: %s = %s" % (str(param), str(result)), show=True)
+                return result
+
+    def on_jog(self, direction=None, step=5.0):
+        if direction is None:
             return
         cmd = ''
 
-        if dir == 'xplus':
+        if direction == 'xplus':
             cmd = "$J=G91 %s X%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
-        if dir == 'xminus':
+        if direction == 'xminus':
             cmd = "$J=G91 %s X-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
-        if dir == 'yplus':
+        if direction == 'yplus':
             cmd = "$J=G91 %s Y%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
-        if dir == 'yminus':
+        if direction == 'yminus':
             cmd = "$J=G91 %s Y-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
 
-        if dir == 'zplus':
+        if direction == 'zplus':
             cmd = "$J=G91 %s Z%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
-        if dir == 'zminus':
+        if direction == 'zminus':
             cmd = "$J=G91 %s Z-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
 
         self.send_grbl_command(command=cmd, echo=False)

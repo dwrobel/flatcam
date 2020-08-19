@@ -2293,7 +2293,6 @@ class CNCObjectUI(ObjectUI):
         grbl_send_grid.setColumnStretch(1, 1)
         grbl_send_grid.setColumnStretch(2, 0)
         self.gr_send_tab_layout.addLayout(grbl_send_grid)
-        self.gr_send_tab_layout.addStretch(1)
 
         # CUSTOM COMMAND
         self.grbl_command_label = FCLabel('%s:' % _("CMD"))
@@ -2319,6 +2318,37 @@ class CNCObjectUI(ObjectUI):
               "and wait for the Z probing data.")
         )
         grbl_send_grid.addWidget(self.grbl_get_heightmap_button, 4, 0, 1, 3)
+
+        # GET Report
+        self.grbl_report_button = FCButton(_("Get Report"))
+        self.grbl_report_button.setToolTip(
+            _("Print in shell the GRBL report.")
+        )
+        grbl_send_grid.addWidget(self.grbl_report_button, 5, 0, 1, 3)
+
+        grbl_send2_grid = QtWidgets.QGridLayout()
+        grbl_send2_grid.setColumnStretch(0, 0)
+        grbl_send2_grid.setColumnStretch(1, 1)
+        grbl_send2_grid.setColumnStretch(2, 0)
+        self.gr_send_tab_layout.addLayout(grbl_send2_grid)
+        self.gr_send_tab_layout.addStretch(1)
+
+        # Get Parameter
+        self.grbl_get_param_label = FCLabel('%s:' % _("Parameter"))
+        self.grbl_get_param_label.setToolTip(
+            _("A GRBL parameter.")
+        )
+
+        self.grbl_parameter_entry = FCEntry()
+
+        self.grbl_get_param_button = QtWidgets.QToolButton()
+        self.grbl_get_param_button.setText(_("Get"))
+        self.grbl_get_param_button.setToolTip(
+            _("Get the value of a specified GRBL parameter.")
+        )
+        grbl_send2_grid.addWidget(self.grbl_get_param_label, 2, 0)
+        grbl_send2_grid.addWidget(self.grbl_parameter_entry, 2, 1)
+        grbl_send2_grid.addWidget(self.grbl_get_param_button, 2, 2)
 
         self.grbl_frame.hide()
         # #############################################################################################################
