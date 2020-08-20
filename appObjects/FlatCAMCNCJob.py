@@ -22,7 +22,7 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import CNCjob
 
 from shapely.ops import unary_union
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPoint
 try:
     from shapely.ops import voronoi_diagram
 except Exception:
@@ -728,8 +728,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             pass
 
     def calculate_voronoi_diagram(self, pts):
-        pts_union = unary_union(pts)
+        pts_union = MultiPoint(pts)
         env = self.solid_geo.envelope
+        print(pts_union.wkt)
         try:
             voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
             print(voronoi_union)
