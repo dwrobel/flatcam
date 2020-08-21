@@ -316,6 +316,9 @@ class PreferencesUIManager:
             "cncjob_al_probe_depth":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.pdepth_entry,
             "cncjob_al_probe_fr":           self.ui.cncjob_defaults_form.cncjob_adv_opt_group.feedrate_probe_entry,
             "cncjob_al_controller":         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_controller_combo,
+            "cncjob_al_grbl_jog_step":      self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_step_entry,
+            "cncjob_al_grbl_jog_fr":        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_fr_entry,
+            "cncjob_al_grbl_travelz":       self.ui.cncjob_defaults_form.cncjob_adv_opt_group.jog_travelz_entry,
 
             # CNC Job (GCode) Editor
             "cncjob_prepend":               self.ui.cncjob_defaults_form.cncjob_editor_group.prepend_text,

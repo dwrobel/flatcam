@@ -384,6 +384,9 @@ class FlatCAMDefaults:
         "cncjob_al_probe_depth": -1.0,
         "cncjob_al_probe_fr": 120,
         "cncjob_al_controller": 'MACH3',
+        "cncjob_al_grbl_jog_step": 5,
+        "cncjob_al_grbl_jog_fr": 1500,
+        "cncjob_al_grbl_travelz": 15.0,
 
         # CNC Job (GCode) Editor
         "cncjob_prepend": "",

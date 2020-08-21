@@ -491,6 +491,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             "al_mode":          self.ui.al_mode_radio,
             "al_rows":          self.ui.al_rows_entry,
             "al_columns":       self.ui.al_columns_entry,
+            "al_grbl_jog_step": self.ui.jog_step_entry,
+            "al_grbl_jog_fr":   self.ui.jog_fr_entry,
         })
 
         self.append_snippet = self.app.defaults['cncjob_append']
@@ -566,12 +568,27 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.grbl_command_entry.returnPressed.connect(self.on_send_grbl_command)
 
         #Jog
-        self.ui.jog_up_button.clicked.connect(lambda: self.on_jog(direction='yplus', step=5.0))
-        self.ui.jog_down_button.clicked.connect(lambda: self.on_jog(direction='yminus', step=5.0))
-        self.ui.jog_right_button.clicked.connect(lambda: self.on_jog(direction='xplus', step=5.0))
-        self.ui.jog_left_button.clicked.connect(lambda: self.on_jog(direction='xminus', step=5.0))
-        self.ui.jog_z_up_button.clicked.connect(lambda: self.on_jog(direction='zplus', step=5.0))
-        self.ui.jog_z_down_button.clicked.connect(lambda: self.on_jog(direction='zminus', step=5.0))
+        self.ui.jog_wdg.jog_up_button.clicked.connect(
+            lambda: self.on_jog(direction='yplus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_down_button.clicked.connect(
+            lambda: self.on_jog(direction='yminus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_right_button.clicked.connect(
+            lambda: self.on_jog(direction='xplus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_left_button.clicked.connect(
+            lambda: self.on_jog(direction='xminus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_z_up_button.clicked.connect(
+            lambda: self.on_jog(direction='zplus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_z_down_button.clicked.connect(
+            lambda: self.on_jog(direction='zminus', step=self.ui.jog_step_entry.get_value(),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_origin_button.clicked.connect(
+            lambda: self.on_jog(direction='origin', travelz=float(self.app.defaults["cncjob_al_grbl_travelz"]),
+                                feedrate=self.ui.jog_fr_entry.get_value()))
 
         # Sender
         self.ui.grbl_report_button.clicked.connect(lambda: self.send_grbl_command(command='?'))
@@ -1128,24 +1145,31 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.shell_message("GRBL Parameter: %s = %s" % (str(param), str(result)), show=True)
                 return result
 
-    def on_jog(self, direction=None, step=5.0):
+    def on_jog(self, direction=None, step=5.0, feedrate=1000.0, travelz=15.0):
         if direction is None:
             return
         cmd = ''
 
         if direction == 'xplus':
-            cmd = "$J=G91 %s X%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s X%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
         if direction == 'xminus':
-            cmd = "$J=G91 %s X-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s X-%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
         if direction == 'yplus':
-            cmd = "$J=G91 %s Y%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s Y%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
         if direction == 'yminus':
-            cmd = "$J=G91 %s Y-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s Y-%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
 
         if direction == 'zplus':
-            cmd = "$J=G91 %s Z%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s Z%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
         if direction == 'zminus':
-            cmd = "$J=G91 %s Z-%s F1000" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step))
+            cmd = "$J=G91 %s Z-%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
+
+        if direction == 'origin':
+            cmd = "$J=G90 %s Z%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(travelz), str(feedrate))
+            self.send_grbl_command(command=cmd, echo=False)
+            cmd = "$J=G90 %s X0.0 Y0.0 F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(feedrate))
+            self.send_grbl_command(command=cmd, echo=False)
+            return
 
         self.send_grbl_command(command=cmd, echo=False)
 
@@ -1192,17 +1216,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # commands
         if controller == 'MACH3':
             probing_command = 'G31'
-            probing_var = '#2002'
+            # probing_var = '#2002'
             openfile_command = 'M40'
             closefile_command = 'M41'
         elif controller == 'MACH4':
             probing_command = 'G31'
-            probing_var = '#5063'
+            # probing_var = '#5063'
             openfile_command = 'M40'
             closefile_command = 'M41'
         elif controller == 'LinuxCNC':
             probing_command = 'G38.2'
-            probing_var = '#5422'
+            # probing_var = '#5422'
             openfile_command = '(PROBEOPEN a_probing_points_file.txt)'
             closefile_command = '(PROBECLOSE)'
         else:
@@ -1217,9 +1241,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         p_gcode += header + '\n'
         # supplementary message for LinuxCNC
         if controller == 'LinuxCNC':
-            probing_var += "The file with the stored probing points can be found\n" \
-                           "in the configuration folder for LinuxCNC.\n" \
-                           "The name of the file is: a_probing_points_file.txt.\n"
+            p_gcode += "The file with the stored probing points can be found\n" \
+                       "in the configuration folder for LinuxCNC.\n" \
+                       "The name of the file is: a_probing_points_file.txt.\n"
         # units
         p_gcode += 'G21\n' if self.units == 'MM' else 'G20\n'
         # reference mode = absolute
@@ -1246,8 +1270,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             )
             # store in a global numeric variable the value of the detected probe Z
             # I offset the global numeric variable by 500 so it does not conflict with something else
-            temp_var = int(idx + 500)
-            p_gcode += "#%d = %s\n" % (temp_var, probing_var)
+            # temp_var = int(idx + 500)
+            # p_gcode += "#%d = %s\n" % (temp_var, probing_var)
 
             # move to safe height (probe travel Z)
             p_gcode += 'G0 Z%s\n' % str(self.app.dec_format(pr_travel, self.coords_decimals))

@@ -2113,7 +2113,9 @@ class CNCObjectUI(ObjectUI):
                 self.al_toolbar.tabBar.setTabEnabled(idx, False)
         # #############################################################################################################
 
+        # #############################################################################################################
         # GRBL CONNECT
+        # #############################################################################################################
         grbl_conn_grid = QtWidgets.QGridLayout()
         grbl_conn_grid.setColumnStretch(0, 0)
         grbl_conn_grid.setColumnStretch(1, 1)
@@ -2189,125 +2191,77 @@ class CNCObjectUI(ObjectUI):
         self.com_connect_button.setStyleSheet("QPushButton {background-color: red;}")
         ctrl_hlay.addWidget(self.com_connect_button)
 
+        grbl_conn_grid.setRowStretch(9, 1)
         grbl_conn_grid.addLayout(ctrl_hlay, 10, 0, 1, 3)
 
+        # #############################################################################################################
         # GRBL CONTROL
+        # #############################################################################################################
         grbl_ctrl_grid = QtWidgets.QGridLayout()
         grbl_ctrl_grid.setColumnStretch(0, 0)
-        grbl_ctrl_grid.setColumnStretch(1, 1)
-        grbl_ctrl_grid.setColumnStretch(2, 0)
+        grbl_ctrl_grid.setColumnStretch(1, 0)
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
+
+        grbl_ctrl2_grid = QtWidgets.QGridLayout()
+        grbl_ctrl2_grid.setColumnStretch(0, 0)
+        grbl_ctrl2_grid.setColumnStretch(1, 1)
+        self.gr_ctrl_tab_layout.addLayout(grbl_ctrl2_grid)
+
         self.gr_ctrl_tab_layout.addStretch(1)
 
-        # JOG axes
-        grbl_jog_grid = QtWidgets.QGridLayout()
-        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        grbl_jog_grid.setColumnStretch(0, 0)
-        grbl_jog_grid.setColumnStretch(1, 0)
-        grbl_jog_grid.setColumnStretch(2, 0)
-        grbl_jog_grid.setColumnStretch(3, 0)
-        grbl_jog_grid.setColumnStretch(4, 1)
-        grbl_jog_grid.setColumnStretch(5, 0)
+        self.jog_wdg = FCJog(_("Jog"), self.app)
+        self.jog_wdg.setContentsMargins(2, 2, 2, 2)
+        self.jog_wdg.setStyleSheet("""
+                            FCJog
+                            {
+                                border: 1px solid lightgray;
+                                border-radius: 5px
+                            }
+                            """)
 
-        grbl_jog_grid.setRowStretch(0, 0)
-        grbl_jog_grid.setRowStretch(1, 0)
-        grbl_jog_grid.setRowStretch(2, 0)
-        grbl_jog_grid.setRowStretch(3, 0)
+        self.zero_axs_wdg = FCZeroAxes(_("Zero Axes"), self.app)
+        self.zero_axs_wdg.setContentsMargins(2, 2, 2, 2)
+        self.zero_axs_wdg.setStyleSheet("""
+                            FCZeroAxes
+                            {
+                                border: 1px solid lightgray;
+                                border-radius: 5px
+                            }
+                            """)
+        grbl_ctrl_grid.addWidget(self.jog_wdg, 0, 0)
+        grbl_ctrl_grid.addWidget(self.zero_axs_wdg, 0, 1)
 
-        grbl_ctrl_grid.addLayout(grbl_jog_grid, 8, 0, 1, 3)
-
-        # JOG Y Up
-        self.jog_up_button = QtWidgets.QToolButton()
-        self.jog_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
-        self.jog_up_button.setToolTip(
-            _("Jog the Y axis.")
+        # JOG Step
+        self.jog_step_label = FCLabel('%s:' % _("Step"))
+        self.jog_step_label.setToolTip(
+            _("Each jog action will move the axes with this value.")
         )
-        grbl_jog_grid.addWidget(self.jog_up_button, 0, 1)
 
-        # JOG Y Down
-        self.jog_down_button = QtWidgets.QToolButton()
-        self.jog_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
-        self.jog_down_button.setToolTip(
-            _("Jog the Y axis.")
+        self.jog_step_entry = FCDoubleSpinner()
+        self.jog_step_entry.set_precision(self.decimals)
+        self.jog_step_entry.setSingleStep(0.1)
+        self.jog_step_entry.set_range(0, 99999.9999)
+
+        grbl_ctrl2_grid.addWidget(self.jog_step_label, 0, 0)
+        grbl_ctrl2_grid.addWidget(self.jog_step_entry, 0, 1)
+
+        # JOG Feedrate
+        self.jog_fr_label = FCLabel('%s:' % _("Feedrate"))
+        self.jog_fr_label.setToolTip(
+            _("Feedrate when jogging.")
         )
-        grbl_jog_grid.addWidget(self.jog_down_button, 2, 1)
 
-        # JOG X Left
-        self.jog_left_button = QtWidgets.QToolButton()
-        self.jog_left_button.setIcon(QtGui.QIcon(self.app.resource_location + '/left_arrow32.png'))
-        self.jog_left_button.setToolTip(
-            _("Jog the X axis.")
-        )
-        grbl_jog_grid.addWidget(self.jog_left_button, 1, 0)
+        self.jog_fr_entry = FCDoubleSpinner()
+        self.jog_fr_entry.set_precision(self.decimals)
+        self.jog_fr_entry.setSingleStep(10)
+        self.jog_fr_entry.set_range(0, 99999.9999)
 
-        # JOG X Right
-        self.jog_right_button = QtWidgets.QToolButton()
-        self.jog_right_button.setIcon(QtGui.QIcon(self.app.resource_location + '/right_arrow32.png'))
-        self.jog_right_button.setToolTip(
-            _("Jog the X axis.")
-        )
-        grbl_jog_grid.addWidget(self.jog_right_button, 1, 2)
+        grbl_ctrl2_grid.addWidget(self.jog_fr_label, 1, 0)
+        grbl_ctrl2_grid.addWidget(self.jog_fr_entry, 1, 1)
 
-        # JOG Z Up
-        self.jog_z_up_button = QtWidgets.QPushButton()
-        self.jog_z_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
-        self.jog_z_up_button.setText('Z+')
-        self.jog_z_up_button.setToolTip(
-            _("Jog the Z axis.")
-        )
-        grbl_jog_grid.addWidget(self.jog_z_up_button, 0, 3)
-
-        # JOG Z Down
-        self.jog_z_down_button = QtWidgets.QPushButton()
-        self.jog_z_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
-        self.jog_z_down_button.setText('Z-')
-        self.jog_z_down_button.setToolTip(
-            _("Jog the Z axis.")
-        )
-        grbl_jog_grid.addWidget(self.jog_z_down_button, 2, 3)
-
-        grbl_ctrl_grid.addWidget(QtWidgets.QLabel(""))
-
-        # Zero the axes
-        grbl_zero_grid = QtWidgets.QGridLayout()
-        grbl_zero_grid.setColumnStretch(0, 0)
-        grbl_zero_grid.setColumnStretch(1, 0)
-        grbl_zero_grid.setColumnStretch(2, 0)
-        grbl_jog_grid.addLayout(grbl_zero_grid, 0, 5, 3, 1)
-
-        # Zero X axis
-        self.grbl_zerox_button = QtWidgets.QToolButton()
-        self.grbl_zerox_button.setText(_("X"))
-        self.grbl_zerox_button.setToolTip(
-            _("Zero the CNC X axes at current position.")
-        )
-        grbl_zero_grid.addWidget(self.grbl_zerox_button, 0, 0)
-        # Zero Y axis
-        self.grbl_zeroy_button = QtWidgets.QToolButton()
-        self.grbl_zeroy_button.setText(_("Y"))
-
-        self.grbl_zeroy_button.setToolTip(
-            _("Zero the CNC Y axes at current position.")
-        )
-        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 1, 0)
-        # Zero Z axis
-        self.grbl_zeroz_button = QtWidgets.QToolButton()
-        self.grbl_zeroz_button.setText(_("Z"))
-
-        self.grbl_zeroz_button.setToolTip(
-            _("Zero the CNC Z axes at current position.")
-        )
-        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 2, 0)
-        # Zeroo all axes
-        self.grbl_zero_all_button = QtWidgets.QToolButton()
-        self.grbl_zero_all_button.setText(_("All"))
-
-        self.grbl_zero_all_button.setToolTip(
-            _("Zero all CNC axes at current position.")
-        )
-        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 0, 1, 3, 1)
-
+        # #############################################################################################################
         # GRBL SENDER
+        # #############################################################################################################
         grbl_send_grid = QtWidgets.QGridLayout()
         grbl_send_grid.setColumnStretch(0, 1)
         grbl_send_grid.setColumnStretch(1, 0)
@@ -2321,6 +2275,7 @@ class CNCObjectUI(ObjectUI):
         grbl_send_grid.addWidget(self.grbl_command_label, 2, 0, 1, 2)
 
         self.grbl_command_entry = FCEntry()
+        self.grbl_command_entry.setPlaceholderText(_("Type GRBL command ..."))
 
         self.grbl_send_button = QtWidgets.QToolButton()
         self.grbl_send_button.setText(_("Send"))
@@ -2338,6 +2293,7 @@ class CNCObjectUI(ObjectUI):
         grbl_send_grid.addWidget(self.grbl_get_param_label, 6, 0, 1, 2)
 
         self.grbl_parameter_entry = FCEntry()
+        self.grbl_parameter_entry.setPlaceholderText(_("Type GRBL parameter ..."))
 
         self.grbl_get_param_button = QtWidgets.QToolButton()
         self.grbl_get_param_button.setText(_("Get"))
@@ -2387,10 +2343,10 @@ class CNCObjectUI(ObjectUI):
         self.h_gcode_button.hide()
         self.import_heights_button.hide()
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 31, 0, 1, 2)
+        # separator_line = QtWidgets.QFrame()
+        # separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        # separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # grid0.addWidget(separator_line, 31, 0, 1, 2)
 
         self.al_button = FCButton(_("Apply Autolevel map"))
         grid0.addWidget(self.al_button, 32, 0, 1, 2)
@@ -2400,9 +2356,9 @@ class CNCObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 34, 0, 1, 2)
 
-        # ####################
+        # #############################################################################################################
         # ## Export G-Code ##
-        # ####################
+        # #############################################################################################################
         self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export CNC Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"

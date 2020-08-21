@@ -3250,6 +3250,150 @@ class FCDock(QtWidgets.QDockWidget):
         super().show()
 
 
+class FCJog(QtWidgets.QFrame):
+
+    def __init__(self, title, app, *args, **kwargs):
+        super(FCJog, self).__init__(*args, **kwargs)
+
+        self.app = app
+        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setLineWidth(1)
+
+        # JOG axes
+        grbl_jog_grid = QtWidgets.QGridLayout()
+        grbl_jog_grid.setAlignment(QtCore.Qt.AlignCenter)
+        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.setLayout(grbl_jog_grid)
+
+        jog_title_label = FCLabel(title)
+        jog_title_label.setStyleSheet("""
+                                FCLabel
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        grbl_jog_grid.addWidget(jog_title_label, 0, 0, 1, 4)
+
+        # JOG Y Up
+        self.jog_up_button = QtWidgets.QToolButton()
+        self.jog_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_up_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_up_button, 2, 1)
+
+        # Origin
+        self.jog_origin_button = QtWidgets.QToolButton()
+        self.jog_origin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/origin2_32.png'))
+        self.jog_origin_button.setToolTip(
+            _("Move to Origin.")
+        )
+
+        grbl_jog_grid.addWidget(self.jog_origin_button, 3, 1)
+
+        # JOG Y Down
+        self.jog_down_button = QtWidgets.QToolButton()
+        self.jog_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_down_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_down_button, 4, 1)
+
+        # JOG X Left
+        self.jog_left_button = QtWidgets.QToolButton()
+        self.jog_left_button.setIcon(QtGui.QIcon(self.app.resource_location + '/left_arrow32.png'))
+        self.jog_left_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_left_button, 3, 0)
+
+        # JOG X Right
+        self.jog_right_button = QtWidgets.QToolButton()
+        self.jog_right_button.setIcon(QtGui.QIcon(self.app.resource_location + '/right_arrow32.png'))
+        self.jog_right_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_right_button, 3, 2)
+
+        # JOG Z Up
+        self.jog_z_up_button = QtWidgets.QToolButton()
+        self.jog_z_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_z_up_button.setText('Z')
+        self.jog_z_up_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_up_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_up_button, 2, 3)
+
+        # JOG Z Down
+        self.jog_z_down_button = QtWidgets.QToolButton()
+        self.jog_z_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_z_down_button.setText('Z')
+        self.jog_z_down_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_down_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_down_button, 4, 3)
+
+
+class FCZeroAxes(QtWidgets.QFrame):
+
+    def __init__(self, title, app, *args, **kwargs):
+        super(FCZeroAxes, self).__init__(*args, **kwargs)
+        self.app = app
+
+        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setLineWidth(1)
+
+        # Zero the axes
+        grbl_zero_grid = QtWidgets.QGridLayout()
+        grbl_zero_grid.setColumnStretch(0, 0)
+        grbl_zero_grid.setColumnStretch(1, 0)
+        grbl_zero_grid.setRowStretch(4, 1)
+        self.setLayout(grbl_zero_grid)
+
+        zero_title_label = FCLabel(title)
+        zero_title_label.setStyleSheet("""
+                                FCLabel
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        grbl_zero_grid.addWidget(zero_title_label, 0, 0, 1, 2)
+
+        # Zero X axis
+        self.grbl_zerox_button = QtWidgets.QToolButton()
+        self.grbl_zerox_button.setText(_("X"))
+        self.grbl_zerox_button.setToolTip(
+            _("Zero the CNC X axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zerox_button, 1, 0)
+        # Zero Y axis
+        self.grbl_zeroy_button = QtWidgets.QToolButton()
+        self.grbl_zeroy_button.setText(_("Y"))
+
+        self.grbl_zeroy_button.setToolTip(
+            _("Zero the CNC Y axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 2, 0)
+        # Zero Z axis
+        self.grbl_zeroz_button = QtWidgets.QToolButton()
+        self.grbl_zeroz_button.setText(_("Z"))
+
+        self.grbl_zeroz_button.setToolTip(
+            _("Zero the CNC Z axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 3, 0)
+        # Zeroo all axes
+        self.grbl_zero_all_button = QtWidgets.QToolButton()
+        self.grbl_zero_all_button.setText(_("All"))
+        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
+        self.grbl_zero_all_button.setToolTip(
+            _("Zero all CNC axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 1, 1, 3, 1)
+
 class FlatCAMActivityView(QtWidgets.QWidget):
     """
     This class create and control the activity icon displayed in the App status bar
