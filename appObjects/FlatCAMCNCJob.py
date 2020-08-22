@@ -1184,6 +1184,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def on_grbl_zero(self, axis):
         current_mode = self.get_grbl_parameter('10')
+        if current_mode is None:
+            return
+
         cmd = '$10=0'
         self.send_grbl_command(command=cmd, echo=False)
 
@@ -1204,15 +1207,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def on_grbl_homing(self):
         cmd = '$H'
+        self.app.inform.emit("%s" % _("GRBL is doing a home cycle."))
         self.wake_grbl()
         self.send_grbl_command(command=cmd)
-        self.app.inform.emit("%s" % _("GRBL is doing a home cycle."))
 
     def on_grbl_reset(self):
         cmd = '\x18'
+        self.app.inform.emit("%s" % _("GRBL software reset was sent."))
         self.wake_grbl()
         self.send_grbl_command(command=cmd)
-        self.app.inform.emit("%s" % _("GRBL software reset was sent."))
 
     def on_grbl_pause_resume(self, checked):
         if checked is False:
