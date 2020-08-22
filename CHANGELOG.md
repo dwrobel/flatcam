@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - in CNCJob UI Autolevelling - GRBL controller - Control: added a Origin button; changed the UI to have rounded rectangles 
 - in CNCJob UI Autolevelling - GRBL controller - Control: added feedrate and step size controls and added them in Preferences
+- in CNCJob UI Autolevelling - GRBL controller - added handlers for the Zeroing and for Homing and for Pause/Resume; some UI optimizations
 
 19.08.2020
 

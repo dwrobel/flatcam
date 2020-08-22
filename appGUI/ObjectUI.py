@@ -2199,7 +2199,8 @@ class CNCObjectUI(ObjectUI):
         # #############################################################################################################
         grbl_ctrl_grid = QtWidgets.QGridLayout()
         grbl_ctrl_grid.setColumnStretch(0, 0)
-        grbl_ctrl_grid.setColumnStretch(1, 0)
+        grbl_ctrl_grid.setColumnStretch(1, 1)
+        grbl_ctrl_grid.setColumnStretch(2, 0)
         self.gr_ctrl_tab_layout.addLayout(grbl_ctrl_grid)
 
         grbl_ctrl2_grid = QtWidgets.QGridLayout()
@@ -2209,18 +2210,35 @@ class CNCObjectUI(ObjectUI):
 
         self.gr_ctrl_tab_layout.addStretch(1)
 
-        self.jog_wdg = FCJog(_("Jog"), self.app)
-        self.jog_wdg.setContentsMargins(2, 2, 2, 2)
+        jog_title_label = FCLabel(_("Jog"))
+        jog_title_label.setStyleSheet("""
+                                FCLabel
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+
+        zero_title_label = FCLabel(_("Zero Axes"))
+        zero_title_label.setStyleSheet("""
+                                FCLabel
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+
+        grbl_ctrl_grid.addWidget(jog_title_label, 0, 0)
+        grbl_ctrl_grid.addWidget(zero_title_label, 0, 2)
+
+        self.jog_wdg = FCJog(self.app)
         self.jog_wdg.setStyleSheet("""
                             FCJog
                             {
                                 border: 1px solid lightgray;
-                                border-radius: 5px
+                                border-radius: 5px;
                             }
                             """)
 
-        self.zero_axs_wdg = FCZeroAxes(_("Zero Axes"), self.app)
-        self.zero_axs_wdg.setContentsMargins(2, 2, 2, 2)
+        self.zero_axs_wdg = FCZeroAxes(self.app)
         self.zero_axs_wdg.setStyleSheet("""
                             FCZeroAxes
                             {
@@ -2228,8 +2246,23 @@ class CNCObjectUI(ObjectUI):
                                 border-radius: 5px
                             }
                             """)
-        grbl_ctrl_grid.addWidget(self.jog_wdg, 0, 0)
-        grbl_ctrl_grid.addWidget(self.zero_axs_wdg, 0, 1)
+        grbl_ctrl_grid.addWidget(self.jog_wdg, 2, 0)
+        grbl_ctrl_grid.addWidget(self.zero_axs_wdg, 2, 2)
+
+        self.pause_resume_button = RotatedToolButton()
+        self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.pause_resume_button.setText(_("Pause/Resume"))
+        self.pause_resume_button.setCheckable(True)
+
+        pause_frame = QtWidgets.QFrame()
+        pause_frame.setContentsMargins(0, 0, 0, 0)
+        pause_frame.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+        pause_hlay = QtWidgets.QHBoxLayout()
+        pause_hlay.setContentsMargins(0, 0, 0, 0)
+
+        pause_hlay.addWidget(self.pause_resume_button)
+        pause_frame.setLayout(pause_hlay)
+        grbl_ctrl_grid.addWidget(pause_frame, 2, 1)
 
         # JOG Step
         self.jog_step_label = FCLabel('%s:' % _("Step"))

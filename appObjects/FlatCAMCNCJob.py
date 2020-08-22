@@ -567,7 +567,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.grbl_send_button.clicked.connect(self.on_send_grbl_command)
         self.ui.grbl_command_entry.returnPressed.connect(self.on_send_grbl_command)
 
-        #Jog
+        # Jog
         self.ui.jog_wdg.jog_up_button.clicked.connect(
             lambda: self.on_jog(direction='yplus', step=self.ui.jog_step_entry.get_value(),
                                 feedrate=self.ui.jog_fr_entry.get_value()))
@@ -590,6 +590,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             lambda: self.on_jog(direction='origin', travelz=float(self.app.defaults["cncjob_al_grbl_travelz"]),
                                 feedrate=self.ui.jog_fr_entry.get_value()))
 
+        # Zero
+        self.ui.zero_axs_wdg.grbl_zerox_button.clicked.connect(lambda: self.on_grbl_zero(axis='x'))
+        self.ui.zero_axs_wdg.grbl_zeroy_button.clicked.connect(lambda: self.on_grbl_zero(axis='y'))
+        self.ui.zero_axs_wdg.grbl_zeroz_button.clicked.connect(lambda: self.on_grbl_zero(axis='z'))
+        self.ui.zero_axs_wdg.grbl_zero_all_button.clicked.connect(lambda: self.on_grbl_zero(axis='all'))
+        self.ui.zero_axs_wdg.grbl_homing_button.clicked.connect(self.on_grbl_homing)
+
         # Sender
         self.ui.grbl_report_button.clicked.connect(lambda: self.send_grbl_command(command='?'))
         self.ui.grbl_get_param_button.clicked.connect(
@@ -597,6 +604,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
         self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
+        self.ui.pause_resume_button.clicked.connect(self.on_grbl_pause_resume)
+
         self.build_al_table_sig.connect(self.build_al_table)
 
         # self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
@@ -697,7 +706,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             for x in range(rows):
                 new_y += dy
                 new_x = xmin
-                for x in range(cols):
+                for y in range(cols):
                     new_x += dx
                     formatted_point = (
                         self.app.dec_format(new_x, self.app.decimals),
@@ -1173,11 +1182,47 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.send_grbl_command(command=cmd, echo=False)
 
+    def on_grbl_zero(self, axis):
+        current_mode = self.get_grbl_parameter('10')
+        cmd = '$10=0'
+        self.send_grbl_command(command=cmd, echo=False)
+
+        if axis == 'x':
+            cmd = 'G10 L2 P1 X0'
+        elif axis == 'y':
+            cmd = 'G10 L2 P1 Y0'
+        elif axis == 'z':
+            cmd = 'G10 L2 P1 Z0'
+        else:
+            # all
+            cmd = 'G10 L2 P1 X0 Y0 Z0'
+        self.send_grbl_command(command=cmd, echo=False)
+
+        # restore previous mode
+        cmd = '$10=%d' % int(current_mode)
+        self.send_grbl_command(command=cmd, echo=False)
+
+    def on_grbl_homing(self):
+        cmd = '$H'
+        self.wake_grbl()
+        self.send_grbl_command(command=cmd)
+        self.app.inform.emit("%s" % _("GRBL is doing a home cycle."))
+
     def on_grbl_reset(self):
         cmd = '\x18'
         self.wake_grbl()
         self.send_grbl_command(command=cmd)
         self.app.inform.emit("%s" % _("GRBL software reset was sent."))
+
+    def on_grbl_pause_resume(self, checked):
+        if checked is False:
+            cmd = '~'
+            self.send_grbl_command(command=cmd)
+            self.app.inform.emit("%s" % _("GRBL resumed."))
+        else:
+            cmd = '!'
+            self.send_grbl_command(command=cmd)
+            self.app.inform.emit("%s" % _("GRBL paused."))
 
     def probing_gcode(self, coords, pr_travel, probe_fr, pr_depth, controller):
         """

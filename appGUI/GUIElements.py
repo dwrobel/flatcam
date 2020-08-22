@@ -3252,7 +3252,7 @@ class FCDock(QtWidgets.QDockWidget):
 
 class FCJog(QtWidgets.QFrame):
 
-    def __init__(self, title, app, *args, **kwargs):
+    def __init__(self, app, *args, **kwargs):
         super(FCJog, self).__init__(*args, **kwargs)
 
         self.app = app
@@ -3263,16 +3263,9 @@ class FCJog(QtWidgets.QFrame):
         grbl_jog_grid = QtWidgets.QGridLayout()
         grbl_jog_grid.setAlignment(QtCore.Qt.AlignCenter)
         grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.setLayout(grbl_jog_grid)
+        grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
 
-        jog_title_label = FCLabel(title)
-        jog_title_label.setStyleSheet("""
-                                FCLabel
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
-        grbl_jog_grid.addWidget(jog_title_label, 0, 0, 1, 4)
+        self.setLayout(grbl_jog_grid)
 
         # JOG Y Up
         self.jog_up_button = QtWidgets.QToolButton()
@@ -3338,7 +3331,7 @@ class FCJog(QtWidgets.QFrame):
 
 class FCZeroAxes(QtWidgets.QFrame):
 
-    def __init__(self, title, app, *args, **kwargs):
+    def __init__(self, app, *args, **kwargs):
         super(FCZeroAxes, self).__init__(*args, **kwargs)
         self.app = app
 
@@ -3347,19 +3340,11 @@ class FCZeroAxes(QtWidgets.QFrame):
 
         # Zero the axes
         grbl_zero_grid = QtWidgets.QGridLayout()
+        grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
         grbl_zero_grid.setColumnStretch(0, 0)
         grbl_zero_grid.setColumnStretch(1, 0)
-        grbl_zero_grid.setRowStretch(4, 1)
+        # grbl_zero_grid.setRowStretch(4, 1)
         self.setLayout(grbl_zero_grid)
-
-        zero_title_label = FCLabel(title)
-        zero_title_label.setStyleSheet("""
-                                FCLabel
-                                {
-                                    font-weight: bold;
-                                }
-                                """)
-        grbl_zero_grid.addWidget(zero_title_label, 0, 0, 1, 2)
 
         # Zero X axis
         self.grbl_zerox_button = QtWidgets.QToolButton()
@@ -3384,6 +3369,11 @@ class FCZeroAxes(QtWidgets.QFrame):
             _("Zero the CNC Z axes at current position.")
         )
         grbl_zero_grid.addWidget(self.grbl_zeroz_button, 3, 0)
+        self.grbl_homing_button = QtWidgets.QToolButton()
+        self.grbl_homing_button.setText(_("Do Home"))
+        self.grbl_homing_button.setToolTip(
+            _("Perform a homing cycle on all axis."))
+        grbl_zero_grid.addWidget(self.grbl_homing_button, 4, 0, 1, 2)
         # Zeroo all axes
         self.grbl_zero_all_button = QtWidgets.QToolButton()
         self.grbl_zero_all_button.setText(_("All"))
@@ -3393,6 +3383,113 @@ class FCZeroAxes(QtWidgets.QFrame):
             _("Zero all CNC axes at current position.")
         )
         grbl_zero_grid.addWidget(self.grbl_zero_all_button, 1, 1, 3, 1)
+
+
+class RotatedToolButton(QtWidgets.QToolButton):
+    def __init__(self, orientation = "east", *args, **kwargs):
+        super(RotatedToolButton,self).__init__(*args, **kwargs)
+        self.orientation = orientation
+
+    def paintEvent(self, event):
+        painter = QtWidgets.QStylePainter(self)
+        if self.orientation == "east":
+            painter.rotate(270)
+            painter.translate(-1 * self.height(), 0)
+        if self.orientation == "west":
+            painter.rotate(90)
+            painter.translate(0, -1 * self.width())
+        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+
+    def minimumSizeHint(self):
+        size = super(RotatedToolButton, self).minimumSizeHint()
+        size.transpose()
+        return size
+
+    def sizeHint(self):
+        size = super(RotatedToolButton, self).sizeHint()
+        size.transpose()
+        return size
+
+    def getSyleOptions(self):
+        options = QtWidgets.QStyleOptionButton()
+        options.initFrom(self)
+        size = options.rect.size()
+        size.transpose()
+        options.rect.setSize(size)
+        options.features = QtWidgets.QStyleOptionButton.None_
+        # if self.isFlat():
+        #     options.features |= QtWidgets.QStyleOptionButton.Flat
+        if self.menu():
+            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+        # if self.autoDefault() or self.isDefault():
+        #     options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
+        # if self.isDefault():
+        #     options.features |= QtWidgets.QStyleOptionButton.DefaultButton
+        if self.isDown() or (self.menu() and self.menu().isVisible()):
+            options.state |= QtWidgets.QStyle.State_Sunken
+        if self.isChecked():
+            options.state |= QtWidgets.QStyle.State_On
+        # if not self.isFlat() and not self.isDown():
+        #     options.state |= QtWidgets.QStyle.State_Raised
+
+        options.text = self.text()
+        options.icon = self.icon()
+        options.iconSize = self.iconSize()
+        return options
+
+
+class RotatedButton(QtWidgets.QPushButton):
+    def __init__(self, orientation = "west", *args, **kwargs):
+        super(RotatedButton,self).__init__(*args, **kwargs)
+        self.orientation = orientation
+
+    def paintEvent(self, event):
+        painter = QtWidgets.QStylePainter(self)
+        if self.orientation == "east":
+            painter.rotate(270)
+            painter.translate(-1 * self.height(), 0)
+        if self.orientation == "west":
+            painter.rotate(90)
+            painter.translate(0, -1 * self.width())
+        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+
+    def minimumSizeHint(self):
+        size = super(RotatedButton, self).minimumSizeHint()
+        size.transpose()
+        return size
+
+    def sizeHint(self):
+        size = super(RotatedButton, self).sizeHint()
+        size.transpose()
+        return size
+
+    def getSyleOptions(self):
+        options = QtWidgets.QStyleOptionButton()
+        options.initFrom(self)
+        size = options.rect.size()
+        size.transpose()
+        options.rect.setSize(size)
+        options.features = QtWidgets.QStyleOptionButton.None_
+        if self.isFlat():
+            options.features |= QtWidgets.QStyleOptionButton.Flat
+        if self.menu():
+            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+        if self.autoDefault() or self.isDefault():
+            options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
+        if self.isDefault():
+            options.features |= QtWidgets.QStyleOptionButton.DefaultButton
+        if self.isDown() or (self.menu() and self.menu().isVisible()):
+            options.state |= QtWidgets.QStyle.State_Sunken
+        if self.isChecked():
+            options.state |= QtWidgets.QStyle.State_On
+        if not self.isFlat() and not self.isDown():
+            options.state |= QtWidgets.QStyle.State_Raised
+
+        options.text = self.text()
+        options.icon = self.icon()
+        options.iconSize = self.iconSize()
+        return options
+
 
 class FlatCAMActivityView(QtWidgets.QWidget):
     """
