@@ -2253,6 +2253,14 @@ class CNCObjectUI(ObjectUI):
         self.pause_resume_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.pause_resume_button.setText(_("Pause/Resume"))
         self.pause_resume_button.setCheckable(True)
+        self.pause_resume_button.setStyleSheet("""
+                            RotatedToolButton:checked
+                            {
+                                background-color: red;
+                                color: white;
+                                border: none;
+                            }
+                            """)
 
         pause_frame = QtWidgets.QFrame()
         pause_frame.setContentsMargins(0, 0, 0, 0)
