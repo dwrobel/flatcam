@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - added a save dialog for the probing GCode
 - added a new GUI element, a DoubleSlider
 - in CNCJob UI Autolevelling - GRBL controller - Control: trying to add DoubleSlider + DoubleSpinner combo controls
+- in GUI element FCDoubleSpinner fixed an range issue
 
 21.08.2020
 

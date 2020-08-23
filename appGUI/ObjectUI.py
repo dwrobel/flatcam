@@ -2281,7 +2281,7 @@ class CNCObjectUI(ObjectUI):
         self.jog_step_entry = FCSliderWithDoubleSpinner()
         self.jog_step_entry.set_precision(self.decimals)
         self.jog_step_entry.setSingleStep(0.1)
-        self.jog_step_entry.set_range(0, 99999.9999)
+        self.jog_step_entry.set_range(0, 500)
 
         grbl_ctrl2_grid.addWidget(self.jog_step_label, 0, 0)
         grbl_ctrl2_grid.addWidget(self.jog_step_entry, 0, 1)
@@ -2295,7 +2295,7 @@ class CNCObjectUI(ObjectUI):
         self.jog_fr_entry = FCSliderWithDoubleSpinner()
         self.jog_fr_entry.set_precision(self.decimals)
         self.jog_fr_entry.setSingleStep(10)
-        self.jog_fr_entry.set_range(0, 99999.9999)
+        self.jog_fr_entry.set_range(0, 10000)
 
         grbl_ctrl2_grid.addWidget(self.jog_fr_label, 1, 0)
         grbl_ctrl2_grid.addWidget(self.jog_fr_entry, 1, 1)

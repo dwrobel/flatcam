@@ -946,6 +946,9 @@ class FCDoubleSlider(QtWidgets.QSlider):
     def value(self):
         return float(super(FCDoubleSlider, self).value()) / self._multi
 
+    def get_value(self):
+        return self.value()
+
     def setMinimum(self, value):
         return super(FCDoubleSlider, self).setMinimum(value * self._multi)
 
@@ -961,9 +964,12 @@ class FCDoubleSlider(QtWidgets.QSlider):
     def set_value(self, value):
         super(FCDoubleSlider, self).setValue(int(value * self._multi))
 
+    def set_precision(self, decimals):
+        self._multi = 10 ** decimals
+
     def set_range(self, min, max):
         self.blockSignals(True)
-        self.setRange(min, max)
+        self.setRange(min * self._multi, max * self._multi)
         self.blockSignals(False)
 
 
