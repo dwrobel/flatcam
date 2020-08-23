@@ -201,6 +201,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.solid_geo = None
         self.grbl_ser_port = None
 
+        self.pressed_button = None
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -568,27 +570,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.grbl_command_entry.returnPressed.connect(self.on_send_grbl_command)
 
         # Jog
-        self.ui.jog_wdg.jog_up_button.clicked.connect(
-            lambda: self.on_jog(direction='yplus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_down_button.clicked.connect(
-            lambda: self.on_jog(direction='yminus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_right_button.clicked.connect(
-            lambda: self.on_jog(direction='xplus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_left_button.clicked.connect(
-            lambda: self.on_jog(direction='xminus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_z_up_button.clicked.connect(
-            lambda: self.on_jog(direction='zplus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_z_down_button.clicked.connect(
-            lambda: self.on_jog(direction='zminus', step=self.ui.jog_step_entry.get_value(),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
-        self.ui.jog_wdg.jog_origin_button.clicked.connect(
-            lambda: self.on_jog(direction='origin', travelz=float(self.app.defaults["cncjob_al_grbl_travelz"]),
-                                feedrate=self.ui.jog_fr_entry.get_value()))
+        self.ui.jog_wdg.jog_up_button.clicked.connect(lambda: self.on_jog(direction='yplus'))
+        self.ui.jog_wdg.jog_down_button.clicked.connect(lambda: self.on_jog(direction='yminus'))
+        self.ui.jog_wdg.jog_right_button.clicked.connect(lambda: self.on_jog(direction='xplus'))
+        self.ui.jog_wdg.jog_left_button.clicked.connect(lambda: self.on_jog(direction='xminus'))
+        self.ui.jog_wdg.jog_z_up_button.clicked.connect(lambda: self.on_jog(direction='zplus'))
+        self.ui.jog_wdg.jog_z_down_button.clicked.connect(lambda: self.on_jog(direction='zminus'))
+        self.ui.jog_wdg.jog_origin_button.clicked.connect(lambda: self.on_jog(direction='origin'))
 
         # Zero
         self.ui.zero_axs_wdg.grbl_zerox_button.clicked.connect(lambda: self.on_grbl_zero(axis='x'))
@@ -624,8 +612,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-            self.ui.sal_cb.show()
-            self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
+            if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name or 'hpgl' in \
+                    self.pp_geometry_name:
+                pass
+            else:
+                self.ui.sal_cb.show()
+                self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
 
         preamble = self.append_snippet
         postamble = self.prepend_snippet
@@ -1154,10 +1146,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.shell_message("GRBL Parameter: %s = %s" % (str(param), str(result)), show=True)
                 return result
 
-    def on_jog(self, direction=None, step=5.0, feedrate=1000.0, travelz=15.0):
+    def on_jog(self, direction=None):
         if direction is None:
             return
         cmd = ''
+
+        step = self.ui.jog_step_entry.get_value(),
+        feedrate = self.ui.jog_fr_entry.get_value()
+        travelz = float(self.app.defaults["cncjob_al_grbl_travelz"])
 
         if direction == 'xplus':
             cmd = "$J=G91 %s X%s F%s" % ({'IN': 'G20', 'MM': 'G21'}[self.units], str(step), str(feedrate))
@@ -1349,6 +1345,44 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         controller = self.ui.al_controller_combo.get_value()
         self.probing_gcode_text = self.probing_gcode(coords, pr_travel, probe_fr, pr_depth, controller)
 
+        lines = StringIO(self.probing_gcode_text)
+
+        _filter_ = self.app.defaults['cncjob_save_filters']
+        name = "probing_gcode"
+        try:
+            dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export Code ..."),
+                directory=dir_file_to_save,
+                ext_filter=_filter_
+            )
+        except TypeError:
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+
+        if filename == '':
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
+            return
+        else:
+            try:
+                force_windows_line_endings = self.app.defaults['cncjob_line_ending']
+                if force_windows_line_endings and sys.platform != 'win32':
+                    with open(filename, 'w', newline='\r\n') as f:
+                        for line in lines:
+                            f.write(line)
+                else:
+                    with open(filename, 'w') as f:
+                        for line in lines:
+                            f.write(line)
+            except FileNotFoundError:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No such file or directory"))
+                return
+            except PermissionError:
+                self.app.inform.emit(
+                    '[WARNING] %s' % _("Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible.")
+                )
+                return 'fail'
+
     def on_view_probing_gcode(self):
         self.app.proc_container.view.set_busy(_("Loading..."))
 
@@ -1415,7 +1449,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.import_height_map, 'params': [filename]})
 

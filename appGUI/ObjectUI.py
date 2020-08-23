@@ -2278,7 +2278,7 @@ class CNCObjectUI(ObjectUI):
             _("Each jog action will move the axes with this value.")
         )
 
-        self.jog_step_entry = FCDoubleSpinner()
+        self.jog_step_entry = FCSliderWithDoubleSpinner()
         self.jog_step_entry.set_precision(self.decimals)
         self.jog_step_entry.setSingleStep(0.1)
         self.jog_step_entry.set_range(0, 99999.9999)
@@ -2292,7 +2292,7 @@ class CNCObjectUI(ObjectUI):
             _("Feedrate when jogging.")
         )
 
-        self.jog_fr_entry = FCDoubleSpinner()
+        self.jog_fr_entry = FCSliderWithDoubleSpinner()
         self.jog_fr_entry.set_precision(self.decimals)
         self.jog_fr_entry.setSingleStep(10)
         self.jog_fr_entry.set_range(0, 99999.9999)

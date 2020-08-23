@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot, QSettings
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -923,6 +923,116 @@ class FCSpinner(QtWidgets.QSpinBox):
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCDoubleSlider(QtWidgets.QSlider):
+    # frome here: https://stackoverflow.com/questions/42820380/use-float-for-qslider
+
+    # create our our signal that we can connect to if necessary
+    doubleValueChanged = pyqtSignal(float)
+
+    def __init__(self, decimals=3, orientation='horizontal', *args, **kargs):
+        if orientation == 'horizontal':
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Horizontal, *args, **kargs)
+        else:
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Vertical, *args, **kargs)
+
+        self._multi = 10 ** decimals
+
+        self.valueChanged.connect(self.emitDoubleValueChanged)
+
+    def emitDoubleValueChanged(self):
+        value = float(super(FCDoubleSlider, self).value()) / self._multi
+        self.doubleValueChanged.emit(value)
+
+    def value(self):
+        return float(super(FCDoubleSlider, self).value()) / self._multi
+
+    def setMinimum(self, value):
+        return super(FCDoubleSlider, self).setMinimum(value * self._multi)
+
+    def setMaximum(self, value):
+        return super(FCDoubleSlider, self).setMaximum(value * self._multi)
+
+    def setSingleStep(self, value):
+        return super(FCDoubleSlider, self).setSingleStep(value * self._multi)
+
+    def singleStep(self):
+        return float(super(FCDoubleSlider, self).singleStep()) / self._multi
+
+    def set_value(self, value):
+        super(FCDoubleSlider, self).setValue(int(value * self._multi))
+
+    def set_range(self, min, max):
+        self.blockSignals(True)
+        self.setRange(min, max)
+        self.blockSignals(False)
+
+
+class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=9999.9999, step=1, precision=4, orientation='horizontal', **kwargs):
+        super().__init__(**kwargs)
+
+        self.slider = FCDoubleSlider(orientation=orientation)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setSingleStep(step)
+        self.slider.set_range(min, max)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_precision(precision)
+
+        self.spinner.set_step(step)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(self.spinner)
+        self.setLayout(self.layout)
+
+        self.slider.doubleValueChanged.connect(self._on_slider)
+        self.spinner.valueChanged.connect(self._on_spinner)
+
+        self.valueChanged = self.spinner.valueChanged
+
+    def set_precision(self, prec):
+        self.spinner.set_precision(prec)
+
+    def setSingleStep(self, step):
+        self.spinner.set_step(step)
+
+    def set_range(self, min, max):
+        self.spinner.set_range(min, max)
+        self.slider.set_range(min, max)
+
+    def set_minimum(self, min):
+        self.slider.setMinimum(min)
+        self.spinner.setMinimum(min)
+
+    def set_maximum(self, max):
+        self.slider.setMaximum(max)
+        self.spinner.setMaximum(max)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def _on_spinner(self):
+        spinner_value = self.spinner.value()
+        self.slider.set_value(spinner_value)
+
+    def _on_slider(self):
+        slider_value = self.slider.value()
+        self.spinner.set_value(slider_value)
+
+
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
@@ -1055,6 +1165,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
+
+    def set_step(self, p_int):
+        self.blockSignals(True)
+        self.setSingleStep(p_int)
+        self.blockSignals(False)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCDoubleSpinner, self).sizeHint()

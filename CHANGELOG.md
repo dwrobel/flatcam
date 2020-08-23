@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.08.2020
+
+- in CNCJob UI Autolevelling - autolevelling is made to be not available for cnc code generated with Roland or HPGL preprocessors
+- in CNCJob UI Autolevelling - added a save dialog for the probing GCode
+- added a new GUI element, a DoubleSlider
+- in CNCJob UI Autolevelling - GRBL controller - Control: trying to add DoubleSlider + DoubleSpinner combo controls
+
 21.08.2020
 
 - in CNCJob UI Autolevelling - GRBL controller - Control: added a Origin button; changed the UI to have rounded rectangles 
