@@ -4137,6 +4137,61 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
+    def scale_defaults(self, sfactor, dimensions):
+        for dim in dimensions:
+            if dim in ['geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
+                       'tools_painttooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
+                       'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
+                       'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
+                if not self.defaults[dim] or self.defaults[dim] == '':
+                    continue
+
+                if isinstance(self.defaults[dim], str):
+                    try:
+                        tools_diameters = eval(self.defaults[dim])
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
+                        continue
+                elif isinstance(self.defaults[dim], (float, int)):
+                    tools_diameters = [self.defaults[dim]]
+                else:
+                    tools_diameters = list(self.defaults[dim])
+
+                if isinstance(tools_diameters, (tuple, list)):
+                    pass
+                elif isinstance(tools_diameters, (int, float)):
+                    tools_diameters = [self.defaults[dim]]
+                else:
+                    continue
+
+                td_len = len(tools_diameters)
+                conv_list = []
+                for t in range(td_len):
+                    conv_list.append(self.dec_format(float(tools_diameters[t]) * sfactor, self.decimals))
+
+                self.defaults[dim] = conv_list
+            elif dim in ['global_gridx', 'global_gridy']:
+                # format the number of decimals to the one specified in self.decimals
+                try:
+                    val = float(self.defaults[dim]) * sfactor
+                except Exception as e:
+                    log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
+                    continue
+
+                self.defaults[dim] = self.dec_format(val, self.decimals)
+            else:
+                # the number of decimals for the rest is kept unchanged
+                if self.defaults[dim]:
+                    try:
+                        val = float(self.defaults[dim]) * sfactor
+                    except Exception as e:
+                        log.debug(
+                            'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
+                        )
+                        continue
+
+                    self.defaults[dim] = self.dec_format(val, self.decimals)
+
     def on_toggle_units(self, no_pref=False):
         """
         Callback for the Units radio-button change in the Preferences tab.
@@ -4270,60 +4325,6 @@ class App(QtCore.QObject):
 
         ]
 
-        def scale_defaults(sfactor):
-            for dim in dimensions:
-                if dim in ['geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
-                           'tools_painttooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
-                           'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
-                           'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
-                    if not self.defaults[dim] or self.defaults[dim] == '':
-                        continue
-
-                    if isinstance(self.defaults[dim], str):
-                        try:
-                            tools_diameters = eval(self.defaults[dim])
-                        except Exception as e:
-                            log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
-                            continue
-                    elif isinstance(self.defaults[dim], (float, int)):
-                        tools_diameters = [self.defaults[dim]]
-                    else:
-                        tools_diameters = list(self.defaults[dim])
-
-                    if isinstance(tools_diameters, (tuple, list)):
-                        pass
-                    elif isinstance(tools_diameters, (int, float)):
-                        tools_diameters = [self.defaults[dim]]
-                    else:
-                        continue
-
-                    td_len = len(tools_diameters)
-                    conv_list = []
-                    for t in range(td_len):
-                        conv_list.append(float(tools_diameters[t]) * sfactor)
-
-                elif dim in ['global_gridx', 'global_gridy']:
-                    # format the number of decimals to the one specified in self.decimals
-                    try:
-                        val = float(self.defaults[dim]) * sfactor
-                    except Exception as e:
-                        log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
-                        continue
-
-                    self.defaults[dim] = self.dec_format(val, self.decimals)
-                else:
-                    # the number of decimals for the rest is kept unchanged
-                    if self.defaults[dim]:
-                        try:
-                            val = float(self.defaults[dim]) * sfactor
-                        except Exception as e:
-                            log.debug(
-                                'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
-                            )
-                            continue
-
-                        self.defaults[dim] = val
-
         # The scaling factor depending on choice of units.
         factor = 25.4 if new_units == 'MM' else 1 / 25.4
 
@@ -4346,7 +4347,7 @@ class App(QtCore.QObject):
         if response == bt_ok:
             if no_pref is False:
                 self.preferencesUiManager.defaults_read_form()
-                scale_defaults(factor)
+                self.scale_defaults(factor, dimensions)
                 self.preferencesUiManager.defaults_write_form(fl_units=new_units)
 
                 self.defaults["units"] = new_units

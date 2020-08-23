@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - fixed issues in units conversion
 - in CNCJob UI Autolevelling - changed how the probing code is generated and when
 - changed some strings in CNCJob UI Autolevelling
+- made sure that when doing units conversion keep only the decimals specified in the application decimals setting (should differentiate between values and display?)
 
 23.08.2020
 
