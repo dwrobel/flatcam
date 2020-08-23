@@ -593,6 +593,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.h_gcode_button.clicked.connect(self.on_save_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
         self.ui.pause_resume_button.clicked.connect(self.on_grbl_pause_resume)
+        self.ui.grbl_get_heightmap_button.clicked.connect(self.on_grbl_autolevel)
 
         self.build_al_table_sig.connect(self.build_al_table)
 
@@ -1101,6 +1102,15 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def send_grbl_command(self, command, echo=True):
+        """
+
+        :param command: GCode command
+        :type command:  str
+        :param echo:    if to send a '\n' char after
+        :type echo:     bool
+        :return:        the text returned by the GRBL controller after each command
+        :rtype:         str
+        """
         stripped_cmd = command.strip()
 
         cmd = stripped_cmd.rpartition('\n')[0]
@@ -1112,7 +1122,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.grbl_ser_port.write(snd.encode('utf-8'))
         grbl_out = self.grbl_ser_port.readlines()
 
-        result = False
+        result = ''
         for line in grbl_out:
             if echo:
                 try:
@@ -1120,7 +1130,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 except Exception as e:
                     log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
             if 'ok' in line:
-                result = True
+                result = grbl_out
 
         return result
 
@@ -1497,6 +1507,49 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     self.al_geometry_dict[idx]['point'] = Point((x, y))
 
         self.build_al_table_sig.emit()
+
+    def on_grbl_autolevel(self):
+        # show the Shell Dock
+        self.app.ui.shell_dock.show()
+
+        def worker_task():
+            with self.app.proc_container.new(_("Sending GCode...")):
+                probe_result = ''
+                pr_travelz = str(self.ui.ptravelz_entry.get_value())
+                probe_fr = str(self.ui.feedrate_probe_entry.get_value())
+                pr_depth = str(self.ui.pdepth_entry.get_value())
+
+                cmd = 'G21\n'
+                self.send_grbl_command(command=cmd)
+                cmd = 'G90\n'
+                self.send_grbl_command(command=cmd)
+
+                for pt_key in self.al_geometry_dict:
+                    x = str(self.al_geometry_dict[pt_key]['point'].x)
+                    y = str(self.al_geometry_dict[pt_key]['point'].y)
+
+                    cmd = 'G0 Z%s\n' % pr_travelz
+                    self.send_grbl_command(command=cmd)
+                    cmd = 'G0 X%s Y%s\n' % (x, y)
+                    self.send_grbl_command(command=cmd)
+                    cmd = 'G38.2 Z%s F%s' % (pr_depth, probe_fr)
+                    output = self.send_grbl_command(command=cmd)
+
+                    probe_result += output + '\n'
+
+                cmd = 'M2\n'
+                self.send_grbl_command(command=cmd)
+                self.app.inform.emit('%s' % _("Finished probing. Doing the autolevelling."))
+
+                # apply autolevel here
+                self.do_grbl_autolevel()
+
+        self.app.inform.emit('%s' % _("Sending probing GCode to the GRBL controller."))
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+
+    def do_grbl_autolevel(self):
+        # TODO here we call the autovell method
+        self.app.inform.emit('%s' % _("Finished autolevelling."))
 
     def on_updateplot_button_click(self, *args):
         """
