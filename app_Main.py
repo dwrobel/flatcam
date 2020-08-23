@@ -4160,141 +4160,166 @@ class App(QtCore.QObject):
             return
 
         # Keys in self.defaults for which to scale their values
-        dimensions = ['tools_iso_tooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
-                      "tools_iso_tool_vtipdia",
-                      "tools_iso_tool_cutz", "gerber_editor_newdim", "gerber_editor_ma_low",
-                      "gerber_editor_ma_high",
+        dimensions = [
+            # Global
+            'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance",
+            'global_tpdf_bmargin', 'global_tpdf_tmargin', 'global_tpdf_rmargin', 'global_tpdf_lmargin',
 
-                      'excellon_cutz', 'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
-                      'excellon_feedrate_z', 'excellon_feedrate_rapid', 'excellon_toolchangez',
-                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', 'excellon_endxy',
-                      "excellon_feedrate_probe", "excellon_milling_dia",
-                      "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",
-                      "excellon_editor_slot_lin_pitch", "excellon_editor_slot_length",
+            # Gerber Object
+            'gerber_noncoppermargin', 'gerber_bboxmargin',
 
-                      'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
-                      'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
-                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
-                      "geometry_extracut_length", "geometry_z_pdepth",
-                      "geometry_feedrate_probe", "geometry_startz", "geometry_segx", "geometry_segy",
+            # Gerber Editor
+            "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
+            "gerber_editor_newdim", "gerber_editor_ma_low", "gerber_editor_ma_high",
 
-                      'cncjob_tooldia',
+            # Excellon Object
+            "excellon_milling_dia", 'excellon_tooldia', 'excellon_slot_tooldia',
 
-                      'tools_paintoffset', 'tools_painttooldia', "tools_paintcutz", "tools_painttipdia",
-                      "tools_paintnewdia",
+            # Excellon Editor
+            "excellon_editor_newdia", "excellon_editor_lin_pitch", "excellon_editor_slot_lin_pitch",
+            "excellon_editor_slot_length",
 
-                      "tools_ncctools", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",
-                      "tools_nccnewdia", "tools_ncc_offset_value",
+            # Geometry Object
+            'geometry_cutz', "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
+            'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
+            "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', 'geometry_endxy',
+            "geometry_extracut_length", "geometry_z_pdepth",
+            "geometry_feedrate_probe", "geometry_startz", "geometry_segx", "geometry_segy", "geometry_area_overz",
 
-                      "tools_2sided_drilldia",
-                      "tools_film_boundary", "tools_film_scale_stroke",
+            # CNCJob Object
+            'cncjob_tooldia', "cncjob_al_travelz", "cncjob_al_probe_depth", "cncjob_al_grbl_jog_step",
+            "cncjob_al_grbl_jog_fr", "cncjob_al_grbl_travelz",
 
-                      "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize', "tools_cutout_z",
-                      "tools_cutout_depthperpass",
+            # Isolation Tool
+            "tools_iso_tool_vtipdia", 'tools_iso_tooldia', "tools_iso_tool_cutz",
 
-                      "tools_panelize_constrainx", "tools_panelize_constrainy", "tools_panelize_spacing_columns",
-                      "tools_panelize_spacing_rows",
+            # Drilling Tool
+            'tools_drill_cutz', 'tools_drill_depthperpass', 'tools_drill_travelz', 'tools_drill_endz',
+            'tools_drill_endxy', 'tools_drill_feedrate_z', 'tools_drill_toolchangez', "tools_drill_drill_overlap",
+            'tools_drill_offset', "tools_drill_toolchangexy", "tools_drill_startz", 'tools_drill_feedrate_rapid',
+             "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
+            
+            # NCC Tool
+            "tools_ncctools", "tools_nccmargin", "tools_ncc_offset_value", "tools_ncccutz", "tools_ncctipdia",
+            "tools_nccnewdia",
 
-                      "tools_calc_vshape_tip_dia", "tools_calc_vshape_cut_z",
+            # Cutout Tool
+            "tools_cutouttooldia", 'tools_cutoutmargin', "tools_cutout_z", "tools_cutout_depthperpass",
+            'tools_cutoutgapsize',
 
-                      "tools_transform_offset_x", "tools_transform_offset_y", "tools_transform_mirror_point",
-                      "tools_transform_buffer_dis",
+            # Paint Tool
+            "tools_painttooldia", 'tools_paintoffset', "tools_paintcutz", "tools_painttipdia", "tools_paintnewdia",
 
-                      "tools_solderpaste_tools", "tools_solderpaste_new", "tools_solderpaste_z_start",
-                      "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
-                      "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
-                      "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
+            # 2Sided Tool
+            "tools_2sided_drilldia",
 
-                      "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val",
-                      "tools_cr_s2sm_val", "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val",
-                      "tools_cr_h2h_val", "tools_cr_dh_val",
+            # Film Tool
+            "tools_film_boundary", "tools_film_scale_stroke",
 
-                      "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
+            # Panel Tool
+            "tools_panelize_spacing_columns", "tools_panelize_spacing_rows", "tools_panelize_constrainx",
+            "tools_panelize_constrainy",
 
-                      "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
-                      "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
-                      "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
-                      "tools_copper_thieving_lines_size", "tools_copper_thieving_lines_spacing",
-                      "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
-                      "tools_copper_thieving_mask_clearance",
+            # Calculators Tool
+            "tools_calc_vshape_tip_dia", "tools_calc_vshape_cut_z",
 
-                      "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
+            # Transform Tool
+            "tools_transform_ref_point", "tools_transform_offset_x", "tools_transform_offset_y",
+            "tools_transform_buffer_dis",
 
-                      "tools_edrills_hole_fixed_dia", "tools_edrills_circular_ring", "tools_edrills_oblong_ring",
-                      "tools_edrills_square_ring", "tools_edrills_rectangular_ring", "tools_edrills_others_ring",
+            # SolderPaste Tool
+            "tools_solderpaste_tools", "tools_solderpaste_new", "tools_solderpaste_z_start",
+            "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
+            "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
+            "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
 
-                      "tools_punch_hole_fixed_dia", "tools_punch_circular_ring", "tools_punch_oblong_ring",
-                      "tools_punch_square_ring", "tools_punch_rectangular_ring", "tools_punch_others_ring",
+            # Corner Markers Tool
+            "tools_corners_thickness", "tools_corners_length", "tools_corners_margin",
 
-                      "tools_invert_margin",
+            # Check Rules Tool
+            "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val", "tools_cr_s2sm_val",
+            "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val", "tools_cr_h2h_val", "tools_cr_dh_val",
 
-                      'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance",
-                      'global_tpdf_bmargin', 'global_tpdf_tmargin', 'global_tpdf_rmargin', 'global_tpdf_lmargin']
+            # QRCode Tool
+            "tools_qrcode_border_size",
+
+            # Copper Thieving Tool
+            "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
+            "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
+            "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
+            "tools_copper_thieving_lines_size", "tools_copper_thieving_lines_spacing",
+            "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
+            "tools_copper_thieving_mask_clearance",
+
+            # Fiducials Tool
+            "tools_fiducials_dia", "tools_fiducials_margin", "tools_fiducials_line_thickness",
+
+            # Calibration Tool
+            "tools_cal_travelz", "tools_cal_verz", "tools_cal_toolchangez", "tools_cal_toolchange_xy",
+
+            # Drills Extraction Tool
+            "tools_edrills_hole_fixed_dia", "tools_edrills_circular_ring", "tools_edrills_oblong_ring",
+            "tools_edrills_square_ring", "tools_edrills_rectangular_ring", "tools_edrills_others_ring",
+
+            # Punch Gerber Tool
+            "tools_punch_hole_fixed_dia", "tools_punch_circular_ring", "tools_punch_oblong_ring",
+            "tools_punch_square_ring", "tools_punch_rectangular_ring", "tools_punch_others_ring",
+
+            # Invert Gerber Tool
+            "tools_invert_margin",
+
+        ]
 
         def scale_defaults(sfactor):
             for dim in dimensions:
-                if dim in [
-                    'gerber_editor_newdim', 'excellon_toolchangexy', 'geometry_toolchangexy', 'excellon_endxy',
-                    'geometry_endxy', 'tools_solderpaste_xy_toolchange', 'tools_cal_toolchange_xy',
-                    'tools_transform_mirror_point'
-                ]:
-                    if self.defaults[dim] is None or self.defaults[dim] == '':
+                if dim in ['geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
+                           'tools_painttooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
+                           'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
+                           'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
+                    if not self.defaults[dim] or self.defaults[dim] == '':
                         continue
 
-                    try:
-                        coordinates = self.defaults[dim].split(",")
-                        coords_xy = [float(eval(a)) for a in coordinates if a != '']
-                        coords_xy[0] *= sfactor
-                        coords_xy[1] *= sfactor
-                        self.defaults[dim] = "%.*f, %.*f" % (
-                            self.decimals, coords_xy[0], self.decimals, coords_xy[1])
-                    except Exception as e:
-                        log.debug("App.on_toggle_units.scale_defaults() --> 'string tuples': %s" % str(e))
-
-                elif dim in [
-                    'geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools'
-                ]:
-                    if self.defaults[dim] is None or self.defaults[dim] == '':
-                        continue
-
-                    try:
-                        self.defaults[dim] = float(self.defaults[dim])
-                        tools_diameters = [self.defaults[dim]]
-                    except ValueError:
+                    if isinstance(self.defaults[dim], str):
                         try:
-                            tools_string = self.defaults[dim].split(",")
-                            tools_diameters = [eval(a) for a in tools_string if a != '']
+                            tools_diameters = eval(self.defaults[dim])
                         except Exception as e:
-                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                            log.debug("App.on_toggle_units().scale_defaults() lists --> %s" % str(e))
                             continue
-
-                    self.defaults[dim] = ''
-                    td_len = len(tools_diameters)
-                    if td_len > 1:
-                        for t in range(td_len):
-                            tools_diameters[t] *= sfactor
-                            self.defaults[dim] += "%.*f," % (self.decimals, tools_diameters[t])
+                    elif isinstance(self.defaults[dim], (float, int)):
+                        tools_diameters = [self.defaults[dim]]
                     else:
-                        tools_diameters[0] *= sfactor
-                        self.defaults[dim] += "%.*f" % (self.decimals, tools_diameters[0])
+                        tools_diameters = list(self.defaults[dim])
+
+                    if isinstance(tools_diameters, (tuple, list)):
+                        pass
+                    elif isinstance(tools_diameters, (int, float)):
+                        tools_diameters = [self.defaults[dim]]
+                    else:
+                        continue
+
+                    td_len = len(tools_diameters)
+                    conv_list = []
+                    for t in range(td_len):
+                        conv_list.append(float(tools_diameters[t]) * sfactor)
 
                 elif dim in ['global_gridx', 'global_gridy']:
                     # format the number of decimals to the one specified in self.decimals
                     try:
                         val = float(self.defaults[dim]) * sfactor
                     except Exception as e:
-                        log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                        log.debug('App.on_toggle_units().scale_defaults() grids --> %s' % str(e))
                         continue
 
-                    self.defaults[dim] = float('%.*f' % (self.decimals, val))
+                    self.defaults[dim] = self.dec_format(val, self.decimals)
                 else:
                     # the number of decimals for the rest is kept unchanged
                     if self.defaults[dim]:
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
-                            log.debug('App.on_toggle_units().scale_defaults() --> Value: %s %s' % (str(dim), str(e)))
+                            log.debug(
+                                'App.on_toggle_units().scale_defaults() standard --> Value: %s %s' % (str(dim), str(e))
+                            )
                             continue
 
                         self.defaults[dim] = val

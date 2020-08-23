@@ -589,8 +589,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.grbl_report_button.clicked.connect(lambda: self.send_grbl_command(command='?'))
         self.ui.grbl_get_param_button.clicked.connect(
             lambda: self.get_grbl_parameter(param=self.ui.grbl_parameter_entry.get_value()))
-        self.ui.view_h_gcode_button.clicked.connect(self.on_view_probing_gcode)
-        self.ui.h_gcode_button.clicked.connect(self.on_generate_probing_gcode)
+        self.ui.view_h_gcode_button.clicked.connect(self.on_edit_probing_gcode)
+        self.ui.h_gcode_button.clicked.connect(self.on_save_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
         self.ui.pause_resume_button.clicked.connect(self.on_grbl_pause_resume)
 
@@ -614,7 +614,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             ))
             if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name or 'hpgl' in \
                     self.pp_geometry_name:
-                pass
+                self.ui.sal_cb.hide()
+                self.ui.sal_cb.set_value(False)
             else:
                 self.ui.sal_cb.show()
                 self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
@@ -720,8 +721,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.al_geometry_dict[pt_id] = deepcopy(new_dict)
             self.calculate_voronoi_diagram(pts=pts_list)
 
+            # generate Probing GCode
+            self.probing_gcode_text = self.probing_gcode()
+
         else:
-            self.app.inform.emit(_("Click on canvas to add a Test Point..."))
+            self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
@@ -806,7 +810,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # rebuild the al table
             self.build_al_table_sig.emit()
-            self.app.inform.emit(_("Added Test Point... Click again to add another or right click to finish ..."))
+            self.app.inform.emit(_("Added a Probe Point... Click again to add another or right click to finish ..."))
 
         # if RMB then we exit
         elif event.button == right_button and self.mouse_is_dragging is False:
@@ -828,12 +832,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # restore selection
             self.app.defaults['global_selection_shape'] = self.old_selection_state
 
-            self.app.inform.emit(_("Finished manual adding of Test Point..."))
+            self.app.inform.emit(_("Finished adding Probe Points..."))
 
             pts_list = []
             for k in self.al_geometry_dict:
                 pts_list.append(self.al_geometry_dict[k]['point'])
             self.calculate_voronoi_diagram(pts=pts_list)
+
+            self.probing_gcode_text = self.probing_gcode()
 
             # rebuild the al table
             self.build_al_table_sig.emit()
@@ -942,6 +948,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.ui.import_heights_button.show()
             self.ui.grbl_frame.hide()
+
+        # if the is empty then there is a chance that we've added probe points but the GRBL controller was selected
+        # therefore no Probing GCode was genrated (it is different for GRBL on how it gets it's Probing GCode
+        if not self.probing_gcode_text or self.probing_gcode_text == '':
+            # generate Probing GCode
+            self.probing_gcode_text = self.probing_gcode()
 
     def list_serial_ports(self):
         """
@@ -1223,20 +1235,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.send_grbl_command(command=cmd)
             self.app.inform.emit("%s" % _("GRBL paused."))
 
-    def probing_gcode(self, coords, pr_travel, probe_fr, pr_depth, controller):
+    def probing_gcode(self):
         """
-
-        :param coords:          a list of (x, y) tuples of probe points coordinates
-        :type coords:           list
-        :param pr_travel:       the height (z) where the probe travel between probe points
-        :type pr_travel:        float
-        :param probe_fr:        feedrate when probing
-        :type probe_fr:         float
-        :param pr_depth:        how much to lower the probe searching for contact
-        :type pr_depth:         float
-        :param controller:      a string with the name of the GCode sender for which to create the probing GCode.
-                                Can be: 'MACH3', 'MACH4', 'LinuxCNC', 'GRBL'
-        :type controller:       str
         :return:                Probing GCode
         :rtype:                 str
         """
@@ -1244,6 +1244,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         p_gcode = ''
         header = ''
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
+        coords = []
+        for id_key, value in self.al_geometry_dict.items():
+            x = value['point'].x
+            y = value['point'].y
+            coords.append(
+                (
+                    self.app.dec_format(x, dec=self.app.decimals),
+                    self.app.dec_format(y, dec=self.app.decimals)
+                )
+            )
+
+        pr_travel = self.ui.ptravelz_entry.get_value()
+        probe_fr = self.ui.feedrate_probe_entry.get_value()
+        pr_depth = self.ui.pdepth_entry.get_value()
+        controller = self.ui.al_controller_combo.get_value()
 
         header += '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
                   (str(self.app.version), str(self.app.version_date)) + '\n'
@@ -1273,6 +1289,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # probing_var = '#5422'
             openfile_command = '(PROBEOPEN a_probing_points_file.txt)'
             closefile_command = '(PROBECLOSE)'
+        elif controller == 'GRBL':
+            # do nothing here because the Probing GCode for GRBL is obtained differently
+            return
         else:
             log.debug("CNCJobObject.probing_gcode() -> controller not supported")
             return
@@ -1327,24 +1346,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         return  p_gcode
 
-    def on_generate_probing_gcode(self):
-        coords = []
-        for id_key, value in self.al_geometry_dict.items():
-            x = value['point'].x
-            y = value['point'].y
-            coords.append(
-                (
-                    self.app.dec_format(x, dec=self.app.decimals),
-                    self.app.dec_format(y, dec=self.app.decimals)
-                )
-            )
-
-        pr_travel = self.ui.ptravelz_entry.get_value()
-        probe_fr = self.ui.feedrate_probe_entry.get_value()
-        pr_depth = self.ui.pdepth_entry.get_value()
-        controller = self.ui.al_controller_combo.get_value()
-        self.probing_gcode_text = self.probing_gcode(coords, pr_travel, probe_fr, pr_depth, controller)
-
+    def on_save_probing_gcode(self):
         lines = StringIO(self.probing_gcode_text)
 
         _filter_ = self.app.defaults['cncjob_save_filters']
@@ -1383,7 +1385,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 )
                 return 'fail'
 
-    def on_view_probing_gcode(self):
+    def on_edit_probing_gcode(self):
         self.app.proc_container.view.set_busy(_("Loading..."))
 
         gco = self.probing_gcode_text
@@ -1426,9 +1428,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.gcode_viewer_tab.sel_all_cb.hide()
         self.gcode_viewer_tab.entryReplace.hide()
 
-        self.gcode_viewer_tab.code_editor.setReadOnly(True)
+        self.gcode_viewer_tab.button_update_code.show()
+
+        # self.gcode_viewer_tab.code_editor.setReadOnly(True)
+
+        self.gcode_viewer_tab.button_update_code.clicked.connect(self.on_update_probing_gcode)
 
         self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Viewer'))
+
+    def on_update_probing_gcode(self):
+        self.probing_gcode_text = self.gcode_viewer_tab.code_editor.toPlainText()
 
     def on_import_height_map(self):
         """

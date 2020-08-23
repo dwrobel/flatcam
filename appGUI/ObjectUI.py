@@ -2363,15 +2363,15 @@ class CNCObjectUI(ObjectUI):
         # #############################################################################################################
 
         height_lay = QtWidgets.QHBoxLayout()
-        self.h_gcode_button = FCButton(_("Generate Height Map GCode"))
+        self.h_gcode_button = FCButton(_("Save Probing GCode"))
         self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
 
         height_lay.addWidget(self.h_gcode_button)
         self.view_h_gcode_button = QtWidgets.QToolButton()
-        self.view_h_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
+        self.view_h_gcode_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
         # self.view_h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         self.view_h_gcode_button.setToolTip(
-            _("View the probing GCode.")
+            _("View/Edit the probing GCode.")
         )
         # height_lay.addStretch()
         height_lay.addWidget(self.view_h_gcode_button)

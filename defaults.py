@@ -595,7 +595,6 @@ class FlatCAMDefaults:
         "tools_dist_snap_center": False,
 
         # Corner Markers Tool
-
         "tools_corners_thickness": 0.1,
         "tools_corners_length": 3.0,
         "tools_corners_margin": 0.0,

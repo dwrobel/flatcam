@@ -107,6 +107,11 @@ class AppTextEditor(QtWidgets.QWidget):
         self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
         self.button_copy_all.setMinimumWidth(100)
 
+        self.button_update_code = QtWidgets.QToolButton()
+        self.button_update_code.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        self.button_update_code.setToolTip(_("Save changes internally."))
+        self.button_update_code.hide()
+
         self.buttonOpen = FCButton(_('Open Code'))
         self.buttonOpen.setIcon(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
@@ -131,6 +136,7 @@ class AppTextEditor(QtWidgets.QWidget):
         editor_hlay_1.addWidget(self.entryReplace)
         editor_hlay_1.addWidget(self.sel_all_cb)
         editor_hlay_1.addWidget(self.button_copy_all)
+        editor_hlay_1.addWidget(self.button_update_code)
         self.work_editor_layout.addLayout(editor_hlay_1, 1, 0, 1, 5)
 
         editor_hlay_2 = QtWidgets.QHBoxLayout()

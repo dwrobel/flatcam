@@ -694,7 +694,7 @@ class NumericalEvalTupleEntry(EvalEntry):
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,]*")
+        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,\[\]]*")
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
 

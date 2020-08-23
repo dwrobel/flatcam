@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.08.2020
+
+- fixed issues in units conversion
+- in CNCJob UI Autolevelling - changed how the probing code is generated and when
+- changed some strings in CNCJob UI Autolevelling
+
 23.08.2020
 
 - in CNCJob UI Autolevelling - autolevelling is made to be not available for cnc code generated with Roland or HPGL preprocessors
