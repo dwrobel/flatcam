@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - made sure that when doing units conversion keep only the decimals specified in the application decimals setting (should differentiate between values and display?)
 - in CNCJob UI Autolevelling - some UI changes
 - in CNCJob UI Autolevelling - GRBL controller - added the probing method
+- in CNCJob UI Autolevelling - GRBL controller - fixed the send_grbl_command() method
 
 23.08.2020
 

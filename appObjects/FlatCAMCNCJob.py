@@ -1111,9 +1111,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:        the text returned by the GRBL controller after each command
         :rtype:         str
         """
-        stripped_cmd = command.strip()
-
-        cmd = stripped_cmd.rpartition('\n')[0]
+        cmd = command.strip()
         if echo:
             self.app.inform_shell[str, bool].emit(cmd, False)
 
@@ -1121,12 +1119,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         snd = cmd + '\n'
         self.grbl_ser_port.write(snd.encode('utf-8'))
         grbl_out = self.grbl_ser_port.readlines()
+        if not grbl_out:
+            self.app.inform_shell[str, bool].emit('\t\t\t: No answer\n', False)
 
         result = ''
         for line in grbl_out:
             if echo:
                 try:
-                    self.app.inform_shell.emit(' : ' + line.decode('utf-8').strip().upper())
+                    self.app.inform_shell.emit('\t\t\t: ' + line.decode('utf-8').strip().upper())
                 except Exception as e:
                     log.debug("CNCJobObject.send_grbl_command() --> %s" % str(e))
             if 'ok' in line:
