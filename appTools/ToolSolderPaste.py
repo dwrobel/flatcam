@@ -6,7 +6,7 @@
 # ##########################################################
 
 from appTool import AppTool
-from Common import LoudDict
+from appCommon.Common import LoudDict
 from appGUI.GUIElements import FCComboBox, FCEntry, FCTable, \
     FCInputDialog, FCDoubleSpinner, FCSpinner, FCFileSaveDialog
 from app_Main import log

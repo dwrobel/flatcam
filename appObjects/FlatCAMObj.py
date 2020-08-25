@@ -14,7 +14,7 @@ import inspect  # TODO: For debugging only.
 
 from appGUI.ObjectUI import *
 
-from Common import LoudDict
+from appCommon.Common import LoudDict
 from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from appGUI.VisPyVisuals import ShapeCollection
 

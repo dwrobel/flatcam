@@ -44,7 +44,7 @@ import rasterio
 from rasterio.features import shapes
 import ezdxf
 
-from Common import GracefulException as grace
+from appCommon.Common import GracefulException as grace
 
 # Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay

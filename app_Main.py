@@ -44,9 +44,9 @@ import socket
 # ####################################################################################################################
 
 # Various
-from Common import LoudDict
-from Common import color_variant
-from Common import ExclusionAreas
+from appCommon.Common import LoudDict
+from appCommon.Common import color_variant
+from appCommon.Common import ExclusionAreas
 
 from Bookmark import BookmarkManager
 from appDatabase import ToolsDB2
@@ -4609,6 +4609,7 @@ class App(QtCore.QObject):
                                 del obj_active.text_col
                                 obj_active.annotation.clear(update=True)
                                 del obj_active.annotation
+                                obj_active.voronoi_shapes.clear(update=True)
                             except AttributeError as e:
                                 log.debug(
                                     "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)

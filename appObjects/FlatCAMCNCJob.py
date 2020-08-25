@@ -22,9 +22,11 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import CNCjob
 
 from shapely.ops import unary_union
-from shapely.geometry import Point, MultiPoint
+from shapely.geometry import Point, MultiPoint, Polygon, LineString
+import shapely.affinity as affinity
 try:
     from shapely.ops import voronoi_diagram
+    # from appCommon.Common import voronoi_diagram
 except Exception:
     pass
 
@@ -34,6 +36,8 @@ import time
 import serial
 import glob
 import math
+import numpy as np
+import random
 
 import gettext
 import appTranslation as fcTranslate
@@ -202,6 +206,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.grbl_ser_port = None
 
         self.pressed_button = None
+
+        if self.app.is_legacy is False:
+            self.voronoi_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+        else:
+            self.voronoi_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_voronoi_shapes")
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -743,23 +752,111 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.mouse_events_connected = True
 
         self.build_al_table_sig.emit()
+        if self.ui.voronoi_cb.get_value():
+            self.show_voronoi_diagram(state=True, reset=True)
 
-    def show_voronoi_diagram(self, state):
-        if state:
-            pass
+    def show_voronoi_diagram(self, state, reset=False):
+
+        if reset:
+            self.voronoi_shapes.clear(update=True)
+
+        points_geo = []
+        poly_geo = []
+
+        # create the geometry
+        radius = 0.3 if self.units == 'MM' else 0.012
+        for pt in self.al_geometry_dict:
+            p_geo = self.al_geometry_dict[pt]['point'].buffer(radius)
+            s_geo = self.al_geometry_dict[pt]['geo'].buffer(0.0000001)
+
+            points_geo.append(p_geo)
+            poly_geo.append(s_geo)
+
+        if not points_geo and not poly_geo:
+            return
+
+        plot_geo = points_geo + poly_geo
+        self.plot_voronoi(geometry=plot_geo, visibility=state)
+
+    def plot_voronoi(self, geometry, visibility, custom_color=None):
+        if visibility:
+            if self.app.is_legacy is False:
+                def random_color():
+                    r_color = np.random.rand(4)
+                    r_color[3] = 0.5
+                    return r_color
+            else:
+                def random_color():
+                    while True:
+                        r_color = np.random.rand(4)
+                        r_color[3] = 0.5
+
+                        new_color = '#'
+                        for idx in range(len(r_color)):
+                            new_color += '%x' % int(r_color[idx] * 255)
+                        # do it until a valid color is generated
+                        # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                        # for a total of 9 chars
+                        if len(new_color) == 9:
+                            break
+                    return new_color
+
+            try:
+                if self.app.is_legacy is False:
+                    color = "#0000FFFE"
+                else:
+                    color = "#0000FFFE"
+                # for sh in points_geo:
+                #     self.add_voronoi_shape(shape=sh, color=color, face_color=color, visible=True)
+
+                edge_color = "#000000FF"
+                try:
+                    for sh in geometry:
+                        if custom_color is None:
+                            self.add_voronoi_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
+                        else:
+                            self.add_voronoi_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
+                except TypeError:
+                    if custom_color is None:
+                        self.add_voronoi_shape(
+                            shape=geometry, color=edge_color, face_color=random_color(), visible=True)
+                    else:
+                        self.add_voronoi_shape(
+                            shape=geometry, color=custom_color, face_color=custom_color, visible=True)
+
+                self.voronoi_shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.voronoi_shapes.clear(update=True)
+            except Exception as e:
+                log.debug("CNCJobObject.plot_voronoi() --> %s" % str(e))
         else:
-            pass
+            self.voronoi_shapes.clear(update=True)
+
+    def add_voronoi_shape(self, **kwargs):
+        if self.deleted:
+            raise ObjectDeleted()
+        else:
+            key = self.voronoi_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
+        return key
 
     def calculate_voronoi_diagram(self, pts):
-        pts_union = MultiPoint(pts)
         env = self.solid_geo.envelope
-        print(pts_union.wkt)
-        try:
-            voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
-            print(voronoi_union)
-        except Exception as e:
-            log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
-            return
+        # fact = 1 if self.units == 'MM' else 0.039
+        # env = env.buffer(fact).exterior
+
+        new_pts = deepcopy(pts)
+        for pt_index in range(len(pts)):
+            try:
+                pts_union = MultiPoint(pts)
+                voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
+                break
+            except Exception as e:
+                log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
+                new_pts[pt_index] = affinity.translate(
+                    new_pts[pt_index], random.random() *  1e-07, random.random() *  1e-07)
+
+                pts_union = MultiPoint(new_pts)
+                voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
 
         for pt_key in list(self.al_geometry_dict.keys()):
             for poly in voronoi_union:
@@ -792,9 +889,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # use the snapped position as reference
             snapped_pos = self.app.geo_editor.snap(pos[0], pos[1])
 
+            probe_pt = Point(snapped_pos)
             if not self.al_geometry_dict:
                 new_dict = {
-                    'point': Point(snapped_pos),
+                    'point': probe_pt,
                     'geo': None,
                     'height': 0.0
                 }
@@ -803,7 +901,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 int_keys = [int(k) for k in self.al_geometry_dict.keys()]
                 new_id = max(int_keys) + 1
                 new_dict = {
-                    'point': Point(snapped_pos),
+                    'point': probe_pt,
                     'geo': None,
                     'height': 0.0
                 }
@@ -811,6 +909,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # rebuild the al table
             self.build_al_table_sig.emit()
+
+            radius = 0.3 if self.units == 'MM' else 0.012
+            probe_pt_buff = probe_pt.buffer(radius)
+
+            self.plot_voronoi(geometry=probe_pt_buff, visibility=True, custom_color="#0000FFFA")
+
             self.app.inform.emit(_("Added a Probe Point... Click again to add another or right click to finish ..."))
 
         # if RMB then we exit
@@ -844,6 +948,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             # rebuild the al table
             self.build_al_table_sig.emit()
+
+            # clear probe shapes
+            self.plot_voronoi(None, False)
 
     def on_key_press(self, event):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
@@ -920,6 +1027,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # reset the al dict
         self.al_geometry_dict.clear()
+
+        # reset Voronoi Shapes
+        self.voronoi_shapes.clear(update=True)
 
         # build AL table
         self.build_al_table()
