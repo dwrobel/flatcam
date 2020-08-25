@@ -23,8 +23,8 @@ import collections
 import traceback
 
 import numpy as np
-from voronoi import Voronoi
-from voronoi import Polygon as voronoi_polygon
+# from voronoi import Voronoi
+# from voronoi import Polygon as voronoi_polygon
 
 import gettext
 import appTranslation as fcTranslate
@@ -913,49 +913,49 @@ def farthest_point(origin, points_list):
     return fartherst_pt
 
 
-def voronoi_diagram(geom, envelope, edges=False):
-    """
-
-    :param geom:        a collection of Shapely Points from which to build the Voronoi diagram
-    :type geom:          MultiPoint
-    :param envelope:    a bounding box to constrain the diagram (Shapely Polygon)
-    :type envelope:     Polygon
-    :param edges:       If False, return regions as polygons. Else, return only
-                        edges e.g. LineStrings.
-    :type edges:        bool, False
-    :return:
-    :rtype:
-    """
-
-    if not isinstance(geom, MultiPoint):
-        return False
-
-    coords = list(envelope.exterior.coords)
-    v_poly = voronoi_polygon(coords)
-
-    vp = Voronoi(v_poly)
-
-    points = []
-    for pt in geom:
-        points.append((pt.x, pt.y))
-    vp.create_diagram(points=points, vis_steps=False, verbose=False, vis_result=False, vis_tree=False)
-
-    if edges is True:
-        return vp.edges
-    else:
-        voronoi_polygons = []
-        for pt in vp.points:
-            try:
-                poly_coords = list(pt.get_coordinates())
-                new_poly_coords = []
-                for coord in poly_coords:
-                    new_poly_coords.append((coord.x, coord.y))
-
-                voronoi_polygons.append(Polygon(new_poly_coords))
-            except Exception:
-                print(traceback.format_exc())
-
-        return voronoi_polygons
+# def voronoi_diagram(geom, envelope, edges=False):
+#     """
+#
+#     :param geom:        a collection of Shapely Points from which to build the Voronoi diagram
+#     :type geom:          MultiPoint
+#     :param envelope:    a bounding box to constrain the diagram (Shapely Polygon)
+#     :type envelope:     Polygon
+#     :param edges:       If False, return regions as polygons. Else, return only
+#                         edges e.g. LineStrings.
+#     :type edges:        bool, False
+#     :return:
+#     :rtype:
+#     """
+#
+#     if not isinstance(geom, MultiPoint):
+#         return False
+#
+#     coords = list(envelope.exterior.coords)
+#     v_poly = voronoi_polygon(coords)
+#
+#     vp = Voronoi(v_poly)
+#
+#     points = []
+#     for pt in geom:
+#         points.append((pt.x, pt.y))
+#     vp.create_diagram(points=points, vis_steps=False, verbose=False, vis_result=False, vis_tree=False)
+#
+#     if edges is True:
+#         return vp.edges
+#     else:
+#         voronoi_polygons = []
+#         for pt in vp.points:
+#             try:
+#                 poly_coords = list(pt.get_coordinates())
+#                 new_poly_coords = []
+#                 for coord in poly_coords:
+#                     new_poly_coords.append((coord.x, coord.y))
+#
+#                 voronoi_polygons.append(Polygon(new_poly_coords))
+#             except Exception:
+#                 print(traceback.format_exc())
+#
+#         return voronoi_polygons
 
 def nearest_point(origin, points_list):
     """
