@@ -12,6 +12,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - made the Voronoi calculations work even in the scenarios that previously did not work; it need a newer version of Shapely, currently I installed the GIT version
 - in CNCJob UI Autolevelling - Voronoi polygons are now plotted
 - in CNCJob UI Autolevelling - adding manual probe points now show some geometry (circles) for the added points until the adding is finished
+- 2Sided Tool - finished the feature that allows picking an Excellon drill hole center as a Point mirror reference
 
 24.08.2020
 

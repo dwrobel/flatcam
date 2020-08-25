@@ -27,11 +27,15 @@ class DblSidedTool(AppTool):
         AppTool.__init__(self, app)
         self.decimals = self.app.decimals
 
+        self.canvas = self.app.plotcanvas
+
         # #############################################################################
         # ######################### Tool GUI ##########################################
         # #############################################################################
         self.ui = DsidedUI(layout=self.layout, app=self.app)
         self.toolName = self.ui.toolName
+
+        self.mr = None
 
         # ## Signals
         self.ui.object_type_radio.activated_custom.connect(self.on_object_type)
@@ -44,6 +48,7 @@ class DblSidedTool(AppTool):
         self.ui.axis_location.group_toggle_fn = self.on_toggle_pointbox
 
         self.ui.point_entry.textChanged.connect(lambda val: self.ui.align_ref_label_val.set_value(val))
+        self.ui.pick_hole_button.clicked.connect(self.on_pick_hole)
         self.ui.mirror_button.clicked.connect(self.on_mirror)
 
         self.ui.xmin_btn.clicked.connect(self.on_xmin_clicked)
@@ -61,6 +66,15 @@ class DblSidedTool(AppTool):
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.drill_values = ""
+
+        # will hold the Excellon object used for picking a hole as mirror reference
+        self.exc_hole_obj = None
+
+        # store the status of the grid
+        self.grid_status_memory = None
+
+        # set True if mouse events are locally connected
+        self.local_connected = False
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+D', **kwargs)
@@ -116,6 +130,9 @@ class DblSidedTool(AppTool):
         self.on_object_type('grb')
         self.ui.box_type_radio.set_value('grb')
         self.on_combo_box_type('grb')
+
+        if self.local_connected is True:
+            self.disconnect_events()
 
     def on_object_type(self, val):
         obj_type = {'grb': 0, 'exc': 1, 'geo': 2}[val]
@@ -202,6 +219,88 @@ class DblSidedTool(AppTool):
         self.app.app_obj.new_object("excellon", "Alignment Drills", obj_init)
         self.drill_values = ''
         self.app.inform.emit('[success] %s' % _("Excellon object with alignment drills created..."))
+
+    def on_pick_hole(self):
+
+        # get the Excellon file whose geometry will contain the desired drill hole
+        selection_index = self.ui.exc_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.exc_combo.rootModelIndex())
+
+        try:
+            self.exc_hole_obj = model_index.internalPointer().obj
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
+            return
+
+        # disengage the grid snapping since it will be hard to find the drills or pads on grid
+        if self.app.ui.grid_snap_btn.isChecked():
+            self.grid_status_memory = True
+            self.app.ui.grid_snap_btn.trigger()
+        else:
+            self.grid_status_memory = False
+
+        self.local_connected = True
+
+        self.app.inform.emit('%s.' % _("Click on canvas within the desired Excellon drill hole"))
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        else:
+            self.canvas.graph_event_disconnect(self.app.mr)
+
+    def on_mouse_click_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+            self.app.event_is_dragging = self.app.event_is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            right_button = 3
+            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
+
+        pos_canvas = self.canvas.translate_coords(event_pos)
+
+        if event.button == 1:
+            click_pt = Point([pos_canvas[0], pos_canvas[1]])
+
+            if self.app.selection_type is not None:
+                # delete previous selection shape
+                self.app.delete_selection_shape()
+                self.app.selection_type = None
+            else:
+                if self.exc_hole_obj.kind.lower() == 'excellon':
+                    for tool, tool_dict in self.exc_hole_obj.tools.items():
+                        for geo in tool_dict['solid_geometry']:
+                            if click_pt.within(geo):
+                                center_pt = geo.centroid
+                                center_pt_coords = (
+                                    self.app.dec_format(center_pt.x, self.decimals),
+                                    self.app.dec_format(center_pt.y, self.decimals)
+                                )
+                                self.app.delete_selection_shape()
+
+                                self.ui.axis_location.set_value('point')
+
+                                # set the reference point for mirror
+                                self.ui.point_entry.set_value(center_pt_coords)
+
+                                self.app.inform.emit('[success] %s' % _("Mirror reference point set."))
+
+        elif event.button == right_button and self.app.event_is_dragging is False:
+            self.app.delete_selection_shape()
+            self.disconnect_events()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
+
+    def disconnect_events(self):
+        self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+        else:
+            self.canvas.graph_event_disconnect(self.mr)
+
+        self.local_connected = False
 
     def on_mirror(self):
         selection_index = self.ui.object_combo.currentIndex()
