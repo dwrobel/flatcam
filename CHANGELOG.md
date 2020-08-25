@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.08.2020
+
+- fix for issue nr 2 in case of Drilling Tool. Need to check Isolation Tool, Paint Tool, NCC Tool
+- Drilling Tool - UI changes
+
 25.08.2020
 
 - in CNCJob UI Autolevelling - made the Voronoi calculations work even in the scenarios that previously did not work; it need a newer version of Shapely, currently I installed the GIT version
