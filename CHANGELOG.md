@@ -14,6 +14,7 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling - adding manual probe points now show some geometry (circles) for the added points until the adding is finished
 - 2Sided Tool - finished the feature that allows picking an Excellon drill hole center as a Point mirror reference
 - Tool Align Objects - moved the Tool Ui into its own class
+- for Tools: Calculators, Calibration, Copper Thieving, Corners, Fiducials - moved the Tool UI in its own class
 
 24.08.2020
 

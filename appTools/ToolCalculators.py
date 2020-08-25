@@ -21,26 +21,152 @@ if '_' not in builtins.__dict__:
 
 class ToolCalculator(AppTool):
 
-    toolName = _("Calculators")
-    v_shapeName = _("V-Shape Tool Calculator")
-    unitsName = _("Units Calculator")
-    eplateName = _("ElectroPlating Calculator")
-
     def __init__(self, app):
         AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = self.app.decimals
 
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = CalcUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
+
+        self.units = ''
+
+        # ## Signals
+        self.ui.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
+        self.ui.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.ui.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.ui.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.ui.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
+
+        self.ui.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
+        self.ui.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
+
+        self.ui.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+    def run(self, toggle=True):
+        self.app.defaults.report_usage("ToolCalculators()")
+
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                try:
+                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
+                except AttributeError:
+                    pass
+        else:
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+
+        AppTool.run(self)
+
+        self.set_tool_ui()
+
+        self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
+
+    def install(self, icon=None, separator=None, **kwargs):
+        AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
+
+    def set_tool_ui(self):
+        self.units = self.app.defaults['units'].upper()
+
+        # ## Initialize form
+        self.ui.mm_entry.set_value('%.*f' % (self.decimals, 0))
+        self.ui.inch_entry.set_value('%.*f' % (self.decimals, 0))
+
+        length = self.app.defaults["tools_calc_electro_length"]
+        width = self.app.defaults["tools_calc_electro_width"]
+        density = self.app.defaults["tools_calc_electro_cdensity"]
+        growth = self.app.defaults["tools_calc_electro_growth"]
+        self.ui.pcblength_entry.set_value(length)
+        self.ui.pcbwidth_entry.set_value(width)
+        self.ui.cdensity_entry.set_value(density)
+        self.ui.growth_entry.set_value(growth)
+        self.ui.cvalue_entry.set_value(0.00)
+        self.ui.time_entry.set_value(0.0)
+
+        tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
+        tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
+        cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
+
+        self.ui.tipDia_entry.set_value(tip_dia)
+        self.ui.tipAngle_entry.set_value(tip_angle)
+        self.ui.cutDepth_entry.set_value(cut_z)
+        self.ui.effectiveToolDia_entry.set_value('0.0000')
+
+    def on_calculate_tool_dia(self):
+        # Calculation:
+        # Manufacturer gives total angle of the the tip but we need only half of it
+        # tangent(half_tip_angle) = opposite side / adjacent = part_of _real_dia / depth_of_cut
+        # effective_diameter = tip_diameter + part_of_real_dia_left_side + part_of_real_dia_right_side
+        # tool is symmetrical therefore: part_of_real_dia_left_side = part_of_real_dia_right_side
+        # effective_diameter = tip_diameter + (2 * part_of_real_dia_left_side)
+        # effective diameter = tip_diameter + (2 * depth_of_cut * tangent(half_tip_angle))
+
+        tip_diameter = float(self.ui.tipDia_entry.get_value())
+
+        half_tip_angle = float(self.ui.tipAngle_entry.get_value()) / 2.0
+
+        cut_depth = float(self.ui.cutDepth_entry.get_value())
+        cut_depth = -cut_depth if cut_depth < 0 else cut_depth
+
+        tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))
+        self.ui.effectiveToolDia_entry.set_value("%.*f" % (self.decimals, tool_diameter))
+
+    def on_calculate_inch_units(self):
+        mm_val = float(self.mm_entry.get_value())
+        self.ui.inch_entry.set_value('%.*f' % (self.decimals, (mm_val / 25.4)))
+
+    def on_calculate_mm_units(self):
+        inch_val = float(self.inch_entry.get_value())
+        self.ui.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
+
+    def on_calculate_eplate(self):
+        length = float(self.ui.pcblength_entry.get_value())
+        width = float(self.ui.pcbwidth_entry.get_value())
+        density = float(self.ui.cdensity_entry.get_value())
+        copper = float(self.ui.growth_entry.get_value())
+
+        calculated_current = (length * width * density) * 0.0021527820833419
+        calculated_time = copper * 2.142857142857143 * float(20 / density)
+
+        self.ui.cvalue_entry.set_value('%.2f' % calculated_current)
+        self.ui.time_entry.set_value('%.1f' % calculated_time)
+
+
+class CalcUI:
+
+    toolName = _("Calculators")
+    v_shapeName = _("V-Shape Tool Calculator")
+    unitsName = _("Units Calculator")
+    eplateName = _("ElectroPlating Calculator")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
         self.layout.addWidget(title_label)
 
         # #####################
@@ -249,123 +375,29 @@ class ToolCalculator(AppTool):
             _("Will reset the tool parameters.")
         )
         self.reset_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
         self.layout.addWidget(self.reset_button)
 
-        self.units = ''
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
 
-        # ## Signals
-        self.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
-        self.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
-        self.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
-
-        self.mm_entry.editingFinished.connect(self.on_calculate_inch_units)
-        self.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
-
-        self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
-        self.reset_button.clicked.connect(self.set_tool_ui)
-
-    def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolCalculators()")
-
-        if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        # if tab is populated with the tool but it does not have the focus, focus on it
-                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
-                            # focus on Tool Tab
-                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-                        else:
-                            self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
         else:
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
-        AppTool.run(self)
-
-        self.set_tool_ui()
-
-        self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
-
-    def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+C', **kwargs)
-
-    def set_tool_ui(self):
-        self.units = self.app.defaults['units'].upper()
-
-        # ## Initialize form
-        self.mm_entry.set_value('%.*f' % (self.decimals, 0))
-        self.inch_entry.set_value('%.*f' % (self.decimals, 0))
-
-        length = self.app.defaults["tools_calc_electro_length"]
-        width = self.app.defaults["tools_calc_electro_width"]
-        density = self.app.defaults["tools_calc_electro_cdensity"]
-        growth = self.app.defaults["tools_calc_electro_growth"]
-        self.pcblength_entry.set_value(length)
-        self.pcbwidth_entry.set_value(width)
-        self.cdensity_entry.set_value(density)
-        self.growth_entry.set_value(growth)
-        self.cvalue_entry.set_value(0.00)
-        self.time_entry.set_value(0.0)
-
-        tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
-        tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
-        cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
-
-        self.tipDia_entry.set_value(tip_dia)
-        self.tipAngle_entry.set_value(tip_angle)
-        self.cutDepth_entry.set_value(cut_z)
-        self.effectiveToolDia_entry.set_value('0.0000')
-
-    def on_calculate_tool_dia(self):
-        # Calculation:
-        # Manufacturer gives total angle of the the tip but we need only half of it
-        # tangent(half_tip_angle) = opposite side / adjacent = part_of _real_dia / depth_of_cut
-        # effective_diameter = tip_diameter + part_of_real_dia_left_side + part_of_real_dia_right_side
-        # tool is symmetrical therefore: part_of_real_dia_left_side = part_of_real_dia_right_side
-        # effective_diameter = tip_diameter + (2 * part_of_real_dia_left_side)
-        # effective diameter = tip_diameter + (2 * depth_of_cut * tangent(half_tip_angle))
-
-        tip_diameter = float(self.tipDia_entry.get_value())
-
-        half_tip_angle = float(self.tipAngle_entry.get_value()) / 2.0
-
-        cut_depth = float(self.cutDepth_entry.get_value())
-        cut_depth = -cut_depth if cut_depth < 0 else cut_depth
-
-        tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))
-        self.effectiveToolDia_entry.set_value("%.*f" % (self.decimals, tool_diameter))
-
-    def on_calculate_inch_units(self):
-        mm_val = float(self.mm_entry.get_value())
-        self.inch_entry.set_value('%.*f' % (self.decimals, (mm_val / 25.4)))
-
-    def on_calculate_mm_units(self):
-        inch_val = float(self.inch_entry.get_value())
-        self.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
-
-    def on_calculate_eplate(self):
-        length = float(self.pcblength_entry.get_value())
-        width = float(self.pcbwidth_entry.get_value())
-        density = float(self.cdensity_entry.get_value())
-        copper = float(self.growth_entry.get_value())
-
-        calculated_current = (length * width * density) * 0.0021527820833419
-        calculated_time = copper * 2.142857142857143 * float(20 / density)
-
-        self.cvalue_entry.set_value('%.2f' % calculated_current)
-        self.time_entry.set_value('%.1f' % calculated_time)
-
-# end of file
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

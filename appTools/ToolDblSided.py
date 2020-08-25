@@ -509,7 +509,6 @@ class DsidedUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-
         self.layout.addWidget(QtWidgets.QLabel(""))
 
         # ## Grid Layout
