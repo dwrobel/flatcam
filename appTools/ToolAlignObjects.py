@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from appTool import AppTool
 
-from appGUI.GUIElements import FCComboBox, RadioSet
+from appGUI.GUIElements import FCComboBox, RadioSet, FCLabel, FCButton
 
 import math
 
@@ -39,155 +39,17 @@ class AlignObjects(AppTool):
 
         self.canvas = self.app.plotcanvas
 
-        # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(title_label)
-
-        self.layout.addWidget(QtWidgets.QLabel(''))
-
-        # Form Layout
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.layout.addLayout(grid0)
-
-        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("MOVING object"))
-        grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
-
-        self.aligned_label.setToolTip(
-            _("Specify the type of object to be aligned.\n"
-              "It can be of type: Gerber or Excellon.\n"
-              "The selection here decide the type of objects that will be\n"
-              "in the Object combobox.")
-        )
-
-        # Type of object to be aligned
-        self.type_obj_radio = RadioSet([
-            {"label": _("Gerber"), "value": "grb"},
-            {"label": _("Excellon"), "value": "exc"},
-        ])
-
-        grid0.addWidget(self.type_obj_radio, 3, 0, 1, 2)
-
-        # Object to be aligned
-        self.object_combo = FCComboBox()
-        self.object_combo.setModel(self.app.collection)
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.is_last = True
-
-        self.object_combo.setToolTip(
-            _("Object to be aligned.")
-        )
-
-        grid0.addWidget(self.object_combo, 4, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 5, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 6, 0, 1, 2)
-
-        self.aligned_label = QtWidgets.QLabel('<b>%s:</b>' % _("DESTINATION object"))
-        self.aligned_label.setToolTip(
-            _("Specify the type of object to be aligned to.\n"
-              "It can be of type: Gerber or Excellon.\n"
-              "The selection here decide the type of objects that will be\n"
-              "in the Object combobox.")
-        )
-        grid0.addWidget(self.aligned_label, 7, 0, 1, 2)
-
-        # Type of object to be aligned to = aligner
-        self.type_aligner_obj_radio = RadioSet([
-            {"label": _("Gerber"), "value": "grb"},
-            {"label": _("Excellon"), "value": "exc"},
-        ])
-
-        grid0.addWidget(self.type_aligner_obj_radio, 8, 0, 1, 2)
-
-        # Object to be aligned to = aligner
-        self.aligner_object_combo = FCComboBox()
-        self.aligner_object_combo.setModel(self.app.collection)
-        self.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.aligner_object_combo.is_last = True
-
-        self.aligner_object_combo.setToolTip(
-            _("Object to be aligned to. Aligner.")
-        )
-
-        grid0.addWidget(self.aligner_object_combo, 9, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 11, 0, 1, 2)
-
-        # Alignment Type
-        self.a_type_lbl = QtWidgets.QLabel('<b>%s:</b>' % _("Alignment Type"))
-        self.a_type_lbl.setToolTip(
-            _("The type of alignment can be:\n"
-              "- Single Point -> it require a single point of sync, the action will be a translation\n"
-              "- Dual Point -> it require two points of sync, the action will be translation followed by rotation")
-        )
-        self.a_type_radio = RadioSet(
-            [
-                {'label': _('Single Point'), 'value': 'sp'},
-                {'label': _('Dual Point'), 'value': 'dp'}
-            ])
-
-        grid0.addWidget(self.a_type_lbl, 12, 0, 1, 2)
-        grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 14, 0, 1, 2)
-
-        # Buttons
-        self.align_object_button = QtWidgets.QPushButton(_("Align Object"))
-        self.align_object_button.setToolTip(
-            _("Align the specified object to the aligner object.\n"
-              "If only one point is used then it assumes translation.\n"
-              "If tho points are used it assume translation and rotation.")
-        )
-        self.align_object_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(self.align_object_button)
-
-        self.layout.addStretch()
-
-        # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
-        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
-        self.reset_button.setToolTip(
-            _("Will reset the tool parameters.")
-        )
-        self.reset_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(self.reset_button)
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = AlignUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         # Signals
-        self.align_object_button.clicked.connect(self.on_align)
-        self.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
-        self.type_aligner_obj_radio.activated_custom.connect(self.on_type_aligner_changed)
-        self.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.align_object_button.clicked.connect(self.on_align)
+        self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
+        self.ui.type_aligner_obj_radio.activated_custom.connect(self.on_type_aligner_changed)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.mr = None
 
@@ -257,39 +119,39 @@ class AlignObjects(AppTool):
         self.aligned_old_fill_color = None
         self.aligned_old_line_color = None
 
-        self.a_type_radio.set_value(self.app.defaults["tools_align_objects_align_type"])
-        self.type_obj_radio.set_value('grb')
-        self.type_aligner_obj_radio.set_value('grb')
+        self.ui.a_type_radio.set_value(self.app.defaults["tools_align_objects_align_type"])
+        self.ui.type_obj_radio.set_value('grb')
+        self.ui.type_aligner_obj_radio.set_value('grb')
 
         if self.local_connected is True:
             self.disconnect_cal_events()
 
     def on_type_obj_changed(self, val):
         obj_type = {'grb': 0, 'exc': 1}[val]
-        self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(0)
-        self.object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.object_combo.setCurrentIndex(0)
+        self.ui.object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
     def on_type_aligner_changed(self, val):
         obj_type = {'grb': 0, 'exc': 1}[val]
-        self.aligner_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.aligner_object_combo.setCurrentIndex(0)
-        self.aligner_object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
+        self.ui.aligner_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.aligner_object_combo.setCurrentIndex(0)
+        self.ui.aligner_object_combo.obj_type = {'grb': "Gerber", 'exc': "Excellon"}[val]
 
     def on_align(self):
         self.app.delete_selection_shape()
 
-        obj_sel_index = self.object_combo.currentIndex()
-        obj_model_index = self.app.collection.index(obj_sel_index, 0, self.object_combo.rootModelIndex())
+        obj_sel_index = self.ui.object_combo.currentIndex()
+        obj_model_index = self.app.collection.index(obj_sel_index, 0, self.ui.object_combo.rootModelIndex())
         try:
             self.aligned_obj = obj_model_index.internalPointer().obj
         except AttributeError:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no aligned FlatCAM object selected..."))
             return
 
-        aligner_obj_sel_index = self.aligner_object_combo.currentIndex()
+        aligner_obj_sel_index = self.ui.aligner_object_combo.currentIndex()
         aligner_obj_model_index = self.app.collection.index(
-            aligner_obj_sel_index, 0, self.aligner_object_combo.rootModelIndex())
+            aligner_obj_sel_index, 0, self.ui.aligner_object_combo.rootModelIndex())
 
         try:
             self.aligner_obj = aligner_obj_model_index.internalPointer().obj
@@ -297,7 +159,7 @@ class AlignObjects(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no aligner FlatCAM object selected..."))
             return
 
-        self.align_type = self.a_type_radio.get_value()
+        self.align_type = self.ui.a_type_radio.get_value()
 
         # disengage the grid snapping since it will be hard to find the drills or pads on grid
         if self.app.ui.grid_snap_btn.isChecked():
@@ -489,5 +351,179 @@ class AlignObjects(AppTool):
         )
 
     def reset_fields(self):
+        self.ui.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+
+class AlignUI:
+
+    toolName = _("Align Objects")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+
+        # ## Title
+        title_label = FCLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(title_label)
+
+        self.layout.addWidget(QtWidgets.QLabel(""))
+
+        # Form Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+
+        self.aligned_label =FCLabel('<b>%s:</b>' % _("MOVING object"))
+        grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
+
+        self.aligned_label.setToolTip(
+            _("Specify the type of object to be aligned.\n"
+              "It can be of type: Gerber or Excellon.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Object combobox.")
+        )
+
+        # Type of object to be aligned
+        self.type_obj_radio = RadioSet([
+            {"label": _("Gerber"), "value": "grb"},
+            {"label": _("Excellon"), "value": "exc"},
+        ])
+
+        grid0.addWidget(self.type_obj_radio, 3, 0, 1, 2)
+
+        # Object to be aligned
+        self.object_combo = FCComboBox()
+        self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.object_combo.is_last = True
+
+        self.object_combo.setToolTip(
+            _("Object to be aligned.")
+        )
+
+        grid0.addWidget(self.object_combo, 4, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 5, 0, 1, 2)
+
+        grid0.addWidget(FCLabel(''), 6, 0, 1, 2)
+
+        self.aligned_label = FCLabel('<b>%s:</b>' % _("DESTINATION object"))
+        self.aligned_label.setToolTip(
+            _("Specify the type of object to be aligned to.\n"
+              "It can be of type: Gerber or Excellon.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Object combobox.")
+        )
+        grid0.addWidget(self.aligned_label, 7, 0, 1, 2)
+
+        # Type of object to be aligned to = aligner
+        self.type_aligner_obj_radio = RadioSet([
+            {"label": _("Gerber"), "value": "grb"},
+            {"label": _("Excellon"), "value": "exc"},
+        ])
+
+        grid0.addWidget(self.type_aligner_obj_radio, 8, 0, 1, 2)
+
+        # Object to be aligned to = aligner
+        self.aligner_object_combo = FCComboBox()
+        self.aligner_object_combo.setModel(self.app.collection)
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.aligner_object_combo.is_last = True
+
+        self.aligner_object_combo.setToolTip(
+            _("Object to be aligned to. Aligner.")
+        )
+
+        grid0.addWidget(self.aligner_object_combo, 9, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 11, 0, 1, 2)
+
+        # Alignment Type
+        self.a_type_lbl = FCLabel('<b>%s:</b>' % _("Alignment Type"))
+        self.a_type_lbl.setToolTip(
+            _("The type of alignment can be:\n"
+              "- Single Point -> it require a single point of sync, the action will be a translation\n"
+              "- Dual Point -> it require two points of sync, the action will be translation followed by rotation")
+        )
+        self.a_type_radio = RadioSet(
+            [
+                {'label': _('Single Point'), 'value': 'sp'},
+                {'label': _('Dual Point'), 'value': 'dp'}
+            ])
+
+        grid0.addWidget(self.a_type_lbl, 12, 0, 1, 2)
+        grid0.addWidget(self.a_type_radio, 13, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
+
+        # Buttons
+        self.align_object_button =FCButton(_("Align Object"))
+        self.align_object_button.setToolTip(
+            _("Align the specified object to the aligner object.\n"
+              "If only one point is used then it assumes translation.\n"
+              "If tho points are used it assume translation and rotation.")
+        )
+        self.align_object_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(self.align_object_button)
+
+        self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = FCButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
+
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
