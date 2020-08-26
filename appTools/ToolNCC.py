@@ -232,12 +232,7 @@ class NonCopperClear(AppTool, Gerber):
         }[self.ui.type_obj_radio.get_value()]
 
     def on_operation_change(self, val):
-        if val == 'iso':
-            self.ui.milling_type_label.setEnabled(True)
-            self.ui.milling_type_radio.setEnabled(True)
-        else:
-            self.ui.milling_type_label.setEnabled(False)
-            self.ui.milling_type_radio.setEnabled(False)
+        self.ui.parameters_ui(val=val)
 
         current_row = self.ui.tools_table.currentRow()
         try:
@@ -3942,8 +3937,8 @@ class NccUI:
         self.grid3.addWidget(self.milling_type_radio, 14, 1)
 
         # Overlap Entry
-        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
-        nccoverlabel.setToolTip(
+        self.nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be cleared are still \n"
@@ -3959,12 +3954,12 @@ class NccUI:
         self.ncc_overlap_entry.setSingleStep(0.1)
         self.ncc_overlap_entry.setObjectName("n_overlap")
 
-        self.grid3.addWidget(nccoverlabel, 15, 0)
+        self.grid3.addWidget(self.nccoverlabel, 15, 0)
         self.grid3.addWidget(self.ncc_overlap_entry, 15, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
-        methodlabel.setToolTip(
+        self.methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        self.methodlabel.setToolTip(
             _("Algorithm for copper clearing:\n"
               "- Standard: Fixed step inwards.\n"
               "- Seed-based: Outwards from seed.\n"
@@ -3982,7 +3977,7 @@ class NccUI:
         )
         self.ncc_method_combo.setObjectName("n_method")
 
-        self.grid3.addWidget(methodlabel, 16, 0)
+        self.grid3.addWidget(self.methodlabel, 16, 0)
         self.grid3.addWidget(self.ncc_method_combo, 16, 1)
 
         # Margin
@@ -4243,7 +4238,37 @@ class NccUI:
         self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # ############################################################################# 
-    
+
+    def parameters_ui(self, val):
+        if val == 'iso':
+            self.milling_type_label.setEnabled(True)
+            self.milling_type_radio.setEnabled(True)
+
+            self.nccoverlabel.setEnabled(False)
+            self.ncc_overlap_entry.setEnabled(False)
+            self.methodlabel.setEnabled(False)
+            self.ncc_method_combo.setEnabled(False)
+            self.nccmarginlabel.setEnabled(False)
+            self.ncc_margin_entry.setEnabled(False)
+            self.ncc_connect_cb.setEnabled(False)
+            self.ncc_contour_cb.setEnabled(False)
+            self.ncc_choice_offset_cb.setEnabled(False)
+            self.ncc_offset_spinner.setEnabled(False)
+        else:
+            self.milling_type_label.setEnabled(False)
+            self.milling_type_radio.setEnabled(False)
+
+            self.nccoverlabel.setEnabled(True)
+            self.ncc_overlap_entry.setEnabled(True)
+            self.methodlabel.setEnabled(True)
+            self.ncc_method_combo.setEnabled(True)
+            self.nccmarginlabel.setEnabled(True)
+            self.ncc_margin_entry.setEnabled(True)
+            self.ncc_connect_cb.setEnabled(True)
+            self.ncc_contour_cb.setEnabled(True)
+            self.ncc_choice_offset_cb.setEnabled(True)
+            self.ncc_offset_spinner.setEnabled(True)
+
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),

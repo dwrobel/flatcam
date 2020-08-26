@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool - remade the UI
 - Isolation Tool - modified the add new tool method to search first in Tools Database  for a suitable tool
 - Isolation Tool - added ability to find the tool diameter that will guarantee total isolation of the currently selected Gerber object
+- NCC Tool - UI change: if the operation is Isolation then some of the tool parameters are disabled
 
 25.08.2020
 
