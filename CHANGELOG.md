@@ -11,6 +11,8 @@ CHANGELOG for FlatCAM beta
 
 - fix for issue nr 2 in case of Drilling Tool. Need to check Isolation Tool, Paint Tool, NCC Tool
 - Drilling Tool - UI changes
+- Geometry object - now plotting color for an individual tool can be specified
+- in CutOut Tool - when using  'thin gaps' option then the cut parts are colored differently than the rest of the geometry in the Geometry object
 
 25.08.2020
 

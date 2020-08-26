@@ -717,6 +717,7 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
         # common parameters update
@@ -2736,7 +2737,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         :param kind:        added so there is no error when a project is loaded and it has both geometry and CNCJob,
                             because CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot()
                             has to be rewritten
-        :param plot_tool:   plot a specif tool for multigeo objects
+        :param plot_tool:   plot a specific tool for multigeo objects
         :return:
         """
 
@@ -2773,20 +2774,30 @@ class GeometryObject(FlatCAMObj, Geometry):
                 if plot_tool is None:
                     for tooluid_key in self.tools:
                         solid_geometry = self.tools[tooluid_key]['solid_geometry']
-                        self.plot_element(solid_geometry, visible=visible,
-                                          color=random_color() if self.options['multicolored']
-                                          else self.app.defaults["geometry_plot_line"])
+                        if 'override_color' in self.tools[tooluid_key]['data']:
+                            color = self.tools[tooluid_key]['data']['override_color']
+                        else:
+                            color = random_color() if self.options['multicolored'] else \
+                                self.app.defaults["geometry_plot_line"]
+
+                        self.plot_element(solid_geometry, visible=visible, color=color)
                 else:
                     solid_geometry = self.tools[plot_tool]['solid_geometry']
-                    self.plot_element(solid_geometry, visible=visible,
-                                      color=random_color() if self.options['multicolored']
-                                      else self.app.defaults["geometry_plot_line"])
+                    if 'override_color' in self.tools[plot_tool]['data']:
+                        color = self.tools[plot_tool]['data']['override_color']
+                    else:
+                        color = random_color() if self.options['multicolored'] else \
+                            self.app.defaults["geometry_plot_line"]
+
+                    self.plot_element(solid_geometry, visible=visible, color=color)
             else:
                 # plot solid geometry that may be an direct attribute of the geometry object
                 # for SingleGeo
                 if self.solid_geometry:
-                    self.plot_element(self.solid_geometry, visible=visible,
-                                      color=self.app.defaults["geometry_plot_line"])
+                    solid_geometry = self.solid_geometry
+                    color = self.app.defaults["geometry_plot_line"]
+
+                    self.plot_element(solid_geometry, visible=visible, color=color)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
 
@@ -2820,6 +2831,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         check_row = 0
 
         self.shapes.clear(update=True)
+
         for tooluid_key in self.tools:
             solid_geometry = self.tools[tooluid_key]['solid_geometry']
 
@@ -2829,8 +2841,13 @@ class GeometryObject(FlatCAMObj, Geometry):
                 if tooluid_item == int(tooluid_key):
                     check_row = row
                     break
+
             if self.ui.geo_tools_table.cellWidget(check_row, 6).isChecked():
-                self.plot_element(element=solid_geometry, visible=True)
+                if 'override' in self.tools[tooluid_key]['data']:
+                    self.plot_element(element=solid_geometry, visible=True,
+                                      color=self.tools[tooluid_key]['data']['override'])
+                else:
+                    self.plot_element(element=solid_geometry, visible=True)
         self.shapes.redraw()
 
         # make sure that the general plot is disabled if one of the row plot's are disabled and

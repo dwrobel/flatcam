@@ -503,6 +503,8 @@ class CutOut(AppTool):
                 geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
                 geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                # plot this tool in a different color
+                geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -756,6 +758,7 @@ class CutOut(AppTool):
                 geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
                 geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
 
         outname = cutout_obj.options["name"] + "_cutout"
         ret = self.app.app_obj.new_object('geometry', outname, geo_init)
@@ -879,6 +882,7 @@ class CutOut(AppTool):
                 self.man_cutout_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 self.man_cutout_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
                 self.man_cutout_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                self.man_cutout_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
             else:
                 self.man_cutout_obj.tools[9999]['solid_geometry'].append(gaps_solid_geo)
 
