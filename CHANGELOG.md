@@ -24,6 +24,7 @@ CHANGELOG for FlatCAM beta
 - in Properties Tool, for CNCJob objects made out of Excellon objects, added the information's from Tool Data
 - in Properties Tool made sure that the set color for the Tree parents depends on the fact if the gray icons set are used (dark theme) or not
 - Properties Tool - properties for a Gerber objects has the Tool Data now at the end of the information's
+- in Gerber UI done some optimizations
 
 25.08.2020
 

@@ -195,7 +195,6 @@ class GerberObjectUI(ObjectUI):
         grid0.setColumnStretch(1, 1)
 
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
-        self.plot_options_label.setMinimumWidth(90)
 
         grid0.addWidget(self.plot_options_label, 0, 0)
 
@@ -204,7 +203,6 @@ class GerberObjectUI(ObjectUI):
         self.solid_cb.setToolTip(
             _("Solid color polygons.")
         )
-        self.solid_cb.setMinimumWidth(50)
         grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
@@ -212,7 +210,6 @@ class GerberObjectUI(ObjectUI):
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        self.multicolored_cb.setMinimumWidth(55)
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
@@ -238,20 +235,15 @@ class GerberObjectUI(ObjectUI):
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
-        self.follow_cb.setMinimumWidth(55)
         grid0.addWidget(self.follow_cb, 2, 2)
-
-        hlay_plot = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hlay_plot)
 
         # ### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel('%s:' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
-        self.apertures_table_label.setMinimumWidth(90)
 
-        hlay_plot.addWidget(self.apertures_table_label)
+        grid0.addWidget(self.apertures_table_label, 4, 0)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox()
@@ -259,9 +251,10 @@ class GerberObjectUI(ObjectUI):
             _("Toggle the display of the Tools Table.")
         )
         # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        hlay_plot.addWidget(self.aperture_table_visibility_cb)
+        grid0.addWidget(self.aperture_table_visibility_cb, 4, 1)
 
-        hlay_plot.addStretch()
+        hlay_plot = QtWidgets.QHBoxLayout()
+        grid0.addLayout(hlay_plot, 4, 2)
 
         # Aperture Mark all CB
         self.mark_all_cb = FCCheckBox(_('Mark All'))
@@ -272,10 +265,12 @@ class GerberObjectUI(ObjectUI):
 
         )
         self.mark_all_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addStretch()
         hlay_plot.addWidget(self.mark_all_cb)
 
+        # Apertures Table
         self.apertures_table = FCTable()
-        self.custom_box.addWidget(self.apertures_table)
+        grid0.addWidget(self.apertures_table, 6, 0, 1, 3)
 
         self.apertures_table.setColumnCount(6)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim'), 'M'])
@@ -308,7 +303,7 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        self.custom_box.addWidget(self.create_buffer_button)
+        grid0.addWidget(self.create_buffer_button, 8, 0, 1, 3)
 
         # Editor
         self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
@@ -322,24 +317,15 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        self.custom_box.addWidget(self.editor_button)
+        grid0.addWidget(self.editor_button, 10, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.custom_box.addWidget(separator_line)
-
-        # ###########################################
-        # ########## NEW GRID #######################
-        # ###########################################
-
-        grid2 = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(grid2)
-        grid2.setColumnStretch(0, 0)
-        grid2.setColumnStretch(1, 1)
+        grid0.addWidget(separator_line, 12, 0, 1, 3)
 
         self.tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("TOOLS"))
-        grid2.addWidget(self.tool_lbl, 0, 0, 1, 2)
+        grid0.addWidget(self.tool_lbl, 14, 0, 1, 3)
 
         # Isolation Tool - will create isolation paths around the copper features
         self.iso_button = QtWidgets.QPushButton(_('Isolation Routing'))
@@ -354,7 +340,7 @@ class GerberObjectUI(ObjectUI):
                                           font-weight: bold;
                                       }
                                       """)
-        grid2.addWidget(self.iso_button, 1, 0, 1, 2)
+        grid0.addWidget(self.iso_button, 16, 0, 1, 3)
 
         # ## Clear non-copper regions
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -369,7 +355,7 @@ class GerberObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid2.addWidget(self.generate_ncc_button, 2, 0, 1, 2)
+        grid0.addWidget(self.generate_ncc_button, 18, 0, 1, 3)
 
         # ## Board cutout
         self.generate_cutout_button = QtWidgets.QPushButton(_('Cutout Tool'))
@@ -384,12 +370,12 @@ class GerberObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid2.addWidget(self.generate_cutout_button, 3, 0, 1, 2)
+        grid0.addWidget(self.generate_cutout_button, 20, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid2.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 22, 0, 1, 3)
 
         # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>%s</b>" % _("Non-copper regions"))
@@ -401,7 +387,7 @@ class GerberObjectUI(ObjectUI):
               "copper from a specified region.")
         )
 
-        grid2.addWidget(self.noncopper_label, 5, 0, 1, 2)
+        grid0.addWidget(self.noncopper_label, 24, 0, 1, 3)
 
         # Margin
         bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
@@ -411,30 +397,30 @@ class GerberObjectUI(ObjectUI):
               "objects with this minimum\n"
               "distance.")
         )
-        bmlabel.setMinimumWidth(90)
+
         self.noncopper_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.noncopper_margin_entry.set_range(-9999.9999, 9999.9999)
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bmlabel, 6, 0)
-        grid2.addWidget(self.noncopper_margin_entry, 6, 1)
+        grid0.addWidget(bmlabel, 26, 0)
+        grid0.addWidget(self.noncopper_margin_entry, 26, 1, 1, 2)
 
         # Rounded corners
-        self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded Geo"))
+        self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded"))
         self.noncopper_rounded_cb.setToolTip(
             _("Resulting geometry will have rounded corners.")
         )
-        self.noncopper_rounded_cb.setMinimumWidth(90)
 
-        self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
-        grid2.addWidget(self.noncopper_rounded_cb, 7, 0)
-        grid2.addWidget(self.generate_noncopper_button, 7, 1)
+        self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_noncopper_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
+        grid0.addWidget(self.noncopper_rounded_cb, 28, 0)
+        grid0.addWidget(self.generate_noncopper_button, 28, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
         separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid2.addWidget(separator_line1, 8, 0, 1, 2)
+        grid0.addWidget(separator_line1, 30, 0, 1, 3)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s</b>' % _('Bounding Box'))
@@ -443,37 +429,36 @@ class GerberObjectUI(ObjectUI):
               "Square shape.")
         )
 
-        grid2.addWidget(self.boundingbox_label, 9, 0, 1, 2)
+        grid0.addWidget(self.boundingbox_label, 32, 0, 1, 3)
 
         bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
             _("Distance of the edges of the box\n"
               "to the nearest polygon.")
         )
-        bbmargin.setMinimumWidth(90)
         self.bbmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.bbmargin_entry.set_range(-9999.9999, 9999.9999)
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bbmargin, 10, 0)
-        grid2.addWidget(self.bbmargin_entry, 10, 1)
+        grid0.addWidget(bbmargin, 34, 0)
+        grid0.addWidget(self.bbmargin_entry, 34, 1, 1, 2)
 
-        self.bbrounded_cb = FCCheckBox(label=_("Rounded Geo"))
+        self.bbrounded_cb = FCCheckBox(label=_("Rounded"))
         self.bbrounded_cb.setToolTip(
             _("If the bounding box is \n"
               "to have rounded corners\n"
               "their radius is equal to\n"
               "the margin.")
         )
-        self.bbrounded_cb.setMinimumWidth(90)
 
-        self.generate_bb_button = QtWidgets.QPushButton(_('Generate Geo'))
+        self.generate_bb_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_bb_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        grid2.addWidget(self.bbrounded_cb, 11, 0)
-        grid2.addWidget(self.generate_bb_button, 11, 1)
+        grid0.addWidget(self.bbrounded_cb, 36, 0)
+        grid0.addWidget(self.generate_bb_button, 36, 1, 1, 2)
 
 
 class ExcellonObjectUI(ObjectUI):
