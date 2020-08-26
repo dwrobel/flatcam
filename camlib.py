@@ -1922,7 +1922,9 @@ class Geometry(object):
                 # then reverse coordinates.
                 # but prefer the first one if last == first
                 if pt != candidate.coords[0] and pt == candidate.coords[-1]:
-                    candidate.coords = list(candidate.coords)[::-1]
+                    # in place coordinates update deprecated in Shapely 2.0
+                    # candidate.coords = list(candidate.coords)[::-1]
+                    candidate = LineString(list(candidate.coords)[::-1])
 
                 # Straight line from current_pt to pt.
                 # Is the toolpath inside the geometry?
@@ -1933,7 +1935,9 @@ class Geometry(object):
                     # log.debug("Walk to path #%d is inside. Joining." % path_count)
 
                     # Completely inside. Append...
-                    geo.coords = list(geo.coords) + list(candidate.coords)
+                    # in place coordinates update deprecated in Shapely 2.0
+                    # geo.coords = list(geo.coords) + list(candidate.coords)
+                    geo = LineString(list(geo.coords) + list(candidate.coords))
                     # try:
                     #     last = optimized_paths[-1]
                     #     last.coords = list(last.coords) + list(geo.coords)
