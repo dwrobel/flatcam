@@ -6570,7 +6570,6 @@ class CNCjob(Geometry):
             }
 
         gcode_parsed = gcode_parsed if gcode_parsed else self.gcode_parsed
-        path_num = 0
 
         if tooldia is None:
             tooldia = self.tooldia
@@ -6590,24 +6589,36 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
         else:
-            text = []
-            pos = []
+            path_num = 0
+
             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
-                        current_position = geo['geom'].coords[0]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+                        start_position = geo['geom'].coords[0]
 
-                        current_position = geo['geom'].coords[-1]
-                        if current_position not in pos:
-                            pos.append(current_position)
+                        if tooldia not in obj.annotations_dict:
+                            obj.annotations_dict[tooldia] = {
+                                'pos': [],
+                                'text': []
+                            }
+                        if start_position not in obj.annotations_dict[tooldia]['pos']:
                             path_num += 1
-                            text.append(str(path_num))
+                            obj.annotations_dict[tooldia]['pos'].append(start_position)
+                            obj.annotations_dict[tooldia]['text'].append(str(path_num))
+
+                        end_position = geo['geom'].coords[-1]
+
+                        if tooldia not in obj.annotations_dict:
+                            obj.annotations_dict[tooldia] = {
+                                'pos': [],
+                                'text': []
+                            }
+                        if end_position not in obj.annotations_dict[tooldia]['pos']:
+                            path_num += 1
+                            obj.annotations_dict[tooldia]['pos'].append(end_position)
+                            obj.annotations_dict[tooldia]['text'].append(str(path_num))
 
                     # plot the geometry of Excellon objects
                     if self.origin_kind == 'excellon':
@@ -6640,70 +6651,66 @@ class CNCjob(Geometry):
                             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                           visible=visible, layer=1)
             else:
-                # For Incremental coordinates type G91
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
-                for geo in gcode_parsed:
-                    if geo['kind'][0] == 'T':
-                        current_position = geo['geom'].coords[0]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
+                return 'fail'
 
-                        current_position = geo['geom'].coords[-1]
-                        if current_position not in pos:
-                            pos.append(current_position)
-                            path_num += 1
-                            text.append(str(path_num))
+    def plot_annotations(self, obj, visible=True):
+        """
+        Plot annotations.
 
-                    # plot the geometry of Excellon objects
-                    if self.origin_kind == 'excellon':
-                        try:
-                            poly = Polygon(geo['geom'])
-                        except ValueError:
-                            # if the geos are travel lines it will enter into Exception
-                            poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                            poly = poly.simplify(tool_tolerance)
-                    else:
-                        # plot the geometry of any objects other than Excellon
-                        poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                        poly = poly.simplify(tool_tolerance)
+        :param obj:         FlatCAM CNCJob object for which to plot the annotations
+        :type obj:
+        :param visible:     annotaions visibility
+        :type visible:      bool
+        :return:            Nothing
+        :rtype:
+        """
 
-                    if kind == 'all':
-                        obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                                      visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
-                    elif kind == 'travel':
-                        if geo['kind'][0] == 'T':
-                            obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
-                                          visible=visible, layer=2)
-                    elif kind == 'cut':
-                        if geo['kind'][0] == 'C':
-                            obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
-                                          visible=visible, layer=1)
+        if not obj.annotations_dict:
+            return
 
-            try:
-                if self.app.defaults['global_theme'] == 'white':
-                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                       color=self.app.defaults["cncjob_annotation_fontcolor"])
-                else:
-                    # invert the color
-                    old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
-                    new_color = ''
-                    code = {}
-                    l1 = "#;0123456789abcdef"
-                    l2 = "#;fedcba9876543210"
-                    for i in range(len(l1)):
-                        code[l1[i]] = l2[i]
+        if visible is True:
+            obj.text_col.enabled = True
+        else:
+            obj.text_col.enabled = False
+            return
 
-                    for x in range(len(old_color)):
-                        new_color += code[old_color[x]]
+        text = []
+        pos = []
+        for tooldia in obj.annotations_dict:
+            pos += obj.annotations_dict[tooldia]['pos']
+            text += obj.annotations_dict[tooldia]['text']
 
-                    obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                                       font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                       color=new_color)
-            except Exception as e:
-                log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
+        if not text or not pos:
+            return
+
+        try:
+            if self.app.defaults['global_theme'] == 'white':
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
+            else:
+                # invert the color
+                old_color = self.app.defaults["cncjob_annotation_fontcolor"].lower()
+                new_color = ''
+                code = {}
+                l1 = "#;0123456789abcdef"
+                l2 = "#;fedcba9876543210"
+                for i in range(len(l1)):
+                    code[l1[i]] = l2[i]
+
+                for x in range(len(old_color)):
+                    new_color += code[old_color[x]]
+
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=new_color)
+        except Exception as e:
+            log.debug("CNCJob.plot2() --> annotations --> %s" % str(e))
+            if self.app.is_legacy is False:
+                obj.annotation.clear(update=True)
+
+        obj.annotation.redraw()
 
     def create_geometry(self):
         """

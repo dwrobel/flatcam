@@ -142,6 +142,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.coords_decimals = 4
         self.fr_decimals = 2
 
+        self.annotations_dict = {}
+
         # used for parsing the GCode lines to adjust the GCode when the GCode is offseted or scaled
         gcodex_re_string = r'(?=.*(X[-\+]?\d*\.\d*))'
         self.g_x_re = re.compile(gcodex_re_string)
@@ -2244,13 +2246,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
-        if self.app.is_legacy is False:
-            if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-                self.text_col.enabled = True
-            else:
-                self.text_col.enabled = False
-            self.annotation.redraw()
-
+        # Geometry shapes plotting
         try:
             if self.multitool is False:  # single tool usage
                 try:
@@ -2285,6 +2281,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.shapes.clear(update=True)
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
+
+        # Annotaions shapes plotting
+        try:
+            if self.app.is_legacy is False:
+                if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                   self.plot_annotations(obj=self, visible=True)
+                else:
+                    self.plot_annotations(obj=self, visible=False)
+
+        except (ObjectDeleted, AttributeError):
+            if self.app.is_legacy is False:
+                self.annotation.clear(update=True)
+
+
 
     def on_annotation_change(self):
         """
