@@ -9,13 +9,15 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, OptionalHideInputSection
+    FCComboBox, OptionalInputSection, FCSpinner, FCLabel
 from appParsers.ParseGerber import Gerber
 
 from copy import deepcopy
 
 import numpy as np
 import math
+import simplejson as json
+import sys
 
 from shapely.ops import cascaded_union
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
@@ -54,15 +56,18 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         self.t_ui.tools_table.setupContextMenu()
         self.t_ui.tools_table.addContextMenu(
-            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+            _("Search and Add"), self.on_add_tool_by_key,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
         )
         self.t_ui.tools_table.addContextMenu(
-            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+            _("Pick from DB"),
+            self.on_add_tool_by_key,
+            icon=QtGui.QIcon(self.app.resource_location + "/search_db32.png")
         )
         self.t_ui.tools_table.addContextMenu(
-            _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+            _("Delete"),
+            lambda: self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/trash16.png")
         )
 
         # #############################################################################
@@ -139,8 +144,6 @@ class ToolIsolation(AppTool, Gerber):
             "i_iso_type":       "tools_iso_isotype"
         }
 
-        self.old_tool_dia = None
-
         self.connect_signals_at_init()
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -187,13 +190,8 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
-        self.t_ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.t_ui.addtool_entry.returnPressed.connect(self.on_tooldia_updated)
+        self.t_ui.add_newtool_button.clicked.connect(self.on_tool_add)
         self.t_ui.deltool_btn.clicked.connect(self.on_tool_delete)
-
-        self.t_ui.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.t_ui.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.t_ui.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
 
         self.t_ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
         self.t_ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
@@ -218,7 +216,6 @@ class ToolIsolation(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
-        self.old_tool_dia = self.app.defaults["tools_iso_newdia"]
 
         # try to select in the Gerber combobox the active object
         try:
@@ -234,11 +231,6 @@ class ToolIsolation(AppTool, Gerber):
         # Show/Hide Advanced Options
         if app_mode == 'b':
             self.t_ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
-
-            # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
-            self.t_ui.tool_type_radio.set_value('C1')
-            self.t_ui.tool_type_label.hide()
-            self.t_ui.tool_type_radio.hide()
 
             self.t_ui.milling_type_label.hide()
             self.t_ui.milling_type_radio.hide()
@@ -266,10 +258,6 @@ class ToolIsolation(AppTool, Gerber):
             self.t_ui.select_label.hide()
         else:
             self.t_ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
-
-            self.t_ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
-            self.t_ui.tool_type_label.show()
-            self.t_ui.tool_type_radio.show()
 
             self.t_ui.milling_type_label.show()
             self.t_ui.milling_type_radio.show()
@@ -321,13 +309,7 @@ class ToolIsolation(AppTool, Gerber):
         self.t_ui.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
         self.t_ui.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
 
-        self.t_ui.cutz_entry.set_value(self.app.defaults["tools_iso_tool_cutz"])
-        self.t_ui.tool_type_radio.set_value(self.app.defaults["tools_iso_tool_type"])
-        self.t_ui.tipdia_entry.set_value(self.app.defaults["tools_iso_tool_vtipdia"])
-        self.t_ui.tipangle_entry.set_value(self.app.defaults["tools_iso_tool_vtipangle"])
-        self.t_ui.addtool_entry.set_value(self.app.defaults["tools_iso_newdia"])
-
-        self.on_tool_type(val=self.t_ui.tool_type_radio.get_value())
+        self.t_ui.new_tooldia_entry.set_value(self.app.defaults["tools_iso_newdia"])
 
         loaded_obj = self.app.collection.get_by_name(self.t_ui.object_combo.get_value())
         if loaded_obj:
@@ -399,6 +381,7 @@ class ToolIsolation(AppTool, Gerber):
 
         self.tooluid = 0
 
+        # adding tools from Preferences: FIXME should search in Tools Database
         self.iso_tools.clear()
         for tool_dia in dias:
             self.tooluid += 1
@@ -408,7 +391,7 @@ class ToolIsolation(AppTool, Gerber):
                     'offset':           'Path',
                     'offset_value':     0.0,
                     'type':             'Iso',
-                    'tool_type':        self.t_ui.tool_type_radio.get_value(),
+                    'tool_type':        'V',
                     'data':             deepcopy(self.default_data),
                     'solid_geometry':   []
                 }
@@ -545,7 +528,6 @@ class ToolIsolation(AppTool, Gerber):
 
     def ui_connect(self):
         self.t_ui.tools_table.itemChanged.connect(self.on_tool_edit)
-        self.t_ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
 
         # rows selected
         self.t_ui.tools_table.clicked.connect(self.on_row_selection_change)
@@ -578,12 +560,6 @@ class ToolIsolation(AppTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.t_ui.tools_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.t_ui.tool_type_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -809,13 +785,9 @@ class ToolIsolation(AppTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Please enter a tool diameter with non-zero value, in Float format."))
                 return
-            self.on_tool_add(dia=float(val))
+            self.on_tool_default_add(dia=float(val))
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
-
-    def on_tooldia_updated(self):
-        if self.t_ui.tool_type_radio.get_value() == 'C1':
-            self.old_tool_dia = self.t_ui.addtool_entry.get_value()
 
     def on_reference_combo_changed(self):
         obj_type = self.t_ui.reference_combo_type.currentIndex()
@@ -916,49 +888,155 @@ class ToolIsolation(AppTool, Gerber):
                 'tool_type': tt,
             })
 
-    def on_tool_type(self, val):
-        if val == 'V':
-            self.t_ui.addtool_entry_lbl.setDisabled(True)
-            self.t_ui.addtool_entry.setDisabled(True)
-            self.t_ui.tipdialabel.show()
-            self.t_ui.tipdia_entry.show()
-            self.t_ui.tipanglelabel.show()
-            self.t_ui.tipangle_entry.show()
+    def on_find_optimal_tooldia(self):
+        pass
 
-            self.on_calculate_tooldia()
-        else:
-            self.t_ui.addtool_entry_lbl.setDisabled(False)
-            self.t_ui.addtool_entry.setDisabled(False)
-            self.t_ui.tipdialabel.hide()
-            self.t_ui.tipdia_entry.hide()
-            self.t_ui.tipanglelabel.hide()
-            self.t_ui.tipangle_entry.hide()
+    def on_tool_add(self):
+        self.blockSignals(True)
 
-            self.t_ui.addtool_entry.set_value(self.old_tool_dia)
+        filename = self.app.data_path + '\\tools_db.FlatDB'
 
-    def on_calculate_tooldia(self):
-        if self.t_ui.tool_type_radio.get_value() == 'V':
-            tip_dia = float(self.t_ui.tipdia_entry.get_value())
-            tip_angle = float(self.t_ui.tipangle_entry.get_value()) / 2.0
-            cut_z = float(self.t_ui.cutz_entry.get_value())
-            cut_z = -cut_z if cut_z < 0 else cut_z
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.iso_tools]
 
-            # calculated tool diameter so the cut_z parameter is obeyed
-            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(tip_angle)))
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
+        tooluid = int(max_uid + 1)
 
-            # update the default_data so it is used in the iso_tools dict
-            self.default_data.update({
-                "vtipdia":      tip_dia,
-                "vtipangle":    (tip_angle * 2),
-            })
+        tool_dias = []
+        for k, v in self.iso_tools.items():
+            for tool_v in v.keys():
+                if tool_v == 'tooldia':
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
-            self.t_ui.addtool_entry.set_value(tool_dia)
+        # determine the new tool diameter
+        tool_dia = self.t_ui.new_tooldia_entry.get_value()
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.blockSignals(False)
+            return
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
 
-            return tool_dia
-        else:
-            return float(self.t_ui.addtool_entry.get_value())
+        # if new tool diameter already in the Tool List then abort
+        if truncated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
 
-    def on_tool_add(self, dia=None, muted=None):
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add()
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add()
+            return
+
+        if not tools_db_dict:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Tools DB empty."))
+            self.blockSignals(False)
+            return
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        tool_found = 0
+
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Isolation Tool
+            if db_tool_val['data']['tool_target'] != _('Isolation'):
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_iso') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_iso') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add()
+            self.blockSignals(False)
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.blockSignals(False)
+            return
+
+        # if new tool diameter found in Tools Database already in the Tool List then abort
+        if updated_tooldia is not None and updated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
+
+        self.iso_tools.update({
+            tooluid: {
+                'tooldia':          updated_tooldia if updated_tooldia is not None else truncated_tooldia,
+                'offset':           'Path',
+                'offset_value':     0.0,
+                'type': '           Iso',
+                'tool_type':        'V',
+                'data':             deepcopy(new_tools_dict),
+                'solid_geometry':   []
+            }
+        })
+        self.blockSignals(False)
+        self.build_ui()
+
+        # select the tool just added
+        for row in range(self.t_ui.tools_table.rowCount()):
+            if int(self.t_ui.tools_table.item(row, 3).text()) == tooluid:
+                self.t_ui.tools_table.selectRow(row)
+                break
+
+        # update the UI form
+        self.update_ui()
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, muted=None):
         self.blockSignals(True)
 
         self.units = self.app.defaults['units'].upper()
@@ -966,59 +1044,49 @@ class ToolIsolation(AppTool, Gerber):
         if dia:
             tool_dia = dia
         else:
-            tool_dia = self.on_calculate_tooldia()
-            if tool_dia is None:
-                self.build_ui()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
-                return
+            tool_dia = self.t_ui.new_tooldia_entry.get_value()
 
-        tool_dia = float('%.*f' % (self.decimals, tool_dia))
-
-        if tool_dia == 0:
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
                                                           "in Float format."))
+            self.blockSignals(False)
             return
 
-        # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.iso_tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        tool_dia = self.app.dec_format(tool_dia, self.decimals)
+
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.iso_tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
         self.tooluid = int(max_uid + 1)
 
         tool_dias = []
         for k, v in self.iso_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
-        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+        if truncated_tooldia in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             # self.t_ui.tools_table.itemChanged.connect(self.on_tool_edit)
             self.blockSignals(False)
-
             return
-        else:
-            if muted is None:
-                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
-            self.iso_tools.update({
-                int(self.tooluid): {
-                    'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type': '           Iso',
-                    'tool_type':        self.t_ui.tool_type_radio.get_value(),
-                    'data':             deepcopy(self.default_data),
-                    'solid_geometry':   []
-                }
-            })
+
+        self.iso_tools.update({
+            int(self.tooluid): {
+                'tooldia':          truncated_tooldia,
+                'offset':           'Path',
+                'offset_value':     0.0,
+                'type': '           Iso',
+                'tool_type':        'V',
+                'data':             deepcopy(self.default_data),
+                'solid_geometry':   []
+            }
+        })
 
         self.blockSignals(False)
         self.build_ui()
@@ -1028,6 +1096,12 @@ class ToolIsolation(AppTool, Gerber):
             if int(self.t_ui.tools_table.item(row, 3).text()) == self.tooluid:
                 self.t_ui.tools_table.selectRow(row)
                 break
+
+        # update the UI form
+        self.update_ui()
+
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
 
     def on_tool_edit(self, item):
         self.blockSignals(True)
@@ -2747,7 +2821,7 @@ class IsoUI:
         self.tools_box.addLayout(self.title_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -2763,7 +2837,7 @@ class IsoUI:
         self.title_box.addWidget(title_label)
 
         # App Level label
-        self.level = QtWidgets.QLabel("")
+        self.level = FCLabel("")
         self.level.setToolTip(
             _(
                 "BASIC is suitable for a beginner. Many parameters\n"
@@ -2777,7 +2851,7 @@ class IsoUI:
         self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.level)
 
-        self.obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("GERBER"))
+        self.obj_combo_label = FCLabel('<b>%s</b>:' % _("GERBER"))
         self.obj_combo_label.setToolTip(
             _("Gerber object for isolation routing.")
         )
@@ -2801,7 +2875,7 @@ class IsoUI:
         self.tools_box.addWidget(separator_line)
 
         # ### Tools ## ##
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for copper clearing.")
@@ -2849,7 +2923,7 @@ class IsoUI:
         self.tools_box.addLayout(grid1)
 
         # Tool order
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -2878,101 +2952,53 @@ class IsoUI:
         self.grid3.setColumnStretch(1, 1)
         self.tools_box.addLayout(self.grid3)
 
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
-
-        # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
-                                         {'label': _('Circular'), 'value': 'C1'}])
-        self.tool_type_radio.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-        self.tool_type_radio.setObjectName("i_tool_type")
-
-        self.grid3.addWidget(self.tool_type_label, 2, 0)
-        self.grid3.addWidget(self.tool_type_radio, 2, 1)
-
-        # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
-        self.tipdialabel.setToolTip(
-            _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.0000, 9999.9999)
-        self.tipdia_entry.setSingleStep(0.1)
-        self.tipdia_entry.setObjectName("i_vtipdia")
-
-        self.grid3.addWidget(self.tipdialabel, 3, 0)
-        self.grid3.addWidget(self.tipdia_entry, 3, 1)
-
-        # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
-        self.tipanglelabel.setToolTip(
-            _("The tip angle for V-Shape Tool.\n"
-              "In degree."))
-        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(0.0000, 180.0000)
-        self.tipangle_entry.setSingleStep(5)
-        self.tipangle_entry.setObjectName("i_vtipangle")
-
-        self.grid3.addWidget(self.tipanglelabel, 4, 0)
-        self.grid3.addWidget(self.tipangle_entry, 4, 1)
-
-        # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
-            _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
-        )
-        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999.9999, 0.0000)
-        self.cutz_entry.setObjectName("i_vcutz")
-
-        self.grid3.addWidget(cutzlabel, 5, 0)
-        self.grid3.addWidget(self.cutz_entry, 5, 1)
+        self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
+        self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
 
         # ### Tool Diameter ####
-        self.addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
-        self.addtool_entry_lbl.setToolTip(
+        self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
+        self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
               "calculated from the other parameters.")
         )
-        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.000, 9999.9999)
-        self.addtool_entry.setObjectName("i_new_tooldia")
+        self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.new_tooldia_entry.set_precision(self.decimals)
+        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.setObjectName("i_new_tooldia")
 
-        self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
-        self.grid3.addWidget(self.addtool_entry, 6, 1)
+        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
+        self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
+
+        # Find Optimal Tooldia
+        self.find_optimal_button = FCButton(_('Find Optimal'))
+        self.find_optimal_button.setToolTip(
+            _("Find a tool diameter that is guaranteed\n"
+              "to do a complete isolation.")
+        )
+        self.grid3.addWidget(self.find_optimal_button, 4, 0, 1, 2)
 
         bhlay = QtWidgets.QHBoxLayout()
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
-        self.addtool_btn.setToolTip(
+        self.add_newtool_button = FCButton(_('Search and Add'))
+        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_newtool_button.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "with the diameter specified above.")
+              "with the diameter specified above.\n"
+              "This is done by a background search\n"
+              "in the Tools Database. If nothing is found\n"
+              "in the Tools DB then a default tool is added.")
         )
+        bhlay.addWidget(self.add_newtool_button)
 
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn = FCButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool Database.\n"
               "Tool database administration in Menu: Options -> Tools Database")
         )
 
-        bhlay.addWidget(self.addtool_btn)
         bhlay.addWidget(self.addtool_from_db_btn)
 
         self.grid3.addLayout(bhlay, 7, 0, 1, 2)
@@ -2982,21 +3008,22 @@ class IsoUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 8, 0, 1, 2)
 
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
+        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row(s) in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
-        # self.grid3.addWidget(QtWidgets.QLabel(''), 10, 0, 1, 2)
+        # self.grid3.addWidget(FCLabel(''), 10, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 11, 0, 1, 2)
 
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -3007,7 +3034,7 @@ class IsoUI:
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
         # Passes
-        passlabel = QtWidgets.QLabel('%s:' % _('Passes'))
+        passlabel = FCLabel('%s:' % _('Passes'))
         passlabel.setToolTip(
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
@@ -3020,7 +3047,7 @@ class IsoUI:
         self.grid3.addWidget(self.passes_entry, 13, 1)
 
         # Overlap Entry
-        overlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        overlabel = FCLabel('%s:' % _('Overlap'))
         overlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.")
         )
@@ -3035,7 +3062,7 @@ class IsoUI:
         self.grid3.addWidget(self.iso_overlap_entry, 14, 1)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -3055,7 +3082,7 @@ class IsoUI:
         self.grid3.addWidget(self.milling_type_radio, 15, 1)
 
         # Follow
-        self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
+        self.follow_label = FCLabel('%s:' % _('Follow'))
         self.follow_label.setToolTip(
             _("Generate a 'Follow' geometry.\n"
               "This means that it will cut through\n"
@@ -3072,7 +3099,7 @@ class IsoUI:
         self.grid3.addWidget(self.follow_cb, 16, 1)
 
         # Isolation Type
-        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
             _("Choose how the isolation will be executed:\n"
               "- 'Full' -> complete isolation of polygons\n"
@@ -3110,7 +3137,7 @@ class IsoUI:
         self.grid3.addWidget(separator_line, 23, 0, 1, 2)
 
         # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -3189,7 +3216,7 @@ class IsoUI:
                                           ])
 
         # Isolation Scope
-        self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
+        self.select_label = FCLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
@@ -3206,7 +3233,7 @@ class IsoUI:
         self.grid3.addWidget(self.select_label, 33, 0)
         self.grid3.addWidget(self.select_combo, 33, 1)
 
-        self.reference_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -3217,7 +3244,7 @@ class IsoUI:
         self.grid3.addWidget(self.reference_combo_type_label, 34, 0)
         self.grid3.addWidget(self.reference_combo_type, 34, 1)
 
-        self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
@@ -3246,7 +3273,7 @@ class IsoUI:
         self.poly_int_cb.hide()
 
         # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -3265,7 +3292,7 @@ class IsoUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 39, 0, 1, 2)
 
-        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Geometry"))
+        self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_iso_button.setStyleSheet("""
                                 QPushButton
@@ -3286,7 +3313,7 @@ class IsoUI:
         )
         self.tools_box.addWidget(self.generate_iso_button)
 
-        self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
+        self.create_buffer_button = FCButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
             _("This button is shown only when the Gerber file\n"
               "is loaded without buffering.\n"
@@ -3298,7 +3325,7 @@ class IsoUI:
         self.tools_box.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")

@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - Geometry object - now plotting color for an individual tool can be specified
 - in CutOut Tool - when using  'thin gaps' option then the cut parts are colored differently than the rest of the geometry in the Geometry object
 - solved some deprecation warnings (Shapely module)
+- Drilling Tool - when replacing Tools if more than one tool for one diameter is found, the application exit the process and display an error in status bar; some minor fixes
+- Isolation Tool - remade the UI
+- Isolation Tool - modified the add new tool method to search first in Tools Database  for a suitable tool
 
 25.08.2020
 

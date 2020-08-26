@@ -889,6 +889,10 @@ class ToolDrilling(AppTool, Excellon):
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             return
 
+        if not self.tools_db_dict:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Tools DB empty."))
+            return
+
         self.replace_tools()
 
     def replace_tools(self):
@@ -900,6 +904,8 @@ class ToolDrilling(AppTool, Excellon):
             for orig_tool, orig_tool_val in self.excellon_tools.items():
                 orig_tooldia = orig_tool_val['tooldia']
 
+                tool_found = 0
+
                 # look in database tools
                 for db_tool, db_tool_val in self.tools_db_dict.items():
                     db_tooldia = db_tool_val['tooldia']
@@ -908,6 +914,7 @@ class ToolDrilling(AppTool, Excellon):
 
                     # if we find a tool with the same diameter in the Tools DB just update it's data
                     if orig_tooldia == db_tooldia:
+                        tool_found += 1
                         for d in db_tool_val['data']:
                             if d.find('tools_drill') == 0:
                                 new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
@@ -918,6 +925,7 @@ class ToolDrilling(AppTool, Excellon):
                                 new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
                     # search for a tool that has a tolerance that the tool fits in
                     elif high_limit >= orig_tooldia >= low_limit:
+                        tool_found += 1
                         new_tools_dict[orig_tool]['tooldia'] = db_tooldia
                         for d in db_tool_val['data']:
                             if d.find('tools_drill') == 0:
@@ -927,6 +935,13 @@ class ToolDrilling(AppTool, Excellon):
                                 continue
                             else:
                                 new_tools_dict[orig_tool]['data'][d] = db_tool_val['data'][d]
+
+                if tool_found > 1:
+                    self.app.inform.emit(
+                        '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                                 "Multiple tools for one tool diameter found in Tools Database."))
+                    self.blockSignals(False)
+                    return
 
             self.excellon_tools = new_tools_dict
             self.build_tool_ui()
