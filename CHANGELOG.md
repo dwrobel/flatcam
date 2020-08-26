@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+27.08.2020
+
+- fixed the Tcl commands AddCircle, AddPolygon, AddPolyline and AddRectangle to have stored bounds therefore making them movable/selectable on canvas
+
 26.08.2020
 
 - fix for issue nr 2 in case of Drilling Tool. Need to check Isolation Tool, Paint Tool, NCC Tool

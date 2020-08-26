@@ -520,69 +520,130 @@ class Geometry(object):
         for i, g in enumerate(self.flat_geometry):
             self.index.insert(i, g)
 
-    def add_circle(self, origin, radius):
+    def add_circle(self, origin, radius, tool=None):
         """
         Adds a circle to the object.
 
-        :param origin: Center of the circle.
-        :param radius: Radius of the circle.
+        :param origin:  Center of the circle.
+        :param radius:  Radius of the circle.
+        :param tool:    A tool in the Tools dictionary attribute of the object
         :return: None
         """
 
         if self.solid_geometry is None:
             self.solid_geometry = []
 
-        if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Point(origin).buffer(radius, int(self.geo_steps_per_circle)))
-            return
+        new_circle = Point(origin).buffer(radius, int(self.geo_steps_per_circle))
+        if not new_circle.is_valid:
+            return "fail"
 
+        # add to the solid_geometry
         try:
-            self.solid_geometry = self.solid_geometry.union(
-                Point(origin).buffer(radius, int(self.geo_steps_per_circle))
-            )
-        except Exception as e:
-            log.error("Failed to run union on polygons. %s" % str(e))
-            return
+            self.solid_geometry.append(new_circle)
+        except TypeError:
+            try:
+                self.solid_geometry = self.solid_geometry.union(new_circle)
+            except Exception as e:
+                log.error("Failed to run union on polygons. %s" % str(e))
+                return "fail"
 
-    def add_polygon(self, points):
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_circle)
+
+        # calculate bounds
+        try:
+            xmin, ymin, xmax, ymax = self.bounds()
+
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
+        except Exception as e:
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
+
+    def add_polygon(self, points, tool=None):
         """
         Adds a polygon to the object (by union)
 
-        :param points: The vertices of the polygon.
-        :return: None
+        :param points:  The vertices of the polygon.
+        :param tool:    A tool in the Tools dictionary attribute of the object
+        :return:        None
         """
         if self.solid_geometry is None:
             self.solid_geometry = []
 
+        new_poly = Polygon(points)
+        if not new_poly.is_valid:
+            return "fail"
+
+        # add to the solid_geometry
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Polygon(points))
-            return
+            self.solid_geometry.append(new_poly)
+        else:
+            try:
+                self.solid_geometry = self.solid_geometry.union(Polygon(points))
+            except Exception as e:
+                log.error("Failed to run union on polygons. %s" % str(e))
+                return "fail"
 
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_poly)
+
+        # calculate bounds
         try:
-            self.solid_geometry = self.solid_geometry.union(Polygon(points))
-        except Exception as e:
-            log.error("Failed to run union on polygons. %s" % str(e))
-            return
+            xmin, ymin, xmax, ymax = self.bounds()
 
-    def add_polyline(self, points):
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
+        except Exception as e:
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
+
+    def add_polyline(self, points, tool=None):
         """
         Adds a polyline to the object (by union)
 
-        :param points: The vertices of the polyline.
-        :return: None
+        :param points:  The vertices of the polyline.
+        :param tool:    A tool in the Tools dictionary attribute of the object
+        :return:        None
         """
         if self.solid_geometry is None:
             self.solid_geometry = []
 
-        if type(self.solid_geometry) is list:
-            self.solid_geometry.append(LineString(points))
-            return
+        new_line = LineString(points)
+        if not new_line.is_valid:
+            return "fail"
 
+        # add to the solid_geometry
+        if type(self.solid_geometry) is list:
+            self.solid_geometry.append(new_line)
+        else:
+            try:
+                self.solid_geometry = self.solid_geometry.union(new_line)
+            except Exception as e:
+                log.error("Failed to run union on polylines. %s" % str(e))
+                return "fail"
+
+        # add in tools solid_geometry
+        if tool is None or tool not in self.tools:
+            tool = 1
+        self.tools[tool]['solid_geometry'].append(new_line)
+
+        # calculate bounds
         try:
-            self.solid_geometry = self.solid_geometry.union(LineString(points))
+            xmin, ymin, xmax, ymax = self.bounds()
+
+            self.options['xmin'] = xmin
+            self.options['ymin'] = ymin
+            self.options['xmax'] = xmax
+            self.options['ymax'] = ymax
         except Exception as e:
-            log.error("Failed to run union on polylines. %s" % str(e))
-            return
+            log.error("Failed. The object has no bounds properties. %s" % str(e))
 
     def is_empty(self):
         if isinstance(self.solid_geometry, BaseGeometry) or isinstance(self.solid_geometry, Polygon) or \
