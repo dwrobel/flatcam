@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - Drilling Tool - when replacing Tools if more than one tool for one diameter is found, the application exit the process and display an error in status bar; some minor fixes
 - Isolation Tool - remade the UI
 - Isolation Tool - modified the add new tool method to search first in Tools Database  for a suitable tool
+- Isolation Tool - added ability to find the tool diameter that will guarantee total isolation of the currently selected Gerber object
 
 25.08.2020
 

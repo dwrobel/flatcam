@@ -11,15 +11,15 @@ from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, \
     FCComboBox, OptionalInputSection, FCSpinner, FCLabel
 from appParsers.ParseGerber import Gerber
+from camlib import grace
 
 from copy import deepcopy
 
 import numpy as np
-import math
 import simplejson as json
 import sys
 
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, nearest_points
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -37,6 +37,8 @@ log = logging.getLogger('base')
 
 
 class ToolIsolation(AppTool, Gerber):
+
+    optimal_found_sig = QtCore.pyqtSignal(float)
 
     def __init__(self, app):
         self.app = app
@@ -192,6 +194,9 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         self.t_ui.add_newtool_button.clicked.connect(self.on_tool_add)
         self.t_ui.deltool_btn.clicked.connect(self.on_tool_delete)
+
+        self.t_ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
+        self.optimal_found_sig.connect(lambda val: self.t_ui.new_tooldia_entry.set_value(float(val)))
 
         self.t_ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
         self.t_ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
@@ -889,7 +894,100 @@ class ToolIsolation(AppTool, Gerber):
             })
 
     def on_find_optimal_tooldia(self):
-        pass
+        self.units = self.app.defaults['units'].upper()
+
+        obj_name = self.t_ui.object_combo.currentText()
+
+        # Get source object.
+        try:
+            fcobj = self.app.collection.get_by_name(obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
+            return
+
+        if fcobj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
+            return
+
+        proc = self.app.proc_container.new(_("Working..."))
+
+        def job_thread(app_obj):
+            try:
+                old_disp_number = 0
+                pol_nr = 0
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+                total_geo = []
+
+                for ap in list(fcobj.apertures.keys()):
+                    if 'geometry' in fcobj.apertures[ap]:
+                        for geo_el in fcobj.apertures[ap]['geometry']:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise grace
+
+                            if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                                total_geo.append(geo_el['solid'])
+
+                total_geo = MultiPolygon(total_geo)
+                total_geo = total_geo.buffer(0)
+
+                try:
+                    __ = iter(total_geo)
+                    geo_len = len(total_geo)
+                    geo_len = (geo_len * (geo_len - 1)) / 2
+                except TypeError:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("The Gerber object has one Polygon as geometry.\n"
+                                          "There are no distances between geometry elements to be found."))
+                    return 'fail'
+
+                min_dict = {}
+                idx = 1
+                for geo in total_geo:
+                    for s_geo in total_geo[idx:]:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        # minimize the number of distances by not taking into considerations those that are too small
+                        dist = geo.distance(s_geo)
+                        dist = float('%.*f' % (self.decimals, dist))
+                        loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                        proc_loc = (
+                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                        )
+
+                        if dist in min_dict:
+                            min_dict[dist].append(proc_loc)
+                        else:
+                            min_dict[dist] = [proc_loc]
+
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                        if old_disp_number < disp_number <= 100:
+                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+                    idx += 1
+
+                min_list = list(min_dict.keys())
+                min_dist = min(min_list)
+
+                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+
+                self.optimal_found_sig.emit(min_dist_truncated)
+
+                app_obj.inform.emit('[success] %s: %s %s' %
+                                    (_("Optimal tool diameter found"), str(min_dist_truncated), self.units.lower()))
+            except Exception as ee:
+                proc.done()
+                log.debug(str(ee))
+                return
+            proc.done()
+
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_tool_add(self):
         self.blockSignals(True)
@@ -2972,6 +3070,7 @@ class IsoUI:
 
         # Find Optimal Tooldia
         self.find_optimal_button = FCButton(_('Find Optimal'))
+        self.find_optimal_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
         self.find_optimal_button.setToolTip(
             _("Find a tool diameter that is guaranteed\n"
               "to do a complete isolation.")
