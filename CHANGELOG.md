@@ -20,6 +20,10 @@ CHANGELOG for FlatCAM beta
 - Isolation Tool - added ability to find the tool diameter that will guarantee total isolation of the currently selected Gerber object
 - NCC Tool - UI change: if the operation is Isolation then some of the tool parameters are disabled
 - fixed issue when plotting a CNCJob object with multiple tools and annotations on by plotting annotations after all the tools geometries are plotted
+- fixed crash in Properties Tool, when applied on a CNCJob object made out of an Excellon object (fixed issue #444)
+- in Properties Tool, for CNCJob objects made out of Excellon objects, added the information's from Tool Data
+- in Properties Tool made sure that the set color for the Tree parents depends on the fact if the gray icons set are used (dark theme) or not
+- Properties Tool - properties for a Gerber objects has the Tool Data now at the end of the information's
 
 25.08.2020
 

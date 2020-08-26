@@ -2294,8 +2294,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if self.app.is_legacy is False:
                 self.annotation.clear(update=True)
 
-
-
     def on_annotation_change(self):
         """
         Handler for toggling the annotation display by clicking a checkbox.
