@@ -16,9 +16,10 @@ CHANGELOG for FlatCAM beta
 - in Tool Cutout: modified the UI in preparation for adding the Mouse Bites feature
 - Turkish translation strings were updated by the translator, Mehmet Kaya
 - Film Tool - moved the Tool UI in its own class
-- in Tools: Film, Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
+- in Tools: Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
 - Tool Isolation - made sure that the app can load from Tools Database only tools marked for Isolation tool
 - Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
+- in Tools: Transform, SUb, RulesCheck, DistanceMin, Distance - moved the Tool UI in its own class
 
 26.08.2020
 
