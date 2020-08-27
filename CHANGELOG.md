@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 27.08.2020
 
 - fixed the Tcl commands AddCircle, AddPolygon, AddPolyline and AddRectangle to have stored bounds therefore making them movable/selectable on canvas
+- in Tool Cutout, when using the Thin Gaps feature, the resulting geometry loose the extra color by toggling tool plot in Geometry UI Tools Table- fixed
 
 26.08.2020
 

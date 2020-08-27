@@ -2843,10 +2843,10 @@ class GeometryObject(FlatCAMObj, Geometry):
                     break
 
             if self.ui.geo_tools_table.cellWidget(check_row, 6).isChecked():
-                if 'override' in self.tools[tooluid_key]['data']:
-                    self.plot_element(element=solid_geometry, visible=True,
-                                      color=self.tools[tooluid_key]['data']['override'])
-                else:
+                try:
+                    color = self.tools[tooluid_key]['data']['override_color']
+                    self.plot_element(element=solid_geometry, visible=True, color=color)
+                except KeyError:
                     self.plot_element(element=solid_geometry, visible=True)
         self.shapes.redraw()
 
