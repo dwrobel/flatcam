@@ -1057,11 +1057,6 @@ class ToolIsolation(AppTool, Gerber):
             self.on_tool_default_add()
             return
 
-        if not tools_db_dict:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Tools DB empty."))
-            self.blockSignals(False)
-            return
-
         tool_found = 0
 
         offset = 'Path'

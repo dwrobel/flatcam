@@ -3356,6 +3356,10 @@ class ToolsDB2(QtWidgets.QWidget):
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("No Tool/row selected in the Tools Database table"))
             return
 
+        if not self.db_tool_dict:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Tools DB empty."))
+            return
+
         for item in self.ui.tree_widget.selectedItems():
             tool_uid = item.data(0, QtCore.Qt.DisplayRole)
 

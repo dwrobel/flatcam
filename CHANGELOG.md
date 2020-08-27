@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - Tool Isolation - made sure that the app can load from Tools Database only tools marked for Isolation tool
 - Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
 - in Tools: Transform, SUb, RulesCheck, DistanceMin, Distance - moved the Tool UI in its own class
+- some small fixes
 
 26.08.2020
 

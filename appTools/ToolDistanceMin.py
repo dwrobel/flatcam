@@ -224,8 +224,9 @@ class DistMinUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
+        self.units = self.app.defaults['units'].lower()
 
-# ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
         self.layout.addWidget(title_label)
 

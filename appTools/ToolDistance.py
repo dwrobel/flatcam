@@ -547,6 +547,7 @@ class DistUI:
         self.app = app
         self.decimals = self.app.decimals
         self.layout = layout
+        self.units = self.app.defaults['units'].lower()
 
         # ## Title
         title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
