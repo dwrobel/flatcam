@@ -432,7 +432,7 @@ class CutOut(AppTool):
                     geo = object_geo
 
                 solid_geo, rest_geo = cutout_handler(geom=geo)
-                if self.ui.thin_cb.get_value():
+                if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
                     gaps_solid_geo = rest_geo
             else:
                 try:
@@ -450,7 +450,7 @@ class CutOut(AppTool):
 
                     c_geo, r_geo = cutout_handler(geom=geom_struct)
                     solid_geo += c_geo
-                    if self.ui.thin_cb.get_value():
+                    if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
                         gaps_solid_geo += r_geo
 
             if not solid_geo:
@@ -667,7 +667,7 @@ class CutOut(AppTool):
 
                 solid_geo = cutout_rect_handler(geom=geo)
 
-                if self.ui.thin_cb.get_value():
+                if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
                     gaps_solid_geo = self.subtract_geo(geo, solid_geo)
             else:
                 if cutout_obj.kind == 'geometry':
@@ -683,7 +683,7 @@ class CutOut(AppTool):
 
                         c_geo = cutout_rect_handler(geom=geom_struct)
                         solid_geo += c_geo
-                        if self.ui.thin_cb.get_value():
+                        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
                             try:
                                 gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
@@ -703,7 +703,7 @@ class CutOut(AppTool):
 
                         c_geo = cutout_rect_handler(geom=geom_struct)
                         solid_geo += c_geo
-                        if self.ui.thin_cb.get_value():
+                        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
                             try:
                                 gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
@@ -845,7 +845,9 @@ class CutOut(AppTool):
 
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
-        gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
+        gaps_solid_geo = None
+        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+            gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
 
         # first subtract geometry for the total solid_geometry
         new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
@@ -1059,6 +1061,9 @@ class CutOut(AppTool):
 
             # rebuild the manual Geometry object
             self.man_cutout_obj.build_ui()
+
+            # plot the final object
+            self.man_cutout_obj.plot()
 
     def on_mouse_move(self, event):
 
