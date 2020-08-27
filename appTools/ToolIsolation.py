@@ -455,7 +455,7 @@ class ToolIsolation(AppTool, Gerber):
 
         sorted_tools = []
         for k, v in self.iso_tools.items():
-            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+            sorted_tools.append(self.app.dec_format(float(v['tooldia']), self.decimals))
 
         order = self.t_ui.order_radio.get_value()
         if order == 'fwd':
@@ -471,7 +471,8 @@ class ToolIsolation(AppTool, Gerber):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.iso_tools.items():
-                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
+                truncated_dia = self.app.dec_format(tooluid_value['tooldia'], self.decimals)
+                if truncated_dia == tool_sorted:
                     tool_id += 1
 
                     # Tool name/id
@@ -481,7 +482,7 @@ class ToolIsolation(AppTool, Gerber):
                     self.t_ui.tools_table.setItem(row_no, 0, id_)
 
                     # Diameter
-                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
+                    dia = QtWidgets.QTableWidgetItem(str(truncated_dia))
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
                     self.t_ui.tools_table.setItem(row_no, 1, dia)
 
@@ -1122,13 +1123,14 @@ class ToolIsolation(AppTool, Gerber):
             self.blockSignals(False)
             return
 
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
         self.iso_tools.update({
             tooluid: {
-                'tooldia':          updated_tooldia if updated_tooldia is not None else truncated_tooldia,
-                'offset':           offset,
-                'offset_value':     offset_val,
-                'type':             typ,
-                'tool_type':        tool_type,
+                'tooldia':          new_tdia,
+                'offset':           deepcopy(offset),
+                'offset_value':     deepcopy(offset_val),
+                'type':             deepcopy(typ),
+                'tool_type':        deepcopy(tool_type),
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
             }
