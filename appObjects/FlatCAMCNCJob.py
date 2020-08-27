@@ -843,25 +843,31 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def calculate_voronoi_diagram(self, pts):
         env = self.solid_geo.envelope
-        # fact = 1 if self.units == 'MM' else 0.039
-        # env = env.buffer(fact).exterior
+        fact = 1 if self.units == 'MM' else 0.039
+        env = env.buffer(fact)
 
         new_pts = deepcopy(pts)
-        for pt_index in range(len(pts)):
-            try:
-                pts_union = MultiPoint(pts)
-                voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
-                break
-            except Exception as e:
-                log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
+        try:
+            pts_union = MultiPoint(pts)
+            voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
+        except Exception as e:
+            log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
+            for pt_index in range(len(pts)):
                 new_pts[pt_index] = affinity.translate(
-                    new_pts[pt_index], random.random() *  1e-07, random.random() *  1e-07)
+                    new_pts[pt_index], random.random() *  1e-09, random.random() *  1e-09)
 
-                pts_union = MultiPoint(new_pts)
+            pts_union = MultiPoint(new_pts)
+            try:
                 voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
+            except Exception:
+                return
+
+        new_voronoi = []
+        for p in voronoi_union:
+            new_voronoi.append(p.intersection(env))
 
         for pt_key in list(self.al_geometry_dict.keys()):
-            for poly in voronoi_union:
+            for poly in new_voronoi:
                 if self.al_geometry_dict[pt_key]['point'].within(poly):
                     self.al_geometry_dict[pt_key]['geo'] = poly
 

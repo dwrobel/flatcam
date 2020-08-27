@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
 - in Tools: Transform, SUb, RulesCheck, DistanceMin, Distance - moved the Tool UI in its own class
 - some small fixes
+- fixed a borderline issue in CNCJob UI Autolevelling - Voronoi polygons calculations
 
 26.08.2020
 
