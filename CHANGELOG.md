@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - in Tool Cutout: modified the UI in preparation for adding the Mouse Bites feature
 - Turkish translation strings were updated by the translator, Mehmet Kaya
 - Film Tool - moved the Tool UI in its own class
+- in Tools: Film, Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
 
 26.08.2020
 

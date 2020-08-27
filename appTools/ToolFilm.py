@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, FCComboBox, FCFileSaveDialog
+    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel
 
 from copy import deepcopy
 import logging
@@ -759,7 +759,7 @@ class FilmUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -768,7 +768,7 @@ class FilmUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
@@ -781,7 +781,7 @@ class FilmUI:
         self.tf_type_obj_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel('<b>%s</b>:' % _("Object"))
+        self.tf_type_obj_combo_label = FCLabel('<b>%s</b>:' % _("Object"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object for which to create the film.\n"
               "The object can be of type: Gerber or Geometry.\n"
@@ -804,7 +804,7 @@ class FilmUI:
         self.tf_type_box_combo = RadioSet([{'label': _('Gerber'), 'value': 'grb'},
                                            {'label': _('Geometry'), 'value': 'geo'}])
 
-        self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
+        self.tf_type_box_combo_label = FCLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
               "film creation. It can be: Gerber or Geometry type."
@@ -827,7 +827,7 @@ class FilmUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
-        self.film_adj_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Adjustments"))
+        self.film_adj_label = FCLabel('<b>%s</b>' % _("Film Adjustments"))
         self.film_adj_label.setToolTip(
             _("Sometime the printers will distort the print shape, especially the Laser types.\n"
               "This section provide the tools to compensate for the print distortions.")
@@ -848,7 +848,7 @@ class FilmUI:
         )
         grid0.addWidget(self.film_scale_cb, 6, 0, 1, 2)
 
-        self.film_scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
+        self.film_scalex_label = FCLabel('%s:' % _("X factor"))
         self.film_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scalex_entry.set_range(-999.9999, 999.9999)
         self.film_scalex_entry.set_precision(self.decimals)
@@ -857,7 +857,7 @@ class FilmUI:
         grid0.addWidget(self.film_scalex_label, 7, 0)
         grid0.addWidget(self.film_scalex_entry, 7, 1)
 
-        self.film_scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
+        self.film_scaley_label = FCLabel('%s:' % _("Y factor"))
         self.film_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scaley_entry.set_range(-999.9999, 999.9999)
         self.film_scaley_entry.set_precision(self.decimals)
@@ -892,7 +892,7 @@ class FilmUI:
         )
         grid0.addWidget(self.film_skew_cb, 10, 0, 1, 2)
 
-        self.film_skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
+        self.film_skewx_label = FCLabel('%s:' % _("X angle"))
         self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
@@ -901,7 +901,7 @@ class FilmUI:
         grid0.addWidget(self.film_skewx_label, 11, 0)
         grid0.addWidget(self.film_skewx_entry, 11, 1)
 
-        self.film_skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
+        self.film_skewy_label = FCLabel('%s:' % _("Y angle"))
         self.film_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
@@ -910,7 +910,7 @@ class FilmUI:
         grid0.addWidget(self.film_skewy_label, 12, 0)
         grid0.addWidget(self.film_skewy_entry, 12, 1)
 
-        self.film_skew_ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.film_skew_ref_label = FCLabel('%s:' % _("Reference"))
         self.film_skew_ref_label.setToolTip(
             _("The reference point to be used as origin for the skew.\n"
               "It can be one of the four points of the geometry bounding box.")
@@ -957,7 +957,7 @@ class FilmUI:
                                           {'label': _('Y'), 'value': 'y'},
                                           {'label': _('Both'), 'value': 'both'}],
                                          stretch=False)
-        self.film_mirror_axis_label = QtWidgets.QLabel('%s:' % _("Mirror axis"))
+        self.film_mirror_axis_label = FCLabel('%s:' % _("Mirror axis"))
 
         grid0.addWidget(self.film_mirror_axis_label, 16, 0)
         grid0.addWidget(self.film_mirror_axis, 16, 1)
@@ -973,7 +973,7 @@ class FilmUI:
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line2, 17, 0, 1, 2)
 
-        self.film_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Parameters"))
+        self.film_param_label = FCLabel('<b>%s</b>' % _("Film Parameters"))
 
         grid0.addWidget(self.film_param_label, 18, 0, 1, 2)
 
@@ -983,7 +983,7 @@ class FilmUI:
         self.film_scale_stroke_entry.setSingleStep(0.01)
         self.film_scale_stroke_entry.set_precision(self.decimals)
 
-        self.film_scale_stroke_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
+        self.film_scale_stroke_label = FCLabel('%s:' % _("Scale Stroke"))
         self.film_scale_stroke_label.setToolTip(
             _("Scale the line stroke thickness of each feature in the SVG file.\n"
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
@@ -996,7 +996,7 @@ class FilmUI:
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
                                    {'label': _('Negative'), 'value': 'neg'}],
                                   stretch=False)
-        self.film_type_label = QtWidgets.QLabel(_("Film Type:"))
+        self.film_type_label = FCLabel(_("Film Type:"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
               "Positive means that it will print the features\n"
@@ -1014,7 +1014,7 @@ class FilmUI:
         self.boundary_entry.setSingleStep(0.01)
         self.boundary_entry.set_precision(self.decimals)
 
-        self.boundary_label = QtWidgets.QLabel('%s:' % _("Border"))
+        self.boundary_label = FCLabel('%s:' % _("Border"))
         self.boundary_label.setToolTip(
             _("Specify a border around the object.\n"
               "Only for negative film.\n"
@@ -1051,7 +1051,7 @@ class FilmUI:
 
         self.ois_p = OptionalHideInputSection(self.punch_cb, [self.punch_frame])
 
-        self.source_label = QtWidgets.QLabel('%s:' % _("Source"))
+        self.source_label = FCLabel('%s:' % _("Source"))
         self.source_label.setToolTip(
             _("The punch hole source can be:\n"
               "- Excellon -> an Excellon holes center will serve as reference.\n"
@@ -1063,7 +1063,7 @@ class FilmUI:
         punch_grid.addWidget(self.source_label, 0, 0)
         punch_grid.addWidget(self.source_punch, 0, 1)
 
-        self.exc_label = QtWidgets.QLabel('%s:' % _("Excellon Obj"))
+        self.exc_label = FCLabel('%s:' % _("Excellon Obj"))
         self.exc_label.setToolTip(
             _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
@@ -1079,7 +1079,7 @@ class FilmUI:
         self.exc_label.hide()
         self.exc_combo.hide()
 
-        self.punch_size_label = QtWidgets.QLabel('%s:' % _("Punch Size"))
+        self.punch_size_label = FCLabel('%s:' % _("Punch Size"))
         self.punch_size_label.setToolTip(_("The value here will control how big is the punch hole in the pads."))
         self.punch_size_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.punch_size_spinner.set_range(0, 999.9999)
@@ -1108,7 +1108,7 @@ class FilmUI:
                                          {'label': _('PDF'), 'value': 'pdf'}
                                          ], stretch=False)
 
-        self.file_type_label = QtWidgets.QLabel(_("Film Type:"))
+        self.file_type_label = FCLabel(_("Film Type:"))
         self.file_type_label.setToolTip(
             _("The file type of the saved film. Can be:\n"
               "- 'SVG' -> open-source vectorial format\n"
@@ -1119,7 +1119,7 @@ class FilmUI:
         grid1.addWidget(self.file_type_radio, 1, 1)
 
         # Page orientation
-        self.orientation_label = QtWidgets.QLabel('%s:' % _("Page Orientation"))
+        self.orientation_label = FCLabel('%s:' % _("Page Orientation"))
         self.orientation_label.setToolTip(_("Can be:\n"
                                             "- Portrait\n"
                                             "- Landscape"))
@@ -1132,7 +1132,7 @@ class FilmUI:
         grid1.addWidget(self.orientation_radio, 2, 1)
 
         # Page Size
-        self.pagesize_label = QtWidgets.QLabel('%s:' % _("Page Size"))
+        self.pagesize_label = FCLabel('%s:' % _("Page Size"))
         self.pagesize_label.setToolTip(_("A selection of standard ISO 216 page sizes."))
 
         self.pagesize_combo = FCComboBox()
@@ -1200,7 +1200,8 @@ class FilmUI:
         self.on_film_type(val='hide')
 
         # Buttons
-        self.film_object_button = QtWidgets.QPushButton(_("Save Film"))
+        self.film_object_button = FCButton(_("Save Film"))
+        self.film_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.film_object_button.setToolTip(
             _("Create a Film for the selected object, within\n"
               "the specified box. Does not create a new \n "
@@ -1218,7 +1219,7 @@ class FilmUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
