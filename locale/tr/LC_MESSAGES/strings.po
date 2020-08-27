@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-06-05 19:36+0300\n"
-"PO-Revision-Date: 2020-07-06 22:37+0300\n"
+"PO-Revision-Date: 2020-08-18 13:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -37,7 +37,7 @@ msgid ""
 "The number of gray colored rows is set in Preferences."
 msgstr ""
 "İndeksi.\n"
-"Gri çizgiler, yer imi menüsünü dolduracaktır.\n"
+"Gri çizgiler, yer işareti menüsünü dolduracaktır.\n"
 "Gri çizgi sayısı Ayarlarda ayarlanır."
 
 #: Bookmark.py:66
@@ -1090,7 +1090,7 @@ msgid ""
 "the edges of the polygon to\n"
 "be painted."
 msgstr ""
-"Çizilecek şeklin kenarından\n"
+"Çizilecek şeklin kenarlarından\n"
 "kaçınılacak mesafe bırakır."
 
 #: appDatabase.py:1603 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:200
@@ -1108,7 +1108,7 @@ msgstr ""
 "Çizim yöntemleri:\n"
 "- Standart: Sabit adım içeri doğru.\n"
 "- Nokta Bazlı: Merkezden dışarıya doğru.\n"
-"- Çizgi Bazçı: Paralel çizgiler.\n"
+"- Çizgi Bazlı: Paralel çizgiler.\n"
 "- Lazer Çizgileri: Yalnızca Gerber nesneleri için etkindir.\n"
 "İzleri takip eden çizgiler oluşturur.\n"
 "- Karma: Arıza durumunda, bu sıraya göre yukarıdan\n"
@@ -1132,14 +1132,14 @@ msgstr "Geçişler"
 msgid ""
 "Width of the isolation gap in\n"
 "number (integer) of tool widths."
-msgstr "Uç kalınlığı numarası (tamsayı), yalıtım boşluğunun genişliğidir."
+msgstr "Yalıtım aralığının uç genişliği sayısı (tamsayı) cinsinden genişliği."
 
 #: appDatabase.py:1669 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:169
 #: appTools/ToolIsolation.py:338
 msgid "How much (percentage) of the tool width to overlap each tool pass."
 msgstr ""
 "Her bir geçişte uç genişliğinin ne kadarlık kısmının (yüzde) üst üste "
-"bineceği."
+"geleceği."
 
 #: appDatabase.py:1702 appGUI/ObjectUI.py:236
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:201
@@ -2255,7 +2255,7 @@ msgstr "Hizala"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:216
 #: appTools/ToolQRCode.py:206 appTools/ToolTransform.py:367
 msgid "Rounded"
-msgstr "Yuvarlaklaştır"
+msgstr "Yuvarlak"
 
 #: appEditors/FlatCAMGeoEditor.py:922 appEditors/FlatCAMGrbEditor.py:5615
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:218
@@ -4385,15 +4385,15 @@ msgstr "Araçlar Araç Çubuğu"
 
 #: appGUI/MainGUI.py:803
 msgid "Excellon Editor Toolbar"
-msgstr "Excellon Editor Toolbar"
+msgstr "Excellon Düzenleyici Araç Çubuğu"
 
 #: appGUI/MainGUI.py:809
 msgid "Geometry Editor Toolbar"
-msgstr "Geometry Editor Toolbar"
+msgstr "Şekil Düzenleyici Araç Çubuğu"
 
 #: appGUI/MainGUI.py:813
 msgid "Gerber Editor Toolbar"
-msgstr "Gerber Editor Toolbar"
+msgstr "Gerber Düzenleyici Araç Çubuğu"
 
 #: appGUI/MainGUI.py:817
 msgid "Grid Toolbar"
@@ -4540,7 +4540,7 @@ msgstr "Hesap Makinesi"
 #: appGUI/MainGUI.py:937 appGUI/MainGUI.py:1969 appGUI/MainGUI.py:4116
 #: appTools/ToolQRCode.py:43 appTools/ToolQRCode.py:391
 msgid "QRCode Tool"
-msgstr "QR Kode"
+msgstr "QR Kod"
 
 #: appGUI/MainGUI.py:939 appGUI/MainGUI.py:1971 appGUI/MainGUI.py:4113
 #: appTools/ToolCopperThieving.py:39 appTools/ToolCopperThieving.py:572
@@ -5990,7 +5990,7 @@ msgid ""
 msgstr ""
 "Freze Tipi:\n"
 "- Delikler -> Bu uçla ilişkili delikleri frezeleyecektir\n"
-"- Oluklar -> Bu uça ilişkili yuvaları frezeleyecektir\n"
+"- Oluklar -> Bu uçla ilişkili yuvaları frezeleyecektir\n"
 "- Her İkisi -> Hem delikleri hem de yuvaları veya mevcut olanları "
 "frezeleyecektir"
 
@@ -6065,8 +6065,8 @@ msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
 msgstr ""
-"Cutting speed in the XY\n"
-"plane in units per minute"
+"Dakikada birim olarak\n"
+"XY düzleminde kesme hızı"
 
 #: appGUI/ObjectUI.py:763
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:209
@@ -6241,7 +6241,7 @@ msgstr "Z Son Hareket"
 msgid ""
 "Height of the tool after\n"
 "the last move at the end of the job."
-msgstr "İşin sonunda son geçişten sonra ucun yüksekliği."
+msgstr "İşin bitiminde ucun yüksekliği."
 
 #: appGUI/ObjectUI.py:1002 appGUI/ObjectUI.py:1904
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:195
@@ -6257,8 +6257,10 @@ msgid ""
 "If no value is entered then there is no move\n"
 "on X,Y plane at the end of the job."
 msgstr ""
-"X, Y konumunda Son Hareket, (x, y) formatında.\n"
-"Hiçbir değer girilmezse, iş sonunda X, Y düzleminde hareket olmaz."
+"X, Y düzleminde iş bittikten sonra ucun hangi noktaya\n"
+"gitmesini istiyorsanız (x, y) formatında bir konum girin.\n"
+"Hiçbir değer girilmezse, iş sonunda X, Y düzleminde\n"
+"iş hangi noktada bitmişse uç o noktada kalır."
 
 #: appGUI/ObjectUI.py:1014 appGUI/ObjectUI.py:1780
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:96
@@ -6840,13 +6842,13 @@ msgid ""
 "which means the moves that cut into the material."
 msgstr ""
 "Bu, çizilecek alan üzerindeki şekil türlerini seçer.\n"
-"İş parçası üzerinde hareketler anlamına gelen herhangi bir \n"
-"'Hareket' tipinde olabilir veya malzemeye kesilen hareketler\n"
-"anlamına gelen 'Kes' tipinde olabilir."
+"Bunlar, ya iş parçasının üzerindeki hareketler anlamına \n"
+"gelen 'Hareket' tipinde olabilir veya malzemeye kesilen\n"
+"hareketler anlamına gelen 'Kes' tipinde olabilir."
 
 #: appGUI/ObjectUI.py:2150 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:55
 msgid "Travel"
-msgstr "Hareket Hattı"
+msgstr "Hareket"
 
 #: appGUI/ObjectUI.py:2154 appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:64
 msgid "Display Annotation"
@@ -6859,7 +6861,7 @@ msgid ""
 "of a travel line."
 msgstr ""
 "Grafik üzerinde metin notunun görüntülenip görüntülenmeyeceğini seçer.\n"
-"Kutu işaretlenirse, her nokta için numaralar hareket hattı sırasına göre "
+"Kutu işaretlenirse numaralar, her nokta için hareket hattı sırasına göre "
 "görüntüler."
 
 #: appGUI/ObjectUI.py:2171
@@ -7268,15 +7270,15 @@ msgstr "Ayar değişiklikleri uygulandı."
 
 #: appGUI/preferences/PreferencesUIManager.py:881
 msgid "Are you sure you want to continue?"
-msgstr "Devam etmek istediğinize emin misiniz?"
+msgstr "Devam etmek istiyor musunuz?"
 
 #: appGUI/preferences/PreferencesUIManager.py:882
 msgid "Application will restart"
-msgstr "Uygulama yeniden başlatılacak"
+msgstr "Uygulama Yeniden Başlatılacak"
 
 #: appGUI/preferences/PreferencesUIManager.py:980
 msgid "Preferences closed without saving."
-msgstr "Ayarlar kaydedilmeden kapatıldı."
+msgstr "Uygulama, ayarlar kaydedilmeden kapatıldı."
 
 #: appGUI/preferences/PreferencesUIManager.py:992
 msgid "Preferences default values are restored."
@@ -8464,8 +8466,8 @@ msgid ""
 "but the menu will hold only so much."
 msgstr ""
 "Menüye yüklenebilecek maksimum yer işareti sayısı.\n"
-"Yer imi yöneticisindeki yer imi sayısı daha fazla olabilir; ancak \n"
-"menü yalnızca bu belirtilen sayıyı içerir."
+"Yer işareti yöneticisindeki yer işareti sayısı daha fazla\n"
+"olabilir; ancak menü yalnızca bu belirtilen sayıyı içerir."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:433
 msgid "Activity Icon"
@@ -8567,8 +8569,8 @@ msgid ""
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
 "FlatCAM için varsayılan kullanım seviyesini seçin.\n"
-"BASİT seviye -> Azaltılmış işlevsellik, yeni başlayanlar için en iyisi.\n"
-"GELİŞMİŞ seviye -> Tam işlevsellik.\n"
+"BASİT Seviye -> Azaltılmış işlevsellik, yeni başlayanlar için en iyisi.\n"
+"GELİŞMİŞ Seviye -> Tam işlevsellik.\n"
 "\n"
 "Buradaki seçim, her türlü FlatCAM nesneleri için Seçili\n"
 "Sekmedeki parametreleri etkileyecektir."
@@ -8731,7 +8733,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:252
 msgid "Save Settings"
-msgstr "Ayarları Kaydet"
+msgstr "Kayıt Ayarları"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:256
 msgid "Save Compressed Project"
@@ -9571,7 +9573,7 @@ msgstr "Alan"
 #: appTools/ToolPaint.py:1487 tclCommands/TclCommandCopperClear.py:192
 #: tclCommands/TclCommandPaint.py:166
 msgid "Reference Object"
-msgstr "Seçim"
+msgstr "Nesne"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:90
 #: appTools/ToolCopperThieving.py:133
@@ -9589,7 +9591,7 @@ msgstr ""
 "- 'Tamamı' - Bakır dolgu yapılacak nesnenin boyutunun tamamını ifade eder.\n"
 "- 'Alan' - Dolgu yapılacak alanı farenin sol tuşuyla seçerek "
 "belirleyebilirsiniz.\n"
-"- 'Seçim' - Belirtilen nesne alanı içinde bakır dolgusu yapar."
+"- 'Nesne' - Belirtilen nesne alanı içinde bakır dolgusu yapar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:101
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:76
@@ -10352,7 +10354,7 @@ msgid ""
 "or in a positive way (squares are opaque)."
 msgstr ""
 "QR Kod'un polaritesini seçin.\n"
-"Negatif seçildiğinde QR Kod'u oluşturan kareler saydamdır.\n"
+"Negatif seçildiğinde QR Kod'u oluşturan kareler şeffaftır.\n"
 "Pozitif seçildiğinde QR Kod'u oluşturan kareler opaktır."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:125
@@ -10385,8 +10387,8 @@ msgid ""
 "The bounding box, meaning the empty space that surrounds\n"
 "the QRCode geometry, can have a rounded or a square shape."
 msgstr ""
-"QR Kod çevresindeki boş alan anlamına gelen sınırlayıcı \n"
-"kutu yuvarlak veya kare şeklinde olabilir."
+"Sınırlayıcı kutu, yani QR Kod'u çevreleyen çerçeve, \n"
+"yuvarlak veya kare şekle sahip olabilir."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:152
 #: appTools/ToolQRCode.py:237
@@ -11299,7 +11301,7 @@ msgstr "Birleştir"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:260
 #: appTools/ToolIsolation.py:459
 msgid "Combine all passes into one object"
-msgstr "Tüm geçişleri tek bir nesneye birleştir"
+msgstr "Tüm geçişleri tek bir nesnede birleştir"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:267
 #: appTools/ToolIsolation.py:466
@@ -11327,11 +11329,10 @@ msgid ""
 "- 'Reference Object' - will process the area specified by another object."
 msgstr ""
 "Yalıtım kapsamı. Neyi yalıtacağınızı seçin:\n"
-"- 'Tümü' -> Nesnedeki tüm çokgenleri ayırın\n"
+"- 'Tamamı' -> Nesnedeki tüm çokgenleri ayırın\n"
 "- 'Alan' -> Seçilen alanda çokgenleri ayırın.\n"
 "- 'Çokgen' -> Seçilen çokgenleri ayırın.\n"
-"- 'Referans Nesne' - Başka bir nesne tarafından belirtilen alanı "
-"işleyecektir."
+"- 'Nesne' - Başka bir nesne tarafından belirtilen alanı işleyecektir."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:285
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:280
@@ -11467,7 +11468,7 @@ msgstr ""
 "- 'Tamamı' – Bakırı temizlenecek olan alan, bakırı temizlenecek olan\n"
 "    nesnenin tamamına dayanır.\n"
 "- 'Alan' - Temizlenecek alanın seçimine başlamak için sol tıklayın.\n"
-"- Seçim' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
+"- Nesne' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
 
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:27
 msgid "Paint Tool Options"
@@ -11522,9 +11523,10 @@ msgstr ""
 "Çizilecek alanın seçimi.\n"
 "- 'Çokgen' - Çizim için çokgen eklemek/çıkarmak için sol tıklayın.\n"
 "- 'Alan' - Çizim alanını seçmeye başlamak için sol tıklayın.\n"
-"(CTRL veya SHIFT) tuşunu basılı tutarak birden çok alan ekleyebilirsiniz.\n"
+"    (CTRL veya SHIFT) tuşunu basılı tutarak birden çok alan "
+"ekleyebilirsiniz.\n"
 "- 'Tamamı' - Çizim bir fare tıklamasıyla başlar.\n"
-"- 'Seçim' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
+"- 'Nesne' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:27
 msgid "Panelize Tool Options"
@@ -12528,7 +12530,7 @@ msgstr "Gerber işleme. Okuma"
 
 #: appParsers/ParseGerber.py:425 appParsers/ParseHPGL2.py:181
 msgid "lines"
-msgstr "satırlar"
+msgstr "satır"
 
 #: appParsers/ParseGerber.py:1001 appParsers/ParseGerber.py:1101
 #: appParsers/ParseHPGL2.py:274 appParsers/ParseHPGL2.py:288
@@ -13171,7 +13173,7 @@ msgstr ""
 "- 'Tamamı' - Bakır dolgu yapılacak nesnenin boyutunun tamamını ifade eder.\n"
 "- 'Alan' - Dolgu yapılacak alanı farenin sol tuşuyla seçerek "
 "belirleyebilirsiniz.\n"
-"- 'Seçim' - Belirtilen nesne alanı içinde bakır dolgusu yapar."
+"- 'Nesne' - Belirtilen nesne alanı içinde bakır dolgusu yapar."
 
 #: appTools/ToolCopperThieving.py:142 appTools/ToolIsolation.py:521
 #: appTools/ToolNCC.py:552 appTools/ToolPaint.py:495
@@ -13571,7 +13573,7 @@ msgstr ""
 
 #: appTools/ToolCutOut.py:343
 msgid "Manual Add Bridge Gaps"
-msgstr "Geçitleri El İle Ekle"
+msgstr "Geçitleri Elle Ekle"
 
 #: appTools/ToolCutOut.py:345
 msgid ""
@@ -13581,12 +13583,12 @@ msgid ""
 "The LMB click has to be done on the perimeter of\n"
 "the Geometry object used as a cutout geometry."
 msgstr ""
-"PCB'yi, keserken çevresindeki malzemeden kopmaması \n"
-"kullanılan geçitleri plaket sınırına farenin sol tuşu ile \n"
+"PCB'yi keserken çevresindeki malzemeden kopmaması \n"
+"için kullanılan geçitleri, plaket sınırına farenin sol tuşu ile \n"
 "tıklayarak ekleyin.\n"
 "\n"
-"Geçit: PCB kesildiği zaman çevresinden kopmaması\n"
-"için kullanılan köprülerdir."
+"Geçit: PCB kesildiği zaman çevresinden kopmaması için\n"
+"kullanılan köprülerdir."
 
 #: appTools/ToolCutOut.py:561
 msgid ""
@@ -14417,7 +14419,7 @@ msgstr "Referans işareti aracından çık."
 
 #: appTools/ToolFilm.py:42
 msgid "Film PCB"
-msgstr "Film PCB"
+msgstr "PCB Filmi"
 
 #: appTools/ToolFilm.py:73
 msgid ""
@@ -14557,17 +14559,16 @@ msgid ""
 " Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
-" Delik deliğinin boyutu Gerber nesnesindeki bazı deliklerden daha büyük "
-"olduğu için delik deliğine sahip bir film oluşturulamadı."
+" Delik yeri açma deliklerinin Gerber nesnesindeki bazı deliklerden daha "
+"büyük olmasından dolayı delikli bir film oluşturulamadı."
 
 #: appTools/ToolFilm.py:803
 msgid ""
 "Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
-"Delik yeri açma deliklerinin boyutu Gerber nesnesindeki bazı deliklerden "
-"daha büyük olduğu için delik yeri açma deliğine sahip bir film "
-"oluşturulamadı."
+" Delik yeri açma deliklerinin Gerber nesnesindeki bazı deliklerden daha "
+"büyük olmasından dolayı delikli bir film oluşturulamadı."
 
 #: appTools/ToolFilm.py:821
 msgid ""
@@ -15462,9 +15463,10 @@ msgid ""
 "specified by another object."
 msgstr ""
 "- 'Alan' - Çizim alanını seçmeye başlamak için sol tıklayın.\n"
-"(CTRL veya SHIFT) tuşunu basılı tutarak birden çok alan ekleyebilirsiniz.\n"
-"- 'Tümü' - Çizim bir fare tıklamasıyla başlar.\n"
-"- 'Seçim' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
+"   (CTRL veya SHIFT) tuşunu basılı tutarak birden çok alan "
+"ekleyebilirsiniz.\n"
+"- 'Tamamı' - Çizim bir fare tıklamasıyla başlar.\n"
+"- 'Nesne' - Belirtilen nesne alanı içindeki bakır temizliği yapılır."
 
 #: appTools/ToolPaint.py:1412
 #, python-format
@@ -17103,22 +17105,28 @@ msgid ""
 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
 "THE SOFTWARE."
 msgstr ""
-"İşbu belgeyle, yazılımın ve ilgili belgelerin (\"Yazılım\") bir kopyasını \n"
-"alan herkese ücretsiz olarak kullanma, kopyalama, değiştirme hakkı da \n"
-"dahil olmak üzere, istisnasız olarak kısıtlama olmaksızın kullanma izni \n"
-"verilir, aşağıdaki koşullar altında, bu yazılımın kopyalarını yayınlama, \n"
-"lisanslama veya satma izni vermek için:\n"
+"İşbu belgeyle, yazılımın ve ilgili belgelerin \"Yazılım\" bir kopyasını alan "
+"herkese ücretsiz\n"
+"olarak kullanma, kopyalama, değiştirme hakkı da dahil olmak üzere, "
+"istisnasız olarak\n"
+"kısıtlama olmaksızın kullanma izni verilir, aşağıdaki koşullar altında, bu "
+"yazılımın kopyalarını\n"
+"yayınlama, lisanslama veya satma izni vermek için:\n"
 "\n"
-"Yukarıdaki telif hakkı bildirimi ve bu izin notu, yazılımın tüm "
-"kopyalarına \n"
-"veya kısmi kopyalarına eklenmelidir.\n"
+"Yukarıdaki telif hakkı bildirimi ve bu izin notu, yazılımın tüm kopyalarına "
+"veya kısmi kopyalarına\n"
+"eklenmelidir.\n"
 "\n"
 "\n"
-"YAZILIM, AMAÇLI VEYA ÖZEL AMAÇLI VEYA HUKUKUN HERHANGİ BİR İHLALİ \n"
-"İÇİN KULLANIM GARANTİSİ DAHİL OLMAK ÜZERE AÇIK VEYA GİZLİ GARANTİ \n"
-"OLMADAN SAĞLANMAKTADIR. YAZILIM VEYA TELİF HAKKI SAHİPLERİ YAZILIM\n"
-" VEYA YAZILIM VEYA DİĞER KULLANIM İLE İLGİLİ YAZILIM VEYA DİĞER KULLANIM \n"
-"İLE İLGİLİ HERHANGİ BİR HASAR VEYA DİĞER ALACAKLAR İÇİN SORUMLU OLMAYACAKTIR."
+"YAZILIM, AMAÇLI VEYA ÖZEL AMAÇLI VEYA HUKUKUN HERHANGİ BİR İHLALİ İÇİN "
+"KULLANIM\n"
+"GARANTİSİ DAHİL OLMAK ÜZERE AÇIK VEYA GİZLİ GARANTİ OLMADAN  "
+"SAĞLANMAKTADIR.\n"
+"YAZILIM VEYA TELİF HAKKI SAHİPLERİ YAZILIM VEYA YAZILIM VEYA DİĞER KULLANIM "
+"İLE İLGİLİ\n"
+"YAZILIM VEYA DİĞER KULLANIM İLE İLGİLİ HERHANGİ BİR HASAR VEYA DİĞER "
+"ALACAKLAR İÇİN\n"
+"SORUMLU OLMAYACAKTIR."
 
 #: app_Main.py:2728
 msgid ""
@@ -17136,8 +17144,8 @@ msgstr ""
 "<br><div>Simgeleri <a href=\"https://www.flaticon.com/authors/freepik\" "
 "title=\"Freepik\">Freepik</a> den <a href=\"https://www.flaticon.com/"
 "\"             title=\"Flaticon\">www.flaticon.com</a></div><div>Simgeleri "
-"<a target=\"_blank\" href=\"https://icons8.com\">Icons8</a></div>Icons by <a "
-"href=\"http://www.onlinewebfonts.com\">oNline Web Fonts</a>"
+"<a target=\"_blank\" href=\"https://icons8.com\">Icons8</a></div>Simgeleri "
+"<a href=\"http://www.onlinewebfonts.com\">oNline Web Fonts</a>"
 
 #: app_Main.py:2764
 msgid "Splash"
@@ -17198,7 +17206,7 @@ msgstr "Önemli Bilgiler"
 #: app_Main.py:2994
 #, python-format
 msgid "This program is %s and free in a very wide meaning of the word."
-msgstr "Bu program% s ve kelimenin tam anlamıyla ücretsizdir."
+msgstr "Bu program % s ve kelimenin tam anlamıyla ücretsizdir."
 
 #: app_Main.py:2995
 msgid "Yet it cannot evolve without <b>contributions</b>."
@@ -17215,7 +17223,7 @@ msgstr "geliştirmeye <b> katkıda bulunabilirsiniz </b>:"
 
 #: app_Main.py:2998
 msgid "Pull Requests on the Bitbucket repository, if you are a developer"
-msgstr "Bir geliştiriciyseniz, Bitbucket deposundaki İstekleri Çekin"
+msgstr "Bir geliştiriciyseniz, Bitbucket deposundaki istekleri çekin"
 
 #: app_Main.py:3000
 msgid "Bug Reports by providing the steps required to reproduce the bug"
@@ -19488,7 +19496,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "G-code does not have a units code: either G20 or G21"
 #~ msgstr "G-code does not have a units code: either G20 or G21"
 
-#, python-brace-format
 #~ msgid ""
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
@@ -19496,20 +19503,16 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
 
-#, python-brace-format
 #~ msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 #~ msgstr "[selected]<span style=\"color:{color};\">{name}</span> selected"
 
-#, python-brace-format
 #~ msgid "{l_save}/Project_{date}"
 #~ msgstr "{l_save}/Project_{date}"
 
-#, python-brace-format
 #~| msgid "{l_save}/Project_{date}"
 #~ msgid "{l_save}/{obj_name}_{date}"
 #~ msgstr "{l_save}/{obj_name}_{date}"
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
@@ -19572,7 +19575,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "Calibrate Tool"
 #~ msgstr "Calibrate Tool"
 
-#, python-brace-format
 #~ msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 #~ msgstr "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 
@@ -19601,7 +19603,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "Margin distance value is missing or wrong format. Add it and retry."
 #~ msgstr "Margin distance value is missing or wrong format. Add it and retry."
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
