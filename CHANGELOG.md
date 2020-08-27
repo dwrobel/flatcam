@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - in Tool Cutout, when using fix gaps made sure that this feature is not activated if the value is zero
 - in Tool Cutout: modified the UI in preparation for adding the Mouse Bites feature
 - Turkish translation strings were updated by the translator, Mehmet Kaya
+- Film Tool - moved the Tool UI in its own class
 
 26.08.2020
 

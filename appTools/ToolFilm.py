@@ -39,23 +39,736 @@ log = logging.getLogger('base')
 
 class Film(AppTool):
 
-    toolName = _("Film PCB")
-
     def __init__(self, app):
         AppTool.__init__(self, app)
 
         self.decimals = self.app.decimals
+        self.units = self.app.defaults['units']
 
-        # Title
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = FilmUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
+
+        # ## Signals
+        self.ui.film_object_button.clicked.connect(self.on_film_creation)
+        self.ui.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+        self.ui.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
+
+        self.ui.film_type.activated_custom.connect(self.ui.on_film_type)
+        self.ui.source_punch.activated_custom.connect(self.ui.on_punch_source)
+        self.ui.file_type_radio.activated_custom.connect(self.ui.on_file_type)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+    def on_type_obj_index_changed(self, val):
+        obj_type = 2 if val == 'geo' else 0
+        self.ui.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.tf_object_combo.setCurrentIndex(0)
+        self.ui.tf_object_combo.obj_type = {
+            "grb": "gerber", "geo": "geometry"
+        }[self.ui.tf_type_obj_combo.get_value()]
+
+    def on_type_box_index_changed(self, val):
+        obj_type = 2 if val == 'geo' else 0
+        self.ui.tf_box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.tf_box_combo.setCurrentIndex(0)
+        self.ui.tf_box_combo.obj_type = {
+            "grb": "gerber", "geo": "geometry"
+        }[self.ui.tf_type_obj_combo.get_value()]
+
+    def run(self, toggle=True):
+        self.app.defaults.report_usage("ToolFilm()")
+
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                try:
+                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
+                except AttributeError:
+                    pass
+        else:
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+
+        AppTool.run(self)
+
+        self.set_tool_ui()
+
+        self.app.ui.notebook.setTabText(2, _("Film Tool"))
+
+    def install(self, icon=None, separator=None, **kwargs):
+        AppTool.install(self, icon, separator, shortcut='Alt+L', **kwargs)
+
+    def set_tool_ui(self):
+        self.reset_fields()
+
+        f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
+        self.ui.film_type.set_value(str(f_type))
+        self.ui.on_film_type(val=f_type)
+
+        b_entry = self.app.defaults["tools_film_boundary"] if self.app.defaults["tools_film_boundary"] else 0.0
+        self.ui.boundary_entry.set_value(float(b_entry))
+
+        scale_stroke_width = self.app.defaults["tools_film_scale_stroke"] if \
+            self.app.defaults["tools_film_scale_stroke"] else 0.0
+        self.ui.film_scale_stroke_entry.set_value(int(scale_stroke_width))
+
+        self.ui.punch_cb.set_value(False)
+        self.ui.source_punch.set_value('exc')
+
+        self.ui.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
+        self.ui.film_scalex_entry.set_value(float(self.app.defaults["tools_film_scale_x_entry"]))
+        self.ui.film_scaley_entry.set_value(float(self.app.defaults["tools_film_scale_y_entry"]))
+        self.ui.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
+        self.ui.film_skewx_entry.set_value(float(self.app.defaults["tools_film_skew_x_entry"]))
+        self.ui.film_skewy_entry.set_value(float(self.app.defaults["tools_film_skew_y_entry"]))
+        self.ui.film_skew_reference.set_value(self.app.defaults["tools_film_skew_ref_radio"])
+        self.ui.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
+        self.ui.film_mirror_axis.set_value(self.app.defaults["tools_film_mirror_axis_radio"])
+        self.ui.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
+        self.ui.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
+        self.ui.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
+
+        self.ui.tf_type_obj_combo.set_value('grb')
+        self.ui.tf_type_box_combo.set_value('grb')
+        # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
+        self.on_type_obj_index_changed(val='grb')
+        self.on_type_box_index_changed(val='grb')
+
+    def on_film_creation(self):
+        log.debug("ToolFilm.Film.on_film_creation() started ...")
+
+        try:
+            name = self.ui.tf_object_combo.currentText()
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No FlatCAM object selected. Load an object for Film and retry."))
+            return
+
+        try:
+            boxname = self.ui.tf_box_combo.currentText()
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No FlatCAM object selected. Load an object for Box and retry."))
+            return
+
+        if name == '' or boxname == '':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
+            return
+
+        scale_stroke_width = float(self.ui.film_scale_stroke_entry.get_value())
+        source = self.ui.source_punch.get_value()
+        file_type = self.ui.file_type_radio.get_value()
+
+        # #################################################################
+        # ################ STARTING THE JOB ###############################
+        # #################################################################
+
+        self.app.inform.emit(_("Generating Film ..."))
+
+        if self.ui.film_type.get_value() == "pos":
+
+            if self.ui.punch_cb.get_value() is False:
+                self.generate_positive_normal_film(name, boxname, factor=scale_stroke_width, ftype=file_type)
+            else:
+                self.generate_positive_punched_film(name, boxname, source, factor=scale_stroke_width, ftype=file_type)
+        else:
+            self.generate_negative_film(name, boxname, factor=scale_stroke_width, ftype=file_type)
+
+    def generate_positive_normal_film(self, name, boxname, factor, ftype='svg'):
+        log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
+
+        scale_factor_x = None
+        scale_factor_y = None
+        skew_factor_x = None
+        skew_factor_y = None
+        mirror = None
+        skew_reference = 'center'
+
+        if self.ui.film_scale_cb.get_value():
+            if self.ui.film_scalex_entry.get_value() != 1.0:
+                scale_factor_x = self.ui.film_scalex_entry.get_value()
+            if self.ui.film_scaley_entry.get_value() != 1.0:
+                scale_factor_y = self.ui.film_scaley_entry.get_value()
+        if self.ui.film_skew_cb.get_value():
+            if self.ui.film_skewx_entry.get_value() != 0.0:
+                skew_factor_x = self.ui.film_skewx_entry.get_value()
+            if self.ui.film_skewy_entry.get_value() != 0.0:
+                skew_factor_y = self.ui.film_skewy_entry.get_value()
+
+            skew_reference = self.ui.film_skew_reference.get_value()
+        if self.ui.film_mirror_cb.get_value():
+            if self.ui.film_mirror_axis.get_value() != 'none':
+                mirror = self.ui.film_mirror_axis.get_value()
+
+        if ftype == 'svg':
+            filter_ext = "SVG Files (*.SVG);;"\
+                         "All Files (*.*)"
+        elif ftype == 'png':
+            filter_ext = "PNG Files (*.PNG);;" \
+                         "All Files (*.*)"
+        else:
+            filter_ext = "PDF Files (*.PDF);;" \
+                         "All Files (*.*)"
+
+        try:
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export positive film"),
+                directory=self.app.get_last_save_folder() + '/' + name + '_film',
+                ext_filter=filter_ext)
+        except TypeError:
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export positive film"))
+
+        filename = str(filename)
+
+        if str(filename) == "":
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+            return
+        else:
+            pagesize = self.ui.pagesize_combo.get_value()
+            orientation = self.ui.orientation_radio.get_value()
+            color = self.app.defaults['tools_film_color']
+
+            self.export_positive(name, boxname, filename,
+                                 scale_stroke_factor=factor,
+                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                 skew_reference=skew_reference,
+                                 mirror=mirror,
+                                 pagesize_val=pagesize, orientation_val=orientation, color_val=color, opacity_val=1.0,
+                                 ftype=ftype
+                                 )
+
+    def generate_positive_punched_film(self, name, boxname, source, factor, ftype='svg'):
+
+        film_obj = self.app.collection.get_by_name(name)
+
+        if source == 'exc':
+            log.debug("ToolFilm.Film.generate_positive_punched_film() with Excellon source started ...")
+
+            try:
+                exc_name = self.ui.exc_combo.currentText()
+            except Exception:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("No Excellon object selected. Load an object for punching reference and retry."))
+                return
+
+            exc_obj = self.app.collection.get_by_name(exc_name)
+            exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
+            punched_solid_geometry = MultiPolygon(film_obj.solid_geometry).difference(exc_solid_geometry)
+
+            def init_func(new_obj, app_obj):
+                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+
+            outname = name + "_punched"
+            self.app.app_obj.new_object('gerber', outname, init_func)
+
+            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
+        else:
+            log.debug("ToolFilm.Film.generate_positive_punched_film() with Pad center source started ...")
+
+            punch_size = float(self.ui.punch_size_spinner.get_value())
+
+            punching_geo = []
+            for apid in film_obj.apertures:
+                if film_obj.apertures[apid]['type'] == 'C':
+                    if punch_size >= float(film_obj.apertures[apid]['size']):
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _(" Could not generate punched hole film because the punch hole size"
+                                               "is bigger than some of the apertures in the Gerber object."))
+                        return 'fail'
+                    else:
+                        for elem in film_obj.apertures[apid]['geometry']:
+                            if 'follow' in elem:
+                                if isinstance(elem['follow'], Point):
+                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                else:
+                    if punch_size >= float(film_obj.apertures[apid]['width']) or \
+                            punch_size >= float(film_obj.apertures[apid]['height']):
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Could not generate punched hole film because the punch hole size"
+                                               "is bigger than some of the apertures in the Gerber object."))
+                        return 'fail'
+                    else:
+                        for elem in film_obj.apertures[apid]['geometry']:
+                            if 'follow' in elem:
+                                if isinstance(elem['follow'], Point):
+                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+
+            punching_geo = MultiPolygon(punching_geo)
+            if not isinstance(film_obj.solid_geometry, Polygon):
+                temp_solid_geometry = MultiPolygon(film_obj.solid_geometry)
+            else:
+                temp_solid_geometry = film_obj.solid_geometry
+            punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
+
+            if punched_solid_geometry == temp_solid_geometry:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Could not generate punched hole film because the newly created object geometry "
+                                       "is the same as the one in the source object geometry..."))
+                return 'fail'
+
+            def init_func(new_obj, app_obj):
+                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+
+            outname = name + "_punched"
+            self.app.app_obj.new_object('gerber', outname, init_func)
+
+            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
+
+    def generate_negative_film(self, name, boxname, factor, ftype='svg'):
+        log.debug("ToolFilm.Film.generate_negative_film() started ...")
+
+        scale_factor_x = None
+        scale_factor_y = None
+        skew_factor_x = None
+        skew_factor_y = None
+        mirror = None
+        skew_reference = 'center'
+
+        if self.ui.film_scale_cb.get_value():
+            if self.ui.film_scalex_entry.get_value() != 1.0:
+                scale_factor_x = self.ui.film_scalex_entry.get_value()
+            if self.ui.film_scaley_entry.get_value() != 1.0:
+                scale_factor_y = self.ui.film_scaley_entry.get_value()
+        if self.ui.film_skew_cb.get_value():
+            if self.ui.film_skewx_entry.get_value() != 0.0:
+                skew_factor_x = self.ui.film_skewx_entry.get_value()
+            if self.ui.film_skewy_entry.get_value() != 0.0:
+                skew_factor_y = self.ui.film_skewy_entry.get_value()
+
+            skew_reference = self.ui.film_skew_reference.get_value()
+        if self.ui.film_mirror_cb.get_value():
+            if self.ui.film_mirror_axis.get_value() != 'none':
+                mirror = self.ui.film_mirror_axis.get_value()
+
+        border = float(self.ui.boundary_entry.get_value())
+
+        if border is None:
+            border = 0
+
+        if ftype == 'svg':
+            filter_ext = "SVG Files (*.SVG);;"\
+                         "All Files (*.*)"
+        elif ftype == 'png':
+            filter_ext = "PNG Files (*.PNG);;" \
+                         "All Files (*.*)"
+        else:
+            filter_ext = "PDF Files (*.PDF);;" \
+                         "All Files (*.*)"
+
+        try:
+            filename, _f = FCFileSaveDialog.get_saved_filename(
+                caption=_("Export negative film"),
+                directory=self.app.get_last_save_folder() + '/' + name + '_film',
+                ext_filter=filter_ext)
+        except TypeError:
+            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export negative film"))
+
+        filename = str(filename)
+
+        if str(filename) == "":
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
+            return
+        else:
+            self.export_negative(name, boxname, filename, border,
+                                 scale_stroke_factor=factor,
+                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                 skew_reference=skew_reference,
+                                 mirror=mirror, ftype=ftype
+                                 )
+
+    def export_negative(self, obj_name, box_name, filename, boundary,
+                        scale_stroke_factor=0.00,
+                        scale_factor_x=None, scale_factor_y=None,
+                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                        mirror=None,
+                        use_thread=True, ftype='svg'):
+        """
+        Exports a Geometry Object to an SVG file in negative.
+
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
+        :param filename: Path to the SVG file to save to.
+        :param boundary: thickness of a black border to surround all the features
+        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
+        :param scale_factor_x: factor to scale the svg geometry on the X axis
+        :param scale_factor_y: factor to scale the svg geometry on the Y axis
+        :param skew_factor_x: factor to skew the svg geometry on the X axis
+        :param skew_factor_y: factor to skew the svg geometry on the Y axis
+        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
+        those are the 4 points of the bounding box of the geometry to be skewed.
+        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+        :param use_thread: if to be run in a separate thread; boolean
+        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
+        :return:
+        """
+        self.app.defaults.report_usage("export_negative()")
+
+        if filename is None:
+            filename = self.app.defaults["global_last_save_folder"]
+
+        self.app.log.debug("export_svg() negative")
+
+        try:
+            obj = self.app.collection.get_by_name(str(obj_name))
+        except Exception:
+            return "Could not retrieve object: %s" % obj_name
+
+        try:
+            box = self.app.collection.get_by_name(str(box_name))
+        except Exception:
+            return "Could not retrieve object: %s" % box_name
+
+        if box is None:
+            self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
+            box = obj
+
+        def make_negative_film():
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
+                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                          mirror=mirror
+                                          )
+
+            # Determine bounding area for svg export
+            bounds = box.bounds()
+            size = box.size()
+
+            uom = obj.units.lower()
+
+            # Convert everything to strings for use in the xml doc
+            svgwidth = str(size[0] + (2 * boundary))
+            svgheight = str(size[1] + (2 * boundary))
+            minx = str(bounds[0] - boundary)
+            miny = str(bounds[1] + boundary + size[1])
+            miny_rect = str(bounds[1] - boundary)
+
+            # Add a SVG Header and footer to the svg output from shapely
+            # The transform flips the Y Axis so that everything renders
+            # properly within svg apps such as inkscape
+            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
+                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
+            svg_header += 'width="' + svgwidth + uom + '" '
+            svg_header += 'height="' + svgheight + uom + '" '
+            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
+            svg_header += '>'
+            svg_header += '<g transform="scale(1,-1)">'
+            svg_footer = '</g> </svg>'
+
+            # Change the attributes of the exported SVG
+            # We don't need stroke-width - wrong, we do when we have lines with certain width
+            # We set opacity to maximum
+            # We set the color to WHITE
+            root = ET.fromstring(exported_svg)
+            for child in root:
+                child.set('fill', '#FFFFFF')
+                child.set('opacity', '1.0')
+                child.set('stroke', '#FFFFFF')
+
+            # first_svg_elem = 'rect x="' + minx + '" ' + 'y="' + miny_rect + '" '
+            # first_svg_elem += 'width="' + svgwidth + '" ' + 'height="' + svgheight + '" '
+            # first_svg_elem += 'fill="#000000" opacity="1.0" stroke-width="0.0"'
+
+            first_svg_elem_tag = 'rect'
+            first_svg_elem_attribs = {
+                'x': minx,
+                'y': miny_rect,
+                'width': svgwidth,
+                'height': svgheight,
+                'id': 'neg_rect',
+                'style': 'fill:#000000;opacity:1.0;stroke-width:0.0'
+            }
+
+            root.insert(0, ET.Element(first_svg_elem_tag, first_svg_elem_attribs))
+            exported_svg = ET.tostring(root)
+
+            svg_elem = svg_header + str(exported_svg) + svg_footer
+
+            # Parse the xml through a xml parser just to add line feeds
+            # and to make it look more pretty for the output
+            doc = parse_xml_string(svg_elem)
+            doc_final = doc.toprettyxml()
+
+            if ftype == 'svg':
+                try:
+                    with open(filename, 'w') as fp:
+                        fp.write(doc_final)
+                except PermissionError:
+                    self.app.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
+            elif ftype == 'png':
+                try:
+                    doc_final = StringIO(doc_final)
+                    drawing = svg2rlg(doc_final)
+                    renderPM.drawToFile(drawing, filename, 'PNG')
+                except Exception as e:
+                    log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
+                    return 'fail'
+            else:
+                try:
+                    if self.units == 'INCH':
+                        unit = inch
+                    else:
+                        unit = mm
+
+                    doc_final = StringIO(doc_final)
+                    drawing = svg2rlg(doc_final)
+
+                    p_size = self.ui.pagesize_combo.get_value()
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
+                    else:
+                        if self.ui.orientation_radio.get_value() == 'p':
+                            page_size = portrait(self.ui.pagesize[p_size])
+                        else:
+                            page_size = landscape(self.ui.pagesize[p_size])
+
+                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
+                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
+                        renderPDF.draw(drawing, my_canvas, 0, 0)
+                        my_canvas.save()
+                except Exception as e:
+                    log.debug("FilmTool.export_negative() --> PDF output --> %s" % str(e))
+                    return 'fail'
+
+            if self.app.defaults["global_open_style"] is False:
+                self.app.file_opened.emit("SVG", filename)
+            self.app.file_saved.emit("SVG", filename)
+            self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
+
+        if use_thread is True:
+            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
+
+            def job_thread_film(app_obj):
+                try:
+                    make_negative_film()
+                except Exception:
+                    proc.done()
+                    return
+                proc.done()
+
+            self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
+        else:
+            make_negative_film()
+
+    def export_positive(self, obj_name, box_name, filename,
+                        scale_stroke_factor=0.00,
+                        scale_factor_x=None, scale_factor_y=None,
+                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                        mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
+                        use_thread=True, ftype='svg'):
+
+        """
+        Exports a Geometry Object to an SVG file in positive black.
+
+        :param obj_name:            the name of the FlatCAM object to be saved
+        :param box_name:            the name of the FlatCAM object to be used as delimitation of the content to be saved
+        :param filename:            Path to the file to save to.
+        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
+        :param scale_factor_x:      factor to scale the geometry on the X axis
+        :param scale_factor_y:      factor to scale the geometry on the Y axis
+        :param skew_factor_x:       factor to skew the geometry on the X axis
+        :param skew_factor_y:       factor to skew the geometry on the Y axis
+        :param skew_reference:      reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft',
+        'topright' and those are the 4 points of the bounding box of the geometry to be skewed.
+        :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+        :param orientation_val:
+        :param pagesize_val:
+        :param color_val:
+        :param opacity_val:
+        :param use_thread:          if to be run in a separate thread; boolean
+        :param ftype:               the type of file for saving the film: 'svg', 'png' or 'pdf'
+
+        :return:
+        """
+        self.app.defaults.report_usage("export_positive()")
+
+        if filename is None:
+            filename = self.app.defaults["global_last_save_folder"]
+
+        self.app.log.debug("export_svg() black")
+
+        try:
+            obj = self.app.collection.get_by_name(str(obj_name))
+        except Exception:
+            return "Could not retrieve object: %s" % obj_name
+
+        try:
+            box = self.app.collection.get_by_name(str(box_name))
+        except Exception:
+            return "Could not retrieve object: %s" % box_name
+
+        if box is None:
+            self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
+            box = obj
+
+        p_size = pagesize_val
+        orientation = orientation_val
+        color = color_val
+        transparency_level = opacity_val
+
+        def make_positive_film(p_size, orientation, color, transparency_level):
+            log.debug("FilmTool.export_positive().make_positive_film()")
+
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
+                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                          mirror=mirror
+                                          )
+
+            # Change the attributes of the exported SVG
+            # We don't need stroke-width
+            # We set opacity to maximum
+            # We set the colour to WHITE
+            root = ET.fromstring(exported_svg)
+            for child in root:
+                child.set('fill', str(color))
+                child.set('opacity', str(transparency_level))
+                child.set('stroke', str(color))
+
+            exported_svg = ET.tostring(root)
+
+            # Determine bounding area for svg export
+            bounds = box.bounds()
+            size = box.size()
+
+            # This contain the measure units
+            uom = obj.units.lower()
+
+            # Define a boundary around SVG of about 1.0mm (~39mils)
+            if uom in "mm":
+                boundary = 1.0
+            else:
+                boundary = 0.0393701
+
+            # Convert everything to strings for use in the xml doc
+            svgwidth = str(size[0] + (2 * boundary))
+            svgheight = str(size[1] + (2 * boundary))
+            minx = str(bounds[0] - boundary)
+            miny = str(bounds[1] + boundary + size[1])
+
+            # Add a SVG Header and footer to the svg output from shapely
+            # The transform flips the Y Axis so that everything renders
+            # properly within svg apps such as inkscape
+            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
+                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
+            svg_header += 'width="' + svgwidth + uom + '" '
+            svg_header += 'height="' + svgheight + uom + '" '
+            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
+            svg_header += '>'
+            svg_header += '<g transform="scale(1,-1)">'
+            svg_footer = '</g> </svg>'
+
+            svg_elem = str(svg_header) + str(exported_svg) + str(svg_footer)
+
+            # Parse the xml through a xml parser just to add line feeds
+            # and to make it look more pretty for the output
+            doc = parse_xml_string(svg_elem)
+            doc_final = doc.toprettyxml()
+
+            if ftype == 'svg':
+                try:
+                    with open(filename, 'w') as fp:
+                        fp.write(doc_final)
+                except PermissionError:
+                    self.app.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
+            elif ftype == 'png':
+                try:
+                    doc_final = StringIO(doc_final)
+                    drawing = svg2rlg(doc_final)
+                    renderPM.drawToFile(drawing, filename, 'PNG')
+                except Exception as e:
+                    log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
+                    return 'fail'
+            else:
+                try:
+                    if self.units == 'IN':
+                        unit = inch
+                    else:
+                        unit = mm
+
+                    doc_final = StringIO(doc_final)
+                    drawing = svg2rlg(doc_final)
+
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
+                    else:
+                        if orientation == 'p':
+                            page_size = portrait(self.pagesize[p_size])
+                        else:
+                            page_size = landscape(self.pagesize[p_size])
+
+                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
+                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
+                        renderPDF.draw(drawing, my_canvas, 0, 0)
+                        my_canvas.save()
+                except Exception as e:
+                    log.debug("FilmTool.export_positive() --> PDF output --> %s" % str(e))
+                    return 'fail'
+
+            if self.app.defaults["global_open_style"] is False:
+                self.app.file_opened.emit("SVG", filename)
+            self.app.file_saved.emit("SVG", filename)
+            self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
+
+        if use_thread is True:
+            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
+
+            def job_thread_film():
+                try:
+                    make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                                       transparency_level=transparency_level)
+                except Exception:
+                    proc.done()
+                    return
+                proc.done()
+
+            self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
+        else:
+            make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                               transparency_level=transparency_level)
+
+    def reset_fields(self):
+        self.ui.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+
+class FilmUI:
+
+    toolName = _("Film PCB")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
         self.layout.addWidget(title_label)
+        self.layout.addWidget(QtWidgets.QLabel(""))
 
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
@@ -428,53 +1141,53 @@ class Film(AppTool):
         self.pagesize.update(
             {
                 'Bounds': None,
-                'A0': (841*mm, 1189*mm),
-                'A1': (594*mm, 841*mm),
-                'A2': (420*mm, 594*mm),
-                'A3': (297*mm, 420*mm),
-                'A4': (210*mm, 297*mm),
-                'A5': (148*mm, 210*mm),
-                'A6': (105*mm, 148*mm),
-                'A7': (74*mm, 105*mm),
-                'A8': (52*mm, 74*mm),
-                'A9': (37*mm, 52*mm),
-                'A10': (26*mm, 37*mm),
+                'A0': (841 * mm, 1189 * mm),
+                'A1': (594 * mm, 841 * mm),
+                'A2': (420 * mm, 594 * mm),
+                'A3': (297 * mm, 420 * mm),
+                'A4': (210 * mm, 297 * mm),
+                'A5': (148 * mm, 210 * mm),
+                'A6': (105 * mm, 148 * mm),
+                'A7': (74 * mm, 105 * mm),
+                'A8': (52 * mm, 74 * mm),
+                'A9': (37 * mm, 52 * mm),
+                'A10': (26 * mm, 37 * mm),
 
-                'B0': (1000*mm, 1414*mm),
-                'B1': (707*mm, 1000*mm),
-                'B2': (500*mm, 707*mm),
-                'B3': (353*mm, 500*mm),
-                'B4': (250*mm, 353*mm),
-                'B5': (176*mm, 250*mm),
-                'B6': (125*mm, 176*mm),
-                'B7': (88*mm, 125*mm),
-                'B8': (62*mm, 88*mm),
-                'B9': (44*mm, 62*mm),
-                'B10': (31*mm, 44*mm),
+                'B0': (1000 * mm, 1414 * mm),
+                'B1': (707 * mm, 1000 * mm),
+                'B2': (500 * mm, 707 * mm),
+                'B3': (353 * mm, 500 * mm),
+                'B4': (250 * mm, 353 * mm),
+                'B5': (176 * mm, 250 * mm),
+                'B6': (125 * mm, 176 * mm),
+                'B7': (88 * mm, 125 * mm),
+                'B8': (62 * mm, 88 * mm),
+                'B9': (44 * mm, 62 * mm),
+                'B10': (31 * mm, 44 * mm),
 
-                'C0': (917*mm, 1297*mm),
-                'C1': (648*mm, 917*mm),
-                'C2': (458*mm, 648*mm),
-                'C3': (324*mm, 458*mm),
-                'C4': (229*mm, 324*mm),
-                'C5': (162*mm, 229*mm),
-                'C6': (114*mm, 162*mm),
-                'C7': (81*mm, 114*mm),
-                'C8': (57*mm, 81*mm),
-                'C9': (40*mm, 57*mm),
-                'C10': (28*mm, 40*mm),
+                'C0': (917 * mm, 1297 * mm),
+                'C1': (648 * mm, 917 * mm),
+                'C2': (458 * mm, 648 * mm),
+                'C3': (324 * mm, 458 * mm),
+                'C4': (229 * mm, 324 * mm),
+                'C5': (162 * mm, 229 * mm),
+                'C6': (114 * mm, 162 * mm),
+                'C7': (81 * mm, 114 * mm),
+                'C8': (57 * mm, 81 * mm),
+                'C9': (40 * mm, 57 * mm),
+                'C10': (28 * mm, 40 * mm),
 
                 # American paper sizes
-                'LETTER': (8.5*inch, 11*inch),
-                'LEGAL': (8.5*inch, 14*inch),
-                'ELEVENSEVENTEEN': (11*inch, 17*inch),
+                'LETTER': (8.5 * inch, 11 * inch),
+                'LEGAL': (8.5 * inch, 14 * inch),
+                'ELEVENSEVENTEEN': (11 * inch, 17 * inch),
 
                 # From https://en.wikipedia.org/wiki/Paper_size
-                'JUNIOR_LEGAL': (5*inch, 8*inch),
-                'HALF_LETTER': (5.5*inch, 8*inch),
-                'GOV_LETTER': (8*inch, 10.5*inch),
-                'GOV_LEGAL': (8.5*inch, 13*inch),
-                'LEDGER': (17*inch, 11*inch),
+                'JUNIOR_LEGAL': (5 * inch, 8 * inch),
+                'HALF_LETTER': (5.5 * inch, 8 * inch),
+                'GOV_LETTER': (8 * inch, 10.5 * inch),
+                'GOV_LEGAL': (8.5 * inch, 13 * inch),
+                'LEDGER': (17 * inch, 11 * inch),
             }
         )
 
@@ -495,11 +1208,11 @@ class Film(AppTool):
               "selected format.")
         )
         self.film_object_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+                               QPushButton
+                               {
+                                   font-weight: bold;
+                               }
+                               """)
         grid1.addWidget(self.film_object_button, 4, 0, 1, 2)
 
         self.layout.addStretch()
@@ -511,107 +1224,15 @@ class Film(AppTool):
             _("Will reset the tool parameters.")
         )
         self.reset_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+                               QPushButton
+                               {
+                                   font-weight: bold;
+                               }
+                               """)
         self.layout.addWidget(self.reset_button)
 
-        self.units = self.app.defaults['units']
-
-        # ## Signals
-        self.film_object_button.clicked.connect(self.on_film_creation)
-        self.tf_type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
-        self.tf_type_box_combo.activated_custom.connect(self.on_type_box_index_changed)
-
-        self.film_type.activated_custom.connect(self.on_film_type)
-        self.source_punch.activated_custom.connect(self.on_punch_source)
-        self.file_type_radio.activated_custom.connect(self.on_file_type)
-        self.reset_button.clicked.connect(self.set_tool_ui)
-
-    def on_type_obj_index_changed(self, val):
-        obj_type = 2 if val == 'geo' else 0
-        self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.tf_object_combo.setCurrentIndex(0)
-        self.tf_object_combo.obj_type = {
-            "grb": "gerber", "geo": "geometry"
-        }[self.tf_type_obj_combo.get_value()]
-
-    def on_type_box_index_changed(self, val):
-        obj_type = 2 if val == 'geo' else 0
-        self.tf_box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.setCurrentIndex(0)
-        self.tf_box_combo.obj_type = {
-            "grb": "gerber", "geo": "geometry"
-        }[self.tf_type_obj_combo.get_value()]
-
-    def run(self, toggle=True):
-        self.app.defaults.report_usage("ToolFilm()")
-
-        if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        # if tab is populated with the tool but it does not have the focus, focus on it
-                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
-                            # focus on Tool Tab
-                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-                        else:
-                            self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
-        else:
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-
-        AppTool.run(self)
-
-        self.set_tool_ui()
-
-        self.app.ui.notebook.setTabText(2, _("Film Tool"))
-
-    def install(self, icon=None, separator=None, **kwargs):
-        AppTool.install(self, icon, separator, shortcut='Alt+L', **kwargs)
-
-    def set_tool_ui(self):
-        self.reset_fields()
-
-        f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
-        self.film_type.set_value(str(f_type))
-        self.on_film_type(val=f_type)
-
-        b_entry = self.app.defaults["tools_film_boundary"] if self.app.defaults["tools_film_boundary"] else 0.0
-        self.boundary_entry.set_value(float(b_entry))
-
-        scale_stroke_width = self.app.defaults["tools_film_scale_stroke"] if \
-            self.app.defaults["tools_film_scale_stroke"] else 0.0
-        self.film_scale_stroke_entry.set_value(int(scale_stroke_width))
-
-        self.punch_cb.set_value(False)
-        self.source_punch.set_value('exc')
-
-        self.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
-        self.film_scalex_entry.set_value(float(self.app.defaults["tools_film_scale_x_entry"]))
-        self.film_scaley_entry.set_value(float(self.app.defaults["tools_film_scale_y_entry"]))
-        self.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
-        self.film_skewx_entry.set_value(float(self.app.defaults["tools_film_skew_x_entry"]))
-        self.film_skewy_entry.set_value(float(self.app.defaults["tools_film_skew_y_entry"]))
-        self.film_skew_reference.set_value(self.app.defaults["tools_film_skew_ref_radio"])
-        self.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
-        self.film_mirror_axis.set_value(self.app.defaults["tools_film_mirror_axis_radio"])
-        self.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
-        self.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
-        self.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
-
-        self.tf_type_obj_combo.set_value('grb')
-        self.tf_type_box_combo.set_value('grb')
-        # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
-        self.on_type_obj_index_changed(val='grb')
-        self.on_type_box_index_changed(val='grb')
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
 
     def on_film_type(self, val):
         type_of_film = val
@@ -655,610 +1276,19 @@ class Film(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Using the Pad center does not work on Geometry objects. "
                                                           "Only a Gerber object has pads."))
 
-    def on_film_creation(self):
-        log.debug("ToolFilm.Film.on_film_creation() started ...")
-
-        try:
-            name = self.tf_object_combo.currentText()
-        except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Film and retry."))
-            return
-
-        try:
-            boxname = self.tf_box_combo.currentText()
-        except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No FlatCAM object selected. Load an object for Box and retry."))
-            return
-
-        if name == '' or boxname == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
-            return
-
-        scale_stroke_width = float(self.film_scale_stroke_entry.get_value())
-        source = self.source_punch.get_value()
-        file_type = self.file_type_radio.get_value()
-
-        # #################################################################
-        # ################ STARTING THE JOB ###############################
-        # #################################################################
-
-        self.app.inform.emit(_("Generating Film ..."))
-
-        if self.film_type.get_value() == "pos":
-
-            if self.punch_cb.get_value() is False:
-                self.generate_positive_normal_film(name, boxname, factor=scale_stroke_width, ftype=file_type)
-            else:
-                self.generate_positive_punched_film(name, boxname, source, factor=scale_stroke_width, ftype=file_type)
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
         else:
-            self.generate_negative_film(name, boxname, factor=scale_stroke_width, ftype=file_type)
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
 
-    def generate_positive_normal_film(self, name, boxname, factor, ftype='svg'):
-        log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
-
-        scale_factor_x = None
-        scale_factor_y = None
-        skew_factor_x = None
-        skew_factor_y = None
-        mirror = None
-        skew_reference = 'center'
-
-        if self.film_scale_cb.get_value():
-            if self.film_scalex_entry.get_value() != 1.0:
-                scale_factor_x = self.film_scalex_entry.get_value()
-            if self.film_scaley_entry.get_value() != 1.0:
-                scale_factor_y = self.film_scaley_entry.get_value()
-        if self.film_skew_cb.get_value():
-            if self.film_skewx_entry.get_value() != 0.0:
-                skew_factor_x = self.film_skewx_entry.get_value()
-            if self.film_skewy_entry.get_value() != 0.0:
-                skew_factor_y = self.film_skewy_entry.get_value()
-
-            skew_reference = self.film_skew_reference.get_value()
-        if self.film_mirror_cb.get_value():
-            if self.film_mirror_axis.get_value() != 'none':
-                mirror = self.film_mirror_axis.get_value()
-
-        if ftype == 'svg':
-            filter_ext = "SVG Files (*.SVG);;"\
-                         "All Files (*.*)"
-        elif ftype == 'png':
-            filter_ext = "PNG Files (*.PNG);;" \
-                         "All Files (*.*)"
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
         else:
-            filter_ext = "PDF Files (*.PDF);;" \
-                         "All Files (*.*)"
-
-        try:
-            filename, _f = FCFileSaveDialog.get_saved_filename(
-                caption=_("Export positive film"),
-                directory=self.app.get_last_save_folder() + '/' + name + '_film',
-                ext_filter=filter_ext)
-        except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export positive film"))
-
-        filename = str(filename)
-
-        if str(filename) == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-            return
-        else:
-            pagesize = self.pagesize_combo.get_value()
-            orientation = self.orientation_radio.get_value()
-            color = self.app.defaults['tools_film_color']
-
-            self.export_positive(name, boxname, filename,
-                                 scale_stroke_factor=factor,
-                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
-                                 mirror=mirror,
-                                 pagesize_val=pagesize, orientation_val=orientation, color_val=color, opacity_val=1.0,
-                                 ftype=ftype
-                                 )
-
-    def generate_positive_punched_film(self, name, boxname, source, factor, ftype='svg'):
-
-        film_obj = self.app.collection.get_by_name(name)
-
-        if source == 'exc':
-            log.debug("ToolFilm.Film.generate_positive_punched_film() with Excellon source started ...")
-
-            try:
-                exc_name = self.exc_combo.currentText()
-            except Exception:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("No Excellon object selected. Load an object for punching reference and retry."))
-                return
-
-            exc_obj = self.app.collection.get_by_name(exc_name)
-            exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
-            punched_solid_geometry = MultiPolygon(film_obj.solid_geometry).difference(exc_solid_geometry)
-
-            def init_func(new_obj, app_obj):
-                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-
-            outname = name + "_punched"
-            self.app.app_obj.new_object('gerber', outname, init_func)
-
-            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
-        else:
-            log.debug("ToolFilm.Film.generate_positive_punched_film() with Pad center source started ...")
-
-            punch_size = float(self.punch_size_spinner.get_value())
-
-            punching_geo = []
-            for apid in film_obj.apertures:
-                if film_obj.apertures[apid]['type'] == 'C':
-                    if punch_size >= float(film_obj.apertures[apid]['size']):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole film because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
-                        return 'fail'
-                    else:
-                        for elem in film_obj.apertures[apid]['geometry']:
-                            if 'follow' in elem:
-                                if isinstance(elem['follow'], Point):
-                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                else:
-                    if punch_size >= float(film_obj.apertures[apid]['width']) or \
-                            punch_size >= float(film_obj.apertures[apid]['height']):
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not generate punched hole film because the punch hole size"
-                                               "is bigger than some of the apertures in the Gerber object."))
-                        return 'fail'
-                    else:
-                        for elem in film_obj.apertures[apid]['geometry']:
-                            if 'follow' in elem:
-                                if isinstance(elem['follow'], Point):
-                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
-
-            punching_geo = MultiPolygon(punching_geo)
-            if not isinstance(film_obj.solid_geometry, Polygon):
-                temp_solid_geometry = MultiPolygon(film_obj.solid_geometry)
-            else:
-                temp_solid_geometry = film_obj.solid_geometry
-            punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
-
-            if punched_solid_geometry == temp_solid_geometry:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Could not generate punched hole film because the newly created object geometry "
-                                       "is the same as the one in the source object geometry..."))
-                return 'fail'
-
-            def init_func(new_obj, app_obj):
-                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-
-            outname = name + "_punched"
-            self.app.app_obj.new_object('gerber', outname, init_func)
-
-            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
-
-    def generate_negative_film(self, name, boxname, factor, ftype='svg'):
-        log.debug("ToolFilm.Film.generate_negative_film() started ...")
-
-        scale_factor_x = None
-        scale_factor_y = None
-        skew_factor_x = None
-        skew_factor_y = None
-        mirror = None
-        skew_reference = 'center'
-
-        if self.film_scale_cb.get_value():
-            if self.film_scalex_entry.get_value() != 1.0:
-                scale_factor_x = self.film_scalex_entry.get_value()
-            if self.film_scaley_entry.get_value() != 1.0:
-                scale_factor_y = self.film_scaley_entry.get_value()
-        if self.film_skew_cb.get_value():
-            if self.film_skewx_entry.get_value() != 0.0:
-                skew_factor_x = self.film_skewx_entry.get_value()
-            if self.film_skewy_entry.get_value() != 0.0:
-                skew_factor_y = self.film_skewy_entry.get_value()
-
-            skew_reference = self.film_skew_reference.get_value()
-        if self.film_mirror_cb.get_value():
-            if self.film_mirror_axis.get_value() != 'none':
-                mirror = self.film_mirror_axis.get_value()
-
-        border = float(self.boundary_entry.get_value())
-
-        if border is None:
-            border = 0
-
-        if ftype == 'svg':
-            filter_ext = "SVG Files (*.SVG);;"\
-                         "All Files (*.*)"
-        elif ftype == 'png':
-            filter_ext = "PNG Files (*.PNG);;" \
-                         "All Files (*.*)"
-        else:
-            filter_ext = "PDF Files (*.PDF);;" \
-                         "All Files (*.*)"
-
-        try:
-            filename, _f = FCFileSaveDialog.get_saved_filename(
-                caption=_("Export negative film"),
-                directory=self.app.get_last_save_folder() + '/' + name + '_film',
-                ext_filter=filter_ext)
-        except TypeError:
-            filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export negative film"))
-
-        filename = str(filename)
-
-        if str(filename) == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
-            return
-        else:
-            self.export_negative(name, boxname, filename, border,
-                                 scale_stroke_factor=factor,
-                                 scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                 skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                 skew_reference=skew_reference,
-                                 mirror=mirror, ftype=ftype
-                                 )
-
-    def export_negative(self, obj_name, box_name, filename, boundary,
-                        scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None,
-                        use_thread=True, ftype='svg'):
-        """
-        Exports a Geometry Object to an SVG file in negative.
-
-        :param obj_name: the name of the FlatCAM object to be saved as SVG
-        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
-        :param filename: Path to the SVG file to save to.
-        :param boundary: thickness of a black border to surround all the features
-        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
-        :param scale_factor_x: factor to scale the svg geometry on the X axis
-        :param scale_factor_y: factor to scale the svg geometry on the Y axis
-        :param skew_factor_x: factor to skew the svg geometry on the X axis
-        :param skew_factor_y: factor to skew the svg geometry on the Y axis
-        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
-        those are the 4 points of the bounding box of the geometry to be skewed.
-        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
-        :param use_thread: if to be run in a separate thread; boolean
-        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
-        :return:
-        """
-        self.app.defaults.report_usage("export_negative()")
-
-        if filename is None:
-            filename = self.app.defaults["global_last_save_folder"]
-
-        self.app.log.debug("export_svg() negative")
-
-        try:
-            obj = self.app.collection.get_by_name(str(obj_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
-
-        try:
-            box = self.app.collection.get_by_name(str(box_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % box_name
-
-        if box is None:
-            self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
-            box = obj
-
-        def make_negative_film():
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
-                                          )
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
-
-            uom = obj.units.lower()
-
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
-            miny_rect = str(bounds[1] - boundary)
-
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width - wrong, we do when we have lines with certain width
-            # We set opacity to maximum
-            # We set the color to WHITE
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', '#FFFFFF')
-                child.set('opacity', '1.0')
-                child.set('stroke', '#FFFFFF')
-
-            # first_svg_elem = 'rect x="' + minx + '" ' + 'y="' + miny_rect + '" '
-            # first_svg_elem += 'width="' + svgwidth + '" ' + 'height="' + svgheight + '" '
-            # first_svg_elem += 'fill="#000000" opacity="1.0" stroke-width="0.0"'
-
-            first_svg_elem_tag = 'rect'
-            first_svg_elem_attribs = {
-                'x': minx,
-                'y': miny_rect,
-                'width': svgwidth,
-                'height': svgheight,
-                'id': 'neg_rect',
-                'style': 'fill:#000000;opacity:1.0;stroke-width:0.0'
-            }
-
-            root.insert(0, ET.Element(first_svg_elem_tag, first_svg_elem_attribs))
-            exported_svg = ET.tostring(root)
-
-            svg_elem = svg_header + str(exported_svg) + svg_footer
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            doc_final = doc.toprettyxml()
-
-            if ftype == 'svg':
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(doc_final)
-                except PermissionError:
-                    self.app.inform.emit('[WARNING] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-            elif ftype == 'png':
-                try:
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
-                except Exception as e:
-                    log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
-                    return 'fail'
-            else:
-                try:
-                    if self.units == 'INCH':
-                        unit = inch
-                    else:
-                        unit = mm
-
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-
-                    p_size = self.pagesize_combo.get_value()
-                    if p_size == 'Bounds':
-                        renderPDF.drawToFile(drawing, filename)
-                    else:
-                        if self.orientation_radio.get_value() == 'p':
-                            page_size = portrait(self.pagesize[p_size])
-                        else:
-                            page_size = landscape(self.pagesize[p_size])
-
-                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
-                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
-                        renderPDF.draw(drawing, my_canvas, 0, 0)
-                        my_canvas.save()
-                except Exception as e:
-                    log.debug("FilmTool.export_negative() --> PDF output --> %s" % str(e))
-                    return 'fail'
-
-            if self.app.defaults["global_open_style"] is False:
-                self.app.file_opened.emit("SVG", filename)
-            self.app.file_saved.emit("SVG", filename)
-            self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
-
-        if use_thread is True:
-            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
-
-            def job_thread_film(app_obj):
-                try:
-                    make_negative_film()
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
-
-            self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
-        else:
-            make_negative_film()
-
-    def export_positive(self, obj_name, box_name, filename,
-                        scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
-                        skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
-                        use_thread=True, ftype='svg'):
-
-        """
-        Exports a Geometry Object to an SVG file in positive black.
-
-        :param obj_name:            the name of the FlatCAM object to be saved
-        :param box_name:            the name of the FlatCAM object to be used as delimitation of the content to be saved
-        :param filename:            Path to the file to save to.
-        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
-        :param scale_factor_x:      factor to scale the geometry on the X axis
-        :param scale_factor_y:      factor to scale the geometry on the Y axis
-        :param skew_factor_x:       factor to skew the geometry on the X axis
-        :param skew_factor_y:       factor to skew the geometry on the Y axis
-        :param skew_reference:      reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft',
-        'topright' and those are the 4 points of the bounding box of the geometry to be skewed.
-        :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
-        :param orientation_val:
-        :param pagesize_val:
-        :param color_val:
-        :param opacity_val:
-        :param use_thread:          if to be run in a separate thread; boolean
-        :param ftype:               the type of file for saving the film: 'svg', 'png' or 'pdf'
-
-        :return:
-        """
-        self.app.defaults.report_usage("export_positive()")
-
-        if filename is None:
-            filename = self.app.defaults["global_last_save_folder"]
-
-        self.app.log.debug("export_svg() black")
-
-        try:
-            obj = self.app.collection.get_by_name(str(obj_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
-
-        try:
-            box = self.app.collection.get_by_name(str(box_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % box_name
-
-        if box is None:
-            self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
-            box = obj
-
-        p_size = pagesize_val
-        orientation = orientation_val
-        color = color_val
-        transparency_level = opacity_val
-
-        def make_positive_film(p_size, orientation, color, transparency_level):
-            log.debug("FilmTool.export_positive().make_positive_film()")
-
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
-                                          )
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width
-            # We set opacity to maximum
-            # We set the colour to WHITE
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', str(color))
-                child.set('opacity', str(transparency_level))
-                child.set('stroke', str(color))
-
-            exported_svg = ET.tostring(root)
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
-
-            # This contain the measure units
-            uom = obj.units.lower()
-
-            # Define a boundary around SVG of about 1.0mm (~39mils)
-            if uom in "mm":
-                boundary = 1.0
-            else:
-                boundary = 0.0393701
-
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
-
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
-
-            svg_elem = str(svg_header) + str(exported_svg) + str(svg_footer)
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            doc_final = doc.toprettyxml()
-
-            if ftype == 'svg':
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(doc_final)
-                except PermissionError:
-                    self.app.inform.emit('[WARNING] %s' %
-                                         _("Permission denied, saving not possible.\n"
-                                           "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
-            elif ftype == 'png':
-                try:
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
-                except Exception as e:
-                    log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
-                    return 'fail'
-            else:
-                try:
-                    if self.units == 'IN':
-                        unit = inch
-                    else:
-                        unit = mm
-
-                    doc_final = StringIO(doc_final)
-                    drawing = svg2rlg(doc_final)
-
-                    if p_size == 'Bounds':
-                        renderPDF.drawToFile(drawing, filename)
-                    else:
-                        if orientation == 'p':
-                            page_size = portrait(self.pagesize[p_size])
-                        else:
-                            page_size = landscape(self.pagesize[p_size])
-
-                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
-                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
-                        renderPDF.draw(drawing, my_canvas, 0, 0)
-                        my_canvas.save()
-                except Exception as e:
-                    log.debug("FilmTool.export_positive() --> PDF output --> %s" % str(e))
-                    return 'fail'
-
-            if self.app.defaults["global_open_style"] is False:
-                self.app.file_opened.emit("SVG", filename)
-            self.app.file_saved.emit("SVG", filename)
-            self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
-
-        if use_thread is True:
-            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
-
-            def job_thread_film(app_obj):
-                try:
-                    make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                                       transparency_level=transparency_level)
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
-
-            self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
-        else:
-            make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                               transparency_level=transparency_level)
-
-    def reset_fields(self):
-        self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
