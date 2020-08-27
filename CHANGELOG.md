@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - Turkish translation strings were updated by the translator, Mehmet Kaya
 - Film Tool - moved the Tool UI in its own class
 - in Tools: Film, Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
+- fixed some typos due of actions above
 
 26.08.2020
 

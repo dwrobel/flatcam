@@ -8,7 +8,8 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox
+from appGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox, FCComboBox, \
+    FCLabel, FCButton
 from camlib import grace
 
 from shapely.geometry import MultiPolygon
@@ -58,13 +59,14 @@ class ToolOptimal(AppTool):
         # ############################################################################
         # ############################ Signals #######################################
         # ############################################################################
+        self.update_text.connect(self.on_update_text)
+        self.update_sec_distances.connect(self.on_update_sec_distances_txt)
+
         self.ui.calculate_button.clicked.connect(self.find_minimum_distance)
         self.ui.locate_button.clicked.connect(self.on_locate_position)
-        self.ui.update_text.connect(self.on_update_text)
         self.ui.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
 
         self.ui.locate_sec_button.clicked.connect(self.on_locate_sec_position)
-        self.ui.update_sec_distances.connect(self.on_update_sec_distances_txt)
         self.ui.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
         self.ui.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
 
@@ -394,7 +396,7 @@ class OptimalUI:
         self.units = self.app.defaults['units'].upper()
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -403,7 +405,7 @@ class OptimalUI:
                                 }
                                 """)
         self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(""))
+        self.layout.addWidget(FCLabel(""))
 
         # ## Form Layout
         form_lay = QtWidgets.QFormLayout()
@@ -416,7 +418,7 @@ class OptimalUI:
         self.gerber_object_combo.is_last = True
         self.gerber_object_combo.obj_type = "Gerber"
 
-        self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.gerber_object_label = FCLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
@@ -429,7 +431,7 @@ class OptimalUI:
         form_lay.addRow(separator_line)
 
         # Precision = nr of decimals
-        self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
+        self.precision_label = FCLabel('%s:' % _("Precision"))
         self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
 
         self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
@@ -438,16 +440,16 @@ class OptimalUI:
         form_lay.addRow(self.precision_label, self.precision_spinner)
 
         # Results Title
-        self.title_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Minimum distance"))
+        self.title_res_label = FCLabel('<b>%s:</b>' % _("Minimum distance"))
         self.title_res_label.setToolTip(_("Display minimum distance between copper features."))
         form_lay.addRow(self.title_res_label)
 
         # Result value
-        self.result_label = QtWidgets.QLabel('%s:' % _("Determined"))
+        self.result_label = FCLabel('%s:' % _("Determined"))
         self.result_entry = FCEntry()
         self.result_entry.setReadOnly(True)
 
-        self.units_lbl = QtWidgets.QLabel(self.units.lower())
+        self.units_lbl = FCLabel(self.units.lower())
         self.units_lbl.setDisabled(True)
 
         hlay = QtWidgets.QHBoxLayout()
@@ -457,7 +459,7 @@ class OptimalUI:
         form_lay.addRow(self.result_label, hlay)
 
         # Frequency of minimum encounter
-        self.freq_label = QtWidgets.QLabel('%s:' % _("Occurring"))
+        self.freq_label = FCLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
         self.freq_entry = FCEntry()
         self.freq_entry.setReadOnly(True)
@@ -469,7 +471,7 @@ class OptimalUI:
         form_lay.addRow(self.locations_cb)
 
         # Locations where minimum was found
-        self.locations_textb = FCTextArea(parent=self)
+        self.locations_textb = FCTextArea()
         self.locations_textb.setPlaceholderText(
             _("Coordinates for points where minimum distance was found.")
         )
@@ -484,7 +486,7 @@ class OptimalUI:
         form_lay.addRow(self.locations_textb)
 
         # Jump button
-        self.locate_button = QtWidgets.QPushButton(_("Jump to selected position"))
+        self.locate_button = FCButton(_("Jump to selected position"))
         self.locate_button.setToolTip(
             _("Select a position in the Locations text box and then\n"
               "click this button.")
@@ -494,7 +496,7 @@ class OptimalUI:
         form_lay.addRow(self.locate_button)
 
         # Other distances in Gerber
-        self.title_second_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Other distances"))
+        self.title_second_res_label = FCLabel('<b>%s:</b>' % _("Other distances"))
         self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
                                                  "the minimum to the maximum, not including the absolute minimum."))
         form_lay.addRow(self.title_second_res_label)
@@ -514,13 +516,13 @@ class OptimalUI:
         self.sec_locations_frame.setLayout(self.distances_box)
 
         # Other Distances label
-        self.distances_label = QtWidgets.QLabel('%s' % _("Gerber distances"))
+        self.distances_label = FCLabel('%s' % _("Gerber distances"))
         self.distances_label.setToolTip(_("Other distances and the coordinates for points\n"
                                           "where the distance was found."))
         self.distances_box.addWidget(self.distances_label)
 
         # Other distances
-        self.distances_textb = FCTextArea(parent=self)
+        self.distances_textb = FCTextArea()
         self.distances_textb.setPlaceholderText(
             _("Other distances and the coordinates for points\n"
               "where the distance was found.")
@@ -535,16 +537,16 @@ class OptimalUI:
         self.distances_textb.setStyleSheet(stylesheet)
         self.distances_box.addWidget(self.distances_textb)
 
-        self.distances_box.addWidget(QtWidgets.QLabel(''))
+        self.distances_box.addWidget(FCLabel(''))
 
         # Other Locations label
-        self.locations_label = QtWidgets.QLabel('%s' % _("Points coordinates"))
+        self.locations_label = FCLabel('%s' % _("Points coordinates"))
         self.locations_label.setToolTip(_("Other distances and the coordinates for points\n"
                                           "where the distance was found."))
         self.distances_box.addWidget(self.locations_label)
 
         # Locations where minimum was found
-        self.locations_sec_textb = FCTextArea(parent=self)
+        self.locations_sec_textb = FCTextArea()
         self.locations_sec_textb.setPlaceholderText(
             _("Other distances and the coordinates for points\n"
               "where the distance was found.")
@@ -560,7 +562,7 @@ class OptimalUI:
         self.distances_box.addWidget(self.locations_sec_textb)
 
         # Jump button
-        self.locate_sec_button = QtWidgets.QPushButton(_("Jump to selected position"))
+        self.locate_sec_button = FCButton(_("Jump to selected position"))
         self.locate_sec_button.setToolTip(
             _("Select a position in the Locations text box and then\n"
               "click this button.")
@@ -570,7 +572,7 @@ class OptimalUI:
         self.distances_box.addWidget(self.locate_sec_button)
 
         # GO button
-        self.calculate_button = QtWidgets.QPushButton(_("Find Minimum"))
+        self.calculate_button = FCButton(_("Find Minimum"))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
               "this will allow the determination of the right tool to\n"
@@ -588,7 +590,7 @@ class OptimalUI:
         self.layout.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
