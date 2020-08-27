@@ -7,7 +7,8 @@
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from appTool import AppTool
-from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
+from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
+    FCLabel
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
 from shapely.ops import cascaded_union, unary_union, linemerge
@@ -104,6 +105,13 @@ class CutOut(AppTool):
         self.ui.obj_combo.setCurrentIndex(0)
         self.ui.obj_combo.obj_type = {"grb": "Gerber", "geo": "Geometry"}[val]
 
+        if val == 'grb':
+            self.ui.convex_box_label.setDisabled(False)
+            self.ui.convex_box_cb.setDisabled(False)
+        else:
+            self.ui.convex_box_label.setDisabled(True)
+            self.ui.convex_box_cb.setDisabled(True)
+
     def run(self, toggle=True):
         self.app.defaults.report_usage("ToolCutOut()")
 
@@ -146,10 +154,12 @@ class CutOut(AppTool):
 
         self.ui.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.ui.gaps.set_value(self.app.defaults["tools_gaps_ff"])
-        self.ui.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
+        self.ui.convex_box_cb.set_value(self.app.defaults['tools_cutout_convexshape'])
         self.ui.big_cursor_cb.set_value(self.app.defaults['tools_cutout_big_cursor'])
 
-        # use the current selected object and make it visible in the Paint object combobox
+        self.ui.gaptype_radio.set_value('b')
+
+        # use the current selected object and make it visible in the object combobox
         sel_list = self.app.collection.get_selected()
         if len(sel_list) == 1:
             active = self.app.collection.get_active()
@@ -289,7 +299,7 @@ class CutOut(AppTool):
                                                   "and after that perform Cutout."))
             return
 
-        convex_box = self.ui.convex_box.get_value()
+        convex_box = self.ui.convex_box_cb.get_value()
 
         gapsize = gapsize / 2 + (dia / 2)
 
@@ -432,7 +442,7 @@ class CutOut(AppTool):
                     geo = object_geo
 
                 solid_geo, rest_geo = cutout_handler(geom=geo)
-                if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+                if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
                     gaps_solid_geo = rest_geo
             else:
                 try:
@@ -450,7 +460,7 @@ class CutOut(AppTool):
 
                     c_geo, r_geo = cutout_handler(geom=geom_struct)
                     solid_geo += c_geo
-                    if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+                    if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
                         gaps_solid_geo += r_geo
 
             if not solid_geo:
@@ -667,7 +677,7 @@ class CutOut(AppTool):
 
                 solid_geo = cutout_rect_handler(geom=geo)
 
-                if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+                if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
                     gaps_solid_geo = self.subtract_geo(geo, solid_geo)
             else:
                 if cutout_obj.kind == 'geometry':
@@ -683,7 +693,7 @@ class CutOut(AppTool):
 
                         c_geo = cutout_rect_handler(geom=geom_struct)
                         solid_geo += c_geo
-                        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+                        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
                             try:
                                 gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
@@ -703,7 +713,7 @@ class CutOut(AppTool):
 
                         c_geo = cutout_rect_handler(geom=geom_struct)
                         solid_geo += c_geo
-                        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+                        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
                             try:
                                 gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
                             except TypeError:
@@ -846,7 +856,7 @@ class CutOut(AppTool):
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
         gaps_solid_geo = None
-        if self.ui.thin_cb.get_value() and self.ui.thin_depth_entry.get_value() > 0:
+        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
             gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
 
         # first subtract geometry for the total solid_geometry
@@ -928,7 +938,7 @@ class CutOut(AppTool):
             return
 
         margin = float(self.ui.margin.get_value())
-        convex_box = self.ui.convex_box.get_value()
+        convex_box = self.ui.convex_box_cb.get_value()
 
         def geo_init(geo_obj, app_obj):
             geo_union = unary_union(cutout_obj.solid_geometry)
@@ -1449,8 +1459,8 @@ class CutoutUI:
             {"label": _("Single"), "value": "single"},
             {"label": _("Panel"), "value": "panel"},
         ])
-        grid0.addWidget(self.kindlabel, 1, 0)
-        grid0.addWidget(self.obj_kind_combo, 1, 1)
+        grid0.addWidget(self.kindlabel, 2, 0)
+        grid0.addWidget(self.obj_kind_combo, 2, 1)
 
         # Type of object to be cutout
         self.type_obj_radio = RadioSet([
@@ -1466,8 +1476,8 @@ class CutoutUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        grid0.addWidget(self.type_obj_combo_label, 2, 0)
-        grid0.addWidget(self.type_obj_radio, 2, 1)
+        grid0.addWidget(self.type_obj_combo_label, 4, 0)
+        grid0.addWidget(self.type_obj_radio, 4, 1)
 
         # Object to be cutout
         self.obj_combo = FCComboBox()
@@ -1475,17 +1485,32 @@ class CutoutUI:
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
 
-        grid0.addWidget(self.obj_combo, 3, 0, 1, 2)
+        grid0.addWidget(self.obj_combo, 6, 0, 1, 2)
+
+        # Convex Shape
+        # Surrounding convex box shape
+        self.convex_box_label = QtWidgets.QLabel('%s:' % _("Convex Shape"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "Used only if the source object type is Gerber.")
+        )
+        self.convex_box_cb = FCCheckBox()
+        self.convex_box_cb.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "Used only if the source object type is Gerber.")
+        )
+        grid0.addWidget(self.convex_box_label, 8, 0)
+        grid0.addWidget(self.convex_box_cb, 8, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 5, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
 
         self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _("Tool Parameters"))
-        grid0.addWidget(self.param_label, 6, 0, 1, 2)
+        grid0.addWidget(self.param_label, 14, 0, 1, 2)
 
         # Tool Diameter
         self.dia = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1497,8 +1522,8 @@ class CutoutUI:
             _("Diameter of the tool used to cutout\n"
               "the PCB shape out of the surrounding material.")
         )
-        grid0.addWidget(self.dia_label, 8, 0)
-        grid0.addWidget(self.dia, 8, 1)
+        grid0.addWidget(self.dia_label, 16, 0)
+        grid0.addWidget(self.dia, 16, 1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -1518,8 +1543,8 @@ class CutoutUI:
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid0.addWidget(cutzlabel, 9, 0)
-        grid0.addWidget(self.cutz_entry, 9, 1)
+        grid0.addWidget(cutzlabel, 18, 0)
+        grid0.addWidget(self.cutz_entry, 18, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -1543,36 +1568,10 @@ class CutoutUI:
             )
         )
 
-        grid0.addWidget(self.mpass_cb, 10, 0)
-        grid0.addWidget(self.maxdepth_entry, 10, 1)
+        grid0.addWidget(self.mpass_cb, 20, 0)
+        grid0.addWidget(self.maxdepth_entry, 20, 1)
 
-        # Thin gaps
-        self.thin_cb = FCCheckBox('%s:' % _("Thin gaps"))
-        self.thin_cb.setToolTip(
-            _("Active only when multi depth is active (negative value)\n"
-              "If checked, it will mill de gaps until the specified depth."))
-
-        self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.thin_depth_entry.set_precision(self.decimals)
-        if machinist_setting == 0:
-            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
-        else:
-            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
-        self.thin_depth_entry.setSingleStep(0.1)
-
-        self.thin_depth_entry.setToolTip(
-            _("Active only when multi depth is active (negative value)\n"
-              "If checked, it will mill de gaps until the specified depth."))
-
-        grid0.addWidget(self.thin_cb, 12, 0)
-        grid0.addWidget(self.thin_depth_entry, 12, 1)
-
-        self.ois_mpass_geo = OptionalInputSection(self.mpass_cb,
-                                                  [
-                                                      self.maxdepth_entry,
-                                                      self.thin_cb,
-                                                      self.thin_depth_entry
-                                                  ])
+        self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
         # Margin
         self.margin = FCDoubleSpinner(callback=self.confirmation_message)
@@ -1586,13 +1585,10 @@ class CutoutUI:
               "will make the cutout of the PCB further from\n"
               "the actual PCB border")
         )
-        grid0.addWidget(self.margin_label, 14, 0)
-        grid0.addWidget(self.margin, 14, 1)
+        grid0.addWidget(self.margin_label, 22, 0)
+        grid0.addWidget(self.margin, 22, 1)
 
         # Gapsize
-        self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
-        self.gapsize.set_precision(self.decimals)
-
         self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))
         self.gapsize_label.setToolTip(
             _("The size of the bridge gaps in the cutout\n"
@@ -1600,9 +1596,90 @@ class CutoutUI:
               "the surrounding material (the one \n"
               "from which the PCB is cutout).")
         )
-        grid0.addWidget(self.gapsize_label, 16, 0)
-        grid0.addWidget(self.gapsize, 16, 1)
 
+        self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
+        self.gapsize.set_precision(self.decimals)
+
+        grid0.addWidget(self.gapsize_label, 24, 0)
+        grid0.addWidget(self.gapsize, 24, 1)
+
+        # Gapsize
+        self.gaptype_label = FCLabel('%s:' % _("Gap type"))
+        self.gaptype_label.setToolTip(
+            _("The type of gap:\n"
+              "- Bridge -> the cutout will be interrupted by bridges\n"
+              "- Thin -> same as 'bridge' but it will be thinner by partially milling the gap\n"
+              "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes")
+        )
+
+        self.gaptype_radio = RadioSet(
+            [
+                {'label': _('Bridge'),      'value': 'b'},
+                {'label': _('Thin'),        'value': 'bt'},
+                {'label': "M-Bites",        'value': 'mb'}
+            ],
+            stretch=True
+        )
+
+        grid0.addWidget(self.gaptype_label, 26, 0)
+        grid0.addWidget(self.gaptype_radio, 26, 1)
+
+        # Thin gaps Depth
+        self.thin_depth_label = FCLabel('%s:' % _("Depth"))
+        self.thin_depth_label.setToolTip(
+            _("The depth until the milling is done\n"
+              "in order to thin the gaps.")
+        )
+        self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.thin_depth_entry.set_precision(self.decimals)
+        if machinist_setting == 0:
+            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
+        self.thin_depth_entry.setSingleStep(0.1)
+
+        grid0.addWidget(self.thin_depth_label, 28, 0)
+        grid0.addWidget(self.thin_depth_entry, 28, 1)
+
+        # Mouse Bites Tool Diameter
+        self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
+        self.mb_dia_label.setToolTip(
+            _("The drill hole diameter when doing mpuse bites.")
+        )
+        self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.mb_dia_entry.set_precision(self.decimals)
+        self.mb_dia_entry.setRange(0, 100.0000)
+
+        grid0.addWidget(self.mb_dia_label, 30, 0)
+        grid0.addWidget(self.mb_dia_entry, 30, 1)
+
+        # Mouse Bites Holes Spacing
+        self.mb_spacing_label = FCLabel('%s:' % _("Spacing"))
+        self.mb_spacing_label.setToolTip(
+            _("The spacing between drill holes when doing mouse bites.")
+        )
+        self.mb_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.mb_spacing_entry.set_precision(self.decimals)
+        self.mb_spacing_entry.setRange(0, 100.0000)
+
+        grid0.addWidget(self.mb_spacing_label, 32, 0)
+        grid0.addWidget(self.mb_spacing_entry, 32, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 34, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 36, 0, 1, 2)
+
+        # Title2
+        title_param_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
+        title_param_label.setToolTip(
+            _("This section handle creation of automatic bridge gaps.")
+        )
+        grid0.addWidget(title_param_label, 38, 0, 1, 2)
+
+        # Gaps
         # How gaps wil be rendered:
         # lr    - left + right
         # tb    - top + bottom
@@ -1610,31 +1687,6 @@ class CutoutUI:
         # 2lr   - 2*left + 2*right
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
-
-        # Surrounding convex box shape
-        self.convex_box = FCCheckBox('%s' % _("Convex Shape"))
-        # self.convex_box_label = QtWidgets.QLabel('%s' % _("Convex Sh."))
-        self.convex_box.setToolTip(
-            _("Create a convex shape surrounding the entire PCB.\n"
-              "Used only if the source object type is Gerber.")
-        )
-        grid0.addWidget(self.convex_box, 18, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 20, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 22, 0, 1, 2)
-
-        # Title2
-        title_param_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
-        title_param_label.setToolTip(
-            _("This section handle creation of automatic bridge gaps.")
-        )
-        grid0.addWidget(title_param_label, 24, 0, 1, 2)
-
-        # Gaps
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
@@ -1655,8 +1707,8 @@ class CutoutUI:
         for it in gaps_items:
             self.gaps.addItem(it)
             # self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        grid0.addWidget(gaps_label, 26, 0)
-        grid0.addWidget(self.gaps, 26, 1)
+        grid0.addWidget(gaps_label, 40, 0)
+        grid0.addWidget(self.gaps, 40, 1)
 
         # Buttons
         self.ff_cutout_object_btn = FCButton(_("Generate Geometry"))
@@ -1672,7 +1724,7 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.ff_cutout_object_btn, 28, 0, 1, 2)
+        grid0.addWidget(self.ff_cutout_object_btn, 42, 0, 1, 2)
 
         self.rect_cutout_object_btn = FCButton(_("Generate Geometry"))
         self.rect_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
@@ -1688,14 +1740,14 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.rect_cutout_object_btn, 30, 0, 1, 2)
+        grid0.addWidget(self.rect_cutout_object_btn, 44, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 32, 0, 1, 2)
+        grid0.addWidget(separator_line, 46, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 34, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 48, 0, 1, 2)
 
         # MANUAL BRIDGE GAPS
         title_manual_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))
@@ -1704,7 +1756,7 @@ class CutoutUI:
               "This is done by mouse clicking on the perimeter of the\n"
               "Geometry object that is used as a cutout object. ")
         )
-        grid0.addWidget(title_manual_label, 36, 0, 1, 2)
+        grid0.addWidget(title_manual_label, 50, 0, 1, 2)
 
         # Big Cursor
         big_cursor_label = QtWidgets.QLabel('%s:' % _("Big cursor"))
@@ -1712,8 +1764,8 @@ class CutoutUI:
             _("Use a big cursor when adding manual gaps."))
         self.big_cursor_cb = FCCheckBox()
 
-        grid0.addWidget(big_cursor_label, 38, 0)
-        grid0.addWidget(self.big_cursor_cb, 38, 1)
+        grid0.addWidget(big_cursor_label, 52, 0)
+        grid0.addWidget(self.big_cursor_cb, 52, 1)
 
         # Generate a surrounding Geometry object
         self.man_geo_creation_btn = FCButton(_("Generate Manual Geometry"))
@@ -1730,7 +1782,7 @@ class CutoutUI:
         #                             font-weight: bold;
         #                         }
         #                         """)
-        grid0.addWidget(self.man_geo_creation_btn, 40, 0, 1, 2)
+        grid0.addWidget(self.man_geo_creation_btn, 54, 0, 1, 2)
 
         # Manual Geo Object
         self.man_object_combo = FCComboBox()
@@ -1745,8 +1797,8 @@ class CutoutUI:
         )
         # self.man_object_label.setMinimumWidth(60)
 
-        grid0.addWidget(self.man_object_label, 42, 0, 1, 2)
-        grid0.addWidget(self.man_object_combo, 44, 0, 1, 2)
+        grid0.addWidget(self.man_object_label, 56, 0, 1, 2)
+        grid0.addWidget(self.man_object_combo, 56, 0, 1, 2)
 
         self.man_gaps_creation_btn = FCButton(_("Manual Add Bridge Gaps"))
         self.man_gaps_creation_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/gaps32.png'))
@@ -1763,7 +1815,7 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.man_gaps_creation_btn, 46, 0, 1, 2)
+        grid0.addWidget(self.man_gaps_creation_btn, 58, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -1781,8 +1833,33 @@ class CutoutUI:
                                 """)
         self.layout.addWidget(self.reset_button)
 
+        self.gaptype_radio.activated_custom.connect(self.on_gap_type_radio)
+
         # ############################ FINSIHED GUI ###################################
         # #############################################################################
+
+    def on_gap_type_radio(self, val):
+        if val == 'b':
+            self.thin_depth_label.hide()
+            self.thin_depth_entry.hide()
+            self.mb_dia_label.hide()
+            self.mb_dia_entry.hide()
+            self.mb_spacing_label.hide()
+            self.mb_spacing_entry.hide()
+        elif val == 'bt':
+            self.thin_depth_label.show()
+            self.thin_depth_entry.show()
+            self.mb_dia_label.hide()
+            self.mb_dia_entry.hide()
+            self.mb_spacing_label.hide()
+            self.mb_spacing_entry.hide()
+        elif val == 'mb':
+            self.thin_depth_label.hide()
+            self.thin_depth_entry.hide()
+            self.mb_dia_label.show()
+            self.mb_dia_entry.show()
+            self.mb_spacing_label.show()
+            self.mb_spacing_entry.show()
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:

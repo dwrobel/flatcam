@@ -13,6 +13,7 @@ CHANGELOG for FlatCAM beta
 - in Tool Cutout, when using the Thin Gaps feature, the resulting geometry loose the extra color by toggling tool plot in Geometry UI Tools Table- fixed
 - in Tool Cutout fixed manual adding of gaps with thin gaps and plotting
 - in Tool Cutout, when using fix gaps made sure that this feature is not activated if the value is zero
+- in Tool Cutout: modified the UI in preparation for adding the Mouse Bites feature
 
 26.08.2020
 
