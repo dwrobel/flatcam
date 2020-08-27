@@ -192,7 +192,6 @@ class ToolIsolation(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
-        self.t_ui.add_newtool_button.clicked.connect(self.on_tool_add)
         self.t_ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
         self.t_ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
@@ -203,6 +202,9 @@ class ToolIsolation(AppTool, Gerber):
 
         self.t_ui.type_excobj_radio.activated_custom.connect(self.on_type_excobj_index_changed)
         self.t_ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
+        # adding Tools
+        self.t_ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.t_ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.t_ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
@@ -378,7 +380,10 @@ class ToolIsolation(AppTool, Gerber):
         try:
             dias = [float(self.app.defaults["tools_iso_tooldia"])]
         except (ValueError, TypeError):
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_iso_tooldia"].split(",") if dia != '']
+            if isinstance(self.app.defaults["tools_iso_tooldia"], str):
+                dias = [float(eval(dia)) for dia in self.app.defaults["tools_iso_tooldia"].split(",") if dia != '']
+            else:
+                dias = self.app.defaults["tools_iso_tooldia"]
 
         if not dias:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> Isolation Tools.")
@@ -389,18 +394,19 @@ class ToolIsolation(AppTool, Gerber):
         # adding tools from Preferences: FIXME should search in Tools Database
         self.iso_tools.clear()
         for tool_dia in dias:
-            self.tooluid += 1
-            self.iso_tools.update({
-                int(self.tooluid): {
-                    'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             'Iso',
-                    'tool_type':        'V',
-                    'data':             deepcopy(self.default_data),
-                    'solid_geometry':   []
-                }
-            })
+            # self.tooluid += 1
+            # self.iso_tools.update({
+            #     int(self.tooluid): {
+            #         'tooldia':          float('%.*f' % (self.decimals, tool_dia)),
+            #         'offset':           'Path',
+            #         'offset_value':     0.0,
+            #         'type':             'Iso',
+            #         'tool_type':        'V',
+            #         'data':             deepcopy(self.default_data),
+            #         'solid_geometry':   []
+            #     }
+            # })
+            self.on_tool_add(custom_dia=tool_dia)
 
         self.obj_name = ""
         self.grb_obj = None
@@ -989,10 +995,13 @@ class ToolIsolation(AppTool, Gerber):
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    def on_tool_add(self):
+    def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
         filename = self.app.data_path + '\\tools_db.FlatDB'
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
 
         # construct a list of all 'tooluid' in the self.iso_tools
         tool_uid_list = [int(tooluid_key) for tooluid_key in self.iso_tools]
@@ -1008,7 +1017,10 @@ class ToolIsolation(AppTool, Gerber):
                     tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
         # determine the new tool diameter
-        tool_dia = self.t_ui.new_tooldia_entry.get_value()
+        if custom_dia is None:
+            tool_dia = self.t_ui.new_tooldia_entry.get_value()
+        else:
+            tool_dia = custom_dia
         if tool_dia is None or tool_dia == 0:
             self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
@@ -1050,13 +1062,19 @@ class ToolIsolation(AppTool, Gerber):
             self.blockSignals(False)
             return
 
-        new_tools_dict = deepcopy(self.default_data)
-        updated_tooldia = None
-
         tool_found = 0
 
+        offset = 'Path'
+        offset_val = 0.0
+        typ = "Rough"
+        tool_type = 'V'
         # look in database tools
         for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
             db_tooldia = db_tool_val['tooldia']
             low_limit = float(db_tool_val['data']['tol_min'])
             high_limit = float(db_tool_val['data']['tol_max'])
@@ -1112,10 +1130,10 @@ class ToolIsolation(AppTool, Gerber):
         self.iso_tools.update({
             tooluid: {
                 'tooldia':          updated_tooldia if updated_tooldia is not None else truncated_tooldia,
-                'offset':           'Path',
-                'offset_value':     0.0,
-                'type': '           Iso',
-                'tool_type':        'V',
+                'offset':           offset,
+                'offset_value':     offset_val,
+                'type':             typ,
+                'tool_type':        tool_type,
                 'data':             deepcopy(new_tools_dict),
                 'solid_geometry':   []
             }
@@ -2535,6 +2553,10 @@ class ToolIsolation(AppTool, Gerber):
         :return:
         """
         tool_from_db = deepcopy(tool)
+
+        if tool['data']['tool_target'] != _("Isolation"):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+            return
 
         res = self.on_tool_from_db_inserted(tool=tool_from_db)
 

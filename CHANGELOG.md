@@ -17,7 +17,8 @@ CHANGELOG for FlatCAM beta
 - Turkish translation strings were updated by the translator, Mehmet Kaya
 - Film Tool - moved the Tool UI in its own class
 - in Tools: Film, Image, InvertGerber, Optimal, PcbWizard - moved the Tool UI in its own class
-- fixed some typos due of actions above
+- Tool Isolation - made sure that the app can load from Tools Database only tools marked for Isolation tool
+- Tool Isolation - on Tool start it will attempt to load the Preferences set tools by diameter from Tools Database. If it can't find one there it will add a default tool.
 
 26.08.2020
 
