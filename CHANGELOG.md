@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+28.08.2020
+
+- Paint Tool - upgraded the UI and added the functionality that now adding a new tool is done by first searching the Tools DB for a suitable tool and if fails then it adds an default tool
+- Paint Tool - on start will attempt to search in the Tools DB for the default tools and if found will load them from the DB
+
+
 27.08.2020
 
 - fixed the Tcl commands AddCircle, AddPolygon, AddPolyline and AddRectangle to have stored bounds therefore making them movable/selectable on canvas

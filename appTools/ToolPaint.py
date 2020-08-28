@@ -10,10 +10,11 @@ from PyQt5.QtCore import Qt
 
 from appTool import AppTool
 from copy import deepcopy
-# from ObjectCollection import *
+
 from appParsers.ParseGerber import Gerber
 from camlib import Geometry, FlatCAMRTreeStorage, grace
-from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox
+from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox, \
+    FCLabel
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import cascaded_union, unary_union, linemerge
@@ -21,10 +22,11 @@ from shapely.ops import cascaded_union, unary_union, linemerge
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import numpy as np
-import math
 from numpy import Inf
 import traceback
+import sys
 import logging
+import simplejson as json
 
 import gettext
 import appTranslation as fcTranslate
@@ -119,8 +121,6 @@ class ToolPaint(AppTool, Gerber):
             'p_contour':    "tools_paintcontour",
         }
 
-        self.old_tool_dia = None
-
         # store here the points for the "Polygon" area selection shape
         self.points = []
         # set this as True when in middle of drawing a "Polygon" area selection shape
@@ -171,21 +171,19 @@ class ToolPaint(AppTool, Gerber):
         # #############################################################################
         # ################################# Signals ###################################
         # #############################################################################
-        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.ui.new_tooldia_entry.returnPressed.connect(self.on_tool_add)
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
-        self.ui.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
-
         self.ui.generate_paint_button.clicked.connect(self.on_paint_button_click)
-        self.ui.selectmethod_combo.currentIndexChanged.connect(self.on_selection)
+        self.ui.selectmethod_combo.currentIndexChanged.connect(self.ui.on_selection)
 
         self.ui.reference_type_combo.currentIndexChanged.connect(self.on_reference_combo_changed)
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
 
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
+        # adding tools
+        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_paint_tool_add_from_db_clicked)
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -422,112 +420,13 @@ class ToolPaint(AppTool, Gerber):
                 'tool_type': tt,
             })
 
-    def on_tool_type(self, val):
-        if val == 'V':
-            self.ui.addtool_entry_lbl.setDisabled(True)
-            self.ui.addtool_entry.setDisabled(True)
-            self.ui.tipdialabel.show()
-            self.ui.tipdia_entry.show()
-            self.ui.tipanglelabel.show()
-            self.ui.tipangle_entry.show()
-
-            self.on_calculate_tooldia()
-        else:
-            self.ui.addtool_entry_lbl.setDisabled(False)
-            self.ui.addtool_entry.setDisabled(False)
-            self.ui.tipdialabel.hide()
-            self.ui.tipdia_entry.hide()
-            self.ui.tipanglelabel.hide()
-            self.ui.tipangle_entry.hide()
-
-            self.ui.addtool_entry.set_value(self.old_tool_dia)
-
-    def on_calculate_tooldia(self):
-        if self.ui.tool_type_radio.get_value() == 'V':
-            tip_dia = float(self.ui.tipdia_entry.get_value())
-            tip_angle = float(self.ui.tipangle_entry.get_value()) / 2.0
-            cut_z = float(self.ui.cutz_entry.get_value())
-            cut_z = -cut_z if cut_z < 0 else cut_z
-
-            # calculated tool diameter so the cut_z parameter is obeyed
-            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(tip_angle)))
-
-            # update the default_data so it is used in the ncc_tools dict
-            self.default_data.update({
-                "vtipdia": tip_dia,
-                "vtipangle": (tip_angle * 2),
-            })
-
-            self.ui.addtool_entry.set_value(tool_dia)
-
-            return tool_dia
-        else:
-            return float(self.ui.addtool_entry.get_value())
-
-    def on_selection(self):
-        sel_combo = self.ui.selectmethod_combo.get_value()
-
-        if sel_combo == _("Reference Object"):
-            self.ui.reference_combo.show()
-            self.ui.reference_combo_label.show()
-            self.ui.reference_type_combo.show()
-            self.ui.reference_type_label.show()
-        else:
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_type_combo.hide()
-            self.ui.reference_type_label.hide()
-
-        if sel_combo == _("Polygon Selection"):
-            # disable rest-machining for single polygon painting
-            # self.ui.rest_cb.set_value(False)
-            # self.ui.rest_cb.setDisabled(True)
-            pass
-
-        if sel_combo == _("Area Selection"):
-            # disable rest-machining for area painting
-            # self.ui.rest_cb.set_value(False)
-            # self.ui.rest_cb.setDisabled(True)
-
-            self.ui.area_shape_label.show()
-            self.ui.area_shape_radio.show()
-        else:
-            self.ui.addtool_entry.setDisabled(False)
-            self.ui.addtool_btn.setDisabled(False)
-            self.ui.deltool_btn.setDisabled(False)
-            self.ui.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
-
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-
     def on_order_changed(self, order):
         if order != 'no':
             self.build_ui()
 
-    def on_rest_machining_check(self, state):
-        if state:
-            self.ui.order_radio.set_value('rev')
-            self.ui.order_label.setDisabled(True)
-            self.ui.order_radio.setDisabled(True)
-
-            self.ui.offset_label.hide()
-            self.ui.offset_entry.hide()
-            self.ui.rest_offset_label.show()
-            self.ui.rest_offset_entry.show()
-        else:
-            self.ui.order_label.setDisabled(False)
-            self.ui.order_radio.setDisabled(False)
-
-            self.ui.offset_label.show()
-            self.ui.offset_entry.show()
-            self.ui.rest_offset_label.hide()
-            self.ui.rest_offset_entry.hide()
-
     def set_tool_ui(self):
         self.ui.tools_frame.show()
         self.reset_fields()
-
-        self.old_tool_dia = self.app.defaults["tools_paintnewdia"]
 
         # updated units
         self.units = self.app.defaults['units'].upper()
@@ -588,14 +487,8 @@ class ToolPaint(AppTool, Gerber):
         self.ui.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
         self.ui.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
 
-        self.ui.cutz_entry.set_value(self.app.defaults["tools_paintcutz"])
-        self.ui.tool_type_radio.set_value(self.app.defaults["tools_painttool_type"])
-        self.ui.tipdia_entry.set_value(self.app.defaults["tools_painttipdia"])
-        self.ui.tipangle_entry.set_value(self.app.defaults["tools_painttipangle"])
-        self.ui.addtool_entry.set_value(self.app.defaults["tools_paintnewdia"])
+        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_paintnewdia"])
         self.ui.rest_cb.set_value(self.app.defaults["tools_paintrest"])
-
-        self.on_tool_type(val=self.ui.tool_type_radio.get_value())
 
         # # make the default object type, "Geometry"
         # self.type_obj_radio.set_value("geometry")
@@ -629,22 +522,24 @@ class ToolPaint(AppTool, Gerber):
         try:
             diameters = [float(self.app.defaults["tools_painttooldia"])]
         except (ValueError, TypeError):
-            diameters = [eval(x) for x in self.app.defaults["tools_painttooldia"].split(",") if x != '']
+            if isinstance(self.app.defaults["tools_painttooldia"], str):
+                diameters = [eval(x) for x in self.app.defaults["tools_painttooldia"].split(",") if x != '']
+            else:
+                diameters = self.app.defaults["tools_painttooldia"]
 
         if not diameters:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             self.build_ui()
+
             # if the Paint Method is "Single" disable the tool table context menu
             if self.default_data["tools_selectmethod"] == "single":
                 self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
             return
 
-        # call on self.on_tool_add() counts as an call to self.build_ui()
-        # through this, we add a initial row / tool in the tool_table
         for dia in diameters:
-            self.on_tool_add(dia, muted=True)
+            self.on_tool_add(custom_dia=dia)
 
-        self.on_rest_machining_check(state=self.app.defaults["tools_paintrest"])
+        self.ui.on_rest_machining_check(state=self.app.defaults["tools_paintrest"])
 
         # if the Paint Method is "Single" disable the tool table context menu
         if self.default_data["tools_selectmethod"] == "single":
@@ -759,57 +654,206 @@ class ToolPaint(AppTool, Gerber):
                 "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
             )
 
-    def on_tool_add(self, dia=None, muted=None):
+    def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
+
+        filename = self.app.data_path + '\\tools_db.FlatDB'
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.paint_tools]
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
+        tooluid = int(max_uid + 1)
+
+        tool_dias = []
+        for k, v in self.paint_tools.items():
+            for tool_v in v.keys():
+                if tool_v == 'tooldia':
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
+
+        # determine the new tool diameter
+        if custom_dia is None:
+            tool_dia = self.ui.new_tooldia_entry.get_value()
+        else:
+            tool_dia = custom_dia
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.blockSignals(False)
+            return
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+
+        # if new tool diameter already in the Tool List then abort
+        if truncated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add()
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add()
+            return
+
+        tool_found = 0
+
+        offset = 'Path'
+        offset_val = 0.0
+        typ = "Rough"
+        tool_type = 'V'
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Paint Tool
+            if db_tool_val['data']['tool_target'] != _('Paint'):
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_paint') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_paint') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add()
+            self.blockSignals(False)
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.blockSignals(False)
+            return
+
+        # if new tool diameter found in Tools Database already in the Tool List then abort
+        if updated_tooldia is not None and updated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
+
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
+        self.paint_tools.update({
+            tooluid: {
+                'tooldia':          new_tdia,
+                'offset':           deepcopy(offset),
+                'offset_value':     deepcopy(offset_val),
+                'type':             deepcopy(typ),
+                'tool_type':        deepcopy(tool_type),
+                'data':             deepcopy(new_tools_dict),
+                'solid_geometry':   []
+            }
+        })
+        self.blockSignals(False)
+        self.build_ui()
+
+        # select the tool just added
+        for row in range(self.ui.tools_table.rowCount()):
+            if int(self.ui.tools_table.item(row, 3).text()) == tooluid:
+                self.ui.tools_table.selectRow(row)
+                break
+
+        # update the UI form
+        self.update_ui()
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, muted=None):
+        self.blockSignals(True)
+        self.units = self.app.defaults['units'].upper()
 
         if dia:
             tool_dia = dia
         else:
-            tool_dia = self.on_calculate_tooldia()
+            tool_dia = self.ui.new_tooldia_entry.get_value()
 
-            if tool_dia is None:
-                self.build_ui()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
-                return
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.blockSignals(False)
+            return
 
         # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.paint_tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.paint_tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
         self.tooluid = int(max_uid + 1)
 
         tool_dias = []
         for k, v in self.paint_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
-        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+        if truncated_tooldia in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.blockSignals(False)
             return
-        else:
-            if muted is None:
-                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
-            self.paint_tools.update({
-                int(self.tooluid): {
-                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Iso',
-                    'tool_type': self.ui.tool_type_radio.get_value(),
-                    'data': dict(self.default_data),
-                    'solid_geometry': []
-                }
-            })
+
+        self.paint_tools.update({
+            int(self.tooluid): {
+                'tooldia':          truncated_tooldia,
+                'offset':           'Path',
+                'offset_value':     0.0,
+                'type':             'Iso',
+                'tool_type':        'V',
+                'data':             deepcopy(self.default_data),
+                'solid_geometry':   []
+            }
+        })
 
         self.blockSignals(False)
         self.build_ui()
@@ -819,6 +863,12 @@ class ToolPaint(AppTool, Gerber):
             if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
                 self.ui.tools_table.selectRow(row)
                 break
+
+        # update the UI form
+        self.update_ui()
+
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
 
     def on_tool_edit(self, item):
         self.blockSignals(True)
@@ -859,61 +909,6 @@ class ToolPaint(AppTool, Gerber):
         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. New diameter value is already in the Tool Table."))
         self.blockSignals(False)
         self.build_ui()
-
-    # def on_tool_copy(self, all=None):
-    #     try:
-    #         self.ui.tools_table.itemChanged.disconnect()
-    #     except:
-    #         pass
-    #
-    #     # find the tool_uid maximum value in the self.tools
-    #     uid_list = []
-    #     for key in self.paint_tools:
-    #         uid_list.append(int(key))
-    #     try:
-    #         max_uid = max(uid_list, key=int)
-    #     except ValueError:
-    #         max_uid = 0
-    #
-    #     if all is None:
-    #         if self.ui.tools_table.selectedItems():
-    #             for current_row in self.ui.tools_table.selectedItems():
-    #                 # sometime the header get selected and it has row number -1
-    #                 # we don't want to do anything with the header :)
-    #                 if current_row.row() < 0:
-    #                     continue
-    #                 try:
-    #                     tooluid_copy = int(self.ui.tools_table.item(current_row.row(), 3).text())
-    #                     max_uid += 1
-    #                     self.paint_tools[int(max_uid)] = dict(self.paint_tools[tooluid_copy])
-    #                     for td in self.paint_tools:
-    #                         print("COPIED", self.paint_tools[td])
-    #                     self.build_ui()
-    #                 except AttributeError:
-    #                     self.app.inform.emit("[WARNING_NOTCL] Failed. Select a tool to copy.")
-    #                     self.build_ui()
-    #                     return
-    #                 except Exception as e:
-    #                     log.debug("on_tool_copy() --> " + str(e))
-    #             # deselect the table
-    #             # self.ui.geo_tools_table.clearSelection()
-    #         else:
-    #             self.app.inform.emit("[WARNING_NOTCL] Failed. Select a tool to copy.")
-    #             self.build_ui()
-    #             return
-    #     else:
-    #         # we copy all tools in geo_tools_table
-    #         try:
-    #             temp_tools = dict(self.paint_tools)
-    #             max_uid += 1
-    #             for tooluid in temp_tools:
-    #                 self.paint_tools[int(max_uid)] = dict(temp_tools[tooluid])
-    #             temp_tools.clear()
-    #             self.build_ui()
-    #         except Exception as e:
-    #             log.debug("on_tool_copy() --> " + str(e))
-    #
-    #     self.app.inform.emit("[success] Tool was copied in the Tool Table.")
 
     def on_tool_delete(self, rows_to_delete=None, all_tools=None):
         """
@@ -1694,11 +1689,12 @@ class ToolPaint(AppTool, Gerber):
             return None
 
     def paint_geo(self, obj, geometry, tooldia=None, order=None, method=None, outname=None,
-                   tools_storage=None, plot=True, run_threaded=True):
+                  tools_storage=None, plot=True, run_threaded=True):
         """
         Paints a given geometry.
 
         :param obj:             painted object
+        :param geometry:        geometry to Paint
         :param tooldia:         Diameter of the painting tool
         :param order:           if the tools are ordered and how
         :param outname:         Name of the resulting Geometry Object.
@@ -1710,7 +1706,6 @@ class ToolPaint(AppTool, Gerber):
         :param run_threaded:
         :return: None
         """
-
 
         paint_method = method if method is not None else self.ui.paintmethod_combo.get_value()
         # determine if to use the progressive plotting
@@ -1967,7 +1962,7 @@ class ToolPaint(AppTool, Gerber):
                     return "fail"
 
                 # store here the cleared geometry
-                cleared_geo = []
+                # cleared_geo = []
 
                 # determine the tool parameters to use
                 over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
@@ -2131,10 +2126,12 @@ class ToolPaint(AppTool, Gerber):
                         has_solid_geo += 1
 
                 if has_solid_geo == 0:
-                    app_obj.inform.emit('[ERROR] %s' %
-                                        _("There is no Painting Geometry in the file.\n"
-                                          "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                          "Change the painting parameters and try again."))
+                    app_obj.inform.emit(
+                        '[ERROR] %s' %
+                        _("There is no Painting Geometry in the file.\n"
+                          "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                          "Change the painting parameters and try again.")
+                    )
                     return "fail"
                 geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
             else:
@@ -2519,8 +2516,7 @@ class ToolPaint(AppTool, Gerber):
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
-        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
-        self.ui.rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ui.rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
         self.ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
@@ -2572,13 +2568,6 @@ class ToolPaint(AppTool, Gerber):
                 except (TypeError, ValueError):
                     pass
 
-
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.tool_type_radio.activated_custom.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.rest_cb.stateChanged.disconnect()
@@ -2624,6 +2613,10 @@ class ToolPaint(AppTool, Gerber):
         :return:
         """
         tool_from_db = deepcopy(tool)
+
+        if tool['data']['tool_target'] != _("Paint"):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+            return
 
         res = self.on_paint_tool_from_db_inserted(tool=tool_from_db)
 
@@ -2740,7 +2733,7 @@ class PaintUI:
         self.layout = layout
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -2767,7 +2760,7 @@ class PaintUI:
         # ##### Type of object to be painted #############
         # ################################################
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be painted.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -2790,7 +2783,7 @@ class PaintUI:
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.is_last = True
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.object_label = FCLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be painted."))
 
         grid0.addWidget(self.object_label, 2, 0)
@@ -2802,7 +2795,7 @@ class PaintUI:
         grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         # ### Tools ## ##
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for painting.")
@@ -2845,7 +2838,7 @@ class PaintUI:
               "Choosing the 'V-Shape' Tool Type automatically will select the Operation Type\n"
               "in the resulting geometry as Isolation."))
 
-        self.order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        self.order_label = FCLabel('<b>%s:</b>' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -2871,113 +2864,53 @@ class PaintUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
-        self.grid3 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(self.grid3)
-        self.grid3.setColumnStretch(0, 0)
-        self.grid3.setColumnStretch(1, 1)
-
         # ##############################################################################
         # ###################### ADD A NEW TOOL ########################################
         # ##############################################################################
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
-
-        # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
-                                         {'label': _('Circular'), 'value': 'C1'}])
-        self.tool_type_radio.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-        self.tool_type_radio.setObjectName('p_tool_type')
-
-        self.grid3.addWidget(self.tool_type_label, 2, 0)
-        self.grid3.addWidget(self.tool_type_radio, 2, 1)
-
-        # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
-        self.tipdialabel.setToolTip(
-            _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.0000, 9999.9999)
-        self.tipdia_entry.setSingleStep(0.1)
-        self.tipdia_entry.setObjectName('p_vtip_dia')
-
-        self.grid3.addWidget(self.tipdialabel, 3, 0)
-        self.grid3.addWidget(self.tipdia_entry, 3, 1)
-
-        # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
-        self.tipanglelabel.setToolTip(
-            _("The tip angle for V-Shape Tool.\n"
-              "In degree."))
-        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(0.0000, 180.0000)
-        self.tipangle_entry.setSingleStep(5)
-        self.tipangle_entry.setObjectName('p_vtip_angle')
-
-        self.grid3.addWidget(self.tipanglelabel, 4, 0)
-        self.grid3.addWidget(self.tipangle_entry, 4, 1)
-
-        # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
-            _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
-        )
-        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999.9999, 0.0000)
-        self.cutz_entry.setObjectName('p_cutz')
-
-        self.cutz_entry.setToolTip(
-            _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
-        )
-        self.grid3.addWidget(cutzlabel, 5, 0)
-        self.grid3.addWidget(self.cutz_entry, 5, 1)
+        
+        self.grid3 = QtWidgets.QGridLayout()
+        self.grid3.setColumnStretch(0, 0)
+        self.grid3.setColumnStretch(1, 1)
+        self.tools_box.addLayout(self.grid3)
+        
+        self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
+        self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
 
         # ### Tool Diameter ####
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
-        self.addtool_entry_lbl.setToolTip(
+        self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
+        self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
               "calculated from the other parameters.")
         )
-        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.000, 9999.9999)
-        self.addtool_entry.setObjectName('p_tool_dia')
+        self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.new_tooldia_entry.set_precision(self.decimals)
+        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.setObjectName('p_tool_dia')
 
-        self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
-        self.grid3.addWidget(self.addtool_entry, 6, 1)
+        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
+        self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
 
         hlay = QtWidgets.QHBoxLayout()
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
-        self.addtool_btn.setToolTip(
+        self.add_newtool_button = FCButton(_('Search and Add'))
+        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_newtool_button.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "with the diameter specified above.")
+              "with the diameter specified above.\n"
+              "This is done by a background search\n"
+              "in the Tools Database. If nothing is found\n"
+              "in the Tools DB then a default tool is added.")
         )
+        hlay.addWidget(self.add_newtool_button)
 
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn = FCButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool Database.\n"
               "Tool database administration in Menu: Options -> Tools Database")
         )
-
-        hlay.addWidget(self.addtool_btn)
         hlay.addWidget(self.addtool_from_db_btn)
 
         self.grid3.addLayout(hlay, 7, 0, 1, 2)
@@ -2987,21 +2920,20 @@ class PaintUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 8, 0, 1, 2)
 
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
+        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row(s) in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
-        self.grid3.addWidget(QtWidgets.QLabel(''), 10, 0, 1, 2)
-
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 11, 0, 1, 2)
 
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -3017,7 +2949,7 @@ class PaintUI:
         self.tools_box.addLayout(grid4)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        ovlabel = FCLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -3038,7 +2970,7 @@ class PaintUI:
         grid4.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Offset
-        self.offset_label = QtWidgets.QLabel('%s:' % _('Offset'))
+        self.offset_label = FCLabel('%s:' % _('Offset'))
         self.offset_label.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -3053,7 +2985,7 @@ class PaintUI:
         grid4.addWidget(self.offset_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel = FCLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for painting:\n"
               "- Standard: Fixed step inwards.\n"
@@ -3125,7 +3057,7 @@ class PaintUI:
         grid4.addWidget(separator_line, 13, 0, 1, 2)
 
         # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -3145,7 +3077,7 @@ class PaintUI:
         grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
 
         # Rest Offset
-        self.rest_offset_label = QtWidgets.QLabel('%s:' % _('Offset'))
+        self.rest_offset_label = FCLabel('%s:' % _('Offset'))
         self.rest_offset_label.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -3159,7 +3091,7 @@ class PaintUI:
         grid4.addWidget(self.rest_offset_entry, 17, 1)
 
         # Polygon selection
-        selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
+        selectlabel = FCLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
             _("Selection of area to be processed.\n"
               "- 'Polygon Selection' - left mouse click to add/remove polygons to be processed.\n"
@@ -3199,7 +3131,7 @@ class PaintUI:
         form1 = QtWidgets.QFormLayout()
         grid4.addLayout(form1, 20, 0, 1, 2)
 
-        self.reference_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.reference_type_label = FCLabel('%s:' % _("Ref. Type"))
         self.reference_type_label.setToolTip(
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -3209,7 +3141,7 @@ class PaintUI:
 
         form1.addRow(self.reference_type_label, self.reference_type_combo)
 
-        self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
@@ -3225,7 +3157,7 @@ class PaintUI:
         self.reference_type_label.hide()
 
         # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -3240,7 +3172,7 @@ class PaintUI:
         self.area_shape_radio.hide()
 
         # GO Button
-        self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_paint_button = FCButton(_('Generate Geometry'))
         self.generate_paint_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_paint_button.setToolTip(
             _("Create a Geometry Object which paints the polygons.")
@@ -3256,7 +3188,7 @@ class PaintUI:
         self.tools_box.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
@@ -3272,6 +3204,61 @@ class PaintUI:
         # #################################### FINSIHED GUI ###########################
         # #############################################################################
     
+    def on_rest_machining_check(self, state):
+        if state:
+            self.order_radio.set_value('rev')
+            self.order_label.setDisabled(True)
+            self.order_radio.setDisabled(True)
+
+            self.offset_label.hide()
+            self.offset_entry.hide()
+            self.rest_offset_label.show()
+            self.rest_offset_entry.show()
+        else:
+            self.order_label.setDisabled(False)
+            self.order_radio.setDisabled(False)
+
+            self.offset_label.show()
+            self.offset_entry.show()
+            self.rest_offset_label.hide()
+            self.rest_offset_entry.hide()
+    
+    def on_selection(self):
+        sel_combo = self.selectmethod_combo.get_value()
+
+        if sel_combo == _("Reference Object"):
+            self.reference_combo.show()
+            self.reference_combo_label.show()
+            self.reference_type_combo.show()
+            self.reference_type_label.show()
+        else:
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_type_combo.hide()
+            self.reference_type_label.hide()
+
+        if sel_combo == _("Polygon Selection"):
+            # disable rest-machining for single polygon painting
+            # self.ui.rest_cb.set_value(False)
+            # self.ui.rest_cb.setDisabled(True)
+            pass
+
+        if sel_combo == _("Area Selection"):
+            # disable rest-machining for area painting
+            # self.ui.rest_cb.set_value(False)
+            # self.ui.rest_cb.setDisabled(True)
+
+            self.area_shape_label.show()
+            self.area_shape_radio.show()
+        else:
+            self.new_tooldia_entry.setDisabled(False)
+            self.add_newtool_button.setDisabled(False)
+            self.deltool_btn.setDisabled(False)
+            self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
+
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
             self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
