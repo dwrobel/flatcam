@@ -195,6 +195,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
 
         self.ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
+        # Custom Signal
         self.optimal_found_sig.connect(lambda val: self.ui.new_tooldia_entry.set_value(float(val)))
 
         self.ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
@@ -783,7 +784,7 @@ class ToolIsolation(AppTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Please enter a tool diameter with non-zero value, in Float format."))
                 return
-            self.on_tool_default_add(dia=float(val))
+            self.on_tool_add(custom_dia=float(val))
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
@@ -1030,7 +1031,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.log.error("Could not load tools DB file.")
             self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
             self.blockSignals(False)
-            self.on_tool_default_add()
+            self.on_tool_default_add(dia=tool_dia)
             return
 
         try:
@@ -1041,7 +1042,7 @@ class ToolIsolation(AppTool, Gerber):
             self.app.log.error(str(e))
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
             self.blockSignals(False)
-            self.on_tool_default_add()
+            self.on_tool_default_add(dia=tool_dia)
             return
 
         tool_found = 0
@@ -1092,7 +1093,7 @@ class ToolIsolation(AppTool, Gerber):
         # test we found a suitable tool in Tools Database or if multiple ones
         if tool_found == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
-            self.on_tool_default_add()
+            self.on_tool_default_add(dia=tool_dia)
             self.blockSignals(False)
             return
 
@@ -1197,7 +1198,7 @@ class ToolIsolation(AppTool, Gerber):
         self.update_ui()
 
         if muted is None:
-            self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
+            self.app.inform.emit('[success] %s' % _("Default tool added to Tool Table."))
 
     def on_tool_edit(self, item):
         self.blockSignals(True)

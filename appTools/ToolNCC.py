@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton,\
-    FCComboBox, OptionalInputSection
+    FCComboBox, OptionalInputSection, FCLabel
 from appParsers.ParseGerber import Gerber
 
 from camlib import grace
@@ -17,16 +17,17 @@ from camlib import grace
 from copy import deepcopy
 
 import numpy as np
-import math
 from shapely.geometry import base
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, nearest_points
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import logging
 import traceback
+import sys
 import gettext
+import simplejson as json
 import appTranslation as fcTranslate
 import builtins
 
@@ -38,6 +39,8 @@ log = logging.getLogger('base')
 
 
 class NonCopperClear(AppTool, Gerber):
+
+    optimal_found_sig = QtCore.pyqtSignal(float)
 
     def __init__(self, app):
         self.app = app
@@ -197,25 +200,26 @@ class NonCopperClear(AppTool, Gerber):
         # #############################################################################
         # ############################ SIGNALS ########################################
         # #############################################################################
-        self.ui.addtool_btn.clicked.connect(self.on_tool_add)
-        self.ui.addtool_entry.returnPressed.connect(self.on_tooldia_updated)
+        self.ui.find_optimal_button.clicked.connect(self.on_find_optimal_tooldia)
+        # Custom Signal
+        self.optimal_found_sig.connect(lambda val: self.ui.new_tooldia_entry.set_value(float(val)))
+
         self.ui.deltool_btn.clicked.connect(self.on_tool_delete)
         self.ui.generate_ncc_button.clicked.connect(self.on_ncc_click)
-
-        self.ui.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
-        self.ui.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
 
         self.ui.op_radio.activated_custom.connect(self.on_operation_change)
 
         self.ui.reference_combo_type.currentIndexChanged.connect(self.on_reference_combo_changed)
-        self.ui.select_combo.currentIndexChanged.connect(self.on_toggle_reference)
+        self.ui.select_combo.currentIndexChanged.connect(self.ui.on_toggle_reference)
 
-        self.ui.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ui.ncc_rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
         self.ui.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_index_changed)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+
+        # add a new tool Signals
+        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
         self.ui.addtool_from_db_btn.clicked.connect(self.on_ncc_tool_add_from_db_clicked)
 
         self.ui.reset_button.clicked.connect(self.set_tool_ui)
@@ -453,7 +457,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Please enter a tool diameter with non-zero value, in Float format."))
                 return
-            self.on_tool_add(dia=float(val))
+            self.on_tool_add(custom_dia=float(val))
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
@@ -509,15 +513,8 @@ class NonCopperClear(AppTool, Gerber):
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_ncc_area_shape"])
 
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
-        self.ui.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
-        self.ui.tool_type_radio.set_value(self.app.defaults["tools_ncctool_type"])
-        self.ui.tipdia_entry.set_value(self.app.defaults["tools_ncctipdia"])
-        self.ui.tipangle_entry.set_value(self.app.defaults["tools_ncctipangle"])
-        self.ui.addtool_entry.set_value(self.app.defaults["tools_nccnewdia"])
 
-        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
-
-        self.on_tool_type(val=self.ui.tool_type_radio.get_value())
+        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_nccnewdia"])
 
         # init the working variables
         self.default_data.clear()
@@ -579,18 +576,7 @@ class NonCopperClear(AppTool, Gerber):
 
         self.ncc_tools.clear()
         for tool_dia in dias:
-            self.tooluid += 1
-            self.ncc_tools.update({
-                int(self.tooluid): {
-                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Iso',
-                    'tool_type': self.app.defaults["tools_ncctool_type"],
-                    'data': deepcopy(self.default_data),
-                    'solid_geometry': []
-                }
-            })
+            self.on_tool_add(custom_dia=tool_dia)
 
         self.obj_name = ""
         self.ncc_obj = None
@@ -727,8 +713,6 @@ class NonCopperClear(AppTool, Gerber):
             except AttributeError:
                 pass
 
-        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type)
-
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
@@ -740,7 +724,7 @@ class NonCopperClear(AppTool, Gerber):
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.form_to_storage)
 
-        self.ui.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ui.ncc_rest_cb.stateChanged.connect(self.ui.on_rest_machining_check)
         self.ui.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
@@ -748,12 +732,6 @@ class NonCopperClear(AppTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.tools_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.tool_type_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -806,10 +784,6 @@ class NonCopperClear(AppTool, Gerber):
         except (TypeError, AttributeError):
             pass
 
-    def on_tooldia_updated(self):
-        if self.ui.tool_type_radio.get_value() == 'C1':
-            self.old_tool_dia = self.ui.addtool_entry.get_value()
-
     def on_reference_combo_changed(self):
         obj_type = self.ui.reference_combo_type.currentIndex()
         self.ui.reference_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -818,82 +792,9 @@ class NonCopperClear(AppTool, Gerber):
             _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
         }[self.ui.reference_combo_type.get_value()]
 
-    def on_toggle_reference(self):
-        sel_combo = self.ui.select_combo.get_value()
-
-        if sel_combo == _("Itself"):
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_combo_type.hide()
-            self.ui.reference_combo_type_label.hide()
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-
-            # disable rest-machining for area painting
-            self.ui.ncc_rest_cb.setDisabled(False)
-        elif sel_combo == _("Area Selection"):
-            self.ui.reference_combo.hide()
-            self.ui.reference_combo_label.hide()
-            self.ui.reference_combo_type.hide()
-            self.ui.reference_combo_type_label.hide()
-            self.ui.area_shape_label.show()
-            self.ui.area_shape_radio.show()
-
-            # disable rest-machining for area painting
-            # self.ui.ncc_rest_cb.set_value(False)
-            # self.ui.ncc_rest_cb.setDisabled(True)
-        else:
-            self.ui.reference_combo.show()
-            self.ui.reference_combo_label.show()
-            self.ui.reference_combo_type.show()
-            self.ui.reference_combo_type_label.show()
-            self.ui.area_shape_label.hide()
-            self.ui.area_shape_radio.hide()
-
-            # disable rest-machining for area painting
-            self.ui.ncc_rest_cb.setDisabled(False)
-
     def on_order_changed(self, order):
         if order != 'no':
             self.build_ui()
-
-    def on_rest_machining_check(self, state):
-        if state:
-            self.ui.ncc_order_radio.set_value('rev')
-            self.ui.ncc_order_label.setDisabled(True)
-            self.ui.ncc_order_radio.setDisabled(True)
-
-            self.ui.nccmarginlabel.hide()
-            self.ui.ncc_margin_entry.hide()
-            self.ui.ncc_connect_cb.hide()
-            self.ui.ncc_contour_cb.hide()
-            self.ui.ncc_choice_offset_cb.hide()
-            self.ui.ncc_offset_spinner.hide()
-
-            self.ui.rest_nccmarginlabel.show()
-            self.ui.rest_ncc_margin_entry.show()
-            self.ui.rest_ncc_connect_cb.show()
-            self.ui.rest_ncc_contour_cb.show()
-            self.ui.rest_ncc_choice_offset_cb.show()
-            self.ui.rest_ncc_offset_spinner.show()
-
-        else:
-            self.ui.ncc_order_label.setDisabled(False)
-            self.ui.ncc_order_radio.setDisabled(False)
-
-            self.ui.nccmarginlabel.show()
-            self.ui.ncc_margin_entry.show()
-            self.ui.ncc_connect_cb.show()
-            self.ui.ncc_contour_cb.show()
-            self.ui.ncc_choice_offset_cb.show()
-            self.ui.ncc_offset_spinner.show()
-
-            self.ui.rest_nccmarginlabel.hide()
-            self.ui.rest_ncc_margin_entry.hide()
-            self.ui.rest_ncc_connect_cb.hide()
-            self.ui.rest_ncc_contour_cb.hide()
-            self.ui.rest_ncc_choice_offset_cb.hide()
-            self.ui.rest_ncc_offset_spinner.hide()
 
     def on_tooltable_cellwidget_change(self):
         cw = self.sender()
@@ -916,80 +817,279 @@ class NonCopperClear(AppTool, Gerber):
                 'tool_type': tt,
             })
 
-    def on_tool_type(self, val):
-        if val == 'V':
-            self.ui.addtool_entry_lbl.setDisabled(True)
-            self.ui.addtool_entry.setDisabled(True)
-            self.ui.tipdialabel.show()
-            self.ui.tipdia_entry.show()
-            self.ui.tipanglelabel.show()
-            self.ui.tipangle_entry.show()
+    def on_find_optimal_tooldia(self):
+        self.units = self.app.defaults['units'].upper()
 
-            self.on_calculate_tooldia()
-        else:
-            self.ui.addtool_entry_lbl.setDisabled(False)
-            self.ui.addtool_entry.setDisabled(False)
-            self.ui.tipdialabel.hide()
-            self.ui.tipdia_entry.hide()
-            self.ui.tipanglelabel.hide()
-            self.ui.tipangle_entry.hide()
+        obj_name = self.ui.object_combo.currentText()
 
-            self.ui.addtool_entry.set_value(self.old_tool_dia)
+        # Get source object.
+        try:
+            fcobj = self.app.collection.get_by_name(obj_name)
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(obj_name)))
+            return
 
-    def on_calculate_tooldia(self):
-        if self.ui.tool_type_radio.get_value() == 'V':
-            tip_dia = float(self.ui.tipdia_entry.get_value())
-            tip_angle = float(self.ui.tipangle_entry.get_value()) / 2.0
-            cut_z = float(self.ui.cutz_entry.get_value())
-            cut_z = -cut_z if cut_z < 0 else cut_z
+        if fcobj is None:
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
+            return
 
-            # calculated tool diameter so the cut_z parameter is obeyed
-            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(tip_angle)))
+        proc = self.app.proc_container.new(_("Working..."))
 
-            # update the default_data so it is used in the ncc_tools dict
-            self.default_data.update({
-                "vtipdia": tip_dia,
-                "vtipangle": (tip_angle * 2),
-            })
+        def job_thread(app_obj):
+            try:
+                old_disp_number = 0
+                pol_nr = 0
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+                total_geo = []
 
-            self.ui.addtool_entry.set_value(tool_dia)
+                for ap in list(fcobj.apertures.keys()):
+                    if 'geometry' in fcobj.apertures[ap]:
+                        for geo_el in fcobj.apertures[ap]['geometry']:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise grace
 
-            return tool_dia
-        else:
-            return float(self.ui.addtool_entry.get_value())
+                            if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                                total_geo.append(geo_el['solid'])
 
-    def on_tool_add(self, dia=None, muted=None):
+                total_geo = MultiPolygon(total_geo)
+                total_geo = total_geo.buffer(0)
+
+                try:
+                    __ = iter(total_geo)
+                    geo_len = len(total_geo)
+                    geo_len = (geo_len * (geo_len - 1)) / 2
+                except TypeError:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("The Gerber object has one Polygon as geometry.\n"
+                                          "There are no distances between geometry elements to be found."))
+                    return 'fail'
+
+                min_dict = {}
+                idx = 1
+                for geo in total_geo:
+                    for s_geo in total_geo[idx:]:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise grace
+
+                        # minimize the number of distances by not taking into considerations those that are too small
+                        dist = geo.distance(s_geo)
+                        dist = float('%.*f' % (self.decimals, dist))
+                        loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                        proc_loc = (
+                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                        )
+
+                        if dist in min_dict:
+                            min_dict[dist].append(proc_loc)
+                        else:
+                            min_dict[dist] = [proc_loc]
+
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                        if old_disp_number < disp_number <= 100:
+                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+                    idx += 1
+
+                min_list = list(min_dict.keys())
+                min_dist = min(min_list)
+
+                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+
+                self.optimal_found_sig.emit(min_dist_truncated)
+
+                app_obj.inform.emit('[success] %s: %s %s' %
+                                    (_("Optimal tool diameter found"), str(min_dist_truncated), self.units.lower()))
+            except Exception as ee:
+                proc.done()
+                log.debug(str(ee))
+                return
+            proc.done()
+
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
 
+        filename = self.app.data_path + '\\tools_db.FlatDB'
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        # construct a list of all 'tooluid' in the self.iso_tools
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.ncc_tools]
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
+        tooluid = int(max_uid + 1)
+
+        tool_dias = []
+        for k, v in self.ncc_tools.items():
+            for tool_v in v.keys():
+                if tool_v == 'tooldia':
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
+
+        # determine the new tool diameter
+        if custom_dia is None:
+            tool_dia = self.ui.new_tooldia_entry.get_value()
+        else:
+            tool_dia = custom_dia
+
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.blockSignals(False)
+            return
+
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+
+        # if new tool diameter already in the Tool List then abort
+        if truncated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add(dia=tool_dia)
+
+            return
+
+        tool_found = 0
+
+        offset = 'Path'
+        offset_val = 0.0
+        typ = "Rough"
+        tool_type = 'V'
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Isolation Tool
+            if db_tool_val['data']['tool_target'] != _('NCC'):
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_iso') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_iso') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add(dia=tool_dia)
+            self.blockSignals(False)
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.blockSignals(False)
+            return
+
+        # if new tool diameter found in Tools Database already in the Tool List then abort
+        if updated_tooldia is not None and updated_tooldia in tool_dias:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
+            self.blockSignals(False)
+            return
+
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
+        self.ncc_tools.update({
+            tooluid: {
+                'tooldia':          new_tdia,
+                'offset':           deepcopy(offset),
+                'offset_value':     deepcopy(offset_val),
+                'type':             deepcopy(typ),
+                'tool_type':        deepcopy(tool_type),
+                'data':             deepcopy(new_tools_dict),
+                'solid_geometry':   []
+            }
+        })
+        self.blockSignals(False)
+        self.build_ui()
+
+        # select the tool just added
+        for row in range(self.ui.tools_table.rowCount()):
+            if int(self.ui.tools_table.item(row, 3).text()) == tooluid:
+                self.ui.tools_table.selectRow(row)
+                break
+
+        # update the UI form
+        self.update_ui()
+
+        self.app.inform.emit('[success] %s' % _("New tool added to Tool Table from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, muted=None):
+        self.blockSignals(True)
         self.units = self.app.defaults['units'].upper()
 
         if dia:
             tool_dia = dia
         else:
-            tool_dia = self.on_calculate_tooldia()
-            if tool_dia is None:
-                self.build_ui()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
-                return
+            tool_dia = self.ui.new_tooldia_entry.get_value()
 
-        tool_dia = float('%.*f' % (self.decimals, tool_dia))
-
-        if tool_dia == 0:
+        if tool_dia is None or tool_dia == 0:
+            self.build_ui()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
                                                           "in Float format."))
+            self.blockSignals(False)
             return
 
         # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.ncc_tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.ncc_tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
         self.tooluid = int(max_uid + 1)
 
         tool_dias = []
@@ -998,27 +1098,25 @@ class NonCopperClear(AppTool, Gerber):
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
 
-        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+        if truncated_tooldia in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             # self.ui.tools_table.itemChanged.connect(self.on_tool_edit)
             self.blockSignals(False)
-
             return
-        else:
-            if muted is None:
-                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
-            self.ncc_tools.update({
-                int(self.tooluid): {
-                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': 'Iso',
-                    'tool_type': self.app.defaults["tools_ncctool_type"],
-                    'data': deepcopy(self.default_data),
-                    'solid_geometry': []
-                }
-            })
+
+        self.ncc_tools.update({
+            int(self.tooluid): {
+                'tooldia':          truncated_tooldia,
+                'offset':           'Path',
+                'offset_value':     0.0,
+                'type':             'Iso',
+                'tool_type':        deepcopy(self.app.defaults["tools_ncctool_type"]),
+                'data':             deepcopy(self.default_data),
+                'solid_geometry':   []
+            }
+        })
 
         self.blockSignals(False)
         self.build_ui()
@@ -1028,6 +1126,12 @@ class NonCopperClear(AppTool, Gerber):
             if int(self.ui.tools_table.item(row, 3).text()) == self.tooluid:
                 self.ui.tools_table.selectRow(row)
                 break
+
+        # update the UI form
+        self.update_ui()
+
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("Default tool added to Tool Table."))
 
     def on_tool_edit(self, item):
         self.blockSignals(True)
@@ -3493,6 +3597,10 @@ class NonCopperClear(AppTool, Gerber):
         """
         tool_from_db = deepcopy(tool)
 
+        if tool['data']['tool_target'] != _("NCC"):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+            return
+
         res = self.on_ncc_tool_from_db_inserted(tool=tool_from_db)
 
         for idx in range(self.app.ui.plot_tab_area.count()):
@@ -3525,40 +3633,33 @@ class NonCopperClear(AppTool, Gerber):
         tooldia = float(tool['tooldia'])
 
         # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.ncc_tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.ncc_tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = 0 if not tool_uid_list else max(tool_uid_list)
         tooluid = max_uid + 1
-
-        tooldia = float('%.*f' % (self.decimals, tooldia))
 
         tool_dias = []
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
+                    tool_dias.append(self.app.dec_format(v[tool_v], self.decimals))
 
-        if float('%.*f' % (self.decimals, tooldia)) in tool_dias:
+        truncated_tooldia = self.app.dec_format(tooldia, self.decimals)
+        if truncated_tooldia in tool_dias:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Tool already in Tool Table."))
             self.ui_connect()
             return 'fail'
 
         self.ncc_tools.update({
             tooluid: {
-                'tooldia': float('%.*f' % (self.decimals, tooldia)),
-                'offset': tool['offset'],
-                'offset_value': tool['offset_value'],
-                'type': tool['type'],
-                'tool_type': tool['tool_type'],
-                'data': deepcopy(tool['data']),
-                'solid_geometry': []
+                'tooldia':          truncated_tooldia,
+                'offset':           deepcopy(tool['offset']),
+                'offset_value':     deepcopy(tool['offset_value']),
+                'type':             deepcopy(tool['type']),
+                'tool_type':        deepcopy(tool['tool_type']),
+                'data':             deepcopy(tool['data']),
+                'solid_geometry':   []
             }
         })
         self.ncc_tools[tooluid]['data']['name'] = '_ncc'
@@ -3613,7 +3714,7 @@ class NccUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label = FCLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                                 QLabel
                                 {
@@ -3627,20 +3728,7 @@ class NccUI:
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        # ################################################
-        # ##### Type of object to be copper cleaned ######
-        # ################################################
-        # self.type_obj_radio = FCComboBox()
-        # self.type_obj_radio.addItem("Gerber")
-        # self.type_obj_radio.addItem("Excellon")
-        # self.type_obj_radio.addItem("Geometry")
-        #
-        # # we get rid of item1 ("Excellon") as it is not suitable
-        # self.type_obj_radio.view().setRowHidden(1, True)
-        # self.type_obj_radio.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        # self.type_obj_radio.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
-
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label = FCLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cleared of excess copper.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -3663,7 +3751,7 @@ class NccUI:
         # self.object_combo.setCurrentIndex(1)
         self.object_combo.is_last = True
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.object_label = FCLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be cleared of excess copper."))
 
         form_layout.addRow(self.object_label, self.object_combo)
@@ -3674,7 +3762,7 @@ class NccUI:
         self.tools_box.addWidget(separator_line)
 
         # ### Tools ## ##
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = FCLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for copper clearing.")
@@ -3728,7 +3816,7 @@ class NccUI:
         grid1.setColumnStretch(1, 1)
 
         # Tool order
-        self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.ncc_order_label = FCLabel('%s:' % _('Tool order'))
         self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -3763,105 +3851,53 @@ class NccUI:
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
 
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
-
-        # Tool Type Radio Button
-        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
-        self.tool_type_label.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-
-        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
-                                         {'label': _('Circular'), 'value': 'C1'}])
-        self.tool_type_radio.setToolTip(
-            _("Default tool type:\n"
-              "- 'V-shape'\n"
-              "- Circular")
-        )
-        self.tool_type_radio.setObjectName(_("Tool Type"))
-
-        self.grid3.addWidget(self.tool_type_label, 2, 0)
-        self.grid3.addWidget(self.tool_type_radio, 2, 1)
-
-        # Tip Dia
-        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
-        self.tipdialabel.setToolTip(
-            _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipdia_entry.set_precision(self.decimals)
-        self.tipdia_entry.set_range(0.0000, 9999.9999)
-        self.tipdia_entry.setSingleStep(0.1)
-        self.tipdia_entry.setObjectName(_("V-Tip Dia"))
-
-        self.grid3.addWidget(self.tipdialabel, 3, 0)
-        self.grid3.addWidget(self.tipdia_entry, 3, 1)
-
-        # Tip Angle
-        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
-        self.tipanglelabel.setToolTip(
-            _("The tip angle for V-Shape Tool.\n"
-              "In degree."))
-        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(0.0000, 180.0000)
-        self.tipangle_entry.setSingleStep(5)
-        self.tipangle_entry.setObjectName(_("V-Tip Angle"))
-
-        self.grid3.addWidget(self.tipanglelabel, 4, 0)
-        self.grid3.addWidget(self.tipangle_entry, 4, 1)
-
-        # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
-            _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
-        )
-        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999.9999, 0.0000)
-        self.cutz_entry.setObjectName(_("Cut Z"))
-
-        self.cutz_entry.setToolTip(
-            _("Depth of cut into material. Negative value.\n"
-              "In FlatCAM units.")
-        )
-        self.grid3.addWidget(cutzlabel, 5, 0)
-        self.grid3.addWidget(self.cutz_entry, 5, 1)
+        self.tool_sel_label = FCLabel('<b>%s</b>' % _('Add from DB'))
+        self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
 
         # ### Tool Diameter ####
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
-        self.addtool_entry_lbl.setToolTip(
+        self.new_tooldia_lbl = FCLabel('<b>%s:</b>' % _('Tool Dia'))
+        self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
               "calculated from the other parameters.")
         )
-        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.addtool_entry.set_precision(self.decimals)
-        self.addtool_entry.set_range(0.000, 9999.9999)
-        self.addtool_entry.setObjectName(_("Tool Dia"))
+        self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.new_tooldia_entry.set_precision(self.decimals)
+        self.new_tooldia_entry.set_range(0.000, 9999.9999)
+        self.new_tooldia_entry.setObjectName(_("Tool Dia"))
 
-        self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
-        self.grid3.addWidget(self.addtool_entry, 6, 1)
+        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
+        self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
+
+        # Find Optimal Tooldia
+        self.find_optimal_button = FCButton(_('Find Optimal'))
+        self.find_optimal_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
+        self.find_optimal_button.setToolTip(
+            _("Find a tool diameter that is guaranteed\n"
+              "to do a complete isolation.")
+        )
+        self.grid3.addWidget(self.find_optimal_button, 4, 0, 1, 2)
 
         hlay = QtWidgets.QHBoxLayout()
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
-        self.addtool_btn.setToolTip(
+        self.add_newtool_button = FCButton(_('Search and Add'))
+        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_newtool_button.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "with the diameter specified above.")
+              "with the diameter specified above.\n"
+              "This is done by a background search\n"
+              "in the Tools Database. If nothing is found\n"
+              "in the Tools DB then a default tool is added.")
         )
+        hlay.addWidget(self.add_newtool_button)
 
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn = FCButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool Database.\n"
               "Tool database administration in Menu: Options -> Tools Database")
         )
-
-        hlay.addWidget(self.addtool_btn)
         hlay.addWidget(self.addtool_from_db_btn)
 
         self.grid3.addLayout(hlay, 7, 0, 1, 2)
@@ -3871,21 +3907,22 @@ class NccUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 8, 0, 1, 2)
 
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
+        self.deltool_btn = FCButton(_('Delete'))
+        self.deltool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/trash16.png'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row(s) in the Tool Table.")
         )
         self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
-        self.grid3.addWidget(QtWidgets.QLabel(''), 10, 0, 1, 2)
+        # self.grid3.addWidget(FCLabel(''), 10, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 11, 0, 1, 2)
 
-        self.tool_data_label = QtWidgets.QLabel(
+        self.tool_data_label = FCLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
@@ -3896,7 +3933,7 @@ class NccUI:
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
         # Operation
-        op_label = QtWidgets.QLabel('%s:' % _('Operation'))
+        op_label = FCLabel('%s:' % _('Operation'))
         op_label.setToolTip(
             _("The 'Operation' can be:\n"
               "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
@@ -3914,7 +3951,7 @@ class NccUI:
         self.grid3.addWidget(self.op_radio, 13, 1)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -3937,7 +3974,7 @@ class NccUI:
         self.grid3.addWidget(self.milling_type_radio, 14, 1)
 
         # Overlap Entry
-        self.nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.nccoverlabel = FCLabel('%s:' % _('Overlap'))
         self.nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -3958,7 +3995,7 @@ class NccUI:
         self.grid3.addWidget(self.ncc_overlap_entry, 15, 1)
 
         # Method
-        self.methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        self.methodlabel = FCLabel('%s:' % _('Method'))
         self.methodlabel.setToolTip(
             _("Algorithm for copper clearing:\n"
               "- Standard: Fixed step inwards.\n"
@@ -3981,7 +4018,7 @@ class NccUI:
         self.grid3.addWidget(self.ncc_method_combo, 16, 1)
 
         # Margin
-        self.nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        self.nccmarginlabel = FCLabel('%s:' % _('Margin'))
         self.nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
@@ -4061,7 +4098,7 @@ class NccUI:
         self.grid3.addWidget(separator_line, 23, 0, 1, 2)
 
         # General Parameters
-        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label = FCLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
@@ -4084,7 +4121,7 @@ class NccUI:
         self.grid3.addWidget(self.ncc_rest_cb, 25, 0, 1, 2)
 
         # Rest Margin
-        self.rest_nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        self.rest_nccmarginlabel = FCLabel('%s:' % _('Margin'))
         self.rest_nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
@@ -4150,7 +4187,7 @@ class NccUI:
         )
         self.select_combo.setObjectName("n_selection")
 
-        self.select_label = QtWidgets.QLabel('%s:' % _("Selection"))
+        self.select_label = FCLabel('%s:' % _("Selection"))
         self.select_label.setToolTip(
             _("Selection of area to be processed.\n"
               "- 'Itself' - the processing extent is based on the object that is processed.\n "
@@ -4163,7 +4200,7 @@ class NccUI:
         form1 = QtWidgets.QFormLayout()
         self.grid3.addLayout(form1, 30, 0, 1, 2)
 
-        self.reference_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -4173,7 +4210,7 @@ class NccUI:
 
         form1.addRow(self.reference_combo_type_label, self.reference_combo_type)
 
-        self.reference_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )
@@ -4189,7 +4226,7 @@ class NccUI:
         self.reference_combo_type_label.hide()
 
         # Area Selection shape
-        self.area_shape_label = QtWidgets.QLabel('%s:' % _("Shape"))
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
         self.area_shape_label.setToolTip(
             _("The kind of selection shape used for area selection.")
         )
@@ -4208,7 +4245,7 @@ class NccUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.grid3.addWidget(separator_line, 32, 0, 1, 2)
 
-        self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
+        self.generate_ncc_button = FCButton(_('Generate Geometry'))
         self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
@@ -4224,7 +4261,7 @@ class NccUI:
         self.tools_box.addStretch()
 
         # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button = FCButton(_("Reset Tool"))
         self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
         self.reset_button.setToolTip(
             _("Will reset the tool parameters.")
@@ -4268,6 +4305,79 @@ class NccUI:
             self.ncc_contour_cb.setEnabled(True)
             self.ncc_choice_offset_cb.setEnabled(True)
             self.ncc_offset_spinner.setEnabled(True)
+
+    def on_toggle_reference(self):
+        sel_combo = self.select_combo.get_value()
+
+        if sel_combo == _("Itself"):
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_combo_type.hide()
+            self.reference_combo_type_label.hide()
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
+
+            # disable rest-machining for area painting
+            self.ncc_rest_cb.setDisabled(False)
+        elif sel_combo == _("Area Selection"):
+            self.reference_combo.hide()
+            self.reference_combo_label.hide()
+            self.reference_combo_type.hide()
+            self.reference_combo_type_label.hide()
+            self.area_shape_label.show()
+            self.area_shape_radio.show()
+
+            # disable rest-machining for area painting
+            # self.ncc_rest_cb.set_value(False)
+            # self.ncc_rest_cb.setDisabled(True)
+        else:
+            self.reference_combo.show()
+            self.reference_combo_label.show()
+            self.reference_combo_type.show()
+            self.reference_combo_type_label.show()
+            self.area_shape_label.hide()
+            self.area_shape_radio.hide()
+
+            # disable rest-machining for area painting
+            self.ncc_rest_cb.setDisabled(False)
+
+    def on_rest_machining_check(self, state):
+        if state:
+            self.ncc_order_radio.set_value('rev')
+            self.ncc_order_label.setDisabled(True)
+            self.ncc_order_radio.setDisabled(True)
+
+            self.nccmarginlabel.hide()
+            self.ncc_margin_entry.hide()
+            self.ncc_connect_cb.hide()
+            self.ncc_contour_cb.hide()
+            self.ncc_choice_offset_cb.hide()
+            self.ncc_offset_spinner.hide()
+
+            self.rest_nccmarginlabel.show()
+            self.rest_ncc_margin_entry.show()
+            self.rest_ncc_connect_cb.show()
+            self.rest_ncc_contour_cb.show()
+            self.rest_ncc_choice_offset_cb.show()
+            self.rest_ncc_offset_spinner.show()
+
+        else:
+            self.ncc_order_label.setDisabled(False)
+            self.ncc_order_radio.setDisabled(False)
+
+            self.nccmarginlabel.show()
+            self.ncc_margin_entry.show()
+            self.ncc_connect_cb.show()
+            self.ncc_contour_cb.show()
+            self.ncc_choice_offset_cb.show()
+            self.ncc_offset_spinner.show()
+
+            self.rest_nccmarginlabel.hide()
+            self.rest_ncc_margin_entry.hide()
+            self.rest_ncc_connect_cb.hide()
+            self.rest_ncc_contour_cb.hide()
+            self.rest_ncc_choice_offset_cb.hide()
+            self.rest_ncc_offset_spinner.hide()
 
     def confirmation_message(self, accepted, minval, maxval):
         if accepted is False:
