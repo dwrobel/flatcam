@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from appGUI.GUIElements import FCTable, FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, \
-    FCTree, RadioSet, FCFileSaveDialog
+    FCTree, RadioSet, FCFileSaveDialog, FCLabel
 from camlib import to_dict
 
 import sys
@@ -74,7 +74,7 @@ class ToolsDB(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        # new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        # new_tool_lbl = FCLabel('<b>%s</b>' % _("New Tool"))
         # new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
 
         self.buttons_frame = QtWidgets.QFrame()
@@ -1121,7 +1121,7 @@ class ToolsDB2UI:
         self.description_vlay.addStretch()
 
         # Tool Name
-        self.name_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Name'))
+        self.name_label = FCLabel('<span style="color:red;"><b>%s:</b></span>' % _('Name'))
         self.name_label.setToolTip(
             _("Tool name.\n"
               "This is not used in the app, it's function\n"
@@ -1134,7 +1134,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.name_entry, 0, 1)
 
         # Tool Dia
-        self.dia_label = QtWidgets.QLabel('%s:' % _('Diameter'))
+        self.dia_label = FCLabel('%s:' % _('Diameter'))
         self.dia_label.setToolTip(
             _("Tool Diameter."))
 
@@ -1147,7 +1147,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.dia_entry, 1, 1)
 
         # Tool Tolerance
-        self.tol_label = QtWidgets.QLabel("<b>%s:</b>" % _("Diameter Tolerance"))
+        self.tol_label = FCLabel("<b>%s:</b>" % _("Diameter Tolerance"))
         self.tol_label.setToolTip(
             _("Tool tolerance. If there is a tool in the targeted tools table with\n"
               "the value within the limits then this tool from DB will be used.")
@@ -1155,7 +1155,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tol_label, 2, 0, 1, 2)
 
         # Tolerance Min Limit
-        self.min_limit_label = QtWidgets.QLabel('%s:' % _("Min"))
+        self.min_limit_label = FCLabel('%s:' % _("Min"))
         self.min_limit_label.setToolTip(
             _("Set the tool tolerance minimum.")
         )
@@ -1169,7 +1169,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tol_min_entry, 4, 1)
 
         # Tolerance Min Limit
-        self.max_limit_label = QtWidgets.QLabel('%s:' % _("Max"))
+        self.max_limit_label = FCLabel('%s:' % _("Max"))
         self.max_limit_label.setToolTip(
             _("Set the tool tolerance maximum.")
         )
@@ -1183,7 +1183,7 @@ class ToolsDB2UI:
         self.grid_tool.addWidget(self.tol_max_entry, 6, 1)
 
         # Tool Object Type
-        self.tool_op_label = QtWidgets.QLabel('<b>%s:</b>' % _('Operation'))
+        self.tool_op_label = FCLabel('<b>%s:</b>' % _('Operation'))
         self.tool_op_label.setToolTip(
             _("The kind of Application Tool where this tool is to be used."))
 
@@ -1205,7 +1205,7 @@ class ToolsDB2UI:
         self.milling_vlay.addStretch()
 
         # Tool Shape
-        self.shape_label = QtWidgets.QLabel('%s:' % _('Shape'))
+        self.shape_label = FCLabel('%s:' % _('Shape'))
         self.shape_label.setToolTip(
             _("Tool Shape. \n"
               "Can be:\n"
@@ -1221,7 +1221,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.shape_combo, 2, 1)
 
         # V-Dia
-        self.vdia_label = QtWidgets.QLabel('%s:' % _("V-Dia"))
+        self.vdia_label = FCLabel('%s:' % _("V-Dia"))
         self.vdia_label.setToolTip(
             _("V-Dia.\n"
               "Diameter of the tip for V-Shape Tools."))
@@ -1235,7 +1235,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.vdia_entry, 4, 1)
 
         # V-Angle
-        self.vangle_label = QtWidgets.QLabel('%s:' % _("V-Angle"))
+        self.vangle_label = FCLabel('%s:' % _("V-Angle"))
         self.vangle_label.setToolTip(
             _("V-Agle.\n"
               "Angle at the tip for the V-Shape Tools."))
@@ -1254,7 +1254,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Tool Type
-        self.type_label = QtWidgets.QLabel('%s:' % _("Tool Type"))
+        self.type_label = FCLabel('%s:' % _("Tool Type"))
         self.type_label.setToolTip(
             _("Tool Type.\n"
               "Can be:\n"
@@ -1270,7 +1270,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.type_combo, 10, 1)
 
         # Tool Offset
-        self.tooloffset_label = QtWidgets.QLabel('%s:' % _('Tool Offset'))
+        self.tooloffset_label = FCLabel('%s:' % _('Tool Offset'))
         self.tooloffset_label.setToolTip(
             _("Tool Offset.\n"
               "Can be of a few types:\n"
@@ -1287,7 +1287,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.tooloffset_combo, 12, 1)
 
         # Custom Offset
-        self.custom_offset_label = QtWidgets.QLabel('%s:' % _("Custom Offset"))
+        self.custom_offset_label = FCLabel('%s:' % _("Custom Offset"))
         self.custom_offset_label.setToolTip(
             _("Custom Offset.\n"
               "A value to be used as offset from the current path."))
@@ -1306,7 +1306,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Cut Z
-        self.cutz_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
+        self.cutz_label = FCLabel('%s:' % _("Cut Z"))
         self.cutz_label.setToolTip(
             _("Cutting Depth.\n"
               "The depth at which to cut into material."))
@@ -1320,7 +1320,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.cutz_entry, 18, 1)
 
         # Multi Depth
-        self.multidepth_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
+        self.multidepth_label = FCLabel('%s:' % _("MultiDepth"))
         self.multidepth_label.setToolTip(
             _("Multi Depth.\n"
               "Selecting this will allow cutting in multiple passes,\n"
@@ -1333,7 +1333,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.multidepth_cb, 20, 1)
 
         # Depth Per Pass
-        self.dpp_label = QtWidgets.QLabel('%s:' % _("DPP"))
+        self.dpp_label = FCLabel('%s:' % _("DPP"))
         self.dpp_label.setToolTip(
             _("DPP. Depth per Pass.\n"
               "The value used to cut into material on each pass."))
@@ -1347,7 +1347,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.multidepth_entry, 22, 1)
 
         # Travel Z
-        self.travelz_label = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        self.travelz_label = FCLabel('%s:' % _("Travel Z"))
         self.travelz_label.setToolTip(
             _("Clearance Height.\n"
               "Height at which the milling bit will travel between cuts,\n"
@@ -1362,7 +1362,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.travelz_entry, 24, 1)
 
         # Extra Cut
-        self.ecut_label = QtWidgets.QLabel('%s:' % _("ExtraCut"))
+        self.ecut_label = FCLabel('%s:' % _("ExtraCut"))
         self.ecut_label.setToolTip(
             _("Extra Cut.\n"
               "If checked, after a isolation is finished an extra cut\n"
@@ -1377,7 +1377,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.ecut_cb, 26, 1)
 
         # Extra Cut Length
-        self.ecut_length_label = QtWidgets.QLabel('%s:' % _("E-Cut Length"))
+        self.ecut_length_label = FCLabel('%s:' % _("E-Cut Length"))
         self.ecut_length_label.setToolTip(
             _("Extra Cut length.\n"
               "If checked, after a isolation is finished an extra cut\n"
@@ -1400,7 +1400,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 30, 0, 1, 2)
 
         # Feedrate X-Y
-        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
+        self.frxy_label = FCLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
             _("Feedrate X-Y. Feedrate\n"
               "The speed on XY plane used while cutting into material."))
@@ -1414,7 +1414,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.frxy_entry, 32, 1)
 
         # Feedrate Z
-        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
+        self.frz_label = FCLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate Z\n"
               "The speed on Z plane."))
@@ -1428,7 +1428,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.frz_entry, 34, 1)
 
         # Feedrate Rapids
-        self.frapids_label = QtWidgets.QLabel('%s:' % _("FR Rapids"))
+        self.frapids_label = FCLabel('%s:' % _("FR Rapids"))
         self.frapids_label.setToolTip(
             _("FR Rapids. Feedrate Rapids\n"
               "Speed used while moving as fast as possible.\n"
@@ -1449,7 +1449,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Spindle Spped
-        self.spindle_label = QtWidgets.QLabel('%s:' % _("Spindle Speed"))
+        self.spindle_label = FCLabel('%s:' % _("Spindle Speed"))
         self.spindle_label.setToolTip(
             _("Spindle Speed.\n"
               "If it's left empty it will not be used.\n"
@@ -1464,7 +1464,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.spindle_entry, 40, 1)
 
         # Dwell
-        self.dwell_label = QtWidgets.QLabel('%s:' % _("Dwell"))
+        self.dwell_label = FCLabel('%s:' % _("Dwell"))
         self.dwell_label.setToolTip(
             _("Dwell.\n"
               "Check this if a delay is needed to allow\n"
@@ -1477,7 +1477,7 @@ class ToolsDB2UI:
         self.grid0.addWidget(self.dwell_cb, 42, 1)
 
         # Dwell Time
-        self.dwelltime_label = QtWidgets.QLabel('%s:' % _("Dwelltime"))
+        self.dwelltime_label = FCLabel('%s:' % _("Dwelltime"))
         self.dwelltime_label.setToolTip(
             _("Dwell Time.\n"
               "A delay used to allow the motor spindle reach its set speed."))
@@ -1501,7 +1501,7 @@ class ToolsDB2UI:
         self.ncc_vlay.addStretch()
 
         # Operation
-        op_label = QtWidgets.QLabel('%s:' % _('Operation'))
+        op_label = FCLabel('%s:' % _('Operation'))
         op_label.setToolTip(
             _("The 'Operation' can be:\n"
               "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
@@ -1519,7 +1519,7 @@ class ToolsDB2UI:
         self.grid2.addWidget(self.op_radio, 13, 1)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -1539,7 +1539,7 @@ class ToolsDB2UI:
         self.grid2.addWidget(self.milling_type_radio, 14, 1)
 
         # Overlap Entry
-        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        nccoverlabel = FCLabel('%s:' % _('Overlap'))
         nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -1560,7 +1560,7 @@ class ToolsDB2UI:
         self.grid2.addWidget(self.ncc_overlap_entry, 15, 1)
 
         # Margin
-        nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
+        nccmarginlabel = FCLabel('%s:' % _('Margin'))
         nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
@@ -1573,7 +1573,7 @@ class ToolsDB2UI:
         self.grid2.addWidget(self.ncc_margin_entry, 16, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel = FCLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for copper clearing:\n"
               "- Standard: Fixed step inwards.\n"
@@ -1648,7 +1648,7 @@ class ToolsDB2UI:
         self.paint_vlay.addStretch()
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        ovlabel = FCLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -1669,7 +1669,7 @@ class ToolsDB2UI:
         self.grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel('%s:' % _('Offset'))
+        marginlabel = FCLabel('%s:' % _('Offset'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -1684,7 +1684,7 @@ class ToolsDB2UI:
         self.grid3.addWidget(self.paint_offset_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
+        methodlabel = FCLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for painting:\n"
               "- Standard: Fixed step inwards.\n"
@@ -1737,7 +1737,7 @@ class ToolsDB2UI:
         self.iso_vlay.addStretch()
 
         # Passes
-        passlabel = QtWidgets.QLabel('%s:' % _('Passes'))
+        passlabel = FCLabel('%s:' % _('Passes'))
         passlabel.setToolTip(
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
@@ -1750,7 +1750,7 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.passes_entry, 0, 1)
 
         # Overlap Entry
-        overlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
+        overlabel = FCLabel('%s:' % _('Overlap'))
         overlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.")
         )
@@ -1765,7 +1765,7 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Milling Type Radio Button
-        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
@@ -1785,7 +1785,7 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.milling_type_radio, 4, 1)
 
         # Follow
-        self.follow_label = QtWidgets.QLabel('%s:' % _('Follow'))
+        self.follow_label = FCLabel('%s:' % _('Follow'))
         self.follow_label.setToolTip(
             _("Generate a 'Follow' geometry.\n"
               "This means that it will cut through\n"
@@ -1802,7 +1802,7 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.follow_cb, 6, 1)
 
         # Isolation Type
-        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
             _("Choose how the isolation will be executed:\n"
               "- 'Full' -> complete isolation of polygons\n"
@@ -1831,7 +1831,7 @@ class ToolsDB2UI:
         self.drill_vlay.addStretch()
 
         # Cut Z
-        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel = FCLabel('%s:' % _('Cut Z'))
         self.cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
@@ -1852,7 +1852,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.cutz_drill_entry, 4, 1)
 
         # Tool Offset
-        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        self.tool_offset_label = FCLabel('%s:' % _('Offset Z'))
         self.tool_offset_label.setToolTip(
             _("Some drill bits (the larger ones) need to drill deeper\n"
               "to create the desired exit hole diameter due of the tip shape.\n"
@@ -1868,7 +1868,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.offset_drill_entry, 6, 1)
 
         # Multi-Depth
-        self.multidepth_drill_label = QtWidgets.QLabel('%s:' % _("MultiDepth"))
+        self.multidepth_drill_label = FCLabel('%s:' % _("MultiDepth"))
         self.multidepth_drill_label.setToolTip(
             _(
                 "Use multiple passes to limit\n"
@@ -1884,7 +1884,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.mpass_drill_cb, 7, 1)
 
         # Depth Per Pass
-        self.dpp_drill_label = QtWidgets.QLabel('%s:' % _("DPP"))
+        self.dpp_drill_label = FCLabel('%s:' % _("DPP"))
         self.dpp_drill_label.setToolTip(
             _("DPP. Depth per Pass.\n"
               "The value used to cut into material on each pass."))
@@ -1900,7 +1900,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.maxdepth_drill_entry, 8, 1)
 
         # Travel Z (z_move)
-        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
         self.travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
@@ -1926,7 +1926,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(separator_line, 12, 0, 1, 2)
 
         # Excellon Feedrate Z
-        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frzlabel = FCLabel('%s:' % _('Feedrate Z'))
         self.frzlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -1943,7 +1943,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.feedrate_z_drill_entry, 14, 1)
 
         # Excellon Rapid Feedrate
-        self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         self.feedrate_rapid_label.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -1966,7 +1966,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(separator_line, 18, 0, 1, 2)
 
         # Spindlespeed
-        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label = FCLabel('%s:' % _('Spindle speed'))
         self.spindle_label.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
@@ -1981,7 +1981,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.spindlespeed_drill_entry, 20, 1)
 
         # Dwell
-        self.dwell_drill_label = QtWidgets.QLabel('%s:' % _("Dwell"))
+        self.dwell_drill_label = FCLabel('%s:' % _("Dwell"))
         self.dwell_drill_label.setToolTip(
             _("Dwell.\n"
               "Check this if a delay is needed to allow\n"
@@ -1994,7 +1994,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.dwell_drill_cb, 21, 1)
 
         # Dwelltime
-        self.dwelltime_drill_lbl = QtWidgets.QLabel('%s:' % _('Dwelltime'))
+        self.dwelltime_drill_lbl = FCLabel('%s:' % _('Dwelltime'))
         self.dwelltime_drill_lbl.setToolTip(
             _("Dwell Time.\n"
               "A delay used to allow the motor spindle reach its set speed."))
@@ -2013,7 +2013,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(separator_line, 24, 0, 1, 2)
 
         # Drill slots
-        self.drill_slots_drill_lbl = QtWidgets.QLabel('%s:' % _('Drill slots'))
+        self.drill_slots_drill_lbl = FCLabel('%s:' % _('Drill slots'))
         self.drill_slots_drill_lbl.setToolTip(
             _("If the selected tool has slots then they will be drilled.")
         )
@@ -2024,7 +2024,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_slots_drill_cb, 26, 1)
 
         # Drill Overlap
-        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
         self.drill_overlap_label.setToolTip(
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
@@ -2040,7 +2040,7 @@ class ToolsDB2UI:
         self.grid5.addWidget(self.drill_overlap_drill_entry, 28, 1)
 
         # Last drill in slot
-        self.last_drill_drill_lbl = QtWidgets.QLabel('%s:' % _('Last drill'))
+        self.last_drill_drill_lbl = FCLabel('%s:' % _('Last drill'))
         self.last_drill_drill_lbl.setToolTip(
             _("If the slot length is not completely covered by drill holes,\n"
               "add a drill hole on the slot end point.")
@@ -2068,7 +2068,7 @@ class ToolsDB2UI:
         self.cutout_margin_entry.set_precision(self.decimals)
         self.cutout_margin_entry.setObjectName('gdb_ct_margin')
 
-        self.cutout_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.cutout_margin_label = FCLabel('%s:' % _("Margin"))
         self.cutout_margin_label.setToolTip(
             _("Margin over bounds. A positive value here\n"
               "will make the cutout of the PCB further from\n"
@@ -2082,7 +2082,7 @@ class ToolsDB2UI:
         self.cutout_gapsize.set_precision(self.decimals)
         self.cutout_gapsize.setObjectName('gdb_ct_gapsize')
 
-        self.cutout_gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))
+        self.cutout_gapsize_label = FCLabel('%s:' % _("Gap size"))
         self.cutout_gapsize_label.setToolTip(
             _("The size of the bridge gaps in the cutout\n"
               "used to keep the board connected to\n"
@@ -2092,6 +2092,73 @@ class ToolsDB2UI:
         self.grid6.addWidget(self.cutout_gapsize_label, 13, 0)
         self.grid6.addWidget(self.cutout_gapsize, 13, 1)
 
+        # Gap Type
+        self.gaptype_label = FCLabel('%s:' % _("Gap type"))
+        self.gaptype_label.setToolTip(
+            _("The type of gap:\n"
+              "- Bridge -> the cutout will be interrupted by bridges\n"
+              "- Thin -> same as 'bridge' but it will be thinner by partially milling the gap\n"
+              "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes")
+        )
+
+        self.gaptype_radio = RadioSet(
+            [
+                {'label': _('Bridge'), 'value': 'b'},
+                {'label': _('Thin'), 'value': 'bt'},
+                {'label': "M-Bites", 'value': 'mb'}
+            ],
+            stretch=True
+        )
+        self.gaptype_radio.setObjectName('gdb_ct_gap_type')
+
+        self.grid6.addWidget(self.gaptype_label, 15, 0)
+        self.grid6.addWidget(self.gaptype_radio, 15, 1)
+
+        # Thin gaps Depth
+        self.thin_depth_label = FCLabel('%s:' % _("Depth"))
+        self.thin_depth_label.setToolTip(
+            _("The depth until the milling is done\n"
+              "in order to thin the gaps.")
+        )
+        self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.thin_depth_entry.set_precision(self.decimals)
+        self.thin_depth_entry.setObjectName('gdb_ct_gap_depth')
+
+        if self.machinist_setting == 0:
+            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
+        self.thin_depth_entry.setSingleStep(0.1)
+
+        self.grid6.addWidget(self.thin_depth_label, 17, 0)
+        self.grid6.addWidget(self.thin_depth_entry, 17, 1)
+
+        # Mouse Bites Tool Diameter
+        self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
+        self.mb_dia_label.setToolTip(
+            _("The drill hole diameter when doing mpuse bites.")
+        )
+        self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.mb_dia_entry.set_precision(self.decimals)
+        self.mb_dia_entry.setRange(0, 100.0000)
+        self.mb_dia_entry.setObjectName('gdb_ct_mb_dia')
+
+        self.grid6.addWidget(self.mb_dia_label, 19, 0)
+        self.grid6.addWidget(self.mb_dia_entry, 19, 1)
+
+        # Mouse Bites Holes Spacing
+        self.mb_spacing_label = FCLabel('%s:' % _("Spacing"))
+        self.mb_spacing_label.setToolTip(
+            _("The spacing between drill holes when doing mouse bites.")
+        )
+        self.mb_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.mb_spacing_entry.set_precision(self.decimals)
+        self.mb_spacing_entry.setRange(0, 100.0000)
+        self.mb_spacing_entry.setObjectName('gdb_ct_mb_spacing')
+
+        self.grid6.addWidget(self.mb_spacing_label, 21, 0)
+        self.grid6.addWidget(self.mb_spacing_entry, 21, 1)
+        
         # How gaps wil be rendered:
         # lr    - left + right
         # tb    - top + bottom
@@ -2102,17 +2169,17 @@ class ToolsDB2UI:
 
         # Surrounding convex box shape
         self.cutout_convex_box = FCCheckBox('%s' % _("Convex Shape"))
-        # self.convex_box_label = QtWidgets.QLabel('%s' % _("Convex Sh."))
+        # self.convex_box_label = FCLabel('%s' % _("Convex Sh."))
         self.cutout_convex_box.setToolTip(
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
         )
         self.cutout_convex_box.setObjectName('gdb_ct_convex')
 
-        self.grid6.addWidget(self.cutout_convex_box, 15, 0, 1, 2)
+        self.grid6.addWidget(self.cutout_convex_box, 23, 0, 1, 2)
 
         # Gaps
-        self.cutout_gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
+        self.cutout_gaps_label = FCLabel('%s:' % _('Gaps'))
         self.cutout_gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
@@ -2131,8 +2198,8 @@ class ToolsDB2UI:
         self.cutout_gaps.addItems(gaps_items)
         self.cutout_gaps.setObjectName('gdb_ct_gaps')
 
-        self.grid6.addWidget(self.cutout_gaps_label, 19, 0)
-        self.grid6.addWidget(self.cutout_gaps, 19, 1)
+        self.grid6.addWidget(self.cutout_gaps_label, 25, 0)
+        self.grid6.addWidget(self.cutout_gaps, 25, 1)
 
         # ####################################################################
         # ####################################################################
@@ -2363,10 +2430,15 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_drill_last_drill":       self.ui.last_drill_drill_cb,
 
             # Cutout
-            "tools_cutoutmargin":           self.ui.cutout_margin_entry,
-            "tools_cutoutgapsize":          self.ui.cutout_gapsize,
-            "tools_gaps_ff":                self.ui.cutout_gaps,
+            "tools_cutout_margin":           self.ui.cutout_margin_entry,
+            "tools_cutout_gapsize":          self.ui.cutout_gapsize,
+            "tools_cutout_gaps_ff":         self.ui.cutout_gaps,
             "tools_cutout_convexshape":     self.ui.cutout_convex_box,
+
+            "tools_cutout_gap_type":        self.ui.gaptype_radio,
+            "tools_cutout_gap_depth":       self.ui.thin_depth_entry,
+            "tools_cutout_mb_dia":          self.ui.mb_dia_entry,
+            "tools_cutout_mb_spacing":      self.ui.mb_spacing_entry,
 
         }
 
@@ -2442,10 +2514,15 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_e_drill_last_drill":   "tools_drill_last_drill",
 
             # Cutout
-            "gdb_ct_margin":            "tools_cutoutmargin",
-            "gdb_ct_gapsize":           "tools_cutoutgapsize",
-            "gdb_ct_gaps":              "tools_gaps_ff",
+            "gdb_ct_margin":            "tools_cutout_margin",
+            "gdb_ct_gapsize":           "tools_cutout_gapsize",
+            "gdb_ct_gaps":              "tools_cutout_gaps_ff",
             "gdb_ct_convex":            "tools_cutout_convexshape",
+
+            "gdb_ct_gap_type":          "tools_cutout_gap_type",
+            "gdb_ct_gap_depth":         "tools_cutout_gap_depth",
+            "gdb_ct_mb_dia":            "tools_cutout_mb_dia",
+            "gdb_ct_mb_spacing":        "tools_cutout_mb_spacing"
 
         }
 
@@ -2782,10 +2859,15 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_drill_last_drill":       self.app.defaults["tools_drill_last_drill"],
 
             # Cutout
-            "tools_cutoutmargin":           float(self.app.defaults["tools_cutoutmargin"]),
-            "tools_cutoutgapsize":          float(self.app.defaults["tools_cutoutgapsize"]),
-            "tools_gaps_ff":                self.app.defaults["tools_gaps_ff"],
+            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
+            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
             "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
+
+            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"])
         })
 
         temp = []
@@ -3341,13 +3423,22 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # Cutout Tool
             elif wdg_name == "gdb_ct_margin":
-                self.db_tool_dict[tool_id]['data']['tools_cutoutmargin'] = val
+                self.db_tool_dict[tool_id]['data']['tools_cutout_margin'] = val
             elif wdg_name == "gdb_ct_gapsize":
-                self.db_tool_dict[tool_id]['data']['tools_cutoutgapsize'] = val
+                self.db_tool_dict[tool_id]['data']['tools_cutout_gapsize'] = val
             elif wdg_name == "gdb_ct_gaps":
-                self.db_tool_dict[tool_id]['data']['tools_gaps_ff'] = val
+                self.db_tool_dict[tool_id]['data']['tools_cutout_gaps_ff'] = val
             elif wdg_name == "gdb_ct_convex":
                 self.db_tool_dict[tool_id]['data']['tools_cutout_convexshape'] = val
+
+            elif wdg_name == "gdb_ct_gap_type":
+                self.db_tool_dict[tool_id]['data']['tools_cutout_gap_type'] = val
+            elif wdg_name == "gdb_ct_gap_depth":
+                self.db_tool_dict[tool_id]['data']['tools_cutout_gap_depth'] = val
+            elif wdg_name == "gdb_ct_mb_dia":
+                self.db_tool_dict[tool_id]['data']['tools_cutout_mb_dia'] = val
+            elif wdg_name == "gdb_ct_mb_spacing":
+                self.db_tool_dict[tool_id]['data']['tools_cutout_mb_spacing'] = val
 
         self.callback_app()
 

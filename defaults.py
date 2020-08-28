@@ -476,16 +476,20 @@ class FlatCAMDefaults:
         "tools_ncc_plotting": 'normal',
 
         # Cutout Tool
-        "tools_cutouttooldia": 2.4,
-        "tools_cutoutkind": "single",
-        "tools_cutoutmargin": 0.1,
+        "tools_cutout_tooldia": 2.4,
+        "tools_cutout_kind": "single",
+        "tools_cutout_margin": 0.1,
         "tools_cutout_z": -1.8,
         "tools_cutout_depthperpass": 0.6,
         "tools_cutout_mdepth": True,
-        "tools_cutoutgapsize": 4,
-        "tools_gaps_ff": "4",
+        "tools_cutout_gapsize": 4,
+        "tools_cutout_gaps_ff": "4",
         "tools_cutout_convexshape": False,
         "tools_cutout_big_cursor": True,
+        "tools_cutout_gap_type": 'b',
+        "tools_cutout_gap_depth": -1.0,
+        "tools_cutout_mb_dia": 0.6,
+        "tools_cutout_mb_spacing": 0.3,
 
         # Paint Tool
         "tools_painttooldia": 0.3,

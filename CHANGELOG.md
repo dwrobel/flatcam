@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - NCC Tool - upgraded the UI and added the functionality that now adding a new tool is done by first searching the Tools DB for a suitable tool and if fails then it adds an default tool
 - NCC Tool - on start will attempt to search in the Tools DB for the default tools and if found will load them from the DB
 - fixes in NCC, Paint and Isolation Tool due of recent changes
+- modified the Tools Database and Preferences with the new parameters from CutOut Tool
+- changes in Tool Cutout: now on Cutout Tool start the app will look into Tools Database and search for a tool with same diameter (or within the set tolerance) as the one from Preferences and load it if found or load a default tool if not
+- Tool Cutout - this Tool can now load tools from Tools Database through buttons in the Cutout Tool
 
 27.08.2020
 

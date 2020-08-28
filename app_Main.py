@@ -4259,8 +4259,8 @@ class App(QtCore.QObject):
             "tools_nccnewdia",
 
             # Cutout Tool
-            "tools_cutouttooldia", 'tools_cutoutmargin', "tools_cutout_z", "tools_cutout_depthperpass",
-            'tools_cutoutgapsize',
+            "tools_cutout_tooldia", 'tools_cutout_margin', "tools_cutout_z", "tools_cutout_depthperpass",
+            'tools_cutout_gapsize', 'tools_cutout_gap_depth', 'tools_cutout_mb_dia', 'tools_cutout_mb_spacing',
 
             # Paint Tool
             "tools_painttooldia", 'tools_paintoffset', "tools_paintcutz", "tools_painttipdia", "tools_paintnewdia",
@@ -5705,6 +5705,14 @@ class App(QtCore.QObject):
                 callback_on_edited=self.on_tools_db_edited,
                 callback_on_tool_request=self.isolation_tool.on_iso_tool_add_from_db_executed
             )
+        elif source == 'cutout':
+            self.tools_db_tab = ToolsDB2(
+                app=self,
+                parent=self.ui,
+                callback_on_edited=self.on_tools_db_edited,
+                callback_on_tool_request=self.cutout_tool.on_cutout_tool_add_from_db_executed
+            )
+
         # add the tab if it was closed
         try:
             self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))

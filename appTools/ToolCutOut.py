@@ -21,6 +21,9 @@ from copy import deepcopy
 import math
 import logging
 import gettext
+import sys
+import simplejson as json
+
 import appTranslation as fcTranslate
 import builtins
 
@@ -90,9 +93,16 @@ class CutOut(AppTool):
         # store original geometry for manual cutout
         self.manual_solid_geo = None
 
+        # here store the tool data for the Cutout Tool
+        self.cut_tool_dict = {}
+
         # Signals
         self.ui.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.ui.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
+
+        # adding tools
+        self.ui.add_newtool_button.clicked.connect(lambda: self.on_tool_add())
+        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
         self.ui.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
         self.ui.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
@@ -145,20 +155,6 @@ class CutOut(AppTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.ui.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
-        self.ui.obj_kind_combo.set_value(self.app.defaults["tools_cutoutkind"])
-        self.ui.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
-        self.ui.cutz_entry.set_value(float(self.app.defaults["tools_cutout_z"]))
-        self.ui.mpass_cb.set_value(float(self.app.defaults["tools_cutout_mdepth"]))
-        self.ui.maxdepth_entry.set_value(float(self.app.defaults["tools_cutout_depthperpass"]))
-
-        self.ui.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
-        self.ui.gaps.set_value(self.app.defaults["tools_gaps_ff"])
-        self.ui.convex_box_cb.set_value(self.app.defaults['tools_cutout_convexshape'])
-        self.ui.big_cursor_cb.set_value(self.app.defaults['tools_cutout_big_cursor'])
-
-        self.ui.gaptype_radio.set_value('b')
-
         # use the current selected object and make it visible in the object combobox
         sel_list = self.app.collection.get_selected()
         if len(sel_list) == 1:
@@ -188,13 +184,15 @@ class CutOut(AppTool):
             else:
                 self.on_type_obj_changed(val='geo')
 
-        # self.type_obj_radio.set_value('grb')
+        self.ui.dia.set_value(float(self.app.defaults["tools_cutout_tooldia"]))
 
         self.default_data.update({
             "plot":             True,
+
             "cutz":             float(self.app.defaults["geometry_cutz"]),
             "multidepth":       self.app.defaults["geometry_multidepth"],
             "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+
             "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
             "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
             "travelz":          float(self.app.defaults["geometry_travelz"]),
@@ -219,31 +217,309 @@ class CutOut(AppTool):
             "area_overz":       float(self.app.defaults["geometry_area_overz"]),
             "optimization_type":    self.app.defaults["geometry_optimization_type"],
 
-            # NCC
-            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
-            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"],
-            "tools_nccoverlap":         float(self.app.defaults["tools_nccoverlap"]),
-            "tools_nccmargin":          float(self.app.defaults["tools_nccmargin"]),
-            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
-            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
-            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
-            "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
-            "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
+            # Cutout
+            "tools_cutout_tooldia":         self.app.defaults["tools_cutout_tooldia"],
+            "tools_cutout_kind":            self.app.defaults["tools_cutout_kind"],
+            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
+            "tools_cutout_z":               float(self.app.defaults["tools_cutout_z"]),
+            "tools_cutout_depthperpass":    float(self.app.defaults["tools_cutout_depthperpass"]),
+            "tools_cutout_mdepth":          self.app.defaults["tools_cutout_mdepth"],
+            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
+            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
 
-            # Paint
-            "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
-            "tools_paintoffset":        float(self.app.defaults["tools_paintoffset"]),
-            "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
-            "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
-            "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
+            "tools_cutout_big_cursor":      self.app.defaults["tools_cutout_big_cursor"],
+            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"]),
 
-            # Isolation Tool
-            "tools_iso_passes":         self.app.defaults["tools_iso_passes"],
-            "tools_iso_overlap":        self.app.defaults["tools_iso_overlap"],
-            "tools_iso_milling_type":   self.app.defaults["tools_iso_milling_type"],
-            "tools_iso_follow":         self.app.defaults["tools_iso_follow"],
-            "tools_iso_isotype":        self.app.defaults["tools_iso_isotype"],
         })
+        tool_dia = float(self.app.defaults["tools_cutout_tooldia"])
+        self.on_tool_add(custom_dia=tool_dia)
+
+    def update_ui(self, tool_dict):
+        self.ui.obj_kind_combo.set_value(self.default_data["tools_cutout_kind"])
+        self.ui.big_cursor_cb.set_value(self.default_data['tools_cutout_big_cursor'])
+
+        # Entries that may be updated from database
+        self.ui.margin.set_value(float(tool_dict["tools_cutout_margin"]))
+        self.ui.gapsize.set_value(float(tool_dict["tools_cutout_gapsize"]))
+        self.ui.gaptype_radio.set_value(tool_dict["tools_cutout_gap_type"])
+        self.ui.thin_depth_entry.set_value(float(tool_dict["tools_cutout_gap_depth"]))
+        self.ui.mb_dia_entry.set_value(float(tool_dict["tools_cutout_mb_dia"]))
+        self.ui.mb_spacing_entry.set_value(float(tool_dict["tools_cutout_mb_spacing"]))
+        self.ui.convex_box_cb.set_value(tool_dict['tools_cutout_convexshape'])
+        self.ui.gaps.set_value(tool_dict["tools_cutout_gaps_ff"])
+
+        self.ui.cutz_entry.set_value(float(tool_dict["tools_cutout_z"]))
+        self.ui.mpass_cb.set_value(float(tool_dict["tools_cutout_mdepth"]))
+        self.ui.maxdepth_entry.set_value(float(tool_dict["tools_cutout_depthperpass"]))
+
+    def on_tool_add(self, custom_dia=None):
+        self.blockSignals(True)
+
+        filename = self.app.data_path + '\\tools_db.FlatDB'
+
+        new_tools_dict = deepcopy(self.default_data)
+        updated_tooldia = None
+
+        # determine the new tool diameter
+        if custom_dia is None:
+            tool_dia = self.ui.dia.get_value()
+        else:
+            tool_dia = custom_dia
+
+        if tool_dia is None or tool_dia == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
+            self.blockSignals(False)
+            return
+
+        truncated_tooldia = self.app.dec_format(tool_dia, self.decimals)
+
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        try:
+            # store here the tools from Tools Database when searching in Tools Database
+            tools_db_dict = json.loads(tools)
+        except Exception:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            self.blockSignals(False)
+            self.on_tool_default_add(dia=tool_dia)
+            return
+
+        tool_found = 0
+
+        offset = 'Path'
+        offset_val = 0.0
+        typ = "Rough"
+        tool_type = 'V'
+        # look in database tools
+        for db_tool, db_tool_val in tools_db_dict.items():
+            offset = db_tool_val['offset']
+            offset_val = db_tool_val['offset_value']
+            typ = db_tool_val['type']
+            tool_type = db_tool_val['tool_type']
+
+            db_tooldia = db_tool_val['tooldia']
+            low_limit = float(db_tool_val['data']['tol_min'])
+            high_limit = float(db_tool_val['data']['tol_max'])
+
+            # we need only tool marked for Cutout Tool
+            if db_tool_val['data']['tool_target'] != _('Cutout'):
+                continue
+
+            # if we find a tool with the same diameter in the Tools DB just update it's data
+            if truncated_tooldia == db_tooldia:
+                tool_found += 1
+                for d in db_tool_val['data']:
+                    if d.find('tools_cutout') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+            # search for a tool that has a tolerance that the tool fits in
+            elif high_limit >= truncated_tooldia >= low_limit:
+                tool_found += 1
+                updated_tooldia = db_tooldia
+                for d in db_tool_val['data']:
+                    if d.find('tools_cutout') == 0:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+                    elif d.find('tools_') == 0:
+                        # don't need data for other App Tools; this tests after 'tools_drill_'
+                        continue
+                    else:
+                        new_tools_dict[d] = db_tool_val['data'][d]
+
+        # test we found a suitable tool in Tools Database or if multiple ones
+        if tool_found == 0:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool not in Tools Database. Adding a default tool."))
+            self.on_tool_default_add()
+            self.blockSignals(False)
+            return
+
+        if tool_found > 1:
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s' % _("Cancelled.\n"
+                                         "Multiple tools for one tool diameter found in Tools Database."))
+            self.blockSignals(False)
+            return
+
+        # FIXME when the Geometry UI milling functionality will be transferred in the Milling Tool this needs changes
+        new_tools_dict["tools_cutout_z"] = deepcopy(new_tools_dict["cutz"])
+        new_tools_dict["tools_cutout_mdepth"] = deepcopy(new_tools_dict["multidepth"])
+        new_tools_dict["tools_cutout_depthperpass"] = deepcopy(new_tools_dict["depthperpass"])
+
+        new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
+        self.cut_tool_dict.update({
+                'tooldia':          new_tdia,
+                'offset':           deepcopy(offset),
+                'offset_value':     deepcopy(offset_val),
+                'type':             deepcopy(typ),
+                'tool_type':        deepcopy(tool_type),
+                'data':             deepcopy(new_tools_dict),
+                'solid_geometry':   []
+            })
+
+        self.update_ui(new_tools_dict)
+
+        self.blockSignals(False)
+        self.app.inform.emit('[success] %s' % _("Updated tool from Tools Database."))
+
+    def on_tool_default_add(self, dia=None, muted=None):
+        self.default_data.update({
+            "plot":             True,
+
+            "cutz":             float(self.app.defaults["geometry_cutz"]),
+            "multidepth":       self.app.defaults["geometry_multidepth"],
+            "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+
+            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
+            "travelz":          float(self.app.defaults["geometry_travelz"]),
+            "feedrate":         float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z":       float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid":   float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
+            "dwell":            self.app.defaults["geometry_dwell"],
+            "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
+            "spindledir":       self.app.defaults["geometry_spindledir"],
+            "ppname_g":         self.app.defaults["geometry_ppname_g"],
+            "extracut":         self.app.defaults["geometry_extracut"],
+            "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
+            "toolchange":       self.app.defaults["geometry_toolchange"],
+            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
+            "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
+            "startz":           self.app.defaults["geometry_startz"],
+            "endz":             float(self.app.defaults["geometry_endz"]),
+            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
+            "area_shape":       self.app.defaults["geometry_area_shape"],
+            "area_strategy":    self.app.defaults["geometry_area_strategy"],
+            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type":    self.app.defaults["geometry_optimization_type"],
+
+            # Cutout
+            "tools_cutout_tooldia":         self.app.defaults["tools_cutout_tooldia"],
+            "tools_cutout_kind":            self.app.defaults["tools_cutout_kind"],
+            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
+            "tools_cutout_z":               float(self.app.defaults["tools_cutout_z"]),
+            "tools_cutout_depthperpass":    float(self.app.defaults["tools_cutout_depthperpass"]),
+            "tools_cutout_mdepth":          self.app.defaults["tools_cutout_mdepth"],
+            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
+            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
+
+            "tools_cutout_big_cursor":      self.app.defaults["tools_cutout_big_cursor"],
+            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"]),
+
+        })
+
+        self.cut_tool_dict.update({
+                'tooldia':          str(self.app.defaults["tools_cutout_tooldia"]),
+                'offset':           'Path',
+                'offset_value':     0.0,
+                'type':             _('Rough'),
+                'tool_type':        'C1',
+                'data':             deepcopy(self.default_data),
+                'solid_geometry':   []
+            })
+
+        self.update_ui(self.default_data)
+
+        if muted is None:
+            self.app.inform.emit('[success] %s' % _("Default tool added."))
+
+    def on_cutout_tool_add_from_db_executed(self, tool):
+        """
+        Here add the tool from DB  in the selected geometry object
+        :return:
+        """
+
+        if tool['data']['tool_target'] != _("Cutout"):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Selected tool can't be used here. Pick another."))
+            return
+        tool_from_db = deepcopy(self.default_data)
+        tool_from_db.update(tool)
+
+        # FIXME when the Geometry UI milling functionality will be transferred in the Milling Tool this needs changes
+        tool_from_db['data']["tools_cutout_tooldia"] = deepcopy(tool["tooldia"])
+        tool_from_db['data']["tools_cutout_z"] = deepcopy(tool_from_db['data']["cutz"])
+        tool_from_db['data']["tools_cutout_mdepth"] = deepcopy(tool_from_db['data']["multidepth"])
+        tool_from_db['data']["tools_cutout_depthperpass"] = deepcopy(tool_from_db['data']["depthperpass"])
+
+        self.cut_tool_dict.update(tool_from_db)
+        self.cut_tool_dict['solid_geometry'] = []
+
+        self.update_ui(tool_from_db['data'])
+        self.ui.dia.set_value(float(tool_from_db['data']["tools_cutout_tooldia"]))
+
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                wdg = self.app.ui.plot_tab_area.widget(idx)
+                wdg.deleteLater()
+                self.app.ui.plot_tab_area.removeTab(idx)
+
+        self.app.inform.emit('[success] %s' % _("Tool updated from Tools Database."))
+
+    def on_tool_from_db_inserted(self, tool):
+        """
+        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        :param tool: a dict with the tool data
+        :return: None
+        """
+
+        tooldia = float(tool['tooldia'])
+
+        truncated_tooldia = self.app.dec_format(tooldia, self.decimals)
+        self.cutout_tools.update({
+            1: {
+                'tooldia':          truncated_tooldia,
+                'offset':           tool['offset'],
+                'offset_value':     tool['offset_value'],
+                'type':             tool['type'],
+                'tool_type':        tool['tool_type'],
+                'data':             deepcopy(tool['data']),
+                'solid_geometry':   []
+            }
+        })
+        self.cutout_tools[1]['data']['name'] = '_cutout'
+
+        return 1
+
+    def on_tool_add_from_db_clicked(self):
+        """
+        Called when the user wants to add a new tool from Tools Database. It will create the Tools Database object
+        and display the Tools Database tab in the form needed for the Tool adding
+        :return: None
+        """
+
+        # if the Tools Database is already opened focus on it
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
+                break
+        self.app.on_tools_database(source='cutout')
+        self.app.tools_db_tab.ok_to_add = True
+        self.app.tools_db_tab.ui.buttons_frame.hide()
+        self.app.tools_db_tab.ui.add_tool_from_db.show()
+        self.app.tools_db_tab.ui.cancel_tool_from_db.show()
 
     def on_freeform_cutout(self):
         log.debug("Cutout.on_freeform_cutout() was launched ...")
@@ -480,18 +756,14 @@ class CutOut(AppTool):
             geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-            geo_obj.tools.update({
-                1: {
-                    'tooldia':          str(dia),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             _('Rough'),
-                    'tool_type':        'C1',
-                    'data':             deepcopy(self.default_data),
-                    'solid_geometry':   geo_obj.solid_geometry
-                }
-            })
             geo_obj.multigeo = True
+
+            geo_obj.tools.update({
+                1: self.cut_tool_dict
+            })
+            geo_obj.tools[1]['tooldia'] = str(dia)
+            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+
             geo_obj.tools[1]['data']['name'] = outname
             geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -499,16 +771,11 @@ class CutOut(AppTool):
 
             if gaps_solid_geo is not None:
                 geo_obj.tools.update({
-                    9999: {
-                        'tooldia': str(dia),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': 'C1',
-                        'data': deepcopy(self.default_data),
-                        'solid_geometry': gaps_solid_geo
-                    }
+                    9999: self.cut_tool_dict
                 })
+                geo_obj.tools[9999]['tooldia'] = str(dia)
+                geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+
                 geo_obj.tools[9999]['data']['name'] = outname
                 geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -735,18 +1002,14 @@ class CutOut(AppTool):
             solid_geo = linemerge(solid_geo)
             geo_obj.solid_geometry = deepcopy(solid_geo)
 
-            geo_obj.tools.update({
-                1: {
-                    'tooldia':          str(dia),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             _('Rough'),
-                    'tool_type':        'C1',
-                    'data':             deepcopy(self.default_data),
-                    'solid_geometry':   geo_obj.solid_geometry
-                }
-            })
             geo_obj.multigeo = True
+
+            geo_obj.tools.update({
+                1: self.cut_tool_dict
+            })
+            geo_obj.tools[1]['tooldia'] = str(dia)
+            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+
             geo_obj.tools[1]['data']['name'] = outname
             geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -754,16 +1017,11 @@ class CutOut(AppTool):
 
             if gaps_solid_geo is not None:
                 geo_obj.tools.update({
-                    9999: {
-                        'tooldia': str(dia),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': 'C1',
-                        'data': deepcopy(self.default_data),
-                        'solid_geometry': gaps_solid_geo
-                    }
+                    9999: self.cut_tool_dict
                 })
+                geo_obj.tools[9999]['tooldia'] = str(dia)
+                geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+
                 geo_obj.tools[9999]['data']['name'] = outname
                 geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -856,7 +1114,7 @@ class CutOut(AppTool):
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
         gaps_solid_geo = None
-        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
+        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() != 0:
             gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
 
         # first subtract geometry for the total solid_geometry
@@ -864,10 +1122,11 @@ class CutOut(AppTool):
         new_solid_geometry = linemerge(new_solid_geometry)
         self.man_cutout_obj.solid_geometry = new_solid_geometry
 
-        # then do it or each tool in the manual cutout Geometry object
+        # then do it on each tool in the manual cutout Geometry object
         try:
-            self.man_cutout_obj.tools[1]['solid_geometry'] = new_solid_geometry
             self.man_cutout_obj.multigeo = True
+
+            self.man_cutout_obj.tools[1]['solid_geometry'] = new_solid_geometry
             self.man_cutout_obj.tools[1]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
             self.man_cutout_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             self.man_cutout_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -880,16 +1139,11 @@ class CutOut(AppTool):
         if gaps_solid_geo:
             if 9999 not in self.man_cutout_obj.tools:
                 self.man_cutout_obj.tools.update({
-                    9999: {
-                        'tooldia': str(dia),
-                        'offset': 'Path',
-                        'offset_value': 0.0,
-                        'type': _('Rough'),
-                        'tool_type': 'C1',
-                        'data': deepcopy(self.default_data),
-                        'solid_geometry': [gaps_solid_geo]
-                    }
+                    9999: self.cut_tool_dict
                 })
+                self.man_cutout_obj.tools[9999]['tooldia'] = str(dia)
+                self.man_cutout_obj.tools[9999]['solid_geometry'] = [gaps_solid_geo]
+
                 self.man_cutout_obj.tools[9999]['data']['name'] = self.man_cutout_obj.options['name'] + '_cutout'
                 self.man_cutout_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
                 self.man_cutout_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -899,7 +1153,7 @@ class CutOut(AppTool):
                 self.man_cutout_obj.tools[9999]['solid_geometry'].append(gaps_solid_geo)
 
         self.man_cutout_obj.plot(plot_tool=1)
-        self.app.inform.emit('[success] %s' % _("Added manual Bridge Gap."))
+        self.app.inform.emit('%s' % _("Added manual Bridge Gap. Left click to add another or right click to finish."))
 
         self.app.should_we_save = True
 
@@ -975,18 +1229,14 @@ class CutOut(AppTool):
             geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
             geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-            geo_obj.tools.update({
-                1: {
-                    'tooldia':          str(dia),
-                    'offset':           'Path',
-                    'offset_value':     0.0,
-                    'type':             _('Rough'),
-                    'tool_type':        'C1',
-                    'data':             self.default_data,
-                    'solid_geometry':   geo_obj.solid_geometry
-                }
-            })
             geo_obj.multigeo = True
+
+            geo_obj.tools.update({
+                1: self.cut_tool_dict
+            })
+            geo_obj.tools[1]['tooldia'] = str(dia)
+            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+
             geo_obj.tools[1]['data']['name'] = outname
             geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
             geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
@@ -1074,6 +1324,8 @@ class CutOut(AppTool):
 
             # plot the final object
             self.man_cutout_obj.plot()
+
+            self.app.inform.emit('[success] %s' % _("Finished manual adding of gaps."))
 
     def on_mouse_move(self, event):
 
@@ -1507,23 +1759,55 @@ class CutoutUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 10, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
-
-        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _("Tool Parameters"))
-        grid0.addWidget(self.param_label, 14, 0, 1, 2)
+        self.tool_sel_label = FCLabel('<b>%s</b>' % _('Cutout Tool'))
+        grid0.addWidget(self.tool_sel_label, 12, 0, 1, 2)
 
         # Tool Diameter
         self.dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia.set_precision(self.decimals)
         self.dia.set_range(0.0000, 9999.9999)
 
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Diameter"))
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Dia"))
         self.dia_label.setToolTip(
             _("Diameter of the tool used to cutout\n"
               "the PCB shape out of the surrounding material.")
         )
-        grid0.addWidget(self.dia_label, 16, 0)
-        grid0.addWidget(self.dia, 16, 1)
+        grid0.addWidget(self.dia_label, 14, 0)
+        grid0.addWidget(self.dia, 14, 1)
+
+        hlay = QtWidgets.QHBoxLayout()
+
+        # Search and Add new Tool
+        self.add_newtool_button = FCButton(_('Search and Add'))
+        self.add_newtool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
+        self.add_newtool_button.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "with the diameter specified above.\n"
+              "This is done by a background search\n"
+              "in the Tools Database. If nothing is found\n"
+              "in the Tools DB then a default tool is added.")
+        )
+        hlay.addWidget(self.add_newtool_button)
+
+        # Pick from DB new Tool
+        self.addtool_from_db_btn = FCButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool Database.\n"
+              "Tool database administration in Menu: Options -> Tools Database")
+        )
+        hlay.addWidget(self.addtool_from_db_btn)
+
+        grid0.addLayout(hlay, 16, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 18, 0, 1, 2)
+
+        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _("Tool Parameters"))
+        grid0.addWidget(self.param_label, 20, 0, 1, 2)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -1543,8 +1827,8 @@ class CutoutUI:
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid0.addWidget(cutzlabel, 18, 0)
-        grid0.addWidget(self.cutz_entry, 18, 1)
+        grid0.addWidget(cutzlabel, 22, 0)
+        grid0.addWidget(self.cutz_entry, 22, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -1568,8 +1852,8 @@ class CutoutUI:
             )
         )
 
-        grid0.addWidget(self.mpass_cb, 20, 0)
-        grid0.addWidget(self.maxdepth_entry, 20, 1)
+        grid0.addWidget(self.mpass_cb, 24, 0)
+        grid0.addWidget(self.maxdepth_entry, 24, 1)
 
         self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
@@ -1585,8 +1869,8 @@ class CutoutUI:
               "will make the cutout of the PCB further from\n"
               "the actual PCB border")
         )
-        grid0.addWidget(self.margin_label, 22, 0)
-        grid0.addWidget(self.margin, 22, 1)
+        grid0.addWidget(self.margin_label, 26, 0)
+        grid0.addWidget(self.margin, 26, 1)
 
         # Gapsize
         self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))
@@ -1600,10 +1884,10 @@ class CutoutUI:
         self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
         self.gapsize.set_precision(self.decimals)
 
-        grid0.addWidget(self.gapsize_label, 24, 0)
-        grid0.addWidget(self.gapsize, 24, 1)
+        grid0.addWidget(self.gapsize_label, 28, 0)
+        grid0.addWidget(self.gapsize, 28, 1)
 
-        # Gapsize
+        # Gap Type
         self.gaptype_label = FCLabel('%s:' % _("Gap type"))
         self.gaptype_label.setToolTip(
             _("The type of gap:\n"
@@ -1621,8 +1905,8 @@ class CutoutUI:
             stretch=True
         )
 
-        grid0.addWidget(self.gaptype_label, 26, 0)
-        grid0.addWidget(self.gaptype_radio, 26, 1)
+        grid0.addWidget(self.gaptype_label, 30, 0)
+        grid0.addWidget(self.gaptype_radio, 30, 1)
 
         # Thin gaps Depth
         self.thin_depth_label = FCLabel('%s:' % _("Depth"))
@@ -1638,8 +1922,8 @@ class CutoutUI:
             self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
         self.thin_depth_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.thin_depth_label, 28, 0)
-        grid0.addWidget(self.thin_depth_entry, 28, 1)
+        grid0.addWidget(self.thin_depth_label, 32, 0)
+        grid0.addWidget(self.thin_depth_entry, 32, 1)
 
         # Mouse Bites Tool Diameter
         self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
@@ -1650,8 +1934,8 @@ class CutoutUI:
         self.mb_dia_entry.set_precision(self.decimals)
         self.mb_dia_entry.setRange(0, 100.0000)
 
-        grid0.addWidget(self.mb_dia_label, 30, 0)
-        grid0.addWidget(self.mb_dia_entry, 30, 1)
+        grid0.addWidget(self.mb_dia_label, 34, 0)
+        grid0.addWidget(self.mb_dia_entry, 34, 1)
 
         # Mouse Bites Holes Spacing
         self.mb_spacing_label = FCLabel('%s:' % _("Spacing"))
@@ -1662,22 +1946,20 @@ class CutoutUI:
         self.mb_spacing_entry.set_precision(self.decimals)
         self.mb_spacing_entry.setRange(0, 100.0000)
 
-        grid0.addWidget(self.mb_spacing_label, 32, 0)
-        grid0.addWidget(self.mb_spacing_entry, 32, 1)
+        grid0.addWidget(self.mb_spacing_label, 36, 0)
+        grid0.addWidget(self.mb_spacing_entry, 36, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 34, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 36, 0, 1, 2)
+        grid0.addWidget(separator_line, 38, 0, 1, 2)
 
         # Title2
         title_param_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Automatic'), _("Bridge Gaps")))
         title_param_label.setToolTip(
             _("This section handle creation of automatic bridge gaps.")
         )
-        grid0.addWidget(title_param_label, 38, 0, 1, 2)
+        grid0.addWidget(title_param_label, 40, 0, 1, 2)
 
         # Gaps
         # How gaps wil be rendered:
@@ -1707,8 +1989,8 @@ class CutoutUI:
         for it in gaps_items:
             self.gaps.addItem(it)
             # self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        grid0.addWidget(gaps_label, 40, 0)
-        grid0.addWidget(self.gaps, 40, 1)
+        grid0.addWidget(gaps_label, 42, 0)
+        grid0.addWidget(self.gaps, 42, 1)
 
         # Buttons
         self.ff_cutout_object_btn = FCButton(_("Generate Geometry"))
@@ -1724,7 +2006,7 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.ff_cutout_object_btn, 42, 0, 1, 2)
+        grid0.addWidget(self.ff_cutout_object_btn, 44, 0, 1, 2)
 
         self.rect_cutout_object_btn = FCButton(_("Generate Geometry"))
         self.rect_cutout_object_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/rectangle32.png'))
@@ -1740,14 +2022,12 @@ class CutoutUI:
                                     font-weight: bold;
                                 }
                                 """)
-        grid0.addWidget(self.rect_cutout_object_btn, 44, 0, 1, 2)
+        grid0.addWidget(self.rect_cutout_object_btn, 46, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 46, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 48, 0, 1, 2)
+        grid0.addWidget(separator_line, 48, 0, 1, 2)
 
         # MANUAL BRIDGE GAPS
         title_manual_label = QtWidgets.QLabel("<b>%s %s</b>:" % (_('Manual'), _("Bridge Gaps")))

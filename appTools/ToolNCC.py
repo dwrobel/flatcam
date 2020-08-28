@@ -3855,7 +3855,7 @@ class NccUI:
         self.grid3.addWidget(self.tool_sel_label, 0, 0, 1, 2)
 
         # ### Tool Diameter ####
-        self.new_tooldia_lbl = FCLabel('<b>%s:</b>' % _('Tool Dia'))
+        self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
         self.new_tooldia_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table.\n"
               "If the tool is V-shape type then this value is automatically\n"
