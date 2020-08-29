@@ -2068,22 +2068,26 @@ class Geometry(object):
                 if type(left) == LineString:
                     if left.coords[0] == geo.coords[0]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords)[::-1] + list(left.coords)
+                        # geo.coords = list(geo.coords)[::-1] + list(left.coords)   # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(left.coords))
                         continue
 
                     if left.coords[-1] == geo.coords[0]:
                         storage.remove(left)
-                        geo.coords = list(left.coords) + list(geo.coords)
+                        # geo.coords = list(left.coords) + list(geo.coords)  # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(left.coords))
                         continue
 
                     if left.coords[0] == geo.coords[-1]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords) + list(left.coords)
+                        # geo.coords = list(geo.coords) + list(left.coords) # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(left.coords))
                         continue
 
                     if left.coords[-1] == geo.coords[-1]:
                         storage.remove(left)
-                        geo.coords = list(geo.coords) + list(left.coords)[::-1]
+                        # geo.coords = list(geo.coords) + list(left.coords)[::-1] # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(left.coords)[::-1])
                         continue
 
                 _, right = storage.nearest(geo.coords[-1])
@@ -2093,22 +2097,26 @@ class Geometry(object):
                 if type(right) == LineString:
                     if right.coords[0] == geo.coords[-1]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords) + list(right.coords)
+                        # geo.coords = list(geo.coords) + list(right.coords)  # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(right.coords))
                         continue
 
                     if right.coords[-1] == geo.coords[-1]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords) + list(right.coords)[::-1]
+                        # geo.coords = list(geo.coords) + list(right.coords)[::-1]    # Shapely 2.0
+                        geo = LineString(list(geo.coords) + list(right.coords)[::-1])
                         continue
 
                     if right.coords[0] == geo.coords[0]:
                         storage.remove(right)
-                        geo.coords = list(geo.coords)[::-1] + list(right.coords)
+                        # geo.coords = list(geo.coords)[::-1] + list(right.coords)    # Shapely 2.0
+                        geo = LineString(list(geo.coords)[::-1] + list(right.coords))
                         continue
 
                     if right.coords[-1] == geo.coords[0]:
                         storage.remove(right)
-                        geo.coords = list(left.coords) + list(geo.coords)
+                        # geo.coords = list(left.coords) + list(geo.coords)   # Shapely 2.0
+                        geo = LineString(list(left.coords) + list(geo.coords))
                         continue
 
                 # right is either a LinearRing or it does not connect
@@ -5032,7 +5040,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapley 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
@@ -5054,9 +5063,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
-                                                               tolerance,  z_move=z_move, postproc=p,
-                                                               old_point=current_pt)
+                    gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, extracut, extracut_length,
+                                                           tolerance,  z_move=z_move, postproc=p,
+                                                           old_point=current_pt)
+                    self.gcode += gc
 
                 # calculate the total distance
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
@@ -5395,7 +5405,7 @@ class CNCjob(Geometry):
             # If last point in geometry is the nearest but prefer the first one if last point == first point
             # then reverse coordinates.
             if pt != geo.coords[0] and pt == geo.coords[-1]:
-                geo.coords = list(geo.coords)[::-1]
+                geo = LineString(list(geo.coords)[::-1])
 
             # ---------- Single depth/pass --------
             if not self.multidepth:
@@ -5418,9 +5428,10 @@ class CNCjob(Geometry):
 
                 total_cut += (geo.length * nr_cuts)
 
-                t_gcode += self.create_gcode_multi_pass(geo, current_tooldia, self.extracut,
-                                                        self.extracut_length, self.tolerance,
-                                                        z_move=self.z_move, postproc=p, old_point=current_pt)
+                gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, self.extracut,
+                                                       self.extracut_length, self.tolerance,
+                                                       z_move=self.z_move, postproc=p, old_point=current_pt)
+                t_gcode += gc
 
             # calculate the total distance
             total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
@@ -5798,7 +5809,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapely 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
@@ -5819,9 +5831,10 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
-                                                               tolerance, z_move=z_move, postproc=p,
-                                                               old_point=current_pt)
+                    gc, geo = self.create_gcode_multi_pass(geo, current_tooldia, extracut, self.extracut_length,
+                                                           tolerance, z_move=z_move, postproc=p,
+                                                           old_point=current_pt)
+                    self.gcode += gc
 
                 # calculate the travel distance
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
@@ -5951,7 +5964,8 @@ class CNCjob(Geometry):
                 # If last point in geometry is the nearest but prefer the first one if last point == first point
                 # then reverse coordinates.
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
+                    # geo.coords = list(geo.coords)[::-1] # Shapely 2.0
+                    geo = LineString(list(geo.coords)[::-1])
 
                 self.gcode += self.create_soldepaste_gcode(geo, p=p, old_point=current_pt)
                 current_pt = geo.coords[-1]
@@ -6151,17 +6165,17 @@ class CNCjob(Geometry):
 
             # Reverse coordinates if not a loop so we can continue cutting without returning to the beginning.
             if type(geometry) == LineString:
-                geometry.coords = list(geometry.coords)[::-1]
+                geometry = LineString(list(geometry.coords)[::-1])
                 reverse = True
 
         # If geometry is reversed, revert.
         if reverse:
             if type(geometry) == LineString:
-                geometry.coords = list(geometry.coords)[::-1]
+                geometry = LineString(list(geometry.coords)[::-1])
 
         # Lift the tool
         gcode_multi_pass += self.doformat(p.lift_code, x=old_point[0], y=old_point[1])
-        return gcode_multi_pass
+        return gcode_multi_pass, geometry
 
     def codes_split(self, gline):
         """

@@ -526,9 +526,6 @@ class CutOut(AppTool):
     def on_freeform_cutout(self):
         log.debug("Cutout.on_freeform_cutout() was launched ...")
 
-        # def subtract_rectangle(obj_, x0, y0, x1, y1):
-        #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-        #     obj_.subtract_polygon(pts)
         name = self.ui.obj_combo.currentText()
 
         # Get source object.
@@ -544,7 +541,7 @@ class CutOut(AppTool):
                                  _("There is no object selected for Cutout.\nSelect one and try again."))
             return
 
-        dia = float(self.ui.dia.get_value())
+        dia = self.ui.dia.get_value()
         if 0 in {dia}:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
@@ -555,8 +552,7 @@ class CutOut(AppTool):
         except ValueError:
             return
 
-        margin = float(self.ui.margin.get_value())
-        gapsize = float(self.ui.gapsize.get_value())
+        margin = self.ui.margin.get_value()
 
         try:
             gaps = self.ui.gaps.get_value()
@@ -570,239 +566,330 @@ class CutOut(AppTool):
                                    "Fill in a correct value and retry. "))
             return
 
-        if cutout_obj.multigeo is True:
-            self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                                  "Optionally, this Multi-geo Geometry can be converted to "
-                                                  "Single-geo Geometry,\n"
-                                                  "and after that perform Cutout."))
-            return
+        # if cutout_obj.multigeo is True:
+        #     self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
+        #                                           "Optionally, this Multi-geo Geometry can be converted to "
+        #                                           "Single-geo Geometry,\n"
+        #                                           "and after that perform Cutout."))
+        #     return
 
-        convex_box = self.ui.convex_box_cb.get_value()
+        def cutout_handler(geom, gapsize):
+            proc_geometry = []
+            rest_geometry = []
+            r_temp_geo = []
+            initial_geo = deepcopy(geom)
 
-        gapsize = gapsize / 2 + (dia / 2)
+            # Get min and max data for each object as we just cut rectangles across X or Y
+            xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
 
-        def geo_init(geo_obj, app_obj):
-            solid_geo = []
-            gaps_solid_geo = None
+            px = 0.5 * (xxmin + xxmax) + margin
+            py = 0.5 * (yymin + yymax) + margin
+            lenx = (xxmax - xxmin) + (margin * 2)
+            leny = (yymax - yymin) + (margin * 2)
 
-            if cutout_obj.kind == 'gerber':
-                if isinstance(cutout_obj.solid_geometry, list):
-                    cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
-
-                try:
-                    if convex_box:
-                        object_geo = cutout_obj.solid_geometry.convex_hull
-                    else:
-                        object_geo = cutout_obj.solid_geometry
-                except Exception as err:
-                    log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
-                    object_geo = cutout_obj.solid_geometry
+            if gaps == 'None':
+                pass
             else:
-                object_geo = cutout_obj.solid_geometry
+                if gaps == '8' or gaps == '2LR':
+                    points = (
+                        xxmin - gapsize,  # botleft_x
+                        py - gapsize + leny / 4,  # botleft_y
+                        xxmax + gapsize,  # topright_x
+                        py + gapsize + leny / 4  # topright_y
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-            def cutout_handler(geom):
-                proc_geometry = []
-                rest_geometry = []
-                r_temp_geo = []
-                initial_geo = deepcopy(geom)
+                    points = (
+                        xxmin - gapsize,
+                        py - gapsize - leny / 4,
+                        xxmax + gapsize,
+                        py + gapsize - leny / 4
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                # Get min and max data for each object as we just cut rectangles across X or Y
-                xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
+                if gaps == '8' or gaps == '2TB':
+                    points = (
+                        px - gapsize + lenx / 4,
+                        yymin - gapsize,
+                        px + gapsize + lenx / 4,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                px = 0.5 * (xxmin + xxmax) + margin
-                py = 0.5 * (yymin + yymax) + margin
-                lenx = (xxmax - xxmin) + (margin * 2)
-                leny = (yymax - yymin) + (margin * 2)
+                    points = (
+                        px - gapsize - lenx / 4,
+                        yymin - gapsize,
+                        px + gapsize - lenx / 4,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                if gaps == 'None':
-                    pass
-                else:
-                    if gaps == '8' or gaps == '2LR':
-                        points = (
-                            xxmin - gapsize,  # botleft_x
-                            py - gapsize + leny / 4,  # botleft_y
-                            xxmax + gapsize,  # topright_x
-                            py + gapsize + leny / 4  # topright_y
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
+                if gaps == '4' or gaps == 'LR':
+                    points = (
+                        xxmin - gapsize,
+                        py - gapsize,
+                        xxmax + gapsize,
+                        py + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                        points = (
-                            xxmin - gapsize,
-                            py - gapsize - leny / 4,
-                            xxmax + gapsize,
-                            py + gapsize - leny / 4
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
+                if gaps == '4' or gaps == 'TB':
+                    points = (
+                        px - gapsize,
+                        yymin - gapsize,
+                        px + gapsize,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                    if gaps == '8' or gaps == '2TB':
-                        points = (
-                            px - gapsize + lenx / 4,
-                            yymin - gapsize,
-                            px + gapsize + lenx / 4,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                        points = (
-                            px - gapsize - lenx / 4,
-                            yymin - gapsize,
-                            px + gapsize - lenx / 4,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                    if gaps == '4' or gaps == 'LR':
-                        points = (
-                            xxmin - gapsize,
-                            py - gapsize,
-                            xxmax + gapsize,
-                            py + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                    if gaps == '4' or gaps == 'TB':
-                        points = (
-                            px - gapsize,
-                            yymin - gapsize,
-                            px + gapsize,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                try:
-                    for g in geom:
-                        if g and not g.is_empty:
-                            proc_geometry.append(g)
-                except TypeError:
-                    if geom and not geom.is_empty:
-                        proc_geometry.append(geom)
-
-                r_temp_geo = CutOut.flatten(r_temp_geo)
-                for g in r_temp_geo:
+            try:
+                for g in geom:
                     if g and not g.is_empty:
-                        rest_geometry.append(g)
+                        proc_geometry.append(g)
+            except TypeError:
+                if geom and not geom.is_empty:
+                    proc_geometry.append(geom)
 
-                return proc_geometry, rest_geometry
+            r_temp_geo = CutOut.flatten(r_temp_geo)
+            for g in r_temp_geo:
+                if g and not g.is_empty:
+                    rest_geometry.append(g)
 
-            if kind == 'single':
-                object_geo = unary_union(object_geo)
+            return proc_geometry, rest_geometry
 
-                # for geo in object_geo:
+        with self.app.proc_container.new("Generating Cutout ..."):
+            outname = cutout_obj.options["name"] + "_cutout"
+            self.app.collection.promise(outname)
+
+            has_mouse_bites = True if self.ui.gaptype_radio.get_value() == 'mb' else False
+
+            outname_exc = cutout_obj.options["name"] + "_mouse_bites"
+            if has_mouse_bites is True:
+                self.app.collection.promise(outname_exc)
+
+            def job_thread(app_obj):
+                solid_geo = []
+                gaps_solid_geo = []
+                mouse_bites_geo = []
+
+                convex_box = self.ui.convex_box_cb.get_value()
+                gapsize = self.ui.gapsize.get_value()
+                gapsize = gapsize / 2 + (dia / 2)
+                mb_dia = self.ui.mb_dia_entry.get_value()
+                mb_buff_val = mb_dia / 2.0
+                mb_spacing = self.ui.mb_spacing_entry.get_value()
+                gap_type = self.ui.gaptype_radio.get_value()
+                thin_entry = self.ui.thin_depth_entry.get_value()
+
                 if cutout_obj.kind == 'gerber':
-                    if isinstance(object_geo, MultiPolygon):
-                        x0, y0, x1, y1 = object_geo.bounds
-                        object_geo = box(x0, y0, x1, y1)
-                    if margin >= 0:
-                        geo_buf = object_geo.buffer(margin + abs(dia / 2))
-                    else:
-                        geo_buf = object_geo.buffer(margin - abs(dia / 2))
-
-                    geo = geo_buf.exterior
-                else:
-                    geo = object_geo
-
-                solid_geo, rest_geo = cutout_handler(geom=geo)
-                if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                    gaps_solid_geo = rest_geo
-            else:
-                try:
-                    __ = iter(object_geo)
-                except TypeError:
-                    object_geo = [object_geo]
-
-                for geom_struct in object_geo:
-                    if cutout_obj.kind == 'gerber':
-                        if margin >= 0:
-                            geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                    if isinstance(cutout_obj.solid_geometry, list):
+                        cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
+                    try:
+                        if convex_box:
+                            object_geo = cutout_obj.solid_geometry.convex_hull
                         else:
-                            geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
-                            geom_struct = geom_struct_buff.interiors
+                            object_geo = cutout_obj.solid_geometry
+                    except Exception as err:
+                        log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
+                        object_geo = cutout_obj.solid_geometry
+                else:
+                    if cutout_obj.multigeo is False:
+                        object_geo = cutout_obj.solid_geometry
+                    else:
+                        # first tool in the tools dict
+                        t_first = list(cutout_obj.tools.keys())[0]
+                        object_geo = cutout_obj.tools[t_first]['solid_geometry']
 
-                    c_geo, r_geo = cutout_handler(geom=geom_struct)
-                    solid_geo += c_geo
-                    if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                        gaps_solid_geo += r_geo
+                if kind == 'single':
+                    object_geo = unary_union(object_geo)
 
-            if not solid_geo:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-                return "fail"
+                    # for geo in object_geo:
+                    if cutout_obj.kind == 'gerber':
+                        if isinstance(object_geo, MultiPolygon):
+                            x0, y0, x1, y1 = object_geo.bounds
+                            object_geo = box(x0, y0, x1, y1)
+                        if margin >= 0:
+                            geo_buf = object_geo.buffer(margin + abs(dia / 2))
+                        else:
+                            geo_buf = object_geo.buffer(margin - abs(dia / 2))
+                        geo = geo_buf.exterior
+                    else:
+                        geo = object_geo
 
-            solid_geo = linemerge(solid_geo)
-            geo_obj.solid_geometry = deepcopy(solid_geo)
+                    solid_geo, rest_geo = cutout_handler(geom=geo, gapsize=gapsize)
+                    if gap_type == 'bt' and thin_entry != 0:
+                        gaps_solid_geo = rest_geo
+                else:
+                    try:
+                        __ = iter(object_geo)
+                    except TypeError:
+                        object_geo = [object_geo]
 
-            xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
-            geo_obj.options['xmin'] = xmin
-            geo_obj.options['ymin'] = ymin
-            geo_obj.options['xmax'] = xmax
-            geo_obj.options['ymax'] = ymax
-            geo_obj.options['cnctooldia'] = str(dia)
-            geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    for geom_struct in object_geo:
+                        if cutout_obj.kind == 'gerber':
+                            if margin >= 0:
+                                geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                            else:
+                                geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
+                                geom_struct = geom_struct_buff.interiors
 
-            geo_obj.multigeo = True
+                        c_geo, r_geo = cutout_handler(geom=geom_struct, gapsize=gapsize)
+                        solid_geo += c_geo
+                        if gap_type == 'bt' and thin_entry != 0:
+                            gaps_solid_geo += r_geo
 
-            geo_obj.tools.update({
-                1: self.cut_tool_dict
-            })
-            geo_obj.tools[1]['tooldia'] = str(dia)
-            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+                if not solid_geo:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return "fail"
 
-            geo_obj.tools[1]['data']['name'] = outname
-            geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                solid_geo = linemerge(solid_geo)
 
-            if gaps_solid_geo is not None:
-                geo_obj.tools.update({
-                    9999: self.cut_tool_dict
-                })
-                geo_obj.tools[9999]['tooldia'] = str(dia)
-                geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+                if has_mouse_bites is True:
+                    gapsize -= dia / 2
+                    mb_object_geo = deepcopy(object_geo)
+                    if kind == 'single':
+                        mb_object_geo = unary_union(mb_object_geo)
 
-                geo_obj.tools[9999]['data']['name'] = outname
-                geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
-                # plot this tool in a different color
-                geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                        # for geo in object_geo:
+                        if cutout_obj.kind == 'gerber':
+                            if isinstance(mb_object_geo, MultiPolygon):
+                                x0, y0, x1, y1 = mb_object_geo.bounds
+                                mb_object_geo = box(x0, y0, x1, y1)
+                            if margin >= 0:
+                                geo_buf = mb_object_geo.buffer(margin + mb_buff_val)
+                            else:
+                                geo_buf = mb_object_geo.buffer(margin - mb_buff_val)
+                            mb_geo = geo_buf.exterior
+                        else:
+                            mb_geo = mb_object_geo
 
-        outname = cutout_obj.options["name"] + "_cutout"
-        ret = self.app.app_obj.new_object('geometry', outname, geo_init)
+                        __, rest_geo = cutout_handler(geom=mb_geo, gapsize=gapsize)
+                        mouse_bites_geo = rest_geo
+                    else:
+                        try:
+                            __ = iter(mb_object_geo)
+                        except TypeError:
+                            mb_object_geo = [mb_object_geo]
 
-        if ret == 'fail':
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-            return
+                        for mb_geom_struct in mb_object_geo:
+                            if cutout_obj.kind == 'gerber':
+                                if margin >= 0:
+                                    mb_geom_struct = mb_geom_struct.buffer(margin + mb_buff_val)
+                                    mb_geom_struct = mb_geom_struct.exterior
+                                else:
+                                    mb_geom_struct = mb_geom_struct.buffer(-margin + mb_buff_val)
+                                    mb_geom_struct = mb_geom_struct.interiors
 
-        # cutout_obj.plot(plot_tool=1)
-        self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        self.app.should_we_save = True
+                            __, mb_r_geo = cutout_handler(geom=mb_geom_struct, gapsize=gapsize)
+                            mouse_bites_geo += mb_r_geo
+
+                    # list of Shapely Points to mark the drill points centers
+                    holes = []
+                    for line in mouse_bites_geo:
+                        calc_len = 0
+                        while calc_len < line.length:
+                            holes.append(line.interpolate(calc_len))
+                            calc_len += mb_dia + mb_spacing
+
+                def geo_init(geo_obj, app_object):
+                    geo_obj.multigeo = True
+                    geo_obj.solid_geometry = deepcopy(solid_geo)
+
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
+                    geo_obj.options['xmin'] = xmin
+                    geo_obj.options['ymin'] = ymin
+                    geo_obj.options['xmax'] = xmax
+                    geo_obj.options['ymax'] = ymax
+
+                    geo_obj.options['cnctooldia'] = str(dia)
+                    geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+                    geo_obj.tools[1] = deepcopy(self.cut_tool_dict)
+                    geo_obj.tools[1]['tooldia'] = str(dia)
+                    geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+
+                    geo_obj.tools[1]['data']['name'] = outname
+                    geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+                    if not gaps_solid_geo:
+                        pass
+                    else:
+                        geo_obj.tools[9999] = deepcopy(self.cut_tool_dict)
+                        geo_obj.tools[9999]['tooldia'] = str(dia)
+                        geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+
+                        geo_obj.tools[9999]['data']['name'] = outname
+                        geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        # plot this tool in a different color
+                        geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+
+                def excellon_init(exc_obj, app_o):
+                    if not holes:
+                        return 'fail'
+
+                    tools = {}
+                    tools[1] = {}
+                    tools[1]["tooldia"] = mb_dia
+                    tools[1]['drills'] = holes
+                    tools[1]['solid_geometry'] = []
+
+                    exc_obj.tools = tools
+                    exc_obj.create_geometry()
+                    exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
+                                                                filename=None, use_thread=False)
+                    # calculate the bounds
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
+                    exc_obj.options['xmin'] = xmin
+                    exc_obj.options['ymin'] = ymin
+                    exc_obj.options['xmax'] = xmax
+                    exc_obj.options['ymax'] = ymax
+
+                try:
+                    if self.ui.gaptype_radio.get_value() == 'mb':
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        if ret == 'fail':
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
+
+                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init)
+                    if ret == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return
+
+                    # cutout_obj.plot(plot_tool=1)
+                    app_obj.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
+                    # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+                    app_obj.should_we_save = True
+                except Exception as ee:
+                    log.debug(str(ee))
+
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_rectangular_cutout(self):
         log.debug("Cutout.on_rectangular_cutout() was launched ...")
-
-        # def subtract_rectangle(obj_, x0, y0, x1, y1):
-        #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-        #     obj_.subtract_polygon(pts)
 
         name = self.ui.obj_combo.currentText()
 
@@ -828,8 +915,7 @@ class CutOut(AppTool):
         except ValueError:
             return
 
-        margin = float(self.ui.margin.get_value())
-        gapsize = float(self.ui.gapsize.get_value())
+        margin = self.ui.margin.get_value()
 
         try:
             gaps = self.ui.gaps.get_value()
@@ -844,204 +930,330 @@ class CutOut(AppTool):
                                                           "Fill in a correct value and retry. "))
             return
 
-        if cutout_obj.multigeo is True:
-            self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                                  "Optionally, this Multi-geo Geometry can be converted to "
-                                                  "Single-geo Geometry,\n"
-                                                  "and after that perform Cutout."))
-            return
+        # if cutout_obj.multigeo is True:
+        #     self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
+        #                                           "Optionally, this Multi-geo Geometry can be converted to "
+        #                                           "Single-geo Geometry,\n"
+        #                                           "and after that perform Cutout."))
+        #     return
 
-        # Get min and max data for each object as we just cut rectangles across X or Y
+        def cutout_rect_handler(geom, gapsize, xmin, ymin, xmax, ymax):
+            proc_geometry = []
 
-        gapsize = gapsize / 2 + (dia / 2)
+            px = 0.5 * (xmin + xmax) + margin
+            py = 0.5 * (ymin + ymax) + margin
+            lenx = (xmax - xmin) + (margin * 2)
+            leny = (ymax - ymin) + (margin * 2)
 
-        def geo_init(geo_obj, app_obj):
-            solid_geo = []
-            gaps_solid_geo = None
-
-            object_geo = cutout_obj.solid_geometry
-
-            def cutout_rect_handler(geom):
-                proc_geometry = []
-
-                px = 0.5 * (xmin + xmax) + margin
-                py = 0.5 * (ymin + ymax) + margin
-                lenx = (xmax - xmin) + (margin * 2)
-                leny = (ymax - ymin) + (margin * 2)
-
-                if gaps == 'None':
-                    pass
-                else:
-                    if gaps == '8' or gaps == '2LR':
-                        points = (
-                            xmin - gapsize,  # botleft_x
-                            py - gapsize + leny / 4,  # botleft_y
-                            xmax + gapsize,  # topright_x
-                            py + gapsize + leny / 4  # topright_y
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        points = (
-                            xmin - gapsize,
-                            py - gapsize - leny / 4,
-                            xmax + gapsize,
-                            py + gapsize - leny / 4
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-
-                    if gaps == '8' or gaps == '2TB':
-                        points = (
-                            px - gapsize + lenx / 4,
-                            ymin - gapsize,
-                            px + gapsize + lenx / 4,
-                            ymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        points = (
-                            px - gapsize - lenx / 4,
-                            ymin - gapsize,
-                            px + gapsize - lenx / 4,
-                            ymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-
-                    if gaps == '4' or gaps == 'LR':
-                        points = (
-                            xmin - gapsize,
-                            py - gapsize,
-                            xmax + gapsize,
-                            py + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-
-                    if gaps == '4' or gaps == 'TB':
-                        points = (
-                            px - gapsize,
-                            ymin - gapsize,
-                            px + gapsize,
-                            ymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-
-                try:
-                    for g in geom:
-                        proc_geometry.append(g)
-                except TypeError:
-                    proc_geometry.append(geom)
-                return proc_geometry
-
-            if kind == 'single':
-                # fuse the lines
-                object_geo = unary_union(object_geo)
-
-                xmin, ymin, xmax, ymax = object_geo.bounds
-                geo = box(xmin, ymin, xmax, ymax)
-
-                # if Gerber create a buffer at a distance
-                # if Geometry then cut through the geometry
-                if cutout_obj.kind == 'gerber':
-                    if margin >= 0:
-                        geo = geo.buffer(margin + abs(dia / 2))
-                    else:
-                        geo = geo.buffer(margin - abs(dia / 2))
-
-                solid_geo = cutout_rect_handler(geom=geo)
-
-                if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                    gaps_solid_geo = self.subtract_geo(geo, solid_geo)
+            if gaps == 'None':
+                pass
             else:
-                if cutout_obj.kind == 'geometry':
-                    try:
-                        __ = iter(object_geo)
-                    except TypeError:
-                        object_geo = [object_geo]
+                if gaps == '8' or gaps == '2LR':
+                    points = (
+                        xmin - gapsize,  # botleft_x
+                        py - gapsize + leny / 4,  # botleft_y
+                        xmax + gapsize,  # topright_x
+                        py + gapsize + leny / 4  # topright_y
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    points = (
+                        xmin - gapsize,
+                        py - gapsize - leny / 4,
+                        xmax + gapsize,
+                        py + gapsize - leny / 4
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
 
-                    for geom_struct in object_geo:
-                        geom_struct = unary_union(geom_struct)
-                        xmin, ymin, xmax, ymax = geom_struct.bounds
-                        geom_struct = box(xmin, ymin, xmax, ymax)
+                if gaps == '8' or gaps == '2TB':
+                    points = (
+                        px - gapsize + lenx / 4,
+                        ymin - gapsize,
+                        px + gapsize + lenx / 4,
+                        ymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    points = (
+                        px - gapsize - lenx / 4,
+                        ymin - gapsize,
+                        px + gapsize - lenx / 4,
+                        ymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
 
-                        c_geo = cutout_rect_handler(geom=geom_struct)
-                        solid_geo += c_geo
-                        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                            try:
-                                gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
-                            except TypeError:
-                                gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
-                elif cutout_obj.kind == 'gerber' and margin >= 0:
-                    try:
-                        __ = iter(object_geo)
-                    except TypeError:
-                        object_geo = [object_geo]
+                if gaps == '4' or gaps == 'LR':
+                    points = (
+                        xmin - gapsize,
+                        py - gapsize,
+                        xmax + gapsize,
+                        py + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
 
-                    for geom_struct in object_geo:
-                        geom_struct = unary_union(geom_struct)
-                        xmin, ymin, xmax, ymax = geom_struct.bounds
-                        geom_struct = box(xmin, ymin, xmax, ymax)
+                if gaps == '4' or gaps == 'TB':
+                    points = (
+                        px - gapsize,
+                        ymin - gapsize,
+                        px + gapsize,
+                        ymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
 
-                        geom_struct = geom_struct.buffer(margin + abs(dia / 2))
+            try:
+                for g in geom:
+                    proc_geometry.append(g)
+            except TypeError:
+                proc_geometry.append(geom)
+            return proc_geometry
 
-                        c_geo = cutout_rect_handler(geom=geom_struct)
-                        solid_geo += c_geo
-                        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                            try:
-                                gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
-                            except TypeError:
-                                gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
-                elif cutout_obj.kind == 'gerber' and margin < 0:
-                    app_obj.inform.emit(
-                        '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible."))
+        with self.app.proc_container.new("Generating Cutout ..."):
+            outname = cutout_obj.options["name"] + "_cutout"
+            self.app.collection.promise(outname)
+
+            has_mouse_bites = True if self.ui.gaptype_radio.get_value() == 'mb' else False
+
+            outname_exc = cutout_obj.options["name"] + "_mouse_bites"
+            if has_mouse_bites is True:
+                self.app.collection.promise(outname_exc)
+
+            def job_thread(app_obj):
+                solid_geo = []
+                gaps_solid_geo = []
+                mouse_bites_geo = []
+
+                gapsize = self.ui.gapsize.get_value()
+                gapsize = gapsize / 2 + (dia / 2)
+                mb_dia = self.ui.mb_dia_entry.get_value()
+                mb_buff_val = mb_dia / 2.0
+                mb_spacing = self.ui.mb_spacing_entry.get_value()
+                gap_type = self.ui.gaptype_radio.get_value()
+                thin_entry = self.ui.thin_depth_entry.get_value()
+
+                if cutout_obj.multigeo is False:
+                    object_geo = cutout_obj.solid_geometry
+                else:
+                    # first tool in the tools dict
+                    t_first = list(cutout_obj.tools.keys())[0]
+                    object_geo = cutout_obj.tools[t_first]['solid_geometry']
+
+                if kind == 'single':
+                    # fuse the lines
+                    object_geo = unary_union(object_geo)
+
+                    xmin, ymin, xmax, ymax = object_geo.bounds
+                    geo = box(xmin, ymin, xmax, ymax)
+
+                    # if Gerber create a buffer at a distance
+                    # if Geometry then cut through the geometry
+                    if cutout_obj.kind == 'gerber':
+                        if margin >= 0:
+                            geo = geo.buffer(margin + abs(dia / 2))
+                        else:
+                            geo = geo.buffer(margin - abs(dia / 2))
+
+                    solid_geo = cutout_rect_handler(geo, gapsize, xmin, ymin, xmax, ymax)
+
+                    if gap_type == 'bt' and thin_entry != 0:
+                        gaps_solid_geo = self.subtract_geo(geo, deepcopy(solid_geo))
+                else:
+                    if cutout_obj.kind == 'geometry':
+                        try:
+                            __ = iter(object_geo)
+                        except TypeError:
+                            object_geo = [object_geo]
+
+                        for geom_struct in object_geo:
+                            geom_struct = unary_union(geom_struct)
+                            xmin, ymin, xmax, ymax = geom_struct.bounds
+                            geom_struct = box(xmin, ymin, xmax, ymax)
+
+                            c_geo = cutout_rect_handler(geom_struct, gapsize, xmin, ymin, xmax, ymax)
+                            solid_geo += c_geo
+                            if gap_type == 'bt' and thin_entry != 0:
+                                try:
+                                    gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
+                                except TypeError:
+                                    gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
+                    elif cutout_obj.kind == 'gerber' and margin >= 0:
+                        try:
+                            __ = iter(object_geo)
+                        except TypeError:
+                            object_geo = [object_geo]
+
+                        for geom_struct in object_geo:
+                            geom_struct = unary_union(geom_struct)
+                            xmin, ymin, xmax, ymax = geom_struct.bounds
+                            geom_struct = box(xmin, ymin, xmax, ymax)
+
+                            geom_struct = geom_struct.buffer(margin + abs(dia / 2))
+
+                            c_geo = cutout_rect_handler(geom_struct, gapsize, xmin, ymin, xmax, ymax)
+                            solid_geo += c_geo
+                            if gap_type == 'bt' and thin_entry != 0:
+                                try:
+                                    gaps_solid_geo += self.subtract_geo(geom_struct, c_geo)
+                                except TypeError:
+                                    gaps_solid_geo.append(self.subtract_geo(geom_struct, c_geo))
+                    elif cutout_obj.kind == 'gerber' and margin < 0:
+                        app_obj.inform.emit(
+                            '[WARNING_NOTCL] %s' % _("Rectangular cutout with negative margin is not possible."))
+                        return "fail"
+
+                if not solid_geo:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
                     return "fail"
 
-            geo_obj.options['cnctooldia'] = str(dia)
-            geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                solid_geo = linemerge(solid_geo)
 
-            if not solid_geo:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-                return "fail"
+                if has_mouse_bites is True:
+                    gapsize -= dia / 2
+                    mb_object_geo = deepcopy(object_geo)
 
-            solid_geo = linemerge(solid_geo)
-            geo_obj.solid_geometry = deepcopy(solid_geo)
+                    if kind == 'single':
+                        # fuse the lines
+                        mb_object_geo = unary_union(mb_object_geo)
 
-            geo_obj.multigeo = True
+                        xmin, ymin, xmax, ymax = mb_object_geo.bounds
+                        mb_geo = box(xmin, ymin, xmax, ymax)
 
-            geo_obj.tools.update({
-                1: self.cut_tool_dict
-            })
-            geo_obj.tools[1]['tooldia'] = str(dia)
-            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+                        # if Gerber create a buffer at a distance
+                        # if Geometry then cut through the geometry
+                        if cutout_obj.kind == 'gerber':
+                            if margin >= 0:
+                                mb_geo = mb_geo.buffer(margin + mb_buff_val)
+                            else:
+                                mb_geo = mb_geo.buffer(margin - mb_buff_val)
 
-            geo_obj.tools[1]['data']['name'] = outname
-            geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        mb_solid_geo = cutout_rect_handler(mb_geo, gapsize, xmin, ymin, xmax, ymax)
 
-            if gaps_solid_geo is not None:
-                geo_obj.tools.update({
-                    9999: self.cut_tool_dict
-                })
-                geo_obj.tools[9999]['tooldia'] = str(dia)
-                geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+                        mouse_bites_geo = self.subtract_geo(mb_geo, mb_solid_geo)
+                    else:
+                        if cutout_obj.kind == 'geometry':
+                            try:
+                                __ = iter(mb_object_geo)
+                            except TypeError:
+                                mb_object_geo = [mb_object_geo]
 
-                geo_obj.tools[9999]['data']['name'] = outname
-                geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
-                geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                            for mb_geom_struct in mb_object_geo:
+                                mb_geom_struct = unary_union(mb_geom_struct)
+                                xmin, ymin, xmax, ymax = mb_geom_struct.bounds
+                                mb_geom_struct = box(xmin, ymin, xmax, ymax)
 
-        outname = cutout_obj.options["name"] + "_cutout"
-        ret = self.app.app_obj.new_object('geometry', outname, geo_init)
+                                c_geo = cutout_rect_handler(mb_geom_struct, gapsize, xmin, ymin, xmax, ymax)
+                                solid_geo += c_geo
 
-        if ret != 'fail':
-            # cutout_obj.plot()
-            self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
-        else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-            return
+                                try:
+                                    mouse_bites_geo += self.subtract_geo(mb_geom_struct, c_geo)
+                                except TypeError:
+                                    mouse_bites_geo.append(self.subtract_geo(mb_geom_struct, c_geo))
+                        elif cutout_obj.kind == 'gerber' and margin >= 0:
+                            try:
+                                __ = iter(mb_object_geo)
+                            except TypeError:
+                                mb_object_geo = [mb_object_geo]
 
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        self.app.should_we_save = True
+                            for mb_geom_struct in mb_object_geo:
+                                mb_geom_struct = unary_union(mb_geom_struct)
+                                xmin, ymin, xmax, ymax = mb_geom_struct.bounds
+                                mb_geom_struct = box(xmin, ymin, xmax, ymax)
+                                mb_geom_struct = mb_geom_struct.buffer(margin + mb_buff_val)
+
+                                c_geo = cutout_rect_handler(mb_geom_struct, gapsize, xmin, ymin, xmax, ymax)
+                                solid_geo += c_geo
+
+                                try:
+                                    mouse_bites_geo += self.subtract_geo(mb_geom_struct, c_geo)
+                                except TypeError:
+                                    mouse_bites_geo.append(self.subtract_geo(mb_geom_struct, c_geo))
+                        elif cutout_obj.kind == 'gerber' and margin < 0:
+                            msg = '[WARNING_NOTCL] %s' % \
+                                  _("Rectangular cutout with negative margin is not possible.")
+                            app_obj.inform.emit(msg)
+                            return "fail"
+
+                    # list of Shapely Points to mark the drill points centers
+                    holes = []
+                    for line in mouse_bites_geo:
+                        calc_len = 0
+                        while calc_len < line.length:
+                            holes.append(line.interpolate(calc_len))
+                            calc_len += mb_dia + mb_spacing
+
+                def geo_init(geo_obj, app_obj):
+                    geo_obj.multigeo = True
+                    geo_obj.solid_geometry = deepcopy(solid_geo)
+
+                    geo_obj.options['xmin'] = xmin
+                    geo_obj.options['ymin'] = ymin
+                    geo_obj.options['xmax'] = xmax
+                    geo_obj.options['ymax'] = ymax
+
+                    geo_obj.options['cnctooldia'] = str(dia)
+                    geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+                    geo_obj.tools[1] = deepcopy(self.cut_tool_dict)
+                    geo_obj.tools[1]['tooldia'] = str(dia)
+                    geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+
+                    geo_obj.tools[1]['data']['name'] = outname
+                    geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+
+                    if not gaps_solid_geo:
+                        pass
+                    else:
+                        geo_obj.tools[9999] = deepcopy(self.cut_tool_dict)
+                        geo_obj.tools[9999]['tooldia'] = str(dia)
+                        geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+
+                        geo_obj.tools[9999]['data']['name'] = outname
+                        geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+
+                def excellon_init(exc_obj, app_o):
+                    if not holes:
+                        return 'fail'
+
+                    tools = {}
+                    tools[1] = {}
+                    tools[1]["tooldia"] = mb_dia
+                    tools[1]['drills'] = holes
+                    tools[1]['solid_geometry'] = []
+
+                    exc_obj.tools = tools
+                    exc_obj.create_geometry()
+                    exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
+                                                                filename=None, use_thread=False)
+                    # calculate the bounds
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
+                    exc_obj.options['xmin'] = xmin
+                    exc_obj.options['ymin'] = ymin
+                    exc_obj.options['xmax'] = xmax
+                    exc_obj.options['ymax'] = ymax
+
+                try:
+                    if self.ui.gaptype_radio.get_value() == 'mb':
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        if ret == 'fail':
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
+
+                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init)
+                    if ret == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return
+
+                    # cutout_obj.plot(plot_tool=1)
+                    app_obj.inform.emit('[success] %s' % _("Rectangular CutOut operation finished."))
+                    # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+                    app_obj.should_we_save = True
+                except Exception as ee:
+                    log.debug(str(ee))
+
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_manual_gap_click(self):
         name = self.ui.man_object_combo.currentText()

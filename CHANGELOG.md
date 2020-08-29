@@ -13,6 +13,9 @@ CHANGELOG for FlatCAM beta
 - 2Sided Tool - modified the UI such that some of the fields will allow only numbers and some special characters ([,],(,),/,*,,,+,-,%)
 - Cutout Tool - working on adding mouse bites for the Freeform cutout
 - updated the translation files to the current state of the app
+- Cutout Tool - rectangular and freeform cutouts are done in a threaded way
+- Cutout Tool - added the Mouse Bites feature for the Rectangular and Freeform cutouts and right now it fails in case of using a Geometry object and Freeform cutout (weird result)
+- some changes in camlib due of warnigns for future changes in Shapely 2.0
 
 28.08.2020
 
