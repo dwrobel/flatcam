@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
     FCLabel
 
-from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
+from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
 from shapely.ops import cascaded_union, unary_union, linemerge
 import shapely.affinity as affinity
 
@@ -1194,7 +1194,7 @@ class CutOut(AppTool):
                             holes.append(line.interpolate(calc_len))
                             calc_len += mb_dia + mb_spacing
 
-                def geo_init(geo_obj, app_obj):
+                def geo_init(geo_obj, application_obj):
                     geo_obj.multigeo = True
                     geo_obj.solid_geometry = deepcopy(solid_geo)
 
@@ -1245,11 +1245,11 @@ class CutOut(AppTool):
                     exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
                                                                 filename=None, use_thread=False)
                     # calculate the bounds
-                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
-                    exc_obj.options['xmin'] = xmin
-                    exc_obj.options['ymin'] = ymin
-                    exc_obj.options['xmax'] = xmax
-                    exc_obj.options['ymax'] = ymax
+                    e_xmin, e_ymin, e_xmax, e_ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
+                    exc_obj.options['xmin'] = e_xmin
+                    exc_obj.options['ymin'] = e_ymin
+                    exc_obj.options['xmax'] = e_xmax
+                    exc_obj.options['ymax'] = e_ymax
 
                 try:
                     if self.ui.gaptype_radio.get_value() == 'mb':
