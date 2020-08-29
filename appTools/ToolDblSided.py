@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry, FCButton, FCComboBox, FCCheckBox
+from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCButton, FCComboBox, NumericalEvalTupleEntry
 
 from numpy import Inf
 
@@ -156,27 +156,19 @@ class DblSidedTool(AppTool):
             try:
                 px, py = self.ui.point_entry.get_value()
             except TypeError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("'Point' reference is selected and 'Point' coordinates "
-                                                              "are missing. Add them and retry."))
+                msg = '[WARNING_NOTCL] %s' % \
+                      _("'Point' reference is selected and 'Point' coordinates are missing. Add them and retry.")
+                self.app.inform.emit(msg)
                 return
         else:
             selection_index = self.ui.box_combo.currentIndex()
-            model_index = self.app.collection.index(selection_index, 0, self.ui.gerber_object_combo.rootModelIndex())
+            model_index = self.app.collection.index(selection_index, 0, self.ui.object_combo.rootModelIndex())
             try:
                 bb_obj = model_index.internalPointer().obj
             except AttributeError:
-                model_index = self.app.collection.index(selection_index, 0, self.ui.exc_object_combo.rootModelIndex())
-                try:
-                    bb_obj = model_index.internalPointer().obj
-                except AttributeError:
-                    model_index = self.app.collection.index(selection_index, 0,
-                                                            self.ui.geo_object_combo.rootModelIndex())
-                    try:
-                        bb_obj = model_index.internalPointer().obj
-                    except AttributeError:
-                        self.app.inform.emit(
-                            '[WARNING_NOTCL] %s' % _("There is no Box reference object loaded. Load one and retry."))
-                        return
+                msg = '[WARNING_NOTCL] %s' % _("There is no Box reference object loaded. Load one and retry.")
+                self.app.inform.emit(msg)
+                return
 
             xmin, ymin, xmax, ymax = bb_obj.bounds()
             px = 0.5 * (xmin + xmax)
@@ -184,10 +176,10 @@ class DblSidedTool(AppTool):
 
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
-        dia = float(self.drill_dia.get_value())
+        dia = self.ui.drill_dia.get_value()
         if dia == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No value or wrong format in Drill Dia entry. Add it and retry."))
+            msg = '[WARNING_NOTCL] %s' % _("No value or wrong format in Drill Dia entry. Add it and retry.")
+            self.app.inform.emit(msg)
             return
 
         tools = {}
@@ -198,8 +190,8 @@ class DblSidedTool(AppTool):
         # holes = self.alignment_holes.get_value()
         holes = eval('[{}]'.format(self.ui.alignment_holes.text()))
         if not holes:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There are no Alignment Drill Coordinates to use. "
-                                                          "Add them and retry."))
+            msg = '[WARNING_NOTCL] %s' % _("There are no Alignment Drill Coordinates to use. Add them and retry.")
+            self.app.inform.emit(msg)
             return
 
         for hole in holes:
@@ -629,7 +621,7 @@ class DsidedUI:
         grid0.addWidget(self.ymax_entry, 10, 1)
 
         # Center point value
-        self.center_entry = FCEntry()
+        self.center_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.center_entry.setPlaceholderText(_("Center point coordinates"))
 
         self.center_btn = FCButton('%s:' % _("Centroid"))
@@ -714,7 +706,7 @@ class DsidedUI:
         grid1.addWidget(self.axis_location, 4, 1, 1, 2)
 
         # ## Point/Box
-        self.point_entry = EvalEntry()
+        self.point_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.point_entry.setPlaceholderText(_("Point coordinates"))
 
         # Add a reference
@@ -876,7 +868,7 @@ class DsidedUI:
               "It can be modified in the Mirror Parameters -> Reference section")
         )
 
-        self.align_ref_label_val = EvalEntry()
+        self.align_ref_label_val = NumericalEvalTupleEntry(border_color='#0069A9')
         self.align_ref_label_val.setToolTip(
             _("The reference point used to create the second alignment drill\n"
               "from the first alignment drill, by doing mirror.\n"
@@ -900,7 +892,7 @@ class DsidedUI:
               "- one drill in mirror position over the axis selected above in the 'Align Axis'.")
         )
 
-        self.alignment_holes = EvalEntry()
+        self.alignment_holes = NumericalEvalTupleEntry(border_color='#0069A9')
         self.alignment_holes.setPlaceholderText(_("Drill coordinates"))
 
         grid5.addWidget(self.ah_label, 0, 0, 1, 2)

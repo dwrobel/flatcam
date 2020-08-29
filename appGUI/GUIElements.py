@@ -286,7 +286,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         # Unit conversion table OUTPUT-INPUT
         self.scales = {
             'IN': {'IN': 1.0,
-                   'MM': 1/25.4},
+                   'MM': 1 / 25.4},
             'MM': {'IN': 25.4,
                    'MM': 1.0}
         }
@@ -668,6 +668,7 @@ class NumericalEvalEntry(FCEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
+
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
@@ -691,10 +692,11 @@ class NumericalEvalTupleEntry(EvalEntry):
     """
     Will return a text value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
+
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,\[\]]*")
+        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
 
@@ -802,7 +804,6 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
 
 
 class FCSpinner(QtWidgets.QSpinBox):
-
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
@@ -1040,7 +1041,6 @@ class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
 
 
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
-
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
@@ -1694,7 +1694,6 @@ class FCButton(QtWidgets.QPushButton):
 
 
 class FCLabel(QtWidgets.QLabel):
-
     clicked = QtCore.pyqtSignal(bool)
     right_clicked = QtCore.pyqtSignal(bool)
     middle_clicked = QtCore.pyqtSignal(bool)
@@ -2018,7 +2017,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     if str(tab_name) == str(self.tabText(index)):
                         self.protectTab(index)
 
-        # Make this tab the current tab
+            # Make this tab the current tab
             if index > -1:
                 self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
 
@@ -2101,7 +2100,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 # area to the side of the QTabBar) or there are not tabs
                 # currently attached...
                 if tabDropPos.y() < self.tabBar.height() or self.count() == 0:
-
                     # Close the detached tab and allow it to re-attach
                     # automatically
                     self.detachedTabs[name].close()
@@ -2422,6 +2420,7 @@ class VerticalScrollArea(QtWidgets.QScrollArea):
     scroll area that also expands horizontally to accommodate
     its contents.
     """
+
     def __init__(self, parent=None):
         QtWidgets.QScrollArea.__init__(self, parent=parent)
         self.setWidgetResizable(True)
@@ -2537,7 +2536,6 @@ class OptionalHideInputSection:
 
 
 class FCTable(QtWidgets.QTableWidget):
-
     drag_drop_sig = QtCore.pyqtSignal(object, int)
     lost_focus = QtCore.pyqtSignal()
 
@@ -3011,7 +3009,7 @@ class _BrowserTextEdit(QTextEdit):
             save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
         clear_action = QAction(_("Clear"), self)
-        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
+        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))  # it's not working, the shortcut
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
 
@@ -3507,8 +3505,8 @@ class FCZeroAxes(QtWidgets.QFrame):
 
 
 class RotatedToolButton(QtWidgets.QToolButton):
-    def __init__(self, orientation = "east", *args, **kwargs):
-        super(RotatedToolButton,self).__init__(*args, **kwargs)
+    def __init__(self, orientation="east", *args, **kwargs):
+        super(RotatedToolButton, self).__init__(*args, **kwargs)
         self.orientation = orientation
 
     def paintEvent(self, event):
@@ -3560,8 +3558,8 @@ class RotatedToolButton(QtWidgets.QToolButton):
 
 
 class RotatedButton(QtWidgets.QPushButton):
-    def __init__(self, orientation = "west", *args, **kwargs):
-        super(RotatedButton,self).__init__(*args, **kwargs)
+    def __init__(self, orientation="west", *args, **kwargs):
+        super(RotatedButton, self).__init__(*args, **kwargs)
         self.orientation = orientation
 
     def paintEvent(self, event):

@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton, \
     FCLabel
 
-from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
+from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString, Point
 from shapely.ops import cascaded_union, unary_union, linemerge
 import shapely.affinity as affinity
 
@@ -187,52 +187,52 @@ class CutOut(AppTool):
         self.ui.dia.set_value(float(self.app.defaults["tools_cutout_tooldia"]))
 
         self.default_data.update({
-            "plot":             True,
+            "plot": True,
 
-            "cutz":             float(self.app.defaults["geometry_cutz"]),
-            "multidepth":       self.app.defaults["geometry_multidepth"],
-            "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+            "cutz": float(self.app.defaults["geometry_cutz"]),
+            "multidepth": self.app.defaults["geometry_multidepth"],
+            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
 
-            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
-            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
-            "travelz":          float(self.app.defaults["geometry_travelz"]),
-            "feedrate":         float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z":       float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid":   float(self.app.defaults["geometry_feedrate_rapid"]),
-            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
-            "dwell":            self.app.defaults["geometry_dwell"],
-            "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
-            "spindledir":       self.app.defaults["geometry_spindledir"],
-            "ppname_g":         self.app.defaults["geometry_ppname_g"],
-            "extracut":         self.app.defaults["geometry_extracut"],
-            "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
-            "toolchange":       self.app.defaults["geometry_toolchange"],
-            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
-            "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
-            "startz":           self.app.defaults["geometry_startz"],
-            "endz":             float(self.app.defaults["geometry_endz"]),
-            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
-            "area_shape":       self.app.defaults["geometry_area_shape"],
-            "area_strategy":    self.app.defaults["geometry_area_strategy"],
-            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type":    self.app.defaults["geometry_optimization_type"],
+            "vtipdia": float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle": float(self.app.defaults["geometry_vtipangle"]),
+            "travelz": float(self.app.defaults["geometry_travelz"]),
+            "feedrate": float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
+            "dwell": self.app.defaults["geometry_dwell"],
+            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
+            "spindledir": self.app.defaults["geometry_spindledir"],
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
+            "toolchange": self.app.defaults["geometry_toolchange"],
+            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
+            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+            "startz": self.app.defaults["geometry_startz"],
+            "endz": float(self.app.defaults["geometry_endz"]),
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type": self.app.defaults["geometry_optimization_type"],
 
             # Cutout
-            "tools_cutout_tooldia":         self.app.defaults["tools_cutout_tooldia"],
-            "tools_cutout_kind":            self.app.defaults["tools_cutout_kind"],
-            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
-            "tools_cutout_z":               float(self.app.defaults["tools_cutout_z"]),
-            "tools_cutout_depthperpass":    float(self.app.defaults["tools_cutout_depthperpass"]),
-            "tools_cutout_mdepth":          self.app.defaults["tools_cutout_mdepth"],
-            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
-            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
-            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
+            "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
+            "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
+            "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
+            "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
+            "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
+            "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
+            "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
+            "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
 
-            "tools_cutout_big_cursor":      self.app.defaults["tools_cutout_big_cursor"],
-            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
-            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
-            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
-            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"]),
+            "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
+            "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
 
         })
         tool_dia = float(self.app.defaults["tools_cutout_tooldia"])
@@ -366,14 +366,14 @@ class CutOut(AppTool):
 
         new_tdia = deepcopy(updated_tooldia) if updated_tooldia is not None else deepcopy(truncated_tooldia)
         self.cut_tool_dict.update({
-                'tooldia':          new_tdia,
-                'offset':           deepcopy(offset),
-                'offset_value':     deepcopy(offset_val),
-                'type':             deepcopy(typ),
-                'tool_type':        deepcopy(tool_type),
-                'data':             deepcopy(new_tools_dict),
-                'solid_geometry':   []
-            })
+            'tooldia': new_tdia,
+            'offset': deepcopy(offset),
+            'offset_value': deepcopy(offset_val),
+            'type': deepcopy(typ),
+            'tool_type': deepcopy(tool_type),
+            'data': deepcopy(new_tools_dict),
+            'solid_geometry': []
+        })
 
         self.update_ui(new_tools_dict)
 
@@ -381,65 +381,67 @@ class CutOut(AppTool):
         self.app.inform.emit('[success] %s' % _("Updated tool from Tools Database."))
 
     def on_tool_default_add(self, dia=None, muted=None):
+
+        dia = dia
         self.default_data.update({
-            "plot":             True,
+            "plot": True,
 
-            "cutz":             float(self.app.defaults["geometry_cutz"]),
-            "multidepth":       self.app.defaults["geometry_multidepth"],
-            "depthperpass":     float(self.app.defaults["geometry_depthperpass"]),
+            "cutz": float(self.app.defaults["geometry_cutz"]),
+            "multidepth": self.app.defaults["geometry_multidepth"],
+            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
 
-            "vtipdia":          float(self.app.defaults["geometry_vtipdia"]),
-            "vtipangle":        float(self.app.defaults["geometry_vtipangle"]),
-            "travelz":          float(self.app.defaults["geometry_travelz"]),
-            "feedrate":         float(self.app.defaults["geometry_feedrate"]),
-            "feedrate_z":       float(self.app.defaults["geometry_feedrate_z"]),
-            "feedrate_rapid":   float(self.app.defaults["geometry_feedrate_rapid"]),
-            "spindlespeed":     self.app.defaults["geometry_spindlespeed"],
-            "dwell":            self.app.defaults["geometry_dwell"],
-            "dwelltime":        float(self.app.defaults["geometry_dwelltime"]),
-            "spindledir":       self.app.defaults["geometry_spindledir"],
-            "ppname_g":         self.app.defaults["geometry_ppname_g"],
-            "extracut":         self.app.defaults["geometry_extracut"],
-            "extracut_length":  float(self.app.defaults["geometry_extracut_length"]),
-            "toolchange":       self.app.defaults["geometry_toolchange"],
-            "toolchangexy":     self.app.defaults["geometry_toolchangexy"],
-            "toolchangez":      float(self.app.defaults["geometry_toolchangez"]),
-            "startz":           self.app.defaults["geometry_startz"],
-            "endz":             float(self.app.defaults["geometry_endz"]),
-            "area_exclusion":   self.app.defaults["geometry_area_exclusion"],
-            "area_shape":       self.app.defaults["geometry_area_shape"],
-            "area_strategy":    self.app.defaults["geometry_area_strategy"],
-            "area_overz":       float(self.app.defaults["geometry_area_overz"]),
-            "optimization_type":    self.app.defaults["geometry_optimization_type"],
+            "vtipdia": float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle": float(self.app.defaults["geometry_vtipangle"]),
+            "travelz": float(self.app.defaults["geometry_travelz"]),
+            "feedrate": float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
+            "dwell": self.app.defaults["geometry_dwell"],
+            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
+            "spindledir": self.app.defaults["geometry_spindledir"],
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
+            "toolchange": self.app.defaults["geometry_toolchange"],
+            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
+            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+            "startz": self.app.defaults["geometry_startz"],
+            "endz": float(self.app.defaults["geometry_endz"]),
+            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
+            "area_shape": self.app.defaults["geometry_area_shape"],
+            "area_strategy": self.app.defaults["geometry_area_strategy"],
+            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type": self.app.defaults["geometry_optimization_type"],
 
             # Cutout
-            "tools_cutout_tooldia":         self.app.defaults["tools_cutout_tooldia"],
-            "tools_cutout_kind":            self.app.defaults["tools_cutout_kind"],
-            "tools_cutout_margin":          float(self.app.defaults["tools_cutout_margin"]),
-            "tools_cutout_z":               float(self.app.defaults["tools_cutout_z"]),
-            "tools_cutout_depthperpass":    float(self.app.defaults["tools_cutout_depthperpass"]),
-            "tools_cutout_mdepth":          self.app.defaults["tools_cutout_mdepth"],
-            "tools_cutout_gapsize":         float(self.app.defaults["tools_cutout_gapsize"]),
-            "tools_cutout_gaps_ff":         self.app.defaults["tools_cutout_gaps_ff"],
-            "tools_cutout_convexshape":     self.app.defaults["tools_cutout_convexshape"],
+            "tools_cutout_tooldia": self.app.defaults["tools_cutout_tooldia"],
+            "tools_cutout_kind": self.app.defaults["tools_cutout_kind"],
+            "tools_cutout_margin": float(self.app.defaults["tools_cutout_margin"]),
+            "tools_cutout_z": float(self.app.defaults["tools_cutout_z"]),
+            "tools_cutout_depthperpass": float(self.app.defaults["tools_cutout_depthperpass"]),
+            "tools_cutout_mdepth": self.app.defaults["tools_cutout_mdepth"],
+            "tools_cutout_gapsize": float(self.app.defaults["tools_cutout_gapsize"]),
+            "tools_cutout_gaps_ff": self.app.defaults["tools_cutout_gaps_ff"],
+            "tools_cutout_convexshape": self.app.defaults["tools_cutout_convexshape"],
 
-            "tools_cutout_big_cursor":      self.app.defaults["tools_cutout_big_cursor"],
-            "tools_cutout_gap_type":        self.app.defaults["tools_cutout_gap_type"],
-            "tools_cutout_gap_depth":       float(self.app.defaults["tools_cutout_gap_depth"]),
-            "tools_cutout_mb_dia":          float(self.app.defaults["tools_cutout_mb_dia"]),
-            "tools_cutout_mb_spacing":      float(self.app.defaults["tools_cutout_mb_spacing"]),
+            "tools_cutout_big_cursor": self.app.defaults["tools_cutout_big_cursor"],
+            "tools_cutout_gap_type": self.app.defaults["tools_cutout_gap_type"],
+            "tools_cutout_gap_depth": float(self.app.defaults["tools_cutout_gap_depth"]),
+            "tools_cutout_mb_dia": float(self.app.defaults["tools_cutout_mb_dia"]),
+            "tools_cutout_mb_spacing": float(self.app.defaults["tools_cutout_mb_spacing"]),
 
         })
 
         self.cut_tool_dict.update({
-                'tooldia':          str(self.app.defaults["tools_cutout_tooldia"]),
-                'offset':           'Path',
-                'offset_value':     0.0,
-                'type':             _('Rough'),
-                'tool_type':        'C1',
-                'data':             deepcopy(self.default_data),
-                'solid_geometry':   []
-            })
+            'tooldia': str(self.app.defaults["tools_cutout_tooldia"]),
+            'offset': 'Path',
+            'offset_value': 0.0,
+            'type': _('Rough'),
+            'tool_type': 'C1',
+            'data': deepcopy(self.default_data),
+            'solid_geometry': []
+        })
 
         self.update_ui(self.default_data)
 
@@ -490,13 +492,13 @@ class CutOut(AppTool):
         truncated_tooldia = self.app.dec_format(tooldia, self.decimals)
         self.cutout_tools.update({
             1: {
-                'tooldia':          truncated_tooldia,
-                'offset':           tool['offset'],
-                'offset_value':     tool['offset_value'],
-                'type':             tool['type'],
-                'tool_type':        tool['tool_type'],
-                'data':             deepcopy(tool['data']),
-                'solid_geometry':   []
+                'tooldia': truncated_tooldia,
+                'offset': tool['offset'],
+                'offset_value': tool['offset_value'],
+                'type': tool['type'],
+                'tool_type': tool['tool_type'],
+                'data': deepcopy(tool['data']),
+                'solid_geometry': []
             }
         })
         self.cutout_tools[1]['data']['name'] = '_cutout'
@@ -554,7 +556,6 @@ class CutOut(AppTool):
             return
 
         margin = float(self.ui.margin.get_value())
-        gapsize = float(self.ui.gapsize.get_value())
 
         try:
             gaps = self.ui.gaps.get_value()
@@ -575,225 +576,274 @@ class CutOut(AppTool):
                                                   "and after that perform Cutout."))
             return
 
-        convex_box = self.ui.convex_box_cb.get_value()
+        def cutout_handler(geom, gapsize):
+            proc_geometry = []
+            rest_geometry = []
+            r_temp_geo = []
+            initial_geo = deepcopy(geom)
 
-        gapsize = gapsize / 2 + (dia / 2)
+            # Get min and max data for each object as we just cut rectangles across X or Y
+            xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
 
-        def geo_init(geo_obj, app_obj):
-            solid_geo = []
-            gaps_solid_geo = None
+            px = 0.5 * (xxmin + xxmax) + margin
+            py = 0.5 * (yymin + yymax) + margin
+            lenx = (xxmax - xxmin) + (margin * 2)
+            leny = (yymax - yymin) + (margin * 2)
 
-            if cutout_obj.kind == 'gerber':
-                if isinstance(cutout_obj.solid_geometry, list):
-                    cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
-
-                try:
-                    if convex_box:
-                        object_geo = cutout_obj.solid_geometry.convex_hull
-                    else:
-                        object_geo = cutout_obj.solid_geometry
-                except Exception as err:
-                    log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
-                    object_geo = cutout_obj.solid_geometry
+            if gaps == 'None':
+                pass
             else:
-                object_geo = cutout_obj.solid_geometry
+                if gaps == '8' or gaps == '2LR':
+                    points = (
+                        xxmin - gapsize,  # botleft_x
+                        py - gapsize + leny / 4,  # botleft_y
+                        xxmax + gapsize,  # topright_x
+                        py + gapsize + leny / 4  # topright_y
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-            def cutout_handler(geom):
-                proc_geometry = []
-                rest_geometry = []
-                r_temp_geo = []
-                initial_geo = deepcopy(geom)
+                    points = (
+                        xxmin - gapsize,
+                        py - gapsize - leny / 4,
+                        xxmax + gapsize,
+                        py + gapsize - leny / 4
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                # Get min and max data for each object as we just cut rectangles across X or Y
-                xxmin, yymin, xxmax, yymax = CutOut.recursive_bounds(geom)
+                if gaps == '8' or gaps == '2TB':
+                    points = (
+                        px - gapsize + lenx / 4,
+                        yymin - gapsize,
+                        px + gapsize + lenx / 4,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                px = 0.5 * (xxmin + xxmax) + margin
-                py = 0.5 * (yymin + yymax) + margin
-                lenx = (xxmax - xxmin) + (margin * 2)
-                leny = (yymax - yymin) + (margin * 2)
+                    points = (
+                        px - gapsize - lenx / 4,
+                        yymin - gapsize,
+                        px + gapsize - lenx / 4,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                if gaps == 'None':
-                    pass
-                else:
-                    if gaps == '8' or gaps == '2LR':
-                        points = (
-                            xxmin - gapsize,  # botleft_x
-                            py - gapsize + leny / 4,  # botleft_y
-                            xxmax + gapsize,  # topright_x
-                            py + gapsize + leny / 4  # topright_y
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
+                if gaps == '4' or gaps == 'LR':
+                    points = (
+                        xxmin - gapsize,
+                        py - gapsize,
+                        xxmax + gapsize,
+                        py + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                        points = (
-                            xxmin - gapsize,
-                            py - gapsize - leny / 4,
-                            xxmax + gapsize,
-                            py + gapsize - leny / 4
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
+                if gaps == '4' or gaps == 'TB':
+                    points = (
+                        px - gapsize,
+                        yymin - gapsize,
+                        px + gapsize,
+                        yymax + gapsize
+                    )
+                    geom = self.subtract_poly_from_geo(geom, points)
+                    r_temp_geo.append(
+                        self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
+                    )
 
-                    if gaps == '8' or gaps == '2TB':
-                        points = (
-                            px - gapsize + lenx / 4,
-                            yymin - gapsize,
-                            px + gapsize + lenx / 4,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                        points = (
-                            px - gapsize - lenx / 4,
-                            yymin - gapsize,
-                            px + gapsize - lenx / 4,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                    if gaps == '4' or gaps == 'LR':
-                        points = (
-                            xxmin - gapsize,
-                            py - gapsize,
-                            xxmax + gapsize,
-                            py + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                    if gaps == '4' or gaps == 'TB':
-                        points = (
-                            px - gapsize,
-                            yymin - gapsize,
-                            px + gapsize,
-                            yymax + gapsize
-                        )
-                        geom = self.subtract_poly_from_geo(geom, points)
-                        r_temp_geo.append(
-                            self.intersect_geo(initial_geo, box(points[0], points[1], points[2], points[3]))
-                        )
-
-                try:
-                    for g in geom:
-                        if g and not g.is_empty:
-                            proc_geometry.append(g)
-                except TypeError:
-                    if geom and not geom.is_empty:
-                        proc_geometry.append(geom)
-
-                r_temp_geo = CutOut.flatten(r_temp_geo)
-                for g in r_temp_geo:
+            try:
+                for g in geom:
                     if g and not g.is_empty:
-                        rest_geometry.append(g)
+                        proc_geometry.append(g)
+            except TypeError:
+                if geom and not geom.is_empty:
+                    proc_geometry.append(geom)
 
-                return proc_geometry, rest_geometry
+            r_temp_geo = CutOut.flatten(r_temp_geo)
+            for g in r_temp_geo:
+                if g and not g.is_empty:
+                    rest_geometry.append(g)
 
-            if kind == 'single':
-                object_geo = unary_union(object_geo)
+            return proc_geometry, rest_geometry
 
-                # for geo in object_geo:
+        with self.app.proc_container.new("Generating Cutout ..."):
+            outname = cutout_obj.options["name"] + "_cutout"
+            self.app.collection.promise(outname)
+
+            outname_exc = cutout_obj.options["name"] + "_mouse_bites"
+            if self.ui.gaptype_radio.get_value() == 'mb':
+                self.app.collection.promise(outname_exc)
+
+            def job_thread(app_obj):
+                solid_geo = []
+                gaps_solid_geo = []
+                mouse_bites_geo = []
+
+                convex_box = self.ui.convex_box_cb.get_value()
+                gapsize = self.ui.gapsize.get_value()
+                gapsize = gapsize / 2 + (dia / 2)
+
                 if cutout_obj.kind == 'gerber':
-                    if isinstance(object_geo, MultiPolygon):
-                        x0, y0, x1, y1 = object_geo.bounds
-                        object_geo = box(x0, y0, x1, y1)
-                    if margin >= 0:
-                        geo_buf = object_geo.buffer(margin + abs(dia / 2))
-                    else:
-                        geo_buf = object_geo.buffer(margin - abs(dia / 2))
+                    if isinstance(cutout_obj.solid_geometry, list):
+                        cutout_obj.solid_geometry = MultiPolygon(cutout_obj.solid_geometry)
 
-                    geo = geo_buf.exterior
-                else:
-                    geo = object_geo
-
-                solid_geo, rest_geo = cutout_handler(geom=geo)
-                if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                    gaps_solid_geo = rest_geo
-            else:
-                try:
-                    __ = iter(object_geo)
-                except TypeError:
-                    object_geo = [object_geo]
-
-                for geom_struct in object_geo:
-                    if cutout_obj.kind == 'gerber':
-                        if margin >= 0:
-                            geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                    try:
+                        if convex_box:
+                            object_geo = cutout_obj.solid_geometry.convex_hull
                         else:
-                            geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
-                            geom_struct = geom_struct_buff.interiors
+                            object_geo = cutout_obj.solid_geometry
+                    except Exception as err:
+                        log.debug("CutOut.on_freeform_cutout().geo_init() --> %s" % str(err))
+                        object_geo = cutout_obj.solid_geometry
+                else:
+                    object_geo = cutout_obj.solid_geometry
 
-                    c_geo, r_geo = cutout_handler(geom=geom_struct)
-                    solid_geo += c_geo
+                if kind == 'single':
+                    object_geo = unary_union(object_geo)
+
+                    # for geo in object_geo:
+                    if cutout_obj.kind == 'gerber':
+                        if isinstance(object_geo, MultiPolygon):
+                            x0, y0, x1, y1 = object_geo.bounds
+                            object_geo = box(x0, y0, x1, y1)
+                        if margin >= 0:
+                            geo_buf = object_geo.buffer(margin + abs(dia / 2))
+                        else:
+                            geo_buf = object_geo.buffer(margin - abs(dia / 2))
+
+                        geo = geo_buf.exterior
+                    else:
+                        geo = object_geo
+
+                    solid_geo, rest_geo = cutout_handler(geom=geo, gapsize=gapsize)
                     if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
-                        gaps_solid_geo += r_geo
+                        gaps_solid_geo = rest_geo
+                    if self.ui.gaptype_radio.get_value() == 'mb':
+                        mouse_bites_geo = rest_geo
+                else:
+                    try:
+                        __ = iter(object_geo)
+                    except TypeError:
+                        object_geo = [object_geo]
 
-            if not solid_geo:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-                return "fail"
+                    for geom_struct in object_geo:
+                        if cutout_obj.kind == 'gerber':
+                            if margin >= 0:
+                                geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
+                            else:
+                                geom_struct_buff = geom_struct.buffer(-margin + abs(dia / 2))
+                                geom_struct = geom_struct_buff.interiors
 
-            solid_geo = linemerge(solid_geo)
-            geo_obj.solid_geometry = deepcopy(solid_geo)
+                        c_geo, r_geo = cutout_handler(geom=geom_struct, gapsize=gapsize)
+                        solid_geo += c_geo
+                        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() > 0:
+                            gaps_solid_geo += r_geo
+                        if self.ui.gaptype_radio.get_value() == 'mb':
+                            mouse_bites_geo += r_geo
+                if not solid_geo:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                    return "fail"
 
-            xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
-            geo_obj.options['xmin'] = xmin
-            geo_obj.options['ymin'] = ymin
-            geo_obj.options['xmax'] = xmax
-            geo_obj.options['ymax'] = ymax
-            geo_obj.options['cnctooldia'] = str(dia)
-            geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                solid_geo = linemerge(solid_geo)
 
-            geo_obj.multigeo = True
+                # list of Shapely Points to mark the drill points centers
+                holes = []
+                print(mouse_bites_geo)
 
-            geo_obj.tools.update({
-                1: self.cut_tool_dict
-            })
-            geo_obj.tools[1]['tooldia'] = str(dia)
-            geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
+                def geo_init(geo_obj, app_object):
+                    geo_obj.solid_geometry = deepcopy(solid_geo)
 
-            geo_obj.tools[1]['data']['name'] = outname
-            geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
-            geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-            geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(geo_obj.solid_geometry)
+                    geo_obj.options['xmin'] = xmin
+                    geo_obj.options['ymin'] = ymin
+                    geo_obj.options['xmax'] = xmax
+                    geo_obj.options['ymax'] = ymax
+                    geo_obj.options['cnctooldia'] = str(dia)
+                    geo_obj.options['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.options['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.options['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-            if gaps_solid_geo is not None:
-                geo_obj.tools.update({
-                    9999: self.cut_tool_dict
-                })
-                geo_obj.tools[9999]['tooldia'] = str(dia)
-                geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
+                    geo_obj.multigeo = True
 
-                geo_obj.tools[9999]['data']['name'] = outname
-                geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
-                geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
-                geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
-                # plot this tool in a different color
-                geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+                    geo_obj.tools.update({
+                        1: self.cut_tool_dict
+                    })
+                    geo_obj.tools[1]['tooldia'] = str(dia)
+                    geo_obj.tools[1]['solid_geometry'] = geo_obj.solid_geometry
 
-        outname = cutout_obj.options["name"] + "_cutout"
-        ret = self.app.app_obj.new_object('geometry', outname, geo_init)
+                    geo_obj.tools[1]['data']['name'] = outname
+                    geo_obj.tools[1]['data']['cutz'] = self.ui.cutz_entry.get_value()
+                    geo_obj.tools[1]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                    geo_obj.tools[1]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
 
-        if ret == 'fail':
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
-            return
+                    if gaps_solid_geo:
+                        geo_obj.tools.update({
+                            9999: self.cut_tool_dict
+                        })
+                        geo_obj.tools[9999]['tooldia'] = str(dia)
+                        geo_obj.tools[9999]['solid_geometry'] = gaps_solid_geo
 
-        # cutout_obj.plot(plot_tool=1)
-        self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-        self.app.should_we_save = True
+                        geo_obj.tools[9999]['data']['name'] = outname
+                        geo_obj.tools[9999]['data']['cutz'] = self.ui.thin_depth_entry.get_value()
+                        geo_obj.tools[9999]['data']['multidepth'] = self.ui.mpass_cb.get_value()
+                        geo_obj.tools[9999]['data']['depthperpass'] = self.ui.maxdepth_entry.get_value()
+                        # plot this tool in a different color
+                        geo_obj.tools[9999]['data']['override_color'] = "#29a3a3fa"
+
+                def excellon_init(exc_obj, app_o):
+                    if not holes:
+                        return 'fail'
+                    mb_dia = self.ui.mb_dia_entry.get_value()
+
+                    tools = {}
+                    tools[1] = {}
+                    tools[1]["tooldia"] = mb_dia
+                    tools[1]['drills'] = holes
+                    tools[1]['solid_geometry'] = []
+
+                    exc_obj.tools = tools
+                    exc_obj.create_geometry()
+                    exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'], local_use=exc_obj,
+                                                                filename=None, use_thread=False)
+                    # calculate the bounds
+                    xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
+                    exc_obj.options['xmin'] = xmin
+                    exc_obj.options['ymin'] = ymin
+                    exc_obj.options['xmax'] = xmax
+                    exc_obj.options['ymax'] = ymax
+
+                try:
+                    ret = app_obj.app_obj.new_object('geometry', outname, geo_init)
+                    if ret == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Failed."))
+                        return
+
+                    if self.ui.gaptype_radio.get_value() == 'mb':
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        if ret == 'fail':
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
+                            return
+
+                    # cutout_obj.plot(plot_tool=1)
+                    app_obj.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
+                    # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+                    app_obj.should_we_save = True
+                except Exception as ee:
+                    log.debug(str(ee))
+
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def on_rectangular_cutout(self):
         log.debug("Cutout.on_rectangular_cutout() was launched ...")
@@ -875,7 +925,7 @@ class CutOut(AppTool):
                             xmin - gapsize,  # botleft_x
                             py - gapsize + leny / 4,  # botleft_y
                             xmax + gapsize,  # topright_x
-                            py + gapsize + leny / 4 # topright_y
+                            py + gapsize + leny / 4  # topright_y
                         )
                         geom = self.subtract_poly_from_geo(geom, points)
                         points = (
@@ -1660,14 +1710,13 @@ class CutOut(AppTool):
             if second_geo.intersects(geo):
                 results.append(second_geo.intersection(geo))
 
-        return  CutOut.flatten(results)
+        return CutOut.flatten(results)
 
     def reset_fields(self):
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
 
 class CutoutUI:
-
     toolName = _("Cutout PCB")
 
     def __init__(self, layout, app):
@@ -1898,9 +1947,9 @@ class CutoutUI:
 
         self.gaptype_radio = RadioSet(
             [
-                {'label': _('Bridge'),      'value': 'b'},
-                {'label': _('Thin'),        'value': 'bt'},
-                {'label': "M-Bites",        'value': 'mb'}
+                {'label': _('Bridge'), 'value': 'b'},
+                {'label': _('Thin'), 'value': 'bt'},
+                {'label': "M-Bites", 'value': 'mb'}
             ],
             stretch=True
         )

@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+29.08.2020
+
+- 2Sided Tool - fixed newly introduced issues in the Alignment section
+- 2Sided Tool - modified the UI such that some of the fields will allow only numbers and some special characters ([,],(,),/,*,,,+,-,%)
+- Cutout Tool - working on adding mouse bites for the Freeform cutout
+- updated the translation files to the current state of the app
+
 28.08.2020
 
 - Paint Tool - upgraded the UI and added the functionality that now adding a new tool is done by first searching the Tools DB for a suitable tool and if fails then it adds an default tool
