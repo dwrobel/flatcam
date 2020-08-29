@@ -16,6 +16,9 @@ CHANGELOG for FlatCAM beta
 - Cutout Tool - rectangular and freeform cutouts are done in a threaded way
 - Cutout Tool - added the Mouse Bites feature for the Rectangular and Freeform cutouts and right now it fails in case of using a Geometry object and Freeform cutout (weird result)
 - some changes in camlib due of warnigns for future changes in Shapely 2.0
+- Cutout Tool - fixed mouse bites feature in case of using a Geometry object and Freeform cutout
+- Cutout Tool - can do cutouts on multigeo Geometry objects: it will automatically select the geometry of first tool
+- Geometry Editor - fixed exception raised when trying to move and there is no shape to move
 
 28.08.2020
 

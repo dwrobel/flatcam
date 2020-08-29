@@ -4378,8 +4378,12 @@ class AppGeoEditor(QtCore.QObject):
         self.on_tool_select('move')
 
     def on_move_click(self):
+        try:
+            x, y = self.snap(self.x, self.y)
+        except TypeError:
+            return
         self.on_move()
-        self.active_tool.set_origin(self.snap(self.x, self.y))
+        self.active_tool.set_origin((x, y))
 
     def on_copy_click(self):
         if not self.selected:

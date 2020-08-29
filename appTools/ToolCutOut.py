@@ -732,7 +732,11 @@ class CutOut(AppTool):
                             geo_buf = object_geo.buffer(margin - abs(dia / 2))
                         geo = geo_buf.exterior
                     else:
-                        geo = object_geo
+                        if isinstance(object_geo, MultiPolygon):
+                            x0, y0, x1, y1 = object_geo.bounds
+                            object_geo = box(x0, y0, x1, y1)
+                        geo_buf = object_geo.buffer(0)
+                        geo = geo_buf.exterior
 
                     solid_geo, rest_geo = cutout_handler(geom=geo, gapsize=gapsize)
                     if gap_type == 'bt' and thin_entry != 0:
@@ -779,7 +783,11 @@ class CutOut(AppTool):
                                 geo_buf = mb_object_geo.buffer(margin - mb_buff_val)
                             mb_geo = geo_buf.exterior
                         else:
-                            mb_geo = mb_object_geo
+                            if isinstance(mb_object_geo, MultiPolygon):
+                                x0, y0, x1, y1 = mb_object_geo.bounds
+                                mb_object_geo = box(x0, y0, x1, y1)
+                            geo_buf = mb_object_geo.buffer(0)
+                            mb_geo = geo_buf.exterior
 
                         __, rest_geo = cutout_handler(geom=mb_geo, gapsize=gapsize)
                         mouse_bites_geo = rest_geo
@@ -1122,6 +1130,8 @@ class CutOut(AppTool):
                                 mb_geo = mb_geo.buffer(margin + mb_buff_val)
                             else:
                                 mb_geo = mb_geo.buffer(margin - mb_buff_val)
+                        else:
+                            mb_geo = mb_geo.buffer(0)
 
                         mb_solid_geo = cutout_rect_handler(mb_geo, gapsize, xmin, ymin, xmax, ymax)
 
