@@ -93,6 +93,12 @@ class CutOut(AppTool):
         # store original geometry for manual cutout
         self.manual_solid_geo = None
 
+        # here will store the original geometry for manual cutout with mouse bytes
+        self.mb_manual_solid_geo = None
+
+        # here will store the geo rests when doing manual cutouts with mouse bites
+        self.mb_manual_cuts = []
+
         # here store the tool data for the Cutout Tool
         self.cut_tool_dict = {}
 
@@ -1286,13 +1292,18 @@ class CutOut(AppTool):
 
         self.manual_solid_geo = deepcopy(self.flatten(self.man_cutout_obj.solid_geometry))
 
-        self.cutting_dia = float(self.ui.dia.get_value())
+        self.cutting_dia = self.ui.dia.get_value()
         if 0 in {self.cutting_dia}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
             return
 
-        self.cutting_gapsize = float(self.ui.gapsize.get_value())
+        if self.ui.gaptype_radio.get_value() == 'mb':
+            mb_dia = self.ui.mb_dia_entry.get_value()
+            b_dia = (self.cutting_dia / 2.0) - (mb_dia / 2.0)
+            self.mb_manual_solid_geo = self.flatten(unary_union(self.manual_solid_geo).buffer(b_dia).interiors)
+
+        self.cutting_gapsize = self.ui.gapsize.get_value()
 
         name = self.ui.man_object_combo.currentText()
         # Get Geometry source object to be used as target for Manual adding Gaps
@@ -1328,8 +1339,8 @@ class CutOut(AppTool):
     def on_manual_cutout(self, click_pos):
 
         if self.man_cutout_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Geometry object for manual cutout not found"), self.man_cutout_obj))
+            msg = '[ERROR_NOTCL] %s: %s' % (_("Geometry object for manual cutout not found"), self.man_cutout_obj)
+            self.app.inform.emit(msg)
             return
 
         # use the snapped position as reference
@@ -1337,9 +1348,17 @@ class CutOut(AppTool):
 
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
 
+        gap_type = self.ui.gaptype_radio.get_value()
         gaps_solid_geo = None
-        if self.ui.gaptype_radio.get_value() == 'bt' and self.ui.thin_depth_entry.get_value() != 0:
+        if gap_type == 'bt' and self.ui.thin_depth_entry.get_value() != 0:
             gaps_solid_geo = self.intersect_geo(self.manual_solid_geo, cut_poly)
+
+        if gap_type == 'mb':
+            rests_geo = self.intersect_geo(self.mb_manual_solid_geo, cut_poly)
+            if isinstance(rests_geo, list):
+                self.mb_manual_cuts += rests_geo
+            else:
+                self.mb_manual_cuts.append(rests_geo)
 
         # first subtract geometry for the total solid_geometry
         new_solid_geometry = CutOut.subtract_geo(self.man_cutout_obj.solid_geometry, cut_poly)
@@ -1359,7 +1378,7 @@ class CutOut(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No tool in the Geometry object."))
             return
 
-        dia = float(self.ui.dia.get_value())
+        dia = self.ui.dia.get_value()
         if gaps_solid_geo:
             if 9999 not in self.man_cutout_obj.tools:
                 self.man_cutout_obj.tools.update({
@@ -1548,6 +1567,52 @@ class CutOut(AppTool):
 
             # plot the final object
             self.man_cutout_obj.plot()
+
+            # mouse bytes
+            if self.ui.gaptype_radio.get_value() == 'mb':
+                with self.app.proc_container.new("Generating Excellon ..."):
+                    outname_exc = self.man_cutout_obj.options["name"] + "_mouse_bites"
+                    self.app.collection.promise(outname_exc)
+
+                    def job_thread(app_obj):
+                        # list of Shapely Points to mark the drill points centers
+                        holes = []
+                        mb_dia = self.ui.mb_dia_entry.get_value()
+                        mb_spacing = self.ui.mb_spacing_entry.get_value()
+                        for line in self.mb_manual_cuts:
+                            calc_len = 0
+                            while calc_len < line.length:
+                                holes.append(line.interpolate(calc_len))
+                                calc_len += mb_dia + mb_spacing
+                        self.mb_manual_cuts[:] = []
+
+                        def excellon_init(exc_obj, app_o):
+                            if not holes:
+                                return 'fail'
+
+                            tools = {}
+                            tools[1] = {}
+                            tools[1]["tooldia"] = mb_dia
+                            tools[1]['drills'] = holes
+                            tools[1]['solid_geometry'] = []
+
+                            exc_obj.tools = tools
+                            exc_obj.create_geometry()
+                            exc_obj.source_file = app_o.export_excellon(obj_name=exc_obj.options['name'],
+                                                                        local_use=exc_obj,
+                                                                        filename=None, use_thread=False)
+                            # calculate the bounds
+                            xmin, ymin, xmax, ymax = CutOut.recursive_bounds(exc_obj.solid_geometry)
+                            exc_obj.options['xmin'] = xmin
+                            exc_obj.options['ymin'] = ymin
+                            exc_obj.options['xmax'] = xmax
+                            exc_obj.options['ymax'] = ymax
+
+                        ret = app_obj.app_obj.new_object('excellon', outname_exc, excellon_init)
+                        if ret == 'fail':
+                            app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Mouse bites failed."))
+
+                    self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
             self.app.inform.emit('[success] %s' % _("Finished manual adding of gaps."))
 

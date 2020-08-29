@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - Cutout Tool - fixed mouse bites feature in case of using a Geometry object and Freeform cutout
 - Cutout Tool - can do cutouts on multigeo Geometry objects: it will automatically select the geometry of first tool
 - Geometry Editor - fixed exception raised when trying to move and there is no shape to move
+- Cutout Tool - finished adding the Mouse Bites feature by adding mouse bites for manual cutouts
 
 28.08.2020
 
