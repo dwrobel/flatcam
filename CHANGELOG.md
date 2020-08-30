@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+31.08.2020
+
+- updated the Italian translation files by Massimiliano Golfetto
+
 29.08.2020
 
 - 2Sided Tool - fixed newly introduced issues in the Alignment section
