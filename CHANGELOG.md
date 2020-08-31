@@ -10,6 +10,10 @@ CHANGELOG for FlatCAM beta
 31.08.2020
 
 - updated the Italian translation files by Massimiliano Golfetto
+- in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
+- in CNCJob UI Autolevelling : in manual mode, Points can be chosen only when clicking inside the object to be probed
+- in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
+- in CNCJob UI Autolevelling: remade the probing points generation so they could allow bilinear interpolation
 
 29.08.2020
 

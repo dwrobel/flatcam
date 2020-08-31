@@ -22,7 +22,7 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 from camlib import CNCjob
 
 from shapely.ops import unary_union
-from shapely.geometry import Point, MultiPoint, Polygon, LineString
+from shapely.geometry import Point, MultiPoint, Polygon, LineString, box
 import shapely.affinity as affinity
 try:
     from shapely.ops import voronoi_diagram
@@ -572,22 +572,22 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
         self.ui.voronoi_cb.stateChanged.connect(self.show_voronoi_diagram)
         # GRBL
-        self.ui.com_search_button.clicked.connect(self.on_search_ports)
-        self.ui.add_bd_button.clicked.connect(self.on_add_baudrate_grbl)
-        self.ui.del_bd_button.clicked.connect(self.on_delete_baudrate_grbl)
+        self.ui.com_search_button.clicked.connect(self.on_grbl_search_ports)
+        self.ui.add_bd_button.clicked.connect(self.on_grbl_add_baudrate)
+        self.ui.del_bd_button.clicked.connect(self.on_grbl_delete_baudrate_grbl)
         self.ui.controller_reset_button.clicked.connect(self.on_grbl_reset)
-        self.ui.com_connect_button.clicked.connect(self.on_connect_grbl)
-        self.ui.grbl_send_button.clicked.connect(self.on_send_grbl_command)
-        self.ui.grbl_command_entry.returnPressed.connect(self.on_send_grbl_command)
+        self.ui.com_connect_button.clicked.connect(self.on_grbl_connect)
+        self.ui.grbl_send_button.clicked.connect(self.on_grbl_send_command)
+        self.ui.grbl_command_entry.returnPressed.connect(self.on_grbl_send_command)
 
         # Jog
-        self.ui.jog_wdg.jog_up_button.clicked.connect(lambda: self.on_jog(direction='yplus'))
-        self.ui.jog_wdg.jog_down_button.clicked.connect(lambda: self.on_jog(direction='yminus'))
-        self.ui.jog_wdg.jog_right_button.clicked.connect(lambda: self.on_jog(direction='xplus'))
-        self.ui.jog_wdg.jog_left_button.clicked.connect(lambda: self.on_jog(direction='xminus'))
-        self.ui.jog_wdg.jog_z_up_button.clicked.connect(lambda: self.on_jog(direction='zplus'))
-        self.ui.jog_wdg.jog_z_down_button.clicked.connect(lambda: self.on_jog(direction='zminus'))
-        self.ui.jog_wdg.jog_origin_button.clicked.connect(lambda: self.on_jog(direction='origin'))
+        self.ui.jog_wdg.jog_up_button.clicked.connect(lambda: self.on_grbl_jog(direction='yplus'))
+        self.ui.jog_wdg.jog_down_button.clicked.connect(lambda: self.on_grbl_jog(direction='yminus'))
+        self.ui.jog_wdg.jog_right_button.clicked.connect(lambda: self.on_grbl_jog(direction='xplus'))
+        self.ui.jog_wdg.jog_left_button.clicked.connect(lambda: self.on_grbl_jog(direction='xminus'))
+        self.ui.jog_wdg.jog_z_up_button.clicked.connect(lambda: self.on_grbl_jog(direction='zplus'))
+        self.ui.jog_wdg.jog_z_down_button.clicked.connect(lambda: self.on_grbl_jog(direction='zminus'))
+        self.ui.jog_wdg.jog_origin_button.clicked.connect(lambda: self.on_grbl_jog(direction='origin'))
 
         # Zero
         self.ui.zero_axs_wdg.grbl_zerox_button.clicked.connect(lambda: self.on_grbl_zero(axis='x'))
@@ -599,7 +599,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # Sender
         self.ui.grbl_report_button.clicked.connect(lambda: self.send_grbl_command(command='?'))
         self.ui.grbl_get_param_button.clicked.connect(
-            lambda: self.get_grbl_parameter(param=self.ui.grbl_parameter_entry.get_value()))
+            lambda: self.on_grbl_get_parameter(param=self.ui.grbl_parameter_entry.get_value()))
         self.ui.view_h_gcode_button.clicked.connect(self.on_edit_probing_gcode)
         self.ui.h_gcode_button.clicked.connect(self.on_save_probing_gcode)
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
@@ -703,21 +703,21 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             cols = self.ui.al_columns_entry.get_value()
             rows = self.ui.al_rows_entry.get_value()
 
-            dx = width / (cols + 1)
-            dy = height / (rows + 1)
+            dx = width / (cols - 1)
+            dy = height / (rows - 1)
 
             points = []
             new_y = ymin
             for x in range(rows):
-                new_y += dy
                 new_x = xmin
                 for y in range(cols):
-                    new_x += dx
                     formatted_point = (
                         self.app.dec_format(new_x, self.app.decimals),
                         self.app.dec_format(new_y, self.app.decimals)
                     )
                     points.append(formatted_point)
+                    new_x += dx
+                new_y += dy
 
             pt_id = 0
             pts_list = []
@@ -768,6 +768,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # create the geometry
         radius = 0.3 if self.units == 'MM' else 0.012
         for pt in self.al_geometry_dict:
+            if not self.al_geometry_dict[pt]['geo']:
+                continue
+
             p_geo = self.al_geometry_dict[pt]['point'].buffer(radius)
             s_geo = self.al_geometry_dict[pt]['geo'].buffer(0.0000001)
 
@@ -898,6 +901,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             snapped_pos = self.app.geo_editor.snap(pos[0], pos[1])
 
             probe_pt = Point(snapped_pos)
+
+            xmin, xmax, ymin, ymax = self.solid_geo.bounds
+            if not probe_pt.within(box(xmin, ymin, xmax, ymax)):
+                self.app.inform.emit(
+                    _("Point is not within the object area. Choose another point."))
+                return
+
             if not self.al_geometry_dict:
                 new_dict = {
                     'point': probe_pt,
@@ -1060,7 +1070,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.ui.import_heights_button.hide()
             self.ui.grbl_frame.show()
-            self.on_search_ports(muted=True)
+            self.on_grbl_search_ports(muted=True)
         else:
             self.ui.h_gcode_button.show()
             self.ui.view_h_gcode_button.show()
@@ -1074,7 +1084,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # generate Probing GCode
             self.probing_gcode_text = self.probing_gcode()
 
-    def list_serial_ports(self):
+    def on_grbl_list_serial_ports(self):
         """
         Lists serial port names.
         From here: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
@@ -1109,14 +1119,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         return result
 
-    def on_search_ports(self, muted=None):
-        port_list = self.list_serial_ports()
+    def on_grbl_search_ports(self, muted=None):
+        port_list = self.on_grbl_list_serial_ports()
         self.ui.com_list_combo.clear()
         self.ui.com_list_combo.addItems(port_list)
         if muted is not True:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("COM list updated ..."))
 
-    def on_connect_grbl(self):
+    def on_grbl_connect(self):
         port_name = self.ui.com_list_combo.currentText()
         if " (" in port_name:
             port_name = port_name.rpartition(" (")[0]
@@ -1145,7 +1155,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             except IOError:
                 pass
 
-            answer = self.wake_grbl()
+            answer = self.on_grbl_wake()
             answer = ['ok']   # hack for development without a GRBL controller connected
             for line in answer:
                 if 'ok' in line.lower():
@@ -1186,17 +1196,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         except Exception:
             self.app.inform.emit("[ERROR_NOTCL] %s: %s" % (_("Could not connect to port"), port_name))
 
-    def on_add_baudrate_grbl(self):
+    def on_grbl_add_baudrate(self):
         new_bd = str(self.ui.new_baudrate_entry.get_value())
         if int(new_bd) >= 40 and new_bd not in self.ui.baudrates_list_combo.model().stringList():
             self.ui.baudrates_list_combo.addItem(new_bd)
             self.ui.baudrates_list_combo.setCurrentText(new_bd)
 
-    def on_delete_baudrate_grbl(self):
+    def on_grbl_delete_baudrate_grbl(self):
         current_idx = self.ui.baudrates_list_combo.currentIndex()
         self.ui.baudrates_list_combo.removeItem(current_idx)
 
-    def wake_grbl(self):
+    def on_grbl_wake(self):
         # Wake up grbl
         self.grbl_ser_port.write("\r\n\r\n".encode('utf-8'))
         # Wait for GRBL controller to initialize
@@ -1207,7 +1217,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         return grbl_out
 
-    def on_send_grbl_command(self):
+    def on_grbl_send_command(self):
         cmd = self.ui.grbl_command_entry.get_value()
 
         # show the Shell Dock
@@ -1271,7 +1281,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     except Exception as e:
                         log.debug("CNCJobObject.send_grbl_block() --> %s" % str(e))
 
-    def get_grbl_parameter(self, param):
+    def on_grbl_get_parameter(self, param):
         if '$' in param:
             param = param.replace('$','')
 
@@ -1286,7 +1296,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.shell_message("GRBL Parameter: %s = %s" % (str(param), str(result)), show=True)
                 return result
 
-    def on_jog(self, direction=None):
+    def on_grbl_jog(self, direction=None):
         if direction is None:
             return
         cmd = ''
@@ -1319,7 +1329,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.send_grbl_command(command=cmd, echo=False)
 
     def on_grbl_zero(self, axis):
-        current_mode = self.get_grbl_parameter('10')
+        current_mode = self.on_grbl_get_parameter('10')
         if current_mode is None:
             return
 
@@ -1344,13 +1354,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def on_grbl_homing(self):
         cmd = '$H'
         self.app.inform.emit("%s" % _("GRBL is doing a home cycle."))
-        self.wake_grbl()
+        self.on_grbl_wake()
         self.send_grbl_command(command=cmd)
 
     def on_grbl_reset(self):
         cmd = '\x18'
         self.app.inform.emit("%s" % _("GRBL software reset was sent."))
-        self.wake_grbl()
+        self.on_grbl_wake()
         self.send_grbl_command(command=cmd)
 
     def on_grbl_pause_resume(self, checked):
@@ -1660,12 +1670,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.inform.emit('%s' % _("Finished probing. Doing the autolevelling."))
 
                 # apply autolevel here
-                self.do_grbl_autolevel()
+                self.on_grbl_apply_autolevel()
 
         self.app.inform.emit('%s' % _("Sending probing GCode to the GRBL controller."))
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
-    def do_grbl_autolevel(self):
+    def on_grbl_apply_autolevel(self):
         # TODO here we call the autovell method
         self.app.inform.emit('%s' % _("Finished autolevelling."))
 
