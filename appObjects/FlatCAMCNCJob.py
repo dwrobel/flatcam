@@ -738,6 +738,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         else:
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
+            self.app.defaults['global_selection_shape'] = False
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
@@ -902,11 +903,42 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             probe_pt = Point(snapped_pos)
 
-            xmin, xmax, ymin, ymax = self.solid_geo.bounds
-            if not probe_pt.within(box(xmin, ymin, xmax, ymax)):
-                self.app.inform.emit(
-                    _("Point is not within the object area. Choose another point."))
+            xxmin, yymin, xxmax, yymax = self.solid_geo.bounds
+            box_geo = box(xxmin, yymin, xxmax, yymax)
+            if not probe_pt.within(box_geo):
+                self.app.inform.emit(_("Point is not within the object area. Choose another point."))
                 return
+
+            found = False
+            # add the first point in the origin, only once (if not added yet.
+            for k in self.al_geometry_dict:
+                if self.al_geometry_dict[k]['point'] == Point([xxmin, yymin]):
+                    found = True
+                    break
+
+            if found is False:
+                f_probe_pt = Point([xxmin, yymin])
+                if not self.al_geometry_dict:
+                    new_dict = {
+                        'point': f_probe_pt,
+                        'geo': None,
+                        'height': 0.0
+                    }
+                    self.al_geometry_dict[1] = deepcopy(new_dict)
+                else:
+                    int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+                    new_id = max(int_keys) + 1
+                    new_dict = {
+                        'point': f_probe_pt,
+                        'geo': None,
+                        'height': 0.0
+                    }
+                    self.al_geometry_dict[new_id] = deepcopy(new_dict)
+
+                radius = 0.3 if self.units == 'MM' else 0.012
+                fprobe_pt_buff = f_probe_pt.buffer(radius)
+
+                self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
             if not self.al_geometry_dict:
                 new_dict = {
