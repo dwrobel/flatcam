@@ -171,6 +171,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.source_file = ''
         self.units_found = self.app.defaults['units']
         self.probing_gcode_text = ''
+        self.grbl_probe_result = ''
 
         # store the current selection shape status to be restored after manual adding test points
         self.old_selection_state = self.app.defaults['global_selection_shape']
@@ -467,11 +468,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.ui.al_probe_points_table.model().rowCount():
             self.ui.voronoi_cb.setDisabled(False)
             self.ui.grbl_get_heightmap_button.setDisabled(False)
+            self.ui.grbl_save_height_map_button.setDisabled(False)
             self.ui.h_gcode_button.setDisabled(False)
             self.ui.view_h_gcode_button.setDisabled(False)
         else:
             self.ui.voronoi_cb.setDisabled(True)
             self.ui.grbl_get_heightmap_button.setDisabled(True)
+            self.ui.grbl_save_height_map_button.setDisabled(True)
             self.ui.h_gcode_button.setDisabled(True)
             self.ui.view_h_gcode_button.setDisabled(True)
 
@@ -501,6 +504,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             "al_probe_depth":   self.ui.pdepth_entry,
             "al_probe_fr":      self.ui.feedrate_probe_entry,
             "al_controller":    self.ui.al_controller_combo,
+            "al_method":        self.ui.al_method_radio,
             "al_mode":          self.ui.al_mode_radio,
             "al_rows":          self.ui.al_rows_entry,
             "al_columns":       self.ui.al_columns_entry,
@@ -605,6 +609,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.import_heights_button.clicked.connect(self.on_import_height_map)
         self.ui.pause_resume_button.clicked.connect(self.on_grbl_pause_resume)
         self.ui.grbl_get_heightmap_button.clicked.connect(self.on_grbl_autolevel)
+        self.ui.grbl_save_height_map_button.clicked.connect(self.on_grbl_heightmap_save)
 
         self.build_al_table_sig.connect(self.build_al_table)
 
@@ -1091,11 +1096,17 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.al_rows_label.setDisabled(True)
             self.ui.al_columns_entry.setDisabled(True)
             self.ui.al_columns_label.setDisabled(True)
+            self.ui.al_method_lbl.setDisabled(True)
+            self.ui.al_method_radio.setDisabled(True)
+            self.ui.al_method_radio.set_value('v')
         else:
             self.ui.al_rows_entry.setDisabled(False)
             self.ui.al_rows_label.setDisabled(False)
             self.ui.al_columns_entry.setDisabled(False)
             self.ui.al_columns_label.setDisabled(False)
+            self.ui.al_method_lbl.setDisabled(False)
+            self.ui.al_method_radio.setDisabled(False)
+            self.ui.al_method_radio.set_value(self.app.defaults['cncjob_al_method'])
 
     def on_controller_change(self):
         if self.ui.al_controller_combo.get_value() == 'GRBL':
@@ -1676,7 +1687,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         def worker_task():
             with self.app.proc_container.new(_("Sending GCode...")):
-                probe_result = ''
+                self.grbl_probe_result = ''
                 pr_travelz = str(self.ui.ptravelz_entry.get_value())
                 probe_fr = str(self.ui.feedrate_probe_entry.get_value())
                 pr_depth = str(self.ui.pdepth_entry.get_value())
@@ -1697,7 +1708,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     cmd = 'G38.2 Z%s F%s' % (pr_depth, probe_fr)
                     output = self.send_grbl_command(command=cmd)
 
-                    probe_result += output + '\n'
+                    self.grbl_probe_result += output + '\n'
 
                 cmd = 'M2\n'
                 self.send_grbl_command(command=cmd)
@@ -1709,8 +1720,48 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.inform.emit('%s' % _("Sending probing GCode to the GRBL controller."))
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
+    def on_grbl_heightmap_save(self):
+        if self.grbl_probe_result != '':
+            _filter_ = "Text File .txt (*.txt);;All Files (*.*)"
+            name = "probing_gcode"
+            try:
+                dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
+                filename, _f = FCFileSaveDialog.get_saved_filename(
+                    caption=_("Export Code ..."),
+                    directory=dir_file_to_save,
+                    ext_filter=_filter_
+                )
+            except TypeError:
+                filename, _f = FCFileSaveDialog.get_saved_filename(caption=_("Export Code ..."), ext_filter=_filter_)
+
+            if filename == '':
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export cancelled ..."))
+                return
+            else:
+                try:
+                    force_windows_line_endings = self.app.defaults['cncjob_line_ending']
+                    if force_windows_line_endings and sys.platform != 'win32':
+                        with open(filename, 'w', newline='\r\n') as f:
+                            for line in self.grbl_probe_result:
+                                f.write(line)
+                    else:
+                        with open(filename, 'w') as f:
+                            for line in self.grbl_probe_result:
+                                f.write(line)
+                except FileNotFoundError:
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("No such file or directory"))
+                    return
+                except PermissionError:
+                    self.app.inform.emit(
+                        '[WARNING] %s' % _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible.")
+                    )
+                    return 'fail'
+        else:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Empty GRBL heightmap."))
+
     def on_grbl_apply_autolevel(self):
-        # TODO here we call the autovell method
+        # TODO here we call the autolevell method
         self.app.inform.emit('%s' % _("Finished autolevelling."))
 
     def on_updateplot_button_click(self, *args):

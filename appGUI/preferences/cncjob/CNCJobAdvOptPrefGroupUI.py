@@ -81,6 +81,20 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(al_mode_lbl, 8, 0)
         grid0.addWidget(self.al_mode_radio, 8, 1)
 
+        # AUTOLEVELL METHOD
+        self.al_method_lbl = FCLabel('%s:' % _("Method"))
+        self.al_method_lbl.setToolTip(_("Choose a method for approximation of heights from autolevelling data.\n"
+                                        "- Voronoi: will generate a Voronoi diagram\n"
+                                        "- Bilinear: will use bilinear interpolation. Usable only for grid mode."))
+
+        self.al_method_radio = RadioSet(
+            [
+                {'label': _('Voronoi'), 'value': 'v'},
+                {'label': _('Bilinear'), 'value': 'b'}
+            ])
+        grid0.addWidget(self.al_method_lbl, 9, 0)
+        grid0.addWidget(self.al_method_radio, 9, 1)
+
         # ## Columns
         self.al_columns_entry = FCSpinner()
 

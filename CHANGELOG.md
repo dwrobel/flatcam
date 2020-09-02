@@ -13,6 +13,8 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling: in manual adding of probe points make sure you always add a first probe point in origin
 - in CNCJob UI Autolevelling: first added point when manual adding of probe points is auto added in origin before adding first point
 - in CNCJob UI Autolevelling: temp geo for adding points in manual mode is now painted in solid black color and with a smaller diameter
+- in CNCJob UI Autolevelling - GRBL controller - added a way to save a GRBL height map
+- in CNCJob UI Autolevelling: added the UI for choosing the method used for the interpolation used in autolevelling
 
 31.08.2020
 

@@ -310,6 +310,7 @@ class PreferencesUIManager:
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
             # Autolevelling
             "cncjob_al_mode":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_mode_radio,
+            "cncjob_al_method":             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_method_radio,
             "cncjob_al_rows":               self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_rows_entry,
             "cncjob_al_columns":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.al_columns_entry,
             "cncjob_al_travelz":            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.ptravelz_entry,

@@ -1988,6 +1988,7 @@ class CNCObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 15, 0, 1, 2)
 
+        # AUTOLEVELL MODE
         al_mode_lbl = FCLabel('<b>%s</b>:' % _("Mode"))
         al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
                                  "- Manual: will pick a selection of probe points by clicking on canvas\n"
@@ -1998,8 +1999,26 @@ class CNCObjectUI(ObjectUI):
                 {'label': _('Manual'), 'value': 'manual'},
                 {'label': _('Grid'), 'value': 'grid'}
             ])
-        grid0.addWidget(al_mode_lbl, 17, 0)
-        grid0.addWidget(self.al_mode_radio, 17, 1)
+        grid0.addWidget(al_mode_lbl, 16, 0)
+        grid0.addWidget(self.al_mode_radio, 16, 1)
+
+        # AUTOLEVELL METHOD
+        self.al_method_lbl = FCLabel('%s:' % _("Method"))
+        self.al_method_lbl.setToolTip(_("Choose a method for approximation of heights from autolevelling data.\n"
+                                        "- Voronoi: will generate a Voronoi diagram\n"
+                                        "- Bilinear: will use bilinear interpolation. Usable only for grid mode."))
+
+        self.al_method_radio = RadioSet(
+            [
+                {'label': _('Voronoi'), 'value': 'v'},
+                {'label': _('Bilinear'), 'value': 'b'}
+            ])
+        self.al_method_lbl.setDisabled(True)
+        self.al_method_radio.setDisabled(True)
+        self.al_method_radio.set_value('v')
+
+        grid0.addWidget(self.al_method_lbl, 17, 0)
+        grid0.addWidget(self.al_method_radio, 17, 1)
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
@@ -2338,6 +2357,7 @@ class CNCObjectUI(ObjectUI):
         )
         grbl_send_grid.addWidget(self.grbl_report_button, 10, 0, 1, 2)
 
+        hm_lay = QtWidgets.QHBoxLayout()
         # GET HEIGHT MAP
         self.grbl_get_heightmap_button = FCButton(_("Apply AutoLevelling"))
         self.grbl_get_heightmap_button.setToolTip(
@@ -2345,13 +2365,25 @@ class CNCObjectUI(ObjectUI):
               "wait for the Z probing data and then apply this data\n"
               "over the original GCode therefore doing autolevelling.")
         )
-        grbl_send_grid.addWidget(self.grbl_get_heightmap_button, 12, 0, 1, 2)
+        hm_lay.addWidget(self.grbl_get_heightmap_button, stretch=1)
+
+        self.grbl_save_height_map_button = QtWidgets.QToolButton()
+        self.grbl_save_height_map_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        self.grbl_save_height_map_button.setToolTip(
+            _("Will save the GRBL height map.")
+        )
+        hm_lay.addWidget(self.grbl_save_height_map_button, stretch=0, alignment=Qt.AlignRight)
+
+        grbl_send_grid.addLayout(hm_lay, 12, 0, 1, 2)
 
         self.grbl_frame.hide()
         # #############################################################################################################
 
         height_lay = QtWidgets.QHBoxLayout()
         self.h_gcode_button = FCButton(_("Save Probing GCode"))
+        self.h_gcode_button.setToolTip(
+            _("Will save the probing GCode.")
+        )
         self.h_gcode_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
 
         height_lay.addWidget(self.h_gcode_button)

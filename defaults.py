@@ -378,6 +378,7 @@ class FlatCAMDefaults:
         # Autolevelling
         "cncjob_al_status": False,
         "cncjob_al_mode": 'grid',
+        "cncjob_al_method": 'v',
         "cncjob_al_rows": 4,
         "cncjob_al_columns": 4,
         "cncjob_al_travelz": 2.0,
