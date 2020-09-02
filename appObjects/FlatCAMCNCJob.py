@@ -737,6 +737,38 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.probing_gcode_text = self.probing_gcode()
 
         else:
+            found = False
+            # add the first point in the origin, only once (if not added yet.
+            orig_point = Point([xmin, xmin])
+            for k in self.al_geometry_dict:
+                if self.al_geometry_dict[k]['point'] == orig_point:
+                    found = True
+                    break
+
+            if found is False:
+                f_probe_pt = orig_point
+                if not self.al_geometry_dict:
+                    new_dict = {
+                        'point': f_probe_pt,
+                        'geo': None,
+                        'height': 0.0
+                    }
+                    self.al_geometry_dict[1] = deepcopy(new_dict)
+                else:
+                    int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+                    new_id = max(int_keys) + 1
+                    new_dict = {
+                        'point': f_probe_pt,
+                        'geo': None,
+                        'height': 0.0
+                    }
+                    self.al_geometry_dict[new_id] = deepcopy(new_dict)
+
+                radius = 0.3 if self.units == 'MM' else 0.012
+                fprobe_pt_buff = f_probe_pt.buffer(radius)
+
+                self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
+
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
             self.app.defaults['global_selection_shape'] = False
 
@@ -767,7 +799,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         poly_geo = []
 
         # create the geometry
-        radius = 0.3 if self.units == 'MM' else 0.012
+        radius = 0.1 if self.units == 'MM' else 0.004
         for pt in self.al_geometry_dict:
             if not self.al_geometry_dict[pt]['geo']:
                 continue
@@ -781,8 +813,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if not points_geo and not poly_geo:
             return
 
-        plot_geo = points_geo + poly_geo
-        self.plot_voronoi(geometry=plot_geo, visibility=state)
+        self.plot_voronoi(geometry=poly_geo, visibility=state)
+        self.plot_voronoi(geometry=points_geo, visibility=state, custom_color='#000000FF')
+
 
     def plot_voronoi(self, geometry, visibility, custom_color=None):
         if visibility:
@@ -908,37 +941,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             if not probe_pt.within(box_geo):
                 self.app.inform.emit(_("Point is not within the object area. Choose another point."))
                 return
-
-            found = False
-            # add the first point in the origin, only once (if not added yet.
-            for k in self.al_geometry_dict:
-                if self.al_geometry_dict[k]['point'] == Point([xxmin, yymin]):
-                    found = True
-                    break
-
-            if found is False:
-                f_probe_pt = Point([xxmin, yymin])
-                if not self.al_geometry_dict:
-                    new_dict = {
-                        'point': f_probe_pt,
-                        'geo': None,
-                        'height': 0.0
-                    }
-                    self.al_geometry_dict[1] = deepcopy(new_dict)
-                else:
-                    int_keys = [int(k) for k in self.al_geometry_dict.keys()]
-                    new_id = max(int_keys) + 1
-                    new_dict = {
-                        'point': f_probe_pt,
-                        'geo': None,
-                        'height': 0.0
-                    }
-                    self.al_geometry_dict[new_id] = deepcopy(new_dict)
-
-                radius = 0.3 if self.units == 'MM' else 0.012
-                fprobe_pt_buff = f_probe_pt.buffer(radius)
-
-                self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
             if not self.al_geometry_dict:
                 new_dict = {

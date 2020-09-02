@@ -11,12 +11,14 @@ CHANGELOG for FlatCAM beta
 
 - in CNCJob UI Autolevelling: solved some small errors: when manual adding probe points dragging the mouse with left button pressed created selection rectangles; detection of click inside the solid geometry was failing
 - in CNCJob UI Autolevelling: in manual adding of probe points make sure you always add a first probe point in origin
+- in CNCJob UI Autolevelling: first added point when manual adding of probe points is auto added in origin before adding first point
+- in CNCJob UI Autolevelling: temp geo for adding points in manual mode is now painted in solid black color and with a smaller diameter
 
 31.08.2020
 
 - updated the Italian translation files by Massimiliano Golfetto
 - in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
-- in CNCJob UI Autolevelling : in manual mode, Points can be chosen only when clicking inside the object to be probed
+- in CNCJob UI Autolevelling: in manual mode, Points can be chosen only when clicking inside the object to be probed
 - in CNCJob UI Autolevelling: made sure that plotting a Voronoi polygon is done only for non-None polygons
 - in CNCJob UI Autolevelling: remade the probing points generation so they could allow bilinear interpolation
 
