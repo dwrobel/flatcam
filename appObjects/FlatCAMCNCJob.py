@@ -742,37 +742,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.probing_gcode_text = self.probing_gcode()
 
         else:
-            found = False
-            # add the first point in the origin, only once (if not added yet.
-            orig_point = Point([xmin, xmin])
-            for k in self.al_geometry_dict:
-                if self.al_geometry_dict[k]['point'] == orig_point:
-                    found = True
-                    break
+            f_probe_pt = Point([xmin, xmin])
+            int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+            new_id = max(int_keys) + 1 if int_keys else 1
+            new_dict = {
+                'point': f_probe_pt,
+                'geo': None,
+                'height': 0.0
+            }
+            self.al_geometry_dict[new_id] = deepcopy(new_dict)
 
-            if found is False:
-                f_probe_pt = orig_point
-                if not self.al_geometry_dict:
-                    new_dict = {
-                        'point': f_probe_pt,
-                        'geo': None,
-                        'height': 0.0
-                    }
-                    self.al_geometry_dict[1] = deepcopy(new_dict)
-                else:
-                    int_keys = [int(k) for k in self.al_geometry_dict.keys()]
-                    new_id = max(int_keys) + 1
-                    new_dict = {
-                        'point': f_probe_pt,
-                        'geo': None,
-                        'height': 0.0
-                    }
-                    self.al_geometry_dict[new_id] = deepcopy(new_dict)
+            radius = 0.3 if self.units == 'MM' else 0.012
+            fprobe_pt_buff = f_probe_pt.buffer(radius)
 
-                radius = 0.3 if self.units == 'MM' else 0.012
-                fprobe_pt_buff = f_probe_pt.buffer(radius)
-
-                self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
+            self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
             self.app.defaults['global_selection_shape'] = False
@@ -794,6 +777,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.build_al_table_sig.emit()
         if self.ui.voronoi_cb.get_value():
             self.show_voronoi_diagram(state=True, reset=True)
+        else:
+            # clear probe shapes
+            self.plot_voronoi(None, False)
 
     def show_voronoi_diagram(self, state, reset=False):
 
@@ -818,9 +804,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if not points_geo and not poly_geo:
             return
 
-        self.plot_voronoi(geometry=poly_geo, visibility=state)
         self.plot_voronoi(geometry=points_geo, visibility=state, custom_color='#000000FF')
-
+        self.plot_voronoi(geometry=poly_geo, visibility=state)
 
     def plot_voronoi(self, geometry, visibility, custom_color=None):
         if visibility:
@@ -947,22 +932,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.inform.emit(_("Point is not within the object area. Choose another point."))
                 return
 
-            if not self.al_geometry_dict:
-                new_dict = {
-                    'point': probe_pt,
-                    'geo': None,
-                    'height': 0.0
-                }
-                self.al_geometry_dict[1] = deepcopy(new_dict)
-            else:
-                int_keys = [int(k) for k in self.al_geometry_dict.keys()]
-                new_id = max(int_keys) + 1
-                new_dict = {
-                    'point': probe_pt,
-                    'geo': None,
-                    'height': 0.0
-                }
-                self.al_geometry_dict[new_id] = deepcopy(new_dict)
+            int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+            new_id = max(int_keys) + 1 if int_keys else 1
+            new_dict = {
+                'point': probe_pt,
+                'geo': None,
+                'height': 0.0
+            }
+            self.al_geometry_dict[new_id] = deepcopy(new_dict)
 
             # rebuild the al table
             self.build_al_table_sig.emit()
@@ -1006,8 +983,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # rebuild the al table
             self.build_al_table_sig.emit()
 
-            # clear probe shapes
-            self.plot_voronoi(None, False)
+            if self.ui.voronoi_cb.get_value():
+                self.show_voronoi_diagram(state=True, reset=True)
+            else:
+                # clear probe shapes
+                self.plot_voronoi(None, False)
 
     def on_key_press(self, event):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
