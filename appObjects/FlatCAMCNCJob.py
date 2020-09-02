@@ -741,6 +741,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # generate Probing GCode
             self.probing_gcode_text = self.probing_gcode()
 
+            self.build_al_table_sig.emit()
+            if self.ui.voronoi_cb.get_value():
+                self.show_voronoi_diagram(state=True, reset=True)
+            else:
+                # clear probe shapes
+                self.plot_voronoi(None, False)
+
         else:
             f_probe_pt = Point([xmin, xmin])
             int_keys = [int(k) for k in self.al_geometry_dict.keys()]
@@ -754,8 +761,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             radius = 0.3 if self.units == 'MM' else 0.012
             fprobe_pt_buff = f_probe_pt.buffer(radius)
-
-            self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
             self.app.inform.emit(_("Click on canvas to add a Probe Point..."))
             self.app.defaults['global_selection_shape'] = False
@@ -774,12 +779,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.mouse_events_connected = True
 
-        self.build_al_table_sig.emit()
-        if self.ui.voronoi_cb.get_value():
-            self.show_voronoi_diagram(state=True, reset=True)
-        else:
-            # clear probe shapes
-            self.plot_voronoi(None, False)
+            self.build_al_table_sig.emit()
+            if self.ui.voronoi_cb.get_value():
+                self.show_voronoi_diagram(state=True, reset=True)
+            else:
+                # clear probe shapes
+                self.plot_voronoi(None, False)
+
+            self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
     def show_voronoi_diagram(self, state, reset=False):
 
