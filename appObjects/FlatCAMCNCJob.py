@@ -577,7 +577,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # autolevelling signals
-        self.ui.sal_cb.stateChanged.connect(self.on_autolevelling)
+        self.ui.sal_cb.stateChanged.connect(self.on_toggle_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
@@ -1098,13 +1098,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if key == QtCore.Qt.Key_J or key == 'J':
             self.app.on_jump_to()
 
-    def on_autolevelling(self, state):
+    def on_toggle_autolevelling(self, state):
         self.ui.al_frame.show() if state else self.ui.al_frame.hide()
         self.app.defaults["cncjob_al_status"] = True if state else False
 
-        gcode_levelled = ''
+    def autolevell_gcode(self):
+        pass
 
-    def line_autolevell(self, gcode_line):
+    def autolevell_gcode_line(self, gcode_line):
         al_method = self.ui.al_method_radio.get_value()
 
         coords = ()
