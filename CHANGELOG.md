@@ -12,7 +12,8 @@ CHANGELOG for FlatCAM beta
 - in CNCJob UI Autolevelling: changed the UI a bit
 - added a bilinear interpolation calculation class from: https://github.com/pmav99/interpolation
 - in CNCJob UI Autolevelling: made sure that the grid can't have less than 2 rows and 2 columns when using the bilinear interpolation or 1 row and 1 column when using the Voronoi polygons
-
+- in CNCJob UI Autolevelling: prepared the app for bilinear interpolation
+- in CNCJob UI Autolevelling: fixes in the UI
 
 2.09.2020
 

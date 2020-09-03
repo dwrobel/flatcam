@@ -190,12 +190,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.append_snippet = ''
         self.prepend_snippet = ''
         self.gc_header = self.gcode_header()
-        self.gc_start  = ''
+        self.gc_start = ''
         self.gc_end = ''
 
         '''
-        dictionary of dictionaries to store the informations for the autolevelling
-        format:
+        dictionary of dictionaries to store the information's for the autolevelling
+        format when using Voronoi diagram:
         {
             id: {
                     'point': Shapely Point
@@ -204,16 +204,24 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 }
         }
         '''
-        self.al_geometry_dict = {}
+        self.al_voronoi_geo_storage = {}
+
+        '''
+        list of (x, y, x) tuples to store the information's for the autolevelling
+        format when using bilinear interpolation:
+        [(x0, y0, z0), (x1, y1, z1), ...]
+        '''
+        self.al_bilinear_geo_storage = []
+
         self.solid_geo = None
         self.grbl_ser_port = None
 
         self.pressed_button = None
 
         if self.app.is_legacy is False:
-            self.voronoi_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+            self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
-            self.voronoi_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_voronoi_shapes")
+            self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_voronoi_shapes")
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -428,10 +436,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def build_al_table(self):
         tool_idx = 0
 
-        n = len(self.al_geometry_dict)
+        n = len(self.al_voronoi_geo_storage)
         self.ui.al_probe_points_table.setRowCount(n)
 
-        for id_key, value in self.al_geometry_dict.items():
+        for id_key, value in self.al_voronoi_geo_storage.items():
             tool_idx += 1
             row_no = tool_idx - 1
 
@@ -573,7 +581,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
-        self.ui.plot_probing_pts_cb.stateChanged.connect(self.show_voronoi_diagram)
+        self.ui.plot_probing_pts_cb.stateChanged.connect(self.show_probing_geo)
         # GRBL
         self.ui.com_search_button.clicked.connect(self.on_grbl_search_ports)
         self.ui.add_bd_button.clicked.connect(self.on_grbl_add_baudrate)
@@ -644,6 +652,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_mode_radio.set_value(self.options['al_mode'])
         self.on_controller_change()
 
+        self.on_mode_radio(val=self.options['al_mode'])
         self.on_method_radio(val=self.options['al_method'])
 
     # def on_cnc_custom_parameters(self, signal_text):
@@ -699,7 +708,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_probe_points_table.setRowCount(0)
 
         # reset the al dict
-        self.al_geometry_dict.clear()
+        self.al_voronoi_geo_storage.clear()
 
         xmin, ymin, xmax, ymax = self.solid_geo.bounds
 
@@ -726,39 +735,47 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 new_y += dy
 
             pt_id = 0
-            pts_list = []
+            vor_pts_list = []
+            bl_pts_list = []
             for point in points:
                 pt_id += 1
                 pt = Point(point)
-                pts_list.append(pt)
+                vor_pts_list.append(pt)
+                bl_pts_list.append((point[0], point[1], 0.0))
                 new_dict = {
                     'point': pt,
                     'geo': None,
                     'height': 0.0
                 }
-                self.al_geometry_dict[pt_id] = deepcopy(new_dict)
-            self.calculate_voronoi_diagram(pts=pts_list)
+                self.al_voronoi_geo_storage[pt_id] = deepcopy(new_dict)
 
-            # generate Probing GCode
-            self.probing_gcode_text = self.probing_gcode()
+            al_method = self.ui.al_method_radio.get_value()
+            if al_method == 'v':
+                self.generate_voronoi_geometry(pts=vor_pts_list)
+                # generate Probing GCode
+                self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
+            else:
+                self.generate_bilinear_geometry(pts=bl_pts_list)
+                # generate Probing GCode
+                self.probing_gcode_text = self.probing_gcode(storage=self.al_bilinear_geo_storage)
 
             self.build_al_table_sig.emit()
             if self.ui.plot_probing_pts_cb.get_value():
-                self.show_voronoi_diagram(state=True, reset=True)
+                self.show_probing_geo(state=True, reset=True)
             else:
                 # clear probe shapes
-                self.plot_voronoi(None, False)
+                self.plot_probing_geo(None, False)
 
         else:
             f_probe_pt = Point([xmin, xmin])
-            int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+            int_keys = [int(k) for k in self.al_voronoi_geo_storage.keys()]
             new_id = max(int_keys) + 1 if int_keys else 1
             new_dict = {
                 'point': f_probe_pt,
                 'geo': None,
                 'height': 0.0
             }
-            self.al_geometry_dict[new_id] = deepcopy(new_dict)
+            self.al_voronoi_geo_storage[new_id] = deepcopy(new_dict)
 
             radius = 0.3 if self.units == 'MM' else 0.012
             fprobe_pt_buff = f_probe_pt.buffer(radius)
@@ -782,40 +799,59 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.build_al_table_sig.emit()
             if self.ui.plot_probing_pts_cb.get_value():
-                self.show_voronoi_diagram(state=True, reset=True)
+                self.show_probing_geo(state=True, reset=True)
             else:
                 # clear probe shapes
-                self.plot_voronoi(None, False)
+                self.plot_probing_geo(None, False)
 
-            self.plot_voronoi(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
+            self.plot_probing_geo(geometry=fprobe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
-    def show_voronoi_diagram(self, state, reset=False):
+    def show_probing_geo(self, state, reset=False):
 
         if reset:
-            self.voronoi_shapes.clear(update=True)
+            self.probing_shapes.clear(update=True)
 
         points_geo = []
         poly_geo = []
 
-        # create the geometry
-        radius = 0.1 if self.units == 'MM' else 0.004
-        for pt in self.al_geometry_dict:
-            if not self.al_geometry_dict[pt]['geo']:
-                continue
+        al_method = self.ui.al_method_radio.get_value()
+        # voronoi diagram
+        if al_method == 'v':
+            # create the geometry
+            radius = 0.1 if self.units == 'MM' else 0.004
+            for pt in self.al_voronoi_geo_storage:
+                if not self.al_voronoi_geo_storage[pt]['geo']:
+                    continue
 
-            p_geo = self.al_geometry_dict[pt]['point'].buffer(radius)
-            s_geo = self.al_geometry_dict[pt]['geo'].buffer(0.0000001)
+                p_geo = self.al_voronoi_geo_storage[pt]['point'].buffer(radius)
+                s_geo = self.al_voronoi_geo_storage[pt]['geo'].buffer(0.0000001)
 
-            points_geo.append(p_geo)
-            poly_geo.append(s_geo)
+                points_geo.append(p_geo)
+                poly_geo.append(s_geo)
 
-        if not points_geo and not poly_geo:
-            return
+            if not points_geo and not poly_geo:
+                return
 
-        self.plot_voronoi(geometry=points_geo, visibility=state, custom_color='#000000FF')
-        self.plot_voronoi(geometry=poly_geo, visibility=state)
+            self.plot_probing_geo(geometry=points_geo, visibility=state, custom_color='#000000FF')
+            self.plot_probing_geo(geometry=poly_geo, visibility=state)
+        # bilinear interpolation
+        elif al_method == 'b':
+            radius = 0.1 if self.units == 'MM' else 0.004
+            for pt in self.al_bilinear_geo_storage:
 
-    def plot_voronoi(self, geometry, visibility, custom_color=None):
+                x_pt = pt[0]
+                y_pt = pt[1]
+                p_geo = Point([x_pt, y_pt]).buffer(radius)
+
+                if p_geo.is_valid:
+                    points_geo.append(p_geo)
+
+            if not points_geo:
+                return
+
+            self.plot_probing_geo(geometry=points_geo, visibility=state, custom_color='#000000FF')
+
+    def plot_probing_geo(self, geometry, visibility, custom_color=None):
         if visibility:
             if self.app.is_legacy is False:
                 def random_color():
@@ -839,44 +875,44 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                     return new_color
 
             try:
-                if self.app.is_legacy is False:
-                    color = "#0000FFFE"
-                else:
-                    color = "#0000FFFE"
+                # if self.app.is_legacy is False:
+                #     color = "#0000FFFE"
+                # else:
+                #     color = "#0000FFFE"
                 # for sh in points_geo:
-                #     self.add_voronoi_shape(shape=sh, color=color, face_color=color, visible=True)
+                #     self.add_probing_shape(shape=sh, color=color, face_color=color, visible=True)
 
                 edge_color = "#000000FF"
                 try:
                     for sh in geometry:
                         if custom_color is None:
-                            self.add_voronoi_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
+                            self.add_probing_shape(shape=sh, color=edge_color, face_color=random_color(), visible=True)
                         else:
-                            self.add_voronoi_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
+                            self.add_probing_shape(shape=sh, color=custom_color, face_color=custom_color, visible=True)
                 except TypeError:
                     if custom_color is None:
-                        self.add_voronoi_shape(
+                        self.add_probing_shape(
                             shape=geometry, color=edge_color, face_color=random_color(), visible=True)
                     else:
-                        self.add_voronoi_shape(
+                        self.add_probing_shape(
                             shape=geometry, color=custom_color, face_color=custom_color, visible=True)
 
-                self.voronoi_shapes.redraw()
+                self.probing_shapes.redraw()
             except (ObjectDeleted, AttributeError):
-                self.voronoi_shapes.clear(update=True)
+                self.probing_shapes.clear(update=True)
             except Exception as e:
-                log.debug("CNCJobObject.plot_voronoi() --> %s" % str(e))
+                log.debug("CNCJobObject.plot_probing_geo() --> %s" % str(e))
         else:
-            self.voronoi_shapes.clear(update=True)
+            self.probing_shapes.clear(update=True)
 
-    def add_voronoi_shape(self, **kwargs):
+    def add_probing_shape(self, **kwargs):
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.voronoi_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
+            key = self.probing_shapes.add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
         return key
 
-    def calculate_voronoi_diagram(self, pts):
+    def generate_voronoi_geometry(self, pts):
         env = self.solid_geo.envelope
         fact = 1 if self.units == 'MM' else 0.039
         env = env.buffer(fact)
@@ -886,10 +922,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             pts_union = MultiPoint(pts)
             voronoi_union = voronoi_diagram(geom=pts_union, envelope=env)
         except Exception as e:
-            log.debug("CNCJobObject.calculate_voronoi_diagram() --> %s" % str(e))
+            log.debug("CNCJobObject.generate_voronoi_geometry() --> %s" % str(e))
             for pt_index in range(len(pts)):
                 new_pts[pt_index] = affinity.translate(
-                    new_pts[pt_index], random.random() *  1e-09, random.random() *  1e-09)
+                    new_pts[pt_index], random.random() * 1e-09, random.random() * 1e-09)
 
             pts_union = MultiPoint(new_pts)
             try:
@@ -901,10 +937,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         for p in voronoi_union:
             new_voronoi.append(p.intersection(env))
 
-        for pt_key in list(self.al_geometry_dict.keys()):
+        for pt_key in list(self.al_voronoi_geo_storage.keys()):
             for poly in new_voronoi:
-                if self.al_geometry_dict[pt_key]['point'].within(poly):
-                    self.al_geometry_dict[pt_key]['geo'] = poly
+                if self.al_voronoi_geo_storage[pt_key]['point'].within(poly):
+                    self.al_voronoi_geo_storage[pt_key]['geo'] = poly
+
+    def generate_bilinear_geometry(self, pts):
+        self.al_bilinear_geo_storage = pts
 
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
@@ -940,14 +979,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 self.app.inform.emit(_("Point is not within the object area. Choose another point."))
                 return
 
-            int_keys = [int(k) for k in self.al_geometry_dict.keys()]
+            int_keys = [int(k) for k in self.al_voronoi_geo_storage.keys()]
             new_id = max(int_keys) + 1 if int_keys else 1
             new_dict = {
                 'point': probe_pt,
                 'geo': None,
                 'height': 0.0
             }
-            self.al_geometry_dict[new_id] = deepcopy(new_dict)
+            self.al_voronoi_geo_storage[new_id] = deepcopy(new_dict)
 
             # rebuild the al table
             self.build_al_table_sig.emit()
@@ -955,7 +994,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             radius = 0.3 if self.units == 'MM' else 0.012
             probe_pt_buff = probe_pt.buffer(radius)
 
-            self.plot_voronoi(geometry=probe_pt_buff, visibility=True, custom_color="#0000FFFA")
+            self.plot_probing_geo(geometry=probe_pt_buff, visibility=True, custom_color="#0000FFFA")
 
             self.app.inform.emit(_("Added a Probe Point... Click again to add another or right click to finish ..."))
 
@@ -982,9 +1021,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.app.inform.emit(_("Finished adding Probe Points..."))
 
             pts_list = []
-            for k in self.al_geometry_dict:
-                pts_list.append(self.al_geometry_dict[k]['point'])
-            self.calculate_voronoi_diagram(pts=pts_list)
+            for k in self.al_voronoi_geo_storage:
+                pts_list.append(self.al_voronoi_geo_storage[k]['point'])
+            self.generate_voronoi_geometry(pts=pts_list)
 
             self.probing_gcode_text = self.probing_gcode()
 
@@ -992,10 +1031,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.build_al_table_sig.emit()
 
             if self.ui.plot_probing_pts_cb.get_value():
-                self.show_voronoi_diagram(state=True, reset=True)
+                self.show_probing_geo(state=True, reset=True)
             else:
                 # clear probe shapes
-                self.plot_voronoi(None, False)
+                self.plot_probing_geo(None, False)
 
     def on_key_press(self, event):
         # events out of the self.app.collection view (it's about Project Tab) are of type int
@@ -1057,11 +1096,29 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
-            l_x, l_y = self.app.on_jump_to()
+            self.app.on_jump_to()
 
     def on_autolevelling(self, state):
         self.ui.al_frame.show() if state else self.ui.al_frame.hide()
         self.app.defaults["cncjob_al_status"] = True if state else False
+
+        gcode_levelled = ''
+
+    def line_autolevell(self, gcode_line):
+        al_method = self.ui.al_method_radio.get_value()
+
+        coords = ()
+
+        if al_method == 'v':
+            self.autolevell_voronoi(gcode_line, coords)
+        elif al_method == 'b':
+            self.autolevell_bilinear(gcode_line, coords)
+
+    def autolevell_bilinear(self, gcode_line, coords):
+        pass
+
+    def autolevell_voronoi(self, gcode_line, coords):
+        pass
 
     def on_show_al_table(self, state):
         self.ui.al_probe_points_table.show() if state else self.ui.al_probe_points_table.hide()
@@ -1071,10 +1128,10 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_probe_points_table.setRowCount(0)
 
         # reset the al dict
-        self.al_geometry_dict.clear()
+        self.al_voronoi_geo_storage.clear()
 
         # reset Voronoi Shapes
-        self.voronoi_shapes.clear(update=True)
+        self.probing_shapes.clear(update=True)
 
         # build AL table
         self.build_al_table()
@@ -1123,9 +1180,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # therefore no Probing GCode was genrated (it is different for GRBL on how it gets it's Probing GCode
         if not self.probing_gcode_text or self.probing_gcode_text == '':
             # generate Probing GCode
-            self.probing_gcode_text = self.probing_gcode()
+            al_method = self.ui.al_method_radio.get_value()
+            storage = self.al_voronoi_geo_storage if al_method == 'v' else self.al_bilinear_geo_storage
+            self.probing_gcode_text = self.probing_gcode(storage=storage)
 
-    def on_grbl_list_serial_ports(self):
+    @staticmethod
+    def on_grbl_list_serial_ports():
         """
         Lists serial port names.
         From here: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
@@ -1306,12 +1366,12 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def send_grbl_block(self, command, echo=True):
         stripped_cmd = command.strip()
 
-        for l in stripped_cmd.split('\n'):
+        for grbl_line in stripped_cmd.split('\n'):
             if echo:
-                self.app.inform_shell[str, bool].emit(l, False)
+                self.app.inform_shell[str, bool].emit(grbl_line, False)
 
             # Send Gcode block to GRBL
-            snd = l + '\n'
+            snd = grbl_line + '\n'
             self.grbl_ser_port.write(snd.encode('utf-8'))
             grbl_out = self.grbl_ser_port.readlines()
 
@@ -1324,7 +1384,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
     def on_grbl_get_parameter(self, param):
         if '$' in param:
-            param = param.replace('$','')
+            param = param.replace('$', '')
 
         snd = '$$\n'
         self.grbl_ser_port.write(snd.encode('utf-8'))
@@ -1414,8 +1474,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.send_grbl_command(command=cmd)
             self.app.inform.emit("%s" % _("GRBL paused."))
 
-    def probing_gcode(self):
+    def probing_gcode(self, storage):
         """
+        :param storage:         either a dict of dicts (voronoi) or a list of tuples (bilinear)
         :return:                Probing GCode
         :rtype:                 str
         """
@@ -1425,15 +1486,27 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         coords = []
-        for id_key, value in self.al_geometry_dict.items():
-            x = value['point'].x
-            y = value['point'].y
-            coords.append(
-                (
-                    self.app.dec_format(x, dec=self.app.decimals),
-                    self.app.dec_format(y, dec=self.app.decimals)
+        al_method = self.ui.al_method_radio.get_value()
+        if al_method == 'v':
+            for id_key, value in storage.items():
+                x = value['point'].x
+                y = value['point'].y
+                coords.append(
+                    (
+                        self.app.dec_format(x, dec=self.app.decimals),
+                        self.app.dec_format(y, dec=self.app.decimals)
+                    )
                 )
-            )
+        else:
+            for pt in storage:
+                x = pt[0]
+                y = pt[1]
+                coords.append(
+                    (
+                        self.app.dec_format(x, dec=self.app.decimals),
+                        self.app.dec_format(y, dec=self.app.decimals)
+                    )
+                )
 
         pr_travel = self.ui.ptravelz_entry.get_value()
         probe_fr = self.ui.feedrate_probe_entry.get_value()
@@ -1523,7 +1596,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # finish the GCode
         p_gcode += 'M2'
 
-        return  p_gcode
+        return p_gcode
 
     def on_save_probing_gcode(self):
         lines = StringIO(self.probing_gcode_text)
@@ -1649,7 +1722,6 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         :return:
         :rtype:
         """
-        stream = ''
 
         try:
             if filename:
@@ -1663,19 +1735,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             return
 
         idx = 0
-        for line in stream:
-            if line != '':
-                idx += 1
-                line = line.replace(' ', ',').replace('\n', '').split(',')
-                if idx not in self.al_geometry_dict:
-                    self.al_geometry_dict[idx] = {}
-                self.al_geometry_dict[idx]['height'] = float(line[2])
-                if 'point' not in self.al_geometry_dict[idx]:
-                    x = float(line[0])
-                    y = float(line[1])
-                    self.al_geometry_dict[idx]['point'] = Point((x, y))
+        if stream is not None and stream != '':
+            for line in stream:
+                if line != '':
+                    idx += 1
+                    line = line.replace(' ', ',').replace('\n', '').split(',')
+                    if idx not in self.al_voronoi_geo_storage:
+                        self.al_voronoi_geo_storage[idx] = {}
+                    self.al_voronoi_geo_storage[idx]['height'] = float(line[2])
+                    if 'point' not in self.al_voronoi_geo_storage[idx]:
+                        x = float(line[0])
+                        y = float(line[1])
+                        self.al_voronoi_geo_storage[idx]['point'] = Point((x, y))
 
-        self.build_al_table_sig.emit()
+            self.build_al_table_sig.emit()
 
     def on_grbl_autolevel(self):
         # show the Shell Dock
@@ -1693,9 +1766,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 cmd = 'G90\n'
                 self.send_grbl_command(command=cmd)
 
-                for pt_key in self.al_geometry_dict:
-                    x = str(self.al_geometry_dict[pt_key]['point'].x)
-                    y = str(self.al_geometry_dict[pt_key]['point'].y)
+                for pt_key in self.al_voronoi_geo_storage:
+                    x = str(self.al_voronoi_geo_storage[pt_key]['point'].x)
+                    y = str(self.al_voronoi_geo_storage[pt_key]['point'].y)
 
                     cmd = 'G0 Z%s\n' % pr_travelz
                     self.send_grbl_command(command=cmd)
@@ -2225,7 +2298,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     #             if self.ui.toolchange_cb.get_value():
     #                 self.ui.toolchange_cb.set_value(False)
     #                 self.app.inform.emit('[WARNING_NOTCL] %s' %
-    #                                      _("The used preprocessor file has to have in it's name: 'toolchange_custom'"))
+    #                                      _("The used preprocessor file has to have in it's name: 'toolchange_custom'")
+    #                                      )
     #     except KeyError:
     #         try:
     #             for key in self.cnc_tools:
@@ -2383,7 +2457,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             if self.app.is_legacy is False:
                 if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-                   self.plot_annotations(obj=self, visible=True)
+                    self.plot_annotations(obj=self, visible=True)
                 else:
                     self.plot_annotations(obj=self, visible=False)
 
