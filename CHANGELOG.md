@@ -7,6 +7,13 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+3.09.2020
+
+- in CNCJob UI Autolevelling: changed the UI a bit
+- added a bilinear interpolation calculation class from: https://github.com/pmav99/interpolation
+- in CNCJob UI Autolevelling: made sure that the grid can't have less than 2 rows and 2 columns when using the bilinear interpolation or 1 row and 1 column when using the Voronoi polygons
+
+
 2.09.2020
 
 - in CNCJob UI Autolevelling: solved some small errors: when manual adding probe points dragging the mouse with left button pressed created selection rectangles; detection of click inside the solid geometry was failing

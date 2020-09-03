@@ -466,13 +466,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_probe_points_table.setMaximumHeight(self.ui.al_probe_points_table.getHeight())
 
         if self.ui.al_probe_points_table.model().rowCount():
-            self.ui.voronoi_cb.setDisabled(False)
             self.ui.grbl_get_heightmap_button.setDisabled(False)
             self.ui.grbl_save_height_map_button.setDisabled(False)
             self.ui.h_gcode_button.setDisabled(False)
             self.ui.view_h_gcode_button.setDisabled(False)
         else:
-            self.ui.voronoi_cb.setDisabled(True)
             self.ui.grbl_get_heightmap_button.setDisabled(True)
             self.ui.grbl_save_height_map_button.setDisabled(True)
             self.ui.h_gcode_button.setDisabled(True)
@@ -573,8 +571,9 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         # autolevelling signals
         self.ui.sal_cb.stateChanged.connect(self.on_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
+        self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
-        self.ui.voronoi_cb.stateChanged.connect(self.show_voronoi_diagram)
+        self.ui.plot_probing_pts_cb.stateChanged.connect(self.show_voronoi_diagram)
         # GRBL
         self.ui.com_search_button.clicked.connect(self.on_grbl_search_ports)
         self.ui.add_bd_button.clicked.connect(self.on_grbl_add_baudrate)
@@ -645,6 +644,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.al_mode_radio.set_value(self.options['al_mode'])
         self.on_controller_change()
 
+        self.on_method_radio(val=self.options['al_method'])
+
     # def on_cnc_custom_parameters(self, signal_text):
     #     if signal_text == 'Parameters':
     #         return
@@ -708,8 +709,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             cols = self.ui.al_columns_entry.get_value()
             rows = self.ui.al_rows_entry.get_value()
 
-            dx = width / (cols - 1)
-            dy = height / (rows - 1)
+            dx = 0 if cols == 1 else width / (cols - 1)
+            dy = 0 if rows == 1 else height / (rows - 1)
 
             points = []
             new_y = ymin
@@ -742,7 +743,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.probing_gcode_text = self.probing_gcode()
 
             self.build_al_table_sig.emit()
-            if self.ui.voronoi_cb.get_value():
+            if self.ui.plot_probing_pts_cb.get_value():
                 self.show_voronoi_diagram(state=True, reset=True)
             else:
                 # clear probe shapes
@@ -780,7 +781,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.mouse_events_connected = True
 
             self.build_al_table_sig.emit()
-            if self.ui.voronoi_cb.get_value():
+            if self.ui.plot_probing_pts_cb.get_value():
                 self.show_voronoi_diagram(state=True, reset=True)
             else:
                 # clear probe shapes
@@ -990,7 +991,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             # rebuild the al table
             self.build_al_table_sig.emit()
 
-            if self.ui.voronoi_cb.get_value():
+            if self.ui.plot_probing_pts_cb.get_value():
                 self.show_voronoi_diagram(state=True, reset=True)
             else:
                 # clear probe shapes
@@ -1094,6 +1095,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.al_method_lbl.setDisabled(False)
             self.ui.al_method_radio.setDisabled(False)
             self.ui.al_method_radio.set_value(self.app.defaults['cncjob_al_method'])
+
+    def on_method_radio(self, val):
+        if val == 'b':
+            self.ui.al_columns_entry.setMinimum(2)
+            self.ui.al_rows_entry.setMinimum(2)
+        else:
+            self.ui.al_columns_entry.setMinimum(1)
+            self.ui.al_rows_entry.setMinimum(1)
 
     def on_controller_change(self):
         if self.ui.al_controller_combo.get_value() == 'GRBL':

@@ -1923,11 +1923,13 @@ class CNCObjectUI(ObjectUI):
 
         grid0.addWidget(self.al_probe_points_table, 1, 0, 1, 2)
 
-        self.voronoi_cb = FCCheckBox(_("Show Voronoi diagram"))
-        self.voronoi_cb.setToolTip(
-            _("Display Voronoi diagram if there are probe points in the table.")
+        self.plot_probing_pts_cb = FCCheckBox(_("Plot probing points"))
+        self.plot_probing_pts_cb.setToolTip(
+            _("Plot the probing points in the table.\n"
+              "If a Voronoi method is used then\n"
+              "the Voronoi areas are also plotted.")
         )
-        grid0.addWidget(self.voronoi_cb, 3, 0, 1, 2)
+        grid0.addWidget(self.plot_probing_pts_cb, 3, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -2022,6 +2024,7 @@ class CNCObjectUI(ObjectUI):
 
         # ## Columns
         self.al_columns_entry = FCSpinner()
+        self.al_columns_entry.setMinimum(2)
 
         self.al_columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.al_columns_label.setToolTip(
@@ -2032,6 +2035,7 @@ class CNCObjectUI(ObjectUI):
 
         # ## Rows
         self.al_rows_entry = FCSpinner()
+        self.al_rows_entry.setMinimum(2)
 
         self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.al_rows_label.setToolTip(
@@ -2465,6 +2469,13 @@ class CNCObjectUI(ObjectUI):
 
         # Set initial UI
         self.al_frame.hide()
+        self.al_rows_entry.setDisabled(True)
+        self.al_rows_label.setDisabled(True)
+        self.al_columns_entry.setDisabled(True)
+        self.al_columns_label.setDisabled(True)
+        self.al_method_lbl.setDisabled(True)
+        self.al_method_radio.setDisabled(True)
+        self.al_method_radio.set_value('v')
         # self.on_mode_radio(val='grid')
 
 
