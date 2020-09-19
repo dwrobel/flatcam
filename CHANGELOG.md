@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+19.09.2020
+
+- removed some brackets in the GRBL laser preprocessor due of GRBL firmware interpreting the first closing bracket as the comment end
+
 3.09.2020
 
 - in CNCJob UI Autolevelling: changed the UI a bit
