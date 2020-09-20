@@ -1020,12 +1020,14 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             self.app.inform.emit(_("Finished adding Probe Points..."))
 
-            pts_list = []
-            for k in self.al_voronoi_geo_storage:
-                pts_list.append(self.al_voronoi_geo_storage[k]['point'])
-            self.generate_voronoi_geometry(pts=pts_list)
+            al_method = self.ui.al_method_radio.get_value()
+            if al_method == 'v':
+                pts_list = []
+                for k in self.al_voronoi_geo_storage:
+                    pts_list.append(self.al_voronoi_geo_storage[k]['point'])
+                self.generate_voronoi_geometry(pts=pts_list)
 
-            self.probing_gcode_text = self.probing_gcode()
+                self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
 
             # rebuild the al table
             self.build_al_table_sig.emit()

@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.09.2020
+
+- in CNCJob UI Autolevelling: on manual add of probe points, only voronoi diagram is calculated
+
 19.09.2020
 
 - removed some brackets in the GRBL laser preprocessor due of GRBL firmware interpreting the first closing bracket as the comment end
