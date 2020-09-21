@@ -1090,7 +1090,7 @@ class Geometry(object):
             else:
                 yield item
 
-    def import_svg(self, filename, object_type=None, flip=True, units='MM'):
+    def import_svg(self, filename, object_type=None, flip=True, units=None):
         """
         Imports shapes from an SVG file into the object's geometry.
 
@@ -1114,7 +1114,9 @@ class Geometry(object):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
-        geos = getsvggeo(svg_root, object_type)
+        units = self.app.defaults['units'] if units is None else units
+        res = self.app.defaults['geometry_circle_steps']
+        geos = getsvggeo(svg_root, object_type, units=units, res=res)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 

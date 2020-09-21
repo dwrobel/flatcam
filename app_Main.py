@@ -8873,12 +8873,9 @@ class App(QtCore.QObject):
         units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
-            if obj_type == "geometry":
-                geo_obj.import_svg(filename, obj_type, units=units)
-            elif obj_type == "gerber":
-                geo_obj.import_svg(filename, obj_type, units=units)
-
+            geo_obj.import_svg(filename, obj_type, units=units)
             geo_obj.multigeo = True
+
             with open(filename) as f:
                 file_content = f.read()
             geo_obj.source_file = file_content

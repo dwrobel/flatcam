@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 20.09.2020
 
 - in CNCJob UI Autolevelling: on manual add of probe points, only voronoi diagram is calculated
+- in SVG parser: made sure that the minimum number of steps to approximate an arc/circle/bezier is 10
 
 19.09.2020
 

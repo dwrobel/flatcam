@@ -1786,16 +1786,16 @@ class Gerber(Geometry):
         self.scale(factor, factor)
         return factor
 
-    def import_svg(self, filename, object_type='gerber', flip=True, units='MM'):
+    def import_svg(self, filename, object_type='gerber', flip=True, units=None):
         """
         Imports shapes from an SVG file into the object's geometry.
 
-        :param filename: Path to the SVG file.
-        :type filename: str
-        :param object_type: parameter passed further along
-        :param flip: Flip the vertically.
-        :type flip: bool
-        :param units: FlatCAM units
+        :param filename:        Path to the SVG file.
+        :type filename:         str
+        :param object_type:     parameter passed further along
+        :param flip:            Flip the vertically.
+        :type flip:             bool
+        :param units:           FlatCAM units
         :return: None
         """
 
@@ -1810,7 +1810,9 @@ class Gerber(Geometry):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
-        geos = getsvggeo(svg_root, 'gerber')
+        units = self.app.defaults['units'] if units is None else units
+        res = self.app.defaults['gerber_circle_steps']
+        geos = getsvggeo(svg_root, 'gerber', units=units, res=res)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
@@ -1837,7 +1839,7 @@ class Gerber(Geometry):
                 geo_qrcode = []
                 geo_qrcode.append(Polygon(geos[0].exterior))
                 for i_el in geos[0].interiors:
-                    geo_qrcode.append(Polygon(i_el).buffer(0))
+                    geo_qrcode.append(Polygon(i_el).buffer(0, resolution=res))
                 for poly in geo_qrcode:
                     geos.append(poly)
 
