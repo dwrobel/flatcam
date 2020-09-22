@@ -58,6 +58,21 @@ def svgparselength(lengthstr):
     return
 
 
+def svgparse_viewbox(root):
+    val = root.get('viewBox')
+    if val is None:
+        return 1.0
+
+    res = [float(x) for x in val.split()] or [float(x) for x in val.split(',')]
+    w = svgparselength(root.get('width'))[0]
+    # h = svgparselength(root.get('height'))[0]
+
+    v_w = res[2]
+    # v_h = res[3]
+
+    return w / v_w
+
+
 def path2shapely(path, object_type, res=1.0, units='MM'):
     """
     Converts an svg.path.Path into a Shapely
@@ -369,57 +384,58 @@ def getsvggeo(node, object_type, root=None, units='MM', res=64):
             subgeo = getsvggeo(child, object_type, root=root, units=units, res=res)
             if subgeo is not None:
                 geo += subgeo
-
-    # Parse
-    elif kind == 'path':
-        log.debug("***PATH***")
-        P = parse_path(node.get('d'))
-        P = path2shapely(P, object_type, units=units)
-        # for path, the resulting geometry is already a list so no need to create a new one
-        geo = P
-
-    elif kind == 'rect':
-        log.debug("***RECT***")
-        R = svgrect2shapely(node, n_points=res)
-        geo = [R]
-
-    elif kind == 'circle':
-        log.debug("***CIRCLE***")
-        C = svgcircle2shapely(node, n_points=res)
-        geo = [C]
-
-    elif kind == 'ellipse':
-        log.debug("***ELLIPSE***")
-        E = svgellipse2shapely(node, n_points=res)
-        geo = [E]
-
-    elif kind == 'polygon':
-        log.debug("***POLYGON***")
-        poly = svgpolygon2shapely(node, n_points=res)
-        geo = [poly]
-
-    elif kind == 'line':
-        log.debug("***LINE***")
-        line = svgline2shapely(node)
-        geo = [line]
-
-    elif kind == 'polyline':
-        log.debug("***POLYLINE***")
-        pline = svgpolyline2shapely(node)
-        geo = [pline]
-
-    elif kind == 'use':
-        log.debug('***USE***')
-        # href= is the preferred name for this[1], but inkscape still generates xlink:href=.
-        # [1] https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Attributes
-        href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
-        ref = root.find(".//*[@id='%s']" % href.replace('#', ''))
-        if ref is not None:
-            geo = getsvggeo(ref, object_type, root=root, units=units, res=res)
-
     else:
-        log.warning("Unknown kind: " + kind)
-        geo = None
+        factor = svgparse_viewbox(node)
+        # Parse
+        if kind == 'path':
+            log.debug("***PATH***")
+            P = parse_path(node.get('d'))
+            P = path2shapely(P, object_type, units=units)
+            # for path, the resulting geometry is already a list so no need to create a new one
+            geo = P
+
+        elif kind == 'rect':
+            log.debug("***RECT***")
+            R = svgrect2shapely(node, n_points=res)
+            geo = [R]
+
+        elif kind == 'circle':
+            log.debug("***CIRCLE***")
+            C = svgcircle2shapely(node, n_points=res)
+            geo = [C]
+
+        elif kind == 'ellipse':
+            log.debug("***ELLIPSE***")
+            E = svgellipse2shapely(node, n_points=res)
+            geo = [E]
+
+        elif kind == 'polygon':
+            log.debug("***POLYGON***")
+            poly = svgpolygon2shapely(node, n_points=res)
+            geo = [poly]
+
+        elif kind == 'line':
+            log.debug("***LINE***")
+            line = svgline2shapely(node)
+            geo = [line]
+
+        elif kind == 'polyline':
+            log.debug("***POLYLINE***")
+            pline = svgpolyline2shapely(node)
+            geo = [pline]
+
+        elif kind == 'use':
+            log.debug('***USE***')
+            # href= is the preferred name for this[1], but inkscape still generates xlink:href=.
+            # [1] https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Attributes
+            href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
+            ref = root.find(".//*[@id='%s']" % href.replace('#', ''))
+            if ref is not None:
+                geo = getsvggeo(ref, object_type, root=root, units=units, res=res)
+
+        else:
+            log.warning("Unknown kind: " + kind)
+            geo = None
 
     # ignore transformation for unknown kind
     if geo is not None:

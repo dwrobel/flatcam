@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - fixed an error in importing SVG that has a single line
 - updated the POT file and the PO/MO files for Turkish language
+- working to add virtual units to SVG parser
 
 20.09.2020
 
