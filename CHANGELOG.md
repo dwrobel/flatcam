@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.09.2020
+
+- fixed an error in importing SVG that has a single line
+- updated the POT file and the PO/MO files for Turkish language
+
 20.09.2020
 
 - in CNCJob UI Autolevelling: on manual add of probe points, only voronoi diagram is calculated
