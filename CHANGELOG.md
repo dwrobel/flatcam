@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.09.2020
+
+- added support for virtual units in SVG parser; warning: it may require the support for units which is not implemented yet
+
 22.09.2020
 
 - fixed an error in importing SVG that has a single line

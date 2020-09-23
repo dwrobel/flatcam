@@ -17,7 +17,7 @@ from lxml import etree as ET
 import ezdxf
 
 from appParsers.ParseDXF import *
-from appParsers.ParseSVG import svgparselength, getsvggeo
+from appParsers.ParseSVG import svgparselength, getsvggeo, svgparse_viewbox
 
 import gettext
 import builtins
@@ -1812,7 +1812,8 @@ class Gerber(Geometry):
 
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['gerber_circle_steps']
-        geos = getsvggeo(svg_root, 'gerber', units=units, res=res)
+        factor = svgparse_viewbox(svg_root)
+        geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 

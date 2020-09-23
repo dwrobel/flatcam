@@ -429,7 +429,9 @@ class QRCode(AppTool):
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['geometry_circle_steps']
-        geos = getsvggeo(svg_root, object_type, units=units, res=res)
+        factor = svgparse_viewbox(svg_root)
+
+        geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor)
 
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
