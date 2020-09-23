@@ -6530,10 +6530,15 @@ class App(QtCore.QObject):
             try:
                 # select the object(s) only if it is enabled (plotted)
                 if obj.options['plot']:
-                    poly_obj = Polygon([(obj.options['xmin'], obj.options['ymin']),
-                                        (obj.options['xmax'], obj.options['ymin']),
-                                        (obj.options['xmax'], obj.options['ymax']),
-                                        (obj.options['xmin'], obj.options['ymax'])])
+                    # it's a line without area
+                    if obj.options['xmin'] == obj.options['xmax'] or obj.options['ymin'] == obj.options['ymax']:
+                        poly_obj = unary_union(obj.solid_geometry).buffer(0.001)
+                    # it's a geometry with area
+                    else:
+                        poly_obj = Polygon([(obj.options['xmin'], obj.options['ymin']),
+                                            (obj.options['xmax'], obj.options['ymin']),
+                                            (obj.options['xmax'], obj.options['ymax']),
+                                            (obj.options['xmin'], obj.options['ymax'])])
                     if poly_obj.is_empty or not poly_obj.is_valid:
                         continue
 
@@ -6777,19 +6782,31 @@ class App(QtCore.QObject):
         if sel_obj is None:
             return
 
-        pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
-        pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
-        pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
-        pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
-
-        sel_rect = Polygon([pt1, pt2, pt3, pt4])
-
-        if self.defaults['units'].upper() == 'MM':
-            sel_rect = sel_rect.buffer(-0.1)
-            sel_rect = sel_rect.buffer(0.2)
+        # it's a line without area
+        if sel_obj.options['xmin'] == sel_obj.options['xmax'] or sel_obj.options['ymin'] == sel_obj.options['ymax']:
+            sel_rect = unary_union(sel_obj.solid_geometry).buffer(0.100001)
+        # it's a geometry with area
         else:
-            sel_rect = sel_rect.buffer(-0.00393)
-            sel_rect = sel_rect.buffer(0.00787)
+            pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
+            pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
+            pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
+            pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
+
+            sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
+        b_sel_rect = None
+        try:
+            if self.defaults['units'].upper() == 'MM':
+                b_sel_rect = sel_rect.buffer(-0.1)
+                b_sel_rect = b_sel_rect.buffer(0.2)
+            else:
+                b_sel_rect = sel_rect.buffer(-0.00393)
+                b_sel_rect = b_sel_rect.buffer(0.00787)
+        except Exception:
+            pass
+
+        if b_sel_rect.is_empty or not b_sel_rect.is_valid or b_sel_rect is None:
+            b_sel_rect = sel_rect
 
         if color:
             face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
@@ -6802,7 +6819,7 @@ class App(QtCore.QObject):
                 face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
                 outline = self.defaults['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
 
-        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
+        self.sel_objects_list.append(self.move_tool.sel_shapes.add(b_sel_rect,
                                                                    color=outline,
                                                                    face_color=face,
                                                                    update=True,

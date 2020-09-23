@@ -10,6 +10,8 @@ CHANGELOG for FlatCAM beta
 23.09.2020
 
 - added support for virtual units in SVG parser; warning: it may require the support for units which is not implemented yet
+- fixed canvas selection such that when selecting shape fails to be displayed with rounded corners a square selection shape is used
+- fixed canvas selection for the case when the selected object is a single line or a line made from multiple segments
 
 22.09.2020
 
