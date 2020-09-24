@@ -700,6 +700,16 @@ class NumericalEvalTupleEntry(EvalEntry):
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
 
+    def get_value(self):
+        raw = str(self.text()).strip(' ')
+        try:
+            evaled = eval(raw)
+        except Exception as e:
+            if raw != '':
+                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
+            return None
+        return evaled
+
 
 class FCColorEntry(QtWidgets.QFrame):
 

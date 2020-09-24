@@ -9,7 +9,8 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCButton, \
-    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel
+    FCComboBox, OptionalInputSection, FCSpinner, NumericalEvalEntry, OptionalHideInputSection, FCLabel, \
+    NumericalEvalTupleEntry
 from appParsers.ParseExcellon import Excellon
 
 from copy import deepcopy
@@ -793,6 +794,10 @@ class ToolDrilling(AppTool, Excellon):
                 current_widget2.returnPressed.connect(self.form_to_storage)
             elif isinstance(current_widget2, FCComboBox):
                 current_widget2.currentIndexChanged.connect(self.form_to_storage)
+            elif isinstance(current_widget2, NumericalEvalEntry):
+                current_widget2.editingFinished.connect(self.form_to_storage)
+            elif isinstance(current_widget2, NumericalEvalTupleEntry):
+                current_widget2.editingFinished.connect(self.form_to_storage)
 
         self.t_ui.order_radio.activated_custom[str].connect(self.on_order_changed)
 
@@ -862,7 +867,16 @@ class ToolDrilling(AppTool, Excellon):
                     current_widget2.currentIndexChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
-
+            elif isinstance(current_widget2, NumericalEvalEntry):
+                try:
+                    current_widget2.editingFinished.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget2, NumericalEvalTupleEntry):
+                try:
+                    current_widget2.editingFinished.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
         try:
             self.t_ui.order_radio.activated_custom[str].disconnect()
         except (TypeError, ValueError):
@@ -2436,7 +2450,7 @@ class DrillingUI:
               "If no value is entered then there is no move\n"
               "on X,Y plane at the end of the job.")
         )
-        self.endxy_entry = NumericalEvalEntry(border_color='#0069A9')
+        self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
         self.endxy_entry.setObjectName("e_endxy")
 

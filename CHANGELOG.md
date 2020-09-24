@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.09.2020
+
+- fixed a bug where end_xy parameter in Drilling Tool was not used
+- fixed an issue in Delete All method in the app_Main.py
+
 23.09.2020
 
 - added support for virtual units in SVG parser; warning: it may require the support for units which is not implemented yet

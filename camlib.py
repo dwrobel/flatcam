@@ -3164,6 +3164,7 @@ class CNCjob(Geometry):
             self.startz = None
         self.z_end = tool_dict["tools_drill_endz"]
         self.xy_end = tool_dict["tools_drill_endxy"]
+
         try:
             if self.xy_end == '':
                 self.xy_end = None
@@ -3176,7 +3177,7 @@ class CNCjob(Geometry):
                     self.xy_end = [float(eval(a)) for a in self.xy_end.split(",")]
 
                 if self.xy_end and len(self.xy_end) != 2:
-                    self.app.inform.emit('[ERROR]%s' % _("The End X,Y format has to be (x, y)."))
+                    self.app.inform.emit('[ERROR] %s' % _("The End X,Y format has to be (x, y)."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() xy_end --> %s" % str(e))
@@ -6803,7 +6804,7 @@ class CNCjob(Geometry):
         :rtype:     list
         """
 
-        # TODO: This takes forever. Too much data?
+        # This takes forever. Too much data?
         # self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
         #                                  str(len(self.gcode_parsed))))
         # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])

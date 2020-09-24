@@ -4609,7 +4609,7 @@ class App(QtCore.QObject):
                                 del obj_active.text_col
                                 obj_active.annotation.clear(update=True)
                                 del obj_active.annotation
-                                obj_active.voronoi_shapes.clear(update=True)
+                                obj_active.probing_shapes.clear(update=True)
                             except AttributeError as e:
                                 log.debug(
                                     "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)

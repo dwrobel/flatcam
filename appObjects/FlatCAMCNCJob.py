@@ -221,7 +221,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         if self.app.is_legacy is False:
             self.probing_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
-            self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_voronoi_shapes")
+            self.probing_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name + "_probing_shapes")
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
