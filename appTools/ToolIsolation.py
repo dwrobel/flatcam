@@ -3056,22 +3056,30 @@ class IsoUI:
               "If the tool is V-shape type then this value is automatically\n"
               "calculated from the other parameters.")
         )
+        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
+
+        new_tool_lay = QtWidgets.QHBoxLayout()
+
         self.new_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.new_tooldia_entry.set_precision(self.decimals)
         self.new_tooldia_entry.set_range(0.000, 9999.9999)
         self.new_tooldia_entry.setObjectName("i_new_tooldia")
 
-        self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
-        self.grid3.addWidget(self.new_tooldia_entry, 2, 1)
+        new_tool_lay.addWidget(self.new_tooldia_entry)
 
         # Find Optimal Tooldia
-        self.find_optimal_button = FCButton(_('Find Optimal'))
+        self.find_optimal_button = QtWidgets.QToolButton()
+        self.find_optimal_button.setText(_('Optimal'))
         self.find_optimal_button.setIcon(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'))
+        self.find_optimal_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.find_optimal_button.setToolTip(
             _("Find a tool diameter that is guaranteed\n"
               "to do a complete isolation.")
         )
-        self.grid3.addWidget(self.find_optimal_button, 4, 0, 1, 2)
+
+        new_tool_lay.addWidget(self.find_optimal_button)
+
+        self.grid3.addLayout(new_tool_lay, 2, 1)
 
         bhlay = QtWidgets.QHBoxLayout()
 

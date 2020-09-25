@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.09.2020
+
+- minor GUI change in Isolation Tool
+
 24.09.2020
 
 - fixed a bug where end_xy parameter in Drilling Tool was not used
