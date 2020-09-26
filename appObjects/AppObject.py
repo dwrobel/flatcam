@@ -427,7 +427,7 @@ class AppObject(QtCore.QObject):
         # #############################################################################################################
         self.app.shell._edit.set_model_data(self.app.myKeywords)
 
-        if auto_select:
+        if auto_select or self.app.ui.notebook.currentWidget() is self.app.ui.properties_tab:
             # select the just opened object but deselect the previous ones
             self.app.collection.set_all_inactive()
             self.app.collection.set_active(obj.options["name"])

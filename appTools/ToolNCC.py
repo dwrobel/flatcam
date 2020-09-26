@@ -2501,8 +2501,8 @@ class NonCopperClear(AppTool, Gerber):
             else:
                 a_obj.proc_container.view.set_idle()
 
-            # focus on Selected Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+            # focus on Properties Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         if run_threaded:
             # Promise object with the new name
@@ -3487,8 +3487,8 @@ class NonCopperClear(AppTool, Gerber):
             else:
                 app_obj.proc_container.view.set_idle()
 
-            # focus on Selected Tab
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+            # focus on Properties Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         if run_threaded:
             # Promise object with the new name

@@ -693,7 +693,8 @@ class GeometryObject(FlatCAMObj, Geometry):
             elif isinstance(current_widget, FCComboBox):
                 current_widget.currentIndexChanged.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry):
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry) or \
+                    isinstance(current_widget, NumericalEvalTupleEntry):
                 current_widget.editingFinished.connect(self.gui_form_to_storage)
             elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.gui_form_to_storage)
@@ -741,7 +742,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                 except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
-                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry):
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry) or \
+                    isinstance(current_widget, NumericalEvalTupleEntry):
                 try:
                     current_widget.editingFinished.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
@@ -1475,13 +1477,11 @@ class GeometryObject(FlatCAMObj, Geometry):
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
+            # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
+            if widget_idx == 1 or widget_idx == 3:
+                self.update_cutz()
         except Exception as e:
             log.debug("GeometryObject.gui_form_to_storage() -- wdg index -> %s" % str(e))
-            return
-
-        # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
-        if widget_idx == 1 or widget_idx == 3:
-            self.update_cutz()
 
         # the original connect() function of the OptionalInputSelection is no longer working because of the
         # ui_diconnect() so I use this 'hack'

@@ -399,7 +399,7 @@ class TextInputTool(AppTool):
 
     def hide_tool(self):
         self.text_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         # self.app.ui.splitter.setSizes([0, 1])
         self.app.ui.notebook.setTabText(2, _("Tool"))
 
@@ -1023,7 +1023,7 @@ class TransformEditorTool(AppTool):
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 else:
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
             except AttributeError:
@@ -3099,8 +3099,8 @@ class FCEraser(FCShapeTool):
         self.geometry = []
         self.storage = self.draw_app.storage
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
@@ -3529,14 +3529,14 @@ class AppGeoEditor(QtCore.QObject):
 
         # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the appGUI Selected Tab
+        # Put ourselves in the appGUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
     def build_ui(self):
         """
-        Build the appGUI in the Selected Tab for this editor
+        Build the appGUI in the Properties Tab for this editor
 
         :return:
         """
@@ -3633,8 +3633,8 @@ class AppGeoEditor(QtCore.QObject):
         self.app.ui.popmenu_properties.setVisible(False)
         self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
 
-        # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-        # sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        # prevent the user to change anything in the Properties Tab while the Geo Editor is active
+        # sel_tab_widget_list = self.app.ui.properties_tab.findChildren(QtWidgets.QWidget)
         # for w in sel_tab_widget_list:
         #     w.setEnabled(False)
 
@@ -3715,7 +3715,7 @@ class AppGeoEditor(QtCore.QObject):
 
         # try:
         #     # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
-        #     sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        #     sel_tab_widget_list = self.app.ui.properties_tab.findChildren(QtWidgets.QWidget)
         #     for w in sel_tab_widget_list:
         #         w.setEnabled(True)
         # except Exception as e:

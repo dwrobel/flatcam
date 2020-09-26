@@ -1960,8 +1960,8 @@ class ToolDrilling(AppTool, Excellon):
             with self.app.proc_container.new(_("Generating CNC Code")):
                 a_obj.app_obj.new_object("cncjob", job_name, job_init)
 
-            # Switch notebook to Selected page
-            self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+            # Switch notebook to Properties page
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # Create promise for the new name.
         self.app.collection.promise(job_name)

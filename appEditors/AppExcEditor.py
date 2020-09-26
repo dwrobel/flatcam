@@ -76,8 +76,8 @@ class FCDrillAdd(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
         self.make()
@@ -194,8 +194,8 @@ class FCDrillArray(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
 
@@ -416,8 +416,8 @@ class FCSlot(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
         self.make()
@@ -637,8 +637,8 @@ class FCSlotArray(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
 
@@ -916,8 +916,8 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.resize_btn.clicked.connect(self.make)
         self.draw_app.resdrill_entry.editingFinished.connect(self.make)
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def make(self):
         self.draw_app.is_modified = True
@@ -1163,8 +1163,8 @@ class FCDrillMove(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def set_origin(self, origin):
         self.origin = origin
@@ -1979,10 +1979,10 @@ class AppExcEditor(QtCore.QObject):
 
         # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourself in the GUI Selected Tab
+        # Put ourselves in the GUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.e_ui.exc_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.e_ui.tools_table_exc.itemChanged.connect(self.on_tool_edit)

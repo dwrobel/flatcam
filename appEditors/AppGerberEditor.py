@@ -242,8 +242,8 @@ class FCPad(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.start_msg = _("Click to place ...")
 
@@ -472,8 +472,8 @@ class FCPadArray(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
 
@@ -1954,8 +1954,8 @@ class FCApertureMove(FCShapeTool):
             aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_apertures.append(aperture_on_row)
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -2170,8 +2170,8 @@ class FCEraser(FCShapeTool):
             aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_apertures.append(aperture_on_row)
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -3322,12 +3322,12 @@ class AppGerberEditor(QtCore.QObject):
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
         self.apertures_table.clearSelection()
 
-        # Remove anything else in the GUI Selected Tab
+        # Remove anything else in the GUI Properties Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the GUI Selected Tab
+        # Put ourselves in the GUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.grb_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -5305,7 +5305,7 @@ class AppGerberEditor(QtCore.QObject):
                 self.ma_tool_frame.hide()
         except Exception as e:
             log.debug("AppGerberEditor.hide_tool() --> %s" % str(e))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
 
 class TransformEditorTool(AppTool):
@@ -5733,7 +5733,7 @@ class TransformEditorTool(AppTool):
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 else:
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
             except AttributeError:

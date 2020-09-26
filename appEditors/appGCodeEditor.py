@@ -90,12 +90,12 @@ class AppGCodeEditor(QtCore.QObject):
         self.ui.append_text.set_value(self.app.defaults["cncjob_append"])
         self.ui.prepend_text.set_value(self.app.defaults["cncjob_prepend"])
 
-        # Remove anything else in the GUI Selected Tab
+        # Remove anything else in the GUI Properties Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the GUI Selected Tab
+        # Put ourselves in the GUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.ui.edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gcode_obj.options['name']

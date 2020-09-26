@@ -1619,8 +1619,8 @@ class ToolIsolation(AppTool, Gerber):
             if prog_plot == 'progressive':
                 self.temp_shapes.clear(update=True)
 
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
     def combined_rest(self, iso_obj, iso2geo, tools_storage, lim_area, negative_dia=None, plot=True):
         """
@@ -3052,9 +3052,7 @@ class IsoUI:
         # ### Tool Diameter ####
         self.new_tooldia_lbl = FCLabel('%s:' % _('Tool Dia'))
         self.new_tooldia_lbl.setToolTip(
-            _("Diameter for the new tool to add in the Tool Table.\n"
-              "If the tool is V-shape type then this value is automatically\n"
-              "calculated from the other parameters.")
+            _("Diameter for the new tool")
         )
         self.grid3.addWidget(self.new_tooldia_lbl, 2, 0)
 

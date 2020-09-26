@@ -7,6 +7,12 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+26.09.2020
+
+- the Selected Tab is now Properties Tab for FlatCAM objects
+- modified the Properties Tab for various FlatCAM objects preparing the move of Properties Tool data into the Properties Tab
+- if the Properties tab is in focus (selected) when a new object is created then it is automatically selected therefore it's properties will be populated
+
 25.09.2020
 
 - minor GUI change in Isolation Tool

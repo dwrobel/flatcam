@@ -2175,8 +2175,8 @@ class ToolPaint(AppTool, Gerber):
                 self.app.inform.emit('[ERROR] %s' % _("Paint failed."))
                 return
 
-            # focus on Selected Tab
-            # self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+            # focus on Properties Tab
+            # self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
             self.app.inform.emit('[success] %s' % _("Paint Done."))
 

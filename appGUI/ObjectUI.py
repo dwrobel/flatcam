@@ -230,12 +230,31 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.plot_lbl, 2, 0)
         grid0.addWidget(self.plot_cb, 2, 1)
 
-        # generate follow
+        # Generate 'Follow'
         self.follow_cb = FCCheckBox('%s' % _("Follow"))
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
         grid0.addWidget(self.follow_cb, 2, 2)
+
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+        self.editor_button.setToolTip(
+            _("Edit an Gerber object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.editor_button, 4, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 3)
 
         # ### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel('%s:' % _('Apertures'))
@@ -243,7 +262,7 @@ class GerberObjectUI(ObjectUI):
             _("Apertures Table for the Gerber Object.")
         )
 
-        grid0.addWidget(self.apertures_table_label, 4, 0)
+        grid0.addWidget(self.apertures_table_label, 8, 0)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox()
@@ -251,10 +270,10 @@ class GerberObjectUI(ObjectUI):
             _("Toggle the display of the Tools Table.")
         )
         # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        grid0.addWidget(self.aperture_table_visibility_cb, 4, 1)
+        grid0.addWidget(self.aperture_table_visibility_cb, 8, 1)
 
         hlay_plot = QtWidgets.QHBoxLayout()
-        grid0.addLayout(hlay_plot, 4, 2)
+        grid0.addLayout(hlay_plot, 8, 2)
 
         # Aperture Mark all CB
         self.mark_all_cb = FCCheckBox(_('Mark All'))
@@ -270,7 +289,7 @@ class GerberObjectUI(ObjectUI):
 
         # Apertures Table
         self.apertures_table = FCTable()
-        grid0.addWidget(self.apertures_table, 6, 0, 1, 3)
+        grid0.addWidget(self.apertures_table, 10, 0, 1, 3)
 
         self.apertures_table.setColumnCount(6)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim'), 'M'])
@@ -303,26 +322,7 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid0.addWidget(self.create_buffer_button, 8, 0, 1, 3)
-
-        # Editor
-        self.editor_button = QtWidgets.QPushButton(_('Gerber Editor'))
-        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-        self.editor_button.setToolTip(
-            _("Edit an Gerber object.")
-        )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
-        grid0.addWidget(self.editor_button, 10, 0, 1, 3)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 12, 0, 1, 3)
+        grid0.addWidget(self.create_buffer_button, 12, 0, 1, 3)
 
         self.tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("TOOLS"))
         grid0.addWidget(self.tool_lbl, 14, 0, 1, 3)
@@ -487,33 +487,30 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent,
                           app=self.app)
 
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.custom_box.addLayout(grid0)
+
         # Plot options
-        grid_h = QtWidgets.QGridLayout()
-        grid_h.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.custom_box.addLayout(grid_h)
-        grid_h.setColumnStretch(0, 0)
-        grid_h.setColumnStretch(1, 1)
-
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
-        # self.plot_options_label.setMinimumWidth(90)
-
-        grid_h.addWidget(self.plot_options_label, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             _("Solid circles.")
         )
-        # self.solid_cb.setMinimumWidth(50)
-        grid_h.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        # self.multicolored_cb.setMinimumWidth(55)
-        grid_h.addWidget(self.multicolored_cb, 0, 2)
+
+        grid0.addWidget(self.plot_options_label, 0, 0)
+        grid0.addWidget(self.solid_cb, 0, 1)
+        grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -524,7 +521,22 @@ class ExcellonObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
-        grid_h.addLayout(self.name_hlay, 1, 0, 1, 3)
+        grid0.addLayout(self.name_hlay, 2, 0, 1, 3)
+
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Excellon Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
+        self.editor_button.setToolTip(
+            _("Edit an Excellon object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # ### Tools Drills ####
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
@@ -549,12 +561,17 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.plot_cb)
 
-        grid_h.addWidget(self.tools_table_label, 2, 0)
-        grid_h.addWidget(self.table_visibility_cb, 2, 1)
-        grid_h.addLayout(hlay_plot, 2, 2)
+        grid0.addWidget(self.tools_table_label, 6, 0)
+        grid0.addWidget(self.table_visibility_cb, 6, 1)
+        grid0.addLayout(hlay_plot, 6, 2)
 
+        # #############################################################################################################
+        # #############################################################################################################
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
         # this way I can hide/show the frame
+        # #############################################################################################################
+        # #############################################################################################################
+
         self.drills_frame = QtWidgets.QFrame()
         self.drills_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.drills_frame)
@@ -604,21 +621,6 @@ class ExcellonObjectUI(ObjectUI):
               "with tools from DB that have a close diameter value.")
         )
         self.tools_box.addWidget(self.autoload_db_cb)
-
-        # Editor
-        self.editor_button = QtWidgets.QPushButton(_('Excellon Editor'))
-        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-
-        self.editor_button.setToolTip(
-            _("Edit an Excellon object.")
-        )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
-        self.tools_box.addWidget(self.editor_button)
 
         # #################################################################
         # ########## TOOLS GRID ###########################################
@@ -789,13 +791,28 @@ class GeometryObjectUI(ObjectUI):
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
-        grid_header.addLayout(self.name_hlay, 1, 0, 1, 3)
+        grid_header.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
+
+        # Editor
+        self.editor_button = QtWidgets.QPushButton(_('Geometry Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
+        self.editor_button.setToolTip(
+            _("Edit an Geometry object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid_header.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Tools widgets
         # this way I can hide/show the frame
@@ -907,24 +924,6 @@ class GeometryObjectUI(ObjectUI):
                 "for the corresponding tool."
             ))
 
-        # self.geo_tools_table.setSortingEnabled(False)
-        # self.geo_tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-
-        # Editor
-        self.editor_button = QtWidgets.QPushButton(_('Geometry Editor'))
-        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-
-        self.editor_button.setToolTip(
-            _("Edit an Geometry object.")
-        )
-        self.editor_button.setStyleSheet("""
-                                      QPushButton
-                                      {
-                                          font-weight: bold;
-                                      }
-                                      """)
-        grid0.addWidget(self.editor_button, 3, 0, 1, 2)
-
         # Tool Offset
         grid1 = QtWidgets.QGridLayout()
         self.geo_table_box.addLayout(grid1)
@@ -953,10 +952,10 @@ class GeometryObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid1.addWidget(separator_line, 1, 0, 1, 2)
 
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("Add from DB"))
         grid1.addWidget(self.tool_sel_label, 2, 0, 1, 2)
 
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
+        self.addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
@@ -970,14 +969,15 @@ class GeometryObjectUI(ObjectUI):
 
         bhlay = QtWidgets.QHBoxLayout()
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn = QtWidgets.QPushButton(_('Search and Add'))
         self.addtool_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/plus16.png'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "with the diameter specified above.")
         )
 
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Pick from DB'))
+        self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool Database.\n"
@@ -1296,15 +1296,15 @@ class GeometryObjectUI(ObjectUI):
         # ################# GRID LAYOUT 4   ###############################
         # #################################################################
 
-        grid4 = QtWidgets.QGridLayout()
-        grid4.setColumnStretch(0, 0)
-        grid4.setColumnStretch(1, 1)
-        self.geo_param_box.addLayout(grid4)
+        self.grid4 = QtWidgets.QGridLayout()
+        self.grid4.setColumnStretch(0, 0)
+        self.grid4.setColumnStretch(1, 1)
+        self.geo_param_box.addLayout(self.grid4)
 
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line2, 0, 0, 1, 2)
+        self.grid4.addWidget(separator_line2, 0, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setIcon(QtGui.QIcon(self.app.resource_location + '/param_all32.png'))
@@ -1312,19 +1312,19 @@ class GeometryObjectUI(ObjectUI):
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        grid4.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
+        self.grid4.addWidget(self.apply_param_to_all, 1, 0, 1, 2)
 
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line2, 2, 0, 1, 2)
+        self.grid4.addWidget(separator_line2, 2, 0, 1, 2)
 
         # General Parameters
         self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
-        grid4.addWidget(self.gen_param_label, 3, 0, 1, 2)
+        self.grid4.addWidget(self.gen_param_label, 3, 0, 1, 2)
 
         # Tool change Z
         self.toolchangeg_cb = FCCheckBox('%s:' % _("Tool change Z"))
@@ -1351,8 +1351,8 @@ class GeometryObjectUI(ObjectUI):
         self.toolchangez_entry.setSingleStep(0.1)
         self.ois_tcz_geo = OptionalInputSection(self.toolchangeg_cb, [self.toolchangez_entry])
 
-        grid4.addWidget(self.toolchangeg_cb, 6, 0)
-        grid4.addWidget(self.toolchangez_entry, 6, 1)
+        self.grid4.addWidget(self.toolchangeg_cb, 6, 0)
+        self.grid4.addWidget(self.toolchangez_entry, 6, 1)
 
         # The Z value for the start move
         # startzlabel = QtWidgets.QLabel('Start move Z:')
@@ -1381,8 +1381,8 @@ class GeometryObjectUI(ObjectUI):
 
         self.endz_entry.setSingleStep(0.1)
 
-        grid4.addWidget(self.endz_label, 9, 0)
-        grid4.addWidget(self.endz_entry, 9, 1)
+        self.grid4.addWidget(self.endz_label, 9, 0)
+        self.grid4.addWidget(self.endz_entry, 9, 1)
 
         # End Move X,Y
         endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
@@ -1394,8 +1394,8 @@ class GeometryObjectUI(ObjectUI):
         self.endxy_entry = NumericalEvalTupleEntry(border_color='#0069A9')
         self.endxy_entry.setPlaceholderText(_("X,Y coordinates"))
 
-        grid4.addWidget(endmove_xy_label, 10, 0)
-        grid4.addWidget(self.endxy_entry, 10, 1)
+        self.grid4.addWidget(endmove_xy_label, 10, 0)
+        self.grid4.addWidget(self.endxy_entry, 10, 1)
 
         # preprocessor selection
         pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
@@ -1406,10 +1406,10 @@ class GeometryObjectUI(ObjectUI):
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        grid4.addWidget(pp_label, 11, 0)
-        grid4.addWidget(self.pp_geometry_name_cb, 11, 1)
+        self.grid4.addWidget(pp_label, 11, 0)
+        self.grid4.addWidget(self.pp_geometry_name_cb, 11, 1)
 
-        # grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
+        # self.grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
 
         # ------------------------------------------------------------------------------------------------------------
         # ------------------------- EXCLUSION AREAS ------------------------------------------------------------------
@@ -1424,11 +1424,11 @@ class GeometryObjectUI(ObjectUI):
                 "is forbidden."
             )
         )
-        grid4.addWidget(self.exclusion_cb, 12, 0, 1, 2)
+        self.grid4.addWidget(self.exclusion_cb, 12, 0, 1, 2)
 
         self.exclusion_frame = QtWidgets.QFrame()
         self.exclusion_frame.setContentsMargins(0, 0, 0, 0)
-        grid4.addWidget(self.exclusion_frame, 14, 0, 1, 2)
+        self.grid4.addWidget(self.exclusion_frame, 14, 0, 1, 2)
 
         self.exclusion_box = QtWidgets.QVBoxLayout()
         self.exclusion_box.setContentsMargins(0, 0, 0, 0)
@@ -1519,7 +1519,7 @@ class GeometryObjectUI(ObjectUI):
             "Will add a Paint section at the end of the GCode.\n"
             "A metallic brush will clean the material after milling."))
         self.polish_cb.setObjectName("g_polish")
-        grid4.addWidget(self.polish_cb, 15, 0, 1, 2)
+        self.grid4.addWidget(self.polish_cb, 15, 0, 1, 2)
 
         # Polish Tool Diameter
         self.polish_dia_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
@@ -1531,8 +1531,8 @@ class GeometryObjectUI(ObjectUI):
         self.polish_dia_entry.set_range(0.000, 9999.9999)
         self.polish_dia_entry.setObjectName("g_polish_dia")
 
-        grid4.addWidget(self.polish_dia_lbl, 16, 0)
-        grid4.addWidget(self.polish_dia_entry, 16, 1)
+        self.grid4.addWidget(self.polish_dia_lbl, 16, 0)
+        self.grid4.addWidget(self.polish_dia_entry, 16, 1)
 
         # Polish Pressure
         self.polish_pressure_lbl = QtWidgets.QLabel('%s:' % _('Pressure'))
@@ -1545,8 +1545,8 @@ class GeometryObjectUI(ObjectUI):
         self.polish_pressure_entry.set_range(-9999.9999, 9999.9999)
         self.polish_pressure_entry.setObjectName("g_polish_pressure")
 
-        grid4.addWidget(self.polish_pressure_lbl, 17, 0)
-        grid4.addWidget(self.polish_pressure_entry, 17, 1)
+        self.grid4.addWidget(self.polish_pressure_lbl, 17, 0)
+        self.grid4.addWidget(self.polish_pressure_entry, 17, 1)
 
         # Polish Overlap
         self.polish_over_lbl = QtWidgets.QLabel('%s:' % _('Overlap'))
@@ -1560,8 +1560,8 @@ class GeometryObjectUI(ObjectUI):
         self.polish_over_entry.setSingleStep(0.1)
         self.polish_over_entry.setObjectName("g_polish_overlap")
 
-        grid4.addWidget(self.polish_over_lbl, 18, 0)
-        grid4.addWidget(self.polish_over_entry, 18, 1)
+        self.grid4.addWidget(self.polish_over_lbl, 18, 0)
+        self.grid4.addWidget(self.polish_over_entry, 18, 1)
 
         # Polish Method
         self.polish_method_lbl = QtWidgets.QLabel('%s:' % _('Method'))
@@ -1578,8 +1578,8 @@ class GeometryObjectUI(ObjectUI):
         )
         self.polish_method_combo.setObjectName('g_polish_method')
 
-        grid4.addWidget(self.polish_method_lbl, 20, 0)
-        grid4.addWidget(self.polish_method_combo, 20, 1)
+        self.grid4.addWidget(self.polish_method_lbl, 20, 0)
+        self.grid4.addWidget(self.polish_method_combo, 20, 1)
 
         self.polish_dia_lbl.hide()
         self.polish_dia_entry.hide()
@@ -1607,7 +1607,7 @@ class GeometryObjectUI(ObjectUI):
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line2, 22, 0, 1, 2)
+        self.grid4.addWidget(separator_line2, 22, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -1625,9 +1625,9 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_cnc_button, 24, 0, 1, 2)
+        self.grid4.addWidget(self.generate_cnc_button, 24, 0, 1, 2)
 
-        grid4.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
+        self.grid4.addWidget(QtWidgets.QLabel(''), 26, 0, 1, 2)
 
         # ##############
         # Paint area ##
@@ -1636,7 +1636,7 @@ class GeometryObjectUI(ObjectUI):
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
-        grid4.addWidget(self.tools_label, 28, 0, 1, 2)
+        self.grid4.addWidget(self.tools_label, 28, 0, 1, 2)
 
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
@@ -1655,7 +1655,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.paint_tool_button, 30, 0, 1, 2)
+        self.grid4.addWidget(self.paint_tool_button, 30, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -1670,7 +1670,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid4.addWidget(self.generate_ncc_button, 32, 0, 1, 2)
+        self.grid4.addWidget(self.generate_ncc_button, 32, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):
@@ -1732,7 +1732,7 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.cncplot_method_combo, 0, 1, 1, 2)
 
         self.name_hlay = QtWidgets.QHBoxLayout()
-        f_lay.addLayout(self.name_hlay, 1, 0, 1, 3)
+        f_lay.addLayout(self.name_hlay, 2, 0, 1, 3)
 
         # ## Object name
         name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
@@ -1742,6 +1742,21 @@ class CNCObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
+        # Editor
+        self.editor_button = FCButton(_('GCode Editor'))
+        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
+
+        self.editor_button.setToolTip(
+            _("Edit an GCode object.")
+        )
+        self.editor_button.setStyleSheet("""
+                                       QPushButton
+                                       {
+                                           font-weight: bold;
+                                       }
+                                       """)
+        f_lay.addWidget(self.editor_button, 4, 0, 1, 3)
+
         # Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))
         self.annotation_cb.setToolTip(
@@ -1749,12 +1764,12 @@ class CNCObjectUI(ObjectUI):
               "When checked it will display numbers in order for each end\n"
               "of a travel line.")
         )
-        f_lay.addWidget(self.annotation_cb, 2, 0, 1, 3)
+        f_lay.addWidget(self.annotation_cb, 6, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        f_lay.addWidget(separator_line, 3, 0, 1, 3)
+        f_lay.addWidget(separator_line, 8, 0, 1, 3)
 
         # Travelled Distance
         self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled distance"))
@@ -1765,9 +1780,9 @@ class CNCObjectUI(ObjectUI):
         self.t_distance_entry = FCEntry()
         self.units_label = QtWidgets.QLabel()
 
-        f_lay.addWidget(self.t_distance_label, 5, 0)
-        f_lay.addWidget(self.t_distance_entry, 5, 1)
-        f_lay.addWidget(self.units_label, 5, 2)
+        f_lay.addWidget(self.t_distance_label, 10, 0)
+        f_lay.addWidget(self.t_distance_entry, 10, 1)
+        f_lay.addWidget(self.units_label, 10, 2)
 
         # Estimated Time
         self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
@@ -1778,9 +1793,9 @@ class CNCObjectUI(ObjectUI):
         self.t_time_entry = FCEntry()
         self.units_time_label = QtWidgets.QLabel()
 
-        f_lay.addWidget(self.t_time_label, 7, 0)
-        f_lay.addWidget(self.t_time_entry, 7, 1)
-        f_lay.addWidget(self.units_time_label, 7, 2)
+        f_lay.addWidget(self.t_time_label, 12, 0)
+        f_lay.addWidget(self.t_time_entry, 12, 1)
+        f_lay.addWidget(self.units_time_label, 12, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
@@ -1790,7 +1805,7 @@ class CNCObjectUI(ObjectUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        f_lay.addWidget(separator_line, 9, 0, 1, 3)
+        f_lay.addWidget(separator_line, 14, 0, 1, 3)
 
         hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay)
@@ -1853,21 +1868,6 @@ class CNCObjectUI(ObjectUI):
             _("Update the plot.")
         )
         self.custom_box.addWidget(self.updateplot_button)
-
-        # Editor
-        self.editor_button = FCButton(_('GCode Editor'))
-        self.editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/edit_file32.png'))
-
-        self.editor_button.setToolTip(
-            _("Edit an GCode object.")
-        )
-        self.editor_button.setStyleSheet("""
-                                       QPushButton
-                                       {
-                                           font-weight: bold;
-                                       }
-                                       """)
-        self.custom_box.addWidget(self.editor_button)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

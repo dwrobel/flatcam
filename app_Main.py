@@ -2444,8 +2444,8 @@ class App(QtCore.QObject):
 
                 # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
                 # edited_obj.build_ui()
-                # Switch notebook to Selected page
-                # self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                # Switch notebook to Properties page
+                # self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
             else:
                 # show the Tools Toolbar
                 tools_tb = self.ui.toolbartools
@@ -4473,8 +4473,8 @@ class App(QtCore.QObject):
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
-        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
-        if notebook_widget_name == 'selected_tab':
+        # work only if the notebook tab on focus is the properties_tab and only if the object is Geometry
+        if notebook_widget_name == 'properties_tab':
             if self.collection.get_active().kind == 'geometry':
                 # Tool add works for Geometry only if Advanced is True in Preferences
                 if self.defaults["global_app_level"] == 'a':
@@ -4526,8 +4526,8 @@ class App(QtCore.QObject):
     def on_delete_keypress(self):
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
-        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
-        if notebook_widget_name == 'selected_tab':
+        # work only if the notebook tab on focus is the properties_tab and only if the object is Geometry
+        if notebook_widget_name == 'properties_tab':
             if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.GeometryObject'>":
                 self.collection.get_active().on_tool_delete()
 
@@ -6209,7 +6209,7 @@ class App(QtCore.QObject):
         if name == 'project':
             self.ui.notebook.setCurrentWidget(self.ui.project_tab)
         elif name == 'selected':
-            self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+            self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
@@ -6459,7 +6459,7 @@ class App(QtCore.QObject):
             if self.doubleclick is True:
                 self.doubleclick = False
                 if self.collection.get_selected():
-                    self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                    self.ui.notebook.setCurrentWidget(self.ui.properties_tab)
                     if self.ui.splitter.sizes()[0] == 0:
                         self.ui.splitter.setSizes([1, 1])
                     try:
@@ -9686,8 +9686,7 @@ class App(QtCore.QObject):
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
-        sel_title = QtWidgets.QTextEdit(
-            _('<b>Shortcut Key List</b>'))
+        sel_title = QtWidgets.QTextEdit(_('<b>Shortcut Key List</b>'))
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
@@ -9698,50 +9697,6 @@ class App(QtCore.QObject):
             fsize = 12
 
         tsize = fsize + int(fsize / 2)
-
-        #         selected_text = (_('''
-        # <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span>
-        # </p>
-        #
-        # <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
-        # The normal flow when working in FlatCAM is the following:</span></p>
-        #
-        # <ol>
-        # 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG
-        # 	file into
-        # 	FlatCAM using either the menu&#39;s, toolbars, key shortcuts or
-        # 	even dragging and dropping the files on the appGUI.<br />
-        # 	<br />
-        # 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp;
-        # 	drop of the
-        # 	file into the FLATCAM appGUI or through the menu/toolbar links offered within the app.</span><br />
-        # 	&nbsp;</li>
-        # 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it
-        # 	and then
-        # 	focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the
-        # 	Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to
-        # 	it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
-        # 	<br />
-        # 	If the selection of the object is done on the canvas by single click instead, and the
-        # 	<strong>SELECTED TAB</strong>
-        # 	is in focus, again the object properties will be displayed into the Selected Tab. Alternatively,
-        # 	double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate
-        # 	it even if it was out of focus.<br />
-        # 	<br />
-        # 	You can change the parameters in this screen and the flow direction is like this:<br />
-        # 	<br />
-        # 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;
-        # 	<strong> Geometry Object
-        # 	</strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object
-        # 	</strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in
-        # 	<strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
-        # </ol>
-        #
-        # <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in
-        # <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut:
-        # <strong>F3</strong>.</span></p>
-        #
-        #         ''').format(fsize=fsize, tsize=tsize))
 
         selected_text = '''
         <p><span style="font-size:{tsize}px"><strong>{title}</strong></span></p>
@@ -9767,7 +9722,7 @@ class App(QtCore.QObject):
 
         <p><span style="font-size:{fsize}px">{s8}</span></p>
         '''.format(
-            title=_("Selected Tab - Choose an Item from Project Tab"),
+            title=_("Properties Tab - Choose an Item from Project Tab"),
             subtitle=_("Details"),
 
             s1=_("The normal flow when working with the application is the following:"),
@@ -9778,13 +9733,13 @@ class App(QtCore.QObject):
                  "drag and drop of the file into the GUI or through the menu (or toolbar) "
                  "actions offered within the app."),
             s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
-                 "on SELECTED TAB (more simpler is to double click the object name in the Project Tab, "
-                 "SELECTED TAB will be updated with the object properties according to its kind: "
+                 "on Properties TAB (more simpler is to double click the object name in the Project Tab, "
+                 "Properties TAB will be updated with the object properties according to its kind: "
                  "Gerber, Excellon, Geometry or CNCJob object."),
             s5=_("If the selection of the object is done on the canvas by single click instead, "
-                 "and the SELECTED TAB is in focus, again the object properties will be displayed into the "
-                 "Selected Tab. Alternatively, double clicking on the object on the canvas will bring "
-                 "the SELECTED TAB and populate it even if it was out of focus."),
+                 "and the Properties TAB is in focus, again the object properties will be displayed into the "
+                 "Properties Tab. Alternatively, double clicking on the object on the canvas will bring "
+                 "the Properties TAB and populate it even if it was out of focus."),
             s6=_("You can change the parameters in this screen and the flow direction is like this:"),
             s7=_("Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> Geometry Object --> "
                  "Add tools (change param in Selected Tab) --> Generate CNCJob --> CNCJob Object --> "

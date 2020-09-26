@@ -215,7 +215,7 @@ class FlatCAMObj(QtCore.QObject):
 
         self.app.ui.selected_scroll_area.setWidget(self.ui)
         # self.ui.setMinimumWidth(100)
-        # self.ui.setMaximumWidth(self.app.ui.selected_tab.sizeHint().width())
+        # self.ui.setMaximumWidth(self.app.ui.properties_tab.sizeHint().width())
 
         self.muted_ui = False
 
