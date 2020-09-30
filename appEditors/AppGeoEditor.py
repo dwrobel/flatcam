@@ -399,7 +399,7 @@ class TextInputTool(AppTool):
 
     def hide_tool(self):
         self.text_tool_frame.hide()
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         # self.app.ui.splitter.setSizes([0, 1])
         self.app.ui.notebook.setTabText(2, _("Tool"))
 
@@ -557,8 +557,8 @@ class PaintOptionsTool(AppTool):
         else:
             self.paintoverlap_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintmargin"]:
-            self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        if self.app.defaults["tools_paintoffset"]:
+            self.paintmargin_entry.set_value(self.app.defaults["tools_paintoffset"])
         else:
             self.paintmargin_entry.set_value(0.0)
 
@@ -1023,7 +1023,7 @@ class TransformEditorTool(AppTool):
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 else:
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
             except AttributeError:
@@ -2523,12 +2523,12 @@ class FCSelect(DrawTool):
             # it will not work for 3rd method of click selection
             if not over_shape_list:
                 self.draw_app.selected = []
-                FlatCAMGeoEditor.draw_shape_idx = -1
+                AppGeoEditor.draw_shape_idx = -1
             else:
                 # if there are shapes under our click then advance through the list of them, one at the time in a
                 # circular way
-                FlatCAMGeoEditor.draw_shape_idx = (FlatCAMGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
-                obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
+                AppGeoEditor.draw_shape_idx = (AppGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                obj_to_add = over_shape_list[int(AppGeoEditor.draw_shape_idx)]
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
@@ -2550,7 +2550,7 @@ class FCSelect(DrawTool):
                     self.draw_app.selected = []
                     self.draw_app.selected.append(obj_to_add)
         except Exception as e:
-            log.error("[ERROR] FlatCAMGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
+            log.error("[ERROR] AppGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
 
         # if selection is done on canvas update the Tree in Selected Tab with the selection
         try:
@@ -2788,9 +2788,9 @@ class FCMove(FCShapeTool):
             else:
                 # if there are shapes under our click then advance through the list of them, one at the time in a
                 # circular way
-                self.draw_app.draw_shape_idx = (FlatCAMGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                self.draw_app.draw_shape_idx = (AppGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
                 try:
-                    obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
+                    obj_to_add = over_shape_list[int(AppGeoEditor.draw_shape_idx)]
                 except IndexError:
                     return
 
@@ -3099,8 +3099,8 @@ class FCEraser(FCShapeTool):
         self.geometry = []
         self.storage = self.draw_app.storage
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
@@ -3230,7 +3230,7 @@ class FCTransform(FCShapeTool):
 # ###############################################
 # ################ Main Application #############
 # ###############################################
-class FlatCAMGeoEditor(QtCore.QObject):
+class AppGeoEditor(QtCore.QObject):
 
     # will emit the name of the object that was just selected
     item_selected = QtCore.pyqtSignal(str)
@@ -3243,7 +3243,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # assert isinstance(app, FlatCAMApp.App), \
         #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
-        super(FlatCAMGeoEditor, self).__init__()
+        super(AppGeoEditor, self).__init__()
 
         self.app = app
         self.canvas = app.plotcanvas
@@ -3295,6 +3295,24 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.geo_parent = self.tw.invisibleRootItem()
 
+        layout.addStretch()
+
+        # Editor
+        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.exit_editor_button.setToolTip(
+            _("Exit from Editor.")
+        )
+        self.exit_editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        layout.addWidget(self.exit_editor_button)
+
+        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
+
         # ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn, "constructor": FCSelect},
@@ -3316,7 +3334,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # # ## Data
         self.active_tool = None
 
-        self.storage = FlatCAMGeoEditor.make_storage()
+        self.storage = AppGeoEditor.make_storage()
         self.utility = []
 
         # VisPy visuals
@@ -3415,7 +3433,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.options[opt] = float(text_value)
             except Exception as e:
                 entry.set_value(self.app.defaults[opt])
-                log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
+                log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
         def grid_changed(goption, gentry):
@@ -3511,14 +3529,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the appGUI Selected Tab
+        # Put ourselves in the appGUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
     def build_ui(self):
         """
-        Build the appGUI in the Selected Tab for this editor
+        Build the appGUI in the Properties Tab for this editor
 
         :return:
         """
@@ -3588,7 +3606,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.connect_canvas_event_handlers()
 
         # initialize working objects
-        self.storage = FlatCAMGeoEditor.make_storage()
+        self.storage = AppGeoEditor.make_storage()
         self.utility = []
         self.selected = []
 
@@ -3615,8 +3633,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.popmenu_properties.setVisible(False)
         self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
 
-        # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-        # sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        # prevent the user to change anything in the Properties Tab while the Geo Editor is active
+        # sel_tab_widget_list = self.app.ui.properties_tab.findChildren(QtWidgets.QWidget)
         # for w in sel_tab_widget_list:
         #     w.setEnabled(False)
 
@@ -3697,11 +3715,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # try:
         #     # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
-        #     sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        #     sel_tab_widget_list = self.app.ui.properties_tab.findChildren(QtWidgets.QWidget)
         #     for w in sel_tab_widget_list:
         #         w.setEnabled(True)
         # except Exception as e:
-        #     log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
+        #     log.debug("AppGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:
@@ -3727,7 +3745,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if self.app.is_legacy is False:
             # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-            # but those from FlatCAMGeoEditor
+            # but those from AppGeoEditor
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -3958,79 +3976,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
 
-        # self.storage = FlatCAMGeoEditor.make_storage()
+        # self.storage = AppGeoEditor.make_storage()
         self.replot()
-
-    def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
-        """
-        Imports the geometry from the given FlatCAM Geometry object
-        into the editor.
-
-        :param fcgeometry:      GeometryObject
-        :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
-        :return:                None
-        """
-        assert isinstance(fcgeometry, Geometry), "Expected a Geometry, got %s" % type(fcgeometry)
-
-        self.deactivate()
-        self.activate()
-
-        self.set_ui()
-
-        # Hide original geometry
-        self.fcgeometry = fcgeometry
-        fcgeometry.visible = False
-
-        # Set selection tolerance
-        DrawToolShape.tolerance = fcgeometry.drawing_tolerance * 10
-
-        self.select_tool("select")
-
-        if self.app.defaults['geometry_spindledir'] == 'CW':
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
-                milling_type = 1    # CCW motion = climb milling (spindle is rotating CW)
-            else:
-                milling_type = -1   # CW motion = conventional milling (spindle is rotating CW)
-        else:
-            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
-                milling_type = -1    # CCW motion = climb milling (spindle is rotating CCW)
-            else:
-                milling_type = 1   # CW motion = conventional milling (spindle is rotating CCW)
-
-        # Link shapes into editor.
-        if multigeo_tool:
-            self.multigeo_tool = multigeo_tool
-            geo_to_edit = self.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
-                                       orient_val=milling_type)
-            self.app.inform.emit(
-                '[WARNING_NOTCL] %s: %s %s: %s' % (
-                    _("Editing MultiGeo Geometry, tool"),
-                    str(self.multigeo_tool),
-                    _("with diameter"),
-                    str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
-                )
-            )
-        else:
-            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
-
-        for shape in geo_to_edit:
-            if shape is not None:
-                if type(shape) == Polygon:
-                    self.add_shape(DrawToolShape(shape.exterior))
-                    for inter in shape.interiors:
-                        self.add_shape(DrawToolShape(inter))
-                else:
-                    self.add_shape(DrawToolShape(shape))
-
-        self.replot()
-
-        # updated units
-        self.units = self.app.defaults['units'].upper()
-        self.decimals = self.app.decimals
-
-        # start with GRID toolbar activated
-        if self.app.ui.grid_snap_btn.isChecked() is False:
-            self.app.ui.grid_snap_btn.trigger()
 
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)
@@ -4105,8 +4052,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
@@ -4203,8 +4150,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                            "<b>Y</b>: %.4f&nbsp;" % (x, y))
         #
         # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
         self.app.plotcanvas.text_hud.text = \
@@ -4431,8 +4378,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.on_tool_select('move')
 
     def on_move_click(self):
+        try:
+            x, y = self.snap(self.x, self.y)
+        except TypeError:
+            return
         self.on_move()
-        self.active_tool.set_origin(self.snap(self.x, self.y))
+        self.active_tool.set_origin((x, y))
 
     def on_copy_click(self):
         if not self.selected:
@@ -4567,10 +4518,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 elif isinstance(geom, LineString) and geom is not None:
                     geom = LineString(geom.coords[::-1])
                 else:
-                    log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
+                    log.debug("AppGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
                               type(geom))
             except Exception as e:
-                log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
+                log.debug("AppGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
         shape_list = []
@@ -4682,6 +4633,77 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         return snap_x, snap_y
 
+    def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
+        """
+        Imports the geometry from the given FlatCAM Geometry object
+        into the editor.
+
+        :param fcgeometry:      GeometryObject
+        :param multigeo_tool:   A tool for the case of the edited geometry being of type 'multigeo'
+        :return:                None
+        """
+        assert isinstance(fcgeometry, Geometry), "Expected a Geometry, got %s" % type(fcgeometry)
+
+        self.deactivate()
+        self.activate()
+
+        self.set_ui()
+
+        # Hide original geometry
+        self.fcgeometry = fcgeometry
+        fcgeometry.visible = False
+
+        # Set selection tolerance
+        DrawToolShape.tolerance = fcgeometry.drawing_tolerance * 10
+
+        self.select_tool("select")
+
+        if self.app.defaults['geometry_spindledir'] == 'CW':
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = 1    # CCW motion = climb milling (spindle is rotating CW)
+            else:
+                milling_type = -1   # CW motion = conventional milling (spindle is rotating CW)
+        else:
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = -1    # CCW motion = climb milling (spindle is rotating CCW)
+            else:
+                milling_type = 1   # CW motion = conventional milling (spindle is rotating CCW)
+
+        # Link shapes into editor.
+        if multigeo_tool:
+            self.multigeo_tool = multigeo_tool
+            geo_to_edit = self.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
+                                       orient_val=milling_type)
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s: %s %s: %s' % (
+                    _("Editing MultiGeo Geometry, tool"),
+                    str(self.multigeo_tool),
+                    _("with diameter"),
+                    str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
+                )
+            )
+        else:
+            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
+
+        for shape in geo_to_edit:
+            if shape is not None:
+                if type(shape) == Polygon:
+                    self.add_shape(DrawToolShape(shape.exterior))
+                    for inter in shape.interiors:
+                        self.add_shape(DrawToolShape(inter))
+                else:
+                    self.add_shape(DrawToolShape(shape))
+
+        self.replot()
+
+        # updated units
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
+
+        # start with GRID toolbar activated
+        if self.app.ui.grid_snap_btn.isChecked() is False:
+            self.app.ui.grid_snap_btn.trigger()
+
     def update_fcgeometry(self, fcgeometry):
         """
         Transfers the geometry tool shape buffer to the selected geometry
@@ -4757,7 +4779,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         try:
             results = geo_shapes[0].geo
         except Exception as e:
-            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
@@ -4792,7 +4814,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         try:
             intersector = geo_shapes[0].geo
         except Exception as e:
-            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            log.debug("AppGeoEditor.intersection() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')

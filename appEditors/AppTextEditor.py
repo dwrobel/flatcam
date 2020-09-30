@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber
+from appGUI.GUIElements import FCFileSaveDialog, FCEntry, FCTextAreaExtended, FCTextAreaLineNumber, FCButton
 from PyQt5 import QtPrintSupport, QtWidgets, QtCore, QtGui
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -23,13 +23,14 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class TextEditor(QtWidgets.QWidget):
+class AppTextEditor(QtWidgets.QWidget):
 
     def __init__(self, app, text=None, plain_text=None, parent=None):
         super().__init__(parent=parent)
 
         self.app = app
         self.plain_text = plain_text
+        self.callback = lambda x: None
 
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
@@ -71,21 +72,26 @@ class TextEditor(QtWidgets.QWidget):
         if text:
             self.code_editor.setPlainText(text)
 
-        self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
+        self.buttonPreview = FCButton(_('Print Preview'))
+        self.buttonPreview.setIcon(QtGui.QIcon(self.app.resource_location + '/preview32.png'))
         self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
         self.buttonPreview.setMinimumWidth(100)
 
-        self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
+        self.buttonPrint = FCButton(_('Print Code'))
+        self.buttonPrint.setIcon(QtGui.QIcon(self.app.resource_location + '/printer32.png'))
         self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
+        self.buttonPrint.setMinimumWidth(100)
 
-        self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
+        self.buttonFind = FCButton(_('Find in Code'))
+        self.buttonFind.setIcon(QtGui.QIcon(self.app.resource_location + '/find32.png'))
         self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
         self.buttonFind.setMinimumWidth(100)
 
         self.entryFind = FCEntry()
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
 
-        self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
+        self.buttonReplace = FCButton(_('Replace With'))
+        self.buttonReplace.setIcon(QtGui.QIcon(self.app.resource_location + '/replace32.png'))
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
         self.buttonReplace.setMinimumWidth(100)
 
@@ -96,18 +102,29 @@ class TextEditor(QtWidgets.QWidget):
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
 
-        self.button_copy_all = QtWidgets.QPushButton(_('Copy All'))
+        self.button_copy_all = FCButton(_('Copy All'))
+        self.button_copy_all.setIcon(QtGui.QIcon(self.app.resource_location + '/copy_file32.png'))
         self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
         self.button_copy_all.setMinimumWidth(100)
 
-        self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
+        self.button_update_code = QtWidgets.QToolButton()
+        self.button_update_code.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
+        self.button_update_code.setToolTip(_("Save changes internally."))
+        self.button_update_code.hide()
+
+        self.buttonOpen = FCButton(_('Open Code'))
+        self.buttonOpen.setIcon(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
+        self.buttonOpen.setMinimumWidth(100)
 
-        self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
+        self.buttonSave = FCButton(_('Save Code'))
+        self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
         self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
+        self.buttonSave.setMinimumWidth(100)
 
-        self.buttonRun = QtWidgets.QPushButton(_('Run Code'))
+        self.buttonRun = FCButton(_('Run Code'))
         self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
+        self.buttonRun.setMinimumWidth(100)
 
         self.buttonRun.hide()
 
@@ -119,6 +136,7 @@ class TextEditor(QtWidgets.QWidget):
         editor_hlay_1.addWidget(self.entryReplace)
         editor_hlay_1.addWidget(self.sel_all_cb)
         editor_hlay_1.addWidget(self.button_copy_all)
+        editor_hlay_1.addWidget(self.button_update_code)
         self.work_editor_layout.addLayout(editor_hlay_1, 1, 0, 1, 5)
 
         editor_hlay_2 = QtWidgets.QHBoxLayout()
@@ -151,6 +169,9 @@ class TextEditor(QtWidgets.QWidget):
 
         self.code_edited = ''
 
+    def set_callback(self, callback):
+        self.callback = callback
+
     def handlePrint(self):
         self.app.defaults.report_usage("handlePrint()")
 
@@ -169,7 +190,26 @@ class TextEditor(QtWidgets.QWidget):
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
-        pass
+
+        self.buttonSave.setStyleSheet("QPushButton {color: red;}")
+        self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as_red.png'))
+
+    def load_text(self, text, move_to_start=False, move_to_end=False, clear_text=True, as_html=False):
+        self.code_editor.textChanged.disconnect()
+        if clear_text:
+            # first clear previous text in text editor (if any)
+            self.code_editor.clear()
+
+        self.code_editor.setReadOnly(False)
+        if as_html is False:
+            self.code_editor.setPlainText(text)
+        else:
+            self.code_editor.setHtml(text)
+        if move_to_start:
+            self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        elif move_to_end:
+            self.code_editor.moveCursor(QtGui.QTextCursor.End)
+        self.code_editor.textChanged.connect(self.handleTextChanged)
 
     def handleOpen(self, filt=None):
         self.app.defaults.report_usage("handleOpen()")
@@ -268,6 +308,8 @@ class TextEditor(QtWidgets.QWidget):
                     with open(filename, 'w') as f:
                         for line in my_gcode:
                             f.write(line)
+                self.buttonSave.setStyleSheet("")
+                self.buttonSave.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
             except FileNotFoundError:
                 self.app.inform.emit('[WARNING] %s' % _("No such file or directory"))
                 return
@@ -287,7 +329,6 @@ class TextEditor(QtWidgets.QWidget):
             callback()
 
     def handleFindGCode(self):
-        self.app.defaults.report_usage("handleFindGCode()")
 
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.entryFind.get_value()
@@ -298,7 +339,6 @@ class TextEditor(QtWidgets.QWidget):
             r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
-        self.app.defaults.report_usage("handleReplaceGCode()")
 
         old = self.entryFind.get_value()
         new = self.entryReplace.get_value()
@@ -331,7 +371,7 @@ class TextEditor(QtWidgets.QWidget):
     def handleCopyAll(self):
         text = self.code_editor.toPlainText()
         self.app.clipboard.setText(text)
-        self.app.inform.emit(_("Code Editor content copied to clipboard ..."))
+        self.app.inform.emit(_("Content copied to clipboard ..."))
 
     # def closeEvent(self, QCloseEvent):
     #     super().closeEvent(QCloseEvent)

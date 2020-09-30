@@ -71,19 +71,30 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
             _("Mirror vertically (X) or horizontally (Y).")
         )
 
-        self.empty_lb1 = QtWidgets.QLabel("")
-        grid0.addWidget(self.empty_lb1, 2, 0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
         grid0.addWidget(self.mirax_label, 3, 0)
         grid0.addWidget(self.mirror_axis_radio, 3, 1)
 
         # ## Axis Location
-        self.axis_location_radio = RadioSet([{'label': _('Point'), 'value': 'point'},
-                                             {'label': _('Box'), 'value': 'box'}])
+        self.axis_location_radio = RadioSet(
+            [
+                {'label': _('Point'), 'value': 'point'},
+                {'label': _('Box'), 'value': 'box'},
+                {'label': _('Hole Snap'), 'value': 'hole'},
+            ]
+        )
         self.axloc_label = QtWidgets.QLabel('%s:' % _("Axis Ref"))
         self.axloc_label.setToolTip(
-            _("The axis should pass through a <b>point</b> or cut\n "
-              "a specified <b>box</b> (in a FlatCAM object) through \n"
-              "the center.")
+            _("The coordinates used as reference for the mirror operation.\n"
+              "Can be:\n"
+              "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
+              "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
+              "bounding box of another object selected below\n"
+              "- Hole Snap-> a point defined by the center of a drill hone in a Excellon object")
         )
 
         grid0.addWidget(self.axloc_label, 4, 0)

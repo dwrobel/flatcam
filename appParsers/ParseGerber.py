@@ -2,20 +2,22 @@ from PyQt5 import QtWidgets
 from camlib import Geometry, arc, arc_angle, ApertureMacro, grace
 
 import numpy as np
-import re
-import logging
+# import re
+# import logging
 import traceback
 from copy import deepcopy
-import sys
+# import sys
 
-from shapely.ops import cascaded_union
-from shapely.affinity import scale, translate
+from shapely.ops import unary_union, linemerge
+# from shapely.affinity import scale, translate
 import shapely.affinity as affinity
-from shapely.geometry import box as shply_box, Polygon, LineString, Point, MultiPolygon
+from shapely.geometry import box as shply_box
 
 from lxml import etree as ET
-from appParsers.ParseSVG import svgparselength, getsvggeo
-import appTranslation as fcTranslate
+import ezdxf
+
+from appParsers.ParseDXF import *
+from appParsers.ParseSVG import svgparselength, getsvggeo, svgparse_viewbox
 
 import gettext
 import builtins
@@ -140,12 +142,6 @@ class Gerber(Geometry):
 
         self.source_file = ''
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from Geometry.
-        self.ser_attrs += ['int_digits', 'frac_digits', 'apertures',
-                           'aperture_macros', 'solid_geometry', 'source_file']
-
         # ### Parser patterns ## ##
         # FS - Format Specification
         # The format of X and Y must be the same!
@@ -231,6 +227,11 @@ class Gerber(Geometry):
         self.conversion_done = False
 
         self.use_buffer_for_union = self.app.defaults["gerber_use_buffer_for_union"]
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from Geometry.
+        self.ser_attrs += ['apertures', 'int_digits', 'frac_digits', 'aperture_macros', 'solid_geometry', 'source_file']
 
     def aperture_parse(self, apertureId, apertureType, apParameters):
         """
@@ -502,10 +503,10 @@ class Gerber(Geometry):
 
                     if buff_length > 0:
                         if current_polarity == 'D':
-                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.union(unary_union(poly_buffer))
 
                         else:
-                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.difference(unary_union(poly_buffer))
 
                         # follow_buffer = []
                         poly_buffer = []
@@ -949,6 +950,41 @@ class Gerber(Geometry):
                             # only add the point if it's a new one otherwise skip it (harder to process)
                             if path[-1] != [current_x, current_y]:
                                 path.append([current_x, current_y])
+                            elif len(path) == 1:
+                                # it's a flash that is done by moving with pen up D2 and then just a pen down D1
+                                # Reset path starting point
+                                path = [[current_x, current_y]]
+
+                                # --- BUFFERED ---
+                                # Draw the flash
+                                # this treats the case when we are storing geometry as paths
+                                geo_dict = {}
+                                geo_flash = Point([current_x, current_y])
+                                follow_buffer.append(geo_flash)
+                                geo_dict['follow'] = geo_flash
+
+                                # this treats the case when we are storing geometry as solids
+                                flash = self.create_flash_geometry(
+                                    Point([current_x, current_y]),
+                                    self.apertures[current_aperture],
+                                    self.steps_per_circle
+                                )
+                                if not flash.is_empty:
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(flash.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(flash)
+
+                                    if self.is_lpc is True:
+                                        geo_dict['clear'] = flash
+                                    else:
+                                        geo_dict['solid'] = flash
+
+                                if current_aperture not in self.apertures:
+                                    self.apertures[current_aperture] = {}
+                                if 'geometry' not in self.apertures[current_aperture]:
+                                    self.apertures[current_aperture]['geometry'] = []
+                                self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
@@ -1497,7 +1533,7 @@ class Gerber(Geometry):
 
             else:
                 log.debug("Union by union()...")
-                new_poly = cascaded_union(poly_buffer)
+                new_poly = unary_union(poly_buffer)
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
                 log.warning("Union done.")
 
@@ -1601,7 +1637,7 @@ class Gerber(Geometry):
                 p2 = Point(loc[0], loc[1] - 0.5 * (height - width))
                 c1 = p1.buffer(width * 0.5, int(steps_per_circle / 4))
                 c2 = p2.buffer(width * 0.5, int(steps_per_circle / 4))
-            return cascaded_union([c1, c2]).convex_hull
+            return unary_union([c1, c2]).convex_hull
 
         if aperture['type'] == 'P':  # Regular polygon
             loc = location.coords[0]
@@ -1750,16 +1786,16 @@ class Gerber(Geometry):
         self.scale(factor, factor)
         return factor
 
-    def import_svg(self, filename, object_type='gerber', flip=True, units='MM'):
+    def import_svg(self, filename, object_type='gerber', flip=True, units=None):
         """
         Imports shapes from an SVG file into the object's geometry.
 
-        :param filename: Path to the SVG file.
-        :type filename: str
-        :param object_type: parameter passed further along
-        :param flip: Flip the vertically.
-        :type flip: bool
-        :param units: FlatCAM units
+        :param filename:        Path to the SVG file.
+        :type filename:         str
+        :param object_type:     parameter passed further along
+        :param flip:            Flip the vertically.
+        :type flip:             bool
+        :param units:           FlatCAM units
         :return: None
         """
 
@@ -1774,7 +1810,10 @@ class Gerber(Geometry):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
 
-        geos = getsvggeo(svg_root, 'gerber')
+        units = self.app.defaults['units'] if units is None else units
+        res = self.app.defaults['gerber_circle_steps']
+        factor = svgparse_viewbox(svg_root)
+        geos = getsvggeo(svg_root, 'gerber', units=units, res=res, factor=factor)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
@@ -1801,7 +1840,7 @@ class Gerber(Geometry):
                 geo_qrcode = []
                 geo_qrcode.append(Polygon(geos[0].exterior))
                 for i_el in geos[0].interiors:
-                    geo_qrcode.append(Polygon(i_el).buffer(0))
+                    geo_qrcode.append(Polygon(i_el).buffer(0, resolution=res))
                 for poly in geo_qrcode:
                     geos.append(poly)
 
@@ -1835,6 +1874,56 @@ class Gerber(Geometry):
             new_el['solid'] = pol
             new_el['follow'] = pol.exterior
             self.apertures['0']['geometry'].append(new_el)
+
+    def import_dxf_as_gerber(self, filename, units='MM'):
+        """
+        Imports shapes from an DXF file into the Gerberobject geometry.
+
+        :param filename:    Path to the DXF file.
+        :type filename:     str
+        :param units:       Application units
+        :return: None
+        """
+
+        log.debug("Parsing DXF file geometry into a Gerber object geometry.")
+        # Parse into list of shapely objects
+        dxf = ezdxf.readfile(filename)
+        geos = getdxfgeo(dxf)
+        # trying to optimize the resulting geometry by merging contiguous lines
+        geos = linemerge(geos)
+
+        # Add to object
+        if self.solid_geometry is None:
+            self.solid_geometry = []
+
+        if type(self.solid_geometry) is list:
+            if type(geos) is list:
+                self.solid_geometry += geos
+            else:
+                self.solid_geometry.append(geos)
+        else:  # It's shapely geometry
+            self.solid_geometry = [self.solid_geometry, geos]
+
+        # flatten the self.solid_geometry list for import_dxf() to import DXF as Gerber
+        flat_geo = list(self.flatten_list(self.solid_geometry))
+        if flat_geo:
+            self.solid_geometry = unary_union(flat_geo)
+            self.follow_geometry = self.solid_geometry
+        else:
+            return "fail"
+
+        # create the self.apertures data structure
+        if '0' not in self.apertures:
+            self.apertures['0'] = {}
+            self.apertures['0']['type'] = 'REG'
+            self.apertures['0']['size'] = 0.0
+            self.apertures['0']['geometry'] = []
+
+        for pol in flat_geo:
+            new_el = {}
+            new_el['solid'] = pol
+            new_el['follow'] = pol
+            self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
         """

@@ -570,6 +570,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         obj.options["name"] = name
 
         obj.set_ui(obj.ui_type(app=self.app))
+        # a way to signal that the object was fully loaded
+        obj.load_complete = True
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]
@@ -1011,7 +1013,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     def on_row_activated(self, index):
         if index.isValid():
             if index.internalPointer().parent_item != self.root_item:
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
         self.on_item_activated(index)
 
     def on_row_selected(self, obj_name):

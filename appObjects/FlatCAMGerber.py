@@ -41,66 +41,6 @@ class GerberObject(FlatCAMObj, Gerber):
 
     ui_type = GerberObjectUI
 
-    @staticmethod
-    def merge(grb_list, grb_final):
-        """
-        Merges the geometry of objects in geo_list into
-        the geometry of geo_final.
-
-        :param grb_list: List of GerberObject Objects to join.
-        :param grb_final: Destination GeometryObject object.
-        :return: None
-        """
-
-        if grb_final.solid_geometry is None:
-            grb_final.solid_geometry = []
-            grb_final.follow_geometry = []
-
-        if not grb_final.apertures:
-            grb_final.apertures = {}
-
-        if type(grb_final.solid_geometry) is not list:
-            grb_final.solid_geometry = [grb_final.solid_geometry]
-            grb_final.follow_geometry = [grb_final.follow_geometry]
-
-        for grb in grb_list:
-
-            # Expand lists
-            if type(grb) is list:
-                GerberObject.merge(grb_list=grb, grb_final=grb_final)
-            else:   # If not list, just append
-                for option in grb.options:
-                    if option != 'name':
-                        try:
-                            grb_final.options[option] = grb.options[option]
-                        except KeyError:
-                            log.warning("Failed to copy option.", option)
-
-                try:
-                    for geos in grb.solid_geometry:
-                        grb_final.solid_geometry.append(geos)
-                        grb_final.follow_geometry.append(geos)
-                except TypeError:
-                    grb_final.solid_geometry.append(grb.solid_geometry)
-                    grb_final.follow_geometry.append(grb.solid_geometry)
-
-                for ap in grb.apertures:
-                    if ap not in grb_final.apertures:
-                        grb_final.apertures[ap] = grb.apertures[ap]
-                    else:
-                        # create a list of integers out of the grb.apertures keys and find the max of that value
-                        # then, the aperture duplicate is assigned an id value incremented with 1,
-                        # and finally made string because the apertures dict keys are strings
-                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
-                        grb_final.apertures[max_ap] = {}
-                        grb_final.apertures[max_ap]['geometry'] = []
-
-                        for k, v in grb.apertures[ap].items():
-                            grb_final.apertures[max_ap][k] = deepcopy(v)
-
-        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
-        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
-
     def __init__(self, name):
         self.decimals = self.app.decimals
 
@@ -161,8 +101,8 @@ class GerberObject(FlatCAMObj, Gerber):
         # keep track if the UI is built so we don't have to build it every time
         self.ui_build = False
 
-        # build only once the aperture storage (takes time)
-        self.build_aperture_storage = False
+        # aperture marking storage
+        self.mark_shapes_storage = {}
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -200,11 +140,15 @@ class GerberObject(FlatCAMObj, Gerber):
         # Fill form fields only on object create
         self.to_form()
 
-        assert isinstance(self.ui, GerberObjectUI)
+        assert isinstance(self.ui, GerberObjectUI), \
+            "Expected a GerberObjectUI, got %s" % type(self.ui)
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
+
+        # Editor
+        self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # Tools
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
@@ -844,27 +788,17 @@ class GerberObject(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             # add the shapes storage for marking apertures
-            if self.build_aperture_storage is False:
-                self.build_aperture_storage = True
-
-                if self.app.is_legacy is False:
-                    for ap_code in self.apertures:
-                        self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=1)
-                else:
-                    for ap_code in self.apertures:
-                        self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
-                                                                          name=self.options['name'] + str(ap_code))
+            for ap_code in self.apertures:
+                self.mark_shapes_storage[ap_code] = []
 
             self.ui.apertures_table.setVisible(True)
-            for ap in self.mark_shapes:
-                self.mark_shapes[ap].enabled = True
+            self.mark_shapes.enabled = True
 
             self.ui.mark_all_cb.setVisible(True)
             self.ui.mark_all_cb.setChecked(False)
             self.build_ui()
         else:
             self.ui.apertures_table.setVisible(False)
-
             self.ui.mark_all_cb.setVisible(False)
 
             # on hide disable all mark plots
@@ -872,10 +806,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 for row in range(self.ui.apertures_table.rowCount()):
                     self.ui.apertures_table.cellWidget(row, 5).set_value(False)
                 self.clear_plot_apertures()
-
-                # for ap in list(self.mark_shapes.keys()):
-                #     # self.mark_shapes[ap].enabled = False
-                #     del self.mark_shapes[ap]
+                self.mark_shapes.enabled = False
             except Exception as e:
                 log.debug(" GerberObject.on_aperture_visibility_changed() --> %s" % str(e))
 
@@ -1005,7 +936,7 @@ class GerberObject(FlatCAMObj, Gerber):
             log.debug("GerberObject.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, run_thread=True, **kwargs):
+    def plot_aperture(self, run_thread=False, **kwargs):
         """
 
         :param run_thread: if True run the aperture plot as a thread in a worker
@@ -1026,12 +957,12 @@ class GerberObject(FlatCAMObj, Gerber):
         else:
             color = self.app.defaults['gerber_plot_fill']
 
-        if 'marked_aperture' not in kwargs:
-            return
-        else:
+        if 'marked_aperture' in kwargs:
             aperture_to_plot_mark = kwargs['marked_aperture']
             if aperture_to_plot_mark is None:
                 return
+        else:
+            return
 
         if 'visible' not in kwargs:
             visibility = True
@@ -1046,15 +977,17 @@ class GerberObject(FlatCAMObj, Gerber):
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
                                 geo = elem['solid']
-                                if type(geo) == Polygon or type(geo) == LineString:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                        face_color=color, visible=visibility)
-                                else:
+                                try:
                                     for el in geo:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
-                                                            face_color=color, visible=visibility)
+                                        shape_key = self.add_mark_shape(shape=el, color=color, face_color=color,
+                                                                        visible=visibility)
+                                        self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
+                                except TypeError:
+                                    shape_key = self.add_mark_shape(shape=geo, color=color, face_color=color,
+                                                                    visible=visibility)
+                                    self.mark_shapes_storage[aperture_to_plot_mark].append(shape_key)
 
-                    self.mark_shapes[aperture_to_plot_mark].redraw()
+                    self.mark_shapes.redraw()
 
                 except (ObjectDeleted, AttributeError):
                     self.clear_plot_apertures()
@@ -1073,24 +1006,19 @@ class GerberObject(FlatCAMObj, Gerber):
         :return:
         """
 
-        if self.mark_shapes:
+        if self.mark_shapes_storage:
             if aperture == 'all':
-                for apid in list(self.apertures.keys()):
-                    try:
-                        if self.app.is_legacy is True:
-                            self.mark_shapes[apid].clear(update=False)
-                        else:
-                            self.mark_shapes[apid].clear(update=True)
-                    except Exception as e:
-                        log.debug("GerberObject.clear_plot_apertures() 'all' --> %s" % str(e))
+                val = False if self.app.is_legacy is True else True
+                self.mark_shapes.clear(update=val)
             else:
-                try:
-                    if self.app.is_legacy is True:
-                        self.mark_shapes[aperture].clear(update=False)
-                    else:
-                        self.mark_shapes[aperture].clear(update=True)
-                except Exception as e:
-                    log.debug("GerberObject.clear_plot_apertures() 'aperture' --> %s" % str(e))
+                for shape_key in self.mark_shapes_storage[aperture]:
+                    try:
+                        self.mark_shapes.remove(shape_key)
+                    except Exception as e:
+                        log.debug("GerberObject.clear_plot_apertures() -> %s" % str(e))
+
+                self.mark_shapes_storage[aperture] = []
+                self.mark_shapes.redraw()
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
@@ -1117,6 +1045,7 @@ class GerberObject(FlatCAMObj, Gerber):
         try:
             aperture = self.ui.apertures_table.item(cw_row, 1).text()
         except AttributeError:
+            self.ui_connect()
             return
 
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
@@ -1124,7 +1053,6 @@ class GerberObject(FlatCAMObj, Gerber):
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
             self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
                                marked_aperture=aperture, visible=True, run_thread=True)
-            # self.mark_shapes[aperture].redraw()
         else:
             self.marked_rows.append(False)
             self.clear_plot_apertures(aperture=aperture)
@@ -1228,7 +1156,8 @@ class GerberObject(FlatCAMObj, Gerber):
                     for geo_elem in self.apertures['0']['geometry']:
                         if 'solid' in geo_elem:
                             geo = geo_elem['solid']
-                            if not geo.is_empty:
+                            if not geo.is_empty and not isinstance(geo, LineString) and \
+                                    not isinstance(geo, MultiLineString) and not isinstance(geo, Point):
                                 gerber_code += 'G36*\n'
                                 geo_coords = list(geo.exterior.coords)
                                 # first command is a move with pen-up D02 at the beginning of the geo
@@ -1287,6 +1216,53 @@ class GerberObject(FlatCAMObj, Gerber):
                                         gerber_code += 'D02*\n'
                                         gerber_code += 'G37*\n'
                                     gerber_code += '%LPD*%\n'
+                            elif isinstance(geo, LineString) or isinstance(geo, MultiLineString) or \
+                                    isinstance(geo, Point):
+                                try:
+                                    if not geo.is_empty:
+                                        if isinstance(geo, Point):
+                                            if g_zeros == 'T':
+                                                x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                                gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+                                            else:
+                                                x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                                gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+                                        else:
+                                            geo_coords = list(geo.coords)
+                                            # first command is a move with pen-up D02 at the beginning of the geo
+                                            if g_zeros == 'T':
+                                                x_formatted, y_formatted = tz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+                                            else:
+                                                x_formatted, y_formatted = lz_format(
+                                                    geo_coords[0][0], geo_coords[0][1], factor)
+                                                gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                               yform=y_formatted)
+
+                                            prev_coord = geo_coords[0]
+                                            for coord in geo_coords[1:]:
+                                                if coord != prev_coord:
+                                                    if g_zeros == 'T':
+                                                        x_formatted, y_formatted = tz_format(coord[0], coord[1],
+                                                                                             factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+                                                    else:
+                                                        x_formatted, y_formatted = lz_format(coord[0], coord[1],
+                                                                                             factor)
+                                                        gerber_code += "X{xform}Y{yform}D01*\n".format(
+                                                            xform=x_formatted,
+                                                            yform=y_formatted)
+                                                prev_coord = coord
+
+                                            # gerber_code += "D02*\n"
+                                except Exception as e:
+                                    log.debug("FlatCAMObj.GerberObject.export_gerber() 'follow' --> %s" % str(e))
                         if 'clear' in geo_elem:
                             geo = geo_elem['clear']
                             if not geo.is_empty:
@@ -1482,6 +1458,66 @@ class GerberObject(FlatCAMObj, Gerber):
             return 'fail'
 
         return gerber_code
+
+    @staticmethod
+    def merge(grb_list, grb_final):
+        """
+        Merges the geometry of objects in geo_list into
+        the geometry of geo_final.
+
+        :param grb_list: List of GerberObject Objects to join.
+        :param grb_final: Destination GeometryObject object.
+        :return: None
+        """
+
+        if grb_final.solid_geometry is None:
+            grb_final.solid_geometry = []
+            grb_final.follow_geometry = []
+
+        if not grb_final.apertures:
+            grb_final.apertures = {}
+
+        if type(grb_final.solid_geometry) is not list:
+            grb_final.solid_geometry = [grb_final.solid_geometry]
+            grb_final.follow_geometry = [grb_final.follow_geometry]
+
+        for grb in grb_list:
+
+            # Expand lists
+            if type(grb) is list:
+                GerberObject.merge(grb_list=grb, grb_final=grb_final)
+            else:   # If not list, just append
+                for option in grb.options:
+                    if option != 'name':
+                        try:
+                            grb_final.options[option] = grb.options[option]
+                        except KeyError:
+                            log.warning("Failed to copy option.", option)
+
+                try:
+                    for geos in grb.solid_geometry:
+                        grb_final.solid_geometry.append(geos)
+                        grb_final.follow_geometry.append(geos)
+                except TypeError:
+                    grb_final.solid_geometry.append(grb.solid_geometry)
+                    grb_final.follow_geometry.append(grb.solid_geometry)
+
+                for ap in grb.apertures:
+                    if ap not in grb_final.apertures:
+                        grb_final.apertures[ap] = grb.apertures[ap]
+                    else:
+                        # create a list of integers out of the grb.apertures keys and find the max of that value
+                        # then, the aperture duplicate is assigned an id value incremented with 1,
+                        # and finally made string because the apertures dict keys are strings
+                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
+                        grb_final.apertures[max_ap] = {}
+                        grb_final.apertures[max_ap]['geometry'] = []
+
+                        for k, v in grb.apertures[ap].items():
+                            grb_final.apertures[max_ap][k] = deepcopy(v)
+
+        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
+        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
 
     def mirror(self, axis, point):
         Gerber.mirror(self, axis=axis, point=point)

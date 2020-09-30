@@ -1,5 +1,4 @@
-import collections
-from tclCommands.TclCommand import TclCommandSignaled
+from tclCommands.TclCommand import *
 
 
 class TclCommandAddRectangle(TclCommandSignaled):
@@ -52,17 +51,23 @@ class TclCommandAddRectangle(TclCommandSignaled):
         :return: None or exception
         """
 
-        obj_name = args['name']
+        name = args['name']
         x0 = args['x0']
         y0 = args['y0']
         x1 = args['x1']
         y1 = args['y1']
 
+        if unnamed_args:
+            self.raise_tcl_error(
+                "Too many arguments. Correct format: %s" % '["add_rectangle geo_name xmin ymin xmax ymax"]')
+
         try:
-            obj = self.app.collection.get_by_name(str(obj_name))
+            obj = self.app.collection.get_by_name(str(name))
         except Exception:
-            return "Could not retrieve object: %s" % obj_name
+            return "Could not retrieve object: %s" % name
         if obj is None:
-            return "Object not found: %s" % obj_name
+            return "Object not found: %s" % name
+        if obj.kind != 'geometry':
+            self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         obj.add_polygon([(x0, y0), (x1, y0), (x1, y1), (x0, y1)])

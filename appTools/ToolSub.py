@@ -5,7 +5,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
@@ -37,158 +37,17 @@ class ToolSub(AppTool):
     # meaning geometry that was deformed
     aperture_processing_finished = QtCore.pyqtSignal(str, list)
 
-    toolName = _("Subtract Tool")
-
     def __init__(self, app):
         self.app = app
         self.decimals = self.app.decimals
 
         AppTool.__init__(self, app)
 
-        self.tools_frame = QtWidgets.QFrame()
-        self.tools_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.tools_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.tools_frame.setLayout(self.tools_box)
-
-        # Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.tools_box.addWidget(title_label)
-
-        # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_layout)
-
-        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
-        form_layout.addRow(self.gerber_title)
-
-        # Target Gerber Object
-        self.target_gerber_combo = FCComboBox()
-        self.target_gerber_combo.setModel(self.app.collection)
-        self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        # self.target_gerber_combo.setCurrentIndex(1)
-        self.target_gerber_combo.is_last = True
-        self.target_gerber_combo.obj_type = "Gerber"
-
-        self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
-        self.target_gerber_label.setToolTip(
-            _("Gerber object from which to subtract\n"
-              "the subtractor Gerber object.")
-        )
-
-        form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
-
-        # Substractor Gerber Object
-        self.sub_gerber_combo = FCComboBox()
-        self.sub_gerber_combo.setModel(self.app.collection)
-        self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sub_gerber_combo.is_last = True
-        self.sub_gerber_combo.obj_type = "Gerber"
-
-        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
-        self.sub_gerber_label.setToolTip(
-            _("Gerber object that will be subtracted\n"
-              "from the target Gerber object.")
-        )
-        e_lab_1 = QtWidgets.QLabel('')
-
-        form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
-
-        self.intersect_btn = FCButton(_('Subtract Gerber'))
-        self.intersect_btn.setToolTip(
-            _("Will remove the area occupied by the subtractor\n"
-              "Gerber from the Target Gerber.\n"
-              "Can be used to remove the overlapping silkscreen\n"
-              "over the soldermask.")
-        )
-        self.intersect_btn.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.tools_box.addWidget(self.intersect_btn)
-        self.tools_box.addWidget(e_lab_1)
-
-        # Form Layout
-        form_geo_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_geo_layout)
-
-        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
-        form_geo_layout.addRow(self.geo_title)
-
-        # Target Geometry Object
-        self.target_geo_combo = FCComboBox()
-        self.target_geo_combo.setModel(self.app.collection)
-        self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        # self.target_geo_combo.setCurrentIndex(1)
-        self.target_geo_combo.is_last = True
-        self.target_geo_combo.obj_type = "Geometry"
-
-        self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
-        self.target_geo_label.setToolTip(
-            _("Geometry object from which to subtract\n"
-              "the subtractor Geometry object.")
-        )
-
-        form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
-
-        # Substractor Geometry Object
-        self.sub_geo_combo = FCComboBox()
-        self.sub_geo_combo.setModel(self.app.collection)
-        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.sub_geo_combo.is_last = True
-        self.sub_geo_combo.obj_type = "Geometry"
-
-        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
-        self.sub_geo_label.setToolTip(
-            _("Geometry object that will be subtracted\n"
-              "from the target Geometry object.")
-        )
-        e_lab_1 = QtWidgets.QLabel('')
-
-        form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
-
-        self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
-        self.tools_box.addWidget(self.close_paths_cb)
-
-        self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
-        self.intersect_geo_btn.setToolTip(
-            _("Will remove the area occupied by the subtractor\n"
-              "Geometry from the Target Geometry.")
-        )
-        self.intersect_geo_btn.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.tools_box.addWidget(self.intersect_geo_btn)
-        self.tools_box.addWidget(e_lab_1)
-
-        self.tools_box.addStretch()
-
-        # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
-        self.reset_button.setToolTip(
-            _("Will reset the tool parameters.")
-        )
-        self.reset_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.tools_box.addWidget(self.reset_button)
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = SubUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         # QTimer for periodic check
         self.check_thread = QtCore.QTimer()
@@ -227,11 +86,14 @@ class ToolSub(AppTool):
         self.pool = self.app.pool
         self.results = []
 
-        self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
-        self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
+        # Signals
+        self.ui.intersect_btn.clicked.connect(self.on_grb_intersection_click)
+        self.ui.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
+
+        # Custom Signals
         self.job_finished.connect(self.on_job_finished)
         self.aperture_processing_finished.connect(self.new_gerber_object)
-        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         AppTool.install(self, icon, separator, shortcut='Alt+W', **kwargs)
@@ -269,8 +131,8 @@ class ToolSub(AppTool):
         self.new_solid_geometry = []
         self.target_options.clear()
 
-        self.tools_frame.show()
-        self.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
+        self.ui.tools_frame.show()
+        self.ui.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 
     def on_grb_intersection_click(self):
         # reset previous values
@@ -280,7 +142,7 @@ class ToolSub(AppTool):
 
         self.sub_type = "gerber"
 
-        self.target_grb_obj_name = self.target_gerber_combo.currentText()
+        self.target_grb_obj_name = self.ui.target_gerber_combo.currentText()
         if self.target_grb_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Target object loaded."))
             return
@@ -295,7 +157,7 @@ class ToolSub(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
-        self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
+        self.sub_grb_obj_name = self.ui.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Subtractor object loaded."))
             return
@@ -484,10 +346,9 @@ class ToolSub(AppTool):
 
         self.sub_type = "geo"
 
-        self.target_geo_obj_name = self.target_geo_combo.currentText()
+        self.target_geo_obj_name = self.ui.target_geo_combo.currentText()
         if self.target_geo_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Target object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Target object loaded."))
             return
 
         # Get target object.
@@ -495,14 +356,12 @@ class ToolSub(AppTool):
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.target_geo_obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.target_geo_obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
-        self.sub_geo_obj_name = self.sub_geo_combo.currentText()
+        self.sub_geo_obj_name = self.ui.sub_geo_combo.currentText()
         if self.sub_geo_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Subtractor object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Subtractor object loaded."))
             return
 
         # Get substractor object.
@@ -510,8 +369,7 @@ class ToolSub(AppTool):
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.sub_geo_obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.sub_geo_obj_name))
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
         if self.sub_geo_obj.multigeo:
@@ -528,11 +386,8 @@ class ToolSub(AppTool):
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
             self.new_tools[tool] = {}
-            for key in self.target_geo_obj.tools[tool]:
-                if key == 'solid_geometry':
-                    self.new_tools[tool][key] = []
-                else:
-                    self.new_tools[tool][key] = deepcopy(self.target_geo_obj.tools[tool][key])
+            for key, v in self.target_geo_obj.tools[tool]:
+                self.new_tools[tool][key] = [] if key == 'solid_geometry' else deepcopy(v)
 
         # add the promises
         if self.target_geo_obj.multigeo:
@@ -549,12 +404,10 @@ class ToolSub(AppTool):
         if self.target_geo_obj.multigeo:
             for tool in self.target_geo_obj.tools:
                 geo = self.target_geo_obj.tools[tool]['solid_geometry']
-                self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
-                                           'params': [tool, geo]})
+                self.app.worker_task.emit({'fcn': self.toolgeo_intersection, 'params': [tool, geo]})
         else:
             geo = self.target_geo_obj.solid_geometry
-            self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
-                                       'params': ["single", geo]})
+            self.app.worker_task.emit({'fcn': self.toolgeo_intersection, 'params': ["single", geo]})
 
     def toolgeo_intersection(self, tool, geo):
         new_geometry = []
@@ -567,7 +420,7 @@ class ToolSub(AppTool):
 
         with self.app.proc_container.new(text):
             # resulting paths are closed resulting into Polygons
-            if self.close_paths_cb.isChecked():
+            if self.ui.close_paths_cb.isChecked():
                 new_geo = (cascaded_union(geo)).difference(self.sub_union)
                 if new_geo:
                     if not new_geo.is_empty:
@@ -662,14 +515,12 @@ class ToolSub(AppTool):
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.app_obj.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('Generating new object failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
                 return
             # Register recent file
             self.app.file_opened.emit('geometry', outname)
             # GUI feedback
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Created"), outname))
+            self.app.inform.emit('[success] %s: %s' % (_("Created"), outname))
 
             # cleanup
             self.new_tools.clear()
@@ -731,13 +582,12 @@ class ToolSub(AppTool):
         """
         if succcess is True:
             if self.sub_type == "gerber":
-                outname = self.target_gerber_combo.currentText() + '_sub'
+                outname = self.ui.target_gerber_combo.currentText() + '_sub'
 
                 # intersection jobs finished, start the creation of solid_geometry
-                self.app.worker_task.emit({'fcn': self.new_gerber_object,
-                                           'params': [outname]})
+                self.app.worker_task.emit({'fcn': self.new_gerber_object, 'params': [outname]})
             else:
-                outname = self.target_geo_combo.currentText() + '_sub'
+                outname = self.ui.target_geo_combo.currentText() + '_sub'
 
                 # intersection jobs finished, start the creation of solid_geometry
                 self.app.worker_task.emit({'fcn': self.new_geo_object, 'params': [outname]})
@@ -745,13 +595,189 @@ class ToolSub(AppTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('Generating new object failed.'))
 
     def reset_fields(self):
-        self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
 
-        self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.ui.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.ui.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
 
     @staticmethod
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]
-# end of file
+
+
+class SubUI:
+
+    toolName = _("Subtract Tool")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+
+        # ## Title
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(title_label)
+        self.layout.addWidget(QtWidgets.QLabel(""))
+
+        self.tools_frame = QtWidgets.QFrame()
+        self.tools_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.tools_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.tools_frame.setLayout(self.tools_box)
+
+        # Form Layout
+        form_layout = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form_layout)
+
+        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
+        form_layout.addRow(self.gerber_title)
+
+        # Target Gerber Object
+        self.target_gerber_combo = FCComboBox()
+        self.target_gerber_combo.setModel(self.app.collection)
+        self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        # self.target_gerber_combo.setCurrentIndex(1)
+        self.target_gerber_combo.is_last = True
+        self.target_gerber_combo.obj_type = "Gerber"
+
+        self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
+        self.target_gerber_label.setToolTip(
+            _("Gerber object from which to subtract\n"
+              "the subtractor Gerber object.")
+        )
+
+        form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
+
+        # Substractor Gerber Object
+        self.sub_gerber_combo = FCComboBox()
+        self.sub_gerber_combo.setModel(self.app.collection)
+        self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sub_gerber_combo.is_last = True
+        self.sub_gerber_combo.obj_type = "Gerber"
+
+        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
+        self.sub_gerber_label.setToolTip(
+            _("Gerber object that will be subtracted\n"
+              "from the target Gerber object.")
+        )
+        e_lab_1 = QtWidgets.QLabel('')
+
+        form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
+
+        self.intersect_btn = FCButton(_('Subtract Gerber'))
+        self.intersect_btn.setToolTip(
+            _("Will remove the area occupied by the subtractor\n"
+              "Gerber from the Target Gerber.\n"
+              "Can be used to remove the overlapping silkscreen\n"
+              "over the soldermask.")
+        )
+        self.intersect_btn.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.tools_box.addWidget(self.intersect_btn)
+        self.tools_box.addWidget(e_lab_1)
+
+        # Form Layout
+        form_geo_layout = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form_geo_layout)
+
+        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
+        form_geo_layout.addRow(self.geo_title)
+
+        # Target Geometry Object
+        self.target_geo_combo = FCComboBox()
+        self.target_geo_combo.setModel(self.app.collection)
+        self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        # self.target_geo_combo.setCurrentIndex(1)
+        self.target_geo_combo.is_last = True
+        self.target_geo_combo.obj_type = "Geometry"
+
+        self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
+        self.target_geo_label.setToolTip(
+            _("Geometry object from which to subtract\n"
+              "the subtractor Geometry object.")
+        )
+
+        form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
+
+        # Substractor Geometry Object
+        self.sub_geo_combo = FCComboBox()
+        self.sub_geo_combo.setModel(self.app.collection)
+        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.sub_geo_combo.is_last = True
+        self.sub_geo_combo.obj_type = "Geometry"
+
+        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
+        self.sub_geo_label.setToolTip(
+            _("Geometry object that will be subtracted\n"
+              "from the target Geometry object.")
+        )
+        e_lab_1 = QtWidgets.QLabel('')
+
+        form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
+        self.tools_box.addWidget(self.close_paths_cb)
+
+        self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
+        self.intersect_geo_btn.setToolTip(
+            _("Will remove the area occupied by the subtractor\n"
+              "Geometry from the Target Geometry.")
+        )
+        self.intersect_geo_btn.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.tools_box.addWidget(self.intersect_geo_btn)
+        self.tools_box.addWidget(e_lab_1)
+
+        self.tools_box.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.tools_box.addWidget(self.reset_button)
+
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

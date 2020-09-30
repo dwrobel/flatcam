@@ -12,15 +12,19 @@
 # ##########################################################
 from PyQt5 import QtCore
 
-from shapely.geometry import Polygon, Point, LineString
+from shapely.geometry import Polygon, Point, LineString, MultiPoint
 from shapely.ops import unary_union
 
 from appGUI.VisPyVisuals import ShapeCollection
 from appTool import AppTool
 
 from copy import deepcopy
+import collections
+import traceback
 
 import numpy as np
+# from voronoi import Voronoi
+# from voronoi import Polygon as voronoi_polygon
 
 import gettext
 import appTranslation as fcTranslate
@@ -72,6 +76,84 @@ class LoudDict(dict):
         """
         Assigns a function as callback on item change. The callback
         will receive the key of the object that was changed.
+
+        :param callback: Function to call on item change.
+        :type callback: func
+        :return: None
+        """
+
+        self.callback = callback
+
+
+class LoudUniqueList(list, collections.MutableSequence):
+    """
+    A List with a callback for item changes, callback which returns the index where the items are added/modified.
+    A List that will allow adding only items that are not in the list.
+    """
+
+    def __init__(self, arg=None):
+        super().__init__()
+        self.callback = lambda x: None
+
+        if not arg is None:
+            if isinstance(arg, list):
+                self.extend(arg)
+            else:
+                self.extend([arg])
+
+    def insert(self, i, v):
+        if v in self:
+            raise ValueError("One of the added items is already in the list.")
+        self.callback(i)
+        return super().insert(i, v)
+
+    def append(self, v):
+        if v in self:
+            raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().append(v)
+
+    def extend(self, t):
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().extend(t)
+
+    def __add__(self, t):  # This is for something like `LoudUniqueList([1, 2, 3]) + list([4, 5, 6])`...
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().__add__(t)
+
+    def __iadd__(self, t):  # This is for something like `l = LoudUniqueList(); l += [1, 2, 3]`
+        for v in t:
+            if v in self:
+                raise ValueError("One of the added items is already in the list.")
+        l = len(self)
+        self.callback(l)
+        return super().__iadd__(t)
+
+    def __setitem__(self, i, v):
+        try:
+            for v1 in v:
+                if v1 in self:
+                    raise ValueError("One of the modified items is already in the list.")
+        except TypeError:
+            if v in self:
+                raise ValueError("One of the modified items is already in the list.")
+        if not v is None:
+            self.callback(i)
+        return super().__setitem__(i, v)
+
+    def set_callback(self, callback):
+        """
+        Assigns a function as callback on item change. The callback
+        will receive the index of the object that was changed.
 
         :param callback: Function to call on item change.
         :type callback: func
@@ -406,6 +488,7 @@ class ExclusionAreas(QtCore.QObject):
             # since the exclusion areas should apply to all objects in the app collection, this check is limited to
             # only the current object therefore it will not guarantee success
             self.app.inform.emit("%s" % _("Exclusion areas added. Checking overlap with the object geometry ..."))
+
             for el in self.exclusion_areas_storage:
                 if el["shape"].intersects(unary_union(self.solid_geometry)):
                     self.on_clear_area_click()
@@ -413,8 +496,7 @@ class ExclusionAreas(QtCore.QObject):
                         "[ERROR_NOTCL] %s" % _("Failed. Exclusion areas intersects the object geometry ..."))
                     return
 
-            self.app.inform.emit(
-                "[success] %s" % _("Exclusion areas added."))
+            self.app.inform.emit("[success] %s" % _("Exclusion areas added."))
             self.cnc_button.setStyleSheet("""
                                     QPushButton
                                     {
@@ -506,8 +588,8 @@ class ExclusionAreas(QtCore.QObject):
         self.app.dy = curr_pos[1] - float(self.cursor_pos[1])
         self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                            "<b>Y</b>: %.4f&nbsp;" % (curr_pos[0], curr_pos[1]))
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
         self.app.plotcanvas.text_hud.text = \
@@ -830,6 +912,50 @@ def farthest_point(origin, points_list):
 
     return fartherst_pt
 
+
+# def voronoi_diagram(geom, envelope, edges=False):
+#     """
+#
+#     :param geom:        a collection of Shapely Points from which to build the Voronoi diagram
+#     :type geom:          MultiPoint
+#     :param envelope:    a bounding box to constrain the diagram (Shapely Polygon)
+#     :type envelope:     Polygon
+#     :param edges:       If False, return regions as polygons. Else, return only
+#                         edges e.g. LineStrings.
+#     :type edges:        bool, False
+#     :return:
+#     :rtype:
+#     """
+#
+#     if not isinstance(geom, MultiPoint):
+#         return False
+#
+#     coords = list(envelope.exterior.coords)
+#     v_poly = voronoi_polygon(coords)
+#
+#     vp = Voronoi(v_poly)
+#
+#     points = []
+#     for pt in geom:
+#         points.append((pt.x, pt.y))
+#     vp.create_diagram(points=points, vis_steps=False, verbose=False, vis_result=False, vis_tree=False)
+#
+#     if edges is True:
+#         return vp.edges
+#     else:
+#         voronoi_polygons = []
+#         for pt in vp.points:
+#             try:
+#                 poly_coords = list(pt.get_coordinates())
+#                 new_poly_coords = []
+#                 for coord in poly_coords:
+#                     new_poly_coords.append((coord.x, coord.y))
+#
+#                 voronoi_polygons.append(Polygon(new_poly_coords))
+#             except Exception:
+#                 print(traceback.format_exc())
+#
+#         return voronoi_polygons
 
 def nearest_point(origin, points_list):
     """

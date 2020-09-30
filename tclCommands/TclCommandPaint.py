@@ -34,7 +34,7 @@ class TclCommandPaint(TclCommand):
         ('tooldia', str),
         ('overlap', float),
         ('order', str),
-        ('margin', float),
+        ('offset', float),
         ('method', str),
         ('connect', str),
         ('contour', str),
@@ -59,7 +59,7 @@ class TclCommandPaint(TclCommand):
                         'WARNING: No space is allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
             ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
                         'E.g: for a 25% from tool diameter overlap use -overlap 25'),
-            ('margin', 'Bounding box margin. Float number.'),
+            ('offset', 'Distance from the polygon border where painting starts. Float number.'),
             ('order', 'Can have the values: "no", "fwd" and "rev". String.\n'
                       'It is useful when there are multiple tools in tooldia parameter.\n'
                       '"no" -> the order used is the one provided.\n'
@@ -75,8 +75,8 @@ class TclCommandPaint(TclCommand):
                        'WARNING: No spaces allowed in the value. Use dot decimals separator.'),
             ('outname', 'Name of the resulting Geometry object. String. No spaces.'),
         ]),
-        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all",
-                     "paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -single 3.3,2.0"]
+        'examples': ["paint obj_name -tooldia 0.3 -offset 0.1 -method 'seed' -all",
+                     "paint obj_name -tooldia 0.3 -offset 0.1 -method 'seed' -single 3.3,2.0"]
     }
 
     def execute(self, args, unnamed_args):
@@ -114,10 +114,10 @@ class TclCommandPaint(TclCommand):
         else:
             order = str(self.app.defaults["tools_paintorder"])
 
-        if 'margin' in args:
-            margin = float(args['margin'])
+        if 'offset' in args:
+            offset = float(args['offset'])
         else:
-            margin = float(self.app.defaults["tools_paintmargin"])
+            offset = float(self.app.defaults["tools_paintoffset"])
 
         if 'method' in args:
             method = args['method']
@@ -172,43 +172,43 @@ class TclCommandPaint(TclCommand):
         # store here the default data for Geometry Data
         default_data = {}
         default_data.update({
-            "name": outname,
-            "plot": False,
-            "cutz": self.app.defaults["geometry_cutz"],
-            "vtipdia": 0.1,
-            "vtipangle": 30,
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
-            "endxy": self.app.defaults["geometry_endxy"],
+            "name":                 outname,
+            "plot":                 False,
+            "cutz":                 self.app.defaults["geometry_cutz"],
+            "vtipdia":              float(self.app.defaults["tools_painttipdia"]),
+            "vtipangle":            float(self.app.defaults["tools_painttipangle"]),
+            "travelz":              self.app.defaults["geometry_travelz"],
+            "feedrate":             self.app.defaults["geometry_feedrate"],
+            "feedrate_z":           self.app.defaults["geometry_feedrate_z"],
+            "feedrate_rapid":       self.app.defaults["geometry_feedrate_rapid"],
+            "dwell":                self.app.defaults["geometry_dwell"],
+            "dwelltime":            self.app.defaults["geometry_dwelltime"],
+            "multidepth":           self.app.defaults["geometry_multidepth"],
+            "ppname_g":             self.app.defaults["geometry_ppname_g"],
+            "depthperpass":         self.app.defaults["geometry_depthperpass"],
+            "extracut":             self.app.defaults["geometry_extracut"],
+            "extracut_length":      self.app.defaults["geometry_extracut_length"],
+            "toolchange":           self.app.defaults["geometry_toolchange"],
+            "toolchangez":          self.app.defaults["geometry_toolchangez"],
+            "endz":                 self.app.defaults["geometry_endz"],
+            "endxy":                self.app.defaults["geometry_endxy"],
 
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
+            "spindlespeed":         self.app.defaults["geometry_spindlespeed"],
+            "toolchangexy":         self.app.defaults["geometry_toolchangexy"],
+            "startz":               self.app.defaults["geometry_startz"],
 
-            "area_exclusion": self.app.defaults["geometry_area_exclusion"],
-            "area_shape": self.app.defaults["geometry_area_shape"],
-            "area_strategy": self.app.defaults["geometry_area_strategy"],
-            "area_overz": float(self.app.defaults["geometry_area_overz"]),
+            "area_exclusion":       self.app.defaults["geometry_area_exclusion"],
+            "area_shape":           self.app.defaults["geometry_area_shape"],
+            "area_strategy":        self.app.defaults["geometry_area_strategy"],
+            "area_overz":           float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": margin,
-            "paintmethod": method,
-            "selectmethod": select,
-            "pathconnect": connect,
-            "paintcontour": contour,
-            "paintoverlap": overlap
+            "tooldia":              self.app.defaults["tools_painttooldia"],
+            "tools_paintoffset":   offset,
+            "tools_paintmethod":    method,
+            "tools_selectmethod":   select,
+            "tools_pathconnect":    connect,
+            "tools_paintcontour":   contour,
+            "tools_paintoverlap":   overlap
         })
         paint_tools = {}
 

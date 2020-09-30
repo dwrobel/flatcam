@@ -9,13 +9,13 @@ from PyQt5 import QtWidgets, QtCore
 
 from appTool import AppTool
 from appGUI.VisPyVisuals import *
-from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox
+from appGUI.GUIElements import FCEntry, FCButton, FCCheckBox, FCLabel
 
 from shapely.geometry import Point, MultiLineString, Polygon
 
 import appTranslation as fcTranslate
 from camlib import FlatCAMRTreeStorage
-from appEditors.FlatCAMGeoEditor import DrawToolShape
+from appEditors.AppGeoEditor import DrawToolShape
 
 from copy import copy
 import math
@@ -32,8 +32,6 @@ log = logging.getLogger('base')
 
 class Distance(AppTool):
 
-    toolName = _("Distance Tool")
-
     def __init__(self, app):
         AppTool.__init__(self, app)
 
@@ -43,107 +41,11 @@ class Distance(AppTool):
         self.canvas = self.app.plotcanvas
         self.units = self.app.defaults['units'].lower()
 
-        # ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
-        self.layout.addWidget(title_label)
-
-        # ## Form Layout
-        grid0 = QtWidgets.QGridLayout()
-        grid0.setColumnStretch(0, 0)
-        grid0.setColumnStretch(1, 1)
-        self.layout.addLayout(grid0)
-
-        self.units_label = QtWidgets.QLabel('%s:' % _("Units"))
-        self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
-        self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
-        self.units_value.setDisabled(True)
-
-        grid0.addWidget(self.units_label, 0, 0)
-        grid0.addWidget(self.units_value, 0, 1)
-
-        self.snap_center_cb = FCCheckBox(_("Snap to center"))
-        self.snap_center_cb.setToolTip(
-            _("Mouse cursor will snap to the center of the pad/drill\n"
-              "when it is hovering over the geometry of the pad/drill.")
-        )
-        grid0.addWidget(self.snap_center_cb, 1, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 2, 0, 1, 2)
-
-        self.start_label = QtWidgets.QLabel("%s:" % _('Start Coords'))
-        self.start_label.setToolTip(_("This is measuring Start point coordinates."))
-
-        self.start_entry = FCEntry()
-        self.start_entry.setReadOnly(True)
-        self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
-
-        grid0.addWidget(self.start_label, 3, 0)
-        grid0.addWidget(self.start_entry, 3, 1)
-
-        self.stop_label = QtWidgets.QLabel("%s:" % _('Stop Coords'))
-        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
-
-        self.stop_entry = FCEntry()
-        self.stop_entry.setReadOnly(True)
-        self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
-
-        grid0.addWidget(self.stop_label, 4, 0)
-        grid0.addWidget(self.stop_entry, 4, 1)
-
-        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
-        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
-
-        self.distance_x_entry = FCEntry()
-        self.distance_x_entry.setReadOnly(True)
-        self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
-
-        grid0.addWidget(self.distance_x_label, 5, 0)
-        grid0.addWidget(self.distance_x_entry, 5, 1)
-
-        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
-        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
-
-        self.distance_y_entry = FCEntry()
-        self.distance_y_entry.setReadOnly(True)
-        self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
-
-        grid0.addWidget(self.distance_y_label, 6, 0)
-        grid0.addWidget(self.distance_y_entry, 6, 1)
-
-        self.angle_label = QtWidgets.QLabel('%s:' % _("Angle"))
-        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
-
-        self.angle_entry = FCEntry()
-        self.angle_entry.setReadOnly(True)
-        self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
-
-        grid0.addWidget(self.angle_label, 7, 0)
-        grid0.addWidget(self.angle_entry, 7, 1)
-
-        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
-        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
-
-        self.total_distance_entry = FCEntry()
-        self.total_distance_entry.setReadOnly(True)
-        self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
-
-        grid0.addWidget(self.total_distance_label, 8, 0)
-        grid0.addWidget(self.total_distance_entry, 8, 1)
-
-        self.measure_btn = FCButton(_("Measure"))
-        # self.measure_btn.setFixedWidth(70)
-        self.layout.addWidget(self.measure_btn)
-
-        self.layout.addStretch()
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = DistUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         # store here the first click and second click of the measurement process
         self.points = []
@@ -178,8 +80,9 @@ class Distance(AppTool):
         else:
             from appGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='measurement')
-
-        self.measure_btn.clicked.connect(self.activate_measure_tool)
+        
+        # Signals
+        self.ui.measure_btn.clicked.connect(self.activate_measure_tool)
 
     def run(self, toggle=False):
         self.app.defaults.report_usage("ToolDistance()")
@@ -224,27 +127,27 @@ class Distance(AppTool):
         self.app.command_active = "Distance"
 
         # initial view of the layout
-        self.start_entry.set_value('(0, 0)')
-        self.stop_entry.set_value('(0, 0)')
+        self.ui.start_entry.set_value('(0, 0)')
+        self.ui.stop_entry.set_value('(0, 0)')
 
-        self.distance_x_entry.set_value('0.0')
-        self.distance_y_entry.set_value('0.0')
-        self.angle_entry.set_value('0.0')
-        self.total_distance_entry.set_value('0.0')
+        self.ui.distance_x_entry.set_value('0.0')
+        self.ui.distance_y_entry.set_value('0.0')
+        self.ui.angle_entry.set_value('0.0')
+        self.ui.total_distance_entry.set_value('0.0')
 
-        self.snap_center_cb.set_value(self.app.defaults['tools_dist_snap_center'])
+        self.ui.snap_center_cb.set_value(self.app.defaults['tools_dist_snap_center'])
 
         # snap center works only for Gerber and Execellon Editor's
         if self.original_call_source == 'exc_editor' or self.original_call_source == 'grb_editor':
-            self.snap_center_cb.show()
+            self.ui.snap_center_cb.show()
             snap_center = self.app.defaults['tools_dist_snap_center']
             self.on_snap_toggled(snap_center)
 
-            self.snap_center_cb.toggled.connect(self.on_snap_toggled)
+            self.ui.snap_center_cb.toggled.connect(self.on_snap_toggled)
         else:
-            self.snap_center_cb.hide()
+            self.ui.snap_center_cb.hide()
             try:
-                self.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
+                self.ui.snap_center_cb.toggled.disconnect(self.on_snap_toggled)
             except (TypeError, AttributeError):
                 pass
 
@@ -270,8 +173,8 @@ class Distance(AppTool):
         self.active = True
 
         # disable the measuring button
-        self.measure_btn.setDisabled(True)
-        self.measure_btn.setText('%s...' % _("Working"))
+        self.ui.measure_btn.setDisabled(True)
+        self.ui.measure_btn.setText('%s...' % _("Working"))
 
         self.clicked_meas = 0
         self.original_call_source = copy(self.app.call_source)
@@ -335,8 +238,8 @@ class Distance(AppTool):
         self.points = []
 
         # disable the measuring button
-        self.measure_btn.setDisabled(False)
-        self.measure_btn.setText(_("Measure"))
+        self.ui.measure_btn.setDisabled(False)
+        self.ui.measure_btn.setText(_("Measure"))
 
         self.app.call_source = copy(self.original_call_source)
         if self.original_call_source == 'app':
@@ -406,7 +309,7 @@ class Distance(AppTool):
         if event.button == 1:
             pos_canvas = self.canvas.translate_coords(event_pos)
 
-            if self.snap_center_cb.get_value() is False:
+            if self.ui.snap_center_cb.get_value() is False:
                 # if GRID is active we need to get the snapped positions
                 if self.app.grid_status():
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -475,9 +378,9 @@ class Distance(AppTool):
 
             # Reset here the relative coordinates so there is a new reference on the click position
             if self.rel_point1 is None:
-                # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
-                #                                        "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
-                #                                        (self.decimals, 0.0, self.decimals, 0.0))
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
+                                                       (self.decimals, 0.0, self.decimals, 0.0))
                 self.rel_point1 = pos
             else:
                 self.rel_point2 = copy(self.rel_point1)
@@ -490,14 +393,14 @@ class Distance(AppTool):
 
     def calculate_distance(self, pos):
         if len(self.points) == 1:
-            self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
+            self.ui.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
             self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
         elif len(self.points) == 2:
             # self.app.app_cursor.enabled = False
             dx = self.points[1][0] - self.points[0][0]
             dy = self.points[1][1] - self.points[0][1]
             d = math.sqrt(dx ** 2 + dy ** 2)
-            self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
+            self.ui.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
 
             self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
                 tx1=_("MEASURING"),
@@ -508,23 +411,23 @@ class Distance(AppTool):
                 d_z='%*f' % (self.decimals, abs(d)))
             )
 
-            self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
-            self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+            self.ui.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
+            self.ui.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
 
             try:
                 angle = math.degrees(math.atan2(dy, dx))
                 if angle < 0:
                     angle += 360
-                self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+                self.ui.angle_entry.set_value('%.*f' % (self.decimals, angle))
             except Exception:
                 pass
 
-            self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
-            # self.app.ui.rel_position_label.setText(
-            #     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-            #         '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
-            #     )
-            # )
+            self.ui.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                )
+            )
             self.tool_done = True
             self.deactivate_measure_tool()
 
@@ -573,11 +476,11 @@ class Distance(AppTool):
                 dx = pos[0]
                 dy = pos[1]
 
-            # self.app.ui.rel_position_label.setText(
-            #     "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
-            #         '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
-            #     )
-            # )
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
+                )
+            )
 
             # update utility geometry
             if len(self.points) == 1:
@@ -587,7 +490,7 @@ class Distance(AppTool):
                     angle = math.degrees(math.atan2(dy, dx))
                     if angle < 0:
                         angle += 360
-                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+                    self.ui.angle_entry.set_value('%.*f' % (self.decimals, angle))
                 except Exception as e:
                     log.debug("Distance.on_mouse_move_meas() -> update utility geometry -> %s" % str(e))
                     pass
@@ -595,7 +498,7 @@ class Distance(AppTool):
         except Exception as e:
             log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
-            # self.app.ui.rel_position_label.setText("")
+            self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape
@@ -635,4 +538,135 @@ class Distance(AppTool):
     # def set_meas_units(self, units):
     #     self.meas.units_label.setText("[" + self.app.options["units"].lower() + "]")
 
-# end of file
+
+class DistUI:
+    
+    toolName = _("Distance Tool")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+        self.units = self.app.defaults['units'].lower()
+
+        # ## Title
+        title_label = FCLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
+        self.layout.addWidget(title_label)
+
+        # ## Form Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+
+        self.units_label = FCLabel('%s:' % _("Units"))
+        self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
+        self.units_value = FCLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
+        self.units_value.setDisabled(True)
+
+        grid0.addWidget(self.units_label, 0, 0)
+        grid0.addWidget(self.units_value, 0, 1)
+
+        self.snap_center_cb = FCCheckBox(_("Snap to center"))
+        self.snap_center_cb.setToolTip(
+            _("Mouse cursor will snap to the center of the pad/drill\n"
+              "when it is hovering over the geometry of the pad/drill.")
+        )
+        grid0.addWidget(self.snap_center_cb, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
+        self.start_label = FCLabel("%s:" % _('Start Coords'))
+        self.start_label.setToolTip(_("This is measuring Start point coordinates."))
+
+        self.start_entry = FCEntry()
+        self.start_entry.setReadOnly(True)
+        self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
+
+        grid0.addWidget(self.start_label, 3, 0)
+        grid0.addWidget(self.start_entry, 3, 1)
+
+        self.stop_label = FCLabel("%s:" % _('Stop Coords'))
+        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
+
+        self.stop_entry = FCEntry()
+        self.stop_entry.setReadOnly(True)
+        self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
+
+        grid0.addWidget(self.stop_label, 4, 0)
+        grid0.addWidget(self.stop_entry, 4, 1)
+
+        self.distance_x_label = FCLabel('%s:' % _("Dx"))
+        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
+
+        self.distance_x_entry = FCEntry()
+        self.distance_x_entry.setReadOnly(True)
+        self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
+
+        grid0.addWidget(self.distance_x_label, 5, 0)
+        grid0.addWidget(self.distance_x_entry, 5, 1)
+
+        self.distance_y_label = FCLabel('%s:' % _("Dy"))
+        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
+
+        self.distance_y_entry = FCEntry()
+        self.distance_y_entry.setReadOnly(True)
+        self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
+
+        grid0.addWidget(self.distance_y_label, 6, 0)
+        grid0.addWidget(self.distance_y_entry, 6, 1)
+
+        self.angle_label = FCLabel('%s:' % _("Angle"))
+        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
+
+        self.angle_entry = FCEntry()
+        self.angle_entry.setReadOnly(True)
+        self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
+
+        grid0.addWidget(self.angle_label, 7, 0)
+        grid0.addWidget(self.angle_entry, 7, 1)
+
+        self.total_distance_label = FCLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
+
+        self.total_distance_entry = FCEntry()
+        self.total_distance_entry.setReadOnly(True)
+        self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
+
+        grid0.addWidget(self.total_distance_label, 8, 0)
+        grid0.addWidget(self.total_distance_entry, 8, 1)
+
+        self.measure_btn = FCButton(_("Measure"))
+        # self.measure_btn.setFixedWidth(70)
+        self.layout.addWidget(self.measure_btn)
+
+        self.layout.addStretch()
+
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

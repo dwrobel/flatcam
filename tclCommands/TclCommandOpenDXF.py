@@ -54,8 +54,12 @@ class TclCommandOpenDXF(TclCommandSignaled):
 
             # if geo_obj.kind != 'geometry' and geo_obj.kind != 'gerber':
             #     self.raise_tcl_error('Expected Geometry or Gerber, got %s %s.' % (outname, type(geo_obj)))
-
-            geo_obj.import_dxf(filename, obj_type, units=units)
+            if obj_type == "geometry":
+                geo_obj.import_dxf_as_geo(filename, units=units)
+            elif obj_type == "gerber":
+                geo_obj.import_dxf_as_gerber(filename, units=units)
+            else:
+                return "fail"
 
         filename = args['filename']
 

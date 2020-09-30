@@ -27,10 +27,10 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Geometry Editor")))
         self.decimals = decimals
 
-        # Advanced Geometry Parameters
+        # Editor Parameters
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
-            _("A list of Geometry Editor parameters.")
+            _("A list of Editor parameters.")
         )
         self.layout.addWidget(self.param_label)
 

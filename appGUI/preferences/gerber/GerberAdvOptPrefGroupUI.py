@@ -51,10 +51,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox(label=_('Table Show/Hide'))
         self.aperture_table_visibility_cb.setToolTip(
-            _("Toggle the display of the Gerber Apertures Table.\n"
-              "Also, on hide, it will delete all mark shapes\n"
-              "that are drawn on canvas.")
-
+            _("Toggle the display of the Tools Table.")
         )
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
 

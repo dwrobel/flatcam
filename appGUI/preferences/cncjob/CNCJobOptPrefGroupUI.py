@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from appGUI.GUIElements import FCTextArea
+from appGUI.GUIElements import RadioSet, FCCheckBox
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -43,38 +43,39 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         font = QtGui.QFont()
         font.setPointSize(tb_fsize)
 
-        # Prepend to G-Code
-        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to G-Code'))
-        prependlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to add at the beginning of the G-Code file.")
-        )
-        self.layout.addWidget(prependlabel)
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
-        self.prepend_text = FCTextArea()
-        self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
-              "like to add at the beginning of the G-Code file.")
+        # Plot Kind
+        self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind"))
+        self.cncplot_method_label.setToolTip(
+            _("This selects the kind of geometries on the canvas to plot.\n"
+              "Those can be either of type 'Travel' which means the moves\n"
+              "above the work piece or it can be of type 'Cut',\n"
+              "which means the moves that cut into the material.")
         )
-        self.layout.addWidget(self.prepend_text)
-        self.prepend_text.setFont(font)
 
-        # Append text to G-Code
-        appendlabel = QtWidgets.QLabel('%s:' % _('Append to G-Code'))
-        appendlabel.setToolTip(
-            _("Type here any G-Code commands you would\n"
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
-        )
-        self.layout.addWidget(appendlabel)
+        self.cncplot_method_radio = RadioSet([
+            {"label": _("All"), "value": "all"},
+            {"label": _("Travel"), "value": "travel"},
+            {"label": _("Cut"), "value": "cut"}
+        ], orientation='vertical', stretch=False)
 
-        self.append_text = FCTextArea()
-        self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
-              "like to append to the generated file.\n"
-              "I.e.: M2 (End of program)")
+        grid0.addWidget(self.cncplot_method_label, 1, 0)
+        grid0.addWidget(self.cncplot_method_radio, 1, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
+
+        # Display Annotation
+        self.annotation_cb = FCCheckBox(_("Display Annotation"))
+        self.annotation_cb.setToolTip(
+            _("This selects if to display text annotation on the plot.\n"
+              "When checked it will display numbers in order for each end\n"
+              "of a travel line."
+              )
         )
-        self.layout.addWidget(self.append_text)
-        self.append_text.setFont(font)
+
+        grid0.addWidget(self.annotation_cb, 2, 0, 1, 3)
 
         self.layout.addStretch()

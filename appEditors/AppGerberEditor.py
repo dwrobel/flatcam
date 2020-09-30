@@ -242,8 +242,8 @@ class FCPad(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.start_msg = _("Click to place ...")
 
@@ -472,8 +472,8 @@ class FCPadArray(FCShapeTool):
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
     def click(self, point):
 
@@ -885,7 +885,7 @@ class FCRegion(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCRegion --> %s" % str(e))
+            log.debug("AppGerberEditor.FCRegion --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -991,7 +991,7 @@ class FCRegion(FCShapeTool):
                                                                               join_style=1)
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
-                    log.debug("FlatCAMGrbEditor.FCRegion.utility_geometry() --> %s" % str(e))
+                    log.debug("AppGerberEditor.FCRegion.utility_geometry() --> %s" % str(e))
             else:
                 new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
                                                                      resolution=int(self.steps_per_circle / 4))
@@ -1182,7 +1182,7 @@ class FCTrack(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCTrack.__init__() --> %s" % str(e))
+            log.debug("AppGerberEditor.FCTrack.__init__() --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location +
                                                   '/aero_path%s.png' % self.draw_app.bend_mode))
@@ -1329,7 +1329,7 @@ class FCTrack(FCShapeTool):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.FCTrack.on_key() --> %s" % str(e))
+                log.debug("AppGerberEditor.FCTrack.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
@@ -1368,7 +1368,7 @@ class FCTrack(FCShapeTool):
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.FCTrack.on_key() --> %s" % str(e))
+                log.debug("AppGerberEditor.FCTrack.on_key() --> %s" % str(e))
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
@@ -1477,7 +1477,7 @@ class FCDisc(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCDisc --> %s" % str(e))
+            log.debug("AppGerberEditor.FCDisc --> %s" % str(e))
 
         self.draw_app.current_storage = self.storage_obj
 
@@ -1514,7 +1514,7 @@ class FCSemiDisc(FCShapeTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCSemiDisc --> %s" % str(e))
+            log.debug("AppGerberEditor.FCSemiDisc --> %s" % str(e))
 
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1954,8 +1954,8 @@ class FCApertureMove(FCShapeTool):
             aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_apertures.append(aperture_on_row)
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -2170,8 +2170,8 @@ class FCEraser(FCShapeTool):
             aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_apertures.append(aperture_on_row)
 
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.properties_tab)
 
         self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
@@ -2201,7 +2201,7 @@ class FCEraser(FCShapeTool):
             try:
                 self.draw_app.apertures_table.cellPressed.disconnect()
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.FCEraser.click_release() --> %s" % str(e))
+                log.debug("AppGerberEditor.FCEraser.click_release() --> %s" % str(e))
 
             self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             for aper in sel_aperture:
@@ -2325,7 +2325,7 @@ class FCApertureSelect(DrawTool):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCApertureSelect --> %s" % str(e))
+            log.debug("AppGerberEditor.FCApertureSelect --> %s" % str(e))
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2381,7 +2381,7 @@ class FCApertureSelect(DrawTool):
         try:
             self.grb_editor_app.apertures_table.cellPressed.disconnect()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCApertureSelect.click_release() --> %s" % str(e))
+            log.debug("AppGerberEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
         for shape_s in self.grb_editor_app.selected:
             for storage in self.grb_editor_app.storage_dict:
@@ -2424,7 +2424,7 @@ class FCTransform(FCShapeTool):
         self.draw_app.plot_all()
 
 
-class FlatCAMGrbEditor(QtCore.QObject):
+class AppGerberEditor(QtCore.QObject):
 
     draw_shape_idx = -1
     # plot_finished = QtCore.pyqtSignal()
@@ -2434,7 +2434,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # assert isinstance(app, FlatCAMApp.App), \
         #     "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
-        super(FlatCAMGrbEditor, self).__init__()
+        super(AppGerberEditor, self).__init__()
 
         self.app = app
         self.canvas = self.app.plotcanvas
@@ -2891,8 +2891,25 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_angle_label.hide()
 
         self.array_frame.hide()
-
         self.custom_box.addStretch()
+
+        layout.addStretch()
+
+        # Editor
+        self.exit_editor_button = QtWidgets.QPushButton(_('Exit Editor'))
+        self.exit_editor_button.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
+        self.exit_editor_button.setToolTip(
+            _("Exit from Editor.")
+        )
+        self.exit_editor_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        layout.addWidget(self.exit_editor_button)
+
+        self.exit_editor_button.clicked.connect(lambda: self.app.editor2object())
 
         # Toolbar events and properties
         self.tools_gerber = {
@@ -3305,12 +3322,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
         self.apertures_table.clearSelection()
 
-        # Remove anything else in the GUI Selected Tab
+        # Remove anything else in the GUI Properties Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourselves in the GUI Selected Tab
+        # Put ourselves in the GUI Properties Tab
         self.app.ui.selected_scroll_area.setWidget(self.grb_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        # Switch notebook to Properties page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3369,7 +3386,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         self.apsize_entry.set_value(size_val)
 
                     except Exception as e:
-                        log.error("FlatCAMGrbEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
+                        log.error("AppGerberEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
                                   "tuple format (x,y)\nError: %s" % str(e))
                         self.app.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Aperture dimensions value is missing or wrong format. "
@@ -3497,7 +3514,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 val_edited = int(self.apertures_table.currentItem().text())
             except ValueError as e:
-                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.apertures_table.setCurrentItem(None)
                 # we reactivate the signals after the after the tool editing
                 self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3507,7 +3524,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 val_edited = float(self.apertures_table.currentItem().text())
             except ValueError as e:
-                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # self.apertures_table.setCurrentItem(None)
                 # we reactivate the signals after the after the tool editing
                 self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -3519,7 +3536,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     float(x.strip()) for x in self.apertures_table.currentItem().text().split(",") if x != ''
                 ]
             except ValueError as e:
-                log.debug("FlatCAMGrbEditor.on_tool_edit() --> %s" % str(e))
+                log.debug("AppGerberEditor.on_tool_edit() --> %s" % str(e))
                 # we reactivate the signals after the after the tool editing
                 self.apertures_table.itemChanged.connect(self.on_tool_edit)
                 return
@@ -3703,7 +3720,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.ui.grb_edit_toolbar.setDisabled(False)
         self.app.ui.grb_edit_toolbar.setVisible(True)
-        # self.app.ui.status_toolbar.setDisabled(False)
+        # self.app.ui.grid_toolbar.setDisabled(False)
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
@@ -3725,7 +3742,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.deactivate_grb_editor() --> %s" % str(e))
+            log.debug("AppGerberEditor.deactivate_grb_editor() --> %s" % str(e))
 
         self.clear()
 
@@ -3778,7 +3795,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # Canvas events
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
-        # but those from FlatCAMGeoEditor
+        # but those from AppGeoEditor
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
@@ -3980,7 +3997,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # we activate this after the initial build as we don't need to see the tool been populated
             self.apertures_table.itemChanged.connect(self.on_tool_edit)
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.edit_fcgerber() --> %s" % str(e))
+            log.debug("AppGerberEditor.edit_fcgerber() --> %s" % str(e))
 
         # apply the conversion factor on the obj.apertures
         conv_apertures = deepcopy(self.gerber_obj.apertures)
@@ -4020,7 +4037,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         #                 else:
         #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
         #             except Exception as e:
-        #                 log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+        #                 log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
         #
         #         # Check promises and clear if exists
         #         while True:
@@ -4150,7 +4167,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             )
                     except Exception as ee:
                         log.debug(
-                            "FlatCAMGrbEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
+                            "AppGerberEditor.edit_fcgerber.worker_job() Adding processes to pool --> %s" % str(ee))
                         traceback.print_exc()
 
                     output = []
@@ -4186,7 +4203,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 else:
                     storage_dict[k] = aperture_dict[k]
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                log.debug("AppGerberEditor.edit_fcgerber().job_thread() --> %s" % str(e))
 
         return [aperture_id, storage_dict]
 
@@ -4215,7 +4232,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             self.plot_thread.stop()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.update_fcgerber() --> %s" % str(e))
+            log.debug("AppGerberEditor.update_fcgerber() --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -4522,8 +4539,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
 
         if event.button == 1:
-            # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-            #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
             if self.active_tool is not None:
@@ -4598,7 +4615,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
                         except Exception as e:
-                            log.debug("FlatCAMGrbEditor.on_grb_click_release() --> %s" % str(e))
+                            log.debug("AppGerberEditor.on_grb_click_release() --> %s" % str(e))
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCApertureSelect):
                             self.active_tool.complete = True
@@ -4640,7 +4657,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     else:
                                         self.select_tool("select")
         except Exception as e:
-            log.warning("FlatCAMGrbEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
+            log.warning("AppGerberEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -4658,7 +4675,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if self.selected:
                         self.plot_all()
         except Exception as e:
-            log.warning("FlatCAMGrbEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
+            log.warning("AppGerberEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -4694,7 +4711,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             self.apertures_table.cellPressed.disconnect()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.draw_selection_Area_handler() --> %s" % str(e))
+            log.debug("AppGerberEditor.draw_selection_Area_handler() --> %s" % str(e))
         # select the aperture code of the selected geometry, in the tool table
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
@@ -4770,10 +4787,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                            "<b>Y</b>: %.4f&nbsp;" % (x, y))
-        #
-        # # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+
+        # update the reference position label in the infobar since the APP mouse event handlers are disconnected
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
         self.app.plotcanvas.text_hud.text = \
@@ -4901,7 +4918,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     #
     #     # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
     #     # self.plot_thread.start()
-    #     log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
+    #     log.debug("AppGerberEditor --> Delayed Plot started.")
     #     self.plot_thread = QtCore.QTimer()
     #     self.plot_thread.setInterval(check_period)
     #     self.plot_finished.connect(self.setup_ui_after_delayed_plot)
@@ -4919,7 +4936,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     #         if not self.grb_plot_promises:
     #             self.plot_thread.stop()
     #             self.plot_finished.emit()
-    #             log.debug("FlatCAMGrbEditor --> delayed_plot finished")
+    #             log.debug("AppGerberEditor --> delayed_plot finished")
     #     except Exception as e:
     #         traceback.print_exc()
     #
@@ -4941,7 +4958,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         :return:        None
         """
-        log.debug("FlatCAMGrbEditor.on_zoom_fit()")
+        log.debug("AppGerberEditor.on_zoom_fit()")
 
         # calculate all the geometry in the edited Gerber object
         edit_geo = []
@@ -5095,7 +5112,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_buffer(self):
         buff_value = 0.01
-        log.debug("FlatCAMGrbEditor.on_buffer()")
+        log.debug("AppGerberEditor.on_buffer()")
 
         try:
             buff_value = float(self.buffer_distance_entry.get_value())
@@ -5145,7 +5162,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = []
                 self.storage_dict[apcode]['geometry'] = temp_storage
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
+                log.debug("AppGerberEditor.buffer() --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
                 return
 
@@ -5154,7 +5171,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_scale(self):
         scale_factor = 1.0
-        log.debug("FlatCAMGrbEditor.on_scale()")
+        log.debug("AppGerberEditor.on_scale()")
 
         try:
             scale_factor = float(self.scale_factor_entry.get_value())
@@ -5209,7 +5226,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.storage_dict[apcode]['geometry'] = temp_storage
 
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.on_scale() --> %s" % str(e))
+                log.debug("AppGerberEditor.on_scale() --> %s" % str(e))
 
         self.plot_all()
         self.app.inform.emit('[success] %s' %
@@ -5287,8 +5304,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             if tool_name == 'markarea' or tool_name == 'all':
                 self.ma_tool_frame.hide()
         except Exception as e:
-            log.debug("FlatCAMGrbEditor.hide_tool() --> %s" % str(e))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+            log.debug("AppGerberEditor.hide_tool() --> %s" % str(e))
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
 
 class TransformEditorTool(AppTool):
@@ -5716,7 +5733,7 @@ class TransformEditorTool(AppTool):
         if toggle:
             try:
                 if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
                 else:
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
             except AttributeError:

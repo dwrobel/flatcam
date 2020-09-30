@@ -73,22 +73,22 @@ class TclCommandCutout(TclCommand):
         if 'margin' in args:
             margin_par = float(args['margin'])
         else:
-            margin_par = float(self.app.defaults["tools_cutoutmargin"])
+            margin_par = float(self.app.defaults["tools_cutout_margin"])
 
         if 'dia' in args:
             dia_par = float(args['dia'])
         else:
-            dia_par = float(self.app.defaults["tools_cutouttooldia"])
+            dia_par = float(self.app.defaults["tools_cutout_tooldia"])
 
         if 'gaps' in args:
             gaps_par = args['gaps']
         else:
-            gaps_par = str(self.app.defaults["tools_gaps_ff"])
+            gaps_par = str(self.app.defaults["tools_cutout_gaps_ff"])
 
         if 'gapsize' in args:
             gapsize_par = float(args['gapsize'])
         else:
-            gapsize_par = float(self.app.defaults["tools_cutoutgapsize"])
+            gapsize_par = float(self.app.defaults["tools_cutout_gapsize"])
 
         if 'outname' in args:
             outname = args['outname']
