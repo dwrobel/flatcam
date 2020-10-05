@@ -1854,6 +1854,7 @@ class GeometryObject(FlatCAMObj, Geometry):
             return
 
         self.multigeo = True
+
         # Object initialization function for app.app_obj.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
@@ -2115,9 +2116,9 @@ class GeometryObject(FlatCAMObj, Geometry):
                 is_first = True if tooluid_key == tool_lst[0] else False
                 is_last = True if tooluid_key == tool_lst[-1] else False
                 res, start_gcode = job_obj.geometry_tool_gcode_gen(tooluid_key, tools_dict, first_pt=(0, 0),
-                                                                   tolerance = tol,
+                                                                   tolerance=tol,
                                                                    is_first=is_first, is_last=is_last,
-                                                                   toolchange = True)
+                                                                   toolchange=True)
                 if res == 'fail':
                     log.debug("GeometryObject.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
@@ -2303,8 +2304,8 @@ class GeometryObject(FlatCAMObj, Geometry):
                                                    toolchangexy=toolchangexy,
                                                    extracut=extracut, extracut_length=extracut_length,
                                                    startz=startz, endz=endz, endxy=endxy,
-                                                   pp_geometry_name=ppname_g
-            )
+                                                   pp_geometry_name=ppname_g)
+
             job_obj.source_file = res
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
@@ -2872,13 +2873,13 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.plot()
 
     @staticmethod
-    def merge(geo_list, geo_final, multigeo=None, fuse_tools=None):
+    def merge(geo_list, geo_final, multi_geo=None, fuse_tools=None):
         """
         Merges the geometry of objects in grb_list into the geometry of geo_final.
 
         :param geo_list:    List of GerberObject Objects to join.
         :param geo_final:   Destination GerberObject object.
-        :param multigeo:    if the merged geometry objects are of type MultiGeo
+        :param multi_geo:   if the merged geometry objects are of type MultiGeo
         :param fuse_tools:  If True will try to fuse tools of the same type for the Geometry objects
         :return: None
         """
@@ -2908,7 +2909,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 GeometryObject.merge(geo_list=geo_obj, geo_final=geo_final)
             # If not list, just append
             else:
-                if multigeo is None or multigeo is False:
+                if multi_geo is None or multi_geo is False:
                     geo_final.multigeo = False
                 else:
                     geo_final.multigeo = True
@@ -2966,19 +2967,23 @@ class GeometryObject(FlatCAMObj, Geometry):
             new_tool_nr = 1
             for i_lst in intersect_list:
                 new_solid_geo = []
+                last_tool = None
                 for old_tool in i_lst:
                     new_solid_geo += new_tools[old_tool]['solid_geometry']
+                    last_tool = old_tool
 
-                if new_solid_geo:
+                if new_solid_geo and last_tool:
                     final_tools[new_tool_nr] = \
                         {
-                            k: deepcopy(new_tools[old_tool][k]) for k in new_tools[old_tool] if k != 'solid_geometry'
+                            k: deepcopy(new_tools[last_tool][k]) for k in new_tools[last_tool] if k != 'solid_geometry'
                         }
                     final_tools[new_tool_nr]['solid_geometry'] = deepcopy(new_solid_geo)
                     new_tool_nr += 1
         else:
             final_tools = new_tools
 
+        # if not final_tools:
+        #     return 'fail'
         geo_final.tools = final_tools
 
     @staticmethod

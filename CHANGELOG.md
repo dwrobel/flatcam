@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+5.10.2020
+
+- working on adding DPI setting for PNG export in the Film Tool
+
 26.09.2020
 
 - the Selected Tab is now Properties Tab for FlatCAM objects

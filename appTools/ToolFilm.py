@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel
+    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel, FCSpinner
 
 from copy import deepcopy
 import logging
@@ -138,6 +138,8 @@ class Film(AppTool):
         self.ui.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
         self.ui.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
 
+        self.ui.png_dpi_spinner.set_value(self.app.defaults["tools_film_png_dpi"])
+
         self.ui.tf_type_obj_combo.set_value('grb')
         self.ui.tf_type_box_combo.set_value('grb')
         # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
@@ -187,8 +189,8 @@ class Film(AppTool):
     def generate_positive_normal_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
 
-        scale_factor_x = None
-        scale_factor_y = None
+        scale_factor_x = 1
+        scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
@@ -328,8 +330,8 @@ class Film(AppTool):
     def generate_negative_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_negative_film() started ...")
 
-        scale_factor_x = None
-        scale_factor_y = None
+        scale_factor_x = 1
+        scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
@@ -390,7 +392,7 @@ class Film(AppTool):
 
     def export_negative(self, obj_name, box_name, filename, boundary,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
+                        scale_factor_x=1, scale_factor_y=1,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None,
                         use_thread=True, ftype='svg'):
@@ -433,6 +435,12 @@ class Film(AppTool):
         if box is None:
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
+
+        new_png_dpi = self.ui.png_dpi_spinner.get_value()
+        dpi_rate = new_png_dpi / 96
+        if dpi_rate != 1:
+            scale_factor_x += dpi_rate
+            scale_factor_y += dpi_rate
 
         def make_negative_film():
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
@@ -513,7 +521,10 @@ class Film(AppTool):
                 try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
+                    if new_png_dpi == 96:
+                        renderPM.drawToFile(drawing, filename, 'PNG')
+                    else:
+                        renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
                 except Exception as e:
                     log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
                     return 'fail'
@@ -566,7 +577,7 @@ class Film(AppTool):
 
     def export_positive(self, obj_name, box_name, filename,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
+                        scale_factor_x=1, scale_factor_y=1,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
@@ -619,6 +630,12 @@ class Film(AppTool):
         orientation = orientation_val
         color = color_val
         transparency_level = opacity_val
+
+        new_png_dpi = self.ui.png_dpi_spinner.get_value()
+        dpi_rate = new_png_dpi / 96
+        if dpi_rate != 1:
+            scale_factor_x += dpi_rate
+            scale_factor_y += dpi_rate
 
         def make_positive_film(p_size, orientation, color, transparency_level):
             log.debug("FilmTool.export_positive().make_positive_film()")
@@ -692,7 +709,10 @@ class Film(AppTool):
                 try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
-                    renderPM.drawToFile(drawing, filename, 'PNG')
+                    if new_png_dpi == 96:
+                        renderPM.drawToFile(drawing, filename, 'PNG')
+                    else:
+                        renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'
@@ -1199,6 +1219,20 @@ class FilmUI:
 
         self.on_film_type(val='hide')
 
+        # PNG DPI
+        self.png_dpi_label = FCLabel('%s:' % "PNG DPI")
+        self.png_dpi_label.setToolTip(
+            _("Default value is 96 DPI. Change this value to scale the PNG file.")
+        )
+        self.png_dpi_spinner = FCSpinner(callback=self.confirmation_message_int)
+        self.png_dpi_spinner.set_range(0, 100000)
+
+        grid1.addWidget(self.png_dpi_label, 4, 0)
+        grid1.addWidget(self.png_dpi_spinner, 4, 1)
+
+        self.png_dpi_label.hide()
+        self.png_dpi_spinner.hide()
+
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))
         self.film_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
@@ -1214,7 +1248,7 @@ class FilmUI:
                                    font-weight: bold;
                                }
                                """)
-        grid1.addWidget(self.film_object_button, 4, 0, 1, 2)
+        grid1.addWidget(self.film_object_button, 6, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -1254,11 +1288,22 @@ class FilmUI:
             self.orientation_radio.show()
             self.pagesize_label.show()
             self.pagesize_combo.show()
+            self.png_dpi_label.hide()
+            self.png_dpi_spinner.hide()
+        elif val == 'png':
+            self.png_dpi_label.show()
+            self.png_dpi_spinner.show()
+            self.orientation_label.hide()
+            self.orientation_radio.hide()
+            self.pagesize_label.hide()
+            self.pagesize_combo.hide()
         else:
             self.orientation_label.hide()
             self.orientation_radio.hide()
             self.pagesize_label.hide()
             self.pagesize_combo.hide()
+            self.png_dpi_label.hide()
+            self.png_dpi_spinner.hide()
 
     def on_punch_source(self, val):
         if val == 'pad' and self.punch_cb.get_value():

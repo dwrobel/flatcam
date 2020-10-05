@@ -533,6 +533,7 @@ class FlatCAMDefaults:
         "tools_film_file_type_radio": 'svg',
         "tools_film_orientation": 'p',
         "tools_film_pagesize": 'A4',
+        "tools_film_png_dpi": 96,
 
         # Panel Tool
         "tools_panelize_spacing_columns": 0.0,

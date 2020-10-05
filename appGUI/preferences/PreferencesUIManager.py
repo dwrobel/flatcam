@@ -461,6 +461,7 @@ class PreferencesUIManager:
             "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
             "tools_film_orientation": self.ui.tools_defaults_form.tools_film_group.orientation_radio,
             "tools_film_pagesize": self.ui.tools_defaults_form.tools_film_group.pagesize_combo,
+            "tools_film_png_dpi": self.ui.tools_defaults_form.tools_film_group.png_dpi_spinner,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,

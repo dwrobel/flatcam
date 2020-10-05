@@ -2255,14 +2255,20 @@ class Geometry(object):
 
         geom = geom_svg
 
-        if scale_factor_x:
+        if scale_factor_x and not scale_factor_y:
             geom = affinity.scale(geom_svg, scale_factor_x, 1.0)
-        if scale_factor_y:
+        elif not scale_factor_x and scale_factor_y:
             geom = affinity.scale(geom_svg, 1.0, scale_factor_y)
-        if skew_factor_x:
+        elif scale_factor_x and scale_factor_y:
+            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y)
+
+        if skew_factor_x and not skew_factor_y:
             geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
-        if skew_factor_y:
+        elif not skew_factor_x and skew_factor_y:
             geom = affinity.skew(geom_svg, 0.0, skew_factor_y, origin=skew_ref)
+        elif skew_factor_x and skew_factor_y:
+            geom = affinity.skew(geom_svg, skew_factor_x, skew_factor_y, origin=skew_ref)
+
         if mirror:
             if mirror == 'x':
                 geom = affinity.scale(geom_svg, 1.0, -1.0)
