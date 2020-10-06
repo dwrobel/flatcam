@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 5.10.2020
 
 - working on adding DPI setting for PNG export in the Film Tool
+- finished working in adding DPI settings for PNG export in Film Tool although there are some limitations due of Reportlab
 
 26.09.2020
 

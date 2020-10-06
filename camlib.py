@@ -2221,7 +2221,7 @@ class Geometry(object):
     def export_svg(self, scale_stroke_factor=0.00,
                    scale_factor_x=None, scale_factor_y=None,
                    skew_factor_x=None, skew_factor_y=None,
-                   skew_reference='center',
+                   skew_reference='center', scale_reference='center',
                    mirror=None):
         """
         Exports the Geometry Object as a SVG Element
@@ -2256,11 +2256,11 @@ class Geometry(object):
         geom = geom_svg
 
         if scale_factor_x and not scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, 1.0)
+            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_reference)
         elif not scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, 1.0, scale_factor_y)
+            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_reference)
         elif scale_factor_x and scale_factor_y:
-            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y)
+            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_reference)
 
         if skew_factor_x and not skew_factor_y:
             geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)

@@ -436,22 +436,30 @@ class Film(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
-        new_png_dpi = self.ui.png_dpi_spinner.get_value()
-        dpi_rate = new_png_dpi / 96
-        if dpi_rate != 1:
-            scale_factor_x += dpi_rate
-            scale_factor_y += dpi_rate
+        scale_factor_x = scale_factor_x
+        scale_factor_y = scale_factor_y
 
-        def make_negative_film():
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
-                                          )
+        def make_negative_film(scale_factor_x, scale_factor_y):
+            log.debug("FilmTool.export_negative().make_negative_film()")
 
+            scale_reference = 'center'
             # Determine bounding area for svg export
             bounds = box.bounds()
             size = box.size()
+
+            default_dpi = 96
+            new_png_dpi = self.ui.png_dpi_spinner.get_value()
+            dpi_rate = new_png_dpi / default_dpi
+            if dpi_rate != 1:
+                scale_factor_x += dpi_rate
+                scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
+
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
+                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                          mirror=mirror, scale_reference=scale_reference
+                                          )
 
             uom = obj.units.lower()
 
@@ -521,7 +529,7 @@ class Film(AppTool):
                 try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
-                    if new_png_dpi == 96:
+                    if new_png_dpi == default_dpi:
                         renderPM.drawToFile(drawing, filename, 'PNG')
                     else:
                         renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
@@ -565,7 +573,7 @@ class Film(AppTool):
 
             def job_thread_film(app_obj):
                 try:
-                    make_negative_film()
+                    make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                 except Exception:
                     proc.done()
                     return
@@ -626,24 +634,34 @@ class Film(AppTool):
             self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
+        scale_factor_x = scale_factor_x
+        scale_factor_y = scale_factor_y
+
         p_size = pagesize_val
         orientation = orientation_val
         color = color_val
         transparency_level = opacity_val
 
-        new_png_dpi = self.ui.png_dpi_spinner.get_value()
-        dpi_rate = new_png_dpi / 96
-        if dpi_rate != 1:
-            scale_factor_x += dpi_rate
-            scale_factor_y += dpi_rate
-
-        def make_positive_film(p_size, orientation, color, transparency_level):
+        def make_positive_film(p_size, orientation, color, transparency_level, scale_factor_x, scale_factor_y):
             log.debug("FilmTool.export_positive().make_positive_film()")
+
+            scale_reference = 'center'
+            # Determine bounding area for svg export
+            bounds = box.bounds()
+            size = box.size()
+
+            default_dpi = 96
+            new_png_dpi = self.ui.png_dpi_spinner.get_value()
+            dpi_rate = new_png_dpi / default_dpi
+            if dpi_rate != 1:
+                scale_factor_x += dpi_rate
+                scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
 
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
+                                          mirror=mirror, scale_reference=scale_reference
                                           )
 
             # Change the attributes of the exported SVG
@@ -657,10 +675,6 @@ class Film(AppTool):
                 child.set('stroke', str(color))
 
             exported_svg = ET.tostring(root)
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
 
             # This contain the measure units
             uom = obj.units.lower()
@@ -709,7 +723,7 @@ class Film(AppTool):
                 try:
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
-                    if new_png_dpi == 96:
+                    if new_png_dpi == default_dpi:
                         renderPM.drawToFile(drawing, filename, 'PNG')
                     else:
                         renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
@@ -753,7 +767,8 @@ class Film(AppTool):
             def job_thread_film():
                 try:
                     make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                                       transparency_level=transparency_level)
+                                       transparency_level=transparency_level,
+                                       scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
                 except Exception:
                     proc.done()
                     return
