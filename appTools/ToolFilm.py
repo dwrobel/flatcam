@@ -456,6 +456,7 @@ class Film(AppTool):
             if dpi_rate != 1 and ftype == 'png':
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
 
             if box.kind.lower() == 'geometry':
                 flat_geo = []
@@ -712,6 +713,7 @@ class Film(AppTool):
             if dpi_rate != 1 and ftype == 'png':
                 scale_factor_x += dpi_rate
                 scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
 
             if box.kind.lower() == 'geometry':
                 flat_geo = []
