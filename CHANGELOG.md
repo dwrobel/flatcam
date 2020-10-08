@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - small change in the NCC Tool UI
 - some strings are changed and therefore the translation strings source are updated
+- Isolation Tool - added a check for having a complete isolation
 
 7.10.2020
 

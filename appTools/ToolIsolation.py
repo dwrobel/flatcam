@@ -119,6 +119,8 @@ class ToolIsolation(AppTool, Gerber):
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         self.tooldia = None
+        # store here the tool diameter that is guaranteed to isolate the object
+        self.safe_tooldia = None
 
         # multiprocessing
         self.pool = self.app.pool
@@ -224,6 +226,9 @@ class ToolIsolation(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+
+        # reset the value to prepare for another isolation
+        self.safe_tooldia = None
 
         # try to select in the Gerber combobox the active object
         try:
@@ -888,6 +893,9 @@ class ToolIsolation(AppTool, Gerber):
             })
 
     def on_find_optimal_tooldia(self):
+        self.find_safe_tooldia_worker(is_displayed=True)
+
+    def find_safe_tooldia_worker(self, is_displayed):
         self.units = self.app.defaults['units'].upper()
 
         obj_name = self.ui.object_combo.currentText()
@@ -903,85 +911,109 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        proc = self.app.proc_container.new(_("Working..."))
+        def job_thread(app_obj, is_display):
+            with self.app.proc_container.new(_("Working...")) as proc:
+                try:
+                    old_disp_number = 0
+                    pol_nr = 0
+                    app_obj.proc_container.update_view_text(' %d%%' % 0)
+                    total_geo = []
 
-        def job_thread(app_obj):
-            try:
-                old_disp_number = 0
-                pol_nr = 0
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = []
+                    for ap in list(fcobj.apertures.keys()):
+                        if 'geometry' in fcobj.apertures[ap]:
+                            for geo_el in fcobj.apertures[ap]['geometry']:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise grace
 
-                for ap in list(fcobj.apertures.keys()):
-                    if 'geometry' in fcobj.apertures[ap]:
-                        for geo_el in fcobj.apertures[ap]['geometry']:
+                                if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                                    total_geo.append(geo_el['solid'])
+
+                    total_geo = MultiPolygon(total_geo)
+                    total_geo = total_geo.buffer(0)
+
+                    try:
+                        __ = iter(total_geo)
+                        geo_len = len(total_geo)
+                        geo_len = (geo_len * (geo_len - 1)) / 2
+                    except TypeError:
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                            _("The Gerber object has one Polygon as geometry.\n"
+                                              "There are no distances between geometry elements to be found."))
+                        return 'fail'
+
+                    min_dict = {}
+                    idx = 1
+                    for geo in total_geo:
+                        for s_geo in total_geo[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
 
-                            if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
-                                total_geo.append(geo_el['solid'])
+                            # minimize the number of distances by not taking into considerations those that are too small
+                            dist = geo.distance(s_geo)
+                            dist = float('%.*f' % (self.decimals, dist))
+                            loc_1, loc_2 = nearest_points(geo, s_geo)
 
-                total_geo = MultiPolygon(total_geo)
-                total_geo = total_geo.buffer(0)
+                            proc_loc = (
+                                (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                                (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                            )
 
-                try:
-                    __ = iter(total_geo)
-                    geo_len = len(total_geo)
-                    geo_len = (geo_len * (geo_len - 1)) / 2
-                except TypeError:
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _("The Gerber object has one Polygon as geometry.\n"
-                                          "There are no distances between geometry elements to be found."))
-                    return 'fail'
+                            if dist in min_dict:
+                                min_dict[dist].append(proc_loc)
+                            else:
+                                min_dict[dist] = [proc_loc]
 
-                min_dict = {}
-                idx = 1
-                for geo in total_geo:
-                    for s_geo in total_geo[idx:]:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
+                            pol_nr += 1
+                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                        # minimize the number of distances by not taking into considerations those that are too small
-                        dist = geo.distance(s_geo)
-                        dist = float('%.*f' % (self.decimals, dist))
-                        loc_1, loc_2 = nearest_points(geo, s_geo)
+                            if old_disp_number < disp_number <= 100:
+                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                                old_disp_number = disp_number
+                        idx += 1
 
-                        proc_loc = (
-                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
-                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
-                        )
+                    min_list = list(min_dict.keys())
+                    min_dist = min(min_list)
 
-                        if dist in min_dict:
-                            min_dict[dist].append(proc_loc)
-                        else:
-                            min_dict[dist] = [proc_loc]
+                    min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                    self.safe_tooldia = min_dist_truncated
 
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                    if is_display:
+                        self.optimal_found_sig.emit(min_dist_truncated)
 
-                        if old_disp_number < disp_number <= 100:
-                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                            old_disp_number = disp_number
-                    idx += 1
+                        app_obj.inform.emit('[success] %s: %s %s' %
+                                            (_("Optimal tool diameter found"), str(min_dist_truncated),
+                                             self.units.lower()))
+                    else:
+                        if self.safe_tooldia:
+                            # find the selected tool ID's
+                            sorted_tools = []
+                            table_items = self.ui.tools_table.selectedItems()
+                            sel_rows = {t.row() for t in table_items}
+                            for row in sel_rows:
+                                tid = int(self.ui.tools_table.item(row, 3).text())
+                                sorted_tools.append(tid)
+                            if not sorted_tools:
+                                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+                                return 'fail'
 
-                min_list = list(min_dict.keys())
-                min_dist = min(min_list)
+                            # check if the tools diameters are less then the safe tool diameter
+                            for tool in sorted_tools:
+                                tool_dia = float(self.iso_tools[tool]['tooldia'])
+                                if tool_dia > self.safe_tooldia:
+                                    msg = _("Incomplete isolation. "
+                                            "At least one tool could not do a complete isolation.")
+                                    self.app.inform.emit('[WARNING] %s' % msg)
+                                    break
 
-                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                            # reset the value to prepare for another isolation
+                            self.safe_tooldia = None
+                except Exception as ee:
+                    log.debug(str(ee))
+                    return
 
-                self.optimal_found_sig.emit(min_dist_truncated)
-
-                app_obj.inform.emit('[success] %s: %s %s' %
-                                    (_("Optimal tool diameter found"), str(min_dist_truncated), self.units.lower()))
-            except Exception as ee:
-                proc.done()
-                log.debug(str(ee))
-                return
-            proc.done()
-
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, is_displayed]})
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -1335,11 +1367,13 @@ class ToolIsolation(AppTool, Gerber):
             self.grb_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+            return
 
         if self.grb_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
+
+        self.find_safe_tooldia_worker(is_displayed=False)
 
         def worker_task(iso_obj):
             with self.app.proc_container.new(_("Isolating...")):
