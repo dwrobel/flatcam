@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+8.10.2020
+
+- small change in the NCC Tool UI
+- some strings are changed and therefore the translation strings source are updated
+
 7.10.2020
 
 - working on adding DPI setting for PNG export in Film Tool - update

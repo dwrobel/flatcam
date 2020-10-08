@@ -2909,8 +2909,9 @@ class PaintUI:
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "from the Tool Database.\n"
-              "Tool database administration in Menu: Options -> Tools Database")
+              "from the Tools Database.\n"
+              "Tools database administration in in:\n"
+              "Menu: Options -> Tools Database")
         )
         hlay.addWidget(self.addtool_from_db_btn)
 
