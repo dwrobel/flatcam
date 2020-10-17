@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+17.10.2020
+
+- updated Turkish translation (by Mehmet Kaya)
+
 8.10.2020
 
 - small change in the NCC Tool UI
