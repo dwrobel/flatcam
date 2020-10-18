@@ -427,7 +427,7 @@ class App(QtCore.QObject):
 
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
-            self.defaults.load(filename=current_defaults_path)
+            self.defaults.load(filename=current_defaults_path, inform=self.inform)
 
         if self.defaults['units'] == 'MM':
             self.decimals = int(self.defaults['decimals_metric'])
@@ -2576,7 +2576,7 @@ class App(QtCore.QObject):
             return
 
         # Load in the defaults from the chosen file
-        self.defaults.load(filename=filename)
+        self.defaults.load(filename=filename, inform=self.inform)
 
         self.preferencesUiManager.on_preferences_edited()
         self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
@@ -6971,7 +6971,7 @@ class App(QtCore.QObject):
         self.project_filename = None
 
         # Load the application defaults
-        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
+        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
 
         # Re-fresh project options
         self.on_options_app2project()

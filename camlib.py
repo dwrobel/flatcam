@@ -225,13 +225,14 @@ class ApertureMacro:
         Pads the ``mods`` list with zeros resulting in an
         list of length n.
 
-        :param n: Length of the resulting list.
-        :type n: int
-        :param mods: List to be padded.
-        :type mods: list
-        :return: Zero-padded list.
-        :rtype: list
+        :param n:       Length of the resulting list.
+        :type n:        int
+        :param mods:    List to be padded.
+        :type mods:     list
+        :return:        Zero-padded list.
+        :rtype:         list
         """
+
         x = [0.0] * n
         na = len(mods)
         x[0:na] = mods
@@ -244,9 +245,12 @@ class ApertureMacro:
         :param mods: (Exposure 0/1, Diameter >=0, X-coord, Y-coord)
         :return:
         """
-
-        pol, dia, x, y = ApertureMacro.default2zero(4, mods)
-
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        dia = val[1]
+        x = val[2]
+        y = val[3]
+        # pol, dia, x, y = ApertureMacro.default2zero(4, mods)
         return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
@@ -257,7 +261,15 @@ class ApertureMacro:
             rotation angle around origin in degrees)
         :return:
         """
-        pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
+        val = ApertureMacro.default2zero(7, mods)
+        pol = val[0]
+        width = val[1]
+        xs = val[2]
+        ys = val[3]
+        xe = val[4]
+        ye = val[5]
+        angle = val[6]
+        # pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
 
         line = LineString([(xs, ys), (xe, ye)])
         box = line.buffer(width / 2, cap_style=2)
@@ -274,7 +286,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(4, mods)
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -290,7 +309,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x, y, x + width, y + height)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -330,7 +356,15 @@ class ApertureMacro:
         :return:
         """
 
-        pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        # pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        nverts = val[1]
+        x = val[2]
+        y = val[3]
+        dia = val[4]
+        angle = val[5]
+
         points = [(0, 0)] * nverts
 
         for i in range(nverts):
@@ -354,7 +388,17 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        # x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        val = ApertureMacro.default2zero(9, mods)
+        x = val[0]
+        y = val[1]
+        dia = val[2]
+        thickness = val[3]
+        gap = val[4]
+        nrings = val[5]
+        cross_th = val[6]
+        cross_len = val[7]
+        angle = val[8]
 
         r = dia / 2 - thickness / 2
         result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
@@ -390,7 +434,14 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        # x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        x = val[0]
+        y = val[1]
+        dout = val[2]
+        din = val[3]
+        t = val[4]
+        angle = val[5]
 
         ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
         hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)

@@ -950,7 +950,7 @@ class PreferencesUIManager:
 
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
+            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
 
         settgs = QSettings("Open Source", "FlatCAM")
 

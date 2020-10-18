@@ -834,8 +834,13 @@ class FlatCAMDefaults:
         with open(filename, "w") as file:
             simplejson.dump(self.defaults, file, default=to_dict, indent=2, sort_keys=True)
 
-    def load(self, filename: str):
-        """Loads the defaults from a file on disk, performing migration if required."""
+    def load(self, filename: str, inform):
+        """
+        Loads the defaults from a file on disk, performing migration if required.
+
+        :param filename:    a path to the file that is to be loaded
+        :param inform:      a pyqtSignal used to display information's in the StatusBar of the GUI
+        """
 
         # Read in the file
         try:
@@ -844,7 +849,7 @@ class FlatCAMDefaults:
             f.close()
         except IOError:
             log.error("Could not load defaults file.")
-            self.inform.emit('[ERROR] %s' % _("Could not load defaults file."))
+            inform.emit('[ERROR] %s' % _("Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
             return
@@ -857,7 +862,7 @@ class FlatCAMDefaults:
             self.defaults["global_toolbar_view"] = 511
             e = sys.exc_info()[0]
             log.error(str(e))
-            self.inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
+            inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
         if defaults is None:
             return
