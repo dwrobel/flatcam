@@ -1027,7 +1027,7 @@ class ToolPaint(AppTool, Gerber):
                         continue
                 self.tooldia_list.append(self.tooldia)
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return
 
         self.select_method = self.ui.selectmethod_combo.get_value()
@@ -1740,7 +1740,7 @@ class ToolPaint(AppTool, Gerber):
                         continue
                 sorted_tools.append(self.tooldia)
             if not sorted_tools:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
                 return 'fail'
 
         # Initializes the new geometry object

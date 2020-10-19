@@ -318,6 +318,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
         self.ui.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
+        self.ui.valid_cb.set_value(self.app.defaults["tools_iso_check_valid"])
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
         self.ui.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
         self.ui.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
@@ -937,9 +938,9 @@ class ToolIsolation(AppTool, Gerber):
                         geo_len = len(total_geo)
                         geo_len = (geo_len * (geo_len - 1)) / 2
                     except TypeError:
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                            _("The Gerber object has one Polygon as geometry.\n"
-                                              "There are no distances between geometry elements to be found."))
+                        msg = _("The Gerber object has one Polygon as geometry.\n"
+                                "There are no distances between geometry elements to be found.")
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % msg)
                         return 'fail'
 
                     min_dict = {}
@@ -950,7 +951,8 @@ class ToolIsolation(AppTool, Gerber):
                                 # graceful abort requested by the user
                                 raise grace
 
-                            # minimize the number of distances by not taking into considerations those that are too small
+                            # minimize the number of distances by not taking into considerations those
+                            # that are too small
                             dist = geo.distance(s_geo)
                             dist = float('%.*f' % (self.decimals, dist))
                             loc_1, loc_2 = nearest_points(geo, s_geo)
@@ -995,7 +997,8 @@ class ToolIsolation(AppTool, Gerber):
                                 tid = int(self.ui.tools_table.item(row, 3).text())
                                 sorted_tools.append(tid)
                             if not sorted_tools:
-                                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+                                msg = _("There are no tools selected in the Tool Table.")
+                                self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
                                 return 'fail'
 
                             # check if the tools diameters are less then the safe tool diameter
@@ -1365,7 +1368,7 @@ class ToolIsolation(AppTool, Gerber):
         # Get source object.
         try:
             self.grb_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
             return
 
@@ -1373,7 +1376,8 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
-        self.find_safe_tooldia_worker(is_displayed=False)
+        if self.ui.valid_cb.get_value() is True:
+            self.find_safe_tooldia_worker(is_displayed=False)
 
         def worker_task(iso_obj):
             with self.app.proc_container.new(_("Isolating...")):
@@ -1501,7 +1505,7 @@ class ToolIsolation(AppTool, Gerber):
             tid = int(self.ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         # update the Common Parameters values in the self.iso_tools
@@ -1703,7 +1707,7 @@ class ToolIsolation(AppTool, Gerber):
             sorted_tools.append(float('%.*f' % (self.decimals, tdia)))
 
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         order = self.ui.order_radio.get_value()
@@ -1890,7 +1894,7 @@ class ToolIsolation(AppTool, Gerber):
             tid = int(self.ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         for tool in sorted_tools:
@@ -2279,7 +2283,7 @@ class ToolIsolation(AppTool, Gerber):
         except TypeError:
             if self.solid_geometry not in self.poly_dict.values():
                 if sel_type is True:
-                    if self.solid_geometry.within(poly_selection):
+                    if poly_selection.contains(self.solid_geometry):
                         shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
                                                             shape=self.solid_geometry,
                                                             color=self.app.defaults['global_sel_draw_color'] + 'AF',
@@ -3312,13 +3316,23 @@ class IsoUI:
 
         self.grid3.addWidget(self.combine_passes_cb, 26, 0, 1, 2)
 
+        # Check Tool validity
+        self.valid_cb = FCCheckBox(label=_('Check validity'))
+        self.valid_cb.setToolTip(
+            _("If checked then the tools diameters are verified\n"
+              "if they will provide a complete isolation.")
+        )
+        self.valid_cb.setObjectName("i_check")
+
+        self.grid3.addWidget(self.valid_cb, 28, 0, 1, 2)
+
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        self.grid3.addWidget(self.except_cb, 27, 0)
+        self.grid3.addWidget(self.except_cb, 30, 0)
 
         # Type of object to be excepted
         self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
@@ -3330,7 +3344,7 @@ class IsoUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        self.grid3.addWidget(self.type_excobj_radio, 27, 1)
+        self.grid3.addWidget(self.type_excobj_radio, 30, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -3342,7 +3356,7 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        self.grid3.addWidget(self.exc_obj_combo, 28, 0, 1, 2)
+        self.grid3.addWidget(self.exc_obj_combo, 32, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
@@ -3365,8 +3379,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        self.grid3.addWidget(self.select_label, 33, 0)
-        self.grid3.addWidget(self.select_combo, 33, 1)
+        self.grid3.addWidget(self.select_label, 34, 0)
+        self.grid3.addWidget(self.select_combo, 34, 1)
 
         self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
@@ -3376,8 +3390,8 @@ class IsoUI:
         self.reference_combo_type = FCComboBox()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.grid3.addWidget(self.reference_combo_type_label, 34, 0)
-        self.grid3.addWidget(self.reference_combo_type, 34, 1)
+        self.grid3.addWidget(self.reference_combo_type_label, 36, 0)
+        self.grid3.addWidget(self.reference_combo_type, 36, 1)
 
         self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
@@ -3388,8 +3402,8 @@ class IsoUI:
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo_label, 35, 0)
-        self.grid3.addWidget(self.reference_combo, 35, 1)
+        self.grid3.addWidget(self.reference_combo_label, 38, 0)
+        self.grid3.addWidget(self.reference_combo, 38, 1)
 
         self.reference_combo.hide()
         self.reference_combo_label.hide()
@@ -3403,7 +3417,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        self.grid3.addWidget(self.poly_int_cb, 36, 0)
+        self.grid3.addWidget(self.poly_int_cb, 40, 0)
 
         self.poly_int_cb.hide()
 
@@ -3416,8 +3430,8 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 38, 0)
-        self.grid3.addWidget(self.area_shape_radio, 38, 1)
+        self.grid3.addWidget(self.area_shape_label, 42, 0)
+        self.grid3.addWidget(self.area_shape_radio, 42, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -3425,7 +3439,7 @@ class IsoUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 39, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 44, 0, 1, 2)
 
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))

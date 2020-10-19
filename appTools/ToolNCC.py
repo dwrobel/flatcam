@@ -1292,7 +1292,7 @@ class NonCopperClear(AppTool, Gerber):
                         else:
                             self.ncc_dia_list.append(self.tooldia)
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return
 
         self.o_name = '%s_ncc' % self.obj_name

@@ -342,6 +342,7 @@ class PreferencesUIManager:
 
             "tools_iso_rest":           self.ui.tools_defaults_form.tools_iso_group.rest_cb,
             "tools_iso_combine_passes": self.ui.tools_defaults_form.tools_iso_group.combine_passes_cb,
+            "tools_iso_check_valid":    self.ui.tools_defaults_form.tools_iso_group.valid_cb,
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_poly_ints":      self.ui.tools_defaults_form.tools_iso_group.poly_int_cb,
