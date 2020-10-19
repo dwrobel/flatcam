@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - added a check (and added to Preferences too) for the verification of tools validity in the Isolation Tool
 - fixed QrCode Tool
+- updated the Turkish translation (by Mehmet Kaya)
 
 18.10.2020
 

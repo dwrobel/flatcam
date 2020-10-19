@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-08 15:40+0300\n"
-"PO-Revision-Date: 2020-10-17 22:39+0300\n"
+"PO-Revision-Date: 2020-10-19 15:50+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -701,14 +701,14 @@ msgstr ""
 #: appTools/ToolDrilling.py:895 appTools/ToolIsolation.py:1032
 #: appTools/ToolNCC.py:964 appTools/ToolPaint.py:703
 msgid "Could not load Tools DB file."
-msgstr "Araçlar veritabannı dosyası yüklenemedi."
+msgstr "Araçlar Veri Tabanı dosyası yüklenemedi."
 
 #: appDatabase.py:315 appDatabase.py:726 appDatabase.py:2655
 #: appDatabase.py:3059 appTools/ToolCutOut.py:304 appTools/ToolDrilling.py:903
 #: appTools/ToolIsolation.py:1043 appTools/ToolNCC.py:975
 #: appTools/ToolPaint.py:714
 msgid "Failed to parse Tools DB file."
-msgstr "Araçlar veri tabanı dosyası okunamadı."
+msgstr "Araçlar Veri Tabanı dosyası okunamadı."
 
 #: appDatabase.py:318 appDatabase.py:729 appDatabase.py:2658
 #: appDatabase.py:3062
@@ -725,7 +725,7 @@ msgstr "Veri Tabanından Kopyala"
 
 #: appDatabase.py:328 appDatabase.py:2568
 msgid "Delete from DB"
-msgstr "Veritbanından Sil"
+msgstr "Veri Tanından Sil"
 
 #: appDatabase.py:605 appDatabase.py:2917
 msgid "Tool added to DB."
@@ -745,7 +745,7 @@ msgstr "Araçları Veri Tabanını Dışa Aktar"
 
 #: appDatabase.py:658 appDatabase.py:2991
 msgid "Tools_Database"
-msgstr ""
+msgstr "Araçlar Veri Tabanı"
 
 #: appDatabase.py:695 appDatabase.py:698 appDatabase.py:750 appDatabase.py:3028
 #: appDatabase.py:3031 appDatabase.py:3126
@@ -4380,7 +4380,7 @@ msgstr "Yeni boş bir Gerber nesnesi oluşturur."
 
 #: appGUI/MainGUI.py:105
 msgid "Excellon\tL"
-msgstr ""
+msgstr "Excellon\tL"
 
 #: appGUI/MainGUI.py:107
 msgid "Will create a new, empty Excellon Object."
@@ -5250,7 +5250,7 @@ msgstr "Kurallar"
 #: appGUI/MainGUI.py:953 appGUI/MainGUI.py:2108 appGUI/MainGUI.py:4284
 #: appTools/ToolOptimal.py:103 appTools/ToolOptimal.py:390
 msgid "Optimal Tool"
-msgstr "İyileştirme"
+msgstr "En Uygun Uç"
 
 #: appGUI/MainGUI.py:958 appGUI/MainGUI.py:2113 appGUI/MainGUI.py:4280
 msgid "Calculators Tool"
@@ -5535,7 +5535,7 @@ msgstr "GERBER"
 #: appGUI/MainGUI.py:1324 appTools/ToolDrilling.py:2032
 #: appTools/ToolMilling.py:1637 appTools/ToolRulesCheck.py:1301
 msgid "EXCELLON"
-msgstr ""
+msgstr "EXCELLON"
 
 #: appGUI/MainGUI.py:1334 appTools/ToolSub.py:696
 msgid "GEOMETRY"
@@ -5652,7 +5652,7 @@ msgstr "Şekil"
 #: appTools/ToolPunchGerber.py:803 appTools/ToolPunchGerber.py:818
 #: appTools/ToolTransform.py:126 appTools/ToolTransform.py:586
 msgid "Excellon"
-msgstr ""
+msgstr "Excellon"
 
 #: appGUI/MainGUI.py:1474
 msgid "Grids"
@@ -5680,7 +5680,7 @@ msgstr "Dikdörtgen"
 
 #: appGUI/MainGUI.py:1494
 msgid "Circle"
-msgstr ""
+msgstr "Daire"
 
 #: appGUI/MainGUI.py:1498
 msgid "Arc"
@@ -5784,7 +5784,7 @@ msgstr "Nesneleri Kopyala"
 
 #: appGUI/MainGUI.py:2204 appGUI/MainGUI.py:4480
 msgid "Delete Shape"
-msgstr "Şekli Sil\\"
+msgstr "Şekli Sil"
 
 #: appGUI/MainGUI.py:2210
 msgid "Move Objects"
@@ -7072,7 +7072,7 @@ msgid ""
 "this value is the power of laser."
 msgstr ""
 "Matkap ucunun devir/dakika cinsinden hızı (isteğe bağlı).\n"
-"LAZER ön işlemcisi kullanılıyorsa, bu değer lazerin gücüdür."
+"LAZER önişlemcisi kullanılıyorsa, bu değer lazerin gücüdür."
 
 #: appGUI/ObjectUI.py:1246
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:235
@@ -7483,7 +7483,7 @@ msgstr "Bir GCode nesnesini düzenleyin."
 
 #: appGUI/ObjectUI.py:1762 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:71
 msgid "Display Annotation"
-msgstr ""
+msgstr "Hareket Sıra Numarasını Göster"
 
 #: appGUI/ObjectUI.py:1764 appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:73
 msgid ""
@@ -9536,7 +9536,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:181
 msgid "Show Project"
-msgstr "Projeyi Göster"
+msgstr "Proje Sekmesini Göster"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:183
 msgid ""
@@ -11170,7 +11170,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2OptimalPrefGroupUI.py:27
 msgid "Optimal Tool Options"
-msgstr "İyileştirme Seçenekleri"
+msgstr "En Uygun Uç Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2OptimalPrefGroupUI.py:33
 msgid ""
@@ -11274,6 +11274,8 @@ msgid ""
 "Box size control the overall size of the QRcode\n"
 "by adjusting the size of each box in the code."
 msgstr ""
+"Kare boyutu, koddaki her bir karenin boyutunu ayarlayarak \n"
+"QR Kod'un genel boyutunu kontrol eder."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:94
 #: appTools/ToolQRCode.py:752
@@ -11798,9 +11800,7 @@ msgid ""
 "Create toolpaths to cut around\n"
 "the PCB and separate it from\n"
 "the original board."
-msgstr ""
-"Baskı devre kartını kesmek ve iş \n"
-"parçasından ayırmak."
+msgstr "PCB'yi kesmek ve iş parçasından ayırmak."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:45
 #: appTools/ToolCutOut.py:2060
@@ -14667,7 +14667,7 @@ msgstr "Dikdörtgensel PCB kesim işlemi tamamlandı."
 
 #: appTools/ToolCutOut.py:1282 appTools/ToolCutOut.py:1314
 msgid "Could not retrieve Geometry object"
-msgstr ""
+msgstr "Şekil nesnesi alınamadı"
 
 #: appTools/ToolCutOut.py:1287 appTools/ToolCutOut.py:1342
 msgid "Geometry object for manual cutout not found"
@@ -15939,6 +15939,9 @@ msgid ""
 "Decides the level of details to include\n"
 "in the resulting geometry."
 msgstr ""
+"KIRMIZI renk için maske.\n"
+"[0 ... 255] arasındaki değerleri alır.\n"
+"Ortaya çıkan şekle dahil edilecek ayrıntı düzeyini tanımlar."
 
 #: appTools/ToolImage.py:264
 msgid ""
@@ -16228,7 +16231,7 @@ msgstr ""
 #: appTools/ToolIsolation.py:3070 appTools/ToolNCC.py:3875
 #| msgid "Optimal Tool"
 msgid "Optimal"
-msgstr "İyileştirme"
+msgstr "En Uygun Uç"
 
 #: appTools/ToolIsolation.py:3074 appTools/ToolNCC.py:3879
 msgid ""
@@ -16535,29 +16538,30 @@ msgid ""
 "Optimal Tool. Started to search for the minimum distance between copper "
 "features."
 msgstr ""
-"İyileştirme. Bakır elemanlar arasındaki minimum mesafenin aranması "
+"En Uygun Uç. Bakır elemanlar arasındaki minimum mesafenin aranması "
 "başlamıştır."
 
 #: appTools/ToolOptimal.py:158
 msgid "Optimal Tool. Parsing geometry for aperture"
-msgstr "İyileştirme. Aralık için şekil okunuyor"
+msgstr "En Uygun Uç. Aralık için şekil okunuyor"
 
 #: appTools/ToolOptimal.py:169
 msgid "Optimal Tool. Creating a buffer for the object geometry."
-msgstr "İyileştirme. Bir şekil nesnesi için bir tampon oluşturuluyor."
+msgstr "En Uygun Uç. Bir şekil nesnesi için bir tampon oluşturuluyor."
 
 #: appTools/ToolOptimal.py:184
 msgid ""
 "Optimal Tool. Finding the distances between each two elements. Iterations"
-msgstr "İyileştirme. İki eleman arasındaki mesafeler bulunuyor. \"Tekrarlama\""
+msgstr ""
+"En Uygun Uç. İki eleman arasındaki mesafeler bulunuyor. \"Tekrarlamalar\""
 
 #: appTools/ToolOptimal.py:218
 msgid "Optimal Tool. Finding the minimum distance."
-msgstr "İyileştirme. Minimum mesafe bulunuyor."
+msgstr "En Uygun Uç. Minimum mesafe bulunuyor."
 
 #: appTools/ToolOptimal.py:234
 msgid "Optimal Tool. Finished successfully."
-msgstr "İyileştirme. İşlem başarıyla tamamlandı."
+msgstr "En Uygun Uç. İşlem başarıyla tamamlandı."
 
 #: appTools/ToolOptimal.py:435
 msgid "Number of decimals kept for found distances."
@@ -16639,7 +16643,7 @@ msgstr "Nokta Koordinatları"
 
 #: appTools/ToolOptimal.py:575
 msgid "Find Minimum"
-msgstr "Minimum Mesafe Bul"
+msgstr "Minimum Mesafeyi Bul"
 
 #: appTools/ToolOptimal.py:577
 msgid ""
@@ -17424,8 +17428,8 @@ msgid ""
 "Show a set of controls allowing to export the QRCode\n"
 "to a SVG file or an PNG file."
 msgstr ""
-"QR Kod'u bir SVG veya PNG dosyasına\n"
-" aktarmanıza izin veren bir kontrolleri gösterir."
+"QR Kod'u SVG veya PNG dosyasına\n"
+" aktarmanıza izin veren kontrolleri gösterir."
 
 #: appTools/ToolQRCode.py:839
 msgid "Transparent back color"
@@ -17632,7 +17636,7 @@ msgstr "Kuralların kontrol edildiği Excellon nesneleridir."
 
 #: appTools/ToolRulesCheck.py:1315
 msgid "Excellon 1"
-msgstr ""
+msgstr "Excellon 1"
 
 #: appTools/ToolRulesCheck.py:1317
 msgid ""
@@ -17644,7 +17648,7 @@ msgstr ""
 
 #: appTools/ToolRulesCheck.py:1334
 msgid "Excellon 2"
-msgstr ""
+msgstr "Excellon 2"
 
 #: appTools/ToolRulesCheck.py:1336
 msgid ""
@@ -18336,7 +18340,7 @@ msgstr "Son proje dosyası yazmak için açılamadı."
 
 #: app_Main.py:2796
 msgid "2D Computer-Aided Printed Circuit Board Manufacturing"
-msgstr "2D Bilgisayar Destekli Baskı Devre Kartı İmalatı"
+msgstr "2D Bilgisayar Destekli PCB (Baskı Devre Kartı) İmalatı"
 
 #: app_Main.py:2797
 msgid "Development"
@@ -19283,9 +19287,9 @@ msgid ""
 "the application using either the toolbars, key shortcuts or even dragging "
 "and dropping the files on the GUI."
 msgstr ""
-"Araç çubuğunu, klavye kısayollarını kullanarak veya program penceresine "
-"sürükleyip bırakarak Gerber, Excellon, Gcode, DXF, bitmap veya SVG dosyasını "
-"FlatCAM'e indirin / içe aktarın."
+"Araç çubuğunu, klavye kısayollarını kullanarak veya Kullanıcı Arayüzüne "
+"sürükleyip bırakarak Gerber, Excellon, Gcode, DXF, Bitmap veya SVG dosyasını "
+"FlatCAM'e indirin/içe aktarın."
 
 #: app_Main.py:9732
 msgid ""
@@ -19294,7 +19298,7 @@ msgid ""
 "offered within the app."
 msgstr ""
 "Proje dosyasını çift tıklatarak, dosyayı Kullanıcı Arayüzüne sürükleyip "
-"bırakarak veya uygulama içinde sunulan menü (veya araç çubuğu) eylemlerini "
+"bırakarak veya uygulama içinde sunulan menü veya araç çubuğu eylemlerini "
 "kullanarak da bir proje yükleyebilirsiniz."
 
 #: app_Main.py:9735
@@ -19311,10 +19315,11 @@ msgid ""
 "properties according to its kind: Gerber, Excellon, Geometry or CNCJob "
 "object."
 msgstr ""
-"Nesne Proje sekmesinde mevcut olduğunda, nesneyi seçin ve ardındanÖzellikler "
-"sekmesine odaklanarak (Proje sekmesinde nesnenin adına çift tıklamak daha "
-"kolaydır, Özellikler sekmesi nesne türüne göre güncellenir: Gerber, "
-"Excellon , Şekil veya CNC İş nesnesi."
+"Proje sekmesinde bir nesne varsa, nesneyi seçin ve ardından Özellikler "
+"sekmesine geçin (Proje sekmesinde nesnenin adına çift tıklamak da o nesnenin "
+"özelliklerini Özellikler sekmesine aktaracaktır. Bu işlem daha kolaydır.) "
+"Özellikler sekmesi nesne türüne göre nesne özellikleriyle güncellenir: "
+"Gerber, Excellon , Şekil veya CNC İş nesnesi."
 
 #: app_Main.py:9739
 #| msgid ""
@@ -19331,9 +19336,10 @@ msgid ""
 "if it was out of focus."
 msgstr ""
 "Nesne çalışma alanı üzerinde farenin tek bir tıklamasıyla seçiliyse ve "
-"Seçili sekmesi aktifse, nesnenin özellikleri tekrar Seçili sekmesinde "
+"Özellikler sekmesi aktifse, nesnenin özellikleri Özellikler sekmesinde "
 "görüntülenir. Ayrıca, çalışma alanı üzerindeki bir nesneye çift "
-"tıklandığında Seçili sekmesi açılır ve aktif olamasa bile doldurulur."
+"tıklandığında Seçili sekmesi aktif olmasa bile açılır ve nesneye ilgili "
+"bilgiler doldurulur."
 
 #: app_Main.py:9743
 msgid ""
@@ -19350,20 +19356,20 @@ msgid ""
 "CNCJob --> CNCJob Object --> Verify GCode (through Edit CNC Code) and/or "
 "append/prepend to GCode (again, done in SELECTED TAB) --> Save GCode."
 msgstr ""
-"Gerber / Excellon nesnesi -> Seçenekleri seç -> Şekil oluştur (HARİCİ, "
-"DAHİLİ veya DOLGULU) -> Şekil nesnesi -> Araçlar ekle (Seçili sekmesinde "
-"seçenekleri değiştir) -> CNC İşi Oluştur -> CNC İş nesnesi -> G Kodu Kontrol "
-"Et (ile \"CNC Kodunu Görüntüle\" düğmesini kullanarak) ve gerekirse G-"
-"Kod'unun başına veya sonuna ek komutlar ekleyin (yine \"Özellikler\" "
-"sekmesinde) -> G Kodu Kaydet (\"CNC Kodunu Kaydet\" düğmesi)."
+"Gerber/Excellon nesnesi -> Özellikler Sekmesini seç (veya nesneye çift "
+"tıkla, Özellikler simgesi aktif olmasa dahi açılır.) -> Araç Seç (Yalıtım "
+"Oluşturma, Bakır Temizleme, PCB Kesimi) - > Şekil oluştur -> CNC İş Nesnesi "
+"Oluştur -> (CNC Kod'unu Kontrol Et simgesini kullanarak gerekirse G-Kod'unun "
+"başına veya sonuna ek komutlar ekleyin (yine Özellikler sekmesinde) -> CNC "
+"Kod'unu Kaydet."
 
 #: app_Main.py:9748
 msgid ""
 "A list of key shortcuts is available through an menu entry in Help --> "
 "Shortcuts List or through its own key shortcut: <b>F3</b>."
 msgstr ""
-"Klavye kısayol listesine Yardım -> Klavye kısayolları listesi menüsünden <b> "
-"F3 </b> tuşu ile erişilebilir."
+"Klavye kısayol listesine <b>Yardım</b> -> <b>Klavye Kısayol Listesi</b> "
+"menüsünden veya <b> F3 </b> tuşu ile erişilebilir."
 
 #: app_Main.py:9812
 msgid "Failed checking for latest version. Could not connect."
@@ -20161,7 +20167,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "If you like or use this program you can make a donation"
 #~ msgstr "If you like or use this program you can make a donation"
 
-#, python-format
 #~ msgid ""
 #~ "You don't have to make a donation %s, and it is totally optional but:"
 #~ msgstr ""
@@ -21118,7 +21123,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "G-code does not have a units code: either G20 or G21"
 #~ msgstr "G-code does not have a units code: either G20 or G21"
 
-#, python-brace-format
 #~ msgid ""
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
@@ -21126,20 +21130,16 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
 
-#, python-brace-format
 #~ msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 #~ msgstr "[selected]<span style=\"color:{color};\">{name}</span> selected"
 
-#, python-brace-format
 #~ msgid "{l_save}/Project_{date}"
 #~ msgstr "{l_save}/Project_{date}"
 
-#, python-brace-format
 #~| msgid "{l_save}/Project_{date}"
 #~ msgid "{l_save}/{obj_name}_{date}"
 #~ msgstr "{l_save}/{obj_name}_{date}"
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
@@ -21202,7 +21202,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "Calibrate Tool"
 #~ msgstr "Calibrate Tool"
 
-#, python-brace-format
 #~ msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 #~ msgstr "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 
@@ -21231,7 +21230,6 @@ msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyi
 #~ msgid "Margin distance value is missing or wrong format. Add it and retry."
 #~ msgstr "Margin distance value is missing or wrong format. Add it and retry."
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
