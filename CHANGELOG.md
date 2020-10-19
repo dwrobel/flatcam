@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 19.10.2020
 
 - added a check (and added to Preferences too) for the verification of tools validity in the Isolation Tool
+- fixed QrCode Tool
 
 18.10.2020
 

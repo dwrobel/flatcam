@@ -430,7 +430,6 @@ class QRCode(AppTool):
         units = self.app.defaults['units'] if units is None else units
         res = self.app.defaults['geometry_circle_steps']
         factor = svgparse_viewbox(svg_root)
-
         geos = getsvggeo(svg_root, object_type, units=units, res=res, factor=factor)
 
         if flip:
