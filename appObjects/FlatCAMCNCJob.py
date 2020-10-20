@@ -574,7 +574,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
+
+        # Editor Signal
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+
+        # Properties
+        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
 
         # autolevelling signals
         self.ui.sal_cb.stateChanged.connect(self.on_toggle_autolevelling)
@@ -698,6 +704,20 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.show_al_table.stateChanged.disconnect()
         except (TypeError, AttributeError):
             pass
+
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
 
     def on_add_al_probepoints(self):
         # create the solid_geo

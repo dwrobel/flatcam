@@ -251,10 +251,27 @@ class GerberObjectUI(ObjectUI):
                                       """)
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 6, 0, 1, 3)
+        # PROPERTIES CB
+        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
+        self.properties_lbl.setToolTip(_("Show the Properties."))
+        self.properties_cb = FCCheckBox()
+
+        grid0.addWidget(self.properties_lbl, 6, 0)
+        grid0.addWidget(self.properties_cb, 6, 1, 1, 2)
+
+        # PROPERTIES Frame
+        self.properties_frame = QtWidgets.QFrame()
+        self.properties_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.properties_frame, 7, 0, 1, 3)
+        self.properties_box = QtWidgets.QVBoxLayout()
+        self.properties_box.setContentsMargins(0, 0, 0, 0)
+        self.properties_frame.setLayout(self.properties_box)
+        self.properties_frame.hide()
+
+        self.treeWidget = FCTree(columns=2)
+
+        self.properties_box.addWidget(self.treeWidget)
+        self.properties_box.setStretch(0, 0)
 
         # ### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel('%s:' % _('Apertures'))
@@ -323,6 +340,11 @@ class GerberObjectUI(ObjectUI):
               "required for isolation.")
         )
         grid0.addWidget(self.create_buffer_button, 12, 0, 1, 3)
+
+        separator_line1 = QtWidgets.QFrame()
+        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line1, 13, 0, 1, 3)
 
         self.tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("TOOLS"))
         grid0.addWidget(self.tool_lbl, 14, 0, 1, 3)
@@ -538,6 +560,28 @@ class ExcellonObjectUI(ObjectUI):
                                       """)
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
+        # PROPERTIES CB
+        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
+        self.properties_lbl.setToolTip(_("Show the Properties."))
+        self.properties_cb = FCCheckBox()
+
+        grid0.addWidget(self.properties_lbl, 6, 0)
+        grid0.addWidget(self.properties_cb, 6, 1, 1, 2)
+
+        # PROPERTIES Frame
+        self.properties_frame = QtWidgets.QFrame()
+        self.properties_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.properties_frame, 7, 0, 1, 3)
+        self.properties_box = QtWidgets.QVBoxLayout()
+        self.properties_box.setContentsMargins(0, 0, 0, 0)
+        self.properties_frame.setLayout(self.properties_box)
+        self.properties_frame.hide()
+
+        self.treeWidget = FCTree(columns=2)
+
+        self.properties_box.addWidget(self.treeWidget)
+        self.properties_box.setStretch(0, 0)
+
         # ### Tools Drills ####
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
@@ -561,9 +605,9 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.plot_cb)
 
-        grid0.addWidget(self.tools_table_label, 6, 0)
-        grid0.addWidget(self.table_visibility_cb, 6, 1)
-        grid0.addLayout(hlay_plot, 6, 2)
+        grid0.addWidget(self.tools_table_label, 8, 0)
+        grid0.addWidget(self.table_visibility_cb, 8, 1)
+        grid0.addLayout(hlay_plot, 8, 2)
 
         # #############################################################################################################
         # #############################################################################################################
@@ -813,6 +857,28 @@ class GeometryObjectUI(ObjectUI):
                                       }
                                       """)
         grid_header.addWidget(self.editor_button, 4, 0, 1, 3)
+
+        # PROPERTIES CB
+        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
+        self.properties_lbl.setToolTip(_("Show the Properties."))
+        self.properties_cb = FCCheckBox()
+
+        grid_header.addWidget(self.properties_lbl, 6, 0)
+        grid_header.addWidget(self.properties_cb, 6, 1, 1, 2)
+
+        # PROPERTIES Frame
+        self.properties_frame = QtWidgets.QFrame()
+        self.properties_frame.setContentsMargins(0, 0, 0, 0)
+        grid_header.addWidget(self.properties_frame, 7, 0, 1, 3)
+        self.properties_box = QtWidgets.QVBoxLayout()
+        self.properties_box.setContentsMargins(0, 0, 0, 0)
+        self.properties_frame.setLayout(self.properties_box)
+        self.properties_frame.hide()
+
+        self.treeWidget = FCTree(columns=2)
+
+        self.properties_box.addWidget(self.treeWidget)
+        self.properties_box.setStretch(0, 0)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Tools widgets
         # this way I can hide/show the frame
@@ -1758,6 +1824,28 @@ class CNCObjectUI(ObjectUI):
                                        """)
         f_lay.addWidget(self.editor_button, 4, 0, 1, 3)
 
+        # PROPERTIES CB
+        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
+        self.properties_lbl.setToolTip(_("Show the Properties."))
+        self.properties_cb = FCCheckBox()
+
+        f_lay.addWidget(self.properties_lbl, 6, 0)
+        f_lay.addWidget(self.properties_cb, 6, 1, 1, 2)
+
+        # PROPERTIES Frame
+        self.properties_frame = QtWidgets.QFrame()
+        self.properties_frame.setContentsMargins(0, 0, 0, 0)
+        f_lay.addWidget(self.properties_frame, 7, 0, 1, 3)
+        self.properties_box = QtWidgets.QVBoxLayout()
+        self.properties_box.setContentsMargins(0, 0, 0, 0)
+        self.properties_frame.setLayout(self.properties_box)
+        self.properties_frame.hide()
+
+        self.treeWidget = FCTree(columns=2)
+
+        self.properties_box.addWidget(self.treeWidget)
+        self.properties_box.setStretch(0, 0)
+
         # Annotation
         self.annotation_cb = FCCheckBox(_("Display Annotation"))
         self.annotation_cb.setToolTip(
@@ -1765,12 +1853,12 @@ class CNCObjectUI(ObjectUI):
               "When checked it will display numbers in order for each end\n"
               "of a travel line.")
         )
-        f_lay.addWidget(self.annotation_cb, 6, 0, 1, 3)
+        f_lay.addWidget(self.annotation_cb, 8, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        f_lay.addWidget(separator_line, 8, 0, 1, 3)
+        f_lay.addWidget(separator_line, 10, 0, 1, 3)
 
         # Travelled Distance
         self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled distance"))
@@ -1781,9 +1869,9 @@ class CNCObjectUI(ObjectUI):
         self.t_distance_entry = FCEntry()
         self.units_label = QtWidgets.QLabel()
 
-        f_lay.addWidget(self.t_distance_label, 10, 0)
-        f_lay.addWidget(self.t_distance_entry, 10, 1)
-        f_lay.addWidget(self.units_label, 10, 2)
+        f_lay.addWidget(self.t_distance_label, 12, 0)
+        f_lay.addWidget(self.t_distance_entry, 12, 1)
+        f_lay.addWidget(self.units_label, 12, 2)
 
         # Estimated Time
         self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
@@ -1794,9 +1882,9 @@ class CNCObjectUI(ObjectUI):
         self.t_time_entry = FCEntry()
         self.units_time_label = QtWidgets.QLabel()
 
-        f_lay.addWidget(self.t_time_label, 12, 0)
-        f_lay.addWidget(self.t_time_entry, 12, 1)
-        f_lay.addWidget(self.units_time_label, 12, 2)
+        f_lay.addWidget(self.t_time_label, 14, 0)
+        f_lay.addWidget(self.t_time_entry, 14, 1)
+        f_lay.addWidget(self.units_time_label, 14, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
@@ -1806,7 +1894,7 @@ class CNCObjectUI(ObjectUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        f_lay.addWidget(separator_line, 14, 0, 1, 3)
+        f_lay.addWidget(separator_line, 16, 0, 1, 3)
 
         hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay)

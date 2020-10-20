@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+20.10.2020
+
+- finished to add the Properties data to the Object Properties (former Selected Tab)
+
 19.10.2020
 
 - added a check (and added to Preferences too) for the verification of tools validity in the Isolation Tool

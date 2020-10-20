@@ -589,7 +589,12 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
 
+        # Editor Signal
         self.ui.editor_button.clicked.connect(self.app.object2editor)
+
+        # Properties
+        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -613,6 +618,20 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.strategy_radio.activated_custom.connect(self.on_strategy)
 
         self.ui.geo_tools_table.drag_drop_sig.connect(self.rebuild_ui)
+
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        self.ui.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.MinimumExpanding)
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
 
     def rebuild_ui(self):
         # read the table tools uid

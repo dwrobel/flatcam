@@ -150,6 +150,10 @@ class GerberObject(FlatCAMObj, Gerber):
         # Editor
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
+        # Properties
+        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
+
         # Tools
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
         self.ui.generate_ncc_button.clicked.connect(self.app.ncclear_tool.run)
@@ -342,6 +346,19 @@ class GerberObject(FlatCAMObj, Gerber):
         new_geo = new_geo.buffer(-0.0000001)
 
         return new_geo
+
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
 
     def on_generate_buffer(self):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))

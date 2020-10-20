@@ -176,7 +176,11 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
         # Editor
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
-        
+
+        # Properties
+        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
+
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
         # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
 
@@ -602,6 +606,19 @@ class ExcellonObject(FlatCAMObj, Excellon):
 
     def on_table_visibility_toggle(self, state):
         self.ui.tools_table.show() if state else self.ui.tools_table.hide()
+
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
 
     def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """
