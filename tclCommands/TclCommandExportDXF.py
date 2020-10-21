@@ -49,4 +49,4 @@ class TclCommandExportDXF(TclCommand):
         """
         if 'filename' not in args:
             args['filename'] = self.app.defaults["global_last_save_folder"] + '/' + args['name']
-        self.app.export_dxf(use_thread=False, **args)
+        self.app.export_dxf(use_thread=False, local_use=None, **args)

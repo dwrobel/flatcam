@@ -106,6 +106,16 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.panel_type_label, 4, 0)
         grid0.addWidget(self.panel_type_radio, 4, 1)
 
+        # Path optimization
+        self.poptimization_cb = FCCheckBox('%s' % _("Path Optimization"))
+        self.poptimization_cb.setToolTip(
+            _("Active only for Geometry panel type.\n"
+              "When checked the application will find\n"
+              "any two overlapping Line elements in the panel\n"
+              "and remove the overlapping parts, keeping only one of them.")
+        )
+        grid0.addWidget(self.poptimization_cb, 5, 0, 1, 2)
+
         # ## Constrains
         self.pconstrain_cb = FCCheckBox('%s:' % _("Constrain within"))
         self.pconstrain_cb.setToolTip(
@@ -115,7 +125,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
               "the final panel will have as many columns and rows as\n"
               "they fit completely within selected area.")
         )
-        grid0.addWidget(self.pconstrain_cb, 5, 0, 1, 2)
+        grid0.addWidget(self.pconstrain_cb, 10, 0, 1, 2)
 
         self.px_width_entry = FCDoubleSpinner()
         self.px_width_entry.set_range(0.000001, 9999.9999)
@@ -127,8 +137,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
         )
-        grid0.addWidget(self.x_width_lbl, 6, 0)
-        grid0.addWidget(self.px_width_entry, 6, 1)
+        grid0.addWidget(self.x_width_lbl, 12, 0)
+        grid0.addWidget(self.px_width_entry, 12, 1)
 
         self.py_height_entry = FCDoubleSpinner()
         self.py_height_entry.set_range(0.000001, 9999.9999)
@@ -140,7 +150,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")
         )
-        grid0.addWidget(self.y_height_lbl, 7, 0)
-        grid0.addWidget(self.py_height_entry, 7, 1)
+        grid0.addWidget(self.y_height_lbl, 17, 0)
+        grid0.addWidget(self.py_height_entry, 17, 1)
 
         self.layout.addStretch()

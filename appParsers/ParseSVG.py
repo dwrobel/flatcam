@@ -38,9 +38,9 @@ def svgparselength(lengthstr):
     Parse an SVG length string into a float and a units
     string, if any.
 
-    :param lengthstr: SVG length string.
-    :return: Number and units pair.
-    :rtype: tuple(float, str|None)
+    :param lengthstr:   SVG length string.
+    :return:            Number and units pair.
+    :rtype:             tuple(float, str|None)
     """
 
     integer_re_str = r'[+-]?[0-9]+'
@@ -48,14 +48,32 @@ def svgparselength(lengthstr):
                     r'(?:' + integer_re_str + r'(?:[Ee]' + integer_re_str + r')?)'
     length_re_str = r'(' + number_re_str + r')(em|ex|px|in|cm|mm|pt|pc|%)?'
 
-    match = re.search(length_re_str, lengthstr)
-    if match:
-        return float(match.group(1)), match.group(2)
+    if lengthstr:
+        match = re.search(length_re_str, lengthstr)
+        if match:
+            return float(match.group(1)), match.group(2)
+    else:
+        return 0, 0
 
     return
 
 
-def path2shapely(path, object_type, res=1.0):
+def svgparse_viewbox(root):
+    val = root.get('viewBox')
+    if val is None:
+        return 1.0
+
+    res = [float(x) for x in val.split()] or [float(x) for x in val.split(',')]
+    w = svgparselength(root.get('width'))[0]
+    # h = svgparselength(root.get('height'))[0]
+
+    v_w = res[2]
+    # v_h = res[3]
+
+    return w / v_w
+
+
+def path2shapely(path, object_type, res=1.0, units='MM', factor=1.0):
     """
     Converts an svg.path.Path into a Shapely
     Polygon or LinearString.
@@ -63,6 +81,10 @@ def path2shapely(path, object_type, res=1.0):
     :param path:        svg.path.Path instance
     :param object_type:
     :param res:         Resolution (minimum step along path)
+    :param units:       FlatCAM units
+    :type units:        str
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
     :return:            Shapely geometry object
     :rtype :            Polygon
     :rtype :            LineString
@@ -82,7 +104,7 @@ def path2shapely(path, object_type, res=1.0):
             if len(points) == 0 or points[-1] != (x, y):
                 points.append((x, y))
             end = component.end
-            points.append((end.real, end.imag))
+            points.append((factor * end.real, factor * end.imag))
             continue
 
         # Arc, CubicBezier or QuadraticBezier
@@ -95,10 +117,14 @@ def path2shapely(path, object_type, res=1.0):
             # steps = int(length / res + 0.5)
             steps = int(length) * 2
 
+            if units == 'IN':
+                steps *= 25
+
             # solve error when step is below 1,
-            # it may cause other problems, but LineString needs at least  two points
-            if steps == 0:
-                steps = 1
+            # it may cause other problems, but LineString needs at least two points
+            # later edit: made the minimum nr of steps to be 10; left it like that to see that steps can be 0
+            if steps == 0 or steps < 10:
+                steps = 10
 
             frac = 1.0 / steps
 
@@ -107,9 +133,9 @@ def path2shapely(path, object_type, res=1.0):
                 point = component.point(i * frac)
                 x, y = point.real, point.imag
                 if len(points) == 0 or points[-1] != (x, y):
-                    points.append((x, y))
+                    points.append((factor * x, factor * y))
             end = component.point(1.0)
-            points.append((end.real, end.imag))
+            points.append((factor * end.real, factor * end.imag))
             continue
 
         # Move
@@ -124,7 +150,7 @@ def path2shapely(path, object_type, res=1.0):
                     closed = False
                     start = component.start
                     x, y = start.real, start.imag
-                    points = [(x, y)]
+                    points = [(factor * x, factor * y)]
             continue
 
         closed = False
@@ -145,6 +171,7 @@ def path2shapely(path, object_type, res=1.0):
 
     if points:
         rings.append(points)
+
     try:
         rings = MultiLineString(rings)
     except Exception as e:
@@ -174,30 +201,37 @@ def path2shapely(path, object_type, res=1.0):
     return geometry
 
 
-def svgrect2shapely(rect, n_points=32):
+def svgrect2shapely(rect, n_points=32, factor=1.0):
     """
     Converts an SVG rect into Shapely geometry.
 
     :param rect:        Rect Element
     :type rect:         xml.etree.ElementTree.Element
-    :param n_points:    number of points to approximate circles
+    :param n_points:    number of points to approximate rectangles corners when having rounded corners
     :type n_points:     int
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
     :return:            shapely.geometry.polygon.LinearRing
     """
     w = svgparselength(rect.get('width'))[0]
     h = svgparselength(rect.get('height'))[0]
+
     x_obj = rect.get('x')
     if x_obj is not None:
-        x = svgparselength(x_obj)[0]
+        x = svgparselength(x_obj)[0] * factor
     else:
         x = 0
+
     y_obj = rect.get('y')
     if y_obj is not None:
-        y = svgparselength(y_obj)[0]
+        y = svgparselength(y_obj)[0] * factor
     else:
         y = 0
+
     rxstr = rect.get('rx')
+    rxstr = rxstr * factor if rxstr else rxstr
     rystr = rect.get('ry')
+    rystr = rystr * factor if rystr else rystr
 
     if rxstr is None and rystr is None:  # Sharp corners
         pts = [
@@ -244,42 +278,51 @@ def svgrect2shapely(rect, n_points=32):
     # return LinearRing(pts)
 
 
-def svgcircle2shapely(circle):
+def svgcircle2shapely(circle, n_points=64, factor=1.0):
     """
     Converts an SVG circle into Shapely geometry.
 
-    :param circle: Circle Element
-    :type circle: xml.etree.ElementTree.Element
-    :return: Shapely representation of the circle.
-    :rtype: shapely.geometry.polygon.LinearRing
+    :param circle:      Circle Element
+    :type circle:       xml.etree.ElementTree.Element
+    :param n_points:    circle resolution; nr of points to b e used to approximate a circle
+    :type n_points:     int
+    :return:            Shapely representation of the circle.
+    :rtype:             shapely.geometry.polygon.LinearRing
     """
     # cx = float(circle.get('cx'))
     # cy = float(circle.get('cy'))
     # r = float(circle.get('r'))
     cx = svgparselength(circle.get('cx'))[0]  # TODO: No units support yet
+    cx = cx * factor if cx else cx
     cy = svgparselength(circle.get('cy'))[0]  # TODO: No units support yet
+    cy = cy * factor if cy else cy
     r = svgparselength(circle.get('r'))[0]  # TODO: No units support yet
+    r = r * factor if r else r
 
-    # TODO: No resolution specified.
-    return Point(cx, cy).buffer(r)
+    return Point(cx, cy).buffer(r, resolution=n_points)
 
 
-def svgellipse2shapely(ellipse, n_points=64):
+def svgellipse2shapely(ellipse, n_points=64, factor=1.0):
     """
     Converts an SVG ellipse into Shapely geometry
 
-    :param ellipse: Ellipse Element
-    :type ellipse: xml.etree.ElementTree.Element
-    :param n_points: Number of discrete points in output.
-    :return: Shapely representation of the ellipse.
-    :rtype: shapely.geometry.polygon.LinearRing
+    :param ellipse:     Ellipse Element
+    :type ellipse:      xml.etree.ElementTree.Element
+    :param n_points:    Number of discrete points in output.
+    :type n_points:     int
+    :return:            Shapely representation of the ellipse.
+    :rtype:             shapely.geometry.polygon.LinearRing
     """
 
-    cx = svgparselength(ellipse.get('cx'))[0]  # TODO: No units support yet
-    cy = svgparselength(ellipse.get('cy'))[0]  # TODO: No units support yet
+    cx = svgparselength(ellipse.get('cx'))[0]   # TODO: No units support yet
+    cx = cx * factor if cx else cx
+    cy = svgparselength(ellipse.get('cy'))[0]   # TODO: No units support yet
+    cy = cy * factor if cy else cy
 
-    rx = svgparselength(ellipse.get('rx'))[0]  # TODO: No units support yet
-    ry = svgparselength(ellipse.get('ry'))[0]  # TODO: No units support yet
+    rx = svgparselength(ellipse.get('rx'))[0]   # TODO: No units support yet
+    rx = rx * factor if rx else rx
+    ry = svgparselength(ellipse.get('ry'))[0]   # TODO: No units support yet
+    ry = ry * factor if ry else ry
 
     t = np.arange(n_points, dtype=float) / n_points
     x = cx + rx * np.cos(2 * np.pi * t)
@@ -290,47 +333,74 @@ def svgellipse2shapely(ellipse, n_points=64):
     # return LinearRing(pts)
 
 
-def svgline2shapely(line):
+def svgline2shapely(line, factor=1.0):
     """
 
-    :param line: Line element
-    :type line: xml.etree.ElementTree.Element
-    :return: Shapely representation on the line.
-    :rtype: shapely.geometry.polygon.LinearRing
+    :param line:        Line element
+    :type line:         xml.etree.ElementTree.Element
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
+    :return:            Shapely representation on the line.
+    :rtype:             shapely.geometry.polygon.LineString
     """
 
-    x1 = svgparselength(line.get('x1'))[0]
-    y1 = svgparselength(line.get('y1'))[0]
-    x2 = svgparselength(line.get('x2'))[0]
-    y2 = svgparselength(line.get('y2'))[0]
+    x1 = svgparselength(line.get('x1'))[0] * factor
+    y1 = svgparselength(line.get('y1'))[0] * factor
+    x2 = svgparselength(line.get('x2'))[0] * factor
+    y2 = svgparselength(line.get('y2'))[0] * factor
 
     return LineString([(x1, y1), (x2, y2)])
 
 
-def svgpolyline2shapely(polyline):
+def svgpolyline2shapely(polyline, factor=1.0):
+    """
+
+    :param polyline:    Polyline element
+    :type polyline:     xml.etree.ElementTree.Element
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
+    :return:            Shapely representation of the PolyLine
+    :rtype:             shapely.geometry.polygon.LineString
+    """
 
     ptliststr = polyline.get('points')
-    points = parse_svg_point_list(ptliststr)
+    points = parse_svg_point_list(ptliststr, factor)
 
     return LineString(points)
 
 
-def svgpolygon2shapely(polygon):
+def svgpolygon2shapely(polygon, n_points=64, factor=1.0):
+    """
+    Convert a SVG polygon to a Shapely Polygon.
+
+    :param polygon:
+    :type polygon:
+    :param n_points:    circle resolution; nr of points to b e used to approximate a circle
+    :type n_points:     int
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
+    :return:            Shapely Polygon
+    """
 
     ptliststr = polygon.get('points')
-    points = parse_svg_point_list(ptliststr)
+    points = parse_svg_point_list(ptliststr, factor)
 
-    return Polygon(points).buffer(0)
+    return Polygon(points).buffer(0, resolution=n_points)
     # return LinearRing(points)
 
 
-def getsvggeo(node, object_type, root=None):
+def getsvggeo(node, object_type, root=None, units='MM', res=64, factor=1.0):
     """
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
 
     :param node:        xml.etree.ElementTree.Element
     :param object_type:
+    :param root:
+    :param units:       FlatCAM units
+    :param res:         resolution to be used for circles buffering
+    :param factor:      correction factor due of virtual units
+    :type factor:       float
     :return:            List of Shapely geometry
     :rtype:             list
     """
@@ -343,46 +413,45 @@ def getsvggeo(node, object_type, root=None):
     # Recurse
     if len(node) > 0:
         for child in node:
-            subgeo = getsvggeo(child, object_type, root)
+            subgeo = getsvggeo(child, object_type, root=root, units=units, res=res, factor=factor)
             if subgeo is not None:
                 geo += subgeo
-
     # Parse
     elif kind == 'path':
         log.debug("***PATH***")
         P = parse_path(node.get('d'))
-        P = path2shapely(P, object_type)
+        P = path2shapely(P, object_type, units=units, factor=factor)
         # for path, the resulting geometry is already a list so no need to create a new one
         geo = P
 
     elif kind == 'rect':
         log.debug("***RECT***")
-        R = svgrect2shapely(node)
+        R = svgrect2shapely(node, n_points=res, factor=factor)
         geo = [R]
 
     elif kind == 'circle':
         log.debug("***CIRCLE***")
-        C = svgcircle2shapely(node)
+        C = svgcircle2shapely(node, n_points=res, factor=factor)
         geo = [C]
 
     elif kind == 'ellipse':
         log.debug("***ELLIPSE***")
-        E = svgellipse2shapely(node)
+        E = svgellipse2shapely(node, n_points=res, factor=factor)
         geo = [E]
 
     elif kind == 'polygon':
         log.debug("***POLYGON***")
-        poly = svgpolygon2shapely(node)
+        poly = svgpolygon2shapely(node, n_points=res, factor=factor)
         geo = [poly]
 
     elif kind == 'line':
         log.debug("***LINE***")
-        line = svgline2shapely(node)
+        line = svgline2shapely(node, factor=factor)
         geo = [line]
 
     elif kind == 'polyline':
         log.debug("***POLYLINE***")
-        pline = svgpolyline2shapely(node)
+        pline = svgpolyline2shapely(node, factor=factor)
         geo = [pline]
 
     elif kind == 'use':
@@ -392,7 +461,7 @@ def getsvggeo(node, object_type, root=None):
         href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
         ref = root.find(".//*[@id='%s']" % href.replace('#', ''))
         if ref is not None:
-            geo = getsvggeo(ref, object_type, root)
+            geo = getsvggeo(ref, object_type, root=root, units=units, res=res, factor=factor)
 
     else:
         log.warning("Unknown kind: " + kind)
@@ -434,6 +503,7 @@ def getsvgtext(node, object_type, units='MM'):
 
     :param node:        xml.etree.ElementTree.Element
     :param object_type:
+    :param units:       FlatCAM units
     :return:            List of Shapely geometry
     :rtype:             list
     """
@@ -525,13 +595,15 @@ def getsvgtext(node, object_type, units='MM'):
     return geo
 
 
-def parse_svg_point_list(ptliststr):
+def parse_svg_point_list(ptliststr, factor):
     """
     Returns a list of coordinate pairs extracted from the "points"
     attribute in SVG polygons and polyline's.
 
-    :param ptliststr: "points" attribute string in polygon or polyline.
-    :return: List of tuples with coordinates.
+    :param ptliststr:       "points" attribute string in polygon or polyline.
+    :param factor:          correction factor due of virtual units
+    :type factor:           float
+    :return:                List of tuples with coordinates.
     """
 
     pairs = []
@@ -544,9 +616,9 @@ def parse_svg_point_list(ptliststr):
         val = float(ptliststr[pos:match.start()])
 
         if i % 2 == 1:
-            pairs.append((last, val))
+            pairs.append((factor * last, factor * val))
         else:
-            last = val
+            last = val * factor
 
         pos = match.end()
         i += 1
@@ -554,7 +626,7 @@ def parse_svg_point_list(ptliststr):
     # Check for last element
     val = float(ptliststr[pos:])
     if i % 2 == 1:
-        pairs.append((last, val))
+        pairs.append((factor * last, factor * val))
     else:
         log.warning("Incomplete coordinates.")
 

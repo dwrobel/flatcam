@@ -145,7 +145,15 @@ class ShapeGroup(object):
         :param kwargs: keyword arguments
             Arguments for ShapeCollection.add function
         """
-        self._indexes.append(self._collection.add(**kwargs))
+        key = self._collection.add(**kwargs)
+        self._indexes.append(key)
+        return key
+
+    def remove(self, idx, update=False):
+        self._indexes.remove(idx)
+        self._collection.remove(idx, False)
+        if update:
+            self._collection.redraw([])             # Skip waiting results
 
     def clear(self, update=False):
         """
@@ -187,6 +195,17 @@ class ShapeGroup(object):
         self._visible = value
         for i in self._indexes:
             self._collection.data[i]['visible'] = value
+
+        self._collection.redraw([])
+
+    def update_visibility(self, state, indexes=None):
+        if indexes:
+            for i in indexes:
+                if i in self._indexes:
+                    self._collection.data[i]['visible'] = state
+        else:
+            for i in self._indexes:
+                self._collection.data[i]['visible'] = state
 
         self._collection.redraw([])
 
@@ -319,6 +338,19 @@ class ShapeCollectionVisual(CompoundVisual):
         self.data.clear()
         if update:
             self.__update()
+
+    def update_visibility(self, state:bool, indexes=None) -> None:
+        # Lock sub-visuals updates
+        self.update_lock.acquire(True)
+        if indexes is None:
+            for k, data in list(self.data.items()):
+                self.data[k]['visible'] = state
+        else:
+            for k, data in list(self.data.items()):
+                if k in indexes:
+                    self.data[k]['visible'] = state
+
+        self.update_lock.release()
 
     def update_color(self, new_mesh_color=None, new_line_color=None, indexes=None):
         if new_mesh_color is None and new_line_color is None:
@@ -527,7 +559,7 @@ class ShapeCollectionVisual(CompoundVisual):
 
         self.results_lock.release()
 
-        if update_colors is None:
+        if update_colors is None or update_colors is False:
             self.__update()
         else:
             try:
@@ -667,7 +699,7 @@ class TextCollectionVisual(TextVisual):
 
     def clear(self, update=False):
         """
-        Removes all shapes from colleciton
+        Removes all shapes from collection
         :param update: bool
             Set True to redraw collection
         """

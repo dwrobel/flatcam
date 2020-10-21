@@ -5,14 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from camlib import grace
 from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import unary_union
 from shapely.geometry import Polygon, MultiPolygon, Point, LineString
 from shapely.geometry import box as box
 import shapely.affinity as affinity
@@ -36,8 +36,6 @@ log = logging.getLogger('base')
 class ToolCopperThieving(AppTool):
     work_finished = QtCore.pyqtSignal()
 
-    toolName = _("Copper Thieving Tool")
-
     def __init__(self, app):
         AppTool.__init__(self, app)
 
@@ -47,455 +45,11 @@ class ToolCopperThieving(AppTool):
         self.decimals = self.app.decimals
         self.units = self.app.defaults['units']
 
-        # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(title_label)
-        self.layout.addWidget(QtWidgets.QLabel(''))
-
-        # ## Grid Layout
-        i_grid_lay = QtWidgets.QGridLayout()
-        self.layout.addLayout(i_grid_lay)
-        i_grid_lay.setColumnStretch(0, 0)
-        i_grid_lay.setColumnStretch(1, 1)
-
-        self.grb_object_combo = FCComboBox()
-        self.grb_object_combo.setModel(self.app.collection)
-        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.is_last = True
-        self.grb_object_combo.obj_type = 'Gerber'
-
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.grbobj_label.setToolTip(
-            _("Gerber Object to which will be added a copper thieving.")
-        )
-
-        i_grid_lay.addWidget(self.grbobj_label, 0, 0)
-        i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
-
-        # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-
-        self.copper_fill_label = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
-        self.copper_fill_label.setToolTip(
-            _("Parameters used for this tool.")
-        )
-        grid_lay.addWidget(self.copper_fill_label, 0, 0, 1, 2)
-
-        # CLEARANCE #
-        self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
-        self.clearance_label.setToolTip(
-            _("This set the distance between the copper thieving components\n"
-              "(the polygon fill may be split in multiple polygons)\n"
-              "and the copper traces in the Gerber file.")
-        )
-        self.clearance_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_entry.set_range(0.00001, 9999.9999)
-        self.clearance_entry.set_precision(self.decimals)
-        self.clearance_entry.setSingleStep(0.1)
-
-        grid_lay.addWidget(self.clearance_label, 1, 0)
-        grid_lay.addWidget(self.clearance_entry, 1, 1)
-
-        # MARGIN #
-        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
-        self.margin_label.setToolTip(
-            _("Bounding box margin.")
-        )
-        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.margin_entry.set_range(0.0, 9999.9999)
-        self.margin_entry.set_precision(self.decimals)
-        self.margin_entry.setSingleStep(0.1)
-
-        grid_lay.addWidget(self.margin_label, 2, 0)
-        grid_lay.addWidget(self.margin_entry, 2, 1)
-
-        # Reference #
-        self.reference_radio = RadioSet([
-            {'label': _('Itself'), 'value': 'itself'},
-            {"label": _("Area Selection"), "value": "area"},
-            {'label':  _("Reference Object"), 'value': 'box'}
-        ], orientation='vertical', stretch=False)
-        self.reference_label = QtWidgets.QLabel(_("Reference:"))
-        self.reference_label.setToolTip(
-            _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
-              "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
-              "- 'Reference Object' - will do copper thieving within the area specified by another object.")
-        )
-        grid_lay.addWidget(self.reference_label, 3, 0)
-        grid_lay.addWidget(self.reference_radio, 3, 1)
-
-        self.ref_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.ref_combo_type_label.setToolTip(
-            _("The type of FlatCAM object to be used as copper thieving reference.\n"
-              "It can be Gerber, Excellon or Geometry.")
-        )
-        self.ref_combo_type = FCComboBox()
-        self.ref_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
-
-        grid_lay.addWidget(self.ref_combo_type_label, 4, 0)
-        grid_lay.addWidget(self.ref_combo_type, 4, 1)
-
-        self.ref_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.ref_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
-        self.ref_combo = FCComboBox()
-        self.ref_combo.setModel(self.app.collection)
-        self.ref_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ref_combo.is_last = True
-        self.ref_combo.obj_type = {
-            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ref_combo_type.get_value()]
-
-        grid_lay.addWidget(self.ref_combo_label, 5, 0)
-        grid_lay.addWidget(self.ref_combo, 5, 1)
-
-        self.ref_combo.hide()
-        self.ref_combo_label.hide()
-        self.ref_combo_type.hide()
-        self.ref_combo_type_label.hide()
-
-        # Bounding Box Type #
-        self.bbox_type_radio = RadioSet([
-            {'label': _('Rectangular'), 'value': 'rect'},
-            {"label": _("Minimal"), "value": "min"}
-        ], stretch=False)
-        self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
-        self.bbox_type_label.setToolTip(
-            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
-              "- 'Minimal' - the bounding box will be the convex hull shape.")
-        )
-        grid_lay.addWidget(self.bbox_type_label, 6, 0)
-        grid_lay.addWidget(self.bbox_type_radio, 6, 1)
-        self.bbox_type_label.hide()
-        self.bbox_type_radio.hide()
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line, 7, 0, 1, 2)
-
-        # Fill Type
-        self.fill_type_radio = RadioSet([
-            {'label': _('Solid'), 'value': 'solid'},
-            {"label": _("Dots Grid"), "value": "dot"},
-            {"label": _("Squares Grid"), "value": "square"},
-            {"label": _("Lines Grid"), "value": "line"}
-        ], orientation='vertical', stretch=False)
-        self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
-        self.fill_type_label.setToolTip(
-            _("- 'Solid' - copper thieving will be a solid polygon.\n"
-              "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
-              "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
-              "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
-        )
-        grid_lay.addWidget(self.fill_type_label, 8, 0)
-        grid_lay.addWidget(self.fill_type_radio, 8, 1)
-
-        # DOTS FRAME
-        self.dots_frame = QtWidgets.QFrame()
-        self.dots_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.dots_frame)
-        dots_grid = QtWidgets.QGridLayout()
-        dots_grid.setColumnStretch(0, 0)
-        dots_grid.setColumnStretch(1, 1)
-        dots_grid.setContentsMargins(0, 0, 0, 0)
-        self.dots_frame.setLayout(dots_grid)
-        self.dots_frame.hide()
-
-        self.dots_label = QtWidgets.QLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
-        dots_grid.addWidget(self.dots_label, 0, 0, 1, 2)
-
-        # Dot diameter #
-        self.dotdia_label = QtWidgets.QLabel('%s:' % _("Dia"))
-        self.dotdia_label.setToolTip(
-            _("Dot diameter in Dots Grid.")
-        )
-        self.dot_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dot_dia_entry.set_range(0.0, 9999.9999)
-        self.dot_dia_entry.set_precision(self.decimals)
-        self.dot_dia_entry.setSingleStep(0.1)
-
-        dots_grid.addWidget(self.dotdia_label, 1, 0)
-        dots_grid.addWidget(self.dot_dia_entry, 1, 1)
-
-        # Dot spacing #
-        self.dotspacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.dotspacing_label.setToolTip(
-            _("Distance between each two dots in Dots Grid.")
-        )
-        self.dot_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dot_spacing_entry.set_range(0.0, 9999.9999)
-        self.dot_spacing_entry.set_precision(self.decimals)
-        self.dot_spacing_entry.setSingleStep(0.1)
-
-        dots_grid.addWidget(self.dotspacing_label, 2, 0)
-        dots_grid.addWidget(self.dot_spacing_entry, 2, 1)
-
-        # SQUARES FRAME
-        self.squares_frame = QtWidgets.QFrame()
-        self.squares_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.squares_frame)
-        squares_grid = QtWidgets.QGridLayout()
-        squares_grid.setColumnStretch(0, 0)
-        squares_grid.setColumnStretch(1, 1)
-        squares_grid.setContentsMargins(0, 0, 0, 0)
-        self.squares_frame.setLayout(squares_grid)
-        self.squares_frame.hide()
-
-        self.squares_label = QtWidgets.QLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
-        squares_grid.addWidget(self.squares_label, 0, 0, 1, 2)
-
-        # Square Size #
-        self.square_size_label = QtWidgets.QLabel('%s:' % _("Size"))
-        self.square_size_label.setToolTip(
-            _("Square side size in Squares Grid.")
-        )
-        self.square_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.square_size_entry.set_range(0.0, 9999.9999)
-        self.square_size_entry.set_precision(self.decimals)
-        self.square_size_entry.setSingleStep(0.1)
-
-        squares_grid.addWidget(self.square_size_label, 1, 0)
-        squares_grid.addWidget(self.square_size_entry, 1, 1)
-
-        # Squares spacing #
-        self.squares_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.squares_spacing_label.setToolTip(
-            _("Distance between each two squares in Squares Grid.")
-        )
-        self.squares_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.squares_spacing_entry.set_range(0.0, 9999.9999)
-        self.squares_spacing_entry.set_precision(self.decimals)
-        self.squares_spacing_entry.setSingleStep(0.1)
-
-        squares_grid.addWidget(self.squares_spacing_label, 2, 0)
-        squares_grid.addWidget(self.squares_spacing_entry, 2, 1)
-
-        # LINES FRAME
-        self.lines_frame = QtWidgets.QFrame()
-        self.lines_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.lines_frame)
-        lines_grid = QtWidgets.QGridLayout()
-        lines_grid.setColumnStretch(0, 0)
-        lines_grid.setColumnStretch(1, 1)
-        lines_grid.setContentsMargins(0, 0, 0, 0)
-        self.lines_frame.setLayout(lines_grid)
-        self.lines_frame.hide()
-
-        self.lines_label = QtWidgets.QLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
-        lines_grid.addWidget(self.lines_label, 0, 0, 1, 2)
-
-        # Square Size #
-        self.line_size_label = QtWidgets.QLabel('%s:' % _("Size"))
-        self.line_size_label.setToolTip(
-            _("Line thickness size in Lines Grid.")
-        )
-        self.line_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.line_size_entry.set_range(0.0, 9999.9999)
-        self.line_size_entry.set_precision(self.decimals)
-        self.line_size_entry.setSingleStep(0.1)
-
-        lines_grid.addWidget(self.line_size_label, 1, 0)
-        lines_grid.addWidget(self.line_size_entry, 1, 1)
-
-        # Lines spacing #
-        self.lines_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.lines_spacing_label.setToolTip(
-            _("Distance between each two lines in Lines Grid.")
-        )
-        self.lines_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.lines_spacing_entry.set_range(0.0, 9999.9999)
-        self.lines_spacing_entry.set_precision(self.decimals)
-        self.lines_spacing_entry.setSingleStep(0.1)
-
-        lines_grid.addWidget(self.lines_spacing_label, 2, 0)
-        lines_grid.addWidget(self.lines_spacing_entry, 2, 1)
-
-        # ## Insert Copper Thieving
-        self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
-        self.fill_button.setToolTip(
-            _("Will add a polygon (may be split in multiple parts)\n"
-              "that will surround the actual Gerber traces at a certain distance.")
-        )
-        self.fill_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(self.fill_button)
-
-        # ## Grid Layout
-        grid_lay_1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay_1)
-        grid_lay_1.setColumnStretch(0, 0)
-        grid_lay_1.setColumnStretch(1, 1)
-        grid_lay_1.setColumnStretch(2, 0)
-
-        separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
-
-        grid_lay_1.addWidget(QtWidgets.QLabel(''))
-
-        self.robber_bar_label = QtWidgets.QLabel('<b>%s</b>' % _('Robber Bar Parameters'))
-        self.robber_bar_label.setToolTip(
-            _("Parameters used for the robber bar.\n"
-              "Robber bar = copper border to help in pattern hole plating.")
-        )
-        grid_lay_1.addWidget(self.robber_bar_label, 1, 0, 1, 3)
-
-        # ROBBER BAR MARGIN #
-        self.rb_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
-        self.rb_margin_label.setToolTip(
-            _("Bounding box margin for robber bar.")
-        )
-        self.rb_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
-        self.rb_margin_entry.set_precision(self.decimals)
-        self.rb_margin_entry.setSingleStep(0.1)
-
-        grid_lay_1.addWidget(self.rb_margin_label, 2, 0)
-        grid_lay_1.addWidget(self.rb_margin_entry, 2, 1, 1, 2)
-
-        # THICKNESS #
-        self.rb_thickness_label = QtWidgets.QLabel('%s:' % _("Thickness"))
-        self.rb_thickness_label.setToolTip(
-            _("The robber bar thickness.")
-        )
-        self.rb_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.rb_thickness_entry.set_range(0.0000, 9999.9999)
-        self.rb_thickness_entry.set_precision(self.decimals)
-        self.rb_thickness_entry.setSingleStep(0.1)
-
-        grid_lay_1.addWidget(self.rb_thickness_label, 3, 0)
-        grid_lay_1.addWidget(self.rb_thickness_entry, 3, 1, 1, 2)
-
-        # ## Insert Robber Bar
-        self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
-        self.rb_button.setToolTip(
-            _("Will add a polygon with a defined thickness\n"
-              "that will surround the actual Gerber object\n"
-              "at a certain distance.\n"
-              "Required when doing holes pattern plating.")
-        )
-        self.rb_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        grid_lay_1.addWidget(self.rb_button, 4, 0, 1, 3)
-
-        separator_line_2 = QtWidgets.QFrame()
-        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay_1.addWidget(separator_line_2, 5, 0, 1, 3)
-
-        self.patern_mask_label = QtWidgets.QLabel('<b>%s</b>' % _('Pattern Plating Mask'))
-        self.patern_mask_label.setToolTip(
-            _("Generate a mask for pattern plating.")
-        )
-        grid_lay_1.addWidget(self.patern_mask_label, 6, 0, 1, 3)
-
-        self.sm_obj_label = QtWidgets.QLabel("%s:" % _("Select Soldermask object"))
-        self.sm_obj_label.setToolTip(
-            _("Gerber Object with the soldermask.\n"
-              "It will be used as a base for\n"
-              "the pattern plating mask.")
-        )
-
-        self.sm_object_combo = FCComboBox()
-        self.sm_object_combo.setModel(self.app.collection)
-        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.is_last = True
-        self.sm_object_combo.obj_type = 'Gerber'
-
-        grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
-        grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)
-
-        # Openings CLEARANCE #
-        self.clearance_ppm_label = QtWidgets.QLabel('%s:' % _("Clearance"))
-        self.clearance_ppm_label.setToolTip(
-            _("The distance between the possible copper thieving elements\n"
-              "and/or robber bar and the actual openings in the mask.")
-        )
-        self.clearance_ppm_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.clearance_ppm_entry.set_range(-9999.9999, 9999.9999)
-        self.clearance_ppm_entry.set_precision(self.decimals)
-        self.clearance_ppm_entry.setSingleStep(0.1)
-
-        grid_lay_1.addWidget(self.clearance_ppm_label, 9, 0)
-        grid_lay_1.addWidget(self.clearance_ppm_entry, 9, 1, 1, 2)
-
-        # Plated area
-        self.plated_area_label = QtWidgets.QLabel('%s:' % _("Plated area"))
-        self.plated_area_label.setToolTip(
-            _("The area to be plated by pattern plating.\n"
-              "Basically is made from the openings in the plating mask.\n\n"
-              "<<WARNING>> - the calculated area is actually a bit larger\n"
-              "due of the fact that the soldermask openings are by design\n"
-              "a bit larger than the copper pads, and this area is\n"
-              "calculated from the soldermask openings.")
-        )
-        self.plated_area_entry = FCEntry()
-        self.plated_area_entry.setDisabled(True)
-
-        if self.units.upper() == 'MM':
-            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("mm"))
-        else:
-            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("in"))
-
-        grid_lay_1.addWidget(self.plated_area_label, 10, 0)
-        grid_lay_1.addWidget(self.plated_area_entry, 10, 1)
-        grid_lay_1.addWidget(self.units_area_label, 10, 2)
-
-        # ## Pattern Plating Mask
-        self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
-        self.ppm_button.setToolTip(
-            _("Will add to the soldermask gerber geometry\n"
-              "the geometries of the copper thieving and/or\n"
-              "the robber bar if those were generated.")
-        )
-        self.ppm_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 3)
-
-        self.layout.addStretch()
-
-        # ## Reset Tool
-        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
-        self.reset_button.setToolTip(
-            _("Will reset the tool parameters.")
-        )
-        self.reset_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(self.reset_button)
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = ThievingUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -532,14 +86,14 @@ class ToolCopperThieving(AppTool):
         self.rb_thickness = None
 
         # SIGNALS
-        self.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
-        self.reference_radio.group_toggle_fn = self.on_toggle_reference
-        self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+        self.ui.ref_combo_type.currentIndexChanged.connect(self.on_ref_combo_type_change)
+        self.ui.reference_radio.group_toggle_fn = self.on_toggle_reference
+        self.ui.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
-        self.fill_button.clicked.connect(self.execute)
-        self.rb_button.clicked.connect(self.add_robber_bar)
-        self.ppm_button.clicked.connect(self.on_add_ppm)
-        self.reset_button.clicked.connect(self.set_tool_ui)
+        self.ui.fill_button.clicked.connect(self.execute)
+        self.ui.rb_button.clicked.connect(self.add_robber_bar)
+        self.ui.ppm_button.clicked.connect(self.on_add_ppm)
+        self.ui.reset_button.clicked.connect(self.set_tool_ui)
 
         self.work_finished.connect(self.on_new_pattern_plating_object)
 
@@ -576,23 +130,24 @@ class ToolCopperThieving(AppTool):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
-        self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
-        self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
-        self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
-        self.bbox_type_radio.set_value(self.app.defaults["tools_copper_thieving_box_type"])
-        self.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
         self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
 
-        self.dot_dia_entry.set_value(self.app.defaults["tools_copper_thieving_dots_dia"])
-        self.dot_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_dots_spacing"])
-        self.square_size_entry.set_value(self.app.defaults["tools_copper_thieving_squares_size"])
-        self.squares_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_squares_spacing"])
-        self.line_size_entry.set_value(self.app.defaults["tools_copper_thieving_lines_size"])
-        self.lines_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_lines_spacing"])
+        self.ui.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
+        self.ui.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
+        self.ui.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
+        self.ui.bbox_type_radio.set_value(self.app.defaults["tools_copper_thieving_box_type"])
+        self.ui.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
 
-        self.rb_margin_entry.set_value(self.app.defaults["tools_copper_thieving_rb_margin"])
-        self.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
-        self.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
+        self.ui.dot_dia_entry.set_value(self.app.defaults["tools_copper_thieving_dots_dia"])
+        self.ui.dot_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_dots_spacing"])
+        self.ui.square_size_entry.set_value(self.app.defaults["tools_copper_thieving_squares_size"])
+        self.ui.squares_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_squares_spacing"])
+        self.ui.line_size_entry.set_value(self.app.defaults["tools_copper_thieving_lines_size"])
+        self.ui.lines_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_lines_spacing"])
+
+        self.ui.rb_margin_entry.set_value(self.app.defaults["tools_copper_thieving_rb_margin"])
+        self.ui.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
+        self.ui.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
 
         # INIT SECTION
         self.area_method = False
@@ -601,75 +156,75 @@ class ToolCopperThieving(AppTool):
         self.new_solid_geometry = None
 
     def on_ref_combo_type_change(self):
-        obj_type = self.ref_combo_type.currentIndex()
-        self.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.ref_combo.setCurrentIndex(0)
-        self.ref_combo.obj_type = {
+        obj_type = self.ui.ref_combo_type.currentIndex()
+        self.ui.ref_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.ref_combo.setCurrentIndex(0)
+        self.ui.ref_combo.obj_type = {
             _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
-        }[self.ref_combo_type.get_value()]
+        }[self.ui.ref_combo_type.get_value()]
 
     def on_toggle_reference(self):
-        if self.reference_radio.get_value() == "itself" or self.reference_radio.get_value() == "area":
-            self.ref_combo.hide()
-            self.ref_combo_label.hide()
-            self.ref_combo_type.hide()
-            self.ref_combo_type_label.hide()
+        if self.ui.reference_radio.get_value() == "itself" or self.ui.reference_radio.get_value() == "area":
+            self.ui.ref_combo.hide()
+            self.ui.ref_combo_label.hide()
+            self.ui.ref_combo_type.hide()
+            self.ui.ref_combo_type_label.hide()
         else:
-            self.ref_combo.show()
-            self.ref_combo_label.show()
-            self.ref_combo_type.show()
-            self.ref_combo_type_label.show()
+            self.ui.ref_combo.show()
+            self.ui.ref_combo_label.show()
+            self.ui.ref_combo_type.show()
+            self.ui.ref_combo_type_label.show()
 
-        if self.reference_radio.get_value() == "itself":
-            self.bbox_type_label.show()
-            self.bbox_type_radio.show()
+        if self.ui.reference_radio.get_value() == "itself":
+            self.ui.bbox_type_label.show()
+            self.ui.bbox_type_radio.show()
         else:
-            if self.fill_type_radio.get_value() == 'line':
-                self.reference_radio.set_value('itself')
+            if self.ui.fill_type_radio.get_value() == 'line':
+                self.ui.reference_radio.set_value('itself')
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
                 return
 
-            self.bbox_type_label.hide()
-            self.bbox_type_radio.hide()
+            self.ui.bbox_type_label.hide()
+            self.ui.bbox_type_radio.hide()
 
     def on_thieving_type(self, choice):
         if choice == 'solid':
-            self.dots_frame.hide()
-            self.squares_frame.hide()
-            self.lines_frame.hide()
+            self.ui.dots_frame.hide()
+            self.ui.squares_frame.hide()
+            self.ui.lines_frame.hide()
             self.app.inform.emit(_("Solid fill selected."))
         elif choice == 'dot':
-            self.dots_frame.show()
-            self.squares_frame.hide()
-            self.lines_frame.hide()
+            self.ui.dots_frame.show()
+            self.ui.squares_frame.hide()
+            self.ui.lines_frame.hide()
             self.app.inform.emit(_("Dots grid fill selected."))
         elif choice == 'square':
-            self.dots_frame.hide()
-            self.squares_frame.show()
-            self.lines_frame.hide()
+            self.ui.dots_frame.hide()
+            self.ui.squares_frame.show()
+            self.ui.lines_frame.hide()
             self.app.inform.emit(_("Squares grid fill selected."))
         else:
-            if self.reference_radio.get_value() != 'itself':
-                self.reference_radio.set_value('itself')
+            if self.ui.reference_radio.get_value() != 'itself':
+                self.ui.reference_radio.set_value('itself')
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
-            self.dots_frame.hide()
-            self.squares_frame.hide()
-            self.lines_frame.show()
+            self.ui.dots_frame.hide()
+            self.ui.squares_frame.hide()
+            self.ui.lines_frame.show()
 
     def add_robber_bar(self):
-        rb_margin = self.rb_margin_entry.get_value()
-        self.rb_thickness = self.rb_thickness_entry.get_value()
+        rb_margin = self.ui.rb_margin_entry.get_value()
+        self.rb_thickness = self.ui.rb_thickness_entry.get_value()
 
         # get the Gerber object on which the Robber bar will be inserted
-        selection_index = self.grb_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
+        selection_index = self.ui.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.grb_object_combo.rootModelIndex())
 
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
             log.debug("ToolCopperThieving.add_robber_bar() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
-            return 'fail'
+            return
 
         try:
             outline_pol = self.grb_object.solid_geometry.envelope
@@ -738,23 +293,23 @@ class ToolCopperThieving(AppTool):
     def execute(self):
         self.app.call_source = "copper_thieving_tool"
 
-        self.clearance_val = self.clearance_entry.get_value()
-        self.margin_val = self.margin_entry.get_value()
-        reference_method = self.reference_radio.get_value()
+        self.clearance_val = self.ui.clearance_entry.get_value()
+        self.margin_val = self.ui.margin_entry.get_value()
+        reference_method = self.ui.reference_radio.get_value()
 
         # get the Gerber object on which the Copper thieving will be inserted
-        selection_index = self.grb_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
+        selection_index = self.ui.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.grb_object_combo.rootModelIndex())
 
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
             log.debug("ToolCopperThieving.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
-            return 'fail'
+            return
 
         if reference_method == 'itself':
-            bound_obj_name = self.grb_object_combo.currentText()
+            bound_obj_name = self.ui.grb_object_combo.currentText()
 
             # Get reference object.
             try:
@@ -787,14 +342,14 @@ class ToolCopperThieving(AppTool):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
 
         elif reference_method == 'box':
-            bound_obj_name = self.ref_combo.currentText()
+            bound_obj_name = self.ui.ref_combo.currentText()
 
             # Get reference object.
             try:
                 self.ref_obj = self.app.collection.get_by_name(bound_obj_name)
-            except Exception as e:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), bound_obj_name))
-                return "Could not retrieve object: %s. Error: %s" % (bound_obj_name, str(e))
+                return
 
             self.on_copper_thieving(
                 thieving_obj=self.grb_object,
@@ -873,7 +428,7 @@ class ToolCopperThieving(AppTool):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
 
             if not isinstance(self.sel_rect, Iterable):
                 self.sel_rect = [self.sel_rect]
@@ -923,8 +478,8 @@ class ToolCopperThieving(AppTool):
         # # update the positions on status bar
         self.app.ui.position_label.setText("&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                            "<b>Y</b>: %.4f&nbsp;" % (curr_pos[0], curr_pos[1]))
-        # self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-        #                                        "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (self.app.dx, self.app.dy))
 
         units = self.app.defaults["units"].lower()
         self.app.plotcanvas.text_hud.text = \
@@ -949,7 +504,7 @@ class ToolCopperThieving(AppTool):
         """
 
         if run_threaded:
-            proc = self.app.proc_container.new('%s ...' % _("Thieving"))
+            self.app.proc_container.new('%s ...' % _("Thieving"))
         else:
             QtWidgets.QApplication.processEvents()
 
@@ -962,19 +517,19 @@ class ToolCopperThieving(AppTool):
         log.debug("Copper Thieving Tool started. Reading parameters.")
         self.app.inform.emit(_("Copper Thieving Tool started. Reading parameters."))
 
-        ref_selected = self.reference_radio.get_value()
+        ref_selected = self.ui.reference_radio.get_value()
         if c_val is None:
             c_val = float(self.app.defaults["tools_copperfill_clearance"])
         if margin is None:
             margin = float(self.app.defaults["tools_copperfill_margin"])
 
-        fill_type = self.fill_type_radio.get_value()
-        dot_dia = self.dot_dia_entry.get_value()
-        dot_spacing = self.dot_spacing_entry.get_value()
-        square_size = self.square_size_entry.get_value()
-        square_spacing = self.squares_spacing_entry.get_value()
-        line_size = self.line_size_entry.get_value()
-        line_spacing = self.lines_spacing_entry.get_value()
+        fill_type = self.ui.fill_type_radio.get_value()
+        dot_dia = self.ui.dot_dia_entry.get_value()
+        dot_spacing = self.ui.dot_spacing_entry.get_value()
+        square_size = self.ui.square_size_entry.get_value()
+        square_spacing = self.ui.squares_spacing_entry.get_value()
+        line_size = self.ui.line_size_entry.get_value()
+        line_spacing = self.ui.lines_spacing_entry.get_value()
 
         # make sure that the source object solid geometry is an Iterable
         if not isinstance(self.grb_object.solid_geometry, Iterable):
@@ -1046,14 +601,14 @@ class ToolCopperThieving(AppTool):
                 geo_n = working_obj.solid_geometry
 
                 try:
-                    if app_obj.bbox_type_radio.get_value() == 'min':
+                    if app_obj.ui.bbox_type_radio.get_value() == 'min':
                         if isinstance(geo_n, MultiPolygon):
                             env_obj = geo_n.convex_hull
                         elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
                                 (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                            env_obj = cascaded_union(geo_n)
+                            env_obj = unary_union(geo_n)
                         else:
-                            env_obj = cascaded_union(geo_n)
+                            env_obj = unary_union(geo_n)
                             env_obj = env_obj.convex_hull
                         bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                     else:
@@ -1105,10 +660,10 @@ class ToolCopperThieving(AppTool):
                             raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
 
-                    bounding_box = cascaded_union(geo_buff_list)
+                    bounding_box = unary_union(geo_buff_list)
                 elif working_obj.kind == 'gerber':
-                    geo_n = cascaded_union(geo_n).convex_hull
-                    bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
+                    geo_n = unary_union(geo_n).convex_hull
+                    bounding_box = unary_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                     bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                 else:
                     app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
@@ -1332,7 +887,7 @@ class ToolCopperThieving(AppTool):
         run_threaded = True
 
         if run_threaded:
-            proc = self.app.proc_container.new('%s ...' % _("P-Plating Mask"))
+            self.app.proc_container.new('%s ...' % _("P-Plating Mask"))
         else:
             QtWidgets.QApplication.processEvents()
 
@@ -1345,17 +900,17 @@ class ToolCopperThieving(AppTool):
 
     def on_new_pattern_plating_object(self):
         # get the Gerber object on which the Copper thieving will be inserted
-        selection_index = self.sm_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.sm_object_combo.rootModelIndex())
+        selection_index = self.ui.sm_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.ui.sm_object_combo.rootModelIndex())
 
         try:
             self.sm_object = model_index.internalPointer().obj
         except Exception as e:
             log.debug("ToolCopperThieving.on_add_ppm() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
-            return 'fail'
+            return
 
-        ppm_clearance = self.clearance_ppm_entry.get_value()
+        ppm_clearance = self.ui.clearance_ppm_entry.get_value()
         rb_thickness = self.rb_thickness
 
         self.app.proc_container.update_view_text(' %s' % _("Append PP-M geometry"))
@@ -1379,7 +934,7 @@ class ToolCopperThieving(AppTool):
                 plated_area += geo.area
         if self.robber_geo:
             plated_area += self.robber_geo.area
-        self.plated_area_entry.set_value(plated_area)
+        self.ui.plated_area_entry.set_value(plated_area)
 
         thieving_solid_geo = self.new_solid_geometry
         robber_solid_geo = self.robber_geo
@@ -1392,14 +947,6 @@ class ToolCopperThieving(AppTool):
             grb_obj.follow = False
             grb_obj.apertures = {}
             grb_obj.solid_geometry = []
-
-            # try:
-            #     grb_obj.options['xmin'] = 0
-            #     grb_obj.options['ymin'] = 0
-            #     grb_obj.options['xmax'] = 0
-            #     grb_obj.options['ymax'] = 0
-            # except KeyError:
-            #     pass
 
             # if we have copper thieving geometry, add it
             if thieving_solid_geo:
@@ -1577,3 +1124,485 @@ class ToolCopperThieving(AppTool):
             self.flat_geometry.append(geometry)
 
         return self.flat_geometry
+
+
+class ThievingUI:
+
+    toolName = _("Copper Thieving Tool")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.units = self.app.defaults['units']
+        self.layout = layout
+
+        # ## Title
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(title_label)
+        self.layout.addWidget(QtWidgets.QLabel(""))
+
+        # ## Grid Layout
+        i_grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(i_grid_lay)
+        i_grid_lay.setColumnStretch(0, 0)
+        i_grid_lay.setColumnStretch(1, 1)
+
+        self.grb_object_combo = FCComboBox()
+        self.grb_object_combo.setModel(self.app.collection)
+        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.grb_object_combo.is_last = True
+        self.grb_object_combo.obj_type = 'Gerber'
+
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
+        self.grbobj_label.setToolTip(
+            _("Gerber Object to which will be added a copper thieving.")
+        )
+
+        i_grid_lay.addWidget(self.grbobj_label, 0, 0)
+        i_grid_lay.addWidget(self.grb_object_combo, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        i_grid_lay.addWidget(separator_line, 2, 0, 1, 2)
+
+        # ## Grid Layout
+        grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 0)
+        grid_lay.setColumnStretch(1, 1)
+
+        self.copper_fill_label = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
+        self.copper_fill_label.setToolTip(
+            _("Parameters used for this tool.")
+        )
+        grid_lay.addWidget(self.copper_fill_label, 0, 0, 1, 2)
+
+        # CLEARANCE #
+        self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
+        self.clearance_label.setToolTip(
+            _("This set the distance between the copper thieving components\n"
+              "(the polygon fill may be split in multiple polygons)\n"
+              "and the copper traces in the Gerber file.")
+        )
+        self.clearance_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_entry.set_range(0.00001, 9999.9999)
+        self.clearance_entry.set_precision(self.decimals)
+        self.clearance_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.clearance_label, 1, 0)
+        grid_lay.addWidget(self.clearance_entry, 1, 1)
+
+        # MARGIN #
+        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.margin_entry.set_range(0.0, 9999.9999)
+        self.margin_entry.set_precision(self.decimals)
+        self.margin_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.margin_label, 2, 0)
+        grid_lay.addWidget(self.margin_entry, 2, 1)
+
+        # Reference #
+        self.reference_radio = RadioSet([
+            {'label': _('Itself'), 'value': 'itself'},
+            {"label": _("Area Selection"), "value": "area"},
+            {'label': _("Reference Object"), 'value': 'box'}
+        ], orientation='vertical', stretch=False)
+        self.reference_label = QtWidgets.QLabel(_("Reference:"))
+        self.reference_label.setToolTip(
+            _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
+              "- 'Reference Object' - will do copper thieving within the area specified by another object.")
+        )
+        grid_lay.addWidget(self.reference_label, 3, 0)
+        grid_lay.addWidget(self.reference_radio, 3, 1)
+
+        self.ref_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.ref_combo_type_label.setToolTip(
+            _("The type of FlatCAM object to be used as copper thieving reference.\n"
+              "It can be Gerber, Excellon or Geometry.")
+        )
+        self.ref_combo_type = FCComboBox()
+        self.ref_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
+
+        grid_lay.addWidget(self.ref_combo_type_label, 4, 0)
+        grid_lay.addWidget(self.ref_combo_type, 4, 1)
+
+        self.ref_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.ref_combo_label.setToolTip(
+            _("The FlatCAM object to be used as non copper clearing reference.")
+        )
+        self.ref_combo = FCComboBox()
+        self.ref_combo.setModel(self.app.collection)
+        self.ref_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ref_combo.is_last = True
+        self.ref_combo.obj_type = {
+            _("Gerber"): "Gerber", _("Excellon"): "Excellon", _("Geometry"): "Geometry"
+        }[self.ref_combo_type.get_value()]
+
+        grid_lay.addWidget(self.ref_combo_label, 5, 0)
+        grid_lay.addWidget(self.ref_combo, 5, 1)
+
+        self.ref_combo.hide()
+        self.ref_combo_label.hide()
+        self.ref_combo_type.hide()
+        self.ref_combo_type_label.hide()
+
+        # Bounding Box Type #
+        self.bbox_type_radio = RadioSet([
+            {'label': _('Rectangular'), 'value': 'rect'},
+            {"label": _("Minimal"), "value": "min"}
+        ], stretch=False)
+        self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
+        self.bbox_type_label.setToolTip(
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
+              "- 'Minimal' - the bounding box will be the convex hull shape.")
+        )
+        grid_lay.addWidget(self.bbox_type_label, 6, 0)
+        grid_lay.addWidget(self.bbox_type_radio, 6, 1)
+        self.bbox_type_label.hide()
+        self.bbox_type_radio.hide()
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 7, 0, 1, 2)
+
+        # Fill Type
+        self.fill_type_radio = RadioSet([
+            {'label': _('Solid'), 'value': 'solid'},
+            {"label": _("Dots Grid"), "value": "dot"},
+            {"label": _("Squares Grid"), "value": "square"},
+            {"label": _("Lines Grid"), "value": "line"}
+        ], orientation='vertical', stretch=False)
+        self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
+        self.fill_type_label.setToolTip(
+            _("- 'Solid' - copper thieving will be a solid polygon.\n"
+              "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
+              "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
+              "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
+        )
+        grid_lay.addWidget(self.fill_type_label, 8, 0)
+        grid_lay.addWidget(self.fill_type_radio, 8, 1)
+
+        # DOTS FRAME
+        self.dots_frame = QtWidgets.QFrame()
+        self.dots_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.dots_frame)
+        dots_grid = QtWidgets.QGridLayout()
+        dots_grid.setColumnStretch(0, 0)
+        dots_grid.setColumnStretch(1, 1)
+        dots_grid.setContentsMargins(0, 0, 0, 0)
+        self.dots_frame.setLayout(dots_grid)
+        self.dots_frame.hide()
+
+        self.dots_label = QtWidgets.QLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
+        dots_grid.addWidget(self.dots_label, 0, 0, 1, 2)
+
+        # Dot diameter #
+        self.dotdia_label = QtWidgets.QLabel('%s:' % _("Dia"))
+        self.dotdia_label.setToolTip(
+            _("Dot diameter in Dots Grid.")
+        )
+        self.dot_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.dot_dia_entry.set_range(0.0, 9999.9999)
+        self.dot_dia_entry.set_precision(self.decimals)
+        self.dot_dia_entry.setSingleStep(0.1)
+
+        dots_grid.addWidget(self.dotdia_label, 1, 0)
+        dots_grid.addWidget(self.dot_dia_entry, 1, 1)
+
+        # Dot spacing #
+        self.dotspacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.dotspacing_label.setToolTip(
+            _("Distance between each two dots in Dots Grid.")
+        )
+        self.dot_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.dot_spacing_entry.set_range(0.0, 9999.9999)
+        self.dot_spacing_entry.set_precision(self.decimals)
+        self.dot_spacing_entry.setSingleStep(0.1)
+
+        dots_grid.addWidget(self.dotspacing_label, 2, 0)
+        dots_grid.addWidget(self.dot_spacing_entry, 2, 1)
+
+        # SQUARES FRAME
+        self.squares_frame = QtWidgets.QFrame()
+        self.squares_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.squares_frame)
+        squares_grid = QtWidgets.QGridLayout()
+        squares_grid.setColumnStretch(0, 0)
+        squares_grid.setColumnStretch(1, 1)
+        squares_grid.setContentsMargins(0, 0, 0, 0)
+        self.squares_frame.setLayout(squares_grid)
+        self.squares_frame.hide()
+
+        self.squares_label = QtWidgets.QLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
+        squares_grid.addWidget(self.squares_label, 0, 0, 1, 2)
+
+        # Square Size #
+        self.square_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.square_size_label.setToolTip(
+            _("Square side size in Squares Grid.")
+        )
+        self.square_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.square_size_entry.set_range(0.0, 9999.9999)
+        self.square_size_entry.set_precision(self.decimals)
+        self.square_size_entry.setSingleStep(0.1)
+
+        squares_grid.addWidget(self.square_size_label, 1, 0)
+        squares_grid.addWidget(self.square_size_entry, 1, 1)
+
+        # Squares spacing #
+        self.squares_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.squares_spacing_label.setToolTip(
+            _("Distance between each two squares in Squares Grid.")
+        )
+        self.squares_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.squares_spacing_entry.set_range(0.0, 9999.9999)
+        self.squares_spacing_entry.set_precision(self.decimals)
+        self.squares_spacing_entry.setSingleStep(0.1)
+
+        squares_grid.addWidget(self.squares_spacing_label, 2, 0)
+        squares_grid.addWidget(self.squares_spacing_entry, 2, 1)
+
+        # LINES FRAME
+        self.lines_frame = QtWidgets.QFrame()
+        self.lines_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.lines_frame)
+        lines_grid = QtWidgets.QGridLayout()
+        lines_grid.setColumnStretch(0, 0)
+        lines_grid.setColumnStretch(1, 1)
+        lines_grid.setContentsMargins(0, 0, 0, 0)
+        self.lines_frame.setLayout(lines_grid)
+        self.lines_frame.hide()
+
+        self.lines_label = QtWidgets.QLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        lines_grid.addWidget(self.lines_label, 0, 0, 1, 2)
+
+        # Square Size #
+        self.line_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.line_size_label.setToolTip(
+            _("Line thickness size in Lines Grid.")
+        )
+        self.line_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.line_size_entry.set_range(0.0, 9999.9999)
+        self.line_size_entry.set_precision(self.decimals)
+        self.line_size_entry.setSingleStep(0.1)
+
+        lines_grid.addWidget(self.line_size_label, 1, 0)
+        lines_grid.addWidget(self.line_size_entry, 1, 1)
+
+        # Lines spacing #
+        self.lines_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.lines_spacing_label.setToolTip(
+            _("Distance between each two lines in Lines Grid.")
+        )
+        self.lines_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.lines_spacing_entry.set_range(0.0, 9999.9999)
+        self.lines_spacing_entry.set_precision(self.decimals)
+        self.lines_spacing_entry.setSingleStep(0.1)
+
+        lines_grid.addWidget(self.lines_spacing_label, 2, 0)
+        lines_grid.addWidget(self.lines_spacing_entry, 2, 1)
+
+        # ## Insert Copper Thieving
+        self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
+        self.fill_button.setToolTip(
+            _("Will add a polygon (may be split in multiple parts)\n"
+              "that will surround the actual Gerber traces at a certain distance.")
+        )
+        self.fill_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(self.fill_button)
+
+        # ## Grid Layout
+        grid_lay_1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay_1)
+        grid_lay_1.setColumnStretch(0, 0)
+        grid_lay_1.setColumnStretch(1, 1)
+        grid_lay_1.setColumnStretch(2, 0)
+
+        separator_line_1 = QtWidgets.QFrame()
+        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
+
+        grid_lay_1.addWidget(QtWidgets.QLabel(''))
+
+        self.robber_bar_label = QtWidgets.QLabel('<b>%s</b>' % _('Robber Bar Parameters'))
+        self.robber_bar_label.setToolTip(
+            _("Parameters used for the robber bar.\n"
+              "Robber bar = copper border to help in pattern hole plating.")
+        )
+        grid_lay_1.addWidget(self.robber_bar_label, 1, 0, 1, 3)
+
+        # ROBBER BAR MARGIN #
+        self.rb_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.rb_margin_label.setToolTip(
+            _("Bounding box margin for robber bar.")
+        )
+        self.rb_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.rb_margin_entry.set_precision(self.decimals)
+        self.rb_margin_entry.setSingleStep(0.1)
+
+        grid_lay_1.addWidget(self.rb_margin_label, 2, 0)
+        grid_lay_1.addWidget(self.rb_margin_entry, 2, 1, 1, 2)
+
+        # THICKNESS #
+        self.rb_thickness_label = QtWidgets.QLabel('%s:' % _("Thickness"))
+        self.rb_thickness_label.setToolTip(
+            _("The robber bar thickness.")
+        )
+        self.rb_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.rb_thickness_entry.set_range(0.0000, 9999.9999)
+        self.rb_thickness_entry.set_precision(self.decimals)
+        self.rb_thickness_entry.setSingleStep(0.1)
+
+        grid_lay_1.addWidget(self.rb_thickness_label, 3, 0)
+        grid_lay_1.addWidget(self.rb_thickness_entry, 3, 1, 1, 2)
+
+        # ## Insert Robber Bar
+        self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
+        self.rb_button.setToolTip(
+            _("Will add a polygon with a defined thickness\n"
+              "that will surround the actual Gerber object\n"
+              "at a certain distance.\n"
+              "Required when doing holes pattern plating.")
+        )
+        self.rb_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        grid_lay_1.addWidget(self.rb_button, 4, 0, 1, 3)
+
+        separator_line_2 = QtWidgets.QFrame()
+        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay_1.addWidget(separator_line_2, 5, 0, 1, 3)
+
+        self.patern_mask_label = QtWidgets.QLabel('<b>%s</b>' % _('Pattern Plating Mask'))
+        self.patern_mask_label.setToolTip(
+            _("Generate a mask for pattern plating.")
+        )
+        grid_lay_1.addWidget(self.patern_mask_label, 6, 0, 1, 3)
+
+        self.sm_obj_label = QtWidgets.QLabel("%s:" % _("Select Soldermask object"))
+        self.sm_obj_label.setToolTip(
+            _("Gerber Object with the soldermask.\n"
+              "It will be used as a base for\n"
+              "the pattern plating mask.")
+        )
+
+        self.sm_object_combo = FCComboBox()
+        self.sm_object_combo.setModel(self.app.collection)
+        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sm_object_combo.is_last = True
+        self.sm_object_combo.obj_type = 'Gerber'
+
+        grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
+        grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)
+
+        # Openings CLEARANCE #
+        self.clearance_ppm_label = QtWidgets.QLabel('%s:' % _("Clearance"))
+        self.clearance_ppm_label.setToolTip(
+            _("The distance between the possible copper thieving elements\n"
+              "and/or robber bar and the actual openings in the mask.")
+        )
+        self.clearance_ppm_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.clearance_ppm_entry.set_range(-9999.9999, 9999.9999)
+        self.clearance_ppm_entry.set_precision(self.decimals)
+        self.clearance_ppm_entry.setSingleStep(0.1)
+
+        grid_lay_1.addWidget(self.clearance_ppm_label, 9, 0)
+        grid_lay_1.addWidget(self.clearance_ppm_entry, 9, 1, 1, 2)
+
+        # Plated area
+        self.plated_area_label = QtWidgets.QLabel('%s:' % _("Plated area"))
+        self.plated_area_label.setToolTip(
+            _("The area to be plated by pattern plating.\n"
+              "Basically is made from the openings in the plating mask.\n\n"
+              "<<WARNING>> - the calculated area is actually a bit larger\n"
+              "due of the fact that the soldermask openings are by design\n"
+              "a bit larger than the copper pads, and this area is\n"
+              "calculated from the soldermask openings.")
+        )
+        self.plated_area_entry = FCEntry()
+        self.plated_area_entry.setDisabled(True)
+
+        if self.units.upper() == 'MM':
+            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("mm"))
+        else:
+            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("in"))
+
+        grid_lay_1.addWidget(self.plated_area_label, 10, 0)
+        grid_lay_1.addWidget(self.plated_area_entry, 10, 1)
+        grid_lay_1.addWidget(self.units_area_label, 10, 2)
+
+        # ## Pattern Plating Mask
+        self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
+        self.ppm_button.setToolTip(
+            _("Will add to the soldermask gerber geometry\n"
+              "the geometries of the copper thieving and/or\n"
+              "the robber bar if those were generated.")
+        )
+        self.ppm_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 3)
+
+        self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setIcon(QtGui.QIcon(self.app.resource_location + '/reset32.png'))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(self.reset_button)
+
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

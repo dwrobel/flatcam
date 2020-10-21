@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCTree
 
 from shapely.geometry import MultiPolygon, Polygon
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 from copy import deepcopy
 import math
@@ -146,30 +146,33 @@ class Properties(AppTool):
         font = QtGui.QFont()
         font.setBold(True)
 
+        p_color = QtGui.QColor("#000000") if self.app.defaults['global_gray_icons'] is False \
+            else QtGui.QColor("#FFFFFF")
+
         # main Items categories
-        obj_type = self.treeWidget.addParent(parent, _('TYPE'), expanded=True, color=QtGui.QColor("#000000"), font=font)
-        obj_name = self.treeWidget.addParent(parent, _('NAME'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+        obj_type = self.treeWidget.addParent(parent, _('TYPE'), expanded=True, color=p_color, font=font)
+        obj_name = self.treeWidget.addParent(parent, _('NAME'), expanded=True, color=p_color, font=font)
         dims = self.treeWidget.addParent(
-            parent, _('Dimensions'), expanded=True, color=QtGui.QColor("#000000"), font=font)
-        units = self.treeWidget.addParent(parent, _('Units'), expanded=True, color=QtGui.QColor("#000000"), font=font)
-        options = self.treeWidget.addParent(parent, _('Options'), color=QtGui.QColor("#000000"), font=font)
+            parent, _('Dimensions'), expanded=True, color=p_color, font=font)
+        units = self.treeWidget.addParent(parent, _('Units'), expanded=True, color=p_color, font=font)
+        options = self.treeWidget.addParent(parent, _('Options'), color=p_color, font=font)
 
         if obj.kind.lower() == 'gerber':
             apertures = self.treeWidget.addParent(
-                parent, _('Apertures'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                parent, _('Apertures'), expanded=True, color=p_color, font=font)
         else:
             tools = self.treeWidget.addParent(
-                parent, _('Tools'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                parent, _('Tools'), expanded=True, color=p_color, font=font)
 
         if obj.kind.lower() == 'excellon':
             drills = self.treeWidget.addParent(
-                parent, _('Drills'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                parent, _('Drills'), expanded=True, color=p_color, font=font)
             slots = self.treeWidget.addParent(
-                parent, _('Slots'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                parent, _('Slots'), expanded=True, color=p_color, font=font)
 
         if obj.kind.lower() == 'cncjob':
             others = self.treeWidget.addParent(
-                parent, _('Others'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                parent, _('Others'), expanded=True, color=p_color, font=font)
 
         separator = self.treeWidget.addParent(parent, '')
 
@@ -193,7 +196,7 @@ class Properties(AppTool):
         self.treeWidget.addChild(obj_name, [obj.options['name']])
 
         def job_thread(obj_prop):
-            proc = self.app.proc_container.new(_("Calculating dimensions ... Please wait."))
+            self.app.proc_container.new(_("Calculating dimensions ... Please wait."))
 
             length = 0.0
             width = 0.0
@@ -234,7 +237,7 @@ class Properties(AppTool):
                 if obj_prop.kind.lower() == 'cncjob':
                     try:
                         for tool_k in obj_prop.exc_cnc_tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -244,7 +247,7 @@ class Properties(AppTool):
 
                     try:
                         for tool_k in obj_prop.cnc_tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -254,7 +257,7 @@ class Properties(AppTool):
                 else:
                     try:
                         for tool_k in obj_prop.tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -305,10 +308,10 @@ class Properties(AppTool):
                             env_obj = geo.convex_hull
                         elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
                                 (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                            env_obj = cascaded_union(geo)
+                            env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull
                         else:
-                            env_obj = cascaded_union(geo)
+                            env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull
 
                         area_chull = env_obj.area
@@ -318,7 +321,7 @@ class Properties(AppTool):
                     try:
                         area_chull = []
                         for tool_k in obj_prop.tools:
-                            area_el = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
+                            area_el = unary_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
                             area_chull.append(area_el.area)
                         area_chull = max(area_chull)
                     except Exception as er:
@@ -382,7 +385,7 @@ class Properties(AppTool):
                 temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
 
                 apid = self.treeWidget.addParent(
-                    apertures, str(ap), expanded=False, color=QtGui.QColor("#000000"), font=font)
+                    apertures, str(ap), expanded=False, color=p_color, font=font)
                 for key in temp_ap:
                     self.treeWidget.addChild(apid, [str(key), str(temp_ap[key])], True)
         elif obj.kind.lower() == 'excellon':
@@ -391,22 +394,20 @@ class Properties(AppTool):
 
             for tool, value in obj.tools.items():
                 toolid = self.treeWidget.addParent(
-                    tools, str(tool), expanded=False, color=QtGui.QColor("#000000"), font=font)
+                    tools, str(tool), expanded=False, color=p_color, font=font)
 
                 drill_cnt = 0  # variable to store the nr of drills per tool
                 slot_cnt = 0  # variable to store the nr of slots per tool
 
                 # Find no of drills for the current tool
-                for drill in obj.drills:
-                    if drill['tool'] == tool:
-                        drill_cnt += 1
+                if 'drills' in value and value['drills']:
+                    drill_cnt = len(value['drills'])
 
                 tot_drill_cnt += drill_cnt
 
                 # Find no of slots for the current tool
-                for slot in obj.slots:
-                    if slot['tool'] == tool:
-                        slot_cnt += 1
+                if 'slots' in value and value['slots']:
+                    slot_cnt = len(value['slots'])
 
                 tot_slot_cnt += slot_cnt
 
@@ -414,7 +415,7 @@ class Properties(AppTool):
                     toolid,
                     [
                         _('Diameter'),
-                        '%.*f %s' % (self.decimals, value['C'], self.app.defaults['units'].lower())
+                        '%.*f %s' % (self.decimals, value['tooldia'], self.app.defaults['units'].lower())
                     ],
                     True
                 )
@@ -426,7 +427,7 @@ class Properties(AppTool):
         elif obj.kind.lower() == 'geometry':
             for tool, value in obj.tools.items():
                 geo_tool = self.treeWidget.addParent(
-                    tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                    tools, str(tool), expanded=True, color=p_color, font=font)
                 for k, v in value.items():
                     if k == 'solid_geometry':
                         # printed_value = _('Present') if v else _('None')
@@ -437,7 +438,7 @@ class Properties(AppTool):
                         self.treeWidget.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
                         tool_data = self.treeWidget.addParent(
-                            geo_tool, str(k).capitalize(), color=QtGui.QColor("#000000"), font=font)
+                            geo_tool, str(k).capitalize(), color=p_color, font=font)
                         for data_k, data_v in v.items():
                             self.treeWidget.addChild(tool_data, [str(data_k), str(data_v)], True)
                     else:
@@ -446,7 +447,7 @@ class Properties(AppTool):
             # for cncjob objects made from gerber or geometry
             for tool, value in obj.cnc_tools.items():
                 geo_tool = self.treeWidget.addParent(
-                    tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                    tools, str(tool), expanded=True, color=p_color, font=font)
                 for k, v in value.items():
                     if k == 'solid_geometry':
                         printed_value = _('Present') if v else _('None')
@@ -458,17 +459,20 @@ class Properties(AppTool):
                         printed_value = _('Present') if v else _('None')
                         self.treeWidget.addChild(geo_tool, [_("GCode Geometry"), printed_value], True)
                     elif k == 'data':
-                        tool_data = self.treeWidget.addParent(
-                            geo_tool, _("Data"), color=QtGui.QColor("#000000"), font=font)
-                        for data_k, data_v in v.items():
-                            self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
+                        pass
                     else:
                         self.treeWidget.addChild(geo_tool, [str(k), str(v)], True)
+
+                v = value['data']
+                tool_data = self.treeWidget.addParent(
+                    geo_tool, _("Tool Data"), color=p_color, font=font)
+                for data_k, data_v in v.items():
+                    self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             # for cncjob objects made from excellon
             for tool_dia, value in obj.exc_cnc_tools.items():
                 exc_tool = self.treeWidget.addParent(
-                    tools, str(value['tool']), expanded=False, color=QtGui.QColor("#000000"), font=font
+                    tools, str(value['tool']), expanded=False, color=p_color, font=font
                 )
                 self.treeWidget.addChild(
                     exc_tool,
@@ -486,6 +490,12 @@ class Properties(AppTool):
                         self.treeWidget.addChild(exc_tool, [_("Drills number"), str(v)], True)
                     elif k == 'nr_slots':
                         self.treeWidget.addChild(exc_tool, [_("Slots number"), str(v)], True)
+                    elif k == 'gcode':
+                        printed_value = _('Present') if v != '' else _('None')
+                        self.treeWidget.addChild(exc_tool, [_("GCode Text"), printed_value], True)
+                    elif k == 'gcode_parsed':
+                        printed_value = _('Present') if v else _('None')
+                        self.treeWidget.addChild(exc_tool, [_("GCode Geometry"), printed_value], True)
                     else:
                         pass
 
@@ -495,7 +505,7 @@ class Properties(AppTool):
                         _("Depth of Cut"),
                         '%.*f %s' % (
                             self.decimals,
-                            (obj.z_cut - abs(obj.tool_offset[tool_dia])),
+                            (obj.z_cut - abs(value['data']['tools_drill_offset'])),
                             self.app.defaults['units'].lower()
                         )
                     ],
@@ -525,6 +535,12 @@ class Properties(AppTool):
                     ],
                     True
                 )
+
+                v = value['data']
+                tool_data = self.treeWidget.addParent(
+                    exc_tool, _("Tool Data"), color=p_color, font=font)
+                for data_k, data_v in v.items():
+                    self.treeWidget.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
 
             r_time = obj.routing_time
             if r_time > 1:

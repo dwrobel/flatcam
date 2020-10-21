@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from appTool import AppTool
-from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable
+from appGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable, FCLabel
 
 import re
 import os
@@ -28,121 +28,17 @@ class PcbWizard(AppTool):
 
     file_loaded = QtCore.pyqtSignal(str, str)
 
-    toolName = _("PcbWizard Import Tool")
-
     def __init__(self, app):
         AppTool.__init__(self, app)
 
         self.app = app
         self.decimals = self.app.decimals
 
-        # Title
-        title_label = QtWidgets.QLabel("%s" % _('Import 2-file Excellon'))
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.layout.addWidget(title_label)
-
-        self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Load files")))
-
-        # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
-
-        self.excellon_label = QtWidgets.QLabel('%s:' % _("Excellon file"))
-        self.excellon_label.setToolTip(
-           _("Load the Excellon file.\n"
-             "Usually it has a .DRL extension")
-        )
-        self.excellon_brn = FCButton(_("Open"))
-        form_layout.addRow(self.excellon_label, self.excellon_brn)
-
-        self.inf_label = QtWidgets.QLabel('%s:' % _("INF file"))
-        self.inf_label.setToolTip(
-            _("Load the INF file.")
-        )
-        self.inf_btn = FCButton(_("Open"))
-        form_layout.addRow(self.inf_label, self.inf_btn)
-
-        self.tools_table = FCTable()
-        self.layout.addWidget(self.tools_table)
-
-        self.tools_table.setColumnCount(2)
-        self.tools_table.setHorizontalHeaderLabels(['#Tool', _('Diameter')])
-
-        self.tools_table.horizontalHeaderItem(0).setToolTip(
-            _("Tool Number"))
-        self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool diameter in file units."))
-
-        # start with apertures table hidden
-        self.tools_table.setVisible(False)
-
-        self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Excellon format")))
-        # Form Layout
-        form_layout1 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout1)
-
-        # Integral part of the coordinates
-        self.int_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.int_entry.set_range(1, 10)
-        self.int_label = QtWidgets.QLabel('%s:' % _("Int. digits"))
-        self.int_label.setToolTip(
-           _("The number of digits for the integral part of the coordinates.")
-        )
-        form_layout1.addRow(self.int_label, self.int_entry)
-
-        # Fractional part of the coordinates
-        self.frac_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.frac_entry.set_range(1, 10)
-        self.frac_label = QtWidgets.QLabel('%s:' % _("Frac. digits"))
-        self.frac_label.setToolTip(
-            _("The number of digits for the fractional part of the coordinates.")
-        )
-        form_layout1.addRow(self.frac_label, self.frac_entry)
-
-        # Zeros suppression for coordinates
-        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
-                                     {'label': _('TZ'), 'value': 'TZ'},
-                                     {'label': _('No Suppression'), 'value': 'D'}])
-        self.zeros_label = QtWidgets.QLabel('%s:' % _("Zeros supp."))
-        self.zeros_label.setToolTip(
-            _("The type of zeros suppression used.\n"
-              "Can be of type:\n"
-              "- LZ = leading zeros are kept\n"
-              "- TZ = trailing zeros are kept\n"
-              "- No Suppression = no zero suppression")
-        )
-        form_layout1.addRow(self.zeros_label, self.zeros_radio)
-
-        # Units type
-        self.units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                    {'label': _('MM'), 'value': 'METRIC'}])
-        self.units_label = QtWidgets.QLabel("<b>%s:</b>" % _('Units'))
-        self.units_label.setToolTip(
-            _("The type of units that the coordinates and tool\n"
-              "diameters are using. Can be INCH or MM.")
-        )
-        form_layout1.addRow(self.units_label, self.units_radio)
-
-        # Buttons
-
-        self.import_button = QtWidgets.QPushButton(_("Import Excellon"))
-        self.import_button.setToolTip(
-            _("Import in FlatCAM an Excellon file\n"
-              "that store it's information's in 2 files.\n"
-              "One usually has .DRL extension while\n"
-              "the other has .INF extension.")
-        )
-        self.layout.addWidget(self.import_button)
-
-        self.layout.addStretch()
+        # #############################################################################
+        # ######################### Tool GUI ##########################################
+        # #############################################################################
+        self.ui = WizardUI(layout=self.layout, app=self.app)
+        self.toolName = self.ui.toolName
 
         self.excellon_loaded = False
         self.inf_loaded = False
@@ -151,13 +47,13 @@ class PcbWizard(AppTool):
         self.modified_excellon_file = ''
 
         # ## Signals
-        self.excellon_brn.clicked.connect(self.on_load_excellon_click)
-        self.inf_btn.clicked.connect(self.on_load_inf_click)
-        self.import_button.clicked.connect(lambda: self.on_import_excellon(
+        self.ui.excellon_brn.clicked.connect(self.on_load_excellon_click)
+        self.ui.inf_btn.clicked.connect(self.on_load_inf_click)
+        self.ui.import_button.clicked.connect(lambda: self.on_import_excellon(
             excellon_fileobj=self.modified_excellon_file))
 
         self.file_loaded.connect(self.on_file_loaded)
-        self.units_radio.activated_custom.connect(self.on_units_change)
+        self.ui.units_radio.activated_custom.connect(self.ui.on_units_change)
 
         self.units = 'INCH'
         self.zeros = 'LZ'
@@ -211,10 +107,10 @@ class PcbWizard(AppTool):
         self.tools_from_inf = {}
 
         # ## Initialize form
-        self.int_entry.set_value(self.integral)
-        self.frac_entry.set_value(self.fractional)
-        self.zeros_radio.set_value(self.zeros)
-        self.units_radio.set_value(self.units)
+        self.ui.int_entry.set_value(self.integral)
+        self.ui.frac_entry.set_value(self.fractional)
+        self.ui.zeros_radio.set_value(self.zeros)
+        self.ui.units_radio.set_value(self.units)
 
         self.excellon_loaded = False
         self.inf_loaded = False
@@ -227,57 +123,49 @@ class PcbWizard(AppTool):
         sorted_tools = []
 
         if not self.tools_from_inf:
-            self.tools_table.setVisible(False)
+            self.ui.tools_table.setVisible(False)
         else:
             sort = []
             for k, v in list(self.tools_from_inf.items()):
                 sort.append(int(k))
             sorted_tools = sorted(sort)
             n = len(sorted_tools)
-            self.tools_table.setRowCount(n)
+            self.ui.tools_table.setRowCount(n)
 
         tool_row = 0
         for tool in sorted_tools:
             tool_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool))
             tool_id_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            self.tools_table.setItem(tool_row, 0, tool_id_item)  # Tool name/id
+            self.ui.tools_table.setItem(tool_row, 0, tool_id_item)  # Tool name/id
 
             tool_dia_item = QtWidgets.QTableWidgetItem(str(self.tools_from_inf[tool]))
             tool_dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            self.tools_table.setItem(tool_row, 1, tool_dia_item)
+            self.ui.tools_table.setItem(tool_row, 1, tool_dia_item)
             tool_row += 1
 
-        self.tools_table.resizeColumnsToContents()
-        self.tools_table.resizeRowsToContents()
+        self.ui.tools_table.resizeColumnsToContents()
+        self.ui.tools_table.resizeRowsToContents()
 
-        vertical_header = self.tools_table.verticalHeader()
+        vertical_header = self.ui.tools_table.verticalHeader()
         vertical_header.hide()
-        self.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        horizontal_header = self.tools_table.horizontalHeader()
+        horizontal_header = self.ui.tools_table.horizontalHeader()
         # horizontal_header.setMinimumSectionSize(10)
         # horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
-        self.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.tools_table.setSortingEnabled(False)
-        self.tools_table.setMinimumHeight(self.tools_table.getHeight())
-        self.tools_table.setMaximumHeight(self.tools_table.getHeight())
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.tools_table.setSortingEnabled(False)
+        self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
+        self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
     def update_params(self):
-        self.units = self.units_radio.get_value()
-        self.zeros = self.zeros_radio.get_value()
-        self.integral = self.int_entry.get_value()
-        self.fractional = self.frac_entry.get_value()
-
-    def on_units_change(self, val):
-        if val == 'INCH':
-            self.int_entry.set_value(2)
-            self.frac_entry.set_value(4)
-        else:
-            self.int_entry.set_value(3)
-            self.frac_entry.set_value(3)
+        self.units = self.ui.units_radio.get_value()
+        self.zeros = self.ui.zeros_radio.get_value()
+        self.integral = self.ui.int_entry.get_value()
+        self.fractional = self.ui.frac_entry.get_value()
 
     def on_load_excellon_click(self):
         """
@@ -357,9 +245,9 @@ class PcbWizard(AppTool):
                     self.units = 'INCH'
                 else:
                     self.units = 'METRIC'
-                self.units_radio.set_value(self.units)
-                self.int_entry.set_value(self.integral)
-                self.frac_entry.set_value(self.fractional)
+                self.ui.units_radio.set_value(self.units)
+                self.ui.int_entry.set_value(self.integral)
+                self.ui.frac_entry.set_value(self.fractional)
 
         if not self.tools_from_inf:
             self.app.inform.emit('[ERROR] %s' %
@@ -382,14 +270,12 @@ class PcbWizard(AppTool):
 
         if signal == 'inf':
             self.inf_loaded = True
-            self.tools_table.setVisible(True)
-            self.app.inform.emit('[success] %s' %
-                                 _("PcbWizard .INF file loaded."))
+            self.ui.tools_table.setVisible(True)
+            self.app.inform.emit('[success] %s' % _("PcbWizard .INF file loaded."))
         elif signal == 'excellon':
             self.excellon_loaded = True
             self.outname = os.path.split(str(filename))[1]
-            self.app.inform.emit('[success] %s' %
-                                 _("Main PcbWizard Excellon file loaded."))
+            self.app.inform.emit('[success] %s' % _("Main PcbWizard Excellon file loaded."))
 
         if self.excellon_loaded and self.inf_loaded:
             self.update_params()
@@ -467,3 +353,149 @@ class PcbWizard(AppTool):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _('Excellon merging is in progress. Please wait...'))
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('The imported Excellon file is empty.'))
+
+
+class WizardUI:
+    
+    toolName = _("PcbWizard Import Tool")
+
+    def __init__(self, layout, app):
+        self.app = app
+        self.decimals = self.app.decimals
+        self.layout = layout
+
+        # ## Title
+        title_label = FCLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                                QLabel
+                                {
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(title_label)
+        self.layout.addWidget(FCLabel(""))
+
+        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Load files")))
+
+        # Form Layout
+        form_layout = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout)
+
+        self.excellon_label = FCLabel('%s:' % _("Excellon file"))
+        self.excellon_label.setToolTip(
+            _("Load the Excellon file.\n"
+              "Usually it has a .DRL extension")
+        )
+        self.excellon_brn = FCButton(_("Open"))
+        form_layout.addRow(self.excellon_label, self.excellon_brn)
+
+        self.inf_label = FCLabel('%s:' % _("INF file"))
+        self.inf_label.setToolTip(
+            _("Load the INF file.")
+        )
+        self.inf_btn = FCButton(_("Open"))
+        form_layout.addRow(self.inf_label, self.inf_btn)
+
+        self.tools_table = FCTable()
+        self.layout.addWidget(self.tools_table)
+
+        self.tools_table.setColumnCount(2)
+        self.tools_table.setHorizontalHeaderLabels(['#Tool', _('Diameter')])
+
+        self.tools_table.horizontalHeaderItem(0).setToolTip(
+            _("Tool Number"))
+        self.tools_table.horizontalHeaderItem(1).setToolTip(
+            _("Tool diameter in file units."))
+
+        # start with apertures table hidden
+        self.tools_table.setVisible(False)
+
+        self.layout.addWidget(FCLabel(""))
+        self.layout.addWidget(FCLabel("<b>%s:</b>" % _("Excellon format")))
+        # Form Layout
+        form_layout1 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout1)
+
+        # Integral part of the coordinates
+        self.int_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.int_entry.set_range(1, 10)
+        self.int_label = FCLabel('%s:' % _("Int. digits"))
+        self.int_label.setToolTip(
+            _("The number of digits for the integral part of the coordinates.")
+        )
+        form_layout1.addRow(self.int_label, self.int_entry)
+
+        # Fractional part of the coordinates
+        self.frac_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.frac_entry.set_range(1, 10)
+        self.frac_label = FCLabel('%s:' % _("Frac. digits"))
+        self.frac_label.setToolTip(
+            _("The number of digits for the fractional part of the coordinates.")
+        )
+        form_layout1.addRow(self.frac_label, self.frac_entry)
+
+        # Zeros suppression for coordinates
+        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
+                                     {'label': _('TZ'), 'value': 'TZ'},
+                                     {'label': _('No Suppression'), 'value': 'D'}])
+        self.zeros_label = FCLabel('%s:' % _("Zeros supp."))
+        self.zeros_label.setToolTip(
+            _("The type of zeros suppression used.\n"
+              "Can be of type:\n"
+              "- LZ = leading zeros are kept\n"
+              "- TZ = trailing zeros are kept\n"
+              "- No Suppression = no zero suppression")
+        )
+        form_layout1.addRow(self.zeros_label, self.zeros_radio)
+
+        # Units type
+        self.units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
+                                     {'label': _('MM'), 'value': 'METRIC'}])
+        self.units_label = FCLabel("<b>%s:</b>" % _('Units'))
+        self.units_label.setToolTip(
+            _("The type of units that the coordinates and tool\n"
+              "diameters are using. Can be INCH or MM.")
+        )
+        form_layout1.addRow(self.units_label, self.units_radio)
+
+        # Buttons
+
+        self.import_button = QtWidgets.QPushButton(_("Import Excellon"))
+        self.import_button.setToolTip(
+            _("Import in FlatCAM an Excellon file\n"
+              "that store it's information's in 2 files.\n"
+              "One usually has .DRL extension while\n"
+              "the other has .INF extension.")
+        )
+        self.layout.addWidget(self.import_button)
+
+        self.layout.addStretch()
+
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+    def on_units_change(self, val):
+        if val == 'INCH':
+            self.int_entry.set_value(2)
+            self.frac_entry.set_value(4)
+        else:
+            self.int_entry.set_value(3)
+            self.frac_entry.set_value(3)
+            
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' % (_("Edited value is out of range"),
+                                                                                  self.decimals,
+                                                                                  minval,
+                                                                                  self.decimals,
+                                                                                  maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform[str, bool].emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                            (_("Edited value is out of range"), minval, maxval), False)
+        else:
+            self.app.inform[str, bool].emit('[success] %s' % _("Edited value is within limits."), False)

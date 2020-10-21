@@ -1,6 +1,6 @@
 from tclCommands.TclCommand import TclCommand
 
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 import collections
 
@@ -92,7 +92,7 @@ class TclCommandNregions(TclCommand):
             def geo_init(geo_obj, app_obj):
                 assert geo_obj.kind == 'geometry'
 
-                geo = cascaded_union(obj.solid_geometry)
+                geo = unary_union(obj.solid_geometry)
                 bounding_box = geo.envelope.buffer(float(margin))
                 if not rounded:
                     bounding_box = bounding_box.envelope

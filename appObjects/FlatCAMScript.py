@@ -10,7 +10,7 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from appEditors.FlatCAMTextEditor import TextEditor
+from appEditors.AppTextEditor import AppTextEditor
 from appObjects.FlatCAMObj import *
 from appGUI.ObjectUI import *
 
@@ -86,7 +86,7 @@ class ScriptObject(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
-        self.script_editor_tab = TextEditor(app=self.app, plain_text=True, parent=self.app.ui)
+        self.script_editor_tab = AppTextEditor(app=self.app, plain_text=True, parent=self.app.ui)
 
         # tab_here = False
         # # try to not add too many times a tab that it is already installed
@@ -135,14 +135,11 @@ class ScriptObject(FlatCAMObj):
         self.script_editor_tab.t_frame.hide()
 
         try:
-            self.script_editor_tab.code_editor.setPlainText(self.source_file)
-            # for line in self.source_file.splitlines():
-            #     QtWidgets.QApplication.processEvents()
-            #     self.script_editor_tab.code_editor.append(line)
+            # self.script_editor_tab.code_editor.setPlainText(self.source_file)
+            self.script_editor_tab.load_text(self.source_file, move_to_end=True)
         except Exception as e:
             log.debug("ScriptObject.set_ui() --> %s" % str(e))
 
-        self.script_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.End)
         self.script_editor_tab.t_frame.show()
 
         self.app.proc_container.view.set_idle()

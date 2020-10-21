@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot, QSettings
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -98,6 +98,11 @@ class RadioSet(QtWidgets.QWidget):
                 choice['radio'].setChecked(True)
                 return
         log.error("Value given is not part of this RadioSet: %s" % str(val))
+
+    def setOptionsDisabled(self, options: list, val: bool) -> None:
+        for option in self.choices:
+            if option['label'] in options:
+                option['radio'].setDisabled(val)
 
 
 # class RadioGroupChoice(QtWidgets.QWidget):
@@ -281,7 +286,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         # Unit conversion table OUTPUT-INPUT
         self.scales = {
             'IN': {'IN': 1.0,
-                   'MM': 1/25.4},
+                   'MM': 1 / 25.4},
             'MM': {'IN': 25.4,
                    'MM': 1.0}
         }
@@ -659,10 +664,11 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class NumericalEvalEntry(EvalEntry):
+class NumericalEvalEntry(FCEntry):
     """
     Will evaluate the input and return a value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
+
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
@@ -682,16 +688,27 @@ class NumericalEvalEntry(EvalEntry):
         return evaled
 
 
-class NumericalEvalTupleEntry(FCEntry):
+class NumericalEvalTupleEntry(EvalEntry):
     """
     Will return a text value. Accepts only float numbers and formulas using the operators: /,*,+,-,%
     """
+
     def __init__(self, border_color=None):
         super().__init__(border_color=border_color)
 
-        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,]*")
+        regex = QtCore.QRegExp("[0-9\/\*\+\-\%\.\s\,\[\]\(\)]*")
         validator = QtGui.QRegExpValidator(regex, self)
         self.setValidator(validator)
+
+    def get_value(self):
+        raw = str(self.text()).strip(' ')
+        try:
+            evaled = eval(raw)
+        except Exception as e:
+            if raw != '':
+                log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
+            return None
+        return evaled
 
 
 class FCColorEntry(QtWidgets.QFrame):
@@ -797,7 +814,6 @@ class FCSliderWithSpinner(QtWidgets.QFrame):
 
 
 class FCSpinner(QtWidgets.QSpinBox):
-
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
@@ -918,8 +934,123 @@ class FCSpinner(QtWidgets.QSpinBox):
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
-class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
+class FCDoubleSlider(QtWidgets.QSlider):
+    # frome here: https://stackoverflow.com/questions/42820380/use-float-for-qslider
 
+    # create our our signal that we can connect to if necessary
+    doubleValueChanged = pyqtSignal(float)
+
+    def __init__(self, decimals=3, orientation='horizontal', *args, **kargs):
+        if orientation == 'horizontal':
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Horizontal, *args, **kargs)
+        else:
+            super(FCDoubleSlider, self).__init__(QtCore.Qt.Vertical, *args, **kargs)
+
+        self._multi = 10 ** decimals
+
+        self.valueChanged.connect(self.emitDoubleValueChanged)
+
+    def emitDoubleValueChanged(self):
+        value = float(super(FCDoubleSlider, self).value()) / self._multi
+        self.doubleValueChanged.emit(value)
+
+    def value(self):
+        return float(super(FCDoubleSlider, self).value()) / self._multi
+
+    def get_value(self):
+        return self.value()
+
+    def setMinimum(self, value):
+        return super(FCDoubleSlider, self).setMinimum(value * self._multi)
+
+    def setMaximum(self, value):
+        return super(FCDoubleSlider, self).setMaximum(value * self._multi)
+
+    def setSingleStep(self, value):
+        return super(FCDoubleSlider, self).setSingleStep(value * self._multi)
+
+    def singleStep(self):
+        return float(super(FCDoubleSlider, self).singleStep()) / self._multi
+
+    def set_value(self, value):
+        super(FCDoubleSlider, self).setValue(int(value * self._multi))
+
+    def set_precision(self, decimals):
+        self._multi = 10 ** decimals
+
+    def set_range(self, min, max):
+        self.blockSignals(True)
+        self.setRange(min * self._multi, max * self._multi)
+        self.blockSignals(False)
+
+
+class FCSliderWithDoubleSpinner(QtWidgets.QFrame):
+
+    def __init__(self, min=0, max=9999.9999, step=1, precision=4, orientation='horizontal', **kwargs):
+        super().__init__(**kwargs)
+
+        self.slider = FCDoubleSlider(orientation=orientation)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setSingleStep(step)
+        self.slider.set_range(min, max)
+
+        self.spinner = FCDoubleSpinner()
+        self.spinner.set_range(min, max)
+        self.spinner.set_precision(precision)
+
+        self.spinner.set_step(step)
+        self.spinner.setMinimumWidth(70)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.spinner.setSizePolicy(sizePolicy)
+
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.slider)
+        self.layout.addWidget(self.spinner)
+        self.setLayout(self.layout)
+
+        self.slider.doubleValueChanged.connect(self._on_slider)
+        self.spinner.valueChanged.connect(self._on_spinner)
+
+        self.valueChanged = self.spinner.valueChanged
+
+    def set_precision(self, prec):
+        self.spinner.set_precision(prec)
+
+    def setSingleStep(self, step):
+        self.spinner.set_step(step)
+
+    def set_range(self, min, max):
+        self.spinner.set_range(min, max)
+        self.slider.set_range(min, max)
+
+    def set_minimum(self, min):
+        self.slider.setMinimum(min)
+        self.spinner.setMinimum(min)
+
+    def set_maximum(self, max):
+        self.slider.setMaximum(max)
+        self.spinner.setMaximum(max)
+
+    def get_value(self) -> float:
+        return self.spinner.get_value()
+
+    def set_value(self, value: float):
+        self.spinner.set_value(value)
+
+    def _on_spinner(self):
+        spinner_value = self.spinner.value()
+        self.slider.set_value(spinner_value)
+
+    def _on_slider(self):
+        slider_value = self.slider.value()
+        self.spinner.set_value(slider_value)
+
+
+class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     returnPressed = QtCore.pyqtSignal()
     confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
@@ -1050,6 +1181,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         self.setRange(min_val, max_val)
+
+    def set_step(self, p_int):
+        self.blockSignals(True)
+        self.setSingleStep(p_int)
+        self.blockSignals(False)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCDoubleSpinner, self).sizeHint()
@@ -1552,8 +1688,13 @@ class FCInputDialog(QtWidgets.QInputDialog):
 
 
 class FCButton(QtWidgets.QPushButton):
-    def __init__(self, parent=None):
-        super(FCButton, self).__init__(parent)
+    def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
+        super(FCButton, self).__init__(text, parent)
+        if not checkable is None:
+            self.setCheckable(checkable)
+
+        if not click_callback is None:
+            self.clicked.connect(click_callback)
 
     def get_value(self):
         return self.isChecked()
@@ -1563,18 +1704,28 @@ class FCButton(QtWidgets.QPushButton):
 
 
 class FCLabel(QtWidgets.QLabel):
-
     clicked = QtCore.pyqtSignal(bool)
+    right_clicked = QtCore.pyqtSignal(bool)
+    middle_clicked = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(FCLabel, self).__init__(parent)
 
         # for the usage of this label as a clickable label, to know that current state
         self.clicked_state = False
+        self.middle_clicked_state = False
+        self.right_clicked_state = False
 
     def mousePressEvent(self, event):
-        self.clicked_state = not self.clicked_state
-        self.clicked.emit(self.clicked_state)
+        if event.button() == Qt.LeftButton:
+            self.clicked_state = not self.clicked_state
+            self.clicked.emit(self.clicked_state)
+        elif event.button() == Qt.RightButton:
+            self.right_clicked_state = not self.right_clicked_state
+            self.right_clicked.emit(True)
+        elif event.button() == Qt.MiddleButton:
+            self.middle_clicked_state = not self.middle_clicked_state
+            self.middle_clicked.emit(True)
 
     def get_value(self):
         return self.text()
@@ -1876,7 +2027,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     if str(tab_name) == str(self.tabText(index)):
                         self.protectTab(index)
 
-        # Make this tab the current tab
+            # Make this tab the current tab
             if index > -1:
                 self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
 
@@ -1959,7 +2110,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 # area to the side of the QTabBar) or there are not tabs
                 # currently attached...
                 if tabDropPos.y() < self.tabBar.height() or self.count() == 0:
-
                     # Close the detached tab and allow it to re-attach
                     # automatically
                     self.detachedTabs[name].close()
@@ -2280,6 +2430,7 @@ class VerticalScrollArea(QtWidgets.QScrollArea):
     scroll area that also expands horizontally to accommodate
     its contents.
     """
+
     def __init__(self, parent=None):
         QtWidgets.QScrollArea.__init__(self, parent=parent)
         self.setWidgetResizable(True)
@@ -2395,8 +2546,7 @@ class OptionalHideInputSection:
 
 
 class FCTable(QtWidgets.QTableWidget):
-
-    drag_drop_sig = QtCore.pyqtSignal()
+    drag_drop_sig = QtCore.pyqtSignal(object, int)
     lost_focus = QtCore.pyqtSignal()
 
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
@@ -2407,8 +2557,8 @@ class FCTable(QtWidgets.QTableWidget):
                          palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
 
         # make inactive rows text some color as active; may be useful in the future
-        # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
-        #                  palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
+        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
+                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
         self.setPalette(palette)
 
         if drag_drop:
@@ -2431,6 +2581,7 @@ class FCTable(QtWidgets.QTableWidget):
                 self.rows_not_for_drag_and_drop = [protected_rows]
 
         self.rows_to_move = []
+        self.rows_dragged = None
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -2455,10 +2606,12 @@ class FCTable(QtWidgets.QTableWidget):
 
     # if user is clicking an blank area inside the QTableWidget it will deselect currently selected rows
     def mousePressEvent(self, event):
-        if not self.itemAt(event.pos()):
+        clicked_item = self.itemAt(event.pos())
+        if not clicked_item:
             self.clearSelection()
             self.clearFocus()
         else:
+            self.rows_dragged = [it.row() for it in self.selectedItems()]
             QtWidgets.QTableWidget.mousePressEvent(self, event)
 
     def focusOutEvent(self, event):
@@ -2545,57 +2698,160 @@ class FCTable(QtWidgets.QTableWidget):
     #     return rect.contains(pos, True) and not (
     #                 int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
 
-    def dropEvent(self, event):
-        """
-        From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
-        :param event:
-        :return:
-        """
-        if event.source() == self:
-            rows = set([mi.row() for mi in self.selectedIndexes()])
+    def dragEnterEvent(self, e: QtGui.QDragEnterEvent) -> None:
+        if e.source() == self:
+            self.blockSignals(True)
+            e.accept()
+        else:
+            e.ignore()
 
-            # if one of the selected rows for drag and drop is within the protected list, return
-            for r in rows:
-                if r in self.rows_not_for_drag_and_drop:
-                    return
+    # def dropEvent(self, event):
+    #     """
+    #     From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
+    #     :param event:
+    #     :return:
+    #     """
+    #     if event.source() == self:
+    #         event.acceptProposedAction()
+    #
+    #         # create a set of the selected rows that are dragged to another position
+    #         rows = set([mi.row() for mi in self.selectedIndexes()])
+    #         # if one of the selected rows for drag and drop is within the protected list, return
+    #         for r in rows:
+    #             if r in self.rows_not_for_drag_and_drop:
+    #                 return
+    #
+    #         drop_index = self.indexAt(event.pos())
+    #         # row where we drop the selected rows
+    #         targetRow = drop_index.row()
+    #
+    #         # drop_indicator = self.dropIndicatorPosition()
+    #         # if targetRow != -1:
+    #         #     if drop_indicator == QtWidgets.QAbstractItemView.AboveItem:
+    #         #         print("above")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.BelowItem:
+    #         #         print("below")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+    #         #         print("on")
+    #         #     elif drop_indicator == QtWidgets.QAbstractItemView.OnViewport:
+    #         #         print("on viewport")
+    #
+    #         # if we drop on one row from the already dragged rows
+    #         rows.discard(targetRow)
+    #         rows = sorted(rows)
+    #         if not rows:
+    #             return
+    #         if targetRow == -1:
+    #             targetRow = self.rowCount()
+    #
+    #         # insert empty rows at the index of the targetRow
+    #         for _ in range(len(rows)):
+    #             self.insertRow(targetRow)
+    #
+    #         rowMapping = {}  # Src row to target row.
+    #         for idx, row in enumerate(rows):
+    #             if row < targetRow:
+    #                 rowMapping[row] = targetRow + idx
+    #             else:
+    #                 rowMapping[row + len(rows)] = targetRow + idx
+    #
+    #         colCount = self.columnCount()
+    #         for srcRow, tgtRow in sorted(rowMapping.items()):
+    #             for col in range(0, colCount):
+    #                 new_item = self.item(srcRow, col)
+    #                 if new_item is None:
+    #                     new_item = self.cellWidget(srcRow, col)
+    #
+    #                 if isinstance(new_item, QtWidgets.QTableWidgetItem):
+    #                     new_item = self.takeItem(srcRow, col)
+    #                     self.setItem(tgtRow, col, new_item)
+    #                 else:
+    #                     self.setCellWidget(tgtRow, col, new_item)
+    #
+    #         for row in reversed(sorted(rowMapping.keys())):
+    #             self.removeRow(row)
+    #
+    #         self.blockSignals(False)
+    #         self.drag_drop_sig.emit(int(self.row_dragged), int(targetRow))
+    #     else:
+    #         event.ignore()
 
-            targetRow = self.indexAt(event.pos()).row()
-            rows.discard(targetRow)
-            rows = sorted(rows)
+    def dropEvent(self, event: QtGui.QDropEvent):
+        if not event.isAccepted() and event.source() == self:
+            drop_row = self.drop_on(event)
 
-            if not rows:
-                return
-            if targetRow == -1:
-                targetRow = self.rowCount()
+            rows = sorted(set(item.row() for item in self.selectedItems()))
 
-            for _ in range(len(rows)):
-                self.insertRow(targetRow)
+            rows_to_move = []
+            for row_index in rows:
+                temp_lst = []
+                for column_index in range(self.columnCount()):
+                    col_data = self.item(row_index, column_index)
 
-            rowMapping = {}  # Src row to target row.
-            for idx, row in enumerate(rows):
-                if row < targetRow:
-                    rowMapping[row] = targetRow + idx
-                else:
-                    rowMapping[row + len(rows)] = targetRow + idx
-
-            colCount = self.columnCount()
-            for srcRow, tgtRow in sorted(rowMapping.items()):
-                for col in range(0, colCount):
-                    new_item = self.item(srcRow, col)
-                    if new_item is None:
-                        new_item = self.cellWidget(srcRow, col)
-                    if isinstance(new_item, QtWidgets.QTableWidgetItem):
-                        new_item = self.takeItem(srcRow, col)
-                        self.setItem(tgtRow, col, new_item)
+                    if isinstance(col_data, QtWidgets.QTableWidgetItem):
+                        table_item = QtWidgets.QTableWidgetItem(col_data)
                     else:
-                        self.setCellWidget(tgtRow, col, new_item)
+                        old_item = self.cellWidget(row_index, column_index)
+                        if isinstance(old_item, QtWidgets.QComboBox):
+                            table_item = FCComboBox()
+                            items = [old_item.itemText(i) for i in range(old_item.count())]
+                            table_item.addItems(items)
+                            table_item.setCurrentIndex(old_item.currentIndex())
+                        elif isinstance(old_item, QtWidgets.QCheckBox):
+                            table_item = FCCheckBox()
+                            table_item.setChecked(old_item.isChecked())
+                            table_item.setText(old_item.text())
+                        else:
+                            table_item = None
 
-            for row in reversed(sorted(rowMapping.keys())):
-                self.removeRow(row)
+                    temp_lst.append(table_item)
+                rows_to_move.append(temp_lst)
+
+            for row_index in reversed(rows):
+                self.removeRow(row_index)
+                if row_index < drop_row:
+                    drop_row -= 1
+
+            for row_index, data in enumerate(rows_to_move):
+                row_index += drop_row
+                self.insertRow(row_index)
+                for column_index, column_data in enumerate(data):
+                    if column_data is None:
+                        continue
+
+                    if isinstance(column_data, QtWidgets.QTableWidgetItem):
+                        self.setItem(row_index, column_index, column_data)
+                    else:
+                        self.setCellWidget(row_index, column_index, column_data)
             event.accept()
-            self.drag_drop_sig.emit()
+            for row_index in range(len(rows_to_move)):
+                self.item(drop_row + row_index, 0).setSelected(True)
+                self.item(drop_row + row_index, 1).setSelected(True)
 
-            return
+            self.blockSignals(False)
+            self.drag_drop_sig.emit(self.rows_dragged, int(drop_row))
+
+        self.blockSignals(False)
+        self.resizeRowsToContents()
+        super().dropEvent(event)
+
+    def drop_on(self, event):
+        index = self.indexAt(event.pos())
+        if not index.isValid():
+            return self.rowCount()
+
+        return index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+
+    def is_below(self, pos, index):
+        rect = self.visualRect(index)
+        margin = 2
+        if pos.y() - rect.top() < margin:
+            return False
+        elif rect.bottom() - pos.y() < margin:
+            return True
+        # noinspection PyTypeChecker
+        return rect.contains(pos, True) and not (int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and \
+               pos.y() >= rect.center().y()
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):
@@ -2763,7 +3019,7 @@ class _BrowserTextEdit(QTextEdit):
             save_action.triggered.connect(lambda: self.save_log(app=self.app))
 
         clear_action = QAction(_("Clear"), self)
-        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
+        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))  # it's not working, the shortcut
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
 
@@ -3121,6 +3377,247 @@ class FCDock(QtWidgets.QDockWidget):
         if self.isFloating():
             self.setFloating(False)
         super().show()
+
+
+class FCJog(QtWidgets.QFrame):
+
+    def __init__(self, app, *args, **kwargs):
+        super(FCJog, self).__init__(*args, **kwargs)
+
+        self.app = app
+        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setLineWidth(1)
+
+        # JOG axes
+        grbl_jog_grid = QtWidgets.QGridLayout()
+        grbl_jog_grid.setAlignment(QtCore.Qt.AlignCenter)
+        grbl_jog_grid.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        grbl_jog_grid.setContentsMargins(2, 4, 2, 4)
+
+        self.setLayout(grbl_jog_grid)
+
+        # JOG Y Up
+        self.jog_up_button = QtWidgets.QToolButton()
+        self.jog_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_up_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_up_button, 2, 1)
+
+        # Origin
+        self.jog_origin_button = QtWidgets.QToolButton()
+        self.jog_origin_button.setIcon(QtGui.QIcon(self.app.resource_location + '/origin2_32.png'))
+        self.jog_origin_button.setToolTip(
+            _("Move to Origin.")
+        )
+
+        grbl_jog_grid.addWidget(self.jog_origin_button, 3, 1)
+
+        # JOG Y Down
+        self.jog_down_button = QtWidgets.QToolButton()
+        self.jog_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_down_button.setToolTip(
+            _("Jog the Y axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_down_button, 4, 1)
+
+        # JOG X Left
+        self.jog_left_button = QtWidgets.QToolButton()
+        self.jog_left_button.setIcon(QtGui.QIcon(self.app.resource_location + '/left_arrow32.png'))
+        self.jog_left_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_left_button, 3, 0)
+
+        # JOG X Right
+        self.jog_right_button = QtWidgets.QToolButton()
+        self.jog_right_button.setIcon(QtGui.QIcon(self.app.resource_location + '/right_arrow32.png'))
+        self.jog_right_button.setToolTip(
+            _("Jog the X axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_right_button, 3, 2)
+
+        # JOG Z Up
+        self.jog_z_up_button = QtWidgets.QToolButton()
+        self.jog_z_up_button.setIcon(QtGui.QIcon(self.app.resource_location + '/up-arrow32.png'))
+        self.jog_z_up_button.setText('Z')
+        self.jog_z_up_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_up_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_up_button, 2, 3)
+
+        # JOG Z Down
+        self.jog_z_down_button = QtWidgets.QToolButton()
+        self.jog_z_down_button.setIcon(QtGui.QIcon(self.app.resource_location + '/down-arrow32.png'))
+        self.jog_z_down_button.setText('Z')
+        self.jog_z_down_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.jog_z_down_button.setToolTip(
+            _("Jog the Z axis.")
+        )
+        grbl_jog_grid.addWidget(self.jog_z_down_button, 4, 3)
+
+
+class FCZeroAxes(QtWidgets.QFrame):
+
+    def __init__(self, app, *args, **kwargs):
+        super(FCZeroAxes, self).__init__(*args, **kwargs)
+        self.app = app
+
+        self.setFrameShape(QtWidgets.QFrame.Box)
+        self.setLineWidth(1)
+
+        # Zero the axes
+        grbl_zero_grid = QtWidgets.QGridLayout()
+        grbl_zero_grid.setContentsMargins(2, 4, 2, 4)
+        grbl_zero_grid.setColumnStretch(0, 0)
+        grbl_zero_grid.setColumnStretch(1, 0)
+        # grbl_zero_grid.setRowStretch(4, 1)
+        self.setLayout(grbl_zero_grid)
+
+        # Zero X axis
+        self.grbl_zerox_button = QtWidgets.QToolButton()
+        self.grbl_zerox_button.setText(_("X"))
+        self.grbl_zerox_button.setToolTip(
+            _("Zero the CNC X axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zerox_button, 1, 0)
+        # Zero Y axis
+        self.grbl_zeroy_button = QtWidgets.QToolButton()
+        self.grbl_zeroy_button.setText(_("Y"))
+
+        self.grbl_zeroy_button.setToolTip(
+            _("Zero the CNC Y axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroy_button, 2, 0)
+        # Zero Z axis
+        self.grbl_zeroz_button = QtWidgets.QToolButton()
+        self.grbl_zeroz_button.setText(_("Z"))
+
+        self.grbl_zeroz_button.setToolTip(
+            _("Zero the CNC Z axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zeroz_button, 3, 0)
+        self.grbl_homing_button = QtWidgets.QToolButton()
+        self.grbl_homing_button.setText(_("Do Home"))
+        self.grbl_homing_button.setToolTip(
+            _("Perform a homing cycle on all axis."))
+        grbl_zero_grid.addWidget(self.grbl_homing_button, 4, 0, 1, 2)
+        # Zeroo all axes
+        self.grbl_zero_all_button = QtWidgets.QToolButton()
+        self.grbl_zero_all_button.setText(_("All"))
+        self.grbl_zero_all_button.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+
+        self.grbl_zero_all_button.setToolTip(
+            _("Zero all CNC axes at current position.")
+        )
+        grbl_zero_grid.addWidget(self.grbl_zero_all_button, 1, 1, 3, 1)
+
+
+class RotatedToolButton(QtWidgets.QToolButton):
+    def __init__(self, orientation="east", *args, **kwargs):
+        super(RotatedToolButton, self).__init__(*args, **kwargs)
+        self.orientation = orientation
+
+    def paintEvent(self, event):
+        painter = QtWidgets.QStylePainter(self)
+        if self.orientation == "east":
+            painter.rotate(270)
+            painter.translate(-1 * self.height(), 0)
+        if self.orientation == "west":
+            painter.rotate(90)
+            painter.translate(0, -1 * self.width())
+        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+
+    def minimumSizeHint(self):
+        size = super(RotatedToolButton, self).minimumSizeHint()
+        size.transpose()
+        return size
+
+    def sizeHint(self):
+        size = super(RotatedToolButton, self).sizeHint()
+        size.transpose()
+        return size
+
+    def getSyleOptions(self):
+        options = QtWidgets.QStyleOptionButton()
+        options.initFrom(self)
+        size = options.rect.size()
+        size.transpose()
+        options.rect.setSize(size)
+        options.features = QtWidgets.QStyleOptionButton.None_
+        # if self.isFlat():
+        #     options.features |= QtWidgets.QStyleOptionButton.Flat
+        if self.menu():
+            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+        # if self.autoDefault() or self.isDefault():
+        #     options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
+        # if self.isDefault():
+        #     options.features |= QtWidgets.QStyleOptionButton.DefaultButton
+        if self.isDown() or (self.menu() and self.menu().isVisible()):
+            options.state |= QtWidgets.QStyle.State_Sunken
+        if self.isChecked():
+            options.state |= QtWidgets.QStyle.State_On
+        # if not self.isFlat() and not self.isDown():
+        #     options.state |= QtWidgets.QStyle.State_Raised
+
+        options.text = self.text()
+        options.icon = self.icon()
+        options.iconSize = self.iconSize()
+        return options
+
+
+class RotatedButton(QtWidgets.QPushButton):
+    def __init__(self, orientation="west", *args, **kwargs):
+        super(RotatedButton, self).__init__(*args, **kwargs)
+        self.orientation = orientation
+
+    def paintEvent(self, event):
+        painter = QtWidgets.QStylePainter(self)
+        if self.orientation == "east":
+            painter.rotate(270)
+            painter.translate(-1 * self.height(), 0)
+        if self.orientation == "west":
+            painter.rotate(90)
+            painter.translate(0, -1 * self.width())
+        painter.drawControl(QtWidgets.QStyle.CE_PushButton, self.getSyleOptions())
+
+    def minimumSizeHint(self):
+        size = super(RotatedButton, self).minimumSizeHint()
+        size.transpose()
+        return size
+
+    def sizeHint(self):
+        size = super(RotatedButton, self).sizeHint()
+        size.transpose()
+        return size
+
+    def getSyleOptions(self):
+        options = QtWidgets.QStyleOptionButton()
+        options.initFrom(self)
+        size = options.rect.size()
+        size.transpose()
+        options.rect.setSize(size)
+        options.features = QtWidgets.QStyleOptionButton.None_
+        if self.isFlat():
+            options.features |= QtWidgets.QStyleOptionButton.Flat
+        if self.menu():
+            options.features |= QtWidgets.QStyleOptionButton.HasMenu
+        if self.autoDefault() or self.isDefault():
+            options.features |= QtWidgets.QStyleOptionButton.AutoDefaultButton
+        if self.isDefault():
+            options.features |= QtWidgets.QStyleOptionButton.DefaultButton
+        if self.isDown() or (self.menu() and self.menu().isVisible()):
+            options.state |= QtWidgets.QStyle.State_Sunken
+        if self.isChecked():
+            options.state |= QtWidgets.QStyle.State_On
+        if not self.isFlat() and not self.isDown():
+            options.state |= QtWidgets.QStyle.State_Raised
+
+        options.text = self.text()
+        options.icon = self.icon()
+        options.iconSize = self.iconSize()
+        return options
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):

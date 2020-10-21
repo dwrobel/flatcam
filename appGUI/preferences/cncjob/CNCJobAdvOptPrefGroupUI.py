@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings, Qt
 
-from appGUI.GUIElements import FCTextArea, FCCheckBox, FCComboBox, FCSpinner, FCColorEntry
+from appGUI.GUIElements import FCComboBox, FCSpinner, FCColorEntry, FCLabel, FCDoubleSpinner, RadioSet
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 import gettext
 import appTranslation as fcTranslate
@@ -26,132 +26,29 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("CNC Job Adv. Options")))
 
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+
         # ## Export G-Code
-        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export CNC Code"))
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
         )
-        self.layout.addWidget(self.export_gcode_label)
-
-        # Prepend to G-Code
-        toolchangelabel = QtWidgets.QLabel('%s' % _('Toolchange G-Code'))
-        toolchangelabel.setToolTip(
-            _(
-                "Type here any G-Code commands you would\n"
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode,\n"
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a preprocessor file\n"
-                "that has 'toolchange_custom' in it's name and this is built\n"
-                "having as template the 'Toolchange Custom' posprocessor file."
-            )
-        )
-        self.layout.addWidget(toolchangelabel)
-
-        qsettings = QSettings("Open Source", "FlatCAM")
-        if qsettings.contains("textbox_font_size"):
-            tb_fsize = qsettings.value('textbox_font_size', type=int)
-        else:
-            tb_fsize = 10
-        font = QtGui.QFont()
-        font.setPointSize(tb_fsize)
-
-        self.toolchange_text = FCTextArea()
-        self.toolchange_text.setPlaceholderText(
-            _(
-                "Type here any G-Code commands you would "
-                "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode, "
-                "or a Toolchange Macro.\n"
-                "The FlatCAM variables are surrounded by '%' symbol.\n"
-                "WARNING: it can be used only with a preprocessor file "
-                "that has 'toolchange_custom' in it's name."
-            )
-        )
-        self.layout.addWidget(self.toolchange_text)
-        self.toolchange_text.setFont(font)
-
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
-
-        # Toolchange Replacement GCode
-        self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
-        self.toolchange_cb.setToolTip(
-            _("Check this box if you want to use\n"
-              "a Custom Toolchange GCode (macro).")
-        )
-        hlay.addWidget(self.toolchange_cb)
-        hlay.addStretch()
-
-        hlay1 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay1)
-
-        # Variable list
-        self.tc_variable_combo = FCComboBox()
-        self.tc_variable_combo.setToolTip(
-            _("A list of the FlatCAM variables that can be used\n"
-              "in the Toolchange event.\n"
-              "They have to be surrounded by the '%' symbol")
-        )
-        hlay1.addWidget(self.tc_variable_combo)
-
-        # Populate the Combo Box
-        variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
-                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
-        self.tc_variable_combo.addItems(variables)
-        self.tc_variable_combo.insertSeparator(1)
-
-        self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        fnt = QtGui.QFont()
-        fnt.setBold(True)
-        self.tc_variable_combo.setItemData(0, fnt, Qt.FontRole)
-
-        self.tc_variable_combo.setItemData(2, 'tool = %s' % _("tool number"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, 'tooldia = %s' % _("tool diameter"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, 't_drills = %s' % _("for Excellon, total number of drills"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(6, 'y_toolchange = %s' % _("Y coord for Toolchange"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(9, 'z_move = %s' % _("Z height for travel"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(10, 'z_depthpercut = %s' % _("the step value for multidepth cut"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(11, 'spindlesspeed = %s' % _("the value for the spindle speed"),
-                                           Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(12,
-                                           _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
-                                           Qt.ToolTipRole)
-
-        # hlay1.addStretch()
-
-        # Insert Variable into the Toolchange G-Code Text Box
-        # self.tc_insert_buton = FCButton("Insert")
-        # self.tc_insert_buton.setToolTip(
-        #     "Insert the variable in the GCode Box\n"
-        #     "surrounded by the '%' symbol."
-        # )
-        # hlay1.addWidget(self.tc_insert_buton)
-
-        grid0 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid0)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 1, 0, 1, 2)
+        grid0.addWidget(self.export_gcode_label, 0, 0, 1, 2)
 
         # Annotation Font Size
         self.annotation_fontsize_label = QtWidgets.QLabel('%s:' % _("Annotation Size"))
         self.annotation_fontsize_label.setToolTip(
             _("The font size of the annotation text. In pixels.")
         )
-        grid0.addWidget(self.annotation_fontsize_label, 2, 0)
         self.annotation_fontsize_sp = FCSpinner()
         self.annotation_fontsize_sp.set_range(0, 9999)
 
+        grid0.addWidget(self.annotation_fontsize_label, 2, 0)
         grid0.addWidget(self.annotation_fontsize_sp, 2, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 2)
 
         # Annotation Font Color
         self.annotation_color_label = QtWidgets.QLabel('%s:' % _('Annotation Color'))
@@ -160,20 +57,159 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.annotation_fontcolor_entry = FCColorEntry()
 
-        grid0.addWidget(self.annotation_color_label, 3, 0)
-        grid0.addWidget(self.annotation_fontcolor_entry, 3, 1)
+        grid0.addWidget(self.annotation_color_label, 4, 0)
+        grid0.addWidget(self.annotation_fontcolor_entry, 4, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
+        # ## Autolevelling
+        self.autolevelling_gcode_label = QtWidgets.QLabel("<b>%s</b>" % _("Autolevelling"))
+        self.autolevelling_gcode_label.setToolTip(
+            _("Parameters for the autolevelling.")
+        )
+        grid0.addWidget(self.autolevelling_gcode_label, 6, 0, 1, 2)
+
+        # Probe points mode
+        al_mode_lbl = FCLabel('%s:' % _("Mode"))
+        al_mode_lbl.setToolTip(_("Choose a mode for height map generation.\n"
+                                 "- Manual: will pick a selection of probe points by clicking on canvas\n"
+                                 "- Grid: will automatically generate a grid of probe points"))
+
+        self.al_mode_radio = RadioSet(
+            [
+                {'label': _('Manual'), 'value': 'manual'},
+                {'label': _('Grid'), 'value': 'grid'}
+            ])
+        grid0.addWidget(al_mode_lbl, 8, 0)
+        grid0.addWidget(self.al_mode_radio, 8, 1)
+
+        # AUTOLEVELL METHOD
+        self.al_method_lbl = FCLabel('%s:' % _("Method"))
+        self.al_method_lbl.setToolTip(_("Choose a method for approximation of heights from autolevelling data.\n"
+                                        "- Voronoi: will generate a Voronoi diagram\n"
+                                        "- Bilinear: will use bilinear interpolation. Usable only for grid mode."))
+
+        self.al_method_radio = RadioSet(
+            [
+                {'label': _('Voronoi'), 'value': 'v'},
+                {'label': _('Bilinear'), 'value': 'b'}
+            ])
+        grid0.addWidget(self.al_method_lbl, 9, 0)
+        grid0.addWidget(self.al_method_radio, 9, 1)
+
+        # ## Columns
+        self.al_columns_entry = FCSpinner()
+
+        self.al_columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
+        self.al_columns_label.setToolTip(
+            _("The number of grid columns.")
+        )
+        grid0.addWidget(self.al_columns_label, 10, 0)
+        grid0.addWidget(self.al_columns_entry, 10, 1)
+
+        # ## Rows
+        self.al_rows_entry = FCSpinner()
+
+        self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
+        self.al_rows_label.setToolTip(
+            _("The number of gird rows.")
+        )
+        grid0.addWidget(self.al_rows_label, 12, 0)
+        grid0.addWidget(self.al_rows_entry, 12, 1)
+
+        # Travel Z Probe
+        self.ptravelz_label = QtWidgets.QLabel('%s:' % _("Probe Z travel"))
+        self.ptravelz_label.setToolTip(
+            _("The safe Z for probe travelling between probe points.")
+        )
+        self.ptravelz_entry = FCDoubleSpinner()
+        self.ptravelz_entry.set_precision(self.decimals)
+        self.ptravelz_entry.set_range(0.0000, 9999.9999)
+
+        grid0.addWidget(self.ptravelz_label, 14, 0)
+        grid0.addWidget(self.ptravelz_entry, 14, 1)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label.setToolTip(
+            _("The maximum depth that the probe is allowed\n"
+              "to probe. Negative value, in current units.")
+        )
+        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry.set_precision(self.decimals)
+        self.pdepth_entry.set_range(-99999.9999, 0.0000)
+
+        grid0.addWidget(self.pdepth_label, 16, 0)
+        grid0.addWidget(self.pdepth_entry, 16, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Probe Feedrate"))
+        self.feedrate_probe_label.setToolTip(
+            _("The feedrate used while the probe is probing.")
+        )
+        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry.set_precision(self.decimals)
+        self.feedrate_probe_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.feedrate_probe_label, 18, 0)
+        grid0.addWidget(self.feedrate_probe_entry, 18, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 20, 0, 1, 2)
+
+        self.al_controller_label = FCLabel('%s:' % _("Controller"))
+        self.al_controller_label.setToolTip(
+            _("The kind of controller for which to generate\n"
+              "height map gcode.")
+        )
+
+        self.al_controller_combo = FCComboBox()
+        self.al_controller_combo.addItems(["MACH3", "MACH4", "LinuxCNC", "GRBL"])
+        grid0.addWidget(self.al_controller_label, 22, 0)
+        grid0.addWidget(self.al_controller_combo, 22, 1)
+
+        # JOG Step
+        self.jog_step_label = FCLabel('%s:' % _("Step"))
+        self.jog_step_label.setToolTip(
+            _("Each jog action will move the axes with this value.")
+        )
+
+        self.jog_step_entry = FCDoubleSpinner()
+        self.jog_step_entry.set_precision(self.decimals)
+        self.jog_step_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.jog_step_label, 24, 0)
+        grid0.addWidget(self.jog_step_entry, 24, 1)
+
+        # JOG Feedrate
+        self.jog_fr_label = FCLabel('%s:' % _("Feedrate"))
+        self.jog_fr_label.setToolTip(
+            _("Feedrate when jogging.")
+        )
+
+        self.jog_fr_entry = FCDoubleSpinner()
+        self.jog_fr_entry.set_precision(self.decimals)
+        self.jog_fr_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.jog_fr_label, 26, 0)
+        grid0.addWidget(self.jog_fr_entry, 26, 1)
+
+        # JOG Travel Z
+        self.jog_travelz_label = FCLabel('%s:' % _("Travel Z"))
+        self.jog_travelz_label.setToolTip(
+            _("Safe height (Z) distance when jogging to origin.")
+        )
+
+        self.jog_travelz_entry = FCDoubleSpinner()
+        self.jog_travelz_entry.set_precision(self.decimals)
+        self.jog_travelz_entry.set_range(0, 99999.9999)
+
+        grid0.addWidget(self.jog_travelz_label, 28, 0)
+        grid0.addWidget(self.jog_travelz_entry, 28, 1)
+
         self.layout.addStretch()
 
-        self.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
         self.annotation_fontcolor_entry.editingFinished.connect(self.on_annotation_fontcolor_entry)
-
-    def on_cnc_custom_parameters(self, signal_text):
-        if signal_text == 'Parameters':
-            return
-        else:
-            self.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_annotation_fontcolor_entry(self):
         self.app.defaults['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()

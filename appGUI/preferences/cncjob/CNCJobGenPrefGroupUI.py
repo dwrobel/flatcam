@@ -41,36 +41,6 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.plot_cb.setToolTip(_("Plot (show) this object."))
         grid0.addWidget(self.plot_cb, 0, 0, 1, 2)
 
-        # Plot Kind
-        self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind"))
-        self.cncplot_method_label.setToolTip(
-            _("This selects the kind of geometries on the canvas to plot.\n"
-              "Those can be either of type 'Travel' which means the moves\n"
-              "above the work piece or it can be of type 'Cut',\n"
-              "which means the moves that cut into the material.")
-        )
-
-        self.cncplot_method_radio = RadioSet([
-            {"label": _("All"), "value": "all"},
-            {"label": _("Travel"), "value": "travel"},
-            {"label": _("Cut"), "value": "cut"}
-        ], orientation='vertical')
-
-        grid0.addWidget(self.cncplot_method_label, 1, 0)
-        grid0.addWidget(self.cncplot_method_radio, 1, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
-
-        # Display Annotation
-        self.annotation_cb = FCCheckBox(_("Display Annotation"))
-        self.annotation_cb.setToolTip(
-            _("This selects if to display text annotation on the plot.\n"
-              "When checked it will display numbers in order for each end\n"
-              "of a travel line."
-              )
-        )
-
-        grid0.addWidget(self.annotation_cb, 2, 0, 1, 3)
-
         # ###################################################################
         # Number of circle steps for circular aperture linear approximation #
         # ###################################################################

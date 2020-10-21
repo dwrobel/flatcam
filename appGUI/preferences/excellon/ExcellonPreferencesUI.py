@@ -43,11 +43,11 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.excellon_opt_group)
+        self.vlay.addWidget(self.excellon_adv_opt_group)
         self.vlay.addWidget(self.excellon_exp_group)
 
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addLayout(self.vlay)
-        self.layout.addWidget(self.excellon_adv_opt_group)
         self.layout.addWidget(self.excellon_editor_group)
 
         self.layout.addStretch()

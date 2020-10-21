@@ -95,7 +95,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Application Level for FlatCAM
-        self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APP. LEVEL'))
+        self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APPLICATION LEVEL'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
                                           "BASIC level -> reduced functionality, best for beginner's.\n"
                                           "ADVANCED level -> full functionality.\n\n"
@@ -104,8 +104,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
 
-        grid0.addWidget(self.app_level_label, 5, 0)
-        grid0.addWidget(self.app_level_radio, 5, 1)
+        grid0.addWidget(self.app_level_label, 5, 0, 1, 2)
+        grid0.addWidget(self.app_level_radio, 6, 0, 1, 2)
 
         # Portability for FlatCAM
         self.portability_cb = FCCheckBox('%s' % _('Portable app'))
@@ -114,20 +114,20 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                          "which means that the preferences files will be saved\n"
                                          "in the application folder, in the lib\\config subfolder."))
 
-        grid0.addWidget(self.portability_cb, 6, 0, 1, 2)
+        grid0.addWidget(self.portability_cb, 7, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 7, 0, 1, 2)
+        grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>%s</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.language_cb = FCComboBox()
 
-        grid0.addWidget(self.languagelabel, 8, 0, 1, 2)
-        grid0.addWidget(self.language_cb, 9, 0, 1, 2)
+        grid0.addWidget(self.languagelabel, 9, 0, 1, 2)
+        grid0.addWidget(self.language_cb, 10, 0, 1, 2)
 
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
