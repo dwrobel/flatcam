@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-21 16:06+0300\n"
-"PO-Revision-Date: 2020-10-21 16:06+0300\n"
+"PO-Revision-Date: 2020-10-21 21:30+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -2297,10 +2297,8 @@ msgid "Exit from Editor."
 msgstr "Düzenleyiciden çıkın."
 
 #: appEditors/AppGeoEditor.py:49
-#, fuzzy
-#| msgid "Area Selection"
 msgid "Buffer Selection"
-msgstr "Alan"
+msgstr "Tampon Seçimi"
 
 #: appEditors/AppGeoEditor.py:84
 msgid "Buffer distance:"
@@ -2380,10 +2378,8 @@ msgstr ""
 "Ekleyip tekrar deneyin."
 
 #: appEditors/AppGeoEditor.py:194
-#, fuzzy
-#| msgid "Text Tool"
 msgid "Text Input Tool"
-msgstr "Metin Aracı"
+msgstr "Metin Ekle"
 
 #: appEditors/AppGeoEditor.py:241
 msgid "Font"
@@ -6405,14 +6401,12 @@ msgstr "Gerber nesnesini düzenleyin."
 #: appGUI/ObjectUI.py:255 appGUI/ObjectUI.py:568 appGUI/ObjectUI.py:872
 #: appGUI/ObjectUI.py:1842
 msgid "PROPERTIES"
-msgstr ""
+msgstr "ÖZELLİKLER"
 
 #: appGUI/ObjectUI.py:257 appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:874
 #: appGUI/ObjectUI.py:1844
-#, fuzzy
-#| msgid "Properties"
 msgid "Show the Properties."
-msgstr "Özellikler"
+msgstr "Özellikleri göster."
 
 #: appGUI/ObjectUI.py:291 appGUI/ObjectUI.py:603
 #: appGUI/preferences/excellon/ExcellonAdvOptPrefGroupUI.py:50
@@ -6650,10 +6644,10 @@ msgid "Milling Tool"
 msgstr "Frezeleme"
 
 #: appGUI/ObjectUI.py:712
-#, fuzzy
-#| msgid "Generate GCode out of drill holes in an Excellon object."
 msgid "Generate a Geometry for milling drills or slots in an Excellon object."
-msgstr "Bir Excellon nesnesindeki matkap deliklerinden G Kod oluşturun."
+msgstr ""
+"Bir Excellon nesnesindeki matkap delikleri için \n"
+"veya yuvaları frezelemek için şekil oluşturun."
 
 #: appGUI/ObjectUI.py:738
 msgid "Milling Geometry"
@@ -6684,26 +6678,18 @@ msgid "Mill Drills"
 msgstr "Delikleri Frezele"
 
 #: appGUI/ObjectUI.py:760
-#, fuzzy
-#| msgid ""
-#| "Create the Geometry Object\n"
-#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
 "for milling drills."
 msgstr ""
-"Yuvaları frezelemek için\n"
-"Şekil nesnesi oluşturun."
+"Delikleri frezelemek için\n"
+"Şekil Nesnesini oluşturun."
 
 #: appGUI/ObjectUI.py:778
 msgid "Mill Slots"
 msgstr "Yuvaları Frezele"
 
 #: appGUI/ObjectUI.py:780
-#, fuzzy
-#| msgid ""
-#| "Create the Geometry Object\n"
-#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
 "for milling slots."
@@ -6734,13 +6720,14 @@ msgid ""
 "grayed out and Cut Z is automatically calculated from the newly \n"
 "showed UI form entries named V-Tip Dia and V-Tip Angle."
 msgstr ""
-"“Hiza” Kesim için hizalama ayarı kaydı oluşturur.\n"
+"Bu Şekil nesnesindeki uçlar kesmek için kullanılır.\n"
+"“Hiza” girişi, kesim için bir hiza belirleyecektir.\n"
 "\"Hiza\" İçerde, dışarıda, yolda (yok) ve özel olabilir.\n"
 "\"Tip\" Girişi yalnızca bilgilendirme amaçlıdır ve geçerli aracı \n"
 "kullanma amacını bilmenizi sağlar.\n"
 "Kaba (ing), finish (ing) veya Iso (lation) olabilir.\n"
-"“Uç Tipi” (TT) 1 ila 4 diş (C1..C4), bilyalı (B) veya V Şekli\n"
-" (V) dairesel olabilir.\n"
+"“Uç Tipi” (TT) 1 ila 4 dişli (C1..C4), bilyalı (B) veya V Şekli\n"
+" (V) ile dairesel olabilir.\n"
 "Bir V şekli seçildiğinde, 'Tip' girişi otomatik olarak Yalıtım olarak\n"
 "ayarlanır, kullanıcı arayüz formundaki Z Derinliği seçeneği grileşir\n"
 "ve Z Derinliği, V-Ucu Kalınlığı ve V-Ucu Açısı, yeniden gösterilen\n"
@@ -7586,7 +7573,7 @@ msgstr "Yükseklik"
 
 #: appGUI/ObjectUI.py:2033
 msgid "Plot probing points"
-msgstr "Prob (algılayıcı) noktalarını işaretleyin"
+msgstr "Prob (algılayıcı) Noktalarını İşaretleyin"
 
 #: appGUI/ObjectUI.py:2035
 msgid ""
@@ -7594,7 +7581,7 @@ msgid ""
 "If a Voronoi method is used then\n"
 "the Voronoi areas are also plotted."
 msgstr ""
-"Araştırma noktalarını tabloya çizin.\n"
+"Prob (algılayıcı) noktalarını tabloya çizin.\n"
 "Bir Voronoi yöntemi kullanılırsa, Voronoi alanları da çizilir."
 
 #: appGUI/ObjectUI.py:2050
@@ -7614,7 +7601,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:2059
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:119
 msgid "Probe Z travel"
-msgstr "Z Prob Yüksekliği"
+msgstr "Prob Z Yüksekliği"
 
 #: appGUI/ObjectUI.py:2061
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:121
@@ -9955,10 +9942,8 @@ msgstr "Dışlama Alanı"
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:402
-#, fuzzy
-#| msgid "Add exclusion areas"
 msgid "Area exclusion parameters."
-msgstr "Dışlama Alanları Ekle"
+msgstr "Dışlama alanı seçenekleri."
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:207
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
@@ -11081,8 +11066,6 @@ msgstr ""
 "- 'Eğimli': Çizgiler üçüncü bir çizgi le birleştirilir"
 
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:69
-#, fuzzy
-#| msgid "Beveled"
 msgid "Bevel"
 msgstr "Eğimli"
 
@@ -12247,20 +12230,16 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:275
 #: appTools/ToolIsolation.py:3320
 msgid "Check validity"
-msgstr ""
+msgstr "Doğruluğu Kontrol Et"
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:277
 #: appTools/ToolIsolation.py:3322
-#, fuzzy
-#| msgid ""
-#| "Find a tool diameter that is guaranteed\n"
-#| "to do a complete isolation."
 msgid ""
 "If checked then the tools diameters are verified\n"
 "if they will provide a complete isolation."
 msgstr ""
-"Tam bir yalıtım yapmak için en\n"
-"uygun uç kalınlığını bulun."
+"İşaretlenirse, uç kalınlıklarının tam bir yalıtım\n"
+"sağlayıp sağlamadıkları doğrulanır."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:287
 #: appTools/ToolIsolation.py:3370
@@ -14766,7 +14745,6 @@ msgstr "Geçit Boşlukları"
 msgid "This section handle creation of automatic bridge gaps."
 msgstr ""
 "Bu bölüm geçit boşluklarının otomatik oluşturulmasını ele almaktadır.\n"
-"\n"
 "Geçit: PCB kesildiği zaman çevresinden kopmaması için kullanılan köprülerdir."
 
 #: appTools/ToolCutOut.py:2290
@@ -15988,15 +15966,13 @@ msgstr "En uygun uç kalınlığı bulundu"
 #: appTools/ToolIsolation.py:1710 appTools/ToolIsolation.py:1897
 #: appTools/ToolNCC.py:1296 appTools/ToolPaint.py:1031
 #: appTools/ToolPaint.py:1744
-#, fuzzy
-#| msgid "Failed. No tool selected in the tool table ..."
 msgid "There are no tools selected in the Tool Table."
-msgstr "Hata. Araçlar Tablosunda seçili uç yok ..."
+msgstr "Araç Tablosunda seçili hiçbir uç yok."
 
 #: appTools/ToolIsolation.py:1008
 msgid ""
 "Incomplete isolation. At least one tool could not do a complete isolation."
-msgstr ""
+msgstr "Eksik yalıtım. En az bir uç tam bir yalıtım yapamadı."
 
 #: appTools/ToolIsolation.py:1057 appTools/ToolIsolation.py:1144
 #: appTools/ToolIsolation.py:1206 appTools/ToolIsolation.py:2626

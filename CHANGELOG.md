@@ -27,6 +27,7 @@ CHANGELOG for FlatCAM beta
 - added a button in Excellon UI that will hide/show the milling section
 - optimized a bit the UI for Gerber/Excellon/Geometry objects
 - optimized FlatCAMObj.add_properties_items() method
+- updated the Turkish translation (by Mehmet Kaya)
 
 20.10.2020
 
