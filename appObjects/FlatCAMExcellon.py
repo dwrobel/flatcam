@@ -442,6 +442,9 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.slot_tooldia_entry.setDisabled(False)
             self.ui.generate_milling_slots_button.setDisabled(False)
 
+        # update the milling section
+        self.on_row_selection_change()
+
         self.ui_connect()
 
     def ui_connect(self):
@@ -514,12 +517,22 @@ class ExcellonObject(FlatCAMObj, Excellon):
             self.ui.slot_tooldia_entry.setDisabled(False)
             self.ui.generate_milling_slots_button.setDisabled(False)
 
-            # find if we have drills:
-            has_drills = None
-            for tt in self.tools:
-                if 'drills' in self.tools[tt] and self.tools[tt]['drills']:
-                    has_drills = True
-                    break
+            has_drills = True
+            has_slots = True
+            for row in sel_rows:
+                row_dia = self.app.dec_format(float(self.ui.tools_table.item(row, 1).text()), self.decimals)
+
+                for tt in self.tools:
+                    tool_dia = self.app.dec_format(float(self.tools[tt]['tooldia']), self.decimals)
+                    if tool_dia == row_dia:
+                        # find if we have drills:
+                        if 'drills' not in self.tools[tt] or not self.tools[tt]['drills']:
+                            has_drills = None
+
+                        # find if we have slots
+                        if 'slots' not in self.tools[tt] or not self.tools[tt]['slots']:
+                            has_slots = None
+
             if has_drills is None:
                 self.ui.tooldia_entry.setDisabled(True)
                 self.ui.generate_milling_button.setDisabled(True)
@@ -527,12 +540,6 @@ class ExcellonObject(FlatCAMObj, Excellon):
                 self.ui.tooldia_entry.setDisabled(False)
                 self.ui.generate_milling_button.setDisabled(False)
 
-            # find if we have slots
-            has_slots = None
-            for tt in self.tools:
-                if 'slots' in self.tools[tt] and self.tools[tt]['slots']:
-                    has_slots = True
-                    break
             if has_slots is None:
                 self.ui.slot_tooldia_entry.setDisabled(True)
                 self.ui.generate_milling_slots_button.setDisabled(True)
@@ -895,7 +902,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
+            geo_obj.options["multidepth"] = self.app.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution
@@ -995,7 +1002,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
             geo_obj.options["cnctooldia"] = str(tooldia)
-            geo_obj.options["multidepth"] = self.options["multidepth"]
+            geo_obj.options["multidepth"] = self.app.defaults["geometry_multidepth"]
             geo_obj.solid_geometry = []
 
             # in case that the tool used has the same diameter with the hole, and since the maximum resolution

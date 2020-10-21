@@ -701,7 +701,7 @@ class ExcellonObjectUI(ObjectUI):
         self.milling_button = QtWidgets.QPushButton(_('Milling Tool'))
         self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
         self.milling_button.setToolTip(
-            _("Generate GCode out of slot holes in an Excellon object.")
+            _("Generate a Geometry for milling drills or slots in an Excellon object.")
         )
         self.milling_button.setStyleSheet("""
                         QPushButton
@@ -710,6 +710,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
         grid2.addWidget(self.milling_button, 6, 0, 1, 2)
+        # TODO until the Milling Tool is finished this stays disabled
+        self.milling_button.setDisabled(True)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
