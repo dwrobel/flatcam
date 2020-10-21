@@ -15,7 +15,7 @@ CHANGELOG for FlatCAM beta
 - In Excellon Object UI fixed the milling geometry generation
 - updated the translations strings to the changes in the source code
 - some strings changed
-- made the Properties checkbox in the Object UI into a checkable button and added to it an icon
+- fixed crash on using shortcut for creating a new Document Object
 
 20.10.2020
 

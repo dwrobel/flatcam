@@ -2684,9 +2684,9 @@ class MainGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_B:
                     self.app.app_obj.new_gerber_object()
 
-                # New Geometry
+                # New Document Object
                 if key == QtCore.Qt.Key_D:
-                    self.app.new_document_object()
+                    self.app.app_obj.new_document_object()
 
                 # Copy Object Name
                 if key == QtCore.Qt.Key_E:
