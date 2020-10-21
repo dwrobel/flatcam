@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-21 11:37+0300\n"
+"POT-Creation-Date: 2020-10-21 11:55+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -259,7 +259,7 @@ msgid "Tool Name"
 msgstr ""
 
 #: appDatabase.py:161 appDatabase.py:837 appEditors/AppExcEditor.py:3765
-#: appGUI/ObjectUI.py:738 appGUI/ObjectUI.py:1026 appGUI/ObjectUI.py:1594
+#: appGUI/ObjectUI.py:1026 appGUI/ObjectUI.py:1594
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:132 appTools/ToolCutOut.py:2058
 #: appTools/ToolIsolation.py:3091 appTools/ToolNCC.py:3859 appTools/ToolNCC.py:3870
 #: appTools/ToolPaint.py:2882
@@ -6028,6 +6028,11 @@ msgid ""
 "milled. Use the # column to make the selection."
 msgstr ""
 
+#: appGUI/ObjectUI.py:738 appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80
+#: appTools/ToolMilling.py:1779
+msgid "Milling Diameter"
+msgstr ""
+
 #: appGUI/ObjectUI.py:740 appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:101
 msgid "Diameter of the cutting tool."
 msgstr ""
@@ -6039,7 +6044,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:752
 msgid ""
 "Create the Geometry Object\n"
-"for milling DRILLS toolpaths."
+"for milling drills."
 msgstr ""
 
 #: appGUI/ObjectUI.py:770
@@ -6049,7 +6054,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:772
 msgid ""
 "Create the Geometry Object\n"
-"for milling SLOTS toolpaths."
+"for milling slots."
 msgstr ""
 
 #: appGUI/ObjectUI.py:814
@@ -7871,10 +7876,6 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:199 appTools/ToolFilm.py:1105
 #: appTools/ToolMilling.py:1771
 msgid "Both"
-msgstr ""
-
-#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80 appTools/ToolMilling.py:1779
-msgid "Milling Diameter"
 msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:82 appTools/ToolMilling.py:1781

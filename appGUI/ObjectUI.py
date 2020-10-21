@@ -735,7 +735,7 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.grid6.addWidget(self.mill_hole_label, 5, 0, 1, 3)
 
-        self.tdlabel = QtWidgets.QLabel('%s:' % _('Tool Dia'))
+        self.tdlabel = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
         self.tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
@@ -750,7 +750,7 @@ class ExcellonObjectUI(ObjectUI):
         self.generate_milling_button = QtWidgets.QPushButton(_('Mill Drills'))
         self.generate_milling_button.setToolTip(
             _("Create the Geometry Object\n"
-              "for milling DRILLS toolpaths.")
+              "for milling drills.")
         )
         self.generate_milling_button.setStyleSheet("""
                         QPushButton
@@ -770,7 +770,7 @@ class ExcellonObjectUI(ObjectUI):
         self.generate_milling_slots_button = QtWidgets.QPushButton(_('Mill Slots'))
         self.generate_milling_slots_button.setToolTip(
             _("Create the Geometry Object\n"
-              "for milling SLOTS toolpaths.")
+              "for milling slots.")
         )
         self.generate_milling_slots_button.setStyleSheet("""
                         QPushButton

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-21 11:39+0300\n"
-"PO-Revision-Date: 2020-10-21 11:39+0300\n"
+"POT-Creation-Date: 2020-10-21 11:56+0300\n"
+"PO-Revision-Date: 2020-10-21 11:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -280,7 +280,7 @@ msgid "Tool Name"
 msgstr "Uç Adı"
 
 #: appDatabase.py:161 appDatabase.py:837 appEditors/AppExcEditor.py:3765
-#: appGUI/ObjectUI.py:738 appGUI/ObjectUI.py:1026 appGUI/ObjectUI.py:1594
+#: appGUI/ObjectUI.py:1026 appGUI/ObjectUI.py:1594
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:132
 #: appTools/ToolCutOut.py:2058 appTools/ToolIsolation.py:3091
 #: appTools/ToolNCC.py:3859 appTools/ToolNCC.py:3870 appTools/ToolPaint.py:2882
@@ -6657,6 +6657,12 @@ msgstr ""
 "Yukarıdaki Araçlar Tablosundan frezelenecek delikleri seçin.\n"
 "Seçim yapmak için # sütununu kullanın."
 
+#: appGUI/ObjectUI.py:738
+#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80
+#: appTools/ToolMilling.py:1779
+msgid "Milling Diameter"
+msgstr "Freze Çapı"
+
 #: appGUI/ObjectUI.py:740
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:101
 msgid "Diameter of the cutting tool."
@@ -6667,11 +6673,15 @@ msgid "Mill Drills"
 msgstr "Delikleri Frezele"
 
 #: appGUI/ObjectUI.py:752
+#, fuzzy
+#| msgid ""
+#| "Create the Geometry Object\n"
+#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
-"for milling DRILLS toolpaths."
+"for milling drills."
 msgstr ""
-"Delik frezeleme yolu için bir \n"
+"Yuvaları frezelemek için\n"
 "Şekil nesnesi oluşturun."
 
 #: appGUI/ObjectUI.py:770
@@ -6679,9 +6689,13 @@ msgid "Mill Slots"
 msgstr "Yuvaları Frezele"
 
 #: appGUI/ObjectUI.py:772
+#, fuzzy
+#| msgid ""
+#| "Create the Geometry Object\n"
+#| "for milling SLOTS toolpaths."
 msgid ""
 "Create the Geometry Object\n"
-"for milling SLOTS toolpaths."
+"for milling slots."
 msgstr ""
 "Yuvaları frezelemek için\n"
 "Şekil nesnesi oluşturun."
@@ -8906,11 +8920,6 @@ msgstr ""
 #: appTools/ToolFilm.py:1105 appTools/ToolMilling.py:1771
 msgid "Both"
 msgstr "Her İkisi"
-
-#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80
-#: appTools/ToolMilling.py:1779
-msgid "Milling Diameter"
-msgstr "Freze Çapı"
 
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:82
 #: appTools/ToolMilling.py:1781
@@ -19550,6 +19559,13 @@ msgstr "Orijin, yüklenen tüm nesneleri hizalayarak ayarlanıyor "
 #: tclCommands/TclCommandSubtractRectangle.py:62
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Değişkenlerde Şekil ismi yok. Lütfen bir isim girin ve tekrar deneyin."
+
+#~ msgid ""
+#~ "Create the Geometry Object\n"
+#~ "for milling DRILLS toolpaths."
+#~ msgstr ""
+#~ "Delik frezeleme yolu için bir \n"
+#~ "Şekil nesnesi oluşturun."
 
 #~| msgid ""
 #~| "Merge a selection of Excellon objects into a new combo Excellon object."

@@ -12,8 +12,9 @@ CHANGELOG for FlatCAM beta
 - in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here
 - in NCC and Paint Tool fixed some issues with missing keys in the tool data dictionary
 - In Excellon Object UI fixed the enable/disable for the Milling section according to the Tools Table row that is selected
-- In Excellon Object UI fixed the miiling geometry generation
-- updated th translations strings to the changes in the source code
+- In Excellon Object UI fixed the milling geometry generation
+- updated the translations strings to the changes in the source code
+- some strings changed
 
 20.10.2020
 
