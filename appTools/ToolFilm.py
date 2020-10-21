@@ -9,11 +9,13 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 
 from appTool import AppTool
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel
+    OptionalHideInputSection, FCComboBox, FCFileSaveDialog, FCButton, FCLabel, FCSpinner
 
 from copy import deepcopy
 import logging
 from shapely.geometry import Polygon, MultiPolygon, Point
+import shapely.affinity as affinity
+from shapely.ops import unary_union
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
@@ -138,6 +140,8 @@ class Film(AppTool):
         self.ui.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
         self.ui.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
 
+        self.ui.png_dpi_spinner.set_value(self.app.defaults["tools_film_png_dpi"])
+
         self.ui.tf_type_obj_combo.set_value('grb')
         self.ui.tf_type_box_combo.set_value('grb')
         # run once to update the obj_type attribute in the FCCombobox so the last object is showed in cb
@@ -187,8 +191,8 @@ class Film(AppTool):
     def generate_positive_normal_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
 
-        scale_factor_x = None
-        scale_factor_y = None
+        scale_factor_x = 1
+        scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
@@ -328,8 +332,8 @@ class Film(AppTool):
     def generate_negative_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_negative_film() started ...")
 
-        scale_factor_x = None
-        scale_factor_y = None
+        scale_factor_x = 1
+        scale_factor_y = 1
         skew_factor_x = None
         skew_factor_y = None
         mirror = None
@@ -351,7 +355,7 @@ class Film(AppTool):
             if self.ui.film_mirror_axis.get_value() != 'none':
                 mirror = self.ui.film_mirror_axis.get_value()
 
-        border = float(self.ui.boundary_entry.get_value())
+        border = self.ui.boundary_entry.get_value()
 
         if border is None:
             border = 0
@@ -390,7 +394,7 @@ class Film(AppTool):
 
     def export_negative(self, obj_name, box_name, filename, boundary,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
+                        scale_factor_x=1, scale_factor_y=1,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None,
                         use_thread=True, ftype='svg'):
@@ -434,16 +438,85 @@ class Film(AppTool):
             self.app.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
-        def make_negative_film():
+        scale_factor_x = scale_factor_x
+        scale_factor_y = scale_factor_y
+
+        def make_negative_film(scale_factor_x, scale_factor_y):
+            log.debug("FilmTool.export_negative().make_negative_film()")
+
+            scale_reference = 'center'
+
+            default_dpi = 96
+            new_png_dpi = self.ui.png_dpi_spinner.get_value()
+            dpi_rate = new_png_dpi / default_dpi
+            # Determine bounding area for svg export
+            bounds = box.bounds()
+            tr_scale_reference = (bounds[0], bounds[1])
+
+            if dpi_rate != 1 and ftype == 'png':
+                scale_factor_x += dpi_rate
+                scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
+
+            if box.kind.lower() == 'geometry':
+                flat_geo = []
+                if box.multigeo:
+                    for tool in box.tools:
+                        flat_geo += box.flatten(box.tools[tool]['solid_geometry'])
+                    box_geo = unary_union(flat_geo)
+                else:
+                    box_geo = unary_union(box.flatten())
+            else:
+                box_geo = unary_union(box.flatten())
+
+            skew_ref = 'center'
+            if skew_reference != 'center':
+                xmin, ymin, xmax, ymax = box_geo.bounds
+                if skew_reference == 'topleft':
+                    skew_ref = (xmin, ymax)
+                elif skew_reference == 'bottomleft':
+                    skew_ref = (xmin, ymin)
+                elif skew_reference == 'topright':
+                    skew_ref = (xmax, ymax)
+                elif skew_reference == 'bottomright':
+                    skew_ref = (xmax, ymin)
+
+            transformed_box_geo = box_geo
+
+            if scale_factor_x and not scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0,
+                                                     origin=tr_scale_reference)
+            elif not scale_factor_x and scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y,
+                                                     origin=tr_scale_reference)
+            elif scale_factor_x and scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
+                                                     origin=tr_scale_reference)
+
+            if skew_factor_x and not skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=skew_ref)
+            elif not skew_factor_x and skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=skew_ref)
+            elif skew_factor_x and skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=skew_ref)
+
+            if mirror:
+                if mirror == 'x':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0)
+                if mirror == 'y':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0)
+                if mirror == 'both':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0)
+
+            bounds = transformed_box_geo.bounds
+            size = bounds[2] - bounds[0], bounds[3] - bounds[1]
+
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
+                                          mirror=mirror,
+                                          scale_reference=scale_reference, skew_reference=skew_reference
                                           )
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
 
             uom = obj.units.lower()
 
@@ -514,6 +587,11 @@ class Film(AppTool):
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
                     renderPM.drawToFile(drawing, filename, 'PNG')
+
+                    # if new_png_dpi == default_dpi:
+                    #     renderPM.drawToFile(drawing, filename, 'PNG')
+                    # else:
+                    #     renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
                 except Exception as e:
                     log.debug("FilmTool.export_negative() --> PNG output --> %s" % str(e))
                     return 'fail'
@@ -528,8 +606,7 @@ class Film(AppTool):
                     drawing = svg2rlg(doc_final)
 
                     p_size = self.ui.pagesize_combo.get_value()
-                    if p_size == 'Bounds':
-                        renderPDF.drawToFile(drawing, filename)
+                    if p_size == 'Bounds':                        renderPDF.drawToFile(drawing, filename)
                     else:
                         if self.ui.orientation_radio.get_value() == 'p':
                             page_size = portrait(self.ui.pagesize[p_size])
@@ -550,23 +627,21 @@ class Film(AppTool):
             self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
 
         if use_thread is True:
-            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
+            def job_thread_film():
+                with self.app.proc_container.new(_("Working...")):
+                    try:
+                        make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+                    except Exception as e:
+                        log.debug("export_negative() process -> %s" % str(e))
+                        return
 
-            def job_thread_film(app_obj):
-                try:
-                    make_negative_film()
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
-
-            self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
+            self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
-            make_negative_film()
+            make_negative_film(scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
 
     def export_positive(self, obj_name, box_name, filename,
                         scale_stroke_factor=0.00,
-                        scale_factor_x=None, scale_factor_y=None,
+                        scale_factor_x=1, scale_factor_y=1,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
@@ -615,18 +690,89 @@ class Film(AppTool):
             self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
+        scale_factor_x = scale_factor_x
+        scale_factor_y = scale_factor_y
+
         p_size = pagesize_val
         orientation = orientation_val
         color = color_val
         transparency_level = opacity_val
 
-        def make_positive_film(p_size, orientation, color, transparency_level):
+        def make_positive_film(p_size, orientation, color, transparency_level, scale_factor_x, scale_factor_y):
             log.debug("FilmTool.export_positive().make_positive_film()")
+
+            scale_reference = 'center'
+
+            default_dpi = 96
+            new_png_dpi = self.ui.png_dpi_spinner.get_value()
+            dpi_rate = new_png_dpi / default_dpi
+            # Determine bounding area for svg export
+            bounds = box.bounds()
+            tr_scale_reference = (bounds[0], bounds[1])
+
+            if dpi_rate != 1 and ftype == 'png':
+                scale_factor_x += dpi_rate
+                scale_factor_y += dpi_rate
+                scale_reference = (bounds[0], bounds[1])
+
+            if box.kind.lower() == 'geometry':
+                flat_geo = []
+                if box.multigeo:
+                    for tool in box.tools:
+                        flat_geo += box.flatten(box.tools[tool]['solid_geometry'])
+                    box_geo = unary_union(flat_geo)
+                else:
+                    box_geo = unary_union(box.flatten())
+            else:
+                box_geo = unary_union(box.flatten())
+
+            skew_ref = 'center'
+            if skew_reference != 'center':
+                xmin, ymin, xmax, ymax = box_geo.bounds
+                if skew_reference == 'topleft':
+                    skew_ref = (xmin, ymax)
+                elif skew_reference == 'bottomleft':
+                    skew_ref = (xmin, ymin)
+                elif skew_reference == 'topright':
+                    skew_ref = (xmax, ymax)
+                elif skew_reference == 'bottomright':
+                    skew_ref = (xmax, ymin)
+
+            transformed_box_geo = box_geo
+
+            if scale_factor_x and not scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, 1.0,
+                                                     origin=tr_scale_reference)
+            elif not scale_factor_x and scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, scale_factor_y,
+                                                     origin=tr_scale_reference)
+            elif scale_factor_x and scale_factor_y:
+                transformed_box_geo = affinity.scale(transformed_box_geo, scale_factor_x, scale_factor_y,
+                                                     origin=tr_scale_reference)
+
+            if skew_factor_x and not skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, 0.0, origin=skew_ref)
+            elif not skew_factor_x and skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, 0.0, skew_factor_y, origin=skew_ref)
+            elif skew_factor_x and skew_factor_y:
+                transformed_box_geo = affinity.skew(transformed_box_geo, skew_factor_x, skew_factor_y, origin=skew_ref)
+
+            if mirror:
+                if mirror == 'x':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, 1.0, -1.0)
+                if mirror == 'y':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, 1.0)
+                if mirror == 'both':
+                    transformed_box_geo = affinity.scale(transformed_box_geo, -1.0, -1.0)
+
+            bounds = transformed_box_geo.bounds
+            size = bounds[2] - bounds[0], bounds[3] - bounds[1]
 
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                           skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
+                                          mirror=mirror,
+                                          scale_reference=scale_reference, skew_reference=skew_reference
                                           )
 
             # Change the attributes of the exported SVG
@@ -640,10 +786,6 @@ class Film(AppTool):
                 child.set('stroke', str(color))
 
             exported_svg = ET.tostring(root)
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
 
             # This contain the measure units
             uom = obj.units.lower()
@@ -693,6 +835,11 @@ class Film(AppTool):
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
                     renderPM.drawToFile(drawing, filename, 'PNG')
+
+                    # if new_png_dpi == default_dpi:
+                    #     renderPM.drawToFile(drawing, filename, 'PNG')
+                    # else:
+                    #     renderPM.drawToFile(drawing, filename, 'PNG', dpi=new_png_dpi)
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PNG output --> %s" % str(e))
                     return 'fail'
@@ -710,9 +857,9 @@ class Film(AppTool):
                         renderPDF.drawToFile(drawing, filename)
                     else:
                         if orientation == 'p':
-                            page_size = portrait(self.pagesize[p_size])
+                            page_size = portrait(self.ui.pagesize[p_size])
                         else:
-                            page_size = landscape(self.pagesize[p_size])
+                            page_size = landscape(self.ui.pagesize[p_size])
 
                         my_canvas = canvas.Canvas(filename, pagesize=page_size)
                         my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
@@ -728,21 +875,21 @@ class Film(AppTool):
             self.app.inform.emit('[success] %s: %s' % (_("Film file exported to"), filename))
 
         if use_thread is True:
-            proc = self.app.proc_container.new(_("Generating Film ... Please wait."))
-
             def job_thread_film():
-                try:
-                    make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                                       transparency_level=transparency_level)
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
+                with self.app.proc_container.new(_("Working...")):
+                    try:
+                        make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                                           transparency_level=transparency_level,
+                                           scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
+                    except Exception as e:
+                        log.debug("export_positive() process -> %s" % str(e))
+                        return
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': []})
         else:
             make_positive_film(p_size=p_size, orientation=orientation, color=color,
-                               transparency_level=transparency_level)
+                               transparency_level=transparency_level,
+                               scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y)
 
     def reset_fields(self):
         self.ui.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -1199,6 +1346,20 @@ class FilmUI:
 
         self.on_film_type(val='hide')
 
+        # PNG DPI
+        self.png_dpi_label = FCLabel('%s:' % "PNG DPI")
+        self.png_dpi_label.setToolTip(
+            _("Default value is 96 DPI. Change this value to scale the PNG file.")
+        )
+        self.png_dpi_spinner = FCSpinner(callback=self.confirmation_message_int)
+        self.png_dpi_spinner.set_range(0, 100000)
+
+        grid1.addWidget(self.png_dpi_label, 4, 0)
+        grid1.addWidget(self.png_dpi_spinner, 4, 1)
+
+        self.png_dpi_label.hide()
+        self.png_dpi_spinner.hide()
+
         # Buttons
         self.film_object_button = FCButton(_("Save Film"))
         self.film_object_button.setIcon(QtGui.QIcon(self.app.resource_location + '/save_as.png'))
@@ -1214,7 +1375,7 @@ class FilmUI:
                                    font-weight: bold;
                                }
                                """)
-        grid1.addWidget(self.film_object_button, 4, 0, 1, 2)
+        grid1.addWidget(self.film_object_button, 6, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -1254,11 +1415,22 @@ class FilmUI:
             self.orientation_radio.show()
             self.pagesize_label.show()
             self.pagesize_combo.show()
+            self.png_dpi_label.hide()
+            self.png_dpi_spinner.hide()
+        elif val == 'png':
+            self.png_dpi_label.show()
+            self.png_dpi_spinner.show()
+            self.orientation_label.hide()
+            self.orientation_radio.hide()
+            self.pagesize_label.hide()
+            self.pagesize_combo.hide()
         else:
             self.orientation_label.hide()
             self.orientation_radio.hide()
             self.pagesize_label.hide()
             self.pagesize_combo.hide()
+            self.png_dpi_label.hide()
+            self.png_dpi_spinner.hide()
 
     def on_punch_source(self, val):
         if val == 'pad' and self.punch_cb.get_value():

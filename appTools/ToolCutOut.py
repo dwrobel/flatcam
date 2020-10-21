@@ -11,7 +11,7 @@ from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox
     FCLabel
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union, unary_union, linemerge
+from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -217,6 +217,7 @@ class CutOut(AppTool):
             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
             "startz": self.app.defaults["geometry_startz"],
             "endz": float(self.app.defaults["geometry_endz"]),
+            "endxy": self.app.defaults["geometry_endxy"],
             "area_exclusion": self.app.defaults["geometry_area_exclusion"],
             "area_shape": self.app.defaults["geometry_area_shape"],
             "area_strategy": self.app.defaults["geometry_area_strategy"],
@@ -414,6 +415,7 @@ class CutOut(AppTool):
             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
             "startz": self.app.defaults["geometry_startz"],
             "endz": float(self.app.defaults["geometry_endz"]),
+            "endxy": self.app.defaults["geometry_endxy"],
             "area_exclusion": self.app.defaults["geometry_area_exclusion"],
             "area_shape": self.app.defaults["geometry_area_shape"],
             "area_strategy": self.app.defaults["geometry_area_strategy"],
@@ -1832,7 +1834,7 @@ class CutOut(AppTool):
         log.debug("%d paths" % len(flat_geometry))
 
         polygon = Polygon(points)
-        toolgeo = cascaded_union(polygon)
+        toolgeo = unary_union(polygon)
         diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
@@ -1906,7 +1908,7 @@ class CutOut(AppTool):
 
         :param target_geo:      geometry from which to subtract
         :param subtractor:      a list of Points, a LinearRing or a Polygon that will be subtracted from target_geo
-        :return:                a cascaded union of the resulting geometry
+        :return:                a unary_union of the resulting geometry
         """
 
         if target_geo is None:
@@ -2082,8 +2084,9 @@ class CutoutUI:
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "from the Tool Database.\n"
-              "Tool database administration in Menu: Options -> Tools Database")
+              "from the Tools Database.\n"
+              "Tools database administration in in:\n"
+              "Menu: Options -> Tools Database")
         )
         hlay.addWidget(self.addtool_from_db_btn)
 

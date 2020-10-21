@@ -11,7 +11,7 @@ from appGUI.GUIElements import FCEntry
 
 from shapely.ops import nearest_points
 from shapely.geometry import Point, MultiPolygon
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 import math
 import logging
@@ -113,12 +113,12 @@ class DistanceMin(AppTool):
                     try:
                         selected_objs[0].solid_geometry = MultiPolygon(selected_objs[0].solid_geometry)
                     except Exception:
-                        selected_objs[0].solid_geometry = cascaded_union(selected_objs[0].solid_geometry)
+                        selected_objs[0].solid_geometry = unary_union(selected_objs[0].solid_geometry)
 
                     try:
                         selected_objs[1].solid_geometry = MultiPolygon(selected_objs[1].solid_geometry)
                     except Exception:
-                        selected_objs[1].solid_geometry = cascaded_union(selected_objs[1].solid_geometry)
+                        selected_objs[1].solid_geometry = unary_union(selected_objs[1].solid_geometry)
 
                 first_pos, last_pos = nearest_points(selected_objs[0].solid_geometry, selected_objs[1].solid_geometry)
 

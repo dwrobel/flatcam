@@ -17,7 +17,7 @@ from appGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDial
     FCLabel
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
-from shapely.ops import cascaded_union, unary_union, linemerge
+from shapely.ops import unary_union, linemerge
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
@@ -466,6 +466,7 @@ class ToolPaint(AppTool, Gerber):
             "area_shape":           self.app.defaults["geometry_area_shape"],
             "area_strategy":        self.app.defaults["geometry_area_strategy"],
             "area_overz":           float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type":    self.app.defaults["geometry_optimization_type"],
 
             "tooldia":              self.app.defaults["tools_painttooldia"],
             "tools_paintoffset":   self.app.defaults["tools_paintoffset"],
@@ -1027,7 +1028,7 @@ class ToolPaint(AppTool, Gerber):
                         continue
                 self.tooldia_list.append(self.tooldia)
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return
 
         self.select_method = self.ui.selectmethod_combo.get_value()
@@ -1293,7 +1294,7 @@ class ToolPaint(AppTool, Gerber):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
             self.paint_poly_area(obj=self.paint_obj, tooldia=self.tooldia_list, sel_obj=self.sel_rect,
                                  outname=self.o_name)
 
@@ -1740,7 +1741,7 @@ class ToolPaint(AppTool, Gerber):
                         continue
                 sorted_tools.append(self.tooldia)
             if not sorted_tools:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
                 return 'fail'
 
         # Initializes the new geometry object
@@ -1880,7 +1881,7 @@ class ToolPaint(AppTool, Gerber):
             geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
 
-            geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
+            geo_obj.solid_geometry = unary_union(final_solid_geometry)
 
             try:
                 if isinstance(geo_obj.solid_geometry, list):
@@ -1934,7 +1935,7 @@ class ToolPaint(AppTool, Gerber):
                     except TypeError:
                         poly_buf.append(buffered_pol)
 
-            poly_buf = cascaded_union(poly_buf)
+            poly_buf = unary_union(poly_buf)
 
             if not poly_buf:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Margin parameter too big. Tool is not used"))
@@ -2000,7 +2001,7 @@ class ToolPaint(AppTool, Gerber):
                                                                 prog_plot=prog_plot)
                             geo_elems = list(geo_res.get_objects())
                             # See if the polygon was completely cleared
-                            pp_cleared = cascaded_union(geo_elems).buffer(tool_dia / 2.0)
+                            pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
                             rest = pp.difference(pp_cleared)
                             if rest and not rest.is_empty:
                                 try:
@@ -2040,7 +2041,7 @@ class ToolPaint(AppTool, Gerber):
                         geo_elems = list(geo_res.get_objects())
 
                         # See if the polygon was completely cleared
-                        pp_cleared = cascaded_union(geo_elems).buffer(tool_dia / 2.0)
+                        pp_cleared = unary_union(geo_elems).buffer(tool_dia / 2.0)
                         rest = poly_buf.difference(pp_cleared)
                         if rest and not rest.is_empty:
                             try:
@@ -2094,7 +2095,7 @@ class ToolPaint(AppTool, Gerber):
 
                 poly_buf = MultiPolygon(tmp)
                 if not poly_buf.is_valid:
-                    poly_buf = cascaded_union(tmp)
+                    poly_buf = unary_union(tmp)
 
                 if not poly_buf or poly_buf.is_empty or not poly_buf.is_valid:
                     log.debug("Rest geometry empty. Breaking.")
@@ -2134,7 +2135,7 @@ class ToolPaint(AppTool, Gerber):
                           "Change the painting parameters and try again.")
                     )
                     return "fail"
-                geo_obj.solid_geometry = cascaded_union(final_solid_geometry)
+                geo_obj.solid_geometry = unary_union(final_solid_geometry)
             else:
                 return 'fail'
             try:
@@ -2446,9 +2447,9 @@ class ToolPaint(AppTool, Gerber):
                 env_obj = geo.convex_hull
             elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
                     (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = unary_union(self.bound_obj.solid_geometry)
             else:
-                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = unary_union(self.bound_obj.solid_geometry)
                 env_obj = env_obj.convex_hull
             sel_rect = env_obj.buffer(distance=0.0000001, join_style=base.JOIN_STYLE.mitre)
         except Exception as e:
@@ -2909,8 +2910,9 @@ class PaintUI:
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "from the Tool Database.\n"
-              "Tool database administration in Menu: Options -> Tools Database")
+              "from the Tools Database.\n"
+              "Tools database administration in in:\n"
+              "Menu: Options -> Tools Database")
         )
         hlay.addWidget(self.addtool_from_db_btn)
 

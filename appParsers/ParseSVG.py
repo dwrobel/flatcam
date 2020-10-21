@@ -228,8 +228,10 @@ def svgrect2shapely(rect, n_points=32, factor=1.0):
     else:
         y = 0
 
-    rxstr = rect.get('rx') * factor
-    rystr = rect.get('ry') * factor
+    rxstr = rect.get('rx')
+    rxstr = rxstr * factor if rxstr else rxstr
+    rystr = rect.get('ry')
+    rystr = rystr * factor if rystr else rystr
 
     if rxstr is None and rystr is None:  # Sharp corners
         pts = [
@@ -290,9 +292,12 @@ def svgcircle2shapely(circle, n_points=64, factor=1.0):
     # cx = float(circle.get('cx'))
     # cy = float(circle.get('cy'))
     # r = float(circle.get('r'))
-    cx = svgparselength(circle.get('cx'))[0] * factor  # TODO: No units support yet
-    cy = svgparselength(circle.get('cy'))[0] * factor  # TODO: No units support yet
-    r = svgparselength(circle.get('r'))[0] * factor  # TODO: No units support yet
+    cx = svgparselength(circle.get('cx'))[0]  # TODO: No units support yet
+    cx = cx * factor if cx else cx
+    cy = svgparselength(circle.get('cy'))[0]  # TODO: No units support yet
+    cy = cy * factor if cy else cy
+    r = svgparselength(circle.get('r'))[0]  # TODO: No units support yet
+    r = r * factor if r else r
 
     return Point(cx, cy).buffer(r, resolution=n_points)
 
@@ -309,11 +314,15 @@ def svgellipse2shapely(ellipse, n_points=64, factor=1.0):
     :rtype:             shapely.geometry.polygon.LinearRing
     """
 
-    cx = svgparselength(ellipse.get('cx'))[0] * factor  # TODO: No units support yet
-    cy = svgparselength(ellipse.get('cy'))[0] * factor  # TODO: No units support yet
+    cx = svgparselength(ellipse.get('cx'))[0]   # TODO: No units support yet
+    cx = cx * factor if cx else cx
+    cy = svgparselength(ellipse.get('cy'))[0]   # TODO: No units support yet
+    cy = cy * factor if cy else cy
 
-    rx = svgparselength(ellipse.get('rx'))[0] * factor  # TODO: No units support yet
-    ry = svgparselength(ellipse.get('ry'))[0] * factor  # TODO: No units support yet
+    rx = svgparselength(ellipse.get('rx'))[0]   # TODO: No units support yet
+    rx = rx * factor if rx else rx
+    ry = svgparselength(ellipse.get('ry'))[0]   # TODO: No units support yet
+    ry = ry * factor if ry else ry
 
     t = np.arange(n_points, dtype=float) / n_points
     x = cx + rx * np.cos(2 * np.pi * t)

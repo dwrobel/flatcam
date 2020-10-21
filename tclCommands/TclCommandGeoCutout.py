@@ -3,7 +3,7 @@ from tclCommands.TclCommand import TclCommandSignaled
 import logging
 import collections
 from copy import deepcopy
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 from shapely.geometry import Polygon, LineString, LinearRing
 
 import gettext
@@ -131,14 +131,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
             flat_geometry = flatten(geo, pathonly=True)
 
             polygon = Polygon(pts)
-            toolgeo = cascaded_union(polygon)
+            toolgeo = unary_union(polygon)
             diffs = []
             for target in flat_geometry:
                 if type(target) == LineString or type(target) == LinearRing:
                     diffs.append(target.difference(toolgeo))
                 else:
                     log.warning("Not implemented.")
-            return cascaded_union(diffs)
+            return unary_union(diffs)
 
         if 'name' in args:
             name = args['name']

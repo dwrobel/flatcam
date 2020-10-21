@@ -342,6 +342,7 @@ class PreferencesUIManager:
 
             "tools_iso_rest":           self.ui.tools_defaults_form.tools_iso_group.rest_cb,
             "tools_iso_combine_passes": self.ui.tools_defaults_form.tools_iso_group.combine_passes_cb,
+            "tools_iso_check_valid":    self.ui.tools_defaults_form.tools_iso_group.valid_cb,
             "tools_iso_isoexcept":      self.ui.tools_defaults_form.tools_iso_group.except_cb,
             "tools_iso_selection":      self.ui.tools_defaults_form.tools_iso_group.select_combo,
             "tools_iso_poly_ints":      self.ui.tools_defaults_form.tools_iso_group.poly_int_cb,
@@ -380,6 +381,12 @@ class PreferencesUIManager:
             "tools_drill_spindledir":       self.ui.tools_defaults_form.tools_drill_group.spindledir_radio,
             "tools_drill_f_plunge":         self.ui.tools_defaults_form.tools_drill_group.fplunge_cb,
             "tools_drill_f_retract":        self.ui.tools_defaults_form.tools_drill_group.fretract_cb,
+
+            # Area Exclusion
+            "tools_drill_area_exclusion":   self.ui.tools_defaults_form.tools_drill_group.exclusion_cb,
+            "tools_drill_area_shape":       self.ui.tools_defaults_form.tools_drill_group.area_shape_radio,
+            "tools_drill_area_strategy":    self.ui.tools_defaults_form.tools_drill_group.strategy_radio,
+            "tools_drill_area_overz":       self.ui.tools_defaults_form.tools_drill_group.over_z_entry,
 
             # NCC Tool
             "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
@@ -461,6 +468,7 @@ class PreferencesUIManager:
             "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
             "tools_film_orientation": self.ui.tools_defaults_form.tools_film_group.orientation_radio,
             "tools_film_pagesize": self.ui.tools_defaults_form.tools_film_group.pagesize_combo,
+            "tools_film_png_dpi": self.ui.tools_defaults_form.tools_film_group.png_dpi_spinner,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
@@ -949,7 +957,7 @@ class PreferencesUIManager:
 
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
-            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
+            self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
 
         settgs = QSettings("Open Source", "FlatCAM")
 

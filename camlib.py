@@ -25,7 +25,7 @@ from lxml import etree as ET
 from shapely.geometry import Polygon, Point, LinearRing
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, substring, linemerge
+from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -225,13 +225,14 @@ class ApertureMacro:
         Pads the ``mods`` list with zeros resulting in an
         list of length n.
 
-        :param n: Length of the resulting list.
-        :type n: int
-        :param mods: List to be padded.
-        :type mods: list
-        :return: Zero-padded list.
-        :rtype: list
+        :param n:       Length of the resulting list.
+        :type n:        int
+        :param mods:    List to be padded.
+        :type mods:     list
+        :return:        Zero-padded list.
+        :rtype:         list
         """
+
         x = [0.0] * n
         na = len(mods)
         x[0:na] = mods
@@ -244,9 +245,12 @@ class ApertureMacro:
         :param mods: (Exposure 0/1, Diameter >=0, X-coord, Y-coord)
         :return:
         """
-
-        pol, dia, x, y = ApertureMacro.default2zero(4, mods)
-
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        dia = val[1]
+        x = val[2]
+        y = val[3]
+        # pol, dia, x, y = ApertureMacro.default2zero(4, mods)
         return {"pol": int(pol), "geometry": Point(x, y).buffer(dia / 2)}
 
     @staticmethod
@@ -257,7 +261,15 @@ class ApertureMacro:
             rotation angle around origin in degrees)
         :return:
         """
-        pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
+        val = ApertureMacro.default2zero(7, mods)
+        pol = val[0]
+        width = val[1]
+        xs = val[2]
+        ys = val[3]
+        xe = val[4]
+        ye = val[5]
+        angle = val[6]
+        # pol, width, xs, ys, xe, ye, angle = ApertureMacro.default2zero(7, mods)
 
         line = LineString([(xs, ys), (xe, ye)])
         box = line.buffer(width / 2, cap_style=2)
@@ -274,7 +286,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(4, mods)
+        val = ApertureMacro.default2zero(4, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -290,7 +309,14 @@ class ApertureMacro:
         :return:
         """
 
-        pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        # pol, width, height, x, y, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        width = val[1]
+        height = val[2]
+        x = val[3]
+        y = val[4]
+        angle = val[5]
 
         box = shply_box(x, y, x + width, y + height)
         box_rotated = affinity.rotate(box, angle, origin=(0, 0))
@@ -330,7 +356,15 @@ class ApertureMacro:
         :return:
         """
 
-        pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        # pol, nverts, x, y, dia, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        pol = val[0]
+        nverts = val[1]
+        x = val[2]
+        y = val[3]
+        dia = val[4]
+        angle = val[5]
+
         points = [(0, 0)] * nverts
 
         for i in range(nverts):
@@ -354,7 +388,17 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        # x, y, dia, thickness, gap, nrings, cross_th, cross_len, angle = ApertureMacro.default2zero(9, mods)
+        val = ApertureMacro.default2zero(9, mods)
+        x = val[0]
+        y = val[1]
+        dia = val[2]
+        thickness = val[3]
+        gap = val[4]
+        nrings = val[5]
+        cross_th = val[6]
+        cross_len = val[7]
+        angle = val[8]
 
         r = dia / 2 - thickness / 2
         result = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
@@ -369,13 +413,13 @@ class ApertureMacro:
             if r <= 0:
                 break
             ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
-            result = cascaded_union([result, ring])
+            result = unary_union([result, ring])
             i += 1
 
         # ## Crosshair
         hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th / 2.0, cap_style=2)
         ver = LineString([(x, y - cross_len), (x, y + cross_len)]).buffer(cross_th / 2.0, cap_style=2)
-        result = cascaded_union([result, hor, ver])
+        result = unary_union([result, hor, ver])
 
         return {"pol": 1, "geometry": result}
 
@@ -390,7 +434,14 @@ class ApertureMacro:
         :return:
         """
 
-        x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        # x, y, dout, din, t, angle = ApertureMacro.default2zero(6, mods)
+        val = ApertureMacro.default2zero(6, mods)
+        x = val[0]
+        y = val[1]
+        dout = val[2]
+        din = val[3]
+        t = val[4]
+        angle = val[5]
 
         ring = Point((x, y)).buffer(dout / 2.0).difference(Point((x, y)).buffer(din / 2.0))
         hline = LineString([(x - dout / 2.0, y), (x + dout / 2.0, y)]).buffer(t / 2.0, cap_style=3)
@@ -675,7 +726,7 @@ class Geometry(object):
             polygon = Polygon(points)
         else:
             polygon = points
-        toolgeo = cascaded_union(polygon)
+        toolgeo = unary_union(polygon)
         diffs = []
         for target in flat_geometry:
             if isinstance(target, LineString) or isinstance(target, LineString) or isinstance(target, MultiLineString):
@@ -787,7 +838,7 @@ class Geometry(object):
         #         if len(self.solid_geometry) == 0:
         #             log.debug('solid_geometry is empty []')
         #             return 0, 0, 0, 0
-        #         return cascaded_union(flatten(self.solid_geometry)).bounds
+        #         return unary_union(flatten(self.solid_geometry)).bounds
         #     else:
         #         return self.solid_geometry.bounds
         # except Exception as e:
@@ -802,7 +853,7 @@ class Geometry(object):
         #     if len(self.solid_geometry) == 0:
         #         log.debug('solid_geometry is empty []')
         #         return 0, 0, 0, 0
-        #     return cascaded_union(self.solid_geometry).bounds
+        #     return unary_union(self.solid_geometry).bounds
         # else:
         #     return self.solid_geometry.bounds
 
@@ -1325,7 +1376,7 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
+            # self.solid_geometry.append(unary_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
@@ -1335,7 +1386,7 @@ class Geometry(object):
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        self.solid_geometry = cascaded_union(self.solid_geometry)
+        self.solid_geometry = unary_union(self.solid_geometry)
 
         # self.solid_geometry = MultiPolygon(self.solid_geometry)
         # self.solid_geometry = self.solid_geometry.buffer(0.00000001)
@@ -2211,17 +2262,17 @@ class Geometry(object):
 
     def union(self):
         """
-        Runs a cascaded union on the list of objects in
+        Runs a unary_union on the list of objects in
         solid_geometry.
 
         :return: None
         """
-        self.solid_geometry = [cascaded_union(self.solid_geometry)]
+        self.solid_geometry = [unary_union(self.solid_geometry)]
 
     def export_svg(self, scale_stroke_factor=0.00,
                    scale_factor_x=None, scale_factor_y=None,
                    skew_factor_x=None, skew_factor_y=None,
-                   skew_reference='center',
+                   skew_reference='center', scale_reference='center',
                    mirror=None):
         """
         Exports the Geometry Object as a SVG Element
@@ -2235,11 +2286,11 @@ class Geometry(object):
             if self.multigeo:
                 for tool in self.tools:
                     flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
-                geom_svg = cascaded_union(flat_geo)
+                geom_svg = unary_union(flat_geo)
             else:
-                geom_svg = cascaded_union(self.flatten())
+                geom_svg = unary_union(self.flatten())
         else:
-            geom_svg = cascaded_union(self.flatten())
+            geom_svg = unary_union(self.flatten())
 
         skew_ref = 'center'
         if skew_reference != 'center':
@@ -2255,14 +2306,20 @@ class Geometry(object):
 
         geom = geom_svg
 
-        if scale_factor_x:
-            geom = affinity.scale(geom_svg, scale_factor_x, 1.0)
-        if scale_factor_y:
-            geom = affinity.scale(geom_svg, 1.0, scale_factor_y)
-        if skew_factor_x:
+        if scale_factor_x and not scale_factor_y:
+            geom = affinity.scale(geom_svg, scale_factor_x, 1.0, origin=scale_reference)
+        elif not scale_factor_x and scale_factor_y:
+            geom = affinity.scale(geom_svg, 1.0, scale_factor_y, origin=scale_reference)
+        elif scale_factor_x and scale_factor_y:
+            geom = affinity.scale(geom_svg, scale_factor_x, scale_factor_y, origin=scale_reference)
+
+        if skew_factor_x and not skew_factor_y:
             geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
-        if skew_factor_y:
+        elif not skew_factor_x and skew_factor_y:
             geom = affinity.skew(geom_svg, 0.0, skew_factor_y, origin=skew_ref)
+        elif skew_factor_x and skew_factor_y:
+            geom = affinity.skew(geom_svg, skew_factor_x, skew_factor_y, origin=skew_ref)
+
         if mirror:
             if mirror == 'x':
                 geom = affinity.scale(geom_svg, 1.0, -1.0)
@@ -4818,7 +4875,7 @@ class CNCjob(Geometry):
         :return:                    GCode - string
         """
 
-        log.debug("Generate_from_multitool_geometry()")
+        log.debug("generate_from_multitool_geometry()")
 
         temp_solid_geometry = []
         if offset != 0.0:
@@ -5128,7 +5185,7 @@ class CNCjob(Geometry):
         :rtype:             str
         """
 
-        log.debug("Generate_from_multitool_geometry()")
+        log.debug("geometry_tool_gcode_gen()")
 
         t_gcode = ''
         temp_solid_geometry = []
@@ -5244,7 +5301,11 @@ class CNCjob(Geometry):
         self.feedrate_rapid = float(tool_dict['feedrate_rapid'])
 
         self.spindlespeed = float(tool_dict['spindlespeed'])
-        self.spindledir = tool_dict['spindledir']
+        try:
+            self.spindledir = tool_dict['spindledir']
+        except KeyError:
+            self.spindledir = self.app.defaults["geometry_spindledir"]
+
         self.dwell = tool_dict['dwell']
         self.dwelltime = float(tool_dict['dwelltime'])
 
@@ -5253,8 +5314,9 @@ class CNCjob(Geometry):
             self.startz = None
 
         self.z_end = float(tool_dict['endz'])
+        self.xy_end = tool_dict['endxy']
         try:
-            if self.xy_end == '':
+            if self.xy_end == '' or self.xy_end is None:
                 self.xy_end = None
             else:
                 # either originally it was a string or not, xy_end will be made string
@@ -6807,7 +6869,7 @@ class CNCjob(Geometry):
         # This takes forever. Too much data?
         # self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
         #                                  str(len(self.gcode_parsed))))
-        # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        # self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # This is much faster but not so nice to look at as you can see different segments of the geometry
         self.solid_geometry = [geo['geom'] for geo in self.gcode_parsed]
@@ -7413,18 +7475,18 @@ class CNCjob(Geometry):
                 travels.append(g)
 
         # Used to determine the overall board size
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # Convert the cuts and travels into single geometry objects we can render as svg xml
         if travels:
-            travelsgeom = cascaded_union([geo['geom'] for geo in travels])
+            travelsgeom = unary_union([geo['geom'] for geo in travels])
 
         if self.app.abort_flag:
             # graceful abort requested by the user
             raise grace
 
         if cuts:
-            cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
+            cutsgeom = unary_union([geo['geom'] for geo in cuts])
 
         # Render the SVG Xml
         # The scale factor affects the size of the lines, and the stroke color adds different formatting for each set
@@ -7691,7 +7753,7 @@ class CNCjob(Geometry):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
         self.create_geometry()
         self.app.proc_container.new_text = ''
 
@@ -7800,7 +7862,7 @@ class CNCjob(Geometry):
                         self.old_disp_number = disp_number
 
                 # for the bounding box
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
 
         self.app.proc_container.new_text = ''
 
@@ -8172,7 +8234,7 @@ def dict2obj(d):
 #
 #     m = MultiLineString(edge_points)
 #     triangles = list(polygonize(m))
-#     return cascaded_union(triangles), edge_points
+#     return unary_union(triangles), edge_points
 
 # def voronoi(P):
 #     """

@@ -427,7 +427,7 @@ class App(QtCore.QObject):
 
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
-            self.defaults.load(filename=current_defaults_path)
+            self.defaults.load(filename=current_defaults_path, inform=self.inform)
 
         if self.defaults['units'] == 'MM':
             self.decimals = int(self.defaults['decimals_metric'])
@@ -1092,7 +1092,7 @@ class App(QtCore.QObject):
             self.ui.splitter.setSizes([0, 1])
 
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
-        self.setup_component_editor()
+        self.setup_default_properties_tab()
 
         # ###########################################################################################################
         # ####################################### Auto-complete KEYWORDS ############################################
@@ -2576,7 +2576,7 @@ class App(QtCore.QObject):
             return
 
         # Load in the defaults from the chosen file
-        self.defaults.load(filename=filename)
+        self.defaults.load(filename=filename, inform=self.inform)
 
         self.preferencesUiManager.on_preferences_edited()
         self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
@@ -4655,7 +4655,7 @@ class App(QtCore.QObject):
         self.collection.delete_active()
 
         # Clear form
-        self.setup_component_editor()
+        self.setup_default_properties_tab()
 
         self.inform.emit('%s: %s' % (_("Object deleted"), name))
 
@@ -6965,13 +6965,13 @@ class App(QtCore.QObject):
         self.collection.delete_all()
 
         # add in Selected tab an initial text that describe the flow of work in FlatCAm
-        self.setup_component_editor()
+        self.setup_default_properties_tab()
 
         # Clear project filename
         self.project_filename = None
 
         # Load the application defaults
-        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'))
+        self.defaults.load(filename=os.path.join(self.data_path, 'current_defaults.FlatConfig'), inform=self.inform)
 
         # Re-fresh project options
         self.on_options_app2project()
@@ -9677,9 +9677,9 @@ class App(QtCore.QObject):
 
         self.log.debug("Recent items list has been populated.")
 
-    def setup_component_editor(self):
+    def setup_default_properties_tab(self):
         """
-        Default text for the Selected tab when is not taken by the Object UI.
+        Default text for the Properties tab when is not taken by the Object UI.
 
         :return:
         """
@@ -9698,58 +9698,7 @@ class App(QtCore.QObject):
 
         tsize = fsize + int(fsize / 2)
 
-        selected_text = '''
-        <p><span style="font-size:{tsize}px"><strong>{title}</strong></span></p>
-
-        <p><span style="font-size:{fsize}px"><strong>{subtitle}</strong>:<br />
-        {s1}</span></p>
-
-        <ol>
-            <li><span style="font-size:{fsize}px">{s2}<br />
-            <br />
-            {s3}</span><br />
-            &nbsp;</li>
-            <li><span style="font-size:{fsize}px">{s4}<br />
-            &nbsp;</li>
-            <br />
-            <li><span style="font-size:{fsize}px">{s5}<br />
-            &nbsp;</li>
-            <br />
-            <li><span style="font-size:{fsize}px">{s6}<br />
-            <br />
-            {s7}</span></li>
-        </ol>
-
-        <p><span style="font-size:{fsize}px">{s8}</span></p>
-        '''.format(
-            title=_("Properties Tab - Choose an Item from Project Tab"),
-            subtitle=_("Details"),
-
-            s1=_("The normal flow when working with the application is the following:"),
-            s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into the application "
-                 "using either the toolbars, key shortcuts or even dragging and dropping the "
-                 "files on the GUI."),
-            s3=_("You can also load a project by double clicking on the project file, "
-                 "drag and drop of the file into the GUI or through the menu (or toolbar) "
-                 "actions offered within the app."),
-            s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
-                 "on Properties TAB (more simpler is to double click the object name in the Project Tab, "
-                 "Properties TAB will be updated with the object properties according to its kind: "
-                 "Gerber, Excellon, Geometry or CNCJob object."),
-            s5=_("If the selection of the object is done on the canvas by single click instead, "
-                 "and the Properties TAB is in focus, again the object properties will be displayed into the "
-                 "Properties Tab. Alternatively, double clicking on the object on the canvas will bring "
-                 "the Properties TAB and populate it even if it was out of focus."),
-            s6=_("You can change the parameters in this screen and the flow direction is like this:"),
-            s7=_("Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> Geometry Object --> "
-                 "Add tools (change param in Selected Tab) --> Generate CNCJob --> CNCJob Object --> "
-                 "Verify GCode (through Edit CNC Code) and/or append/prepend to GCode "
-                 "(again, done in SELECTED TAB) --> Save GCode."),
-            s8=_("A list of key shortcuts is available through an menu entry in Help --> Shortcuts List "
-                 "or through its own key shortcut: <b>F3</b>."),
-            tsize=tsize,
-            fsize=fsize
-        )
+        selected_text = ''
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)

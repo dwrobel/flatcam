@@ -12,7 +12,7 @@
 
 
 from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 from appParsers.ParseGerber import Gerber
 from appObjects.FlatCAMObj import *
@@ -149,6 +149,10 @@ class GerberObject(FlatCAMObj, Gerber):
 
         # Editor
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
+
+        # Properties
+        self.ui.properties_button.toggled.connect(self.on_properties)
+        self.calculations_finished.connect(self.update_area_chull)
 
         # Tools
         self.ui.iso_button.clicked.connect(self.app.isolation_tool.run)
@@ -343,6 +347,19 @@ class GerberObject(FlatCAMObj, Gerber):
 
         return new_geo
 
+    def on_properties(self, state):
+        if state:
+            self.ui.properties_frame.show()
+        else:
+            self.ui.properties_frame.hide()
+            return
+
+        self.ui.treeWidget.clear()
+        self.add_properties_items(obj=self, treeWidget=self.ui.treeWidget)
+
+        # make sure that the FCTree widget columns are resized to content
+        self.ui.treeWidget.resize_sig.emit()
+
     def on_generate_buffer(self):
         self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
 
@@ -369,7 +386,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 try:
                     self.solid_geometry = MultiPolygon(self.solid_geometry)
                 except Exception:
-                    self.solid_geometry = cascaded_union(self.solid_geometry)
+                    self.solid_geometry = unary_union(self.solid_geometry)
 
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
@@ -395,7 +412,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 try:
                     self.solid_geometry = MultiPolygon(self.solid_geometry)
                 except Exception:
-                    self.solid_geometry = cascaded_union(self.solid_geometry)
+                    self.solid_geometry = unary_union(self.solid_geometry)
 
             # Bounding box with rounded corners
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))

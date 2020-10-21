@@ -19,7 +19,7 @@ import numpy as np
 import simplejson as json
 import sys
 
-from shapely.ops import cascaded_union, nearest_points
+from shapely.ops import unary_union, nearest_points
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -119,6 +119,8 @@ class ToolIsolation(AppTool, Gerber):
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         self.tooldia = None
+        # store here the tool diameter that is guaranteed to isolate the object
+        self.safe_tooldia = None
 
         # multiprocessing
         self.pool = self.app.pool
@@ -225,6 +227,9 @@ class ToolIsolation(AppTool, Gerber):
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
+        # reset the value to prepare for another isolation
+        self.safe_tooldia = None
+
         # try to select in the Gerber combobox the active object
         try:
             selected_obj = self.app.collection.get_active()
@@ -313,6 +318,7 @@ class ToolIsolation(AppTool, Gerber):
         self.ui.iso_overlap_entry.set_value(self.app.defaults["tools_iso_overlap"])
         self.ui.milling_type_radio.set_value(self.app.defaults["tools_iso_milling_type"])
         self.ui.combine_passes_cb.set_value(self.app.defaults["tools_iso_combine_passes"])
+        self.ui.valid_cb.set_value(self.app.defaults["tools_iso_check_valid"])
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_iso_area_shape"])
         self.ui.poly_int_cb.set_value(self.app.defaults["tools_iso_poly_ints"])
         self.ui.forced_rest_iso_cb.set_value(self.app.defaults["tools_iso_force"])
@@ -888,6 +894,9 @@ class ToolIsolation(AppTool, Gerber):
             })
 
     def on_find_optimal_tooldia(self):
+        self.find_safe_tooldia_worker(is_displayed=True)
+
+    def find_safe_tooldia_worker(self, is_displayed):
         self.units = self.app.defaults['units'].upper()
 
         obj_name = self.ui.object_combo.currentText()
@@ -903,85 +912,111 @@ class ToolIsolation(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
-        proc = self.app.proc_container.new(_("Working..."))
+        def job_thread(app_obj, is_display):
+            with self.app.proc_container.new(_("Working...")) as proc:
+                try:
+                    old_disp_number = 0
+                    pol_nr = 0
+                    app_obj.proc_container.update_view_text(' %d%%' % 0)
+                    total_geo = []
 
-        def job_thread(app_obj):
-            try:
-                old_disp_number = 0
-                pol_nr = 0
-                app_obj.proc_container.update_view_text(' %d%%' % 0)
-                total_geo = []
+                    for ap in list(fcobj.apertures.keys()):
+                        if 'geometry' in fcobj.apertures[ap]:
+                            for geo_el in fcobj.apertures[ap]['geometry']:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise grace
 
-                for ap in list(fcobj.apertures.keys()):
-                    if 'geometry' in fcobj.apertures[ap]:
-                        for geo_el in fcobj.apertures[ap]['geometry']:
+                                if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
+                                    total_geo.append(geo_el['solid'])
+
+                    total_geo = MultiPolygon(total_geo)
+                    total_geo = total_geo.buffer(0)
+
+                    try:
+                        __ = iter(total_geo)
+                        geo_len = len(total_geo)
+                        geo_len = (geo_len * (geo_len - 1)) / 2
+                    except TypeError:
+                        msg = _("The Gerber object has one Polygon as geometry.\n"
+                                "There are no distances between geometry elements to be found.")
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % msg)
+                        return 'fail'
+
+                    min_dict = {}
+                    idx = 1
+                    for geo in total_geo:
+                        for s_geo in total_geo[idx:]:
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise grace
 
-                            if 'solid' in geo_el and geo_el['solid'] is not None and geo_el['solid'].is_valid:
-                                total_geo.append(geo_el['solid'])
+                            # minimize the number of distances by not taking into considerations those
+                            # that are too small
+                            dist = geo.distance(s_geo)
+                            dist = float('%.*f' % (self.decimals, dist))
+                            loc_1, loc_2 = nearest_points(geo, s_geo)
 
-                total_geo = MultiPolygon(total_geo)
-                total_geo = total_geo.buffer(0)
+                            proc_loc = (
+                                (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                                (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                            )
 
-                try:
-                    __ = iter(total_geo)
-                    geo_len = len(total_geo)
-                    geo_len = (geo_len * (geo_len - 1)) / 2
-                except TypeError:
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _("The Gerber object has one Polygon as geometry.\n"
-                                          "There are no distances between geometry elements to be found."))
-                    return 'fail'
+                            if dist in min_dict:
+                                min_dict[dist].append(proc_loc)
+                            else:
+                                min_dict[dist] = [proc_loc]
 
-                min_dict = {}
-                idx = 1
-                for geo in total_geo:
-                    for s_geo in total_geo[idx:]:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise grace
+                            pol_nr += 1
+                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                        # minimize the number of distances by not taking into considerations those that are too small
-                        dist = geo.distance(s_geo)
-                        dist = float('%.*f' % (self.decimals, dist))
-                        loc_1, loc_2 = nearest_points(geo, s_geo)
+                            if old_disp_number < disp_number <= 100:
+                                app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                                old_disp_number = disp_number
+                        idx += 1
 
-                        proc_loc = (
-                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
-                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
-                        )
+                    min_list = list(min_dict.keys())
+                    min_dist = min(min_list)
 
-                        if dist in min_dict:
-                            min_dict[dist].append(proc_loc)
-                        else:
-                            min_dict[dist] = [proc_loc]
+                    min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                    self.safe_tooldia = min_dist_truncated
 
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                    if is_display:
+                        self.optimal_found_sig.emit(min_dist_truncated)
 
-                        if old_disp_number < disp_number <= 100:
-                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                            old_disp_number = disp_number
-                    idx += 1
+                        app_obj.inform.emit('[success] %s: %s %s' %
+                                            (_("Optimal tool diameter found"), str(min_dist_truncated),
+                                             self.units.lower()))
+                    else:
+                        if self.safe_tooldia:
+                            # find the selected tool ID's
+                            sorted_tools = []
+                            table_items = self.ui.tools_table.selectedItems()
+                            sel_rows = {t.row() for t in table_items}
+                            for row in sel_rows:
+                                tid = int(self.ui.tools_table.item(row, 3).text())
+                                sorted_tools.append(tid)
+                            if not sorted_tools:
+                                msg = _("There are no tools selected in the Tool Table.")
+                                self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
+                                return 'fail'
 
-                min_list = list(min_dict.keys())
-                min_dist = min(min_list)
+                            # check if the tools diameters are less then the safe tool diameter
+                            for tool in sorted_tools:
+                                tool_dia = float(self.iso_tools[tool]['tooldia'])
+                                if tool_dia > self.safe_tooldia:
+                                    msg = _("Incomplete isolation. "
+                                            "At least one tool could not do a complete isolation.")
+                                    self.app.inform.emit('[WARNING] %s' % msg)
+                                    break
 
-                min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                            # reset the value to prepare for another isolation
+                            self.safe_tooldia = None
+                except Exception as ee:
+                    log.debug(str(ee))
+                    return
 
-                self.optimal_found_sig.emit(min_dist_truncated)
-
-                app_obj.inform.emit('[success] %s: %s %s' %
-                                    (_("Optimal tool diameter found"), str(min_dist_truncated), self.units.lower()))
-            except Exception as ee:
-                proc.done()
-                log.debug(str(ee))
-                return
-            proc.done()
-
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, is_displayed]})
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -1333,13 +1368,16 @@ class ToolIsolation(AppTool, Gerber):
         # Get source object.
         try:
             self.grb_obj = self.app.collection.get_by_name(self.obj_name)
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(self.obj_name)))
-            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
+            return
 
         if self.grb_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
+
+        if self.ui.valid_cb.get_value() is True:
+            self.find_safe_tooldia_worker(is_displayed=False)
 
         def worker_task(iso_obj):
             with self.app.proc_container.new(_("Isolating...")):
@@ -1436,8 +1474,8 @@ class ToolIsolation(AppTool, Gerber):
 
         elif selection == _("Reference Object"):
             ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
-            ref_geo = cascaded_union(ref_obj.solid_geometry)
-            use_geo = cascaded_union(isolated_obj.solid_geometry).difference(ref_geo)
+            ref_geo = unary_union(ref_obj.solid_geometry)
+            use_geo = unary_union(isolated_obj.solid_geometry).difference(ref_geo)
             self.isolate(isolated_obj=isolated_obj, geometry=use_geo)
 
     def isolate(self, isolated_obj, geometry=None, limited_area=None, negative_dia=None, plot=True):
@@ -1467,7 +1505,7 @@ class ToolIsolation(AppTool, Gerber):
             tid = int(self.ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         # update the Common Parameters values in the self.iso_tools
@@ -1669,7 +1707,7 @@ class ToolIsolation(AppTool, Gerber):
             sorted_tools.append(float('%.*f' % (self.decimals, tdia)))
 
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         order = self.ui.order_radio.get_value()
@@ -1856,7 +1894,7 @@ class ToolIsolation(AppTool, Gerber):
             tid = int(self.ui.tools_table.item(row, 3).text())
             sorted_tools.append(tid)
         if not sorted_tools:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("There are no tools selected in the Tool Table."))
             return 'fail'
 
         for tool in sorted_tools:
@@ -2010,11 +2048,11 @@ class ToolIsolation(AppTool, Gerber):
         target_geo = geo
 
         if subtraction_geo:
-            sub_union = cascaded_union(subtraction_geo)
+            sub_union = unary_union(subtraction_geo)
         else:
             name = self.ui.exc_obj_combo.currentText()
             subtractor_obj = self.app.collection.get_by_name(name)
-            sub_union = cascaded_union(subtractor_obj.solid_geometry)
+            sub_union = unary_union(subtractor_obj.solid_geometry)
 
         try:
             for geo_elem in target_geo:
@@ -2068,7 +2106,7 @@ class ToolIsolation(AppTool, Gerber):
         new_geometry = []
         target_geo = geo
 
-        intersect_union = cascaded_union(intersection_geo)
+        intersect_union = unary_union(intersection_geo)
 
         try:
             for geo_elem in target_geo:
@@ -2245,7 +2283,7 @@ class ToolIsolation(AppTool, Gerber):
         except TypeError:
             if self.solid_geometry not in self.poly_dict.values():
                 if sel_type is True:
-                    if self.solid_geometry.within(poly_selection):
+                    if poly_selection.contains(self.solid_geometry):
                         shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
                                                             shape=self.solid_geometry,
                                                             color=self.app.defaults['global_sel_draw_color'] + 'AF',
@@ -2389,7 +2427,7 @@ class ToolIsolation(AppTool, Gerber):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
             self.isolate(isolated_obj=self.grb_obj, limited_area=self.sel_rect, plot=True)
             self.sel_rect = []
 
@@ -3096,8 +3134,9 @@ class IsoUI:
         self.addtool_from_db_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/search_db32.png'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-              "from the Tool Database.\n"
-              "Tool database administration in Menu: Options -> Tools Database")
+              "from the Tools Database.\n"
+              "Tools database administration in in:\n"
+              "Menu: Options -> Tools Database")
         )
         bhlay.addWidget(self.addtool_from_db_btn)
 
@@ -3277,13 +3316,23 @@ class IsoUI:
 
         self.grid3.addWidget(self.combine_passes_cb, 26, 0, 1, 2)
 
+        # Check Tool validity
+        self.valid_cb = FCCheckBox(label=_('Check validity'))
+        self.valid_cb.setToolTip(
+            _("If checked then the tools diameters are verified\n"
+              "if they will provide a complete isolation.")
+        )
+        self.valid_cb.setObjectName("i_check")
+
+        self.grid3.addWidget(self.valid_cb, 28, 0, 1, 2)
+
         # Exception Areas
         self.except_cb = FCCheckBox(label=_('Except'))
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object below\n"
                                     "will be subtracted from the isolation geometry."))
         self.except_cb.setObjectName("i_except")
-        self.grid3.addWidget(self.except_cb, 27, 0)
+        self.grid3.addWidget(self.except_cb, 30, 0)
 
         # Type of object to be excepted
         self.type_excobj_radio = RadioSet([{'label': _("Geometry"), 'value': 'geometry'},
@@ -3295,7 +3344,7 @@ class IsoUI:
               "of objects that will populate the 'Object' combobox.")
         )
 
-        self.grid3.addWidget(self.type_excobj_radio, 27, 1)
+        self.grid3.addWidget(self.type_excobj_radio, 30, 1)
 
         # The object to be excepted
         self.exc_obj_combo = FCComboBox()
@@ -3307,7 +3356,7 @@ class IsoUI:
         self.exc_obj_combo.is_last = True
         self.exc_obj_combo.obj_type = "gerber"
 
-        self.grid3.addWidget(self.exc_obj_combo, 28, 0, 1, 2)
+        self.grid3.addWidget(self.exc_obj_combo, 32, 0, 1, 2)
 
         self.e_ois = OptionalInputSection(self.except_cb,
                                           [
@@ -3330,8 +3379,8 @@ class IsoUI:
         )
         self.select_combo.setObjectName("i_selection")
 
-        self.grid3.addWidget(self.select_label, 33, 0)
-        self.grid3.addWidget(self.select_combo, 33, 1)
+        self.grid3.addWidget(self.select_label, 34, 0)
+        self.grid3.addWidget(self.select_combo, 34, 1)
 
         self.reference_combo_type_label = FCLabel('%s:' % _("Ref. Type"))
         self.reference_combo_type_label.setToolTip(
@@ -3341,8 +3390,8 @@ class IsoUI:
         self.reference_combo_type = FCComboBox()
         self.reference_combo_type.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
 
-        self.grid3.addWidget(self.reference_combo_type_label, 34, 0)
-        self.grid3.addWidget(self.reference_combo_type, 34, 1)
+        self.grid3.addWidget(self.reference_combo_type_label, 36, 0)
+        self.grid3.addWidget(self.reference_combo_type, 36, 1)
 
         self.reference_combo_label = FCLabel('%s:' % _("Ref. Object"))
         self.reference_combo_label.setToolTip(
@@ -3353,8 +3402,8 @@ class IsoUI:
         self.reference_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.reference_combo.is_last = True
 
-        self.grid3.addWidget(self.reference_combo_label, 35, 0)
-        self.grid3.addWidget(self.reference_combo, 35, 1)
+        self.grid3.addWidget(self.reference_combo_label, 38, 0)
+        self.grid3.addWidget(self.reference_combo, 38, 1)
 
         self.reference_combo.hide()
         self.reference_combo_label.hide()
@@ -3368,7 +3417,7 @@ class IsoUI:
               "(holes in the polygon).")
         )
 
-        self.grid3.addWidget(self.poly_int_cb, 36, 0)
+        self.grid3.addWidget(self.poly_int_cb, 40, 0)
 
         self.poly_int_cb.hide()
 
@@ -3381,8 +3430,8 @@ class IsoUI:
         self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
                                           {'label': _("Polygon"), 'value': 'polygon'}])
 
-        self.grid3.addWidget(self.area_shape_label, 38, 0)
-        self.grid3.addWidget(self.area_shape_radio, 38, 1)
+        self.grid3.addWidget(self.area_shape_label, 42, 0)
+        self.grid3.addWidget(self.area_shape_radio, 42, 1)
 
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
@@ -3390,7 +3439,7 @@ class IsoUI:
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 39, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 44, 0, 1, 2)
 
         self.generate_iso_button = FCButton("%s" % _("Generate Geometry"))
         self.generate_iso_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))

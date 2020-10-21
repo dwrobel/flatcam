@@ -9,7 +9,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon, box
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 import shapely.affinity as affinity
 
 from vispy.geometry import Rect
@@ -2235,7 +2235,7 @@ class FCEraser(FCShapeTool):
             temp_shape = eraser_shape['solid'].buffer(0.0000001)
             temp_shape = Polygon(temp_shape.exterior)
             eraser_sel_shapes.append(temp_shape)
-        eraser_sel_shapes = cascaded_union(eraser_sel_shapes)
+        eraser_sel_shapes = unary_union(eraser_sel_shapes)
 
         for storage in self.draw_app.storage_dict:
             try:
@@ -4968,7 +4968,7 @@ class AppGerberEditor(QtCore.QObject):
                 if 'solid' in actual_geo:
                     edit_geo.append(actual_geo['solid'])
 
-        all_geo = cascaded_union(edit_geo)
+        all_geo = unary_union(edit_geo)
 
         # calculate the bounds values for the edited Gerber object
         xmin, ymin, xmax, ymax = all_geo.bounds

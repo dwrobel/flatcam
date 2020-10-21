@@ -11,7 +11,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCCheckBox, FCButton, FCComboBox
 
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 import traceback
 from copy import deepcopy
@@ -396,7 +396,7 @@ class ToolSub(AppTool):
         else:
             self.promises.append("single")
 
-        self.sub_union = cascaded_union(self.sub_geo_obj.solid_geometry)
+        self.sub_union = unary_union(self.sub_geo_obj.solid_geometry)
 
         # start the QTimer to check for promises with 0.5 second period check
         self.periodic_check(500, reset=True)
@@ -421,7 +421,7 @@ class ToolSub(AppTool):
         with self.app.proc_container.new(text):
             # resulting paths are closed resulting into Polygons
             if self.ui.close_paths_cb.isChecked():
-                new_geo = (cascaded_union(geo)).difference(self.sub_union)
+                new_geo = (unary_union(geo)).difference(self.sub_union)
                 if new_geo:
                     if not new_geo.is_empty:
                         new_geometry.append(new_geo)

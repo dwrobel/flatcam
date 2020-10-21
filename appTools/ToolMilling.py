@@ -17,7 +17,7 @@ from copy import deepcopy
 # import numpy as np
 # import math
 
-# from shapely.ops import cascaded_union
+# from shapely.ops import unary_union
 from shapely.geometry import Point, LineString
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event

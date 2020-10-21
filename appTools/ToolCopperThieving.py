@@ -12,7 +12,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry, FCComboBox
 
 import shapely.geometry.base as base
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import unary_union
 from shapely.geometry import Polygon, MultiPolygon, Point, LineString
 from shapely.geometry import box as box
 import shapely.affinity as affinity
@@ -428,7 +428,7 @@ class ToolCopperThieving(AppTool):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
 
             if not isinstance(self.sel_rect, Iterable):
                 self.sel_rect = [self.sel_rect]
@@ -606,9 +606,9 @@ class ToolCopperThieving(AppTool):
                             env_obj = geo_n.convex_hull
                         elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
                                 (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                            env_obj = cascaded_union(geo_n)
+                            env_obj = unary_union(geo_n)
                         else:
-                            env_obj = cascaded_union(geo_n)
+                            env_obj = unary_union(geo_n)
                             env_obj = env_obj.convex_hull
                         bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                     else:
@@ -660,10 +660,10 @@ class ToolCopperThieving(AppTool):
                             raise grace
                         geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
 
-                    bounding_box = cascaded_union(geo_buff_list)
+                    bounding_box = unary_union(geo_buff_list)
                 elif working_obj.kind == 'gerber':
-                    geo_n = cascaded_union(geo_n).convex_hull
-                    bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
+                    geo_n = unary_union(geo_n).convex_hull
+                    bounding_box = unary_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                     bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
                 else:
                     app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
