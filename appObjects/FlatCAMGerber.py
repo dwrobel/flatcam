@@ -12,7 +12,7 @@
 
 
 from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 from appParsers.ParseGerber import Gerber
 from appObjects.FlatCAMObj import *
@@ -386,7 +386,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 try:
                     self.solid_geometry = MultiPolygon(self.solid_geometry)
                 except Exception:
-                    self.solid_geometry = cascaded_union(self.solid_geometry)
+                    self.solid_geometry = unary_union(self.solid_geometry)
 
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
@@ -412,7 +412,7 @@ class GerberObject(FlatCAMObj, Gerber):
                 try:
                     self.solid_geometry = MultiPolygon(self.solid_geometry)
                 except Exception:
-                    self.solid_geometry = cascaded_union(self.solid_geometry)
+                    self.solid_geometry = unary_union(self.solid_geometry)
 
             # Bounding box with rounded corners
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))

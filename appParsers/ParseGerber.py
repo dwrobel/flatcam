@@ -374,7 +374,7 @@ class Gerber(Geometry):
         geo_f = None
 
         # Polygons are stored here until there is a change in polarity.
-        # Only then they are combined via cascaded_union and added or
+        # Only then they are combined via unary_union and added or
         # subtracted from solid_geometry. This is ~100 times faster than
         # applying a union for every new polygon.
         poly_buffer = []
@@ -1680,7 +1680,7 @@ class Gerber(Geometry):
         #
         # self.do_flashes()
         #
-        # self.solid_geometry = cascaded_union(self.buffered_paths +
+        # self.solid_geometry = unary_union(self.buffered_paths +
         #                                      [poly['polygon'] for poly in self.regions] +
         #                                      self.flash_geometry)
 

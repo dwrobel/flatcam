@@ -21,7 +21,7 @@ from appGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComb
 from appParsers.ParseFont import *
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
-from shapely.ops import cascaded_union, unary_union, linemerge
+from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
 
@@ -3147,7 +3147,7 @@ class FCEraser(FCShapeTool):
             temp_shape = eraser_shape.buffer(0.0000001)
             temp_shape = Polygon(temp_shape.exterior)
             eraser_sel_shapes.append(temp_shape)
-        eraser_sel_shapes = cascaded_union(eraser_sel_shapes)
+        eraser_sel_shapes = unary_union(eraser_sel_shapes)
 
         for obj_shape in self.storage.get_objects():
             try:
@@ -5134,7 +5134,7 @@ class AppGeoEditor(QtCore.QObject):
                     return
 
                 # add the result to the results list
-                results.append(cascaded_union(local_results))
+                results.append(unary_union(local_results))
 
         # This is a dirty patch:
         for r in results:

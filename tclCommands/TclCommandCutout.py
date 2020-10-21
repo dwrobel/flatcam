@@ -3,7 +3,7 @@ from tclCommands.TclCommand import TclCommand
 import collections
 import logging
 
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 from shapely.geometry import LineString
 
 log = logging.getLogger('base')
@@ -134,7 +134,7 @@ class TclCommandCutout(TclCommand):
                            [pts[6], pts[7], pts[8]],
                            [pts[9], pts[10], pts[11]]]}
             cuts = cases[gaps_par]
-            geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
+            geo_obj.solid_geometry = unary_union([LineString(segment) for segment in cuts])
 
         try:
             self.app.app_obj.new_object("geometry", outname, geo_init_me, plot=False)

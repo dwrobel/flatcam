@@ -25,7 +25,7 @@ from lxml import etree as ET
 from shapely.geometry import Polygon, Point, LinearRing
 
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union, substring, linemerge
+from shapely.ops import unary_union, substring, linemerge
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -413,13 +413,13 @@ class ApertureMacro:
             if r <= 0:
                 break
             ring = Point((x, y)).buffer(r).exterior.buffer(thickness / 2.0)
-            result = cascaded_union([result, ring])
+            result = unary_union([result, ring])
             i += 1
 
         # ## Crosshair
         hor = LineString([(x - cross_len, y), (x + cross_len, y)]).buffer(cross_th / 2.0, cap_style=2)
         ver = LineString([(x, y - cross_len), (x, y + cross_len)]).buffer(cross_th / 2.0, cap_style=2)
-        result = cascaded_union([result, hor, ver])
+        result = unary_union([result, hor, ver])
 
         return {"pol": 1, "geometry": result}
 
@@ -726,7 +726,7 @@ class Geometry(object):
             polygon = Polygon(points)
         else:
             polygon = points
-        toolgeo = cascaded_union(polygon)
+        toolgeo = unary_union(polygon)
         diffs = []
         for target in flat_geometry:
             if isinstance(target, LineString) or isinstance(target, LineString) or isinstance(target, MultiLineString):
@@ -838,7 +838,7 @@ class Geometry(object):
         #         if len(self.solid_geometry) == 0:
         #             log.debug('solid_geometry is empty []')
         #             return 0, 0, 0, 0
-        #         return cascaded_union(flatten(self.solid_geometry)).bounds
+        #         return unary_union(flatten(self.solid_geometry)).bounds
         #     else:
         #         return self.solid_geometry.bounds
         # except Exception as e:
@@ -853,7 +853,7 @@ class Geometry(object):
         #     if len(self.solid_geometry) == 0:
         #         log.debug('solid_geometry is empty []')
         #         return 0, 0, 0, 0
-        #     return cascaded_union(self.solid_geometry).bounds
+        #     return unary_union(self.solid_geometry).bounds
         # else:
         #     return self.solid_geometry.bounds
 
@@ -1376,7 +1376,7 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
+            # self.solid_geometry.append(unary_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
@@ -1386,7 +1386,7 @@ class Geometry(object):
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        self.solid_geometry = cascaded_union(self.solid_geometry)
+        self.solid_geometry = unary_union(self.solid_geometry)
 
         # self.solid_geometry = MultiPolygon(self.solid_geometry)
         # self.solid_geometry = self.solid_geometry.buffer(0.00000001)
@@ -2262,12 +2262,12 @@ class Geometry(object):
 
     def union(self):
         """
-        Runs a cascaded union on the list of objects in
+        Runs a unary_union on the list of objects in
         solid_geometry.
 
         :return: None
         """
-        self.solid_geometry = [cascaded_union(self.solid_geometry)]
+        self.solid_geometry = [unary_union(self.solid_geometry)]
 
     def export_svg(self, scale_stroke_factor=0.00,
                    scale_factor_x=None, scale_factor_y=None,
@@ -2286,11 +2286,11 @@ class Geometry(object):
             if self.multigeo:
                 for tool in self.tools:
                     flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
-                geom_svg = cascaded_union(flat_geo)
+                geom_svg = unary_union(flat_geo)
             else:
-                geom_svg = cascaded_union(self.flatten())
+                geom_svg = unary_union(self.flatten())
         else:
-            geom_svg = cascaded_union(self.flatten())
+            geom_svg = unary_union(self.flatten())
 
         skew_ref = 'center'
         if skew_reference != 'center':
@@ -6869,7 +6869,7 @@ class CNCjob(Geometry):
         # This takes forever. Too much data?
         # self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
         #                                  str(len(self.gcode_parsed))))
-        # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        # self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # This is much faster but not so nice to look at as you can see different segments of the geometry
         self.solid_geometry = [geo['geom'] for geo in self.gcode_parsed]
@@ -7475,18 +7475,18 @@ class CNCjob(Geometry):
                 travels.append(g)
 
         # Used to determine the overall board size
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        self.solid_geometry = unary_union([geo['geom'] for geo in self.gcode_parsed])
 
         # Convert the cuts and travels into single geometry objects we can render as svg xml
         if travels:
-            travelsgeom = cascaded_union([geo['geom'] for geo in travels])
+            travelsgeom = unary_union([geo['geom'] for geo in travels])
 
         if self.app.abort_flag:
             # graceful abort requested by the user
             raise grace
 
         if cuts:
-            cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
+            cutsgeom = unary_union([geo['geom'] for geo in cuts])
 
         # Render the SVG Xml
         # The scale factor affects the size of the lines, and the stroke color adds different formatting for each set
@@ -7753,7 +7753,7 @@ class CNCjob(Geometry):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
         self.create_geometry()
         self.app.proc_container.new_text = ''
 
@@ -7862,7 +7862,7 @@ class CNCjob(Geometry):
                         self.old_disp_number = disp_number
 
                 # for the bounding box
-                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
+                v['solid_geometry'] = unary_union([geo['geom'] for geo in v['gcode_parsed']])
 
         self.app.proc_container.new_text = ''
 
@@ -8234,7 +8234,7 @@ def dict2obj(d):
 #
 #     m = MultiLineString(edge_points)
 #     triangles = list(polygonize(m))
-#     return cascaded_union(triangles), edge_points
+#     return unary_union(triangles), edge_points
 
 # def voronoi(P):
 #     """

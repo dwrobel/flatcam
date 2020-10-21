@@ -18,7 +18,7 @@ from copy import deepcopy
 
 import numpy as np
 from shapely.geometry import base
-from shapely.ops import cascaded_union, nearest_points
+from shapely.ops import unary_union, nearest_points
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -1461,7 +1461,7 @@ class NonCopperClear(AppTool, Gerber):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
 
             self.clear_copper(ncc_obj=self.ncc_obj, sel_obj=self.bound_obj, ncctooldia=self.ncc_dia_list,
                               isotooldia=self.iso_dia_list, outname=self.o_name)
@@ -1623,16 +1623,16 @@ class NonCopperClear(AppTool, Gerber):
                     env_obj = geo_n.convex_hull
                 elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                    env_obj = cascaded_union(geo_n)
+                    env_obj = unary_union(geo_n)
                 else:
-                    env_obj = cascaded_union(geo_n)
+                    env_obj = unary_union(geo_n)
                     env_obj = env_obj.convex_hull
             except Exception as e:
                 log.debug("NonCopperClear.calculate_bounding_box() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return None
         elif ncc_select == _("Area Selection"):
-            env_obj = cascaded_union(self.sel_rect)
+            env_obj = unary_union(self.sel_rect)
             try:
                 __ = iter(env_obj)
             except Exception:
@@ -1650,8 +1650,8 @@ class NonCopperClear(AppTool, Gerber):
                     env_obj = [box_geo]
 
             elif box_kind == 'gerber':
-                box_geo = cascaded_union(box_obj.solid_geometry).convex_hull
-                ncc_geo = cascaded_union(ncc_obj.solid_geometry).convex_hull
+                box_geo = unary_union(box_obj.solid_geometry).convex_hull
+                ncc_geo = unary_union(ncc_obj.solid_geometry).convex_hull
                 env_obj = ncc_geo.intersection(box_geo)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
@@ -1693,7 +1693,7 @@ class NonCopperClear(AppTool, Gerber):
                     # graceful abort requested by the user
                     raise grace
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
-            new_bounding_box = cascaded_union(geo_buff_list)
+            new_bounding_box = unary_union(geo_buff_list)
         elif ncc_select == _("Reference Object"):
             if box_kind == 'geometry':
                 geo_buff_list = []
@@ -1703,7 +1703,7 @@ class NonCopperClear(AppTool, Gerber):
                         raise grace
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
-                new_bounding_box = cascaded_union(geo_buff_list)
+                new_bounding_box = unary_union(geo_buff_list)
             elif box_kind == 'gerber':
                 new_bounding_box = bbox.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             else:
@@ -1874,7 +1874,7 @@ class NonCopperClear(AppTool, Gerber):
                         geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         break
 
-            sol_geo = cascaded_union(isolated_geo)
+            sol_geo = unary_union(isolated_geo)
             if has_offset is True:
                 self.app.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                 sol_geo = sol_geo.buffer(distance=ncc_offset)
@@ -1887,7 +1887,7 @@ class NonCopperClear(AppTool, Gerber):
                 return 'fail'
 
         elif ncc_obj.kind == 'geometry':
-            sol_geo = cascaded_union(ncc_obj.solid_geometry)
+            sol_geo = unary_union(ncc_obj.solid_geometry)
             if has_offset is True:
                 self.app.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                 sol_geo = sol_geo.buffer(distance=ncc_offset)
@@ -2431,7 +2431,7 @@ class NonCopperClear(AppTool, Gerber):
                             log.debug("There are no geometries in the cleared polygon.")
 
                 # Area to clear next
-                buffered_cleared = cascaded_union(cleared_geo).buffer(tool / 2.0)
+                buffered_cleared = unary_union(cleared_geo).buffer(tool / 2.0)
                 area = area.difference(buffered_cleared)
 
                 if not area or area.is_empty:
@@ -2443,7 +2443,7 @@ class NonCopperClear(AppTool, Gerber):
                 #     new_area = [p.buffer(buff_distance) for p in area if not p.is_empty]
                 # except TypeError:
                 #     new_area = [area.buffer(tool * ncc_overlap)]
-                # area = cascaded_union(area)
+                # area = unary_union(area)
 
             geo_obj.multigeo = True
             geo_obj.options["cnctooldia"] = '0.0'
@@ -2616,9 +2616,9 @@ class NonCopperClear(AppTool, Gerber):
                     env_obj = geo_n.convex_hull
                 elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
                         (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                    env_obj = cascaded_union(geo_n)
+                    env_obj = unary_union(geo_n)
                 else:
-                    env_obj = cascaded_union(geo_n)
+                    env_obj = unary_union(geo_n)
                     env_obj = env_obj.convex_hull
 
                 bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
@@ -2628,7 +2628,7 @@ class NonCopperClear(AppTool, Gerber):
                 return 'fail'
 
         elif ncc_select == 'area':
-            geo_n = cascaded_union(self.sel_rect)
+            geo_n = unary_union(self.sel_rect)
             try:
                 __ = iter(geo_n)
             except Exception as e:
@@ -2642,7 +2642,7 @@ class NonCopperClear(AppTool, Gerber):
                     raise grace
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
-            bounding_box = cascaded_union(geo_buff_list)
+            bounding_box = unary_union(geo_buff_list)
 
         elif ncc_select == _("Reference Object"):
             geo_n = ncc_sel_obj.solid_geometry
@@ -2660,10 +2660,10 @@ class NonCopperClear(AppTool, Gerber):
                         raise grace
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
-                bounding_box = cascaded_union(geo_buff_list)
+                bounding_box = unary_union(geo_buff_list)
             elif ncc_sel_obj.kind == 'gerber':
-                geo_n = cascaded_union(geo_n).convex_hull
-                bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
+                geo_n = unary_union(geo_n).convex_hull
+                bounding_box = unary_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
                 bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
@@ -2838,7 +2838,7 @@ class NonCopperClear(AppTool, Gerber):
                                 break
                         geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
 
-                sol_geo = cascaded_union(isolated_geo)
+                sol_geo = unary_union(isolated_geo)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
@@ -2853,7 +2853,7 @@ class NonCopperClear(AppTool, Gerber):
                     return 'fail'
 
             elif ncc_obj.kind == 'geometry':
-                sol_geo = cascaded_union(ncc_obj.solid_geometry)
+                sol_geo = unary_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
@@ -3220,7 +3220,7 @@ class NonCopperClear(AppTool, Gerber):
                                 break
                         geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
 
-                sol_geo = cascaded_union(isolated_geo)
+                sol_geo = unary_union(isolated_geo)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
@@ -3235,7 +3235,7 @@ class NonCopperClear(AppTool, Gerber):
                     return 'fail'
 
             elif ncc_obj.kind == 'geometry':
-                sol_geo = cascaded_union(ncc_obj.solid_geometry)
+                sol_geo = unary_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)

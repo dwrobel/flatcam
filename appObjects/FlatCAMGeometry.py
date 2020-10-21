@@ -2052,7 +2052,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # TODO this serve for bounding box creation only; should be optimized
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
                 # for bounding box values
-                # dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                # dia_cnc_dict['solid_geometry'] = unary_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
                 try:
                     dia_cnc_dict['solid_geometry'] = tool_solid_geometry
                     self.app.inform.emit('[success] %s...' % _("Finished G-Code processing"))
@@ -2202,7 +2202,7 @@ class GeometryObject(FlatCAMObj, Geometry):
                 # TODO this serve for bounding box creation only; should be optimized
                 # commented this; there is no need for the actual GCode geometry - the original one will serve as well
                 # for bounding box values
-                # geo_for_bound_values = cascaded_union([
+                # geo_for_bound_values = unary_union([
                 #     geo['geom'] for geo in dia_cnc_dict['gcode_parsed'] if geo['geom'].is_valid is True
                 # ])
                 try:

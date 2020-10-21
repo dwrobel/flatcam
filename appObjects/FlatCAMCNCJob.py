@@ -2568,7 +2568,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 #         g['geom'] = affinity.scale(g['geom'], factor, factor, origin=(0, 0))
                 #
                 #     tool_dia_copy['gcode_parsed'] = deepcopy(dia_value)
-                #     tool_dia_copy['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_value])
+                #     tool_dia_copy['solid_geometry'] = unary_union([geo['geom'] for geo in dia_value])
 
             temp_tools_dict.update({
                 tooluid_key: deepcopy(tool_dia_copy)

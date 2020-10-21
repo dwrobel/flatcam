@@ -19,7 +19,7 @@ import numpy as np
 import simplejson as json
 import sys
 
-from shapely.ops import cascaded_union, nearest_points
+from shapely.ops import unary_union, nearest_points
 from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing, Point
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -1474,8 +1474,8 @@ class ToolIsolation(AppTool, Gerber):
 
         elif selection == _("Reference Object"):
             ref_obj = self.app.collection.get_by_name(self.ui.reference_combo.get_value())
-            ref_geo = cascaded_union(ref_obj.solid_geometry)
-            use_geo = cascaded_union(isolated_obj.solid_geometry).difference(ref_geo)
+            ref_geo = unary_union(ref_obj.solid_geometry)
+            use_geo = unary_union(isolated_obj.solid_geometry).difference(ref_geo)
             self.isolate(isolated_obj=isolated_obj, geometry=use_geo)
 
     def isolate(self, isolated_obj, geometry=None, limited_area=None, negative_dia=None, plot=True):
@@ -2048,11 +2048,11 @@ class ToolIsolation(AppTool, Gerber):
         target_geo = geo
 
         if subtraction_geo:
-            sub_union = cascaded_union(subtraction_geo)
+            sub_union = unary_union(subtraction_geo)
         else:
             name = self.ui.exc_obj_combo.currentText()
             subtractor_obj = self.app.collection.get_by_name(name)
-            sub_union = cascaded_union(subtractor_obj.solid_geometry)
+            sub_union = unary_union(subtractor_obj.solid_geometry)
 
         try:
             for geo_elem in target_geo:
@@ -2106,7 +2106,7 @@ class ToolIsolation(AppTool, Gerber):
         new_geometry = []
         target_geo = geo
 
-        intersect_union = cascaded_union(intersection_geo)
+        intersect_union = unary_union(intersection_geo)
 
         try:
             for geo_elem in target_geo:
@@ -2427,7 +2427,7 @@ class ToolIsolation(AppTool, Gerber):
             if len(self.sel_rect) == 0:
                 return
 
-            self.sel_rect = cascaded_union(self.sel_rect)
+            self.sel_rect = unary_union(self.sel_rect)
             self.isolate(isolated_obj=self.grb_obj, limited_area=self.sel_rect, plot=True)
             self.sel_rect = []
 

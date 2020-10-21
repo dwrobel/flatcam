@@ -19,7 +19,7 @@ from copy import deepcopy
 from datetime import datetime
 
 from shapely.geometry import Polygon, LineString
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 import traceback
 from io import StringIO
@@ -941,7 +941,7 @@ class SolderPaste(AppTool):
                 tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
                 # TODO this serve for bounding box creation only; should be optimized
-                tool_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
+                tool_cnc_dict['solid_geometry'] = unary_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode

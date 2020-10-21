@@ -1,7 +1,7 @@
 import collections
 from tclCommands.TclCommand import TclCommand
 
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 import gettext
 import appTranslation as fcTranslate
@@ -94,7 +94,7 @@ class TclCommandBbox(TclCommand):
                 # assert geo_obj.kind == 'geometry'
 
                 # Bounding box with rounded corners
-                geo = cascaded_union(obj.solid_geometry)
+                geo = unary_union(obj.solid_geometry)
                 bounding_box = geo.envelope.buffer(float(margin))
                 if not rounded:  # Remove rounded corners
                     bounding_box = bounding_box.envelope

@@ -589,8 +589,8 @@ class Panelize(AppTool):
                         obj_fin.source_file = self.app.export_dxf(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
 
-                    # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
-                    # app_obj.log.debug("Finished creating a cascaded union for the panel.")
+                    # obj_fin.solid_geometry = unary_union(obj_fin.solid_geometry)
+                    # app_obj.log.debug("Finished creating a unary_union for the panel.")
                     app_obj.proc_container.update_view_text('')
 
                 self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))

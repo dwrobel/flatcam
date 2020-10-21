@@ -11,7 +11,7 @@ from appGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox
     FCLabel
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union, unary_union, linemerge
+from shapely.ops import unary_union, linemerge
 import shapely.affinity as affinity
 
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
@@ -1834,7 +1834,7 @@ class CutOut(AppTool):
         log.debug("%d paths" % len(flat_geometry))
 
         polygon = Polygon(points)
-        toolgeo = cascaded_union(polygon)
+        toolgeo = unary_union(polygon)
         diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
@@ -1908,7 +1908,7 @@ class CutOut(AppTool):
 
         :param target_geo:      geometry from which to subtract
         :param subtractor:      a list of Points, a LinearRing or a Polygon that will be subtracted from target_geo
-        :return:                a cascaded union of the resulting geometry
+        :return:                a unary_union of the resulting geometry
         """
 
         if target_geo is None:

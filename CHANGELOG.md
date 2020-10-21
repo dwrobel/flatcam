@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - fixed crash on using shortcut for creating a new Document Object
 - fixed Cutout Tool to work with the endxy parameter
 - added the exclusion parameters for Drilling Tool to the Preferences area
+- cascaded_union() method will be deprecated in Shapely 1.8 in favor of unary_union; replaced the usage of cascaded_union with unary_union in all the app
 
 20.10.2020
 

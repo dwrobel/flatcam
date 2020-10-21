@@ -10,7 +10,7 @@ from appTool import AppTool
 from appGUI.GUIElements import FCTree
 
 from shapely.geometry import MultiPolygon, Polygon
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 
 from copy import deepcopy
 import math
@@ -237,7 +237,7 @@ class Properties(AppTool):
                 if obj_prop.kind.lower() == 'cncjob':
                     try:
                         for tool_k in obj_prop.exc_cnc_tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -247,7 +247,7 @@ class Properties(AppTool):
 
                     try:
                         for tool_k in obj_prop.cnc_tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -257,7 +257,7 @@ class Properties(AppTool):
                 else:
                     try:
                         for tool_k in obj_prop.tools:
-                            x0, y0, x1, y1 = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
+                            x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
                             xmin.append(x0)
                             ymin.append(y0)
                             xmax.append(x1)
@@ -308,10 +308,10 @@ class Properties(AppTool):
                             env_obj = geo.convex_hull
                         elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
                                 (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                            env_obj = cascaded_union(geo)
+                            env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull
                         else:
-                            env_obj = cascaded_union(geo)
+                            env_obj = unary_union(geo)
                             env_obj = env_obj.convex_hull
 
                         area_chull = env_obj.area
@@ -321,7 +321,7 @@ class Properties(AppTool):
                     try:
                         area_chull = []
                         for tool_k in obj_prop.tools:
-                            area_el = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
+                            area_el = unary_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
                             area_chull.append(area_el.area)
                         area_chull = max(area_chull)
                     except Exception as er:
