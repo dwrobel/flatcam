@@ -598,7 +598,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.editor_button.clicked.connect(self.app.object2editor)
 
         # Properties
-        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)

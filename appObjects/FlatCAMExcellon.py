@@ -178,7 +178,7 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
 
         # Properties
-        self.ui.properties_cb.stateChanged.connect(self.on_properties)
+        self.ui.properties_button.toggled.connect(self.on_properties)
         self.calculations_finished.connect(self.update_area_chull)
 
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))

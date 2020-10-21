@@ -252,12 +252,16 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # PROPERTIES CB
-        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
-        self.properties_lbl.setToolTip(_("Show the Properties."))
-        self.properties_cb = FCCheckBox()
-
-        grid0.addWidget(self.properties_lbl, 6, 0)
-        grid0.addWidget(self.properties_cb, 6, 1, 1, 2)
+        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
+        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.properties_button.setToolTip(_("Show the Properties."))
+        self.properties_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.properties_button, 6, 0, 1, 3)
 
         # PROPERTIES Frame
         self.properties_frame = QtWidgets.QFrame()
@@ -561,12 +565,16 @@ class ExcellonObjectUI(ObjectUI):
         grid0.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # PROPERTIES CB
-        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
-        self.properties_lbl.setToolTip(_("Show the Properties."))
-        self.properties_cb = FCCheckBox()
-
-        grid0.addWidget(self.properties_lbl, 6, 0)
-        grid0.addWidget(self.properties_cb, 6, 1, 1, 2)
+        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
+        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.properties_button.setToolTip(_("Show the Properties."))
+        self.properties_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.properties_button, 6, 0, 1, 3)
 
         # PROPERTIES Frame
         self.properties_frame = QtWidgets.QFrame()
@@ -861,12 +869,16 @@ class GeometryObjectUI(ObjectUI):
         grid_header.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # PROPERTIES CB
-        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
-        self.properties_lbl.setToolTip(_("Show the Properties."))
-        self.properties_cb = FCCheckBox()
-
-        grid_header.addWidget(self.properties_lbl, 6, 0)
-        grid_header.addWidget(self.properties_cb, 6, 1, 1, 2)
+        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
+        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.properties_button.setToolTip(_("Show the Properties."))
+        self.properties_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid_header.addWidget(self.properties_button, 6, 0, 1, 3)
 
         # PROPERTIES Frame
         self.properties_frame = QtWidgets.QFrame()
@@ -1827,12 +1839,16 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.editor_button, 4, 0, 1, 3)
 
         # PROPERTIES CB
-        self.properties_lbl = FCLabel('<b>%s</b>:' % _("PROPERTIES"))
-        self.properties_lbl.setToolTip(_("Show the Properties."))
-        self.properties_cb = FCCheckBox()
-
-        f_lay.addWidget(self.properties_lbl, 6, 0)
-        f_lay.addWidget(self.properties_cb, 6, 1, 1, 2)
+        self.properties_button = FCButton('%s' % _("PROPERTIES"), checkable=True)
+        self.properties_button.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.properties_button.setToolTip(_("Show the Properties."))
+        self.properties_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        f_lay.addWidget(self.properties_button, 6, 0, 1, 3)
 
         # PROPERTIES Frame
         self.properties_frame = QtWidgets.QFrame()
