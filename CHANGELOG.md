@@ -15,11 +15,13 @@ CHANGELOG for FlatCAM beta
 - In Excellon Object UI fixed the milling geometry generation
 - updated the translations strings to the changes in the source code
 - some strings changed
+- made the Properties checkbox in the Object UI into a checkable button and added to it an icon
 - fixed crash on using shortcut for creating a new Document Object
 - fixed Cutout Tool to work with the endxy parameter
 - added the exclusion parameters for Drilling Tool to the Preferences area
 - cascaded_union() method will be deprecated in Shapely 1.8 in favor of unary_union; replaced the usage of cascaded_union with unary_union in all the app
 - added some strings to the translatable strings and updated the translation strings
+- merged in the Autolevelling branch and made some PEP8 changes to the bilinearInterpolator.py file
 
 20.10.2020
 
