@@ -28,6 +28,7 @@ CHANGELOG for FlatCAM beta
 - optimized a bit the UI for Gerber/Excellon/Geometry objects
 - optimized FlatCAMObj.add_properties_items() method
 - updated the Turkish translation (by Mehmet Kaya)
+- added ability to run a callback function with callback_parameters after a new FlatCAM object is created
 
 20.10.2020
 
