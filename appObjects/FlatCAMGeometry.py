@@ -438,6 +438,11 @@ class GeometryObject(FlatCAMObj, Geometry):
             "area_shape": self.ui.area_shape_radio,
             "area_strategy": self.ui.strategy_radio,
             "area_overz": self.ui.over_z_entry,
+            "polish": self.ui.polish_cb,
+            "polish_dia": self.ui.polish_dia_entry,
+            "polish_pressure": self.ui.polish_pressure_entry,
+            "polish_overlap": self.ui.polish_over_entry,
+            "polish_method": self.ui.polish_method_combo,
         })
 
         self.param_fields.update({
@@ -741,7 +746,13 @@ class GeometryObject(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
         # common parameters update
+        self.ui.toolchangeg_cb.stateChanged.connect(self.update_common_param_in_storage)
+        self.ui.toolchangez_entry.editingFinished.connect(self.update_common_param_in_storage)
+        self.ui.endz_entry.editingFinished.connect(self.update_common_param_in_storage)
+        self.ui.endxy_entry.editingFinished.connect(self.update_common_param_in_storage)
         self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
+        self.ui.exclusion_cb.stateChanged.connect(self.update_common_param_in_storage)
+        self.ui.polish_cb.stateChanged.connect(self.update_common_param_in_storage)
 
     def ui_disconnect(self):
 
@@ -822,6 +833,36 @@ class GeometryObject(FlatCAMObj, Geometry):
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        # common parameters update
+        try:
+            self.ui.toolchangeg_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.toolchangez_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.endz_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.endxy_entry.editingFinished.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.pp_geometry_name_cb.currentIndexChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.exclusion_cb.stateChanged.disconnect(self.update_common_param_in_storage)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.polish_cb.stateChanged.disconnect(self.update_common_param_in_storage)
         except (TypeError, AttributeError):
             pass
 
@@ -1574,7 +1615,13 @@ class GeometryObject(FlatCAMObj, Geometry):
 
     def update_common_param_in_storage(self):
         for tooluid_value in self.tools.values():
+            tooluid_value['data']['toolchange'] = self.ui.toolchangeg_cb.get_value()
+            tooluid_value['data']['toolchangez'] = self.ui.toolchangez_entry.get_value()
+            tooluid_value['data']['endz'] = self.ui.endz_entry.get_value()
+            tooluid_value['data']['endxy'] = self.ui.endxy_entry.get_value()
             tooluid_value['data']['ppname_g'] = self.ui.pp_geometry_name_cb.get_value()
+            tooluid_value['data']['area_exclusion'] = self.ui.exclusion_cb.get_value()
+            tooluid_value['data']['polish'] = self.ui.polish_cb.get_value()
 
     def select_tools_table_row(self, row, clearsel=None):
         if clearsel:

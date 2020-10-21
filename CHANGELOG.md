@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+21.10.2020
+
+- in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here
+
 20.10.2020
 
 - finished to add the Properties data to the Object Properties (former Selected Tab)

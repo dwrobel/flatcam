@@ -339,6 +339,11 @@ class FlatCAMDefaults:
         "geometry_area_shape": "polygon",
         "geometry_area_strategy": "over",
         "geometry_area_overz": 1.0,
+        "geometry_polish": False,
+        "geometry_polish_dia": 10.0,
+        "geometry_polish_pressure": -1.0,
+        "geometry_polish_overlap": 1.0,
+        "geometry_polish_method": _("Standard"),
 
         # Geometry Editor
         "geometry_editor_sel_limit": 30,

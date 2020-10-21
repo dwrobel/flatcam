@@ -4875,7 +4875,7 @@ class CNCjob(Geometry):
         :return:                    GCode - string
         """
 
-        log.debug("Generate_from_multitool_geometry()")
+        log.debug("generate_from_multitool_geometry()")
 
         temp_solid_geometry = []
         if offset != 0.0:
@@ -5185,7 +5185,7 @@ class CNCjob(Geometry):
         :rtype:             str
         """
 
-        log.debug("Generate_from_multitool_geometry()")
+        log.debug("geometry_tool_gcode_gen()")
 
         t_gcode = ''
         temp_solid_geometry = []
@@ -5310,8 +5310,9 @@ class CNCjob(Geometry):
             self.startz = None
 
         self.z_end = float(tool_dict['endz'])
+        self.xy_end = tool_dict['endxy']
         try:
-            if self.xy_end == '':
+            if self.xy_end == '' or self.xy_end is None:
                 self.xy_end = None
             else:
                 # either originally it was a string or not, xy_end will be made string

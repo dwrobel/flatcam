@@ -971,7 +971,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             except Exception as e:
                 log.debug("Nothing to remove. %s" % str(e))
 
-            self.app.setup_component_editor()
+            self.app.setup_default_properties_tab()
             return
 
         if obj:
