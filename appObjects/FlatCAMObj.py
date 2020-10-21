@@ -523,7 +523,7 @@ class FlatCAMObj(QtCore.QObject):
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
                 except Exception as ee:
-                    log.debug("FlatCAMObj.addItems() -> calculate dimensions --> %s" % str(ee))
+                    log.debug("FlatCAMObj.add_properties_items() -> calculate dimensions --> %s" % str(ee))
 
                 # calculate box area
                 if self.app.defaults['units'].lower() == 'mm':
@@ -531,7 +531,7 @@ class FlatCAMObj(QtCore.QObject):
                 else:
                     area = length * width
 
-                if obj_prop.kind.lower() == 'gerber':
+                if obj_prop.kind.lower() == 'gerber' and geo:
                     # calculate copper area
                     try:
                         for geo_el in geo:
@@ -554,7 +554,7 @@ class FlatCAMObj(QtCore.QObject):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.addItems() --> %s" % str(ee))
+                        log.debug("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
 
                     try:
                         for tool_k in obj_prop.cnc_tools:
@@ -564,19 +564,24 @@ class FlatCAMObj(QtCore.QObject):
                             xmax.append(x1)
                             ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.addItems() --> %s" % str(ee))
+                        log.debug("FlatCAMObj.add_properties_items() cncjob --> %s" % str(ee))
                 else:
                     try:
-                        for tool_k in obj_prop.tools:
-                            x0, y0, x1, y1 = unary_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
-                            xmin.append(x0)
-                            ymin.append(y0)
-                            xmax.append(x1)
-                            ymax.append(y1)
+                        if obj_prop.tools:
+                            for tool_k in obj_prop.tools:
+                                t_geo = obj_prop.tools[tool_k]['solid_geometry']
+                                try:
+                                    x0, y0, x1, y1 = unary_union(t_geo).bounds
+                                except Exception:
+                                    continue
+                                xmin.append(x0)
+                                ymin.append(y0)
+                                xmax.append(x1)
+                                ymax.append(y1)
                     except Exception as ee:
-                        log.debug("FlatCAMObj.addItems() --> %s" % str(ee))
+                        log.debug("FlatCAMObj.add_properties_items() not cncjob tools --> %s" % str(ee))
 
-                try:
+                if xmin and ymin and xmax and ymax:
                     xmin = min(xmin)
                     ymin = min(ymin)
                     xmax = max(xmax)
@@ -591,24 +596,20 @@ class FlatCAMObj(QtCore.QObject):
                     else:
                         area = length * width
 
-                    if obj_prop.kind.lower() == 'gerber':
-                        # calculate copper area
+                if obj_prop.kind.lower() == 'gerber' and obj_prop.tools:
+                    # calculate copper area
 
-                        # create a complete solid_geometry from the tools
-                        geo_tools = []
-                        for tool_k in obj_prop.tools:
-                            if 'solid_geometry' in obj_prop.tools[tool_k]:
-                                for geo_el in obj_prop.tools[tool_k]['solid_geometry']:
-                                    geo_tools.append(geo_el)
+                    # create a complete solid_geometry from the tools
+                    geo_tools = []
+                    for tool_k in obj_prop.tools:
+                        if 'solid_geometry' in obj_prop.tools[tool_k]:
+                            for geo_el in obj_prop.tools[tool_k]['solid_geometry']:
+                                geo_tools.append(geo_el)
 
-                        try:
-                            for geo_el in geo_tools:
-                                copper_area += geo_el.area
-                        except TypeError:
-                            copper_area += geo_tools.area
-                        copper_area /= 100
-                except Exception as err:
-                    log.debug("FlatCAMObj.addItems() --> %s" % str(err))
+                    for geo_el in geo_tools:
+                        copper_area += geo_el.area
+                    # in cm2
+                    copper_area /= 100
 
             area_chull = 0.0
             if obj_prop.kind.lower() != 'cncjob':
@@ -630,14 +631,16 @@ class FlatCAMObj(QtCore.QObject):
                         area_chull = 0
                 else:
                     try:
-                        area_chull = []
-                        for tool_k in obj_prop.tools:
-                            area_el = unary_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
-                            area_chull.append(area_el.area)
-                        area_chull = max(area_chull)
+                        area_chull = None
+                        if obj_prop.tools:
+                            area_chull_list = []
+                            for tool_k in obj_prop.tools:
+                                area_el = unary_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
+                                area_chull_list.append(area_el.area)
+                            area_chull = max(area_chull_list)
                     except Exception as er:
                         area_chull = None
-                        log.debug("FlatCAMObj.addItems() --> %s" % str(er))
+                        log.debug("FlatCAMObj.add_properties_items() area chull--> %s" % str(er))
 
             if self.app.defaults['units'].lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100
@@ -656,7 +659,7 @@ class FlatCAMObj(QtCore.QObject):
             self.treeWidget.addChild(options, [str(option), str(obj.options[option])], True)
 
         # Items that depend on the object type
-        if obj.kind.lower() == 'gerber':
+        if obj.kind.lower() == 'gerber' and obj.apertures:
             temp_ap = {}
             for ap in obj.apertures:
                 temp_ap.clear()

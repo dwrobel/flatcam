@@ -1763,6 +1763,22 @@ class GeometryObjectUI(ObjectUI):
         )
         self.grid4.addWidget(self.tools_label, 28, 0, 1, 2)
 
+        # Milling Tool - will create GCode for slot holes
+        self.milling_button = QtWidgets.QPushButton(_('Milling Tool'))
+        self.milling_button.setIcon(QtGui.QIcon(self.app.resource_location + '/milling_tool32.png'))
+        self.milling_button.setToolTip(
+            _("Generate a CNCJob by milling a Geometry.")
+        )
+        self.milling_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.grid4.addWidget(self.milling_button, 30, 0, 1, 2)
+        # FIXME: until the Milling Tool is ready, this get disabled
+        self.milling_button.setDisabled(True)
+
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
         self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
@@ -1774,13 +1790,13 @@ class GeometryObjectUI(ObjectUI):
                 "to click on the desired polygon."
             )
         )
-        self.paint_tool_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.grid4.addWidget(self.paint_tool_button, 30, 0, 1, 2)
+        # self.paint_tool_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
+        self.grid4.addWidget(self.paint_tool_button, 32, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -1795,7 +1811,7 @@ class GeometryObjectUI(ObjectUI):
         #                     font-weight: bold;
         #                 }
         #                 """)
-        self.grid4.addWidget(self.generate_ncc_button, 32, 0, 1, 2)
+        self.grid4.addWidget(self.generate_ncc_button, 34, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):

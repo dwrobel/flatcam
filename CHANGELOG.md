@@ -26,6 +26,7 @@ CHANGELOG for FlatCAM beta
 - compacted the UI for the 2Sided Tool
 - added a button in Excellon UI that will hide/show the milling section
 - optimized a bit the UI for Gerber/Excellon/Geometry objects
+- optimized FlatCAMObj.add_properties_items() method
 
 20.10.2020
 
