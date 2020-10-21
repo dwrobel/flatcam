@@ -403,6 +403,32 @@ class GerberObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 22, 0, 1, 3)
 
+        # UTILITIES BUTTON
+        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
+        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid0.addWidget(self.util_button, 24, 0, 1, 3)
+
+        # UTILITIES Frame
+        self.util_frame = QtWidgets.QFrame()
+        self.util_frame.setContentsMargins(0, 0, 0, 0)
+        grid0.addWidget(self.util_frame, 25, 0, 1, 3)
+        self.util_box = QtWidgets.QVBoxLayout()
+        self.util_box.setContentsMargins(0, 0, 0, 0)
+        self.util_frame.setLayout(self.util_box)
+        self.util_frame.hide()
+
+        util_grid = QtWidgets.QGridLayout()
+        util_grid.setColumnStretch(0, 0)
+        util_grid.setColumnStretch(1, 1)
+        self.util_box.addLayout(util_grid)
+
         # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>%s</b>" % _("Non-copper regions"))
         self.noncopper_label.setToolTip(
@@ -413,7 +439,7 @@ class GerberObjectUI(ObjectUI):
               "copper from a specified region.")
         )
 
-        grid0.addWidget(self.noncopper_label, 24, 0, 1, 3)
+        util_grid.addWidget(self.noncopper_label, 0, 0, 1, 3)
 
         # Margin
         bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
@@ -429,8 +455,8 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(bmlabel, 26, 0)
-        grid0.addWidget(self.noncopper_margin_entry, 26, 1, 1, 2)
+        util_grid.addWidget(bmlabel, 2, 0)
+        util_grid.addWidget(self.noncopper_margin_entry, 2, 1, 1, 2)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded"))
@@ -440,13 +466,13 @@ class GerberObjectUI(ObjectUI):
 
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_noncopper_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))
-        grid0.addWidget(self.noncopper_rounded_cb, 28, 0)
-        grid0.addWidget(self.generate_noncopper_button, 28, 1, 1, 2)
+        util_grid.addWidget(self.noncopper_rounded_cb, 4, 0)
+        util_grid.addWidget(self.generate_noncopper_button, 4, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
         separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line1, 30, 0, 1, 3)
+        util_grid.addWidget(separator_line1, 6, 0, 1, 3)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s</b>' % _('Bounding Box'))
@@ -455,7 +481,7 @@ class GerberObjectUI(ObjectUI):
               "Square shape.")
         )
 
-        grid0.addWidget(self.boundingbox_label, 32, 0, 1, 3)
+        util_grid.addWidget(self.boundingbox_label, 8, 0, 1, 3)
 
         bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -467,8 +493,8 @@ class GerberObjectUI(ObjectUI):
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(bbmargin, 34, 0)
-        grid0.addWidget(self.bbmargin_entry, 34, 1, 1, 2)
+        util_grid.addWidget(bbmargin, 10, 0)
+        util_grid.addWidget(self.bbmargin_entry, 10, 1, 1, 2)
 
         self.bbrounded_cb = FCCheckBox(label=_("Rounded"))
         self.bbrounded_cb.setToolTip(
@@ -483,8 +509,8 @@ class GerberObjectUI(ObjectUI):
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        grid0.addWidget(self.bbrounded_cb, 36, 0)
-        grid0.addWidget(self.generate_bb_button, 36, 1, 1, 2)
+        util_grid.addWidget(self.bbrounded_cb, 12, 0)
+        util_grid.addWidget(self.generate_bb_button, 12, 1, 1, 2)
 
 
 class ExcellonObjectUI(ObjectUI):

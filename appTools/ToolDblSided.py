@@ -546,8 +546,6 @@ class DsidedUI:
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay.addWidget(separator_line, 7, 0, 1, 2)
 
-        self.layout.addWidget(QtWidgets.QLabel(""))
-
         # #############################################################################################################
         # ##########    BOUNDS OPERATION    ###########################################################################
         # #############################################################################################################
@@ -653,8 +651,6 @@ class DsidedUI:
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
-
-        grid0.addWidget(QtWidgets.QLabel(""), 15, 0, 1, 2)
 
         # #############################################################################################################
         # ##########    MIRROR OPERATION    ###########################################################################
@@ -807,8 +803,6 @@ class DsidedUI:
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid1.addWidget(separator_line, 18, 0, 1, 3)
-
-        grid1.addWidget(QtWidgets.QLabel(""), 20, 0, 1, 3)
 
         # #############################################################################################################
         # ##########    ALIGNMENT OPERATION    ########################################################################

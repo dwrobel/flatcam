@@ -22,6 +22,8 @@ CHANGELOG for FlatCAM beta
 - cascaded_union() method will be deprecated in Shapely 1.8 in favor of unary_union; replaced the usage of cascaded_union with unary_union in all the app
 - added some strings to the translatable strings and updated the translation strings
 - merged in the Autolevelling branch and made some PEP8 changes to the bilinearInterpolator.py file
+- added a button in Gerber UI that will hide/show the bounding box generation and the non-copper region section
+- compacted the UI for the 2Sided Tool
 
 20.10.2020
 
