@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 
 from appGUI.GUIElements import RadioSet, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner, NumericalEvalTupleEntry, \
-    OptionalInputSection, NumericalEvalEntry
+    OptionalInputSection, NumericalEvalEntry, FCLabel
 from appGUI.preferences.OptionsGroupUI import OptionsGroupUI
 
 import gettext
@@ -28,7 +28,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.decimals = decimals
 
         # ## Clear non-copper regions
-        self.drill_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.drill_label = FCLabel("<b>%s:</b>" % _("Parameters"))
         self.drill_label.setToolTip(
             _("Create CNCJob with toolpaths for drilling or milling holes.")
         )
@@ -38,7 +38,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # Tool order Radio Button
-        self.order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
+        self.order_label = FCLabel('%s:' % _('Tool order'))
         self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                       "'No' --> means that the used order is the one in the tool table\n"
                                       "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -54,7 +54,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.order_radio, 1, 1, 1, 2)
 
         # Cut Z
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel = FCLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
@@ -95,7 +95,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.maxdepth_entry, 4, 1, 1, 2)
 
         # Travel Z
-        travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        travelzlabel = FCLabel('%s:' % _('Travel Z'))
         travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
@@ -121,7 +121,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.toolchange_cb, 6, 0, 1, 3)
 
         # Tool Change Z
-        toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
+        toolchangezlabel = FCLabel('%s:' % _('Toolchange Z'))
         toolchangezlabel.setToolTip(
             _("Z-axis position (height) for\n"
               "tool change.")
@@ -139,7 +139,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.toolchangez_entry, 7, 1, 1, 2)
 
         # End Move Z
-        endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        endz_label = FCLabel('%s:' % _('End move Z'))
         endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
@@ -156,7 +156,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.endz_entry, 8, 1, 1, 2)
 
         # End Move X,Y
-        endmove_xy_label = QtWidgets.QLabel('%s:' % _('End move X,Y'))
+        endmove_xy_label = FCLabel('%s:' % _('End move X,Y'))
         endmove_xy_label.setToolTip(
             _("End move X,Y position. In format (x,y).\n"
               "If no value is entered then there is no move\n"
@@ -168,7 +168,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.endxy_entry, 9, 1, 1, 2)
 
         # Feedrate Z
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        frlabel = FCLabel('%s:' % _('Feedrate Z'))
         frlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -183,7 +183,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.feedrate_z_entry, 10, 1, 1, 2)
 
         # Spindle speed
-        spdlabel = QtWidgets.QLabel('%s:' % _('Spindle Speed'))
+        spdlabel = FCLabel('%s:' % _('Spindle Speed'))
         spdlabel.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
@@ -206,7 +206,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.dwell_cb, 12, 0, 1, 3)
 
         # Dwell Time
-        dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
+        dwelltime = FCLabel('%s:' % _('Duration'))
         dwelltime.setToolTip(_("Number of time units for spindle to dwell."))
         self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_precision(self.decimals)
@@ -218,7 +218,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # preprocessor selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        pp_excellon_label = FCLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
               "Gcode output.")
@@ -236,7 +236,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 16, 0, 1, 3)
 
         # DRILL SLOTS LABEL
-        self.dslots_label = QtWidgets.QLabel('<b>%s:</b>' % _('Drilling Slots'))
+        self.dslots_label = FCLabel('<b>%s:</b>' % _('Drilling Slots'))
         grid0.addWidget(self.dslots_label, 18, 0, 1, 3)
 
         # Drill slots
@@ -247,7 +247,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_slots_cb, 20, 0, 1, 3)
 
         # Drill Overlap
-        self.drill_overlap_label = QtWidgets.QLabel('%s:' % _('Overlap'))
+        self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
         self.drill_overlap_label.setToolTip(
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
@@ -273,14 +273,14 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 26, 0, 1, 3)
 
-        self.exc_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
+        self.exc_label = FCLabel('<b>%s:</b>' % _('Advanced Options'))
         self.exc_label.setToolTip(
             _("A list of advanced parameters.")
         )
         grid0.addWidget(self.exc_label, 28, 0, 1, 3)
 
         # Offset Z
-        offsetlabel = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        offsetlabel = FCLabel('%s:' % _('Offset Z'))
         offsetlabel.setToolTip(
             _("Some drill bits (the larger ones) need to drill deeper\n"
               "to create the desired exit hole diameter due of the tip shape.\n"
@@ -293,7 +293,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.offset_entry, 29, 1, 1, 2)
 
         # ToolChange X,Y
-        toolchange_xy_label = QtWidgets.QLabel('%s:' % _('Toolchange X,Y'))
+        toolchange_xy_label = FCLabel('%s:' % _('Toolchange X,Y'))
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
@@ -303,7 +303,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.toolchangexy_entry, 31, 1, 1, 2)
 
         # Start Z
-        startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
+        startzlabel = FCLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
             _("Height of the tool just after start.\n"
               "Delete the value if you don't need this feature.")
@@ -314,7 +314,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.estartz_entry, 33, 1, 1, 2)
 
         # Feedrate Rapids
-        fr_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
+        fr_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
         fr_rapid_label.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -330,7 +330,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.feedrate_rapid_entry, 35, 1, 1, 2)
 
         # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label = FCLabel('%s:' % _("Probe Z depth"))
         self.pdepth_label.setToolTip(
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
@@ -343,7 +343,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pdepth_entry, 37, 1, 1, 2)
 
         # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label = FCLabel('%s:' % _("Feedrate Probe"))
         self.feedrate_probe_label.setToolTip(
            _("The feedrate used while the probe is probing.")
         )
@@ -355,7 +355,7 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.feedrate_probe_entry, 38, 1, 1, 2)
 
         # Spindle direction
-        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle direction'))
+        spindle_dir_label = FCLabel('%s:' % _('Spindle direction'))
         spindle_dir_label.setToolTip(
             _("This sets the direction that the spindle is rotating.\n"
               "It can be either:\n"
@@ -388,5 +388,65 @@ class ToolsDrillPrefGroupUI(OptionsGroupUI):
         )
 
         grid0.addWidget(self.fretract_cb, 45, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 46, 0, 1, 3)
+
+        # -----------------------------
+        # --- Area Exclusion ----------
+        # -----------------------------
+        self.area_exc_label = FCLabel('<b>%s:</b>' % _('Area Exclusion'))
+        self.area_exc_label.setToolTip(
+            _("Area exclusion parameters.")
+        )
+        grid0.addWidget(self.area_exc_label, 47, 0, 1, 2)
+
+        # Exclusion Area CB
+        self.exclusion_cb = FCCheckBox('%s' % _("Exclusion areas"))
+        self.exclusion_cb.setToolTip(
+            _(
+                "Include exclusion areas.\n"
+                "In those areas the travel of the tools\n"
+                "is forbidden."
+            )
+        )
+        grid0.addWidget(self.exclusion_cb, 49, 0, 1, 2)
+
+        # Area Selection shape
+        self.area_shape_label = FCLabel('%s:' % _("Shape"))
+        self.area_shape_label.setToolTip(
+            _("The kind of selection shape used for area selection.")
+        )
+
+        self.area_shape_radio = RadioSet([{'label': _("Square"), 'value': 'square'},
+                                          {'label': _("Polygon"), 'value': 'polygon'}])
+
+        grid0.addWidget(self.area_shape_label, 51, 0)
+        grid0.addWidget(self.area_shape_radio, 51, 1)
+
+        # Chose Strategy
+        self.strategy_label = FCLabel('%s:' % _("Strategy"))
+        self.strategy_label.setToolTip(_("The strategy followed when encountering an exclusion area.\n"
+                                         "Can be:\n"
+                                         "- Over -> when encountering the area, the tool will go to a set height\n"
+                                         "- Around -> will avoid the exclusion area by going around the area"))
+        self.strategy_radio = RadioSet([{'label': _('Over'), 'value': 'over'},
+                                        {'label': _('Around'), 'value': 'around'}])
+
+        grid0.addWidget(self.strategy_label, 53, 0)
+        grid0.addWidget(self.strategy_radio, 53, 1)
+
+        # Over Z
+        self.over_z_label = FCLabel('%s:' % _("Over Z"))
+        self.over_z_label.setToolTip(_("The height Z to which the tool will rise in order to avoid\n"
+                                       "an interdiction area."))
+        self.over_z_entry = FCDoubleSpinner()
+        self.over_z_entry.set_range(0.000, 9999.9999)
+        self.over_z_entry.set_precision(self.decimals)
+
+        grid0.addWidget(self.over_z_label, 55, 0)
+        grid0.addWidget(self.over_z_entry, 55, 1)
 
         self.layout.addStretch()

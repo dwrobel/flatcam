@@ -17,6 +17,7 @@ CHANGELOG for FlatCAM beta
 - some strings changed
 - fixed crash on using shortcut for creating a new Document Object
 - fixed Cutout Tool to work with the endxy parameter
+- added the exclusion parameters for Drilling Tool to the Preferences area
 
 20.10.2020
 

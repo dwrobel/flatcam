@@ -382,6 +382,12 @@ class PreferencesUIManager:
             "tools_drill_f_plunge":         self.ui.tools_defaults_form.tools_drill_group.fplunge_cb,
             "tools_drill_f_retract":        self.ui.tools_defaults_form.tools_drill_group.fretract_cb,
 
+            # Area Exclusion
+            "tools_drill_area_exclusion":   self.ui.tools_defaults_form.tools_drill_group.exclusion_cb,
+            "tools_drill_area_shape":       self.ui.tools_defaults_form.tools_drill_group.area_shape_radio,
+            "tools_drill_area_strategy":    self.ui.tools_defaults_form.tools_drill_group.strategy_radio,
+            "tools_drill_area_overz":       self.ui.tools_defaults_form.tools_drill_group.over_z_entry,
+
             # NCC Tool
             "tools_ncctools":           self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
             "tools_nccorder":           self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
