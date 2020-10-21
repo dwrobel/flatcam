@@ -24,6 +24,8 @@ CHANGELOG for FlatCAM beta
 - merged in the Autolevelling branch and made some PEP8 changes to the bilinearInterpolator.py file
 - added a button in Gerber UI that will hide/show the bounding box generation and the non-copper region section
 - compacted the UI for the 2Sided Tool
+- added a button in Excellon UI that will hide/show the milling section
+- optimized a bit the UI for Gerber/Excellon/Geometry objects
 
 20.10.2020
 

@@ -184,6 +184,8 @@ class ExcellonObject(FlatCAMObj, Excellon):
         self.ui.drill_button.clicked.connect(lambda: self.app.drilling_tool.run(toggle=True))
         # self.ui.milling_button.clicked.connect(lambda: self.app.milling_tool.run(toggle=True))
 
+        # UTILITIES
+        self.ui.util_button.clicked.connect(lambda st: self.ui.util_frame.show() if st else self.ui.util_frame.hide())
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 

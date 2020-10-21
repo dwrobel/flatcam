@@ -375,12 +375,12 @@ class GerberObjectUI(ObjectUI):
             _("Create the Geometry Object\n"
               "for non-copper routing.")
         )
-        self.generate_ncc_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+        # self.generate_ncc_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
         grid0.addWidget(self.generate_ncc_button, 18, 0, 1, 3)
 
         # ## Board cutout
@@ -390,12 +390,12 @@ class GerberObjectUI(ObjectUI):
             _("Generate the geometry for\n"
               "the board cutout.")
         )
-        self.generate_cutout_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+        # self.generate_cutout_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
         grid0.addWidget(self.generate_cutout_button, 20, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
@@ -737,12 +737,12 @@ class ExcellonObjectUI(ObjectUI):
         self.milling_button.setToolTip(
             _("Generate a Geometry for milling drills or slots in an Excellon object.")
         )
-        self.milling_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+        # self.milling_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
         grid2.addWidget(self.milling_button, 6, 0, 1, 2)
         # TODO until the Milling Tool is finished this stays disabled
         self.milling_button.setDisabled(True)
@@ -752,13 +752,31 @@ class ExcellonObjectUI(ObjectUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line, 8, 0, 1, 2)
 
-        # #################################################################
-        # ################# GRID LAYOUT 6   ###############################
-        # #################################################################
-        self.grid6 = QtWidgets.QGridLayout()
-        self.grid6.setColumnStretch(0, 0)
-        self.grid6.setColumnStretch(1, 1)
-        self.tools_box.addLayout(self.grid6)
+        # UTILITIES BUTTON
+        self.util_button = FCButton('%s' % _("UTILTIES"), checkable=True)
+        self.util_button.setIcon(QtGui.QIcon(self.app.resource_location + '/settings18.png'))
+        self.util_button.setToolTip(_("Show the Utilties."))
+        self.util_button.setStyleSheet("""
+                                      QPushButton
+                                      {
+                                          font-weight: bold;
+                                      }
+                                      """)
+        grid2.addWidget(self.util_button, 10, 0, 1, 2)
+
+        # UTILITIES Frame
+        self.util_frame = QtWidgets.QFrame()
+        self.util_frame.setContentsMargins(0, 0, 0, 0)
+        grid2.addWidget(self.util_frame, 12, 0, 1, 2)
+        self.util_box = QtWidgets.QVBoxLayout()
+        self.util_box.setContentsMargins(0, 0, 0, 0)
+        self.util_frame.setLayout(self.util_box)
+        self.util_frame.hide()
+
+        util_grid = QtWidgets.QGridLayout()
+        util_grid.setColumnStretch(0, 0)
+        util_grid.setColumnStretch(1, 1)
+        self.util_box.addLayout(util_grid)
 
         # ### Milling Holes Drills ####
         self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Milling Geometry'))
@@ -767,14 +785,14 @@ class ExcellonObjectUI(ObjectUI):
               "Select from the Tools Table above the hole dias to be\n"
               "milled. Use the # column to make the selection.")
         )
-        self.grid6.addWidget(self.mill_hole_label, 5, 0, 1, 3)
+        util_grid.addWidget(self.mill_hole_label, 0, 0, 1, 3)
 
         self.tdlabel = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
         self.tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
 
-        self.grid6.addWidget(self.tdlabel, 6, 0, 1, 3)
+        util_grid.addWidget(self.tdlabel, 2, 0, 1, 3)
 
         self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tooldia_entry.set_precision(self.decimals)
@@ -793,8 +811,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        self.grid6.addWidget(self.tooldia_entry, 7, 0, 1, 2)
-        self.grid6.addWidget(self.generate_milling_button, 7, 2)
+        util_grid.addWidget(self.tooldia_entry, 4, 0, 1, 2)
+        util_grid.addWidget(self.generate_milling_button, 4, 2)
 
         self.slot_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.slot_tooldia_entry.set_precision(self.decimals)
@@ -813,8 +831,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        self.grid6.addWidget(self.slot_tooldia_entry, 8, 0, 1, 2)
-        self.grid6.addWidget(self.generate_milling_slots_button, 8, 2)
+        util_grid.addWidget(self.slot_tooldia_entry, 6, 0, 1, 2)
+        util_grid.addWidget(self.generate_milling_slots_button, 6, 2)
 
     def hide_drills(self, state=True):
         if state is True:
@@ -1771,12 +1789,12 @@ class GeometryObjectUI(ObjectUI):
             _("Create the Geometry Object\n"
               "for non-copper routing.")
         )
-        self.generate_ncc_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
+        # self.generate_ncc_button.setStyleSheet("""
+        #                 QPushButton
+        #                 {
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
         self.grid4.addWidget(self.generate_ncc_button, 32, 0, 1, 2)
 
 
