@@ -466,6 +466,7 @@ class ToolPaint(AppTool, Gerber):
             "area_shape":           self.app.defaults["geometry_area_shape"],
             "area_strategy":        self.app.defaults["geometry_area_strategy"],
             "area_overz":           float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type":    self.app.defaults["geometry_optimization_type"],
 
             "tooldia":              self.app.defaults["tools_painttooldia"],
             "tools_paintoffset":   self.app.defaults["tools_paintoffset"],

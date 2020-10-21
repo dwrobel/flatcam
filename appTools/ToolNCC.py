@@ -548,6 +548,7 @@ class NonCopperClear(AppTool, Gerber):
             "area_shape":               self.app.defaults["geometry_area_shape"],
             "area_strategy":            self.app.defaults["geometry_area_strategy"],
             "area_overz":               float(self.app.defaults["geometry_area_overz"]),
+            "optimization_type":        self.app.defaults["geometry_optimization_type"],
 
             "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
             "tools_nccmargin":          self.app.defaults["tools_nccmargin"],

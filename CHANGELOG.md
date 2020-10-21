@@ -10,6 +10,7 @@ CHANGELOG for FlatCAM beta
 21.10.2020
 
 - in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here
+- in NCC and Paint Tool fixed some issues with missing keys in the tool data dictionary
 
 20.10.2020
 

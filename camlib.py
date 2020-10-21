@@ -5301,7 +5301,11 @@ class CNCjob(Geometry):
         self.feedrate_rapid = float(tool_dict['feedrate_rapid'])
 
         self.spindlespeed = float(tool_dict['spindlespeed'])
-        self.spindledir = tool_dict['spindledir']
+        try:
+            self.spindledir = tool_dict['spindledir']
+        except KeyError:
+            self.spindledir = self.app.defaults["geometry_spindledir"]
+
         self.dwell = tool_dict['dwell']
         self.dwelltime = float(tool_dict['dwelltime'])
 
