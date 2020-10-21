@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-21 12:14+0300\n"
+"POT-Creation-Date: 2020-10-21 16:05+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -249,7 +249,7 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:130 appDatabase.py:2281 appGUI/MainGUI.py:1438
-#: appGUI/preferences/PreferencesUIManager.py:925 app_Main.py:2291 app_Main.py:3386
+#: appGUI/preferences/PreferencesUIManager.py:931 app_Main.py:2291 app_Main.py:3386
 #: app_Main.py:4341 app_Main.py:4587 app_Main.py:6895
 msgid "Cancel"
 msgstr ""
@@ -260,7 +260,7 @@ msgstr ""
 
 #: appDatabase.py:161 appDatabase.py:837 appEditors/AppExcEditor.py:3765
 #: appGUI/ObjectUI.py:1038 appGUI/ObjectUI.py:1606
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:132 appTools/ToolCutOut.py:2058
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:132 appTools/ToolCutOut.py:2060
 #: appTools/ToolIsolation.py:3091 appTools/ToolNCC.py:3859 appTools/ToolNCC.py:3870
 #: appTools/ToolPaint.py:2882
 msgid "Tool Dia"
@@ -296,7 +296,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:98
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:105
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:113 appTools/ToolCalculators.py:240
-#: appTools/ToolCutOut.py:2102 appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
+#: appTools/ToolCutOut.py:2104 appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
 msgid "Cut Z"
 msgstr ""
 
@@ -583,14 +583,14 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:307 appDatabase.py:684 appDatabase.py:718 appDatabase.py:2647
-#: appDatabase.py:3017 appDatabase.py:3051 appTools/ToolCutOut.py:293
+#: appDatabase.py:3017 appDatabase.py:3051 appTools/ToolCutOut.py:294
 #: appTools/ToolDrilling.py:895 appTools/ToolIsolation.py:1067 appTools/ToolNCC.py:965
 #: appTools/ToolPaint.py:704
 msgid "Could not load Tools DB file."
 msgstr ""
 
 #: appDatabase.py:315 appDatabase.py:726 appDatabase.py:2655 appDatabase.py:3059
-#: appTools/ToolCutOut.py:304 appTools/ToolDrilling.py:903 appTools/ToolIsolation.py:1078
+#: appTools/ToolCutOut.py:305 appTools/ToolDrilling.py:903 appTools/ToolIsolation.py:1078
 #: appTools/ToolNCC.py:976 appTools/ToolPaint.py:715
 msgid "Failed to parse Tools DB file."
 msgstr ""
@@ -645,7 +645,7 @@ msgid "Import FlatCAM Tools DB"
 msgstr ""
 
 #: appDatabase.py:740 appDatabase.py:915 appDatabase.py:3073 appDatabase.py:3464
-#: appObjects/FlatCAMGeometry.py:1089 appTools/ToolCutOut.py:482 appTools/ToolCutOut.py:523
+#: appObjects/FlatCAMGeometry.py:1089 appTools/ToolCutOut.py:484 appTools/ToolCutOut.py:525
 #: appTools/ToolIsolation.py:2583 appTools/ToolIsolation.py:2667 appTools/ToolNCC.py:3608
 #: appTools/ToolNCC.py:3688 appTools/ToolPaint.py:2626 appTools/ToolPaint.py:2715
 #: app_Main.py:5676 app_Main.py:5718 app_Main.py:5749 app_Main.py:5769 app_Main.py:5779
@@ -778,12 +778,13 @@ msgstr ""
 msgid "NCC"
 msgstr ""
 
-#: appDatabase.py:1192 appDatabase.py:2779 appTools/ToolCutOut.py:327
-#: appTools/ToolCutOut.py:463
+#: appDatabase.py:1192 appDatabase.py:2779 appTools/ToolCutOut.py:328
+#: appTools/ToolCutOut.py:465
 msgid "Cutout"
 msgstr ""
 
-#: appDatabase.py:1208 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:220
+#: appDatabase.py:1208 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:218
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:418
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:303
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:286 appTools/ToolIsolation.py:3425
@@ -901,7 +902,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:183 appTools/ToolCopperThieving.py:1204
 #: appTools/ToolCopperThieving.py:1455 appTools/ToolCorners.py:411
-#: appTools/ToolCutOut.py:2155 appTools/ToolFiducials.py:786
+#: appTools/ToolCutOut.py:2157 appTools/ToolFiducials.py:786
 #: appTools/ToolInvertGerber.py:234 appTools/ToolInvertGerber.py:242
 #: appTools/ToolNCC.py:4028 appTools/ToolNCC.py:4131
 msgid "Margin"
@@ -974,7 +975,8 @@ msgstr ""
 msgid "Combo"
 msgstr ""
 
-#: appDatabase.py:1594 appDatabase.py:1712 appGUI/ObjectUI.py:2200 appGUI/ObjectUI.py:2223
+#: appDatabase.py:1594 appDatabase.py:1712 appEditors/AppGeoEditor.py:505
+#: appGUI/ObjectUI.py:2200 appGUI/ObjectUI.py:2223
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:237
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:224 appObjects/FlatCAMCNCJob.py:1291
 #: appObjects/FlatCAMCNCJob.py:1313 appTools/ToolNCC.py:4041 appTools/ToolNCC.py:4144
@@ -991,7 +993,7 @@ msgid ""
 "segments to minimize tool lifts."
 msgstr ""
 
-#: appDatabase.py:1604 appDatabase.py:1719
+#: appDatabase.py:1604 appDatabase.py:1719 appEditors/AppGeoEditor.py:515
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:246
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:232 appTools/ToolNCC.py:4051
 #: appTools/ToolNCC.py:4152 appTools/ToolPaint.py:3034
@@ -1157,7 +1159,7 @@ msgstr ""
 #: appDatabase.py:1874 appGUI/ObjectUI.py:1193
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:82
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:80 appTools/ToolCutOut.py:2126
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:80 appTools/ToolCutOut.py:2128
 #: appTools/ToolDrilling.py:2167 appTools/ToolMilling.py:1817
 msgid ""
 "Use multiple passes to limit\n"
@@ -1168,7 +1170,7 @@ msgstr ""
 
 #: appDatabase.py:1896 appGUI/ObjectUI.py:1207
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:94
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:92 appTools/ToolCutOut.py:2140
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:92 appTools/ToolCutOut.py:2142
 #: appTools/ToolDrilling.py:2180 appTools/ToolMilling.py:1830
 msgid "Depth of each pass (positive)."
 msgstr ""
@@ -1248,7 +1250,7 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:2073 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
-#: appTools/ToolCutOut.py:2157
+#: appTools/ToolCutOut.py:2159
 msgid ""
 "Margin over bounds. A positive value here\n"
 "will make the cutout of the PCB further from\n"
@@ -1256,12 +1258,12 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:2085 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:131
-#: appTools/ToolCutOut.py:2165
+#: appTools/ToolCutOut.py:2167
 msgid "Gap size"
 msgstr ""
 
 #: appDatabase.py:2087 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:133
-#: appTools/ToolCutOut.py:2167
+#: appTools/ToolCutOut.py:2169
 msgid ""
 "The size of the bridge gaps in the cutout\n"
 "used to keep the board connected to\n"
@@ -1270,12 +1272,12 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:2096 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
-#: appTools/ToolCutOut.py:2180
+#: appTools/ToolCutOut.py:2182
 msgid "Gap type"
 msgstr ""
 
 #: appDatabase.py:2098 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
-#: appTools/ToolCutOut.py:2182
+#: appTools/ToolCutOut.py:2184
 msgid ""
 "The type of gap:\n"
 "- Bridge -> the cutout will be interrupted by bridges\n"
@@ -1284,22 +1286,22 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:2106 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
-#: appTools/ToolCutOut.py:2190
+#: appTools/ToolCutOut.py:2192
 msgid "Bridge"
 msgstr ""
 
 #: appDatabase.py:2107 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:159
-#: appTools/ToolCutOut.py:2191
+#: appTools/ToolCutOut.py:2193
 msgid "Thin"
 msgstr ""
 
 #: appDatabase.py:2118 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
-#: appTools/ToolCutOut.py:2201
+#: appTools/ToolCutOut.py:2203
 msgid "Depth"
 msgstr ""
 
 #: appDatabase.py:2120 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
-#: appTools/ToolCutOut.py:2203
+#: appTools/ToolCutOut.py:2205
 msgid ""
 "The depth until the milling is done\n"
 "in order to thin the gaps."
@@ -1307,12 +1309,12 @@ msgstr ""
 
 #: appDatabase.py:2137 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186 appTools/ToolCalculators.py:249
-#: appTools/ToolCutOut.py:2218
+#: appTools/ToolCutOut.py:2220
 msgid "Tool Diameter"
 msgstr ""
 
 #: appDatabase.py:2139 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
-#: appTools/ToolCutOut.py:2220
+#: appTools/ToolCutOut.py:2222
 msgid "The drill hole diameter when doing mpuse bites."
 msgstr ""
 
@@ -1321,33 +1323,33 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:198
 #: appTools/ToolCopperThieving.py:1327 appTools/ToolCopperThieving.py:1367
-#: appTools/ToolCopperThieving.py:1407 appTools/ToolCutOut.py:2230
+#: appTools/ToolCopperThieving.py:1407 appTools/ToolCutOut.py:2232
 msgid "Spacing"
 msgstr ""
 
 #: appDatabase.py:2152 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:200
-#: appTools/ToolCutOut.py:2232
+#: appTools/ToolCutOut.py:2234
 msgid "The spacing between drill holes when doing mouse bites."
 msgstr ""
 
 #: appDatabase.py:2171 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
-#: appTools/ToolCutOut.py:2032
+#: appTools/ToolCutOut.py:2034
 msgid "Convex Shape"
 msgstr ""
 
 #: appDatabase.py:2174 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:235
-#: appTools/ToolCutOut.py:2034 appTools/ToolCutOut.py:2039
+#: appTools/ToolCutOut.py:2036 appTools/ToolCutOut.py:2041
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
 "Used only if the source object type is Gerber."
 msgstr ""
 
 #: appDatabase.py:2182 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:209
-#: appTools/ToolCutOut.py:2261
+#: appTools/ToolCutOut.py:2263
 msgid "Gaps"
 msgstr ""
 
-#: appDatabase.py:2184 appTools/ToolCutOut.py:2263
+#: appDatabase.py:2184 appTools/ToolCutOut.py:2265
 msgid ""
 "Number of gaps used for the Automatic cutout.\n"
 "There can be maximum 8 bridges/gaps.\n"
@@ -1388,7 +1390,7 @@ msgstr ""
 #: appTools/ToolCalculators.py:401 appTools/ToolCalibration.py:1395
 #: appTools/ToolCalibration.py:1406 appTools/ToolCopperThieving.py:1595
 #: appTools/ToolCopperThieving.py:1606 appTools/ToolCorners.py:462
-#: appTools/ToolCorners.py:473 appTools/ToolCutOut.py:2435 appTools/ToolCutOut.py:2446
+#: appTools/ToolCorners.py:473 appTools/ToolCutOut.py:2437 appTools/ToolCutOut.py:2448
 #: appTools/ToolDblSided.py:965 appTools/ToolDblSided.py:976 appTools/ToolDistance.py:659
 #: appTools/ToolDistance.py:670 appTools/ToolDistanceMin.py:324
 #: appTools/ToolDistanceMin.py:335 appTools/ToolDrilling.py:2666
@@ -1418,7 +1420,7 @@ msgstr ""
 #: appTools/ToolCalculators.py:403 appTools/ToolCalibration.py:1401
 #: appTools/ToolCalibration.py:1408 appTools/ToolCopperThieving.py:1601
 #: appTools/ToolCopperThieving.py:1608 appTools/ToolCorners.py:468
-#: appTools/ToolCorners.py:475 appTools/ToolCutOut.py:2441 appTools/ToolCutOut.py:2448
+#: appTools/ToolCorners.py:475 appTools/ToolCutOut.py:2443 appTools/ToolCutOut.py:2450
 #: appTools/ToolDblSided.py:971 appTools/ToolDblSided.py:978 appTools/ToolDistance.py:665
 #: appTools/ToolDistance.py:672 appTools/ToolDistanceMin.py:330
 #: appTools/ToolDistanceMin.py:337 appTools/ToolDrilling.py:2672
@@ -1967,6 +1969,10 @@ msgstr ""
 msgid "Exit from Editor."
 msgstr ""
 
+#: appEditors/AppGeoEditor.py:49
+msgid "Buffer Selection"
+msgstr ""
+
 #: appEditors/AppGeoEditor.py:84
 msgid "Buffer distance:"
 msgstr ""
@@ -1989,12 +1995,14 @@ msgid "Round"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:94 appEditors/AppGerberEditor.py:2639 appGUI/ObjectUI.py:1570
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:225
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:223
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:68
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:175
+#: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:68
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:68
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:177
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:143
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:423
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:308
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:327
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:291 appTools/ToolDrilling.py:2588
@@ -2033,12 +2041,20 @@ msgstr ""
 msgid "Buffer distance value is missing or wrong format. Add it and retry."
 msgstr ""
 
+#: appEditors/AppGeoEditor.py:194
+msgid "Text Input Tool"
+msgstr ""
+
 #: appEditors/AppGeoEditor.py:241
 msgid "Font"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:322 appGUI/MainGUI.py:1502
 msgid "Text"
+msgstr ""
+
+#: appEditors/AppGeoEditor.py:328 appGUI/MainGUI.py:1422
+msgid "Apply"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:348
@@ -2055,6 +2071,12 @@ msgstr ""
 msgid "Tool"
 msgstr ""
 
+#: appEditors/AppGeoEditor.py:412 appEditors/AppGeoEditor.py:546 appGUI/MainGUI.py:935
+#: appGUI/MainGUI.py:2090 appGUI/ObjectUI.py:1723 appTools/ToolPaint.py:228
+#: appTools/ToolPaint.py:2730
+msgid "Paint Tool"
+msgstr ""
+
 #: appEditors/AppGeoEditor.py:438
 msgid "Tool dia"
 msgstr ""
@@ -2069,19 +2091,6 @@ msgid ""
 "- Standard: Fixed step inwards.\n"
 "- Seed-based: Outwards from seed.\n"
 "- Line-based: Parallel lines."
-msgstr ""
-
-#: appEditors/AppGeoEditor.py:505
-msgid "Connect:"
-msgstr ""
-
-#: appEditors/AppGeoEditor.py:515
-msgid "Contour:"
-msgstr ""
-
-#: appEditors/AppGeoEditor.py:546 appGUI/MainGUI.py:935 appGUI/MainGUI.py:2090
-#: appGUI/ObjectUI.py:1723 appTools/ToolPaint.py:228 appTools/ToolPaint.py:2730
-msgid "Paint Tool"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:582 appEditors/AppGeoEditor.py:1071
@@ -2384,7 +2393,8 @@ msgid "Offset Y"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:920 appEditors/AppGerberEditor.py:5630 appGUI/ObjectUI.py:436
-#: appGUI/ObjectUI.py:473 appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:142
+#: appGUI/ObjectUI.py:473 appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:67
+#: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:142
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:216 appTools/ToolQRCode.py:787
 #: appTools/ToolTransform.py:854
 msgid "Rounded"
@@ -2839,7 +2849,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:3287 appEditors/AppGerberEditor.py:2495
 #: appEditors/AppGerberEditor.py:3968 appEditors/appGCodeEditor.py:692
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:955 appGUI/ObjectUI.py:1952
-#: appTools/ToolCutOut.py:2011 appTools/ToolDblSided.py:519 appTools/ToolTransform.py:579
+#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:519 appTools/ToolTransform.py:579
 msgid "Type"
 msgstr ""
 
@@ -2852,7 +2862,8 @@ msgid "Line"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:3561 appGUI/MainGUI.py:1496 appGUI/ObjectUI.py:1571
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:226
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:224
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:424
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:328
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:292 appTools/ToolDrilling.py:2589
@@ -3423,8 +3434,8 @@ msgstr ""
 msgid "No aperture to buffer. Select at least one aperture and try again."
 msgstr ""
 
-#: appEditors/AppGerberEditor.py:5166 appTools/ToolCutOut.py:770 appTools/ToolCutOut.py:893
-#: appTools/ToolCutOut.py:1116 appTools/ToolCutOut.py:1262 camlib.py:4899 camlib.py:5663
+#: appEditors/AppGerberEditor.py:5166 appTools/ToolCutOut.py:772 appTools/ToolCutOut.py:895
+#: appTools/ToolCutOut.py:1118 appTools/ToolCutOut.py:1264 camlib.py:4899 camlib.py:5663
 msgid "Failed."
 msgstr ""
 
@@ -3981,7 +3992,7 @@ msgstr ""
 msgid "Export Preferences to file ..."
 msgstr ""
 
-#: appGUI/MainGUI.py:295 appGUI/preferences/PreferencesUIManager.py:1166
+#: appGUI/MainGUI.py:295 appGUI/preferences/PreferencesUIManager.py:1172
 msgid "Save Preferences"
 msgstr ""
 
@@ -4641,7 +4652,7 @@ msgid "Extract Drills Tool"
 msgstr ""
 
 #: appGUI/MainGUI.py:931 appGUI/ObjectUI.py:387 appTools/ToolCutOut.py:156
-#: appTools/ToolCutOut.py:2050
+#: appTools/ToolCutOut.py:2052
 msgid "Cutout Tool"
 msgstr ""
 
@@ -4905,10 +4916,10 @@ msgstr ""
 msgid "Toggle the display of axis on canvas"
 msgstr ""
 
-#: appGUI/MainGUI.py:1148 appGUI/preferences/PreferencesUIManager.py:892
-#: appGUI/preferences/PreferencesUIManager.py:985
-#: appGUI/preferences/PreferencesUIManager.py:1013
-#: appGUI/preferences/PreferencesUIManager.py:1118 app_Main.py:5579 app_Main.py:5584
+#: appGUI/MainGUI.py:1148 appGUI/preferences/PreferencesUIManager.py:898
+#: appGUI/preferences/PreferencesUIManager.py:991
+#: appGUI/preferences/PreferencesUIManager.py:1019
+#: appGUI/preferences/PreferencesUIManager.py:1124 app_Main.py:5579 app_Main.py:5584
 #: app_Main.py:5599
 msgid "Preferences"
 msgstr ""
@@ -5010,10 +5021,6 @@ msgid ""
 "such as: layout, gui state, style, hdpi support etc."
 msgstr ""
 
-#: appGUI/MainGUI.py:1422
-msgid "Apply"
-msgstr ""
-
 #: appGUI/MainGUI.py:1425
 msgid "Apply the current preferences without saving to a file."
 msgstr ""
@@ -5040,7 +5047,7 @@ msgstr ""
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
 #: appTools/ToolCopperThieving.py:1237 appTools/ToolCopperThieving.py:1251
-#: appTools/ToolCutOut.py:2008 appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:774
+#: appTools/ToolCutOut.py:2010 appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:774
 #: appTools/ToolFilm.py:929 appTools/ToolFilm.py:952 appTools/ToolImage.py:136
 #: appTools/ToolImage.py:191 appTools/ToolIsolation.py:802 appTools/ToolIsolation.py:3338
 #: appTools/ToolIsolation.py:3391 appTools/ToolNCC.py:793 appTools/ToolNCC.py:3741
@@ -5163,13 +5170,13 @@ msgstr ""
 msgid "Are you sure you want to delete the GUI Settings? \n"
 msgstr ""
 
-#: appGUI/MainGUI.py:1986 appGUI/preferences/PreferencesUIManager.py:924
-#: appGUI/preferences/PreferencesUIManager.py:1170 appTranslation.py:112
+#: appGUI/MainGUI.py:1986 appGUI/preferences/PreferencesUIManager.py:930
+#: appGUI/preferences/PreferencesUIManager.py:1176 appTranslation.py:112
 #: appTranslation.py:214 app_Main.py:2289 app_Main.py:3384 app_Main.py:5809 app_Main.py:6893
 msgid "Yes"
 msgstr ""
 
-#: appGUI/MainGUI.py:1987 appGUI/preferences/PreferencesUIManager.py:1171
+#: appGUI/MainGUI.py:1987 appGUI/preferences/PreferencesUIManager.py:1177
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:49
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:164
@@ -5909,8 +5916,8 @@ msgstr ""
 msgid "Resulting geometry will have rounded corners."
 msgstr ""
 
-#: appGUI/ObjectUI.py:441 appGUI/ObjectUI.py:481 appTools/ToolCutOut.py:2285
-#: appTools/ToolCutOut.py:2300 appTools/ToolIsolation.py:3444 appTools/ToolNCC.py:4255
+#: appGUI/ObjectUI.py:441 appGUI/ObjectUI.py:481 appTools/ToolCutOut.py:2287
+#: appTools/ToolCutOut.py:2302 appTools/ToolIsolation.py:3444 appTools/ToolNCC.py:4255
 #: appTools/ToolPaint.py:3178
 msgid "Generate Geometry"
 msgstr ""
@@ -6151,7 +6158,7 @@ msgstr ""
 msgid "Add from DB"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1052 appTools/ToolCutOut.py:2069 appTools/ToolIsolation.py:61
+#: appGUI/ObjectUI.py:1052 appTools/ToolCutOut.py:2071 appTools/ToolIsolation.py:61
 #: appTools/ToolIsolation.py:3122 appTools/ToolNCC.py:3889 appTools/ToolPaint.py:2898
 msgid "Search and Add"
 msgstr ""
@@ -6162,12 +6169,12 @@ msgid ""
 "with the diameter specified above."
 msgstr ""
 
-#: appGUI/ObjectUI.py:1059 appTools/ToolCutOut.py:2081 appTools/ToolIsolation.py:65
+#: appGUI/ObjectUI.py:1059 appTools/ToolCutOut.py:2083 appTools/ToolIsolation.py:65
 #: appTools/ToolIsolation.py:3133 appTools/ToolNCC.py:3900 appTools/ToolPaint.py:2909
 msgid "Pick from DB"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1062 appTools/ToolCutOut.py:2084 appTools/ToolIsolation.py:3136
+#: appGUI/ObjectUI.py:1062 appTools/ToolCutOut.py:2086 appTools/ToolIsolation.py:3136
 #: appTools/ToolNCC.py:3903 appTools/ToolPaint.py:2912
 msgid ""
 "Add a new tool to the Tool Table\n"
@@ -6244,7 +6251,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:1172 appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:51
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:61 appObjects/FlatCAMGeometry.py:1374
-#: appTools/ToolCutOut.py:2105
+#: appTools/ToolCutOut.py:2107
 msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
@@ -6252,7 +6259,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:1190 appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:69
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:79
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:77 appTools/ToolCutOut.py:2123
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:77 appTools/ToolCutOut.py:2125
 #: appTools/ToolDrilling.py:2164 appTools/ToolMilling.py:1814
 msgid "Multi-Depth"
 msgstr ""
@@ -6438,8 +6445,9 @@ msgstr ""
 msgid "Add exclusion areas"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1503 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:212
-#: appTools/ToolDrilling.py:2518 appTools/ToolMilling.py:2197
+#: appGUI/ObjectUI.py:1503 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:210
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:410 appTools/ToolDrilling.py:2518
+#: appTools/ToolMilling.py:2197
 msgid ""
 "Include exclusion areas.\n"
 "In those areas the travel of the tools\n"
@@ -6447,16 +6455,16 @@ msgid ""
 msgstr ""
 
 #: appGUI/ObjectUI.py:1524 appGUI/ObjectUI.py:1543
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:232
-#: appTools/ToolDrilling.py:2540 appTools/ToolDrilling.py:2559 appTools/ToolMilling.py:2218
-#: appTools/ToolMilling.py:2237
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:230
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:430 appTools/ToolDrilling.py:2540
+#: appTools/ToolDrilling.py:2559 appTools/ToolMilling.py:2218 appTools/ToolMilling.py:2237
 msgid "Strategy"
 msgstr ""
 
 #: appGUI/ObjectUI.py:1524 appGUI/ObjectUI.py:1555
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:244
-#: appTools/ToolDrilling.py:2540 appTools/ToolDrilling.py:2572 appTools/ToolMilling.py:2218
-#: appTools/ToolMilling.py:2249
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:242
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:442 appTools/ToolDrilling.py:2540
+#: appTools/ToolDrilling.py:2572 appTools/ToolMilling.py:2218 appTools/ToolMilling.py:2249
 msgid "Over Z"
 msgstr ""
 
@@ -6478,8 +6486,9 @@ msgid ""
 "to avoid the exclusion area."
 msgstr ""
 
-#: appGUI/ObjectUI.py:1544 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:233
-#: appTools/ToolDrilling.py:2560 appTools/ToolMilling.py:2238
+#: appGUI/ObjectUI.py:1544 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:231
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:431 appTools/ToolDrilling.py:2560
+#: appTools/ToolMilling.py:2238
 msgid ""
 "The strategy followed when encountering an exclusion area.\n"
 "Can be:\n"
@@ -6487,18 +6496,21 @@ msgid ""
 "- Around -> will avoid the exclusion area by going around the area"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1548 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:237
-#: appTools/ToolDrilling.py:2564 appTools/ToolMilling.py:2242
+#: appGUI/ObjectUI.py:1548 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:235
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:435 appTools/ToolDrilling.py:2564
+#: appTools/ToolMilling.py:2242
 msgid "Over"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1549 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:238
-#: appTools/ToolDrilling.py:2565 appTools/ToolMilling.py:2243
+#: appGUI/ObjectUI.py:1549 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:236
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:436 appTools/ToolDrilling.py:2565
+#: appTools/ToolMilling.py:2243
 msgid "Around"
 msgstr ""
 
-#: appGUI/ObjectUI.py:1556 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:245
-#: appTools/ToolDrilling.py:2573 appTools/ToolMilling.py:2250
+#: appGUI/ObjectUI.py:1556 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:243
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:443 appTools/ToolDrilling.py:2573
+#: appTools/ToolMilling.py:2250
 msgid ""
 "The height Z to which the tool will rise in order to avoid\n"
 "an interdiction area."
@@ -6512,7 +6524,8 @@ msgstr ""
 msgid "Add an Exclusion Area."
 msgstr ""
 
-#: appGUI/ObjectUI.py:1573 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:222
+#: appGUI/ObjectUI.py:1573 appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:220
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:420
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:305
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:324
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:288 appTools/ToolDrilling.py:2591
@@ -6768,7 +6781,7 @@ msgid ""
 msgstr ""
 
 #: appGUI/ObjectUI.py:2108 appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:78
-#: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:74 appTools/ToolCutOut.py:2322
+#: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:74 appTools/ToolCutOut.py:2324
 #: appTools/ToolFiducials.py:801
 msgid "Manual"
 msgstr ""
@@ -7122,40 +7135,40 @@ msgid ""
 "of text positions."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:899
+#: appGUI/preferences/PreferencesUIManager.py:905
 msgid "Preferences applied."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:919
+#: appGUI/preferences/PreferencesUIManager.py:925
 msgid "Are you sure you want to continue?"
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:920
+#: appGUI/preferences/PreferencesUIManager.py:926
 msgid "Application will restart"
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1018
+#: appGUI/preferences/PreferencesUIManager.py:1024
 msgid "Preferences closed without saving."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1030
+#: appGUI/preferences/PreferencesUIManager.py:1036
 msgid "Preferences default values are restored."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1061 app_Main.py:2622 app_Main.py:2690
+#: appGUI/preferences/PreferencesUIManager.py:1067 app_Main.py:2622 app_Main.py:2690
 msgid "Failed to write defaults to file."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1065
-#: appGUI/preferences/PreferencesUIManager.py:1179
+#: appGUI/preferences/PreferencesUIManager.py:1071
+#: appGUI/preferences/PreferencesUIManager.py:1185
 msgid "Preferences saved."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1115
+#: appGUI/preferences/PreferencesUIManager.py:1121
 msgid "Preferences edited but not saved."
 msgstr ""
 
-#: appGUI/preferences/PreferencesUIManager.py:1164
+#: appGUI/preferences/PreferencesUIManager.py:1170
 msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
@@ -8720,17 +8733,17 @@ msgid ""
 msgstr ""
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:200
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:400
 msgid "Area Exclusion"
 msgstr ""
 
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:202
-msgid ""
-"Area exclusion parameters.\n"
-"Those parameters are available only for\n"
-"Advanced App. Level."
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:402
+msgid "Area exclusion parameters."
 msgstr ""
 
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:209
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:207
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:407
 msgid "Exclusion areas"
 msgstr ""
 
@@ -9664,6 +9677,10 @@ msgid ""
 "- bevel -> the lines are joined by a third line"
 msgstr ""
 
+#: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:69
+msgid "Bevel"
+msgstr ""
+
 #: appGUI/preferences/tools/Tools2OptimalPrefGroupUI.py:27
 msgid "Optimal Tool Options"
 msgstr ""
@@ -10180,7 +10197,7 @@ msgid ""
 "the original board."
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:45 appTools/ToolCutOut.py:2060
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:45 appTools/ToolCutOut.py:2062
 msgid ""
 "Diameter of the tool used to cutout\n"
 "the PCB shape out of the surrounding material."
@@ -10190,18 +10207,18 @@ msgstr ""
 msgid "Object kind"
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102 appTools/ToolCutOut.py:1993
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102 appTools/ToolCutOut.py:1995
 msgid ""
 "Choice of what kind the object we want to cutout is.<BR>- <B>Single</B>: contain a single "
 "PCB Gerber outline object.<BR>- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
 "out of many individual PCB outlines."
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109 appTools/ToolCutOut.py:1999
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109 appTools/ToolCutOut.py:2001
 msgid "Single"
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:110 appTools/ToolCutOut.py:2000
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:110 appTools/ToolCutOut.py:2002
 msgid "Panel"
 msgstr ""
 
@@ -10219,11 +10236,11 @@ msgid ""
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:240 appTools/ToolCutOut.py:2331
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:240 appTools/ToolCutOut.py:2333
 msgid "Big cursor"
 msgstr ""
 
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:242 appTools/ToolCutOut.py:2333
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:242 appTools/ToolCutOut.py:2335
 msgid "Use a big cursor when adding manual gaps."
 msgstr ""
 
@@ -10782,7 +10799,7 @@ msgstr ""
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:891
 #: appTools/ToolCalibration.py:1326 appTools/ToolCalibration.py:1343
 #: appTools/ToolCopperThieving.py:163 appTools/ToolCopperThieving.py:1237
-#: appTools/ToolCopperThieving.py:1251 appTools/ToolCutOut.py:2007
+#: appTools/ToolCopperThieving.py:1251 appTools/ToolCutOut.py:2009
 #: appTools/ToolDblSided.py:528 appTools/ToolDblSided.py:772 appTools/ToolFilm.py:928
 #: appTools/ToolFilm.py:951 appTools/ToolImage.py:117 appTools/ToolImage.py:138
 #: appTools/ToolImage.py:191 appTools/ToolIsolation.py:802 appTools/ToolIsolation.py:3339
@@ -11212,7 +11229,7 @@ msgstr ""
 #: appObjects/AppObject.py:248 appObjects/FlatCAMGeometry.py:128
 #: appObjects/FlatCAMGeometry.py:519 appObjects/FlatCAMGeometry.py:1053
 #: appObjects/FlatCAMGerber.py:539 appObjects/FlatCAMGerber.py:682
-#: appTools/ToolCutOut.py:446 appTools/ToolIsolation.py:1623 appTools/ToolIsolation.py:1785
+#: appTools/ToolCutOut.py:448 appTools/ToolIsolation.py:1623 appTools/ToolIsolation.py:1785
 #: appTools/ToolIsolation.py:1978 camlib.py:1231 camlib.py:1292
 msgid "Rough"
 msgstr ""
@@ -11974,7 +11991,7 @@ msgstr ""
 
 #: appTools/ToolAlignObjects.py:498 appTools/ToolCalculators.py:372
 #: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1577
-#: appTools/ToolCorners.py:444 appTools/ToolCutOut.py:2392 appTools/ToolDblSided.py:947
+#: appTools/ToolCorners.py:444 appTools/ToolCutOut.py:2394 appTools/ToolDblSided.py:947
 #: appTools/ToolDrilling.py:2649 appTools/ToolEtchCompensation.py:458
 #: appTools/ToolExtractDrills.py:702 appTools/ToolFiducials.py:932 appTools/ToolFilm.py:1383
 #: appTools/ToolInvertGerber.py:286 appTools/ToolIsolation.py:3477
@@ -11987,7 +12004,7 @@ msgstr ""
 
 #: appTools/ToolAlignObjects.py:501 appTools/ToolCalculators.py:375
 #: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1580
-#: appTools/ToolCorners.py:447 appTools/ToolCutOut.py:2395 appTools/ToolDblSided.py:950
+#: appTools/ToolCorners.py:447 appTools/ToolCutOut.py:2397 appTools/ToolDblSided.py:950
 #: appTools/ToolDrilling.py:2652 appTools/ToolEtchCompensation.py:461
 #: appTools/ToolExtractDrills.py:705 appTools/ToolFiducials.py:935 appTools/ToolFilm.py:1386
 #: appTools/ToolInvertGerber.py:289 appTools/ToolIsolation.py:3480
@@ -12377,7 +12394,7 @@ msgid "Copper Thieving Tool done."
 msgstr ""
 
 #: appTools/ToolCopperThieving.py:318 appTools/ToolCopperThieving.py:351
-#: appTools/ToolCutOut.py:542 appTools/ToolCutOut.py:915 appTools/ToolDrilling.py:726
+#: appTools/ToolCutOut.py:544 appTools/ToolCutOut.py:917 appTools/ToolDrilling.py:726
 #: appTools/ToolDrilling.py:1582 appTools/ToolEtchCompensation.py:152
 #: appTools/ToolInvertGerber.py:99 appTools/ToolIsolation.py:908
 #: appTools/ToolIsolation.py:1345 appTools/ToolIsolation.py:1372 appTools/ToolMilling.py:424
@@ -12602,7 +12619,7 @@ msgstr ""
 msgid "Will add corner markers to the selected Gerber file."
 msgstr ""
 
-#: appTools/ToolCutOut.py:280 appTools/ToolIsolation.py:791 appTools/ToolIsolation.py:1049
+#: appTools/ToolCutOut.py:281 appTools/ToolIsolation.py:791 appTools/ToolIsolation.py:1049
 #: appTools/ToolIsolation.py:1185 appTools/ToolNCC.py:458 appTools/ToolNCC.py:946
 #: appTools/ToolNCC.py:1084 appTools/ToolPaint.py:395 appTools/ToolPaint.py:686
 #: appTools/ToolPaint.py:823 appTools/ToolSolderPaste.py:131 appTools/ToolSolderPaste.py:464
@@ -12610,65 +12627,65 @@ msgstr ""
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr ""
 
-#: appTools/ToolCutOut.py:356 appTools/ToolIsolation.py:1130 appTools/ToolNCC.py:1029
+#: appTools/ToolCutOut.py:357 appTools/ToolIsolation.py:1130 appTools/ToolNCC.py:1029
 #: appTools/ToolPaint.py:767
 msgid "Tool not in Tools Database. Adding a default tool."
 msgstr ""
 
-#: appTools/ToolCutOut.py:363 appTools/ToolDrilling.py:955 appTools/ToolIsolation.py:1137
+#: appTools/ToolCutOut.py:364 appTools/ToolDrilling.py:955 appTools/ToolIsolation.py:1137
 #: appTools/ToolNCC.py:1036 appTools/ToolPaint.py:775
 msgid ""
 "Cancelled.\n"
 "Multiple tools for one tool diameter found in Tools Database."
 msgstr ""
 
-#: appTools/ToolCutOut.py:387
+#: appTools/ToolCutOut.py:388
 msgid "Updated tool from Tools Database."
 msgstr ""
 
-#: appTools/ToolCutOut.py:455
+#: appTools/ToolCutOut.py:457
 msgid "Default tool added."
 msgstr ""
 
-#: appTools/ToolCutOut.py:464 appTools/ToolIsolation.py:2577 appTools/ToolNCC.py:3602
+#: appTools/ToolCutOut.py:466 appTools/ToolIsolation.py:2577 appTools/ToolNCC.py:3602
 #: appTools/ToolPaint.py:2620
 msgid "Selected tool can't be used here. Pick another."
 msgstr ""
 
-#: appTools/ToolCutOut.py:487
+#: appTools/ToolCutOut.py:489
 msgid "Tool updated from Tools Database."
 msgstr ""
 
-#: appTools/ToolCutOut.py:547
+#: appTools/ToolCutOut.py:549
 msgid ""
 "There is no object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
 
-#: appTools/ToolCutOut.py:553 appTools/ToolCutOut.py:924 appTools/ToolCutOut.py:1298
-#: appTools/ToolCutOut.py:1429 tclCommands/TclCommandGeoCutout.py:184
+#: appTools/ToolCutOut.py:555 appTools/ToolCutOut.py:926 appTools/ToolCutOut.py:1300
+#: appTools/ToolCutOut.py:1431 tclCommands/TclCommandGeoCutout.py:184
 msgid "Tool Diameter is zero value. Change it to a positive real number."
 msgstr ""
 
-#: appTools/ToolCutOut.py:566 appTools/ToolCutOut.py:938
+#: appTools/ToolCutOut.py:568 appTools/ToolCutOut.py:940
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr ""
 
-#: appTools/ToolCutOut.py:571 appTools/ToolCutOut.py:942
+#: appTools/ToolCutOut.py:573 appTools/ToolCutOut.py:944
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. Fill in a "
 "correct value and retry. "
 msgstr ""
 
-#: appTools/ToolCutOut.py:889 appTools/ToolCutOut.py:1258 appTools/ToolCutOut.py:1613
+#: appTools/ToolCutOut.py:891 appTools/ToolCutOut.py:1260 appTools/ToolCutOut.py:1615
 msgid "Mouse bites failed."
 msgstr ""
 
-#: appTools/ToolCutOut.py:897
+#: appTools/ToolCutOut.py:899
 msgid "Any form CutOut operation finished."
 msgstr ""
 
-#: appTools/ToolCutOut.py:919 appTools/ToolDrilling.py:1586
+#: appTools/ToolCutOut.py:921 appTools/ToolDrilling.py:1586
 #: appTools/ToolEtchCompensation.py:158 appTools/ToolInvertGerber.py:105
 #: appTools/ToolIsolation.py:912 appTools/ToolIsolation.py:1349
 #: appTools/ToolIsolation.py:1376 appTools/ToolMilling.py:1326 appTools/ToolNCC.py:834
@@ -12677,79 +12694,79 @@ msgstr ""
 msgid "Object not found"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1112 appTools/ToolCutOut.py:1185
+#: appTools/ToolCutOut.py:1114 appTools/ToolCutOut.py:1187
 msgid "Rectangular cutout with negative margin is not possible."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1266
+#: appTools/ToolCutOut.py:1268
 msgid "Rectangular CutOut operation finished."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1282 appTools/ToolCutOut.py:1314
+#: appTools/ToolCutOut.py:1284 appTools/ToolCutOut.py:1316
 msgid "Could not retrieve Geometry object"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1287 appTools/ToolCutOut.py:1342
+#: appTools/ToolCutOut.py:1289 appTools/ToolCutOut.py:1344
 msgid "Geometry object for manual cutout not found"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1290
+#: appTools/ToolCutOut.py:1292
 msgid "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1378
+#: appTools/ToolCutOut.py:1380
 msgid "No tool in the Geometry object."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1399
+#: appTools/ToolCutOut.py:1401
 msgid "Added manual Bridge Gap. Left click to add another or right click to finish."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1411
+#: appTools/ToolCutOut.py:1413
 msgid "Could not retrieve Gerber object"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1416
+#: appTools/ToolCutOut.py:1418
 msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1422
+#: appTools/ToolCutOut.py:1424
 msgid ""
 "The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1457
+#: appTools/ToolCutOut.py:1459
 msgid "Geometry not supported for cutout"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1529
+#: appTools/ToolCutOut.py:1531
 msgid "Making manual bridge gap..."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1617
+#: appTools/ToolCutOut.py:1619
 msgid "Finished manual adding of gaps."
 msgstr ""
 
-#: appTools/ToolCutOut.py:1959
+#: appTools/ToolCutOut.py:1961
 msgid "Cutout PCB"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1985 appTools/ToolDblSided.py:513 appTools/ToolPanelize.py:652
+#: appTools/ToolCutOut.py:1987 appTools/ToolDblSided.py:513 appTools/ToolPanelize.py:652
 msgid "Source Object"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1986
+#: appTools/ToolCutOut.py:1988
 msgid "Object to be cutout"
 msgstr ""
 
-#: appTools/ToolCutOut.py:1991
+#: appTools/ToolCutOut.py:1993
 msgid "Kind"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:521
+#: appTools/ToolCutOut.py:2015 appTools/ToolDblSided.py:521
 msgid ""
 "Specify the type of object to be cutout.\n"
 "It can be of type: Gerber or Geometry.\n"
@@ -12757,7 +12774,7 @@ msgid ""
 "of objects that will populate the 'Object' combobox."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2072 appTools/ToolIsolation.py:3125 appTools/ToolNCC.py:3892
+#: appTools/ToolCutOut.py:2074 appTools/ToolIsolation.py:3125 appTools/ToolNCC.py:3892
 #: appTools/ToolPaint.py:2901
 msgid ""
 "Add a new tool to the Tool Table\n"
@@ -12767,30 +12784,30 @@ msgid ""
 "in the Tools DB then a default tool is added."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2098
+#: appTools/ToolCutOut.py:2100
 msgid "Tool Parameters"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2247
+#: appTools/ToolCutOut.py:2249
 msgid "Automatic"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2247 appTools/ToolCutOut.py:2322
+#: appTools/ToolCutOut.py:2249 appTools/ToolCutOut.py:2324
 msgid "Bridge Gaps"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2249
+#: appTools/ToolCutOut.py:2251
 msgid "This section handle creation of automatic bridge gaps."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2288
+#: appTools/ToolCutOut.py:2290
 msgid ""
 "Cutout the selected object.\n"
 "The cutout shape can be of any shape.\n"
 "Useful when the PCB has a non-rectangular shape."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2303
+#: appTools/ToolCutOut.py:2305
 msgid ""
 "Cutout the selected object.\n"
 "The resulting cutout shape is\n"
@@ -12798,18 +12815,18 @@ msgid ""
 "the bounding box of the Object."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2324
+#: appTools/ToolCutOut.py:2326
 msgid ""
 "This section handle creation of manual bridge gaps.\n"
 "This is done by mouse clicking on the perimeter of the\n"
 "Geometry object that is used as a cutout object. "
 msgstr ""
 
-#: appTools/ToolCutOut.py:2340
+#: appTools/ToolCutOut.py:2342
 msgid "Generate Manual Geometry"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2343
+#: appTools/ToolCutOut.py:2345
 msgid ""
 "If the object to be cutout is a Gerber\n"
 "first create a Geometry that surrounds it,\n"
@@ -12817,19 +12834,19 @@ msgid ""
 "Select the source Gerber file in the top object combobox."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2363
+#: appTools/ToolCutOut.py:2365
 msgid "Manual cutout Geometry"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2365
+#: appTools/ToolCutOut.py:2367
 msgid "Geometry object used to create the manual cutout."
 msgstr ""
 
-#: appTools/ToolCutOut.py:2372
+#: appTools/ToolCutOut.py:2374
 msgid "Manual Add Bridge Gaps"
 msgstr ""
 
-#: appTools/ToolCutOut.py:2375
+#: appTools/ToolCutOut.py:2377
 msgid ""
 "Use the left mouse button (LMB) click\n"
 "to create a bridge gap to separate the PCB from\n"

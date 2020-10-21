@@ -1280,7 +1280,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 pass
 
             answer = self.on_grbl_wake()
-            answer = ['ok']   # hack for development without a GRBL controller connected
+            answer = ['ok']   # FIXME: hack for development without a GRBL controller connected
             for line in answer:
                 if 'ok' in line.lower():
                     self.ui.com_connect_button.setStyleSheet("QPushButton {background-color: seagreen;}")
