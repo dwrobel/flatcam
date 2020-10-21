@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - updated the translations strings to the changes in the source code
 - some strings changed
 - fixed crash on using shortcut for creating a new Document Object
+- fixed Cutout Tool to work with the endxy parameter
 
 20.10.2020
 
