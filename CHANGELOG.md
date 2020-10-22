@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+23.10.2020
+
+- updated Copper Thieving Tool to work with the updated program
+
 22.10.2020
 
 - added  a message to show if voronoi_diagram method can be used (require Shapely >= 1.8)
