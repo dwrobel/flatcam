@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+22.10.2020
+
+- added  a message to show if voronoi_diagram method can be used (require Shapely >= 1.8)
+
 21.10.2020
 
 - in Geometry Object fixed the issue with not using the End X-Y value and also made some other updates here

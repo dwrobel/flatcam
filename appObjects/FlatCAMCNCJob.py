@@ -26,9 +26,10 @@ from shapely.geometry import Point, MultiPoint, Polygon, LineString, box
 import shapely.affinity as affinity
 try:
     from shapely.ops import voronoi_diagram
+    VORONOI_ENABLED = True
     # from appCommon.Common import voronoi_diagram
 except Exception:
-    pass
+    VORONOI_ENABLED = False
 
 import os
 import sys
@@ -771,9 +772,13 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
-                self.generate_voronoi_geometry(pts=vor_pts_list)
-                # generate Probing GCode
-                self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
+                if VORONOI_ENABLED is True:
+                    self.generate_voronoi_geometry(pts=vor_pts_list)
+                    # generate Probing GCode
+                    self.probing_gcode_text = self.probing_gcode(storage=self.al_voronoi_geo_storage)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
+                                                                "Shapely >= 1.8 is required"))
             else:
                 self.generate_bilinear_geometry(pts=bl_pts_list)
                 # generate Probing GCode
@@ -1042,12 +1047,16 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
             al_method = self.ui.al_method_radio.get_value()
             if al_method == 'v':
-                pts_list = []
-                for k in self.al_voronoi_geo_storage:
-                    pts_list.append(self.al_voronoi_geo_storage[k]['point'])
-                self.generate_voronoi_geometry(pts=pts_list)
+                if VORONOI_ENABLED is True:
+                    pts_list = []
+                    for k in self.al_voronoi_geo_storage:
+                        pts_list.append(self.al_voronoi_geo_storage[k]['point'])
+                    self.generate_voronoi_geometry(pts=pts_list)
 
-                self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
+                    self.probing_gcode_text = self.probing_gcode(self.al_voronoi_geo_storage)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Voronoi function can not be loaded.\n"
+                                                                "Shapely >= 1.8 is required"))
 
             # rebuild the al table
             self.build_al_table_sig.emit()
