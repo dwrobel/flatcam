@@ -22,6 +22,7 @@ CHANGELOG for FlatCAM beta
 - added some new strings for translation and updated the translation strings
 - in ToolsDB2UI class made the vertical layouts have a preferred minimum dimension as opposed to the previous fixed one
 - in Geometry Object made sure that the Tools Table second column is set to Resize to contents
+- fixed a bug in Tool PunchGerber when using an Excellon to punch holes in the Gerber apertures
 
 21.10.2020
 
