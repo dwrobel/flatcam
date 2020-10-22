@@ -14,6 +14,9 @@ CHANGELOG for FlatCAM beta
 - modified some strings and updated the translation strings
 - in NCC Tool added a check for the validity of the used tools; its only informative
 - in NCC Tool done some refactoring
+- in NCC Tool fixed a bug when using Rest Machining; optimizations
+- in NCC Tool fixed a UI issue
+- updated the Turkish translation (by Mehmet Kaya)
 
 21.10.2020
 

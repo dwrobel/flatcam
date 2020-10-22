@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2020-10-22 15:08+0300\n"
-"PO-Revision-Date: 2020-10-22 15:08+0300\n"
+"PO-Revision-Date: 2020-10-22 16:13+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -5909,7 +5909,7 @@ msgstr "Komut Satırı Paneli"
 msgid ""
 "Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"
 msgstr ""
-"Bir araç ekleyin (\"Seçili\" sekmede Şekil, Bakır Temizleme veya Çizim "
+"Bir araç ekleyin (\"Özellikler\" sekmede Şekil, Bakır Temizleme veya Çizim "
 "Araçlarındayken)"
 
 #: appGUI/MainGUI.py:4265
@@ -6474,16 +6474,12 @@ msgid ""
 msgstr "PCB'yi kesmek için kesim şekilleri oluşturun."
 
 #: appGUI/ObjectUI.py:407 appGUI/ObjectUI.py:756
-#, fuzzy
-#| msgid "UTILITIES"
 msgid "UTILTIES"
-msgstr "HİZMETLER"
+msgstr "ARAÇLAR"
 
 #: appGUI/ObjectUI.py:409 appGUI/ObjectUI.py:758
-#, fuzzy
-#| msgid "Show the Properties."
 msgid "Show the Utilties."
-msgstr "Özellikleri göster."
+msgstr "Araçaları göster."
 
 #: appGUI/ObjectUI.py:433 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32
 msgid "Non-copper regions"
@@ -7428,24 +7424,14 @@ msgid "Launch Paint Tool in Tools Tab."
 msgstr "Araçlar sekmesindeki \"Çizim\" aracını başlatır."
 
 #: appGUI/ObjectUI.py:1770
-#, fuzzy
-#| msgid "Generating slot milling geometry..."
 msgid "Generate a CNCJob by milling a Geometry."
-msgstr "Yuva frezeleme şekli oluşturuluyor ..."
+msgstr "Bir Şekli frezeleyerek bir CNC İşi oluşturun."
 
 #: appGUI/ObjectUI.py:1786 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:35
-#, fuzzy
-#| msgid ""
-#| "Creates tool paths to cover the\n"
-#| "whole area of a polygon (remove\n"
-#| "all copper). You will be asked\n"
-#| "to click on the desired polygon."
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon."
-msgstr ""
-"PCB'de yollar dışında kalan tüm bakır kazınarak çıkarılır.\n"
-"Bakır temizliği yapılacak alanı tıklamanız istenir."
+msgstr "Bir çokgenin tüm alanlarını kaplayacak yollar oluşturur."
 
 #: appGUI/ObjectUI.py:1840
 msgid "CNC Job Object"
@@ -9067,7 +9053,7 @@ msgstr ""
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:214
 #: appTools/ToolDblSided.py:666 appTools/ToolDblSided.py:838
 msgid "Axis"
-msgstr "Eksen Yazı Boyutu"
+msgstr "Eksen"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:216
 msgid "This sets the font size for canvas axis."
@@ -12263,7 +12249,7 @@ msgid ""
 "if they will provide a complete isolation."
 msgstr ""
 "İşaretlenirse, uç kalınlıklarının tam bir yalıtım\n"
-"sağlayıp sağlamadıkları doğrulanır."
+"sağlayıp sağlamadıkları kontrol edilir."
 
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:287
 #: appTools/ToolIsolation.py:3370
@@ -13081,6 +13067,8 @@ msgid ""
 "Voronoi function can not be loaded.\n"
 "Shapely >= 1.8 is required"
 msgstr ""
+"Voronoi işlevi yüklenemiyor.\n"
+"Shapely> = 1.8 gereklidir"
 
 #: appObjects/FlatCAMCNCJob.py:808
 msgid "Click on canvas to add a Probe Point..."
@@ -14932,7 +14920,7 @@ msgstr "Terslenecek nesneler"
 
 #: appTools/ToolDblSided.py:521
 msgid "Select the type of application object to be processed in this tool."
-msgstr ""
+msgstr "Bu araçta işlenecek nesnesinin türünü seçin."
 
 #: appTools/ToolDblSided.py:555
 msgid "Bounds Values"
@@ -16326,23 +16314,17 @@ msgstr "Sol tıklandığında hata oluştu."
 
 #: appTools/ToolNCC.py:835
 msgid "NCC Tool. Checking tools for validity."
-msgstr ""
+msgstr "Bakır Temizleme. Uçların uygunluğu kontrol ediliyor."
 
 #: appTools/ToolNCC.py:947
-#, fuzzy
-#| msgid ""
-#| "Incomplete isolation. At least one tool could not do a complete isolation."
 msgid ""
 "Incomplete isolation. None of the selected tools could do a complete "
 "isolation."
-msgstr "Eksik yalıtım. En az bir uç tam bir yalıtım yapamadı."
+msgstr "Eksik yalıtım. Seçilen uçların hiçbiri tam bir yalıtım sağlayamadı."
 
 #: appTools/ToolNCC.py:950
-#, fuzzy
-#| msgid ""
-#| "Incomplete isolation. At least one tool could not do a complete isolation."
 msgid "At least one of the selected tools can do a complete isolation."
-msgstr "Eksik yalıtım. En az bir uç tam bir yalıtım yapamadı."
+msgstr "Seçilen uçlardan en az biri tam bir yalıtım yapabilir."
 
 #: appTools/ToolNCC.py:1722 appTools/ToolNCC.py:2646
 msgid "NCC Tool. Preparing non-copper polygons."
@@ -16488,7 +16470,7 @@ msgstr ""
 
 #: appTools/ToolNCC.py:3750
 msgid "Non-Copper Clearing"
-msgstr "Bakır Temizleniyor"
+msgstr "Bakır Temizleme"
 
 #: appTools/ToolNCC.py:3779 appTools/ToolPaint.py:2765
 msgid "Obj Type"
