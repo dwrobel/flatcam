@@ -235,6 +235,11 @@ class CNCJobObject(FlatCAMObj, CNCjob):
     def build_ui(self):
         self.ui_disconnect()
 
+        # FIXME: until Shapely 1.8 comes this is disabled
+        self.ui.sal_btn.setChecked(False)
+        self.ui.sal_btn.setDisabled(True)
+        self.ui.sal_btn.setToolTip("DISABLED. Work in progress!")
+
         FlatCAMObj.build_ui(self)
         self.units = self.app.defaults['units'].upper()
 
@@ -249,7 +254,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
             self.ui.exc_cnc_tools_table.show()
             self.build_excellon_cnc_tools()
 
-        if self.ui.sal_cb.get_value():
+        if self.ui.sal_btn.isChecked():
             self.build_al_table()
 
         self.ui_connect()
@@ -584,7 +589,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.calculations_finished.connect(self.update_area_chull)
 
         # autolevelling signals
-        self.ui.sal_cb.stateChanged.connect(self.on_toggle_autolevelling)
+        self.ui.sal_btn.toggled.connect(self.on_toggle_autolevelling)
         self.ui.al_mode_radio.activated_custom.connect(self.on_mode_radio)
         self.ui.al_method_radio.activated_custom.connect(self.on_method_radio)
         self.ui.al_controller_combo.currentIndexChanged.connect(self.on_controller_change)
@@ -637,19 +642,19 @@ class CNCJobObject(FlatCAMObj, CNCjob):
                 '<span style="color:green;"><b>Basic</b></span>'
             ))
 
-            self.ui.sal_cb.hide()
-            self.ui.sal_cb.set_value(False)
+            self.ui.sal_btn.hide()
+            self.ui.sal_btn.setChecked(False)
         else:
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
             if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name or 'hpgl' in \
                     self.pp_geometry_name:
-                self.ui.sal_cb.hide()
-                self.ui.sal_cb.set_value(False)
+                self.ui.sal_btn.hide()
+                self.ui.sal_btn.setChecked(False)
             else:
-                self.ui.sal_cb.show()
-                self.ui.sal_cb.set_value(self.app.defaults["cncjob_al_status"])
+                self.ui.sal_btn.show()
+                self.ui.sal_btn.setChecked(self.app.defaults["cncjob_al_status"])
 
         preamble = self.append_snippet
         postamble = self.prepend_snippet

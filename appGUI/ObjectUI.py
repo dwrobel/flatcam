@@ -2047,11 +2047,23 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.snippets_cb)
 
         # Autolevelling
-        self.sal_cb = FCCheckBox(_("Autolevelling"))
-        self.sal_cb.setToolTip(
+        self.sal_btn = FCButton('%s' % _("Autolevelling"), checkable=True)
+        # self.sal_btn.setIcon(QtGui.QIcon(self.app.resource_location + '/properties32.png'))
+        self.sal_btn.setToolTip(
             _("Enable the autolevelling feature.")
         )
-        self.custom_box.addWidget(self.sal_cb)
+        self.sal_btn.setStyleSheet("""
+                                  QPushButton
+                                  {
+                                      font-weight: bold;
+                                  }
+                                  """)
+        self.custom_box.addWidget(self.sal_btn)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.custom_box.addWidget(separator_line)
 
         self.al_frame = QtWidgets.QFrame()
         self.al_frame.setContentsMargins(0, 0, 0, 0)

@@ -17,6 +17,8 @@ CHANGELOG for FlatCAM beta
 - in NCC Tool fixed a bug when using Rest Machining; optimizations
 - in NCC Tool fixed a UI issue
 - updated the Turkish translation (by Mehmet Kaya)
+- small change in the CNCJob UI by replacing the AL checkbox with a checkable QButton
+- disabled the Autolevelling feature in CNCJob due of being not finished and missing also a not-yet-released package: Shapely v 1.8
 
 21.10.2020
 
