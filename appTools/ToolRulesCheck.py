@@ -623,7 +623,8 @@ class RulesCheck(AppTool):
         log.debug("RuleCheck() executing")
 
         def worker_job(app_obj):
-            self.app.proc_container.new(_("Working..."))
+            # self.app.proc_container.new(_("Working..."))
+            self.app.proc_container.view.set_busy('%s' % _("Working..."))
 
             # RULE: Check Trace Size
             if self.ui.trace_size_cb.get_value():
@@ -1055,6 +1056,7 @@ class RulesCheck(AppTool):
                 output.append(p.get())
 
             self.tool_finished.emit(output)
+            self.app.proc_container.view.set_idle()
 
             log.debug("RuleCheck() finished")
 

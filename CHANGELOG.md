@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - updated Copper Thieving Tool to work with the updated program
 - updated Rules Check Tool - Hole Size rule to work with the new data structure for the Excellon objects
+- updated Rules Check Tool - added an activity message
 
 22.10.2020
 
