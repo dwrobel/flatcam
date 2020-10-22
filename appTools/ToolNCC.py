@@ -98,6 +98,9 @@ class NonCopperClear(AppTool, Gerber):
         self.contour = None
         self.rest = None
 
+        # store here the tool diameter that is guaranteed to isolate the object
+        self.safe_tooldia = None
+
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
@@ -126,27 +129,29 @@ class NonCopperClear(AppTool, Gerber):
         self.tooldia = None
 
         self.form_fields = {
-            "tools_nccoperation": self.ui.op_radio,
-            "tools_nccoverlap": self.ui.ncc_overlap_entry,
-            "tools_nccmargin": self.ui.ncc_margin_entry,
-            "tools_nccmethod": self.ui.ncc_method_combo,
-            "tools_nccconnect": self.ui.ncc_connect_cb,
-            "tools_ncccontour": self.ui.ncc_contour_cb,
-            "tools_ncc_offset_choice": self.ui.ncc_choice_offset_cb,
-            "tools_ncc_offset_value": self.ui.ncc_offset_spinner,
-            "tools_nccmilling_type": self.ui.milling_type_radio
+            "tools_ncc_operation":      self.ui.op_radio,
+            "tools_ncc_overlap":        self.ui.ncc_overlap_entry,
+            "tools_ncc_margin":         self.ui.ncc_margin_entry,
+            "tools_ncc_method":         self.ui.ncc_method_combo,
+            "tools_ncc_connect":        self.ui.ncc_connect_cb,
+            "tools_ncc_contour":        self.ui.ncc_contour_cb,
+            "tools_ncc_offset_choice":  self.ui.ncc_choice_offset_cb,
+            "tools_ncc_offset_value":   self.ui.ncc_offset_spinner,
+            "tools_ncc_milling_type":   self.ui.milling_type_radio,
+            "tools_ncc_check_valid":    self.ui.valid_cb
         }
 
         self.name2option = {
-            "n_operation": "tools_nccoperation",
-            "n_overlap": "tools_nccoverlap",
-            "n_margin": "tools_nccmargin",
-            "n_method": "tools_nccmethod",
-            "n_connect": "tools_nccconnect",
-            "n_contour": "tools_ncccontour",
-            "n_offset": "tools_ncc_offset_choice",
-            "n_offset_value": "tools_ncc_offset_value",
-            "n_milling_type": "tools_nccmilling_type",
+            "n_operation":      "tools_ncc_operation",
+            "n_overlap":        "tools_ncc_overlap",
+            "n_margin":         "tools_ncc_margin",
+            "n_method":         "tools_ncc_method",
+            "n_connect":        "tools_ncc_connect",
+            "n_contour":        "tools_ncc_contour",
+            "n_offset":         "tools_ncc_offset_choice",
+            "n_offset_value":   "tools_ncc_offset_value",
+            "n_milling_type":   "tools_ncc_milling_type",
+            "n_check":          "tools_ncc_check_valid",
         }
 
         self.old_tool_dia = None
@@ -241,7 +246,7 @@ class NonCopperClear(AppTool, Gerber):
         current_row = self.ui.tools_table.currentRow()
         try:
             current_uid = int(self.ui.tools_table.item(current_row, 3).text())
-            self.ncc_tools[current_uid]['data']['tools_nccoperation'] = val
+            self.ncc_tools[current_uid]['data']['tools_ncc_operation'] = val
             # TODO got a crash here, a KeyError exception; need to see it again and find out the why
         except AttributeError:
             return
@@ -463,7 +468,10 @@ class NonCopperClear(AppTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
-        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
+        self.old_tool_dia = self.app.defaults["tools_ncc_newdia"]
+
+        # reset the value to prepare for another isolation
+        self.safe_tooldia = None
 
         self.ui.tools_frame.show()
 
@@ -492,29 +500,30 @@ class NonCopperClear(AppTool, Gerber):
             self.on_type_obj_index_changed(val=kind)
             self.on_reference_combo_changed()
 
-        self.ui.op_radio.set_value(self.app.defaults["tools_nccoperation"])
-        self.ui.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
-        self.ui.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
-        self.ui.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
-        self.ui.ncc_method_combo.set_value(self.app.defaults["tools_nccmethod"])
-        self.ui.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
-        self.ui.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
+        self.ui.op_radio.set_value(self.app.defaults["tools_ncc_operation"])
+        self.ui.ncc_order_radio.set_value(self.app.defaults["tools_ncc_order"])
+        self.ui.ncc_overlap_entry.set_value(self.app.defaults["tools_ncc_overlap"])
+        self.ui.ncc_margin_entry.set_value(self.app.defaults["tools_ncc_margin"])
+        self.ui.ncc_method_combo.set_value(self.app.defaults["tools_ncc_method"])
+        self.ui.ncc_connect_cb.set_value(self.app.defaults["tools_ncc_connect"])
+        self.ui.ncc_contour_cb.set_value(self.app.defaults["tools_ncc_contour"])
         self.ui.ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
         self.ui.ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
 
-        self.ui.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
-        self.ui.rest_ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
-        self.ui.rest_ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
-        self.ui.rest_ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
+        self.ui.ncc_rest_cb.set_value(self.app.defaults["tools_ncc_rest"])
+        self.ui.rest_ncc_margin_entry.set_value(self.app.defaults["tools_ncc_margin"])
+        self.ui.rest_ncc_connect_cb.set_value(self.app.defaults["tools_ncc_connect"])
+        self.ui.rest_ncc_contour_cb.set_value(self.app.defaults["tools_ncc_contour"])
         self.ui.rest_ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
         self.ui.rest_ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
 
-        self.ui.select_combo.set_value(self.app.defaults["tools_nccref"])
+        self.ui.select_combo.set_value(self.app.defaults["tools_ncc_ref"])
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_ncc_area_shape"])
+        self.ui.valid_cb.set_value(self.app.defaults["tools_ncc_check_valid"])
 
-        self.ui.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
+        self.ui.milling_type_radio.set_value(self.app.defaults["tools_ncc_milling_type"])
 
-        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_nccnewdia"])
+        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_ncc_newdia"])
 
         # init the working variables
         self.default_data.clear()
@@ -550,26 +559,27 @@ class NonCopperClear(AppTool, Gerber):
             "area_overz":               float(self.app.defaults["geometry_area_overz"]),
             "optimization_type":        self.app.defaults["geometry_optimization_type"],
 
-            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
-            "tools_nccmargin":          self.app.defaults["tools_nccmargin"],
-            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
-            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
-            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
-            "tools_nccoverlap":         self.app.defaults["tools_nccoverlap"],
-            "tools_nccrest":            self.app.defaults["tools_nccrest"],
-            "tools_nccref":             self.app.defaults["tools_nccref"],
+            "tools_ncc_operation":      self.app.defaults["tools_ncc_operation"],
+            "tools_ncc_margin":         self.app.defaults["tools_ncc_margin"],
+            "tools_ncc_method":         self.app.defaults["tools_ncc_method"],
+            "tools_ncc_connect":        self.app.defaults["tools_ncc_connect"],
+            "tools_ncc_contour":        self.app.defaults["tools_ncc_contour"],
+            "tools_ncc_overlap":        self.app.defaults["tools_ncc_overlap"],
+            "tools_ncc_rest":           self.app.defaults["tools_ncc_rest"],
+            "tools_ncc_ref":            self.app.defaults["tools_ncc_ref"],
             "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
             "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"]
+            "tools_ncc_milling_type":   self.app.defaults["tools_ncc_milling_type"],
+            "tools_ncc_check_valid":    self.app.defaults["tools_ncc_check_valid"],
         }
 
         try:
-            dias = [float(self.app.defaults["tools_ncctools"])]
+            dias = [float(self.app.defaults["tools_ncc_tools"])]
         except (ValueError, TypeError):
             try:
-                dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
+                dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncc_tools"].split(",") if dia != '']
             except AttributeError:
-                dias = self.app.defaults["tools_ncctools"]
+                dias = self.app.defaults["tools_ncc_tools"]
         except Exception:
             dias = []
 
@@ -819,6 +829,10 @@ class NonCopperClear(AppTool, Gerber):
             })
 
     def on_find_optimal_tooldia(self):
+        self.find_safe_tooldia_worker(is_displayed=True)
+
+    def find_safe_tooldia_worker(self, is_displayed):
+        self.app.inform.emit(_("NCC Tool. Checking tools for validity."))
         self.units = self.app.defaults['units'].upper()
 
         obj_name = self.ui.object_combo.currentText()
@@ -836,7 +850,7 @@ class NonCopperClear(AppTool, Gerber):
 
         proc = self.app.proc_container.new(_("Working..."))
 
-        def job_thread(app_obj):
+        def job_thread(app_obj, is_display):
             try:
                 old_disp_number = 0
                 pol_nr = 0
@@ -901,18 +915,48 @@ class NonCopperClear(AppTool, Gerber):
                 min_dist = min(min_list)
 
                 min_dist_truncated = self.app.dec_format(float(min_dist), self.decimals)
+                self.safe_tooldia = min_dist_truncated
 
-                self.optimal_found_sig.emit(min_dist_truncated)
+                if is_display:
+                    self.optimal_found_sig.emit(min_dist_truncated)
 
-                app_obj.inform.emit('[success] %s: %s %s' %
-                                    (_("Optimal tool diameter found"), str(min_dist_truncated), self.units.lower()))
+                    app_obj.inform.emit('[success] %s: %s %s' %
+                                        (_("Optimal tool diameter found"), str(min_dist_truncated),
+                                         self.units.lower()))
+                else:
+                    # find the selected tool ID's
+                    sorted_tools = []
+                    table_items = self.ui.tools_table.selectedItems()
+                    sel_rows = {t.row() for t in table_items}
+                    for row in sel_rows:
+                        tid = int(self.ui.tools_table.item(row, 3).text())
+                        sorted_tools.append(tid)
+                    if not sorted_tools:
+                        msg = _("There are no tools selected in the Tool Table.")
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % msg)
+                        return 'fail'
+
+                    # check if the tools diameters are less then the safe tool diameter
+                    suitable_tools = []
+                    for tool in sorted_tools:
+                        tool_dia = float(self.ncc_tools[tool]['tooldia'])
+                        if tool_dia <= self.safe_tooldia:
+                            suitable_tools.append(tool_dia)
+
+                    if not suitable_tools:
+                        msg = _("Incomplete isolation. None of the selected tools could do a complete isolation.")
+                        self.app.inform.emit('[WARNING] %s' % msg)
+                    else:
+                        msg = _("At least one of the selected tools can do a complete isolation.")
+                        self.app.inform.emit('[success] %s' % msg)
+
+                    # reset the value to prepare for another isolation
+                    self.safe_tooldia = None
             except Exception as ee:
-                proc.done()
                 log.debug(str(ee))
                 return
-            proc.done()
 
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app, is_displayed]})
 
     def on_tool_add(self, custom_dia=None):
         self.blockSignals(True)
@@ -1113,7 +1157,7 @@ class NonCopperClear(AppTool, Gerber):
                 'offset':           'Path',
                 'offset_value':     0.0,
                 'type':             'Iso',
-                'tool_type':        deepcopy(self.app.defaults["tools_ncctool_type"]),
+                'tool_type':        deepcopy(self.app.defaults["tools_ncc_tool_type"]),
                 'data':             deepcopy(self.default_data),
                 'solid_geometry':   []
             }
@@ -1266,6 +1310,9 @@ class NonCopperClear(AppTool, Gerber):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
+        if self.ui.valid_cb.get_value() is True:
+            self.find_safe_tooldia_worker(is_displayed=False)
+
         # use the selected tools in the tool table; get diameters for isolation
         self.iso_dia_list = []
         # use the selected tools in the tool table; get diameters for non-copper clear
@@ -1288,7 +1335,7 @@ class NonCopperClear(AppTool, Gerber):
                 # find out which tools is for isolation and which are for copper clearing
                 for uid_k, uid_v in self.ncc_tools.items():
                     if round(uid_v['tooldia'], self.decimals) == round(self.tooldia, self.decimals):
-                        if uid_v['data']['tools_nccoperation'] == "iso":
+                        if uid_v['data']['tools_ncc_operation'] == "iso":
                             self.iso_dia_list.append(self.tooldia)
                         else:
                             self.ncc_dia_list.append(self.tooldia)
@@ -2113,10 +2160,10 @@ class NonCopperClear(AppTool, Gerber):
                         break
 
                 # parameters that are particular to the current tool
-                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
-                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_nccconnect"]
-                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncccontour"]
+                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_overlap"]) / 100.0
+                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_ncc_method"]
+                ncc_connect = self.ncc_tools[tool_uid]["data"]["tools_ncc_connect"]
+                ncc_contour = self.ncc_tools[tool_uid]["data"]["tools_ncc_contour"]
                 has_offset = self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_choice"]
                 ncc_offset = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_offset_value"])
 
@@ -2360,8 +2407,8 @@ class NonCopperClear(AppTool, Gerber):
                         break
 
                 # parameters that are particular to the current tool
-                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_nccoverlap"]) / 100.0
-                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_nccmethod"]
+                ncc_overlap = float(self.ncc_tools[tool_uid]["data"]["tools_ncc_overlap"]) / 100.0
+                ncc_method = self.ncc_tools[tool_uid]["data"]["tools_ncc_method"]
 
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
@@ -2716,9 +2763,9 @@ class NonCopperClear(AppTool, Gerber):
             offset_a = sum(sorted_tools)
             current_uid = int(1)
             try:
-                tool = eval(self.app.defaults["tools_ncctools"])[0]
+                tool = eval(self.app.defaults["tools_ncc_tools"])[0]
             except TypeError:
-                tool = eval(self.app.defaults["tools_ncctools"])
+                tool = eval(self.app.defaults["tools_ncc_tools"])
 
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
@@ -2758,7 +2805,7 @@ class NonCopperClear(AppTool, Gerber):
                     self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = self.app.defaults["tools_nccmilling_type"]
+                milling_type = self.app.defaults["tools_ncc_milling_type"]
 
                 for tool_iso in isotooldia:
                     new_geometry = []
@@ -3106,9 +3153,9 @@ class NonCopperClear(AppTool, Gerber):
             rest_geo = []
             current_uid = 1
             try:
-                tool = eval(self.app.defaults["tools_ncctools"])[0]
+                tool = eval(self.app.defaults["tools_ncc_tools"])[0]
             except TypeError:
-                tool = eval(self.app.defaults["tools_ncctools"])
+                tool = eval(self.app.defaults["tools_ncc_tools"])
 
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
@@ -3137,7 +3184,7 @@ class NonCopperClear(AppTool, Gerber):
                 self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = self.app.defaults["tools_nccmilling_type"]
+                milling_type = self.app.defaults["tools_ncc_milling_type"]
 
                 for tool_iso in isotooldia:
                     new_geometry = []
@@ -4247,10 +4294,20 @@ class NccUI:
         self.area_shape_label.hide()
         self.area_shape_radio.hide()
 
+        # Check Tool validity
+        self.valid_cb = FCCheckBox(label=_('Check validity'))
+        self.valid_cb.setToolTip(
+            _("If checked then the tools diameters are verified\n"
+              "if they will provide a complete isolation.")
+        )
+        self.valid_cb.setObjectName("n_check")
+
+        self.grid3.addWidget(self.valid_cb, 33, 0, 1, 2)
+
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 32, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 35, 0, 1, 2)
 
         self.generate_ncc_button = FCButton(_('Generate Geometry'))
         self.generate_ncc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/geometry32.png'))

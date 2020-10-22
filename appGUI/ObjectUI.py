@@ -1783,13 +1783,10 @@ class GeometryObjectUI(ObjectUI):
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
         self.paint_tool_button.setIcon(QtGui.QIcon(self.app.resource_location + '/paint20_1.png'))
         self.paint_tool_button.setToolTip(
-            _(
-                "Creates tool paths to cover the\n"
-                "whole area of a polygon (remove\n"
-                "all copper). You will be asked\n"
-                "to click on the desired polygon."
-            )
+            _("Creates tool paths to cover the\n"
+              "whole area of a polygon.")
         )
+
         # self.paint_tool_button.setStyleSheet("""
         #                 QPushButton
         #                 {

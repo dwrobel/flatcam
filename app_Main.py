@@ -4139,7 +4139,7 @@ class App(QtCore.QObject):
 
     def scale_defaults(self, sfactor, dimensions):
         for dim in dimensions:
-            if dim in ['geometry_cnctooldia', 'tools_ncctools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
+            if dim in ['geometry_cnctooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
                        'tools_painttooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
                        'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
                        'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
@@ -4255,8 +4255,8 @@ class App(QtCore.QObject):
              "tools_drill_feedrate_probe", "tools_drill_z_pdepth", "tools_drill_area_overz",
             
             # NCC Tool
-            "tools_ncctools", "tools_nccmargin", "tools_ncc_offset_value", "tools_ncccutz", "tools_ncctipdia",
-            "tools_nccnewdia",
+            "tools_ncc_tools", "tools_ncc_margin", "tools_ncc_offset_value", "tools_ncc_cutz", "tools_ncc_tipdia",
+            "tools_ncc_newdia",
 
             # Cutout Tool
             "tools_cutout_tooldia", 'tools_cutout_margin', "tools_cutout_z", "tools_cutout_depthperpass",
@@ -9686,7 +9686,7 @@ class App(QtCore.QObject):
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
-        sel_title = QtWidgets.QTextEdit(_('<b>Shortcut Key List</b>'))
+        sel_title = QtWidgets.QTextEdit()
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
 

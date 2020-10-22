@@ -10,6 +10,10 @@ CHANGELOG for FlatCAM beta
 22.10.2020
 
 - added  a message to show if voronoi_diagram method can be used (require Shapely >= 1.8)
+- modified behind the scene the UI for Tool Subtract
+- modified some strings and updated the translation strings
+- in NCC Tool added a check for the validity of the used tools; its only informative
+- in NCC Tool done some refactoring
 
 21.10.2020
 

@@ -103,22 +103,22 @@ class TclCommandCopperClear(TclCommand):
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
-            tooldia = self.app.defaults["tools_ncctools"]
+            tooldia = self.app.defaults["tools_ncc_tools"]
 
         if 'overlap' in args:
             overlap = float(args['overlap']) / 100.0
         else:
-            overlap = float(self.app.defaults["tools_nccoverlap"]) / 100.0
+            overlap = float(self.app.defaults["tools_ncc_overlap"]) / 100.0
 
         if 'order' in args:
             order = args['order']
         else:
-            order = str(self.app.defaults["tools_nccorder"])
+            order = str(self.app.defaults["tools_ncc_order"])
 
         if 'margin' in args:
             margin = float(args['margin'])
         else:
-            margin = float(self.app.defaults["tools_nccmargin"])
+            margin = float(self.app.defaults["tools_ncc_margin"])
 
         if 'method' in args:
             method = args['method']
@@ -129,7 +129,7 @@ class TclCommandCopperClear(TclCommand):
             else:
                 method_data = _("Lines")
         else:
-            method = str(self.app.defaults["tools_nccmethod"])
+            method = str(self.app.defaults["tools_ncc_method"])
             method_data = method
             if method == _("Standard"):
                 method = "standard"
@@ -145,7 +145,7 @@ class TclCommandCopperClear(TclCommand):
                 par = args['connect']
             connect = bool(eval(par))
         else:
-            connect = bool(eval(str(self.app.defaults["tools_nccconnect"])))
+            connect = bool(eval(str(self.app.defaults["tools_ncc_connect"])))
 
         if 'contour' in args:
             try:
@@ -154,7 +154,7 @@ class TclCommandCopperClear(TclCommand):
                 par = args['contour']
             contour = bool(eval(par))
         else:
-            contour = bool(eval(str(self.app.defaults["tools_ncccontour"])))
+            contour = bool(eval(str(self.app.defaults["tools_ncc_contour"])))
 
         offset = 0.0
         if 'offset' in args:
@@ -175,7 +175,7 @@ class TclCommandCopperClear(TclCommand):
                 par = args['rest']
             rest = bool(eval(par))
         else:
-            rest = bool(eval(str(self.app.defaults["tools_nccrest"])))
+            rest = bool(eval(str(self.app.defaults["tools_ncc_rest"])))
 
         if 'outname' in args:
             outname = args['outname']
@@ -224,18 +224,18 @@ class TclCommandCopperClear(TclCommand):
             "area_overz":       float(self.app.defaults["geometry_area_overz"]),
 
             "tooldia":              self.app.defaults["tools_painttooldia"],
-            "tools_nccoperation":   self.app.defaults["tools_nccoperation"],
+            "tools_ncc_operation":   self.app.defaults["tools_ncc_operation"],
 
-            "tools_nccmargin":  margin,
-            "tools_nccmethod":  method_data,
-            "tools_nccref":     select,
-            "tools_nccconnect": connect,
-            "tools_ncccontour": contour,
-            "tools_nccoverlap": overlap,
+            "tools_ncc_margin":  margin,
+            "tools_ncc_method":  method_data,
+            "tools_ncc_ref":     select,
+            "tools_ncc_connect": connect,
+            "tools_ncc_contour": contour,
+            "tools_ncc_overlap": overlap,
 
             "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
             "tools_ncc_offset_value":   self.app.defaults["tools_ncc_offset_value"],
-            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"]
+            "tools_ncc_milling_type":    self.app.defaults["tools_ncc_milling_type"]
         })
         ncc_tools = {}
 

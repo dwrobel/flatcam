@@ -518,10 +518,7 @@ class DsidedUI:
         # Type of object to be cutout
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Type"))
         self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be cutout.\n"
-              "It can be of type: Gerber or Geometry.\n"
-              "What is selected here will dictate the kind\n"
-              "of objects that will populate the 'Object' combobox.")
+            _("Select the type of application object to be processed in this tool.")
         )
 
         self.object_type_radio = RadioSet([

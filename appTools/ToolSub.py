@@ -635,11 +635,13 @@ class SubUI:
         self.tools_frame.setLayout(self.tools_box)
 
         # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_layout)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid0)
 
         self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("GERBER"))
-        form_layout.addRow(self.gerber_title)
+        grid0.addWidget(self.gerber_title, 0, 0, 1, 2)
 
         # Target Gerber Object
         self.target_gerber_combo = FCComboBox()
@@ -655,7 +657,8 @@ class SubUI:
               "the subtractor Gerber object.")
         )
 
-        form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
+        grid0.addWidget(self.target_gerber_label, 2, 0)
+        grid0.addWidget(self.target_gerber_combo, 2, 1)
 
         # Substractor Gerber Object
         self.sub_gerber_combo = FCComboBox()
@@ -669,9 +672,9 @@ class SubUI:
             _("Gerber object that will be subtracted\n"
               "from the target Gerber object.")
         )
-        e_lab_1 = QtWidgets.QLabel('')
 
-        form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
+        grid0.addWidget(self.sub_gerber_label, 4, 0)
+        grid0.addWidget(self.sub_gerber_combo, 4, 1)
 
         self.intersect_btn = FCButton(_('Subtract Gerber'))
         self.intersect_btn.setToolTip(
@@ -686,15 +689,11 @@ class SubUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(self.intersect_btn)
-        self.tools_box.addWidget(e_lab_1)
-
-        # Form Layout
-        form_geo_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_geo_layout)
+        grid0.addWidget(self.intersect_btn, 6, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 8, 0, 1, 2)
 
         self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("GEOMETRY"))
-        form_geo_layout.addRow(self.geo_title)
+        grid0.addWidget(self.geo_title, 10, 0, 1, 2)
 
         # Target Geometry Object
         self.target_geo_combo = FCComboBox()
@@ -710,7 +709,8 @@ class SubUI:
               "the subtractor Geometry object.")
         )
 
-        form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
+        grid0.addWidget(self.target_geo_label, 12, 0)
+        grid0.addWidget(self.target_geo_combo, 12, 1)
 
         # Substractor Geometry Object
         self.sub_geo_combo = FCComboBox()
@@ -724,13 +724,14 @@ class SubUI:
             _("Geometry object that will be subtracted\n"
               "from the target Geometry object.")
         )
-        e_lab_1 = QtWidgets.QLabel('')
 
-        form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
+        grid0.addWidget(self.sub_geo_label, 14, 0)
+        grid0.addWidget(self.sub_geo_combo, 14, 1)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))
         self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
-        self.tools_box.addWidget(self.close_paths_cb)
+
+        grid0.addWidget(self.close_paths_cb, 16, 0, 1, 2)
 
         self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
         self.intersect_geo_btn.setToolTip(
@@ -743,8 +744,9 @@ class SubUI:
                                     font-weight: bold;
                                 }
                                 """)
-        self.tools_box.addWidget(self.intersect_geo_btn)
-        self.tools_box.addWidget(e_lab_1)
+
+        grid0.addWidget(self.intersect_geo_btn, 18, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 20, 0, 1, 2)
 
         self.tools_box.addStretch()
 

@@ -2388,13 +2388,13 @@ class ToolsDB2(QtWidgets.QWidget):
             "extracut_length":  self.ui.ecut_length_entry,
 
             # NCC
-            "tools_nccoperation":       self.ui.op_radio,
-            "tools_nccmilling_type":    self.ui.milling_type_radio,
-            "tools_nccoverlap":         self.ui.ncc_overlap_entry,
-            "tools_nccmargin":          self.ui.ncc_margin_entry,
-            "tools_nccmethod":          self.ui.ncc_method_combo,
-            "tools_nccconnect":         self.ui.ncc_connect_cb,
-            "tools_ncccontour":         self.ui.ncc_contour_cb,
+            "tools_ncc_operation":       self.ui.op_radio,
+            "tools_ncc_milling_type":    self.ui.milling_type_radio,
+            "tools_ncc_overlap":         self.ui.ncc_overlap_entry,
+            "tools_ncc_margin":          self.ui.ncc_margin_entry,
+            "tools_ncc_method":          self.ui.ncc_method_combo,
+            "tools_ncc_connect":         self.ui.ncc_connect_cb,
+            "tools_ncc_contour":         self.ui.ncc_contour_cb,
             "tools_ncc_offset_choice":  self.ui.ncc_choice_offset_cb,
             "tools_ncc_offset_value":   self.ui.ncc_offset_spinner,
 
@@ -2472,15 +2472,15 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_ecut_length":      "extracut_length",
 
             # NCC
-            "gdb_n_operation":      "tools_nccoperation",
-            "gdb_n_overlap":        "tools_nccoverlap",
-            "gdb_n_margin":         "tools_nccmargin",
-            "gdb_n_method":         "tools_nccmethod",
-            "gdb_n_connect":        "tools_nccconnect",
-            "gdb_n_contour":        "tools_ncccontour",
+            "gdb_n_operation":      "tools_ncc_operation",
+            "gdb_n_overlap":        "tools_ncc_overlap",
+            "gdb_n_margin":         "tools_ncc_margin",
+            "gdb_n_method":         "tools_ncc_method",
+            "gdb_n_connect":        "tools_ncc_connect",
+            "gdb_n_contour":        "tools_ncc_contour",
             "gdb_n_offset":         "tools_ncc_offset_choice",
             "gdb_n_offset_value":   "tools_ncc_offset_value",
-            "gdb_n_milling_type":   "tools_nccmilling_type",
+            "gdb_n_milling_type":   "tools_ncc_milling_type",
 
             # Paint
             'gdb_p_overlap':        "tools_paintoverlap",
@@ -2818,13 +2818,13 @@ class ToolsDB2(QtWidgets.QWidget):
             "endz":             float(self.app.defaults["geometry_endz"]),
 
             # NCC
-            "tools_nccoperation":       self.app.defaults["tools_nccoperation"],
-            "tools_nccmilling_type":    self.app.defaults["tools_nccmilling_type"],
-            "tools_nccoverlap":         float(self.app.defaults["tools_nccoverlap"]),
-            "tools_nccmargin":          float(self.app.defaults["tools_nccmargin"]),
-            "tools_nccmethod":          self.app.defaults["tools_nccmethod"],
-            "tools_nccconnect":         self.app.defaults["tools_nccconnect"],
-            "tools_ncccontour":         self.app.defaults["tools_ncccontour"],
+            "tools_ncc_operation":       self.app.defaults["tools_ncc_operation"],
+            "tools_ncc_milling_type":    self.app.defaults["tools_ncc_milling_type"],
+            "tools_ncc_overlap":         float(self.app.defaults["tools_ncc_overlap"]),
+            "tools_ncc_margin":          float(self.app.defaults["tools_ncc_margin"]),
+            "tools_ncc_method":          self.app.defaults["tools_ncc_method"],
+            "tools_ncc_connect":         self.app.defaults["tools_ncc_connect"],
+            "tools_ncc_contour":         self.app.defaults["tools_ncc_contour"],
             "tools_ncc_offset_choice":  self.app.defaults["tools_ncc_offset_choice"],
             "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
 
@@ -3349,23 +3349,23 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # NCC Tool
             elif wdg_name == "gdb_n_operation":
-                self.db_tool_dict[tool_id]['data']['tools_nccoperation'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_operation'] = val
             elif wdg_name == "gdb_n_overlap":
-                self.db_tool_dict[tool_id]['data']['tools_nccoverlap'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_overlap'] = val
             elif wdg_name == "gdb_n_margin":
-                self.db_tool_dict[tool_id]['data']['tools_nccmargin'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_margin'] = val
             elif wdg_name == "gdb_n_method":
-                self.db_tool_dict[tool_id]['data']['tools_nccmethod'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_method'] = val
             elif wdg_name == "gdb_n_connect":
-                self.db_tool_dict[tool_id]['data']['tools_nccconnect'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_connect'] = val
             elif wdg_name == "gdb_n_contour":
-                self.db_tool_dict[tool_id]['data']['tools_ncccontour'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_contour'] = val
             elif wdg_name == "gdb_n_offset":
                 self.db_tool_dict[tool_id]['data']['tools_ncc_offset_choice'] = val
             elif wdg_name == "gdb_n_offset_value":
                 self.db_tool_dict[tool_id]['data']['tools_ncc_offset_value'] = val
             elif wdg_name == "gdb_n_milling_type":
-                self.db_tool_dict[tool_id]['data']['tools_nccmilling_type'] = val
+                self.db_tool_dict[tool_id]['data']['tools_ncc_milling_type'] = val
 
             # Paint Tool
             elif wdg_name == "gdb_p_overlap":
