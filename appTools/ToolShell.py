@@ -290,7 +290,7 @@ class FCShell(TermWidget):
 
         self._edit.set_model_data(self.app.myKeywords)
         self.setWindowIcon(self.app.ui.app_icon)
-        self.setWindowTitle("FlatCAM Shell")
+        self.setWindowTitle(_("FlatCAM Shell"))
         self.resize(*self.app.defaults["global_shell_shape"])
         self._append_to_browser('in', "FlatCAM %s - " % version)
         self.append_output('%s\n\n' % _("Type >help< to get started"))

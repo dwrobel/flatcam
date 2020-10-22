@@ -310,7 +310,7 @@ class TextInputTool(AppTool):
         self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.form_layout.addRow(FCLabel('%s:' % "Size"), hlay)
+        self.form_layout.addRow(FCLabel('%s:' % _("Size")), hlay)
 
         # Text input
         self.text_input_entry = FCTextAreaRich()

@@ -909,7 +909,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # ########################## Shell Toolbar# ##############################
         # ########################################################################
         self.shell_btn = self.toolbarshell.addAction(
-            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
+            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
         self.open_script_btn = self.toolbarshell.addAction(
@@ -1191,7 +1191,7 @@ class MainGUI(QtWidgets.QMainWindow):
         # #######################################################################
         # ####################### TCL Shell DOCK ################################
         # #######################################################################
-        self.shell_dock = FCDock("TCL Shell", close_callback=self.toggle_shell_ui)
+        self.shell_dock = FCDock(_("TCL Shell"), close_callback=self.toggle_shell_ui)
         self.shell_dock.setObjectName('Shell_DockWidget')
         self.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
@@ -3788,13 +3788,13 @@ class MainGUI(QtWidgets.QMainWindow):
         try:
             name = self.plot_tab_area.widget(0).objectName()
         except AttributeError:
-            self.plot_tab_area.addTab(self.plot_tab, "Plot Area")
+            self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
             # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
             self.plot_tab_area.protectTab(0)
             return
 
         if name != 'plotarea_tab':
-            self.plot_tab_area.insertTab(0, self.plot_tab, "Plot Area")
+            self.plot_tab_area.insertTab(0, self.plot_tab, _("Plot Area"))
             # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
             self.plot_tab_area.protectTab(0)
         else:

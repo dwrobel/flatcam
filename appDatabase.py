@@ -993,7 +993,7 @@ class ToolsDB2UI:
         """)
         self.description_vlay = QtWidgets.QVBoxLayout()
         self.tool_description_box.setTitle(_("Tool Description"))
-        self.tool_description_box.setFixedWidth(250)
+        self.tool_description_box.setMinimumWidth(250)
 
         # Milling box
         self.milling_box = QtWidgets.QGroupBox()
@@ -1006,7 +1006,7 @@ class ToolsDB2UI:
         """)
         self.milling_vlay = QtWidgets.QVBoxLayout()
         self.milling_box.setTitle(_("Milling Parameters"))
-        self.milling_box.setFixedWidth(250)
+        self.milling_box.setMinimumWidth(250)
 
         # NCC TOOL BOX
         self.ncc_box = QtWidgets.QGroupBox()
@@ -1019,7 +1019,7 @@ class ToolsDB2UI:
                         """)
         self.ncc_vlay = QtWidgets.QVBoxLayout()
         self.ncc_box.setTitle(_("NCC Parameters"))
-        self.ncc_box.setFixedWidth(250)
+        self.ncc_box.setMinimumWidth(250)
 
         # PAINT TOOL BOX
         self.paint_box = QtWidgets.QGroupBox()
@@ -1032,7 +1032,7 @@ class ToolsDB2UI:
                         """)
         self.paint_vlay = QtWidgets.QVBoxLayout()
         self.paint_box.setTitle(_("Paint Parameters"))
-        self.paint_box.setFixedWidth(250)
+        self.paint_box.setMinimumWidth(250)
 
         # ISOLATION TOOL BOX
         self.iso_box = QtWidgets.QGroupBox()
@@ -1045,7 +1045,7 @@ class ToolsDB2UI:
                      """)
         self.iso_vlay = QtWidgets.QVBoxLayout()
         self.iso_box.setTitle(_("Isolation Parameters"))
-        self.iso_box.setFixedWidth(250)
+        self.iso_box.setMinimumWidth(250)
 
         # DRILLING TOOL BOX
         self.drill_box = QtWidgets.QGroupBox()
@@ -1058,7 +1058,7 @@ class ToolsDB2UI:
                      """)
         self.drill_vlay = QtWidgets.QVBoxLayout()
         self.drill_box.setTitle(_("Drilling Parameters"))
-        self.drill_box.setFixedWidth(250)
+        self.drill_box.setMinimumWidth(250)
 
         # CUTOUT TOOL BOX
         self.cutout_box = QtWidgets.QGroupBox()
@@ -1071,7 +1071,7 @@ class ToolsDB2UI:
                      """)
         self.cutout_vlay = QtWidgets.QVBoxLayout()
         self.cutout_box.setTitle(_("Cutout Parameters"))
-        self.cutout_box.setFixedWidth(250)
+        self.cutout_box.setMinimumWidth(250)
 
         # Layout Constructor
         self.tool_description_box.setLayout(self.description_vlay)

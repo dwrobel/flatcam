@@ -19,6 +19,9 @@ CHANGELOG for FlatCAM beta
 - updated the Turkish translation (by Mehmet Kaya)
 - small change in the CNCJob UI by replacing the AL checkbox with a checkable QButton
 - disabled the Autolevelling feature in CNCJob due of being not finished and missing also a not-yet-released package: Shapely v 1.8
+- added some new strings for translation and updated the translation strings
+- in ToolsDB2UI class made the vertical layouts have a preferred minimum dimension as opposed to the previous fixed one
+- in Geometry Object made sure that the Tools Table second column is set to Resize to contents
 
 21.10.2020
 

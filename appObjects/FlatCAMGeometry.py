@@ -269,6 +269,7 @@ class GeometryObject(FlatCAMObj, Geometry):
         horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(4, 40)

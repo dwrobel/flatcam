@@ -2258,7 +2258,7 @@ class App(QtCore.QObject):
         else:
             self.old_state_of_tools_toolbar = False
 
-        self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
+        self.ui.plot_tab_area.setTabText(0, _("EDITOR Area"))
         self.ui.plot_tab_area.protectTab(0)
         self.inform.emit('[WARNING_NOTCL] %s' % _("Editor is activated ..."))
 
