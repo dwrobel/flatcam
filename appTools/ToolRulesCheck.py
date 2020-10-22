@@ -357,7 +357,7 @@ class RulesCheck(AppTool):
 
             name = elem['name']
             for tool in elem['tools']:
-                tool_dia = float('%.*f' % (4, float(elem['tools'][tool]['C'])))
+                tool_dia = float('%.*f' % (4, float(elem['tools'][tool]['tooldia'])))
                 if tool_dia < float(size):
                     dia_list.append(tool_dia)
             obj_violations['name'] = name
