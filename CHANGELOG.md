@@ -11,6 +11,7 @@ CHANGELOG for FlatCAM beta
 
 - added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
 - replaced the InputDialog in the Opacity pop menu for the objects in the Project Tab with a FCInputDialogSlider
+- minor changes
 
 23.10.2020
 

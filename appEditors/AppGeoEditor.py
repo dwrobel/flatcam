@@ -3419,57 +3419,15 @@ class AppGeoEditor(QtCore.QObject):
 
         self.rtree_index = rtindex.Index()
 
-        def entry2option(opt, entry):
-            """
-
-            :param opt:     A option from the self.options dictionary
-            :param entry:   A GUI element which text value is used
-            :return:
-            """
-            try:
-                text_value = entry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                self.options[opt] = float(text_value)
-            except Exception as e:
-                entry.set_value(self.app.defaults[opt])
-                log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
-                return
-
-        def grid_changed(goption, gentry):
-            """
-
-            :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
-            :param gentry:      A GUI element which text value is read and used
-            :return:
-            """
-            if goption not in ['global_gridx', 'global_gridy']:
-                return
-
-            entry2option(opt=goption, entry=gentry)
-            # if the grid link is checked copy the value in the GridX field to GridY
-            try:
-                text_value = gentry.text()
-                if ',' in text_value:
-                    text_value = text_value.replace(',', '.')
-                val = float(text_value)
-            except ValueError:
-                return
-
-            if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
-
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
-        self.app.ui.grid_gap_x_entry.textChanged.connect(
-            lambda: grid_changed("global_gridx", self.app.ui.grid_gap_x_entry))
+        self.app.ui.grid_gap_x_entry.textChanged.connect(self.on_gridx_val_changed)
 
         self.app.ui.grid_gap_y_entry.setValidator(QtGui.QDoubleValidator())
-        self.app.ui.grid_gap_y_entry.textChanged.connect(
-            lambda: entry2option("global_gridy", self.app.ui.grid_gap_y_entry))
+        self.app.ui.grid_gap_y_entry.textChanged.connect(self.on_gridy_val_changed)
 
         self.app.ui.snap_max_dist_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.snap_max_dist_entry.textChanged.connect(
-            lambda: entry2option("snap_max", self.app.ui.snap_max_dist_entry))
+            lambda: self.entry2option("snap_max", self.app.ui.snap_max_dist_entry))
 
         # if using Paint store here the tool diameter used
         self.paint_tooldia = None
@@ -3521,6 +3479,56 @@ class AppGeoEditor(QtCore.QObject):
     def on_transform_complete(self):
         self.delete_selected()
         self.replot()
+
+    def entry2option(self, opt, entry):
+        """
+
+        :param opt:     A option from the self.options dictionary
+        :param entry:   A GUI element which text value is used
+        :return:
+        """
+        try:
+            text_value = entry.text()
+            if ',' in text_value:
+                text_value = text_value.replace(',', '.')
+            self.options[opt] = float(text_value)
+        except Exception as e:
+            entry.set_value(self.app.defaults[opt])
+            log.debug("AppGeoEditor.__init__().entry2option() --> %s" % str(e))
+            return
+
+    def grid_changed(self, goption, gentry):
+        """
+
+        :param goption:     String. Can be either 'global_gridx' or 'global_gridy'
+        :param gentry:      A GUI element which text value is read and used
+        :return:
+        """
+        if goption not in ['global_gridx', 'global_gridy']:
+            return
+
+        self.entry2option(opt=goption, entry=gentry)
+        # if the grid link is checked copy the value in the GridX field to GridY
+        try:
+            text_value = gentry.text()
+            if ',' in text_value:
+                text_value = text_value.replace(',', '.')
+            val = float(text_value)
+        except ValueError:
+            return
+
+        if self.app.ui.grid_gap_link_cb.isChecked():
+            self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
+
+    def on_gridx_val_changed(self):
+        self.grid_changed("global_gridx", self.app.ui.grid_gap_x_entry)
+        # try:
+        #     self.app.defaults["global_gridx"] =  float(self.app.ui.grid_gap_x_entry.get_value())
+        # except ValueError:
+        #     return
+
+    def on_gridy_val_changed(self):
+        self.entry2option("global_gridy", self.app.ui.grid_gap_y_entry)
 
     def set_ui(self):
         # updated units
