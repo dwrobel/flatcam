@@ -106,19 +106,19 @@ class ToolPaint(AppTool, Gerber):
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         self.form_fields = {
-            "tools_paintoverlap":   self.ui.paintoverlap_entry,
-            "tools_paintoffset":    self.ui.offset_entry,
-            "tools_paintmethod":    self.ui.paintmethod_combo,
-            "tools_pathconnect":    self.ui.pathconnect_cb,
-            "tools_paintcontour":   self.ui.paintcontour_cb,
+            "tools_paint_overlap":   self.ui.paintoverlap_entry,
+            "tools_paint_offset":    self.ui.offset_entry,
+            "tools_paint_method":    self.ui.paintmethod_combo,
+            "tools_paint_connect":    self.ui.pathconnect_cb,
+            "tools_paint_contour":   self.ui.paintcontour_cb,
         }
 
         self.name2option = {
-            'p_overlap':    "tools_paintoverlap",
-            'p_offset':     "tools_paintoffset",
-            'p_method':     "tools_paintmethod",
-            'p_connect':    "tools_pathconnect",
-            'p_contour':    "tools_paintcontour",
+            'p_overlap':    "tools_paint_overlap",
+            'p_offset':     "tools_paint_offset",
+            'p_method':     "tools_paint_method",
+            'p_connect':    "tools_paint_connect",
+            'p_contour':    "tools_paint_contour",
         }
 
         # store here the points for the "Polygon" area selection shape
@@ -439,9 +439,9 @@ class ToolPaint(AppTool, Gerber):
         self.default_data.update({
             "name":                 '_paint',
             "plot":                 self.app.defaults["geometry_plot"],
-            "cutz":                 float(self.app.defaults["tools_paintcutz"]),
-            "vtipdia":              float(self.app.defaults["tools_painttipdia"]),
-            "vtipangle":            float(self.app.defaults["tools_painttipangle"]),
+            "cutz":                 float(self.app.defaults["tools_paint_cutz"]),
+            "vtipdia":              float(self.app.defaults["tools_paint_tipdia"]),
+            "vtipangle":            float(self.app.defaults["tools_paint_tipangle"]),
             "travelz":              float(self.app.defaults["geometry_travelz"]),
             "feedrate":             float(self.app.defaults["geometry_feedrate"]),
             "feedrate_z":           float(self.app.defaults["geometry_feedrate_z"]),
@@ -468,28 +468,28 @@ class ToolPaint(AppTool, Gerber):
             "area_overz":           float(self.app.defaults["geometry_area_overz"]),
             "optimization_type":    self.app.defaults["geometry_optimization_type"],
 
-            "tooldia":              self.app.defaults["tools_painttooldia"],
-            "tools_paintoffset":   self.app.defaults["tools_paintoffset"],
-            "tools_paintmethod":    self.app.defaults["tools_paintmethod"],
-            "tools_selectmethod":   self.app.defaults["tools_selectmethod"],
-            "tools_pathconnect":    self.app.defaults["tools_pathconnect"],
-            "tools_paintcontour":   self.app.defaults["tools_paintcontour"],
-            "tools_paintoverlap":   self.app.defaults["tools_paintoverlap"],
-            "tools_paintrest":      self.app.defaults["tools_paintrest"],
+            "tooldia":              self.app.defaults["tools_paint_tooldia"],
+            "tools_paint_offset":   self.app.defaults["tools_paint_offset"],
+            "tools_paint_method":    self.app.defaults["tools_paint_method"],
+            "tools_paint_selectmethod":   self.app.defaults["tools_paint_selectmethod"],
+            "tools_paint_connect":    self.app.defaults["tools_paint_connect"],
+            "tools_paint_contour":   self.app.defaults["tools_paint_contour"],
+            "tools_paint_overlap":   self.app.defaults["tools_paint_overlap"],
+            "tools_paint_rest":      self.app.defaults["tools_paint_rest"],
         })
 
         # ## Init the GUI interface
-        self.ui.order_radio.set_value(self.app.defaults["tools_paintorder"])
-        self.ui.offset_entry.set_value(self.app.defaults["tools_paintoffset"])
-        self.ui.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
-        self.ui.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
+        self.ui.order_radio.set_value(self.app.defaults["tools_paint_order"])
+        self.ui.offset_entry.set_value(self.app.defaults["tools_paint_offset"])
+        self.ui.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
+        self.ui.selectmethod_combo.set_value(self.app.defaults["tools_paint_selectmethod"])
         self.ui.area_shape_radio.set_value(self.app.defaults["tools_paint_area_shape"])
-        self.ui.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
-        self.ui.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
-        self.ui.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+        self.ui.pathconnect_cb.set_value(self.app.defaults["tools_paint_connect"])
+        self.ui.paintcontour_cb.set_value(self.app.defaults["tools_paint_contour"])
+        self.ui.paintoverlap_entry.set_value(self.app.defaults["tools_paint_overlap"])
 
-        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_paintnewdia"])
-        self.ui.rest_cb.set_value(self.app.defaults["tools_paintrest"])
+        self.ui.new_tooldia_entry.set_value(self.app.defaults["tools_paint_newdia"])
+        self.ui.rest_cb.set_value(self.app.defaults["tools_paint_rest"])
 
         # # make the default object type, "Geometry"
         # self.type_obj_radio.set_value("geometry")
@@ -521,29 +521,29 @@ class ToolPaint(AppTool, Gerber):
             self.on_reference_combo_changed()
 
         try:
-            diameters = [float(self.app.defaults["tools_painttooldia"])]
+            diameters = [float(self.app.defaults["tools_paint_tooldia"])]
         except (ValueError, TypeError):
-            if isinstance(self.app.defaults["tools_painttooldia"], str):
-                diameters = [eval(x) for x in self.app.defaults["tools_painttooldia"].split(",") if x != '']
+            if isinstance(self.app.defaults["tools_paint_tooldia"], str):
+                diameters = [eval(x) for x in self.app.defaults["tools_paint_tooldia"].split(",") if x != '']
             else:
-                diameters = self.app.defaults["tools_painttooldia"]
+                diameters = self.app.defaults["tools_paint_tooldia"]
 
         if not diameters:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             self.build_ui()
 
             # if the Paint Method is "Single" disable the tool table context menu
-            if self.default_data["tools_selectmethod"] == "single":
+            if self.default_data["tools_paint_selectmethod"] == "single":
                 self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
             return
 
         for dia in diameters:
             self.on_tool_add(custom_dia=dia)
 
-        self.ui.on_rest_machining_check(state=self.app.defaults["tools_paintrest"])
+        self.ui.on_rest_machining_check(state=self.app.defaults["tools_paint_rest"])
 
         # if the Paint Method is "Single" disable the tool table context menu
-        if self.default_data["tools_selectmethod"] == "single":
+        if self.default_data["tools_paint_selectmethod"] == "single":
             self.ui.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
         self.ui.tools_table.drag_drop_sig.connect(self.rebuild_ui)
@@ -1777,11 +1777,11 @@ class ToolPaint(AppTool, Gerber):
                     return "fail"
 
                 # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
+                over = float(tools_storage[current_uid]['data']['tools_paint_overlap']) / 100.0
+                conn = tools_storage[current_uid]['data']['tools_paint_connect']
+                cont = tools_storage[current_uid]['data']['tools_paint_contour']
 
-                paint_offset = float(tools_storage[current_uid]['data']['tools_paintoffset'])
+                paint_offset = float(tools_storage[current_uid]['data']['tools_paint_offset'])
 
                 poly_buf = []
                 for pol in geometry:
@@ -1967,9 +1967,9 @@ class ToolPaint(AppTool, Gerber):
                 # cleared_geo = []
 
                 # determine the tool parameters to use
-                over = float(tools_storage[current_uid]['data']['tools_paintoverlap']) / 100.0
-                conn = tools_storage[current_uid]['data']['tools_pathconnect']
-                cont = tools_storage[current_uid]['data']['tools_paintcontour']
+                over = float(tools_storage[current_uid]['data']['tools_paint_overlap']) / 100.0
+                conn = tools_storage[current_uid]['data']['tools_paint_connect']
+                cont = tools_storage[current_uid]['data']['tools_paint_contour']
 
                 pol_nr = 0
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-23 18:46+0300\n"
+"POT-Creation-Date: 2020-10-23 23:09+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -253,13 +253,13 @@ msgid ""
 msgstr ""
 
 #: appDatabase.py:220 appEditors/AppExcEditor.py:2567 appEditors/AppExcEditor.py:3732
-#: appGUI/ObjectUI.py:666 appObjects/FlatCAMExcellon.py:902
-#: appObjects/FlatCAMExcellon.py:1002 appObjects/FlatCAMObj.py:719
+#: appGUI/ObjectUI.py:666 appObjects/FlatCAMExcellon.py:908
+#: appObjects/FlatCAMExcellon.py:1008 appObjects/FlatCAMObj.py:719
 #: appObjects/FlatCAMObj.py:782 appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
 #: appTools/ToolDrilling.py:2065 appTools/ToolIsolation.py:3022 appTools/ToolMilling.py:1071
 #: appTools/ToolMilling.py:1175 appTools/ToolMilling.py:1360 appTools/ToolMilling.py:1670
 #: appTools/ToolNCC.py:3885 appTools/ToolPaint.py:2813 appTools/ToolPcbWizard.py:404
-#: appTools/ToolProperties.py:416 appTools/ToolProperties.py:479
+#: appTools/ToolProperties.py:413 appTools/ToolProperties.py:476
 #: appTools/ToolSolderPaste.py:1166 tclCommands/TclCommandDrillcncjob.py:195
 msgid "Diameter"
 msgstr ""
@@ -1069,7 +1069,7 @@ msgstr ""
 
 #: appDatabase.py:1222 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
 #: appTools/ToolCutOut.py:2222
-msgid "The drill hole diameter when doing mpuse bites."
+msgid "The drill hole diameter when doing mouse bites."
 msgstr ""
 
 #: appDatabase.py:1233 appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:151
@@ -1436,12 +1436,12 @@ msgstr ""
 msgid "Done. Drill(s) copied."
 msgstr ""
 
-#: appEditors/AppExcEditor.py:1897 appObjects/FlatCAMExcellon.py:330
+#: appEditors/AppExcEditor.py:1897 appObjects/FlatCAMExcellon.py:333
 #: appTools/ToolDrilling.py:571 appTools/ToolMilling.py:494
 msgid "Total Drills"
 msgstr ""
 
-#: appEditors/AppExcEditor.py:1929 appObjects/FlatCAMExcellon.py:364
+#: appEditors/AppExcEditor.py:1929 appObjects/FlatCAMExcellon.py:367
 #: appTools/ToolDrilling.py:598 appTools/ToolMilling.py:521
 msgid "Total Slots"
 msgstr ""
@@ -1790,7 +1790,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:4007
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56 appObjects/FlatCAMObj.py:877
-#: appTools/ToolCorners.py:398 appTools/ToolProperties.py:574
+#: appTools/ToolCorners.py:398 appTools/ToolProperties.py:571
 msgid "Length"
 msgstr ""
 
@@ -1955,7 +1955,7 @@ msgid "Text Tool"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:404 appGUI/MainGUI.py:511 appGUI/MainGUI.py:1245
-#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:880
+#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:886
 #: appObjects/FlatCAMGeometry.py:951 appTools/ToolDrilling.py:711
 #: appTools/ToolDrilling.py:1033 appTools/ToolDrilling.py:2116 appTools/ToolIsolation.py:697
 #: appTools/ToolIsolation.py:3166 appTools/ToolMilling.py:790 appTools/ToolMilling.py:1046
@@ -1997,7 +1997,7 @@ msgstr ""
 #: appEditors/AppGeoEditor.py:595 appEditors/AppGeoEditor.py:2984
 #: appEditors/AppGeoEditor.py:3012 appEditors/AppGeoEditor.py:3040
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:71 appObjects/FlatCAMObj.py:495
-#: appTools/ToolProperties.py:116 appTools/ToolProperties.py:164
+#: appTools/ToolProperties.py:113 appTools/ToolProperties.py:161
 msgid "Tools"
 msgstr ""
 
@@ -2990,7 +2990,7 @@ msgid "Gerber Editor"
 msgstr ""
 
 #: appEditors/AppGerberEditor.py:2482 appGUI/ObjectUI.py:281 appObjects/FlatCAMObj.py:492
-#: appTools/ToolProperties.py:161
+#: appTools/ToolProperties.py:158
 msgid "Apertures"
 msgstr ""
 
@@ -3533,7 +3533,7 @@ msgstr ""
 #: appEditors/appGCodeEditor.py:703 appGUI/ObjectUI.py:666 appGUI/ObjectUI.py:2019
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:71 appObjects/FlatCAMObj.py:499
 #: appTools/ToolDrilling.py:2065 appTools/ToolMilling.py:1670 appTools/ToolMilling.py:1769
-#: appTools/ToolProperties.py:168
+#: appTools/ToolProperties.py:165
 msgid "Drills"
 msgstr ""
 
@@ -3541,7 +3541,7 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:158
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:72 appObjects/FlatCAMObj.py:501
 #: appTools/ToolDrilling.py:2065 appTools/ToolMilling.py:1670 appTools/ToolMilling.py:1770
-#: appTools/ToolProperties.py:170
+#: appTools/ToolProperties.py:167
 msgid "Slots"
 msgstr ""
 
@@ -4009,7 +4009,7 @@ msgstr ""
 msgid "Preferences\tShift+P"
 msgstr ""
 
-#: appGUI/MainGUI.py:423 appObjects/FlatCAMObj.py:488 appTools/ToolProperties.py:157
+#: appGUI/MainGUI.py:423 appObjects/FlatCAMObj.py:488 appTools/ToolProperties.py:154
 msgid "Options"
 msgstr ""
 
@@ -6530,7 +6530,7 @@ msgid ""
 "of a travel line."
 msgstr ""
 
-#: appGUI/ObjectUI.py:1939 appObjects/FlatCAMObj.py:864 appTools/ToolProperties.py:561
+#: appGUI/ObjectUI.py:1939 appObjects/FlatCAMObj.py:864 appTools/ToolProperties.py:558
 msgid "Travelled distance"
 msgstr ""
 
@@ -6804,7 +6804,7 @@ msgstr ""
 
 #: appGUI/ObjectUI.py:2474 appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:185
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:89 appObjects/FlatCAMObj.py:831
-#: appTools/ToolProperties.py:528
+#: appTools/ToolProperties.py:525
 msgid "Feedrate"
 msgstr ""
 
@@ -7433,7 +7433,7 @@ msgstr ""
 #: appGUI/preferences/gerber/GerberExpPrefGroupUI.py:42
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:82 appTools/ToolDistance.py:562
 #: appTools/ToolDistanceMin.py:237 appTools/ToolPcbWizard.py:455
-#: appTools/ToolProperties.py:156
+#: appTools/ToolProperties.py:153
 msgid "Units"
 msgstr ""
 
@@ -8783,9 +8783,9 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:196 appObjects/FlatCAMObj.py:755
 #: appObjects/FlatCAMObj.py:758 appObjects/FlatCAMObj.py:761 appObjects/FlatCAMObj.py:789
 #: appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799 appTools/ToolFiducials.py:815
-#: appTools/ToolFilm.py:1102 appTools/ToolProperties.py:452 appTools/ToolProperties.py:455
-#: appTools/ToolProperties.py:458 appTools/ToolProperties.py:486
-#: appTools/ToolProperties.py:493 appTools/ToolProperties.py:496
+#: appTools/ToolFilm.py:1102 appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
+#: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
+#: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
 msgid "None"
 msgstr ""
 
@@ -9372,7 +9372,7 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:84
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:203 appObjects/FlatCAMObj.py:505
 #: appTools/ToolExtractDrills.py:502 appTools/ToolExtractDrills.py:645
-#: appTools/ToolProperties.py:174 appTools/ToolPunchGerber.py:778
+#: appTools/ToolProperties.py:171 appTools/ToolPunchGerber.py:778
 #: appTools/ToolPunchGerber.py:938
 msgid "Others"
 msgstr ""
@@ -11311,38 +11311,38 @@ msgstr ""
 msgid "Document Editor"
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:874 appObjects/FlatCAMExcellon.py:982
+#: appObjects/FlatCAMExcellon.py:880 appObjects/FlatCAMExcellon.py:988
 #: appTools/ToolDrilling.py:1612 appTools/ToolMilling.py:1038 appTools/ToolMilling.py:1154
 #: appTools/ToolMilling.py:1340
 msgid "Please select one or more tools from the list and try again."
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:879 appTools/ToolMilling.py:1045
+#: appObjects/FlatCAMExcellon.py:885 appTools/ToolMilling.py:1045
 msgid "Milling tool for DRILLS is larger than hole size. Cancelled."
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827 appTools/ToolMilling.py:1071
 #: appTools/ToolMilling.py:1175 appTools/ToolMilling.py:1360
 #: tclCommands/TclCommandDrillcncjob.py:195
 msgid "Tool_nr"
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827 appTools/ToolMilling.py:1071
 #: appTools/ToolMilling.py:1175 appTools/ToolMilling.py:1360
 #: tclCommands/TclCommandDrillcncjob.py:195
 msgid "Drills_Nr"
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827 appTools/ToolMilling.py:1071
 #: appTools/ToolMilling.py:1175 appTools/ToolMilling.py:1360
 #: tclCommands/TclCommandDrillcncjob.py:195
 msgid "Slots_Nr"
 msgstr ""
 
-#: appObjects/FlatCAMExcellon.py:991 appTools/ToolMilling.py:1163
+#: appObjects/FlatCAMExcellon.py:997 appTools/ToolMilling.py:1163
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
 
@@ -11566,88 +11566,88 @@ msgstr ""
 msgid "Skewing..."
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:487 appTools/ToolProperties.py:155
+#: appObjects/FlatCAMObj.py:487 appTools/ToolProperties.py:152
 msgid "Dimensions"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:510 appTools/ToolProperties.py:198
+#: appObjects/FlatCAMObj.py:510 appTools/ToolProperties.py:195
 msgid "Calculating dimensions ... Please wait."
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:724 appObjects/FlatCAMObj.py:792 appTools/ToolProperties.py:421
-#: appTools/ToolProperties.py:489
+#: appObjects/FlatCAMObj.py:724 appObjects/FlatCAMObj.py:792 appTools/ToolProperties.py:418
+#: appTools/ToolProperties.py:486
 msgid "Drills number"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:725 appObjects/FlatCAMObj.py:794 appTools/ToolProperties.py:422
-#: appTools/ToolProperties.py:491
+#: appObjects/FlatCAMObj.py:725 appObjects/FlatCAMObj.py:794 appTools/ToolProperties.py:419
+#: appTools/ToolProperties.py:488
 msgid "Slots number"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:727 appTools/ToolProperties.py:424
+#: appObjects/FlatCAMObj.py:727 appTools/ToolProperties.py:421
 msgid "Drills total number:"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:728 appTools/ToolProperties.py:425
+#: appObjects/FlatCAMObj.py:728 appTools/ToolProperties.py:422
 msgid "Slots total number:"
 msgstr ""
 
 #: appObjects/FlatCAMObj.py:755 appObjects/FlatCAMObj.py:758 appObjects/FlatCAMObj.py:761
 #: appObjects/FlatCAMObj.py:789 appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799
-#: appTools/ToolProperties.py:452 appTools/ToolProperties.py:455
-#: appTools/ToolProperties.py:458 appTools/ToolProperties.py:486
-#: appTools/ToolProperties.py:493 appTools/ToolProperties.py:496
+#: appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
+#: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
+#: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
 msgid "Present"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:756 appObjects/FlatCAMObj.py:790 appTools/ToolProperties.py:453
-#: appTools/ToolProperties.py:487
+#: appObjects/FlatCAMObj.py:756 appObjects/FlatCAMObj.py:790 appTools/ToolProperties.py:450
+#: appTools/ToolProperties.py:484
 msgid "Solid Geometry"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:759 appObjects/FlatCAMObj.py:797 appTools/ToolProperties.py:456
-#: appTools/ToolProperties.py:494
+#: appObjects/FlatCAMObj.py:759 appObjects/FlatCAMObj.py:797 appTools/ToolProperties.py:453
+#: appTools/ToolProperties.py:491
 msgid "GCode Text"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:762 appObjects/FlatCAMObj.py:800 appTools/ToolProperties.py:459
-#: appTools/ToolProperties.py:497
+#: appObjects/FlatCAMObj.py:762 appObjects/FlatCAMObj.py:800 appTools/ToolProperties.py:456
+#: appTools/ToolProperties.py:494
 msgid "GCode Geometry"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:770 appObjects/FlatCAMObj.py:843 appTools/ToolProperties.py:467
-#: appTools/ToolProperties.py:540
+#: appObjects/FlatCAMObj.py:770 appObjects/FlatCAMObj.py:843 appTools/ToolProperties.py:464
+#: appTools/ToolProperties.py:537
 msgid "Tool Data"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:807 appTools/ToolProperties.py:504
+#: appObjects/FlatCAMObj.py:807 appTools/ToolProperties.py:501
 msgid "Depth of Cut"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:819 appTools/ToolProperties.py:516
+#: appObjects/FlatCAMObj.py:819 appTools/ToolProperties.py:513
 msgid "Clearance Height"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:857 appTools/ToolProperties.py:554
+#: appObjects/FlatCAMObj.py:857 appTools/ToolProperties.py:551
 msgid "Routing time"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:882 appTools/ToolProperties.py:579
+#: appObjects/FlatCAMObj.py:882 appTools/ToolProperties.py:576
 msgid "Width"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:888 appObjects/FlatCAMObj.py:896 appTools/ToolProperties.py:585
-#: appTools/ToolProperties.py:593
+#: appObjects/FlatCAMObj.py:888 appObjects/FlatCAMObj.py:896 appTools/ToolProperties.py:582
+#: appTools/ToolProperties.py:590
 msgid "Box Area"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:891 appObjects/FlatCAMObj.py:899 appTools/ToolProperties.py:588
-#: appTools/ToolProperties.py:596
+#: appObjects/FlatCAMObj.py:891 appObjects/FlatCAMObj.py:899 appTools/ToolProperties.py:585
+#: appTools/ToolProperties.py:593
 msgid "Convex_Hull Area"
 msgstr ""
 
-#: appObjects/FlatCAMObj.py:906 appObjects/FlatCAMObj.py:909 appTools/ToolProperties.py:603
-#: appTools/ToolProperties.py:606
+#: appObjects/FlatCAMObj.py:906 appObjects/FlatCAMObj.py:909 appTools/ToolProperties.py:600
+#: appTools/ToolProperties.py:603
 msgid "Copper Area"
 msgstr ""
 
@@ -12062,7 +12062,7 @@ msgid ""
 msgstr ""
 
 #: appTools/ToolCalibration.py:888 appTools/ToolImage.py:196 appTools/ToolPanelize.py:676
-#: appTools/ToolProperties.py:179
+#: appTools/ToolProperties.py:176
 msgid "Object Type"
 msgstr ""
 
@@ -14731,47 +14731,47 @@ msgid ""
 "the other has .INF extension."
 msgstr ""
 
-#: appTools/ToolProperties.py:115 appTools/ToolTransform.py:142 app_Main.py:4976
+#: appTools/ToolProperties.py:112 appTools/ToolTransform.py:142 app_Main.py:4976
 #: app_Main.py:7321 app_Main.py:7421 app_Main.py:7462 app_Main.py:7503 app_Main.py:7545
 #: app_Main.py:7587 app_Main.py:7631 app_Main.py:7675 app_Main.py:8191 app_Main.py:8195
 msgid "No object selected."
 msgstr ""
 
-#: appTools/ToolProperties.py:130
+#: appTools/ToolProperties.py:127
 msgid "Object Properties are displayed."
 msgstr ""
 
-#: appTools/ToolProperties.py:135
+#: appTools/ToolProperties.py:132
 msgid "Properties Tool"
 msgstr ""
 
-#: appTools/ToolProperties.py:152
+#: appTools/ToolProperties.py:149
 msgid "TYPE"
 msgstr ""
 
-#: appTools/ToolProperties.py:153
+#: appTools/ToolProperties.py:150
 msgid "NAME"
 msgstr ""
 
-#: appTools/ToolProperties.py:183
+#: appTools/ToolProperties.py:180
 msgid "Geo Type"
 msgstr ""
 
-#: appTools/ToolProperties.py:186
+#: appTools/ToolProperties.py:183
 msgid "Single-Geo"
 msgstr ""
 
-#: appTools/ToolProperties.py:187
+#: appTools/ToolProperties.py:184
 msgid "Multi-Geo"
 msgstr ""
 
-#: appTools/ToolProperties.py:341 appTools/ToolProperties.py:345
-#: appTools/ToolProperties.py:347
+#: appTools/ToolProperties.py:338 appTools/ToolProperties.py:342
+#: appTools/ToolProperties.py:344
 msgid "Inch"
 msgstr ""
 
-#: appTools/ToolProperties.py:341 appTools/ToolProperties.py:346
-#: appTools/ToolProperties.py:348
+#: appTools/ToolProperties.py:338 appTools/ToolProperties.py:343
+#: appTools/ToolProperties.py:345
 msgid "Metric"
 msgstr ""
 

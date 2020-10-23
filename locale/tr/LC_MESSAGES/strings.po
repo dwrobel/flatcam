@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-23 18:46+0300\n"
-"PO-Revision-Date: 2020-10-23 18:46+0300\n"
+"POT-Creation-Date: 2020-10-23 23:11+0300\n"
+"PO-Revision-Date: 2020-10-23 23:11+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -219,7 +219,7 @@ msgstr "Seçilen dışlama alanları silindi."
 
 #: appDatabase.py:40
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: appDatabase.py:40
 msgid "Tool Name"
@@ -272,15 +272,15 @@ msgstr ""
 
 #: appDatabase.py:220 appEditors/AppExcEditor.py:2567
 #: appEditors/AppExcEditor.py:3732 appGUI/ObjectUI.py:666
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appObjects/FlatCAMObj.py:719 appObjects/FlatCAMObj.py:782
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
 #: appTools/ToolDrilling.py:2065 appTools/ToolIsolation.py:3022
 #: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
 #: appTools/ToolMilling.py:1360 appTools/ToolMilling.py:1670
 #: appTools/ToolNCC.py:3885 appTools/ToolPaint.py:2813
-#: appTools/ToolPcbWizard.py:404 appTools/ToolProperties.py:416
-#: appTools/ToolProperties.py:479 appTools/ToolSolderPaste.py:1166
+#: appTools/ToolPcbWizard.py:404 appTools/ToolProperties.py:413
+#: appTools/ToolProperties.py:476 appTools/ToolSolderPaste.py:1166
 #: tclCommands/TclCommandDrillcncjob.py:195
 msgid "Diameter"
 msgstr "Kalınlık"
@@ -1243,7 +1243,8 @@ msgstr ""
 "- İncelik -> Boyutu, 'Geçit' ile aynıdır ancak \"Geçit\" kısmı frezelenerek "
 "PCB bütünlüğünden\n"
 "   kopmayacak kadar inceltilecektir.\n"
-"- Fare Isırığı -> Boyutu 'Köprü' ile aynıdır, ancak deliklerle kaplanmıştır"
+"- Fare Isırığı (M-Bites) -> Boyutu 'Köprü' ile aynıdır, ancak deliklerle "
+"kaplanmıştır"
 
 #: appDatabase.py:1189 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
 #: appTools/ToolCutOut.py:2192
@@ -1277,7 +1278,7 @@ msgstr "Uç Kalınlığı"
 
 #: appDatabase.py:1222 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
 #: appTools/ToolCutOut.py:2222
-msgid "The drill hole diameter when doing mpuse bites."
+msgid "The drill hole diameter when doing mouse bites."
 msgstr "Geçitlerde fare ısırığı şekli için delik genişliği."
 
 #: appDatabase.py:1233
@@ -1686,12 +1687,12 @@ msgstr "Bitti. Delikleri taşıma işlemi tamamlandı."
 msgid "Done. Drill(s) copied."
 msgstr "Bitti. Delikler kopyalandı."
 
-#: appEditors/AppExcEditor.py:1897 appObjects/FlatCAMExcellon.py:330
+#: appEditors/AppExcEditor.py:1897 appObjects/FlatCAMExcellon.py:333
 #: appTools/ToolDrilling.py:571 appTools/ToolMilling.py:494
 msgid "Total Drills"
 msgstr "Toplam Delik"
 
-#: appEditors/AppExcEditor.py:1929 appObjects/FlatCAMExcellon.py:364
+#: appEditors/AppExcEditor.py:1929 appObjects/FlatCAMExcellon.py:367
 #: appTools/ToolDrilling.py:598 appTools/ToolMilling.py:521
 msgid "Total Slots"
 msgstr "Toplam Yuva"
@@ -2078,7 +2079,7 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
 #: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:398
-#: appTools/ToolProperties.py:574
+#: appTools/ToolProperties.py:571
 msgid "Length"
 msgstr "Uzunluk"
 
@@ -2262,7 +2263,7 @@ msgid "Text Tool"
 msgstr "Metin Aracı"
 
 #: appEditors/AppGeoEditor.py:404 appGUI/MainGUI.py:511 appGUI/MainGUI.py:1245
-#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:880
+#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:886
 #: appObjects/FlatCAMGeometry.py:951 appTools/ToolDrilling.py:711
 #: appTools/ToolDrilling.py:1033 appTools/ToolDrilling.py:2116
 #: appTools/ToolIsolation.py:697 appTools/ToolIsolation.py:3166
@@ -2310,8 +2311,8 @@ msgstr "Çizim işlemi iptal edildi. Şekil seçilmedi."
 #: appEditors/AppGeoEditor.py:595 appEditors/AppGeoEditor.py:2984
 #: appEditors/AppGeoEditor.py:3012 appEditors/AppGeoEditor.py:3040
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:71
-#: appObjects/FlatCAMObj.py:495 appTools/ToolProperties.py:116
-#: appTools/ToolProperties.py:164
+#: appObjects/FlatCAMObj.py:495 appTools/ToolProperties.py:113
+#: appTools/ToolProperties.py:161
 msgid "Tools"
 msgstr "Araçlar"
 
@@ -3401,7 +3402,7 @@ msgid "Gerber Editor"
 msgstr "Gerber Düzenleyici"
 
 #: appEditors/AppGerberEditor.py:2482 appGUI/ObjectUI.py:281
-#: appObjects/FlatCAMObj.py:492 appTools/ToolProperties.py:161
+#: appObjects/FlatCAMObj.py:492 appTools/ToolProperties.py:158
 msgid "Apertures"
 msgstr "Şekiller"
 
@@ -3994,7 +3995,7 @@ msgstr "TT"
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:71
 #: appObjects/FlatCAMObj.py:499 appTools/ToolDrilling.py:2065
 #: appTools/ToolMilling.py:1670 appTools/ToolMilling.py:1769
-#: appTools/ToolProperties.py:168
+#: appTools/ToolProperties.py:165
 msgid "Drills"
 msgstr "Delikler"
 
@@ -4004,7 +4005,7 @@ msgstr "Delikler"
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:72
 #: appObjects/FlatCAMObj.py:501 appTools/ToolDrilling.py:2065
 #: appTools/ToolMilling.py:1670 appTools/ToolMilling.py:1770
-#: appTools/ToolProperties.py:170
+#: appTools/ToolProperties.py:167
 msgid "Slots"
 msgstr "Yuvalar"
 
@@ -4183,8 +4184,6 @@ msgid "File"
 msgstr "Dosya"
 
 #: appGUI/MainGUI.py:84
-#, fuzzy
-#| msgid "&New Project ...\tCtrl+N"
 msgid "New Project ...\tCtrl+N"
 msgstr "Yeni Proje ...\tCTRL+N"
 
@@ -4229,20 +4228,14 @@ msgid "Will create a new, empty Document Object."
 msgstr "Yeni, boş bir Belge nesnesi oluşturur."
 
 #: appGUI/MainGUI.py:129
-#, fuzzy
-#| msgid "Open &Gerber ...\tCtrl+G"
 msgid "Open Gerber ...\tCtrl+G"
 msgstr "Gerber'i Aç ...\tCTRL+G"
 
 #: appGUI/MainGUI.py:134
-#, fuzzy
-#| msgid "Open &Excellon ...\tCtrl+E"
 msgid "Open Excellon ...\tCtrl+E"
 msgstr "Excellon'u Aç ...\tCTRL+E"
 
 #: appGUI/MainGUI.py:139
-#, fuzzy
-#| msgid "Open G-&Code ..."
 msgid "Open G-Code ..."
 msgstr "G-Kodunu Aç ..."
 
@@ -4263,14 +4256,10 @@ msgid "Save"
 msgstr "Kaydet"
 
 #: appGUI/MainGUI.py:160
-#, fuzzy
-#| msgid "&Save Project ...\tCtrl+S"
 msgid "Save Project ...\tCtrl+S"
 msgstr "Projeyi Kaydet ...\tCTRL+S"
 
 #: appGUI/MainGUI.py:165
-#, fuzzy
-#| msgid "Save Project &As ...\tCtrl+Shift+S"
 msgid "Save Project As ...\tCtrl+Shift+S"
 msgstr "Projeyi Farklı Kaydet ...\tCtrl+Shift+S"
 
@@ -4295,26 +4284,18 @@ msgid "Import"
 msgstr "İçe Aktar"
 
 #: appGUI/MainGUI.py:209
-#, fuzzy
-#| msgid "&SVG as Geometry Object ..."
 msgid "SVG as Geometry Object ..."
 msgstr "SVG Şekil Nesnesi ..."
 
 #: appGUI/MainGUI.py:212
-#, fuzzy
-#| msgid "&SVG as Gerber Object ..."
 msgid "SVG as Gerber Object ..."
 msgstr "SVG Gerber Nesnesi ..."
 
 #: appGUI/MainGUI.py:217
-#, fuzzy
-#| msgid "&DXF as Geometry Object ..."
 msgid "DXF as Geometry Object ..."
 msgstr "DXF Şekil Nesnesi ..."
 
 #: appGUI/MainGUI.py:220
-#, fuzzy
-#| msgid "&DXF as Gerber Object ..."
 msgid "DXF as Gerber Object ..."
 msgstr "DXF Gerber Nesnesi ..."
 
@@ -4327,8 +4308,6 @@ msgid "Export"
 msgstr "Dışa Aktar"
 
 #: appGUI/MainGUI.py:234
-#, fuzzy
-#| msgid "Export &SVG ..."
 msgid "Export SVG ..."
 msgstr "SVG'i Dışa Aktar ..."
 
@@ -4337,8 +4316,6 @@ msgid "Export DXF ..."
 msgstr "DXF'i Dışa Aktar ..."
 
 #: appGUI/MainGUI.py:244
-#, fuzzy
-#| msgid "Export &PNG ..."
 msgid "Export PNG ..."
 msgstr "PNG'i Dışa Aktar ..."
 
@@ -4353,8 +4330,6 @@ msgstr ""
 "alanında o anda açık olan görsel bilgileri içerir."
 
 #: appGUI/MainGUI.py:255
-#, fuzzy
-#| msgid "Export &Excellon ..."
 msgid "Export Excellon ..."
 msgstr "Excellon'u Dışa Aktar ..."
 
@@ -4369,8 +4344,6 @@ msgstr ""
 "Ayarlar -> Excellon'u Dışa Aktar'da ayarlanır."
 
 #: appGUI/MainGUI.py:264
-#, fuzzy
-#| msgid "Export &Gerber ..."
 msgid "Export Gerber ..."
 msgstr "Gerber'i Dışa Aktar ..."
 
@@ -4457,8 +4430,6 @@ msgid "Join Objects"
 msgstr "Nesneleri Birleştir"
 
 #: appGUI/MainGUI.py:364
-#, fuzzy
-#| msgid "&Join Geo/Gerber/Exc -> Geo"
 msgid "Join Geo/Gerber/Exc -> Geo"
 msgstr "Şekil / Gerber / Excellon -> Şekli Birleştir"
 
@@ -4495,8 +4466,6 @@ msgstr ""
 "Seçili Gerber nesnelerini yeni bir karma Gerber nesnesiyle birleştirir."
 
 #: appGUI/MainGUI.py:388
-#, fuzzy
-#| msgid "&Copy\tCtrl+C"
 msgid "Copy\tCtrl+C"
 msgstr "Kopyala\tCTRL+C"
 
@@ -4505,8 +4474,6 @@ msgid "Delete\tDEL"
 msgstr "Sil\tDEL"
 
 #: appGUI/MainGUI.py:398
-#, fuzzy
-#| msgid "Se&t Origin\tO"
 msgid "Set Origin\tO"
 msgstr "Orijini Ayarla\tO"
 
@@ -4527,49 +4494,35 @@ msgid "Toggle Units\tQ"
 msgstr "Birimleri Değiştir\tQ"
 
 #: appGUI/MainGUI.py:412
-#, fuzzy
-#| msgid "&Select All\tCtrl+A"
 msgid "Select All\tCtrl+A"
 msgstr "Tümünü Seç\tCTRL+A"
 
 #: appGUI/MainGUI.py:417
-#, fuzzy
-#| msgid "&Preferences\tShift+P"
 msgid "Preferences\tShift+P"
-msgstr "&Ayarlar\tSHIFT+P"
+msgstr "Ayarlar\tSHIFT+P"
 
 #: appGUI/MainGUI.py:423 appObjects/FlatCAMObj.py:488
-#: appTools/ToolProperties.py:157
+#: appTools/ToolProperties.py:154
 msgid "Options"
 msgstr "Seçenekler"
 
 #: appGUI/MainGUI.py:425
-#, fuzzy
-#| msgid "&Rotate Selection\tShift+(R)"
 msgid "Rotate Selection\tShift+(R)"
-msgstr "&Seçimi Döndür\tSHIFT+(R)"
+msgstr "Seçimi Döndür\tSHIFT+(R)"
 
 #: appGUI/MainGUI.py:430
-#, fuzzy
-#| msgid "&Skew on X axis\tShift+X"
 msgid "Skew on X axis\tShift+X"
-msgstr "&X Ekseninde Eğrilt\tSHIFT+X"
+msgstr "X Ekseninde Eğrilt\tSHIFT+X"
 
 #: appGUI/MainGUI.py:432
-#, fuzzy
-#| msgid "S&kew on Y axis\tShift+Y"
 msgid "Skew on Y axis\tShift+Y"
 msgstr "Y Ekseninde Eğrilt\tSHIFT+Y"
 
 #: appGUI/MainGUI.py:437
-#, fuzzy
-#| msgid "Flip on &X axis\tX"
 msgid "Flip on X axis\tX"
 msgstr "X Ekseninde Çevir\tX"
 
 #: appGUI/MainGUI.py:439
-#, fuzzy
-#| msgid "Flip on &Y axis\tY"
 msgid "Flip on Y axis\tY"
 msgstr "Y Ekseninde Çevir\tY"
 
@@ -4598,22 +4551,16 @@ msgid "Disable non-selected\tAlt+3"
 msgstr "Seçili Olmayanları Devre Dışı Bırak\tALT+3"
 
 #: appGUI/MainGUI.py:463
-#, fuzzy
-#| msgid "&Zoom Fit\tV"
 msgid "Zoom Fit\tV"
 msgstr "Ekrana Sığdır\tV"
 
 #: appGUI/MainGUI.py:465
-#, fuzzy
-#| msgid "&Zoom In\t="
 msgid "Zoom In\t="
-msgstr "&Yakınlaştır\t="
+msgstr "Yakınlaştır\t="
 
 #: appGUI/MainGUI.py:467
-#, fuzzy
-#| msgid "&Zoom Out\t-"
 msgid "Zoom Out\t-"
-msgstr "&Uzaklaştır\t-"
+msgstr "Uzaklaştır\t-"
 
 #: appGUI/MainGUI.py:472
 msgid "Redraw All\tF5"
@@ -4624,40 +4571,28 @@ msgid "Toggle Code Editor\tShift+E"
 msgstr "Kod Düzenleyiciyi Aç/Kapat\tSHIFT+E"
 
 #: appGUI/MainGUI.py:479
-#, fuzzy
-#| msgid "&Toggle FullScreen\tAlt+F10"
 msgid "Toggle FullScreen\tAlt+F10"
-msgstr "&Tam Ekranı Aç/Kapat\tALT+F10"
+msgstr "Tam Ekranı Aç/Kapat\tALT+F10"
 
 #: appGUI/MainGUI.py:481
-#, fuzzy
-#| msgid "&Toggle Plot Area\tCtrl+F10"
 msgid "Toggle Plot Area\tCtrl+F10"
-msgstr "&Çalışma Alanını Aç/Kapat\tCTRL+F10"
+msgstr "Çalışma Alanını Aç/Kapat\tCTRL+F10"
 
 #: appGUI/MainGUI.py:483
-#, fuzzy
-#| msgid "&Toggle Project/Sel/Tool\t`"
 msgid "Toggle Project/Sel/Tool\t`"
-msgstr "&Yan Paneli Aç/Kapat\t`"
+msgstr "Yan Paneli Aç/Kapat\t`"
 
 #: appGUI/MainGUI.py:487
-#, fuzzy
-#| msgid "&Toggle Grid Snap\tG"
 msgid "Toggle Grid Snap\tG"
-msgstr "&Izgaraya Yapıştırmayı Aç/Kapat\tG"
+msgstr "Izgaraya Yapıştırmayı Aç/Kapat\tG"
 
 #: appGUI/MainGUI.py:489
-#, fuzzy
-#| msgid "&Toggle Grid Lines\tAlt+G"
 msgid "Toggle Grid Lines\tAlt+G"
-msgstr "&Izgarayı Göster/Gizle\tALT+G"
+msgstr "Izgarayı Göster/Gizle\tALT+G"
 
 #: appGUI/MainGUI.py:491
-#, fuzzy
-#| msgid "&Toggle Axis\tShift+G"
 msgid "Toggle Axis\tShift+G"
-msgstr "&Ekseni Göster/Gizle\tSHIFT+G"
+msgstr "Ekseni Göster/Gizle\tSHIFT+G"
 
 #: appGUI/MainGUI.py:493
 msgid "Toggle Workspace\tShift+W"
@@ -4682,10 +4617,8 @@ msgid "Deselect All"
 msgstr "Tüm Seçimleri Kaldır"
 
 #: appGUI/MainGUI.py:514
-#, fuzzy
-#| msgid "&Command Line\tS"
 msgid "Command Line\tS"
-msgstr "&Komut Satırı\tS"
+msgstr "Komut Satırı\tS"
 
 #: appGUI/MainGUI.py:519
 msgid "Help"
@@ -5062,8 +4995,6 @@ msgid "Replot"
 msgstr "Yeniden Çiz"
 
 #: appGUI/MainGUI.py:898 appGUI/MainGUI.py:2055
-#, fuzzy
-#| msgid "&Clear plot"
 msgid "Clear plot"
 msgstr "Nesneyi Temizle"
 
@@ -5120,7 +5051,7 @@ msgstr "Delme"
 
 #: appGUI/MainGUI.py:943 appGUI/MainGUI.py:2098
 msgid "Panel Tool"
-msgstr "PCB Paneli"
+msgstr "Panelli PCB"
 
 #: appGUI/MainGUI.py:945 appGUI/MainGUI.py:2100 appTools/ToolFilm.py:108
 msgid "Film Tool"
@@ -5403,10 +5334,8 @@ msgstr ""
 "Referans (X = 0, Y = 0) konumudur"
 
 #: appGUI/MainGUI.py:1194
-#, fuzzy
-#| msgid "Show Shell"
 msgid "TCL Shell"
-msgstr "Komut Satırını Göster"
+msgstr "Komut Satırı"
 
 #: appGUI/MainGUI.py:1221 appGUI/MainGUI.py:1470 app_Main.py:8149
 msgid "Project"
@@ -6392,7 +6321,7 @@ msgstr "ARAÇLAR"
 
 #: appGUI/ObjectUI.py:409 appGUI/ObjectUI.py:758
 msgid "Show the Utilties."
-msgstr "Araçaları göster."
+msgstr "Araçları göster."
 
 #: appGUI/ObjectUI.py:433 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:32
 msgid "Non-copper regions"
@@ -7393,7 +7322,7 @@ msgstr ""
 "numaralar gösterilir."
 
 #: appGUI/ObjectUI.py:1939 appObjects/FlatCAMObj.py:864
-#: appTools/ToolProperties.py:561
+#: appTools/ToolProperties.py:558
 msgid "Travelled distance"
 msgstr "Katedilen Mesafe"
 
@@ -7718,7 +7647,7 @@ msgstr "Her ilerletme eylemi, eksenleri bu değerle hareket ettirecektir."
 #: appGUI/ObjectUI.py:2474
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:185
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:89
-#: appObjects/FlatCAMObj.py:831 appTools/ToolProperties.py:528
+#: appObjects/FlatCAMObj.py:831 appTools/ToolProperties.py:525
 msgid "Feedrate"
 msgstr "İlerleme Hızı"
 
@@ -8419,7 +8348,7 @@ msgstr ""
 #: appGUI/preferences/gerber/GerberExpPrefGroupUI.py:42
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:82
 #: appTools/ToolDistance.py:562 appTools/ToolDistanceMin.py:237
-#: appTools/ToolPcbWizard.py:455 appTools/ToolProperties.py:156
+#: appTools/ToolPcbWizard.py:455 appTools/ToolProperties.py:153
 msgid "Units"
 msgstr "Birimler"
 
@@ -10067,9 +9996,9 @@ msgstr ""
 #: appObjects/FlatCAMObj.py:761 appObjects/FlatCAMObj.py:789
 #: appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799
 #: appTools/ToolFiducials.py:815 appTools/ToolFilm.py:1102
-#: appTools/ToolProperties.py:452 appTools/ToolProperties.py:455
-#: appTools/ToolProperties.py:458 appTools/ToolProperties.py:486
-#: appTools/ToolProperties.py:493 appTools/ToolProperties.py:496
+#: appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
+#: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
+#: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
 msgid "None"
 msgstr "Yok"
 
@@ -10747,7 +10676,7 @@ msgstr "Dikdörtgensel pedlerin işlenmesi."
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:84
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:203
 #: appObjects/FlatCAMObj.py:505 appTools/ToolExtractDrills.py:502
-#: appTools/ToolExtractDrills.py:645 appTools/ToolProperties.py:174
+#: appTools/ToolExtractDrills.py:645 appTools/ToolProperties.py:171
 #: appTools/ToolPunchGerber.py:778 appTools/ToolPunchGerber.py:938
 msgid "Others"
 msgstr "Diğerleri"
@@ -13143,38 +13072,38 @@ msgstr ""
 msgid "Document Editor"
 msgstr "Belge Düzenleyici"
 
-#: appObjects/FlatCAMExcellon.py:874 appObjects/FlatCAMExcellon.py:982
+#: appObjects/FlatCAMExcellon.py:880 appObjects/FlatCAMExcellon.py:988
 #: appTools/ToolDrilling.py:1612 appTools/ToolMilling.py:1038
 #: appTools/ToolMilling.py:1154 appTools/ToolMilling.py:1340
 msgid "Please select one or more tools from the list and try again."
 msgstr "Lütfen listeden bir veya daha fazla araç seçin ve tekrar deneyin."
 
-#: appObjects/FlatCAMExcellon.py:879 appTools/ToolMilling.py:1045
+#: appObjects/FlatCAMExcellon.py:885 appTools/ToolMilling.py:1045
 msgid "Milling tool for DRILLS is larger than hole size. Cancelled."
 msgstr "Matkap ucu delik boyutundan daha büyüktür. İptal edildi."
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
 #: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
 #: appTools/ToolMilling.py:1360 tclCommands/TclCommandDrillcncjob.py:195
 msgid "Tool_nr"
 msgstr "Uç Numarası"
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
 #: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
 #: appTools/ToolMilling.py:1360 tclCommands/TclCommandDrillcncjob.py:195
 msgid "Drills_Nr"
 msgstr "Delik Sayısı"
 
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMExcellon.py:908 appObjects/FlatCAMExcellon.py:1008
 #: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
 #: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
 #: appTools/ToolMilling.py:1360 tclCommands/TclCommandDrillcncjob.py:195
 msgid "Slots_Nr"
 msgstr "Yuva Sayısı"
 
-#: appObjects/FlatCAMExcellon.py:991 appTools/ToolMilling.py:1163
+#: appObjects/FlatCAMExcellon.py:997 appTools/ToolMilling.py:1163
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr "YUVA için matkap ucu delik boyutundan daha büyüktür. İptal edildi."
 
@@ -13417,89 +13346,89 @@ msgstr "Ölçekleniyor ..."
 msgid "Skewing..."
 msgstr "Eğriltiliyor..."
 
-#: appObjects/FlatCAMObj.py:487 appTools/ToolProperties.py:155
+#: appObjects/FlatCAMObj.py:487 appTools/ToolProperties.py:152
 msgid "Dimensions"
 msgstr "Boyutlar"
 
-#: appObjects/FlatCAMObj.py:510 appTools/ToolProperties.py:198
+#: appObjects/FlatCAMObj.py:510 appTools/ToolProperties.py:195
 msgid "Calculating dimensions ... Please wait."
 msgstr "Boyutlar hesaplanıyor ... Lütfen bekleyin."
 
 #: appObjects/FlatCAMObj.py:724 appObjects/FlatCAMObj.py:792
-#: appTools/ToolProperties.py:421 appTools/ToolProperties.py:489
+#: appTools/ToolProperties.py:418 appTools/ToolProperties.py:486
 msgid "Drills number"
 msgstr "Delik Sayısı"
 
 #: appObjects/FlatCAMObj.py:725 appObjects/FlatCAMObj.py:794
-#: appTools/ToolProperties.py:422 appTools/ToolProperties.py:491
+#: appTools/ToolProperties.py:419 appTools/ToolProperties.py:488
 msgid "Slots number"
 msgstr "Yuva Sayısı"
 
-#: appObjects/FlatCAMObj.py:727 appTools/ToolProperties.py:424
+#: appObjects/FlatCAMObj.py:727 appTools/ToolProperties.py:421
 msgid "Drills total number:"
 msgstr "Toplam Delik:"
 
-#: appObjects/FlatCAMObj.py:728 appTools/ToolProperties.py:425
+#: appObjects/FlatCAMObj.py:728 appTools/ToolProperties.py:422
 msgid "Slots total number:"
 msgstr "Toplam Yuva:"
 
 #: appObjects/FlatCAMObj.py:755 appObjects/FlatCAMObj.py:758
 #: appObjects/FlatCAMObj.py:761 appObjects/FlatCAMObj.py:789
 #: appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799
-#: appTools/ToolProperties.py:452 appTools/ToolProperties.py:455
-#: appTools/ToolProperties.py:458 appTools/ToolProperties.py:486
-#: appTools/ToolProperties.py:493 appTools/ToolProperties.py:496
+#: appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
+#: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
+#: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
 msgid "Present"
 msgstr "Mevcut"
 
 #: appObjects/FlatCAMObj.py:756 appObjects/FlatCAMObj.py:790
-#: appTools/ToolProperties.py:453 appTools/ToolProperties.py:487
+#: appTools/ToolProperties.py:450 appTools/ToolProperties.py:484
 msgid "Solid Geometry"
 msgstr "Dolgulu Şekil"
 
 #: appObjects/FlatCAMObj.py:759 appObjects/FlatCAMObj.py:797
-#: appTools/ToolProperties.py:456 appTools/ToolProperties.py:494
+#: appTools/ToolProperties.py:453 appTools/ToolProperties.py:491
 msgid "GCode Text"
 msgstr "G-Kod Metni"
 
 #: appObjects/FlatCAMObj.py:762 appObjects/FlatCAMObj.py:800
-#: appTools/ToolProperties.py:459 appTools/ToolProperties.py:497
+#: appTools/ToolProperties.py:456 appTools/ToolProperties.py:494
 msgid "GCode Geometry"
 msgstr "G Kod Şekli"
 
 #: appObjects/FlatCAMObj.py:770 appObjects/FlatCAMObj.py:843
-#: appTools/ToolProperties.py:467 appTools/ToolProperties.py:540
+#: appTools/ToolProperties.py:464 appTools/ToolProperties.py:537
 msgid "Tool Data"
 msgstr "Veriler"
 
-#: appObjects/FlatCAMObj.py:807 appTools/ToolProperties.py:504
+#: appObjects/FlatCAMObj.py:807 appTools/ToolProperties.py:501
 msgid "Depth of Cut"
 msgstr "Kesme Derinliği"
 
-#: appObjects/FlatCAMObj.py:819 appTools/ToolProperties.py:516
+#: appObjects/FlatCAMObj.py:819 appTools/ToolProperties.py:513
 msgid "Clearance Height"
 msgstr "Açıklık Yüksekliği"
 
-#: appObjects/FlatCAMObj.py:857 appTools/ToolProperties.py:554
+#: appObjects/FlatCAMObj.py:857 appTools/ToolProperties.py:551
 msgid "Routing time"
 msgstr "Dönme Süresi"
 
-#: appObjects/FlatCAMObj.py:882 appTools/ToolProperties.py:579
+#: appObjects/FlatCAMObj.py:882 appTools/ToolProperties.py:576
 msgid "Width"
 msgstr "Genişlik"
 
 #: appObjects/FlatCAMObj.py:888 appObjects/FlatCAMObj.py:896
-#: appTools/ToolProperties.py:585 appTools/ToolProperties.py:593
+#: appTools/ToolProperties.py:582 appTools/ToolProperties.py:590
 msgid "Box Area"
 msgstr "Kutu Alanı"
 
 #: appObjects/FlatCAMObj.py:891 appObjects/FlatCAMObj.py:899
-#: appTools/ToolProperties.py:588 appTools/ToolProperties.py:596
+#: appTools/ToolProperties.py:585 appTools/ToolProperties.py:593
 msgid "Convex_Hull Area"
 msgstr "Dışbükey Gövde Alanı"
 
 #: appObjects/FlatCAMObj.py:906 appObjects/FlatCAMObj.py:909
-#: appTools/ToolProperties.py:603 appTools/ToolProperties.py:606
+#: appTools/ToolProperties.py:600 appTools/ToolProperties.py:603
 msgid "Copper Area"
 msgstr "Bakır Alan"
 
@@ -13964,7 +13893,7 @@ msgstr ""
 "olduğunca) köşesinde olmalıdır."
 
 #: appTools/ToolCalibration.py:888 appTools/ToolImage.py:196
-#: appTools/ToolPanelize.py:676 appTools/ToolProperties.py:179
+#: appTools/ToolPanelize.py:676 appTools/ToolProperties.py:176
 msgid "Object Type"
 msgstr "Nesne Türü"
 
@@ -14314,7 +14243,7 @@ msgstr "Desen kaplama maskesi oluşturma işlemi tamamlandı."
 
 #: appTools/ToolCopperThieving.py:1112
 msgid "Copper Thieving Tool exit."
-msgstr "Bakır dolgu aracından çık."
+msgstr "Bakır dolgu aracından çıkış."
 
 #: appTools/ToolCopperThieving.py:1171 appTools/ToolFiducials.py:875
 msgid "Gerber Object to which will be added a copper thieving."
@@ -17123,48 +17052,48 @@ msgstr ""
 "Excellon dosyasını içe aktarın. \n"
 "Birinde genellikle .DRL, diğerinde .INF uzantısı vardır."
 
-#: appTools/ToolProperties.py:115 appTools/ToolTransform.py:142
+#: appTools/ToolProperties.py:112 appTools/ToolTransform.py:142
 #: app_Main.py:4976 app_Main.py:7321 app_Main.py:7421 app_Main.py:7462
 #: app_Main.py:7503 app_Main.py:7545 app_Main.py:7587 app_Main.py:7631
 #: app_Main.py:7675 app_Main.py:8191 app_Main.py:8195
 msgid "No object selected."
 msgstr "Hiçbir nesne seçilmedi."
 
-#: appTools/ToolProperties.py:130
+#: appTools/ToolProperties.py:127
 msgid "Object Properties are displayed."
 msgstr "Nesne özellikleri görüntüleniyor."
 
-#: appTools/ToolProperties.py:135
+#: appTools/ToolProperties.py:132
 msgid "Properties Tool"
 msgstr "Özellikler"
 
-#: appTools/ToolProperties.py:152
+#: appTools/ToolProperties.py:149
 msgid "TYPE"
 msgstr "TİP"
 
-#: appTools/ToolProperties.py:153
+#: appTools/ToolProperties.py:150
 msgid "NAME"
 msgstr "İSİM"
 
-#: appTools/ToolProperties.py:183
+#: appTools/ToolProperties.py:180
 msgid "Geo Type"
 msgstr "Şekil Tipi"
 
-#: appTools/ToolProperties.py:186
+#: appTools/ToolProperties.py:183
 msgid "Single-Geo"
 msgstr "Tek Şekilli"
 
-#: appTools/ToolProperties.py:187
+#: appTools/ToolProperties.py:184
 msgid "Multi-Geo"
 msgstr "Çok Şekilli"
 
-#: appTools/ToolProperties.py:341 appTools/ToolProperties.py:345
-#: appTools/ToolProperties.py:347
+#: appTools/ToolProperties.py:338 appTools/ToolProperties.py:342
+#: appTools/ToolProperties.py:344
 msgid "Inch"
 msgstr "İnç"
 
-#: appTools/ToolProperties.py:341 appTools/ToolProperties.py:346
-#: appTools/ToolProperties.py:348
+#: appTools/ToolProperties.py:338 appTools/ToolProperties.py:343
+#: appTools/ToolProperties.py:345
 msgid "Metric"
 msgstr "Metrik"
 
@@ -17510,10 +17439,8 @@ msgid "...processing..."
 msgstr "...işleniyor..."
 
 #: appTools/ToolShell.py:293
-#, fuzzy
-#| msgid "FlatCAM Beta"
 msgid "FlatCAM Shell"
-msgstr "FlatCAM Beta"
+msgstr ""
 
 #: appTools/ToolSolderPaste.py:459
 msgid "Please enter a tool diameter to add, in Float format."
@@ -18101,7 +18028,7 @@ msgstr ""
 
 #: app_Main.py:2267
 msgid "EDITOR Area"
-msgstr ""
+msgstr "DÜZENLEYİCİ Alanı"
 
 #: app_Main.py:2269
 msgid "Editor is activated ..."
@@ -19104,46 +19031,36 @@ msgid "Clear Recent files"
 msgstr "Listeyi Temizle"
 
 #: app_Main.py:9730
-#, fuzzy
-#| msgid "FlatCAM.org"
 msgid "FlatCAM Evo"
-msgstr "FlatCAM.org"
+msgstr ""
 
 #: app_Main.py:9734
 msgid "Release date"
-msgstr ""
+msgstr "Yayın Tarihi"
 
 #: app_Main.py:9738
 msgid "Displayed"
-msgstr ""
+msgstr "Görüntülendi"
 
 #: app_Main.py:9741
-#, fuzzy
-#| msgid "Snap Max"
 msgid "Snap"
 msgstr "Maksimum Yapışma"
 
 #: app_Main.py:9750
 msgid "Canvas"
-msgstr ""
+msgstr "Çalışma Alanı"
 
 #: app_Main.py:9755
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace active"
-msgstr "Çalışma Alanı Ayarları"
+msgstr "Çalışma alanı etkin"
 
 #: app_Main.py:9759
-#, fuzzy
-#| msgid "Workspace disabled."
 msgid "Workspace size"
-msgstr "Çalışma alanı devre dışı."
+msgstr "Çalışma alanı boyutu"
 
 #: app_Main.py:9763
-#, fuzzy
-#| msgid "Workspace Settings"
 msgid "Workspace orientation"
-msgstr "Çalışma Alanı Ayarları"
+msgstr "Çalışma alanı yönlendirmesi"
 
 #: app_Main.py:9826
 msgid "Failed checking for latest version. Could not connect."

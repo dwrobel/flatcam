@@ -4146,7 +4146,7 @@ class App(QtCore.QObject):
     def scale_defaults(self, sfactor, dimensions):
         for dim in dimensions:
             if dim in ['geometry_cnctooldia', 'tools_ncc_tools', 'tools_solderpaste_tools', 'tools_iso_tooldia',
-                       'tools_painttooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
+                       'tools_paint_tooldia', 'tools_transform_ref_point', 'tools_cal_toolchange_xy',
                        'gerber_editor_newdim', 'tools_drill_toolchangexy', 'tools_drill_endxy',
                        'geometry_toolchangexy', 'geometry_endxy', 'tools_solderpaste_xy_toolchange']:
                 if not self.defaults[dim] or self.defaults[dim] == '':
@@ -4269,7 +4269,7 @@ class App(QtCore.QObject):
             'tools_cutout_gapsize', 'tools_cutout_gap_depth', 'tools_cutout_mb_dia', 'tools_cutout_mb_spacing',
 
             # Paint Tool
-            "tools_painttooldia", 'tools_paintoffset', "tools_paintcutz", "tools_painttipdia", "tools_paintnewdia",
+            "tools_paint_tooldia", 'tools_paint_offset', "tools_paint_cutz", "tools_paint_tipdia", "tools_paint_newdia",
 
             # 2Sided Tool
             "tools_2sided_drilldia",

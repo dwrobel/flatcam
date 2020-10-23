@@ -547,33 +547,33 @@ class PaintOptionsTool(AppTool):
 
     def set_tool_ui(self):
         # Init appGUI
-        if self.app.defaults["tools_painttooldia"]:
-            self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
+        if self.app.defaults["tools_paint_tooldia"]:
+            self.painttooldia_entry.set_value(self.app.defaults["tools_paint_tooldia"])
         else:
             self.painttooldia_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintoverlap"]:
-            self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+        if self.app.defaults["tools_paint_overlap"]:
+            self.paintoverlap_entry.set_value(self.app.defaults["tools_paint_overlap"])
         else:
             self.paintoverlap_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintoffset"]:
-            self.paintmargin_entry.set_value(self.app.defaults["tools_paintoffset"])
+        if self.app.defaults["tools_paint_offset"]:
+            self.paintmargin_entry.set_value(self.app.defaults["tools_paint_offset"])
         else:
             self.paintmargin_entry.set_value(0.0)
 
-        if self.app.defaults["tools_paintmethod"]:
-            self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        if self.app.defaults["tools_paint_method"]:
+            self.paintmethod_combo.set_value(self.app.defaults["tools_paint_method"])
         else:
             self.paintmethod_combo.set_value(_("Seed"))
 
-        if self.app.defaults["tools_pathconnect"]:
-            self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        if self.app.defaults["tools_paint_connect"]:
+            self.pathconnect_cb.set_value(self.app.defaults["tools_paint_connect"])
         else:
             self.pathconnect_cb.set_value(False)
 
-        if self.app.defaults["tools_paintcontour"]:
-            self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        if self.app.defaults["tools_paint_contour"]:
+            self.paintcontour_cb.set_value(self.app.defaults["tools_paint_contour"])
         else:
             self.paintcontour_cb.set_value(False)
 

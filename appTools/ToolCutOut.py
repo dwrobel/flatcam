@@ -2219,7 +2219,7 @@ class CutoutUI:
         # Mouse Bites Tool Diameter
         self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
         self.mb_dia_label.setToolTip(
-            _("The drill hole diameter when doing mpuse bites.")
+            _("The drill hole diameter when doing mouse bites.")
         )
         self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mb_dia_entry.set_precision(self.decimals)

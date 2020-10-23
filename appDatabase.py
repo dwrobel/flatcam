@@ -296,12 +296,12 @@ class ToolsDB2UI:
               "B = ball tip milling tool\n"
               "V = v-shape milling tool"))
 
-        self.shape_combo = FCComboBox()
-        self.shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
-        self.shape_combo.setObjectName('gdb_shape')
+        self.mill_shape_combo = FCComboBox()
+        self.mill_shape_combo.addItems(["C1", "C2", "C3", "C4", "B", "V"])
+        self.mill_shape_combo.setObjectName('gdb_shape')
 
         self.grid0.addWidget(self.shape_label, 2, 0)
-        self.grid0.addWidget(self.shape_combo, 2, 1)
+        self.grid0.addWidget(self.mill_shape_combo, 2, 1)
 
         # V-Dia
         self.vdia_label = FCLabel('%s:' % _("V-Dia"))
@@ -309,13 +309,13 @@ class ToolsDB2UI:
             _("V-Dia.\n"
               "Diameter of the tip for V-Shape Tools."))
 
-        self.vdia_entry = FCDoubleSpinner()
-        self.vdia_entry.set_range(0.0000, 9999.9999)
-        self.vdia_entry.set_precision(self.decimals)
-        self.vdia_entry.setObjectName('gdb_vdia')
+        self.mill_vdia_entry = FCDoubleSpinner()
+        self.mill_vdia_entry.set_range(0.0000, 9999.9999)
+        self.mill_vdia_entry.set_precision(self.decimals)
+        self.mill_vdia_entry.setObjectName('gdb_vdia')
 
         self.grid0.addWidget(self.vdia_label, 4, 0)
-        self.grid0.addWidget(self.vdia_entry, 4, 1)
+        self.grid0.addWidget(self.mill_vdia_entry, 4, 1)
 
         # V-Angle
         self.vangle_label = FCLabel('%s:' % _("V-Angle"))
@@ -323,13 +323,13 @@ class ToolsDB2UI:
             _("V-Agle.\n"
               "Angle at the tip for the V-Shape Tools."))
 
-        self.vangle_entry = FCDoubleSpinner()
-        self.vangle_entry.set_range(-360.0, 360.0)
-        self.vangle_entry.set_precision(self.decimals)
-        self.vangle_entry.setObjectName('gdb_vangle')
+        self.mill_vangle_entry = FCDoubleSpinner()
+        self.mill_vangle_entry.set_range(-360.0, 360.0)
+        self.mill_vangle_entry.set_precision(self.decimals)
+        self.mill_vangle_entry.setObjectName('gdb_vangle')
 
         self.grid0.addWidget(self.vangle_label, 6, 0)
-        self.grid0.addWidget(self.vangle_entry, 6, 1)
+        self.grid0.addWidget(self.mill_vangle_entry, 6, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -345,12 +345,12 @@ class ToolsDB2UI:
               "Rough = rough cut, low feedrate, multiple passes\n"
               "Finish = finishing cut, high feedrate"))
 
-        self.type_combo = FCComboBox()
-        self.type_combo.addItems(["Iso", "Rough", "Finish"])
-        self.type_combo.setObjectName('gdb_type')
+        self.mill_type_combo = FCComboBox()
+        self.mill_type_combo.addItems(["Iso", "Rough", "Finish"])
+        self.mill_type_combo.setObjectName('gdb_type')
 
         self.grid0.addWidget(self.type_label, 10, 0)
-        self.grid0.addWidget(self.type_combo, 10, 1)
+        self.grid0.addWidget(self.mill_type_combo, 10, 1)
 
         # Tool Offset
         self.tooloffset_label = FCLabel('%s:' % _('Tool Offset'))
@@ -362,12 +362,12 @@ class ToolsDB2UI:
               "Out = offset outside by half of tool diameter\n"
               "Custom = custom offset using the Custom Offset value"))
 
-        self.tooloffset_combo = FCComboBox()
-        self.tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
-        self.tooloffset_combo.setObjectName('gdb_tool_offset')
+        self.mill_tooloffset_combo = FCComboBox()
+        self.mill_tooloffset_combo.addItems(["Path", "In", "Out", "Custom"])
+        self.mill_tooloffset_combo.setObjectName('gdb_tool_offset')
 
         self.grid0.addWidget(self.tooloffset_label, 12, 0)
-        self.grid0.addWidget(self.tooloffset_combo, 12, 1)
+        self.grid0.addWidget(self.mill_tooloffset_combo, 12, 1)
 
         # Custom Offset
         self.custom_offset_label = FCLabel('%s:' % _("Custom Offset"))
@@ -375,13 +375,13 @@ class ToolsDB2UI:
             _("Custom Offset.\n"
               "A value to be used as offset from the current path."))
 
-        self.custom_offset_entry = FCDoubleSpinner()
-        self.custom_offset_entry.set_range(-9999.9999, 9999.9999)
-        self.custom_offset_entry.set_precision(self.decimals)
-        self.custom_offset_entry.setObjectName('gdb_custom_offset')
+        self.mill_custom_offset_entry = FCDoubleSpinner()
+        self.mill_custom_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_custom_offset_entry.set_precision(self.decimals)
+        self.mill_custom_offset_entry.setObjectName('gdb_custom_offset')
 
         self.grid0.addWidget(self.custom_offset_label, 14, 0)
-        self.grid0.addWidget(self.custom_offset_entry, 14, 1)
+        self.grid0.addWidget(self.mill_custom_offset_entry, 14, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -394,13 +394,13 @@ class ToolsDB2UI:
             _("Cutting Depth.\n"
               "The depth at which to cut into material."))
 
-        self.cutz_entry = FCDoubleSpinner()
-        self.cutz_entry.set_range(-9999.9999, 9999.9999)
-        self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setObjectName('gdb_cutz')
+        self.mill_cutz_entry = FCDoubleSpinner()
+        self.mill_cutz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_cutz_entry.set_precision(self.decimals)
+        self.mill_cutz_entry.setObjectName('gdb_cutz')
 
         self.grid0.addWidget(self.cutz_label, 18, 0)
-        self.grid0.addWidget(self.cutz_entry, 18, 1)
+        self.grid0.addWidget(self.mill_cutz_entry, 18, 1)
 
         # Multi Depth
         self.multidepth_label = FCLabel('%s:' % _("MultiDepth"))
@@ -409,11 +409,11 @@ class ToolsDB2UI:
               "Selecting this will allow cutting in multiple passes,\n"
               "each pass adding a DPP parameter depth."))
 
-        self.multidepth_cb = FCCheckBox()
-        self.multidepth_cb.setObjectName('gdb_multidepth')
+        self.mill_multidepth_cb = FCCheckBox()
+        self.mill_multidepth_cb.setObjectName('gdb_multidepth')
 
         self.grid0.addWidget(self.multidepth_label, 20, 0)
-        self.grid0.addWidget(self.multidepth_cb, 20, 1)
+        self.grid0.addWidget(self.mill_multidepth_cb, 20, 1)
 
         # Depth Per Pass
         self.dpp_label = FCLabel('%s:' % _("DPP"))
@@ -421,13 +421,13 @@ class ToolsDB2UI:
             _("DPP. Depth per Pass.\n"
               "The value used to cut into material on each pass."))
 
-        self.multidepth_entry = FCDoubleSpinner()
-        self.multidepth_entry.set_range(-9999.9999, 9999.9999)
-        self.multidepth_entry.set_precision(self.decimals)
-        self.multidepth_entry.setObjectName('gdb_multidepth_entry')
+        self.mill_multidepth_entry = FCDoubleSpinner()
+        self.mill_multidepth_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_multidepth_entry.set_precision(self.decimals)
+        self.mill_multidepth_entry.setObjectName('gdb_multidepth_entry')
 
         self.grid0.addWidget(self.dpp_label, 22, 0)
-        self.grid0.addWidget(self.multidepth_entry, 22, 1)
+        self.grid0.addWidget(self.mill_multidepth_entry, 22, 1)
 
         # Travel Z
         self.travelz_label = FCLabel('%s:' % _("Travel Z"))
@@ -436,13 +436,13 @@ class ToolsDB2UI:
               "Height at which the milling bit will travel between cuts,\n"
               "above the surface of the material, avoiding all fixtures."))
 
-        self.travelz_entry = FCDoubleSpinner()
-        self.travelz_entry.set_range(-9999.9999, 9999.9999)
-        self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setObjectName('gdb_travelz')
+        self.mill_travelz_entry = FCDoubleSpinner()
+        self.mill_travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.mill_travelz_entry.set_precision(self.decimals)
+        self.mill_travelz_entry.setObjectName('gdb_travelz')
 
         self.grid0.addWidget(self.travelz_label, 24, 0)
-        self.grid0.addWidget(self.travelz_entry, 24, 1)
+        self.grid0.addWidget(self.mill_travelz_entry, 24, 1)
 
         # Extra Cut
         self.ecut_label = FCLabel('%s:' % _("ExtraCut"))
@@ -453,11 +453,11 @@ class ToolsDB2UI:
               "such as that this point is covered by this extra cut to\n"
               "ensure a complete isolation."))
 
-        self.ecut_cb = FCCheckBox()
-        self.ecut_cb.setObjectName('gdb_ecut')
+        self.mill_ecut_cb = FCCheckBox()
+        self.mill_ecut_cb.setObjectName('gdb_ecut')
 
         self.grid0.addWidget(self.ecut_label, 26, 0)
-        self.grid0.addWidget(self.ecut_cb, 26, 1)
+        self.grid0.addWidget(self.mill_ecut_cb, 26, 1)
 
         # Extra Cut Length
         self.ecut_length_label = FCLabel('%s:' % _("E-Cut Length"))
@@ -469,13 +469,13 @@ class ToolsDB2UI:
               "ensure a complete isolation. This is the length of\n"
               "the extra cut."))
 
-        self.ecut_length_entry = FCDoubleSpinner()
-        self.ecut_length_entry.set_range(0.0000, 9999.9999)
-        self.ecut_length_entry.set_precision(self.decimals)
-        self.ecut_length_entry.setObjectName('gdb_ecut_length')
+        self.mill_ecut_length_entry = FCDoubleSpinner()
+        self.mill_ecut_length_entry.set_range(0.0000, 9999.9999)
+        self.mill_ecut_length_entry.set_precision(self.decimals)
+        self.mill_ecut_length_entry.setObjectName('gdb_ecut_length')
 
         self.grid0.addWidget(self.ecut_length_label, 28, 0)
-        self.grid0.addWidget(self.ecut_length_entry, 28, 1)
+        self.grid0.addWidget(self.mill_ecut_length_entry, 28, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -488,13 +488,13 @@ class ToolsDB2UI:
             _("Feedrate X-Y. Feedrate\n"
               "The speed on XY plane used while cutting into material."))
 
-        self.frxy_entry = FCDoubleSpinner()
-        self.frxy_entry.set_range(-999999.9999, 999999.9999)
-        self.frxy_entry.set_precision(self.decimals)
-        self.frxy_entry.setObjectName('gdb_frxy')
+        self.mill_frxy_entry = FCDoubleSpinner()
+        self.mill_frxy_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frxy_entry.set_precision(self.decimals)
+        self.mill_frxy_entry.setObjectName('gdb_frxy')
 
         self.grid0.addWidget(self.frxy_label, 32, 0)
-        self.grid0.addWidget(self.frxy_entry, 32, 1)
+        self.grid0.addWidget(self.mill_frxy_entry, 32, 1)
 
         # Feedrate Z
         self.frz_label = FCLabel('%s:' % _("Feedrate Z"))
@@ -502,13 +502,13 @@ class ToolsDB2UI:
             _("Feedrate Z\n"
               "The speed on Z plane."))
 
-        self.frz_entry = FCDoubleSpinner()
-        self.frz_entry.set_range(-999999.9999, 999999.9999)
-        self.frz_entry.set_precision(self.decimals)
-        self.frz_entry.setObjectName('gdb_frz')
+        self.mill_frz_entry = FCDoubleSpinner()
+        self.mill_frz_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_frz_entry.set_precision(self.decimals)
+        self.mill_frz_entry.setObjectName('gdb_frz')
 
         self.grid0.addWidget(self.frz_label, 34, 0)
-        self.grid0.addWidget(self.frz_entry, 34, 1)
+        self.grid0.addWidget(self.mill_frz_entry, 34, 1)
 
         # Feedrate Rapids
         self.frapids_label = FCLabel('%s:' % _("FR Rapids"))
@@ -518,13 +518,13 @@ class ToolsDB2UI:
               "This is used only by some devices that can't use\n"
               "the G0 g-code command. Mostly 3D printers."))
 
-        self.frapids_entry = FCDoubleSpinner()
-        self.frapids_entry.set_range(0.0000, 9999.9999)
-        self.frapids_entry.set_precision(self.decimals)
-        self.frapids_entry.setObjectName('gdb_frapids')
+        self.mill_frapids_entry = FCDoubleSpinner()
+        self.mill_frapids_entry.set_range(0.0000, 9999.9999)
+        self.mill_frapids_entry.set_precision(self.decimals)
+        self.mill_frapids_entry.setObjectName('gdb_frapids')
 
         self.grid0.addWidget(self.frapids_label, 36, 0)
-        self.grid0.addWidget(self.frapids_entry, 36, 1)
+        self.grid0.addWidget(self.mill_frapids_entry, 36, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -538,13 +538,13 @@ class ToolsDB2UI:
               "If it's left empty it will not be used.\n"
               "The speed of the spindle in RPM."))
 
-        self.spindle_entry = FCDoubleSpinner()
-        self.spindle_entry.set_range(-999999.9999, 999999.9999)
-        self.spindle_entry.set_precision(self.decimals)
-        self.spindle_entry.setObjectName('gdb_spindle')
+        self.mill_spindle_entry = FCDoubleSpinner()
+        self.mill_spindle_entry.set_range(-999999.9999, 999999.9999)
+        self.mill_spindle_entry.set_precision(self.decimals)
+        self.mill_spindle_entry.setObjectName('gdb_spindle')
 
         self.grid0.addWidget(self.spindle_label, 40, 0)
-        self.grid0.addWidget(self.spindle_entry, 40, 1)
+        self.grid0.addWidget(self.mill_spindle_entry, 40, 1)
 
         # Dwell
         self.dwell_label = FCLabel('%s:' % _("Dwell"))
@@ -553,11 +553,11 @@ class ToolsDB2UI:
               "Check this if a delay is needed to allow\n"
               "the spindle motor to reach its set speed."))
 
-        self.dwell_cb = FCCheckBox()
-        self.dwell_cb.setObjectName('gdb_dwell')
+        self.mill_dwell_cb = FCCheckBox()
+        self.mill_dwell_cb.setObjectName('gdb_dwell')
 
         self.grid0.addWidget(self.dwell_label, 42, 0)
-        self.grid0.addWidget(self.dwell_cb, 42, 1)
+        self.grid0.addWidget(self.mill_dwell_cb, 42, 1)
 
         # Dwell Time
         self.dwelltime_label = FCLabel('%s:' % _("Dwelltime"))
@@ -565,13 +565,13 @@ class ToolsDB2UI:
             _("Dwell Time.\n"
               "A delay used to allow the motor spindle reach its set speed."))
 
-        self.dwelltime_entry = FCDoubleSpinner()
-        self.dwelltime_entry.set_range(0.0000, 9999.9999)
-        self.dwelltime_entry.set_precision(self.decimals)
-        self.dwelltime_entry.setObjectName('gdb_dwelltime')
+        self.mill_dwelltime_entry = FCDoubleSpinner()
+        self.mill_dwelltime_entry.set_range(0.0000, 9999.9999)
+        self.mill_dwelltime_entry.set_precision(self.decimals)
+        self.mill_dwelltime_entry.setObjectName('gdb_dwelltime')
 
         self.grid0.addWidget(self.dwelltime_label, 44, 0)
-        self.grid0.addWidget(self.dwelltime_entry, 44, 1)
+        self.grid0.addWidget(self.mill_dwelltime_entry, 44, 1)
 
         # ###########################################################################
         # ############### NCC UI form ###############################################
@@ -592,14 +592,14 @@ class ToolsDB2UI:
               "- Clear -> the regular non-copper clearing.")
         )
 
-        self.op_radio = RadioSet([
+        self.ncc_op_radio = RadioSet([
             {"label": _("Clear"), "value": "clear"},
             {"label": _("Isolation"), "value": "iso"}
         ], orientation='horizontal', stretch=False)
-        self.op_radio.setObjectName("gdb_n_operation")
+        self.ncc_op_radio.setObjectName("gdb_n_operation")
 
         self.grid2.addWidget(op_label, 13, 0)
-        self.grid2.addWidget(self.op_radio, 13, 1)
+        self.grid2.addWidget(self.ncc_op_radio, 13, 1)
 
         # Milling Type Radio Button
         self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
@@ -609,17 +609,17 @@ class ToolsDB2UI:
               "- conventional / useful when there is no backlash compensation")
         )
 
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
-        self.milling_type_radio.setToolTip(
+        self.ncc_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                                {'label': _('Conventional'), 'value': 'cv'}])
+        self.ncc_milling_type_radio.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
-        self.milling_type_radio.setObjectName("gdb_n_milling_type")
+        self.ncc_milling_type_radio.setObjectName("gdb_n_milling_type")
 
         self.grid2.addWidget(self.milling_type_label, 14, 0)
-        self.grid2.addWidget(self.milling_type_radio, 14, 1)
+        self.grid2.addWidget(self.ncc_milling_type_radio, 14, 1)
 
         # Overlap Entry
         nccoverlabel = FCLabel('%s:' % _('Overlap'))
@@ -741,15 +741,15 @@ class ToolsDB2UI:
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
-        self.paintoverlap_entry.set_precision(3)
-        self.paintoverlap_entry.setWrapping(True)
-        self.paintoverlap_entry.setRange(0.0000, 99.9999)
-        self.paintoverlap_entry.setSingleStep(0.1)
-        self.paintoverlap_entry.setObjectName('gdb_p_overlap')
+        self.paint_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.paint_overlap_entry.set_precision(3)
+        self.paint_overlap_entry.setWrapping(True)
+        self.paint_overlap_entry.setRange(0.0000, 99.9999)
+        self.paint_overlap_entry.setSingleStep(0.1)
+        self.paint_overlap_entry.setObjectName('gdb_p_overlap')
 
         self.grid3.addWidget(ovlabel, 1, 0)
-        self.grid3.addWidget(self.paintoverlap_entry, 1, 1)
+        self.grid3.addWidget(self.paint_overlap_entry, 1, 1)
 
         # Margin
         marginlabel = FCLabel('%s:' % _('Offset'))
@@ -779,35 +779,35 @@ class ToolsDB2UI:
               "in the order specified.")
         )
 
-        self.paintmethod_combo = FCComboBox()
-        self.paintmethod_combo.addItems(
+        self.paint_method_combo = FCComboBox()
+        self.paint_method_combo.addItems(
             [_("Standard"), _("Seed"), _("Lines"), _("Laser_lines"), _("Combo")]
         )
-        idx = self.paintmethod_combo.findText(_("Laser_lines"))
-        self.paintmethod_combo.model().item(idx).setEnabled(False)
+        idx = self.paint_method_combo.findText(_("Laser_lines"))
+        self.paint_method_combo.model().item(idx).setEnabled(False)
 
-        self.paintmethod_combo.setObjectName('gdb_p_method')
+        self.paint_method_combo.setObjectName('gdb_p_method')
 
         self.grid3.addWidget(methodlabel, 7, 0)
-        self.grid3.addWidget(self.paintmethod_combo, 7, 1)
+        self.grid3.addWidget(self.paint_method_combo, 7, 1)
 
         # Connect lines
-        self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
-        self.pathconnect_cb.setObjectName('gdb_p_connect')
-        self.pathconnect_cb.setToolTip(
+        self.path_connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.path_connect_cb.setObjectName('gdb_p_connect')
+        self.path_connect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
 
-        self.paintcontour_cb = FCCheckBox('%s' % _("Contour"))
-        self.paintcontour_cb.setObjectName('gdb_p_contour')
-        self.paintcontour_cb.setToolTip(
+        self.paint_contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.paint_contour_cb.setObjectName('gdb_p_contour')
+        self.paint_contour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
 
-        self.grid3.addWidget(self.pathconnect_cb, 10, 0)
-        self.grid3.addWidget(self.paintcontour_cb, 10, 1)
+        self.grid3.addWidget(self.path_connect_cb, 10, 0)
+        self.grid3.addWidget(self.paint_contour_cb, 10, 1)
 
         # ###########################################################################
         # ############### Isolation UI form #########################################
@@ -825,12 +825,12 @@ class ToolsDB2UI:
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
         )
-        self.passes_entry = FCSpinner()
-        self.passes_entry.set_range(1, 999)
-        self.passes_entry.setObjectName("gdb_i_passes")
+        self.iso_passes_entry = FCSpinner()
+        self.iso_passes_entry.set_range(1, 999)
+        self.iso_passes_entry.setObjectName("gdb_i_passes")
 
         self.grid4.addWidget(passlabel, 0, 0)
-        self.grid4.addWidget(self.passes_entry, 0, 1)
+        self.grid4.addWidget(self.iso_passes_entry, 0, 1)
 
         # Overlap Entry
         overlabel = FCLabel('%s:' % _('Overlap'))
@@ -848,24 +848,24 @@ class ToolsDB2UI:
         self.grid4.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Milling Type Radio Button
-        self.milling_type_label = FCLabel('%s:' % _('Milling Type'))
-        self.milling_type_label.setToolTip(
+        self.iso_milling_type_label = FCLabel('%s:' % _('Milling Type'))
+        self.iso_milling_type_label.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
 
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conventional'), 'value': 'cv'}])
-        self.milling_type_radio.setToolTip(
+        self.iso_milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                                {'label': _('Conventional'), 'value': 'cv'}])
+        self.iso_milling_type_radio.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
-        self.milling_type_radio.setObjectName("gdb_i_milling_type")
+        self.iso_milling_type_radio.setObjectName("gdb_i_milling_type")
 
-        self.grid4.addWidget(self.milling_type_label, 4, 0)
-        self.grid4.addWidget(self.milling_type_radio, 4, 1)
+        self.grid4.addWidget(self.iso_milling_type_label, 4, 0)
+        self.grid4.addWidget(self.iso_milling_type_radio, 4, 1)
 
         # Follow
         self.follow_label = FCLabel('%s:' % _('Follow'))
@@ -875,14 +875,14 @@ class ToolsDB2UI:
               "the middle of the trace.")
         )
 
-        self.follow_cb = FCCheckBox()
-        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
+        self.iso_follow_cb = FCCheckBox()
+        self.iso_follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
-        self.follow_cb.setObjectName("gdb_i_follow")
+        self.iso_follow_cb.setObjectName("gdb_i_follow")
 
         self.grid4.addWidget(self.follow_label, 6, 0)
-        self.grid4.addWidget(self.follow_cb, 6, 1)
+        self.grid4.addWidget(self.iso_follow_cb, 6, 1)
 
         # Isolation Type
         self.iso_type_label = FCLabel('%s:' % _('Isolation Type'))
@@ -920,19 +920,19 @@ class ToolsDB2UI:
               "below the copper surface.")
         )
 
-        self.cutz_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cutz_drill_entry.set_precision(self.decimals)
+        self.drill_cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_cutz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.cutz_drill_entry.set_range(-9999.9999, 0.0000)
+            self.drill_cutz_entry.set_range(-9999.9999, 0.0000)
         else:
-            self.cutz_drill_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_cutz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.cutz_drill_entry.setSingleStep(0.1)
-        self.cutz_drill_entry.setObjectName("gdb_e_cutz")
+        self.drill_cutz_entry.setSingleStep(0.1)
+        self.drill_cutz_entry.setObjectName("gdb_e_cutz")
 
         self.grid5.addWidget(self.cutzlabel, 4, 0)
-        self.grid5.addWidget(self.cutz_drill_entry, 4, 1)
+        self.grid5.addWidget(self.drill_cutz_entry, 4, 1)
 
         # Tool Offset
         self.tool_offset_label = FCLabel('%s:' % _('Offset Z'))
@@ -942,13 +942,13 @@ class ToolsDB2UI:
               "The value here can compensate the Cut Z parameter.")
         )
 
-        self.offset_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.offset_drill_entry.set_precision(self.decimals)
-        self.offset_drill_entry.set_range(-9999.9999, 9999.9999)
-        self.offset_drill_entry.setObjectName("gdb_e_offset")
+        self.drill_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_offset_entry.set_precision(self.decimals)
+        self.drill_offset_entry.set_range(-9999.9999, 9999.9999)
+        self.drill_offset_entry.setObjectName("gdb_e_offset")
 
         self.grid5.addWidget(self.tool_offset_label, 6, 0)
-        self.grid5.addWidget(self.offset_drill_entry, 6, 1)
+        self.grid5.addWidget(self.drill_offset_entry, 6, 1)
 
         # Multi-Depth
         self.multidepth_drill_label = FCLabel('%s:' % _("MultiDepth"))
@@ -960,27 +960,27 @@ class ToolsDB2UI:
                 "reached."
             )
         )
-        self.mpass_drill_cb = FCCheckBox()
-        self.mpass_drill_cb.setObjectName("gdb_e_multidepth")
+        self.drill_mpass_cb = FCCheckBox()
+        self.drill_mpass_cb.setObjectName("gdb_e_multidepth")
 
         self.grid5.addWidget(self.multidepth_drill_label, 7, 0)
-        self.grid5.addWidget(self.mpass_drill_cb, 7, 1)
+        self.grid5.addWidget(self.drill_mpass_cb, 7, 1)
 
         # Depth Per Pass
         self.dpp_drill_label = FCLabel('%s:' % _("DPP"))
         self.dpp_drill_label.setToolTip(
             _("DPP. Depth per Pass.\n"
               "The value used to cut into material on each pass."))
-        self.maxdepth_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.maxdepth_drill_entry.set_precision(self.decimals)
-        self.maxdepth_drill_entry.set_range(0, 9999.9999)
-        self.maxdepth_drill_entry.setSingleStep(0.1)
+        self.drill_maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_maxdepth_entry.set_precision(self.decimals)
+        self.drill_maxdepth_entry.set_range(0, 9999.9999)
+        self.drill_maxdepth_entry.setSingleStep(0.1)
 
-        self.maxdepth_drill_entry.setToolTip(_("Depth of each pass (positive)."))
-        self.maxdepth_drill_entry.setObjectName("gdb_e_depthperpass")
+        self.drill_maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
+        self.drill_maxdepth_entry.setObjectName("gdb_e_depthperpass")
 
         self.grid5.addWidget(self.dpp_drill_label, 8, 0)
-        self.grid5.addWidget(self.maxdepth_drill_entry, 8, 1)
+        self.grid5.addWidget(self.drill_maxdepth_entry, 8, 1)
 
         # Travel Z (z_move)
         self.travelzlabel = FCLabel('%s:' % _('Travel Z'))
@@ -989,19 +989,19 @@ class ToolsDB2UI:
               "across the XY plane.")
         )
 
-        self.travelz_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.travelz_drill_entry.set_precision(self.decimals)
+        self.drill_travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_travelz_entry.set_precision(self.decimals)
 
         if self.machinist_setting == 0:
-            self.travelz_drill_entry.set_range(0.00001, 9999.9999)
+            self.drill_travelz_entry.set_range(0.00001, 9999.9999)
         else:
-            self.travelz_drill_entry.set_range(-9999.9999, 9999.9999)
+            self.drill_travelz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.travelz_drill_entry.setSingleStep(0.1)
-        self.travelz_drill_entry.setObjectName("gdb_e_travelz")
+        self.drill_travelz_entry.setSingleStep(0.1)
+        self.drill_travelz_entry.setObjectName("gdb_e_travelz")
 
         self.grid5.addWidget(self.travelzlabel, 10, 0)
-        self.grid5.addWidget(self.travelz_drill_entry, 10, 1)
+        self.grid5.addWidget(self.drill_travelz_entry, 10, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1016,14 +1016,14 @@ class ToolsDB2UI:
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
-        self.feedrate_z_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_z_drill_entry.set_precision(self.decimals)
-        self.feedrate_z_drill_entry.set_range(0.0, 99999.9999)
-        self.feedrate_z_drill_entry.setSingleStep(0.1)
-        self.feedrate_z_drill_entry.setObjectName("gdb_e_feedratez")
+        self.drill_feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_feedrate_z_entry.set_precision(self.decimals)
+        self.drill_feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_z_entry.setSingleStep(0.1)
+        self.drill_feedrate_z_entry.setObjectName("gdb_e_feedratez")
 
         self.grid5.addWidget(self.frzlabel, 14, 0)
-        self.grid5.addWidget(self.feedrate_z_drill_entry, 14, 1)
+        self.grid5.addWidget(self.drill_feedrate_z_entry, 14, 1)
 
         # Excellon Rapid Feedrate
         self.feedrate_rapid_label = FCLabel('%s:' % _('Feedrate Rapids'))
@@ -1034,14 +1034,14 @@ class ToolsDB2UI:
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.feedrate_rapid_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_rapid_drill_entry.set_precision(self.decimals)
-        self.feedrate_rapid_drill_entry.set_range(0.0, 99999.9999)
-        self.feedrate_rapid_drill_entry.setSingleStep(0.1)
-        self.feedrate_rapid_drill_entry.setObjectName("gdb_e_fr_rapid")
+        self.drill_feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_feedrate_rapid_entry.set_precision(self.decimals)
+        self.drill_feedrate_rapid_entry.set_range(0.0, 99999.9999)
+        self.drill_feedrate_rapid_entry.setSingleStep(0.1)
+        self.drill_feedrate_rapid_entry.setObjectName("gdb_e_fr_rapid")
 
         self.grid5.addWidget(self.feedrate_rapid_label, 16, 0)
-        self.grid5.addWidget(self.feedrate_rapid_drill_entry, 16, 1)
+        self.grid5.addWidget(self.drill_feedrate_rapid_entry, 16, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1055,13 +1055,13 @@ class ToolsDB2UI:
               "in RPM (optional)")
         )
 
-        self.spindlespeed_drill_entry = FCSpinner(callback=self.confirmation_message_int)
-        self.spindlespeed_drill_entry.set_range(0, 1000000)
-        self.spindlespeed_drill_entry.set_step(100)
-        self.spindlespeed_drill_entry.setObjectName("gdb_e_spindlespeed")
+        self.drill_spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
+        self.drill_spindlespeed_entry.set_range(0, 1000000)
+        self.drill_spindlespeed_entry.set_step(100)
+        self.drill_spindlespeed_entry.setObjectName("gdb_e_spindlespeed")
 
         self.grid5.addWidget(self.spindle_label, 20, 0)
-        self.grid5.addWidget(self.spindlespeed_drill_entry, 20, 1)
+        self.grid5.addWidget(self.drill_spindlespeed_entry, 20, 1)
 
         # Dwell
         self.dwell_drill_label = FCLabel('%s:' % _("Dwell"))
@@ -1070,25 +1070,25 @@ class ToolsDB2UI:
               "Check this if a delay is needed to allow\n"
               "the spindle motor to reach its set speed."))
 
-        self.dwell_drill_cb = FCCheckBox()
-        self.dwell_drill_cb.setObjectName("gdb_e_dwell")
+        self.drill_dwell_cb = FCCheckBox()
+        self.drill_dwell_cb.setObjectName("gdb_e_dwell")
 
         self.grid5.addWidget(self.dwell_drill_label, 21, 0)
-        self.grid5.addWidget(self.dwell_drill_cb, 21, 1)
+        self.grid5.addWidget(self.drill_dwell_cb, 21, 1)
 
         # Dwelltime
         self.dwelltime_drill_lbl = FCLabel('%s:' % _('Dwelltime'))
         self.dwelltime_drill_lbl.setToolTip(
             _("Dwell Time.\n"
               "A delay used to allow the motor spindle reach its set speed."))
-        self.dwelltime_drill_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.dwelltime_drill_entry.set_precision(self.decimals)
-        self.dwelltime_drill_entry.set_range(0.0, 9999.9999)
-        self.dwelltime_drill_entry.setSingleStep(0.1)
-        self.dwelltime_drill_entry.setObjectName("gdb_e_dwelltime")
+        self.drill_dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.drill_dwelltime_entry.set_precision(self.decimals)
+        self.drill_dwelltime_entry.set_range(0.0, 9999.9999)
+        self.drill_dwelltime_entry.setSingleStep(0.1)
+        self.drill_dwelltime_entry.setObjectName("gdb_e_dwelltime")
 
         self.grid5.addWidget(self.dwelltime_drill_lbl, 22, 0)
-        self.grid5.addWidget(self.dwelltime_drill_entry, 22, 1)
+        self.grid5.addWidget(self.drill_dwelltime_entry, 22, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1100,11 +1100,11 @@ class ToolsDB2UI:
         self.drill_slots_drill_lbl.setToolTip(
             _("If the selected tool has slots then they will be drilled.")
         )
-        self.drill_slots_drill_cb = FCCheckBox()
-        self.drill_slots_drill_cb.setObjectName("gdb_e_drill_slots")
+        self.drill_slots_cb = FCCheckBox()
+        self.drill_slots_cb.setObjectName("gdb_e_drill_slots")
 
         self.grid5.addWidget(self.drill_slots_drill_lbl, 26, 0,)
-        self.grid5.addWidget(self.drill_slots_drill_cb, 26, 1)
+        self.grid5.addWidget(self.drill_slots_cb, 26, 1)
 
         # Drill Overlap
         self.drill_overlap_label = FCLabel('%s:' % _('Overlap'))
@@ -1112,15 +1112,15 @@ class ToolsDB2UI:
             _("How much (percentage) of the tool diameter to overlap previous drill hole.")
         )
 
-        self.drill_overlap_drill_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
-        self.drill_overlap_drill_entry.set_precision(self.decimals)
-        self.drill_overlap_drill_entry.set_range(0.0, 100.0000)
-        self.drill_overlap_drill_entry.setSingleStep(0.1)
+        self.drill_overlap_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
+        self.drill_overlap_entry.set_precision(self.decimals)
+        self.drill_overlap_entry.set_range(0.0, 100.0000)
+        self.drill_overlap_entry.setSingleStep(0.1)
 
-        self.drill_overlap_drill_entry.setObjectName("gdb_e_drill_slots_over")
+        self.drill_overlap_entry.setObjectName("gdb_e_drill_slots_over")
 
         self.grid5.addWidget(self.drill_overlap_label, 28, 0)
-        self.grid5.addWidget(self.drill_overlap_drill_entry, 28, 1)
+        self.grid5.addWidget(self.drill_overlap_entry, 28, 1)
 
         # Last drill in slot
         self.last_drill_drill_lbl = FCLabel('%s:' % _('Last drill'))
@@ -1129,11 +1129,11 @@ class ToolsDB2UI:
               "add a drill hole on the slot end point.")
         )
 
-        self.last_drill_drill_cb = FCCheckBox()
-        self.last_drill_drill_cb.setObjectName("gdb_e_drill_last_drill")
+        self.drill_last_drill_cb = FCCheckBox()
+        self.drill_last_drill_cb.setObjectName("gdb_e_drill_last_drill")
 
         self.grid5.addWidget(self.last_drill_drill_lbl, 30, 0, 1, 2)
-        self.grid5.addWidget(self.last_drill_drill_cb, 30, 1)
+        self.grid5.addWidget(self.drill_last_drill_cb, 30, 1)
 
         # ###########################################################################
         # ################### Cutout UI form ########################################
@@ -1184,7 +1184,7 @@ class ToolsDB2UI:
               "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes")
         )
 
-        self.gaptype_radio = RadioSet(
+        self.cutout_gaptype_radio = RadioSet(
             [
                 {'label': _('Bridge'), 'value': 'b'},
                 {'label': _('Thin'), 'value': 'bt'},
@@ -1192,10 +1192,10 @@ class ToolsDB2UI:
             ],
             stretch=True
         )
-        self.gaptype_radio.setObjectName('gdb_ct_gap_type')
+        self.cutout_gaptype_radio.setObjectName('gdb_ct_gap_type')
 
         self.grid6.addWidget(self.gaptype_label, 15, 0)
-        self.grid6.addWidget(self.gaptype_radio, 15, 1)
+        self.grid6.addWidget(self.cutout_gaptype_radio, 15, 1)
 
         # Thin gaps Depth
         self.thin_depth_label = FCLabel('%s:' % _("Depth"))
@@ -1203,44 +1203,44 @@ class ToolsDB2UI:
             _("The depth until the milling is done\n"
               "in order to thin the gaps.")
         )
-        self.thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.thin_depth_entry.set_precision(self.decimals)
-        self.thin_depth_entry.setObjectName('gdb_ct_gap_depth')
+        self.cutout_thin_depth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutout_thin_depth_entry.set_precision(self.decimals)
+        self.cutout_thin_depth_entry.setObjectName('gdb_ct_gap_depth')
 
         if self.machinist_setting == 0:
-            self.thin_depth_entry.setRange(-9999.9999, -0.00001)
+            self.cutout_thin_depth_entry.setRange(-9999.9999, -0.00001)
         else:
-            self.thin_depth_entry.setRange(-9999.9999, 9999.9999)
-        self.thin_depth_entry.setSingleStep(0.1)
+            self.cutout_thin_depth_entry.setRange(-9999.9999, 9999.9999)
+        self.cutout_thin_depth_entry.setSingleStep(0.1)
 
         self.grid6.addWidget(self.thin_depth_label, 17, 0)
-        self.grid6.addWidget(self.thin_depth_entry, 17, 1)
+        self.grid6.addWidget(self.cutout_thin_depth_entry, 17, 1)
 
         # Mouse Bites Tool Diameter
         self.mb_dia_label = FCLabel('%s:' % _("Tool Diameter"))
         self.mb_dia_label.setToolTip(
-            _("The drill hole diameter when doing mpuse bites.")
+            _("The drill hole diameter when doing mouse bites.")
         )
-        self.mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.mb_dia_entry.set_precision(self.decimals)
-        self.mb_dia_entry.setRange(0, 100.0000)
-        self.mb_dia_entry.setObjectName('gdb_ct_mb_dia')
+        self.cutout_mb_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutout_mb_dia_entry.set_precision(self.decimals)
+        self.cutout_mb_dia_entry.setRange(0, 100.0000)
+        self.cutout_mb_dia_entry.setObjectName('gdb_ct_mb_dia')
 
         self.grid6.addWidget(self.mb_dia_label, 19, 0)
-        self.grid6.addWidget(self.mb_dia_entry, 19, 1)
+        self.grid6.addWidget(self.cutout_mb_dia_entry, 19, 1)
 
         # Mouse Bites Holes Spacing
         self.mb_spacing_label = FCLabel('%s:' % _("Spacing"))
         self.mb_spacing_label.setToolTip(
             _("The spacing between drill holes when doing mouse bites.")
         )
-        self.mb_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.mb_spacing_entry.set_precision(self.decimals)
-        self.mb_spacing_entry.setRange(0, 100.0000)
-        self.mb_spacing_entry.setObjectName('gdb_ct_mb_spacing')
+        self.cutout_mb_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.cutout_mb_spacing_entry.set_precision(self.decimals)
+        self.cutout_mb_spacing_entry.setRange(0, 100.0000)
+        self.cutout_mb_spacing_entry.setObjectName('gdb_ct_mb_spacing')
 
         self.grid6.addWidget(self.mb_spacing_label, 21, 0)
-        self.grid6.addWidget(self.mb_spacing_entry, 21, 1)
+        self.grid6.addWidget(self.cutout_mb_spacing_entry, 21, 1)
         
         # How gaps wil be rendered:
         # lr    - left + right
@@ -1450,78 +1450,78 @@ class ToolsDB2(QtWidgets.QWidget):
             "tooldia":          self.ui.dia_entry,
 
             # Milling
-            "tool_type":        self.ui.shape_combo,
-            "cutz":             self.ui.cutz_entry,
-            "multidepth":       self.ui.multidepth_cb,
-            "depthperpass":     self.ui.multidepth_entry,
-            "travelz":          self.ui.travelz_entry,
-            "feedrate":         self.ui.frxy_entry,
-            "feedrate_z":       self.ui.frz_entry,
-            "spindlespeed":     self.ui.spindle_entry,
-            "dwell":            self.ui.dwell_cb,
-            "dwelltime":        self.ui.dwelltime_entry,
+            "tool_type":        self.ui.mill_shape_combo,
+            "cutz":             self.ui.mill_cutz_entry,
+            "multidepth":       self.ui.mill_multidepth_cb,
+            "depthperpass":     self.ui.mill_multidepth_entry,
+            "travelz":          self.ui.mill_travelz_entry,
+            "feedrate":         self.ui.mill_frxy_entry,
+            "feedrate_z":       self.ui.mill_frz_entry,
+            "spindlespeed":     self.ui.mill_spindle_entry,
+            "dwell":            self.ui.mill_dwell_cb,
+            "dwelltime":        self.ui.mill_dwelltime_entry,
 
-            "type":             self.ui.type_combo,
-            "offset":           self.ui.tooloffset_combo,
-            "offset_value":     self.ui.custom_offset_entry,
-            "vtipdia":          self.ui.vdia_entry,
-            "vtipangle":        self.ui.vangle_entry,
-            "feedrate_rapid":   self.ui.frapids_entry,
-            "extracut":         self.ui.ecut_cb,
-            "extracut_length":  self.ui.ecut_length_entry,
+            "type":             self.ui.mill_type_combo,
+            "offset":           self.ui.mill_tooloffset_combo,
+            "offset_value":     self.ui.mill_custom_offset_entry,
+            "vtipdia":          self.ui.mill_vdia_entry,
+            "vtipangle":        self.ui.mill_vangle_entry,
+            "feedrate_rapid":   self.ui.mill_frapids_entry,
+            "extracut":         self.ui.mill_ecut_cb,
+            "extracut_length":  self.ui.mill_ecut_length_entry,
 
             # NCC
-            "tools_ncc_operation":       self.ui.op_radio,
-            "tools_ncc_milling_type":    self.ui.milling_type_radio,
-            "tools_ncc_overlap":         self.ui.ncc_overlap_entry,
-            "tools_ncc_margin":          self.ui.ncc_margin_entry,
-            "tools_ncc_method":          self.ui.ncc_method_combo,
-            "tools_ncc_connect":         self.ui.ncc_connect_cb,
-            "tools_ncc_contour":         self.ui.ncc_contour_cb,
+            "tools_ncc_operation":      self.ui.ncc_op_radio,
+            "tools_ncc_milling_type":   self.ui.ncc_milling_type_radio,
+            "tools_ncc_overlap":        self.ui.ncc_overlap_entry,
+            "tools_ncc_margin":         self.ui.ncc_margin_entry,
+            "tools_ncc_method":         self.ui.ncc_method_combo,
+            "tools_ncc_connect":        self.ui.ncc_connect_cb,
+            "tools_ncc_contour":        self.ui.ncc_contour_cb,
             "tools_ncc_offset_choice":  self.ui.ncc_choice_offset_cb,
             "tools_ncc_offset_value":   self.ui.ncc_offset_spinner,
 
             # Paint
-            "tools_paintoverlap":       self.ui.paintoverlap_entry,
-            "tools_paintoffset":       self.ui.paint_offset_entry,
-            "tools_paintmethod":        self.ui.paintmethod_combo,
-            "tools_pathconnect":        self.ui.pathconnect_cb,
-            "tools_paintcontour":       self.ui.paintcontour_cb,
+            "tools_paint_overlap":      self.ui.paint_overlap_entry,
+            "tools_paint_offset":       self.ui.paint_offset_entry,
+            "tools_paint_method":       self.ui.paint_method_combo,
+            "tools_paint_connect":      self.ui.path_connect_cb,
+            "tools_paint_contour":      self.ui.paint_contour_cb,
 
             # Isolation
-            "tools_iso_passes":         self.ui.passes_entry,
+            "tools_iso_passes":         self.ui.iso_passes_entry,
             "tools_iso_overlap":        self.ui.iso_overlap_entry,
-            "tools_iso_milling_type":   self.ui.milling_type_radio,
-            "tools_iso_follow":         self.ui.follow_cb,
+            "tools_iso_milling_type":   self.ui.iso_milling_type_radio,
+            "tools_iso_follow":         self.ui.iso_follow_cb,
             "tools_iso_isotype":        self.ui.iso_type_radio,
 
             # Drilling
-            "tools_drill_cutz":             self.ui.cutz_drill_entry,
-            "tools_drill_multidepth":       self.ui.mpass_drill_cb,
-            "tools_drill_depthperpass":     self.ui.maxdepth_drill_entry,
-            "tools_drill_travelz":          self.ui.travelz_drill_entry,
-            "tools_drill_feedrate_z":       self.ui.feedrate_z_drill_entry,
+            "tools_drill_cutz":             self.ui.drill_cutz_entry,
+            "tools_drill_multidepth":       self.ui.drill_mpass_cb,
+            "tools_drill_depthperpass":     self.ui.drill_maxdepth_entry,
+            "tools_drill_travelz":          self.ui.drill_travelz_entry,
+            "tools_drill_feedrate_z":       self.ui.drill_feedrate_z_entry,
 
-            "tools_drill_feedrate_rapid":   self.ui.feedrate_rapid_drill_entry,
-            "tools_drill_spindlespeed":     self.ui.spindlespeed_drill_entry,
-            "tools_drill_dwell":            self.ui.dwell_drill_cb,
-            "tools_drill_dwelltime":        self.ui.dwelltime_drill_entry,
+            "tools_drill_feedrate_rapid":   self.ui.drill_feedrate_rapid_entry,
+            "tools_drill_spindlespeed":     self.ui.drill_spindlespeed_entry,
+            "tools_drill_dwell":            self.ui.drill_dwell_cb,
+            "tools_drill_dwelltime":        self.ui.drill_dwelltime_entry,
 
-            "tools_drill_offset":           self.ui.offset_drill_entry,
-            "tools_drill_drill_slots":      self.ui.drill_slots_drill_cb,
-            "tools_drill_drill_overlap":    self.ui.drill_overlap_drill_entry,
-            "tools_drill_last_drill":       self.ui.last_drill_drill_cb,
+            "tools_drill_offset":           self.ui.drill_offset_entry,
+            "tools_drill_drill_slots":      self.ui.drill_slots_cb,
+            "tools_drill_drill_overlap":    self.ui.drill_overlap_entry,
+            "tools_drill_last_drill":       self.ui.drill_last_drill_cb,
 
             # Cutout
-            "tools_cutout_margin":           self.ui.cutout_margin_entry,
-            "tools_cutout_gapsize":          self.ui.cutout_gapsize,
+            "tools_cutout_margin":          self.ui.cutout_margin_entry,
+            "tools_cutout_gapsize":         self.ui.cutout_gapsize,
             "tools_cutout_gaps_ff":         self.ui.cutout_gaps,
             "tools_cutout_convexshape":     self.ui.cutout_convex_box,
 
-            "tools_cutout_gap_type":        self.ui.gaptype_radio,
-            "tools_cutout_gap_depth":       self.ui.thin_depth_entry,
-            "tools_cutout_mb_dia":          self.ui.mb_dia_entry,
-            "tools_cutout_mb_spacing":      self.ui.mb_spacing_entry,
+            "tools_cutout_gap_type":        self.ui.cutout_gaptype_radio,
+            "tools_cutout_gap_depth":       self.ui.cutout_thin_depth_entry,
+            "tools_cutout_mb_dia":          self.ui.cutout_mb_dia_entry,
+            "tools_cutout_mb_spacing":      self.ui.cutout_mb_spacing_entry,
 
         }
 
@@ -1566,11 +1566,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "gdb_n_milling_type":   "tools_ncc_milling_type",
 
             # Paint
-            'gdb_p_overlap':        "tools_paintoverlap",
-            'gdb_p_offset':         "tools_paintoffset",
-            'gdb_p_method':         "tools_paintmethod",
-            'gdb_p_connect':        "tools_pathconnect",
-            'gdb_p_contour':        "tools_paintcontour",
+            'gdb_p_overlap':        "tools_paint_overlap",
+            'gdb_p_offset':         "tools_paint_offset",
+            'gdb_p_method':         "tools_paint_method",
+            'gdb_p_connect':        "tools_paint_connect",
+            'gdb_p_contour':        "tools_paint_contour",
 
             # Isolation
             "gdb_i_passes":         "tools_iso_passes",
@@ -1912,11 +1912,11 @@ class ToolsDB2(QtWidgets.QWidget):
             "tools_ncc_offset_value":   float(self.app.defaults["tools_ncc_offset_value"]),
 
             # Paint
-            "tools_paintoverlap":       float(self.app.defaults["tools_paintoverlap"]),
-            "tools_paintoffset":        float(self.app.defaults["tools_paintoffset"]),
-            "tools_paintmethod":        self.app.defaults["tools_paintmethod"],
-            "tools_pathconnect":        self.app.defaults["tools_pathconnect"],
-            "tools_paintcontour":       self.app.defaults["tools_paintcontour"],
+            "tools_paint_overlap":       float(self.app.defaults["tools_paint_overlap"]),
+            "tools_paint_offset":        float(self.app.defaults["tools_paint_offset"]),
+            "tools_paint_method":        self.app.defaults["tools_paint_method"],
+            "tools_paint_connect":        self.app.defaults["tools_paint_connect"],
+            "tools_paint_contour":       self.app.defaults["tools_paint_contour"],
 
             # Isolation
             "tools_iso_passes":         int(self.app.defaults["tools_iso_passes"]),
@@ -2217,10 +2217,10 @@ class ToolsDB2(QtWidgets.QWidget):
         self.on_save_tools_db()
 
     def on_calculate_tooldia(self):
-        if self.ui.shape_combo.get_value() == 'V':
-            tip_dia = float(self.ui.vdia_entry.get_value())
-            half_tip_angle = float(self.ui.vangle_entry.get_value()) / 2.0
-            cut_z = float(self.ui.cutz_entry.get_value())
+        if self.ui.mill_shape_combo.get_value() == 'V':
+            tip_dia = float(self.ui.mill_vdia_entry.get_value())
+            half_tip_angle = float(self.ui.mill_vangle_entry.get_value()) / 2.0
+            cut_z = float(self.ui.mill_cutz_entry.get_value())
             cut_z = -cut_z if cut_z < 0 else cut_z
 
             # calculated tool diameter so the cut_z parameter is obeyed
@@ -2259,10 +2259,10 @@ class ToolsDB2(QtWidgets.QWidget):
 
         # connect the calculate tooldia method to the controls
         # if the tool shape is 'V' the tool dia will be calculated to obey Cut Z parameter
-        self.ui.shape_combo.currentIndexChanged.connect(self.on_calculate_tooldia)
-        self.ui.cutz_entry.valueChanged.connect(self.on_calculate_tooldia)
-        self.ui.vdia_entry.valueChanged.connect(self.on_calculate_tooldia)
-        self.ui.vangle_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.ui.mill_shape_combo.currentIndexChanged.connect(self.on_calculate_tooldia)
+        self.ui.mill_cutz_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.ui.mill_vdia_entry.valueChanged.connect(self.on_calculate_tooldia)
+        self.ui.mill_vangle_entry.valueChanged.connect(self.on_calculate_tooldia)
 
     def ui_disconnect(self):
         try:
@@ -2271,22 +2271,22 @@ class ToolsDB2(QtWidgets.QWidget):
             pass
 
         try:
-            self.ui.shape_combo.currentIndexChanged.disconnect(self.on_calculate_tooldia)
+            self.ui.mill_shape_combo.currentIndexChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
         try:
-            self.ui.cutz_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+            self.ui.mill_cutz_entry.valueChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
         try:
-            self.ui.vdia_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+            self.ui.mill_vdia_entry.valueChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
         try:
-            self.ui.vangle_entry.valueChanged.disconnect(self.on_calculate_tooldia)
+            self.ui.mill_vangle_entry.valueChanged.disconnect(self.on_calculate_tooldia)
         except (TypeError, AttributeError):
             pass
 
@@ -2452,15 +2452,15 @@ class ToolsDB2(QtWidgets.QWidget):
 
             # Paint Tool
             elif wdg_name == "gdb_p_overlap":
-                self.db_tool_dict[tool_id]['data']['tools_paintoverlap'] = val
+                self.db_tool_dict[tool_id]['data']['tools_paint_overlap'] = val
             elif wdg_name == "gdb_p_offset":
-                self.db_tool_dict[tool_id]['data']['tools_paintoffset'] = val
+                self.db_tool_dict[tool_id]['data']['tools_paint_offset'] = val
             elif wdg_name == "gdb_p_method":
-                self.db_tool_dict[tool_id]['data']['tools_paintmethod'] = val
+                self.db_tool_dict[tool_id]['data']['tools_paint_method'] = val
             elif wdg_name == "gdb_p_connect":
-                self.db_tool_dict[tool_id]['data']['tools_pathconnect'] = val
+                self.db_tool_dict[tool_id]['data']['tools_paint_connect'] = val
             elif wdg_name == "gdb_p_contour":
-                self.db_tool_dict[tool_id]['data']['tools_paintcontour'] = val
+                self.db_tool_dict[tool_id]['data']['tools_paint_contour'] = val
 
             # Isolation Tool
             elif wdg_name == "gdb_i_passes":

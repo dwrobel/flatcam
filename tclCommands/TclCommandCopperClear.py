@@ -223,7 +223,7 @@ class TclCommandCopperClear(TclCommand):
             "area_strategy":    self.app.defaults["geometry_area_strategy"],
             "area_overz":       float(self.app.defaults["geometry_area_overz"]),
 
-            "tooldia":              self.app.defaults["tools_painttooldia"],
+            "tooldia":              self.app.defaults["tools_paint_tooldia"],
             "tools_ncc_operation":   self.app.defaults["tools_ncc_operation"],
 
             "tools_ncc_margin":  margin,

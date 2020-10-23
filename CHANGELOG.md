@@ -19,6 +19,8 @@ CHANGELOG for FlatCAM beta
 - added a default properties tab which will hold a set of information's about the application
 - minor changes in the Properties Tool
 - Excellon UI: fixed a small issue with toggling all rows in Tools Table not toggling off and also the milling section in Utilities was not updated
+- some refactoring in the keys of the defaults dictionary
+- fixed an ambiguity in the Tools Database GUI elements
 
 22.10.2020
 
