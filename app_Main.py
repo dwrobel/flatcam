@@ -2044,7 +2044,7 @@ class App(QtCore.QObject):
         self.ui.tool_tab = QtWidgets.QWidget()
         self.ui.tool_tab_layout = QtWidgets.QVBoxLayout(self.ui.tool_tab)
         self.ui.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.ui.notebook.addTab(self.ui.tool_tab, "Tool")
+        self.ui.notebook.addTab(self.ui.tool_tab, _("Tool"))
         self.ui.tool_scroll_area = VerticalScrollArea()
         self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
 
@@ -2303,7 +2303,7 @@ class App(QtCore.QObject):
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
-                    self.ui.notebook.setTabText(2, "Tool")
+                    self.ui.notebook.setTabText(2, _("Tool"))
 
                     if edited_obj.kind == 'geometry':
                         obj_type = "Geometry"
@@ -2410,7 +2410,7 @@ class App(QtCore.QObject):
                     # clean the Tools Tab
                     self.ui.tool_scroll_area.takeWidget()
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
-                    self.ui.notebook.setTabText(2, "Tool")
+                    self.ui.notebook.setTabText(2, _("Tool"))
 
                     self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
 
@@ -3022,10 +3022,10 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<micmac589@gmail.com>"), 2, 3)
 
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
+                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Hungarian"), 3, 0)
+                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
+                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
+                # self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Italian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Massimiliano Golfetto"), 4, 1)

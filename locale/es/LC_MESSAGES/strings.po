@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-22 22:02+0300\n"
-"PO-Revision-Date: 2020-10-22 22:02+0300\n"
+"POT-Creation-Date: 2020-10-23 14:11+0300\n"
+"PO-Revision-Date: 2020-10-23 14:11+0300\n"
 "Last-Translator: Marius Stanciu - Google Translate\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -104,10 +104,10 @@ msgstr "Exportar marcadores"
 msgid "Bookmarks"
 msgstr "Marcadores"
 
-#: Bookmark.py:300 Bookmark.py:342 appDatabase.py:665 appDatabase.py:711
-#: appDatabase.py:2998 appDatabase.py:3044 appEditors/AppExcEditor.py:1023
-#: appEditors/AppExcEditor.py:1091 appEditors/AppTextEditor.py:263
-#: appGUI/MainGUI.py:2878 appGUI/MainGUI.py:3100 appGUI/MainGUI.py:3315
+#: Bookmark.py:300 Bookmark.py:342 appDatabase.py:2081 appDatabase.py:2127
+#: appEditors/AppExcEditor.py:1023 appEditors/AppExcEditor.py:1091
+#: appEditors/AppTextEditor.py:259 appGUI/MainGUI.py:2878
+#: appGUI/MainGUI.py:3100 appGUI/MainGUI.py:3315
 #: appObjects/FlatCAMCNCJob.py:1750 appObjects/ObjectCollection.py:126
 #: appTools/ToolFilm.py:238 appTools/ToolFilm.py:384 appTools/ToolImage.py:112
 #: appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
@@ -123,12 +123,12 @@ msgstr "Marcadores"
 msgid "Cancelled."
 msgstr "Cancelado."
 
-#: Bookmark.py:308 appDatabase.py:673 appDatabase.py:3006
-#: appEditors/AppTextEditor.py:318 appObjects/FlatCAMCNCJob.py:1672
-#: appObjects/FlatCAMCNCJob.py:1862 appObjects/FlatCAMCNCJob.py:2311
-#: appTools/ToolFilm.py:582 appTools/ToolFilm.py:830
-#: appTools/ToolSolderPaste.py:1097 app_Main.py:2666 app_Main.py:8451
-#: app_Main.py:8499 app_Main.py:8628 app_Main.py:8765 app_Main.py:8833
+#: Bookmark.py:308 appDatabase.py:2089 appEditors/AppTextEditor.py:314
+#: appObjects/FlatCAMCNCJob.py:1672 appObjects/FlatCAMCNCJob.py:1862
+#: appObjects/FlatCAMCNCJob.py:2311 appTools/ToolFilm.py:582
+#: appTools/ToolFilm.py:830 appTools/ToolSolderPaste.py:1097 app_Main.py:2666
+#: app_Main.py:8451 app_Main.py:8499 app_Main.py:8628 app_Main.py:8765
+#: app_Main.py:8833
 msgid ""
 "Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -223,222 +223,58 @@ msgstr "Todas las zonas de exclusión eliminadas."
 msgid "Selected exclusion zones deleted."
 msgstr "Zonas de exclusión seleccionadas eliminadas."
 
-#: appDatabase.py:88
-msgid "Add Geometry Tool in DB"
-msgstr "Agregar herramienta de geo. en DB"
-
-#: appDatabase.py:90 appDatabase.py:2224
-msgid ""
-"Add a new tool in the Tools Database.\n"
-"It will be used in the Geometry UI.\n"
-"You can edit it after it is added."
+#: appDatabase.py:40
+msgid "ID"
 msgstr ""
-"Agregue una nueva herramienta en la Base de datos de herramientas.\n"
-"Se utilizará en la interfaz de usuario de geometría.\n"
-"Puede editarlo después de agregarlo."
 
-#: appDatabase.py:104 appDatabase.py:2238
-msgid "Delete Tool from DB"
-msgstr "Eliminar herram. de la BD"
-
-#: appDatabase.py:106 appDatabase.py:2241
-msgid "Remove a selection of tools in the Tools Database."
-msgstr "Eliminar una selección de herramientas en la DB de herramientas."
-
-#: appDatabase.py:110 appDatabase.py:2245
-msgid "Export DB"
-msgstr "Exportar DB"
-
-#: appDatabase.py:112 appDatabase.py:2248
-msgid "Save the Tools Database to a custom text file."
-msgstr ""
-"Guarde la base de datos de herramientas en un archivo de texto personalizado."
-
-#: appDatabase.py:116 appDatabase.py:2252
-msgid "Import DB"
-msgstr "Importar DB"
-
-#: appDatabase.py:118 appDatabase.py:2255
-msgid "Load the Tools Database information's from a custom text file."
-msgstr ""
-"Cargue la información de la DB de herramientas desde un archivo de texto "
-"personalizado."
-
-#: appDatabase.py:122 appDatabase.py:2266
-msgid "Transfer the Tool"
-msgstr "Transfiere la herramienta"
-
-#: appDatabase.py:124
-msgid ""
-"Add a new tool in the Tools Table of the\n"
-"active Geometry object after selecting a tool\n"
-"in the Tools Database."
-msgstr ""
-"Agregue una nueva herramienta en la Tabla de herramientas del\n"
-"objeto de geometría activo después de seleccionar una herramienta\n"
-"en la base de datos de herramientas."
-
-#: appDatabase.py:130 appDatabase.py:2281 appGUI/MainGUI.py:1438
-#: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2291
-#: app_Main.py:3386 app_Main.py:4341 app_Main.py:4587 app_Main.py:6895
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: appDatabase.py:160 appDatabase.py:835
+#: appDatabase.py:40
 msgid "Tool Name"
 msgstr "Nombre de Herram"
 
-#: appDatabase.py:161 appDatabase.py:837 appEditors/AppExcEditor.py:3765
-#: appGUI/ObjectUI.py:1082 appGUI/ObjectUI.py:1650
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:130
-#: appTools/ToolCutOut.py:2060 appTools/ToolIsolation.py:3091
-#: appTools/ToolNCC.py:3966 appTools/ToolNCC.py:3977 appTools/ToolPaint.py:2882
-msgid "Tool Dia"
-msgstr "Diá. de Herram"
+#: appDatabase.py:78
+#, fuzzy
+#| msgid "NCC Tool Options"
+msgid "Tool Description"
+msgstr "Opc. de herra. NCC"
 
-#: appDatabase.py:162 appDatabase.py:839 appDatabase.py:1273
-#: appGUI/ObjectUI.py:1057
-msgid "Tool Offset"
-msgstr "Offset de Herram"
+#: appDatabase.py:91
+#, fuzzy
+#| msgid "Milling Diameter"
+msgid "Milling Parameters"
+msgstr "Diá. de fresado"
 
-#: appDatabase.py:163 appDatabase.py:841 appDatabase.py:1290
-msgid "Custom Offset"
-msgstr "Desplazamiento personalizado"
+#: appDatabase.py:104
+msgid "NCC Parameters"
+msgstr "NCC Parameters"
 
-#: appDatabase.py:164 appDatabase.py:843 appDatabase.py:1257
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:70
-#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:53
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:60
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:70
-msgid "Tool Type"
-msgstr "Tipo de herram"
+#: appDatabase.py:117
+msgid "Paint Parameters"
+msgstr "Parámetros de Pintura"
 
-#: appDatabase.py:165 appDatabase.py:845
-msgid "Tool Shape"
-msgstr "Forma de la herram"
+#: appDatabase.py:130
+msgid "Isolation Parameters"
+msgstr "Parámetros de Aislamiento"
 
-#: appDatabase.py:166 appDatabase.py:848 appDatabase.py:1309
-#: appDatabase.py:1834 appEditors/appGCodeEditor.py:703 appGUI/ObjectUI.py:1213
-#: appGUI/ObjectUI.py:2019
-#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:49
-#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:78
-#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:58
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:57
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:115
-#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:98
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:103
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:111
-#: appTools/ToolCalculators.py:240 appTools/ToolCutOut.py:2104
-#: appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
-msgid "Cut Z"
-msgstr "Corte Z"
+#: appDatabase.py:143
+#, fuzzy
+#| msgid "Film Parameters"
+msgid "Drilling Parameters"
+msgstr "Parámetros de la película"
 
-#: appDatabase.py:167 appDatabase.py:850 appDatabase.py:1323
-#: appDatabase.py:1871
-msgid "MultiDepth"
-msgstr "Profund. Múlti"
+#: appDatabase.py:156
+#, fuzzy
+#| msgid "Slot Parameters"
+msgid "Cutout Parameters"
+msgstr "Parámetros de ranura"
 
-#: appDatabase.py:168 appDatabase.py:852 appDatabase.py:1336
-#: appDatabase.py:1887
-msgid "DPP"
-msgstr "PPP"
+#: appDatabase.py:207 appEditors/AppGeoEditor.py:3287 appGUI/ObjectUI.py:219
+#: appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:894 appGUI/ObjectUI.py:1876
+#: appGUI/ObjectUI.py:2693 appGUI/ObjectUI.py:2760
+#: appTools/ToolCalibration.py:929 appTools/ToolFiducials.py:681
+msgid "Name"
+msgstr "Nombre"
 
-#: appDatabase.py:169 appDatabase.py:854 appDatabase.py:1224
-msgid "V-Dia"
-msgstr "V-Dia"
-
-#: appDatabase.py:170 appDatabase.py:856 appDatabase.py:1238
-msgid "V-Angle"
-msgstr "V-Ángulo"
-
-#: appDatabase.py:171 appDatabase.py:858 appDatabase.py:1350
-#: appDatabase.py:1903 appGUI/ObjectUI.py:1260
-#: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:198
-#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:102
-#: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:61
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:98
-#: appObjects/FlatCAMGeometry.py:1811 appTools/ToolCalibration.py:769
-#: appTools/ToolDrilling.py:1294 appTools/ToolDrilling.py:2189
-#: appTools/ToolMilling.py:1291 appTools/ToolMilling.py:1839
-msgid "Travel Z"
-msgstr "Viaje Z"
-
-#: appDatabase.py:172 appDatabase.py:860
-msgid "FR"
-msgstr "FR"
-
-#: appDatabase.py:173 appDatabase.py:862
-msgid "FR Z"
-msgstr "FR Z"
-
-#: appDatabase.py:174 appDatabase.py:864 appDatabase.py:1431
-msgid "FR Rapids"
-msgstr "Avance rápido"
-
-#: appDatabase.py:175 appDatabase.py:866 appDatabase.py:1452
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:186
-msgid "Spindle Speed"
-msgstr "Eje de velocidad"
-
-#: appDatabase.py:176 appDatabase.py:868 appDatabase.py:1467
-#: appDatabase.py:1984 appGUI/ObjectUI.py:1367 appTools/ToolDrilling.py:2264
-#: appTools/ToolMilling.py:1957
-msgid "Dwell"
-msgstr "Habitar"
-
-#: appDatabase.py:177 appDatabase.py:870 appDatabase.py:1480
-#: appDatabase.py:1997
-msgid "Dwelltime"
-msgstr "Tiempo de permanencia"
-
-#: appDatabase.py:178 appDatabase.py:872 appGUI/ObjectUI.py:1526
-#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:255
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:221
-#: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:237
-#: appTools/ToolDrilling.py:2498 appTools/ToolSolderPaste.py:1407
-msgid "Preprocessor"
-msgstr "Postprocesador"
-
-#: appDatabase.py:179 appDatabase.py:874 appDatabase.py:1365
-msgid "ExtraCut"
-msgstr "Corte extra"
-
-#: appDatabase.py:180 appDatabase.py:876 appDatabase.py:1380
-msgid "E-Cut Length"
-msgstr "Longitud de Corte extra"
-
-#: appDatabase.py:181 appDatabase.py:878
-msgid "Toolchange"
-msgstr "Cambio de herram"
-
-#: appDatabase.py:182 appDatabase.py:880
-msgid "Toolchange XY"
-msgstr "Cambio de herra X, Y"
-
-#: appDatabase.py:183 appDatabase.py:882
-#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:132
-#: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:98
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:124
-#: appTools/ToolCalibration.py:806
-msgid "Toolchange Z"
-msgstr "Cambio de herramienta Z"
-
-#: appDatabase.py:184 appDatabase.py:884
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:56
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:306
-#: appTools/ToolDrilling.py:2415 appTools/ToolMilling.py:2087
-msgid "Start Z"
-msgstr "Comience Z"
-
-#: appDatabase.py:185 appDatabase.py:887
-msgid "End Z"
-msgstr "Fin Z"
-
-#: appDatabase.py:189
-msgid "Tool Index."
-msgstr "Índice de herramientas."
-
-#: appDatabase.py:191 appDatabase.py:1126
+#: appDatabase.py:209
 msgid ""
 "Tool name.\n"
 "This is not used in the app, it's function\n"
@@ -448,11 +284,183 @@ msgstr ""
 "Esto no se usa en la aplicación, es función\n"
 "es servir como una nota para el usuario."
 
-#: appDatabase.py:195 appDatabase.py:1139
+#: appDatabase.py:220 appEditors/AppExcEditor.py:2567
+#: appEditors/AppExcEditor.py:3732 appGUI/ObjectUI.py:666
+#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
+#: appObjects/FlatCAMObj.py:719 appObjects/FlatCAMObj.py:782
+#: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
+#: appTools/ToolDrilling.py:2065 appTools/ToolIsolation.py:3022
+#: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
+#: appTools/ToolMilling.py:1360 appTools/ToolMilling.py:1670
+#: appTools/ToolNCC.py:3885 appTools/ToolPaint.py:2813
+#: appTools/ToolPcbWizard.py:404 appTools/ToolProperties.py:417
+#: appTools/ToolProperties.py:480 appTools/ToolSolderPaste.py:1166
+#: tclCommands/TclCommandDrillcncjob.py:195
+msgid "Diameter"
+msgstr "Diámetro"
+
+#: appDatabase.py:222
 msgid "Tool Diameter."
 msgstr "Diá. de Herram."
 
-#: appDatabase.py:197 appDatabase.py:1275
+#: appDatabase.py:233
+#, fuzzy
+#| msgid "Geo Tolerance"
+msgid "Diameter Tolerance"
+msgstr "Geo Tolerancia"
+
+#: appDatabase.py:235
+msgid ""
+"Tool tolerance. If there is a tool in the targeted tools table with\n"
+"the value within the limits then this tool from DB will be used."
+msgstr ""
+
+#: appDatabase.py:241
+#, fuzzy
+#| msgid "in"
+msgid "Min"
+msgstr "in"
+
+#: appDatabase.py:243
+msgid "Set the tool tolerance minimum."
+msgstr ""
+
+#: appDatabase.py:255
+msgid "Max"
+msgstr ""
+
+#: appDatabase.py:257
+msgid "Set the tool tolerance maximum."
+msgstr ""
+
+#: appDatabase.py:269 appDatabase.py:587
+#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:46
+#: appTools/ToolMilling.py:1738 appTools/ToolNCC.py:4050
+msgid "Operation"
+msgstr "Operación"
+
+#: appDatabase.py:271
+msgid "The kind of Application Tool where this tool is to be used."
+msgstr ""
+
+#: appDatabase.py:275 appDatabase.py:1778 appDatabase.py:1814
+#: appDatabase.py:1877 appDatabase.py:2162 appGUI/MainGUI.py:1299
+msgid "General"
+msgstr "General"
+
+#: appDatabase.py:275 appDatabase.py:1836 appDatabase.py:2165
+#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:55
+#: appTools/ToolMilling.py:1747
+msgid "Milling"
+msgstr "Fresado"
+
+#: appDatabase.py:275 appDatabase.py:1840 appDatabase.py:2170
+#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:54
+#: appTools/ToolMilling.py:1746
+msgid "Drilling"
+msgstr "Perforación"
+
+#: appDatabase.py:275 appDatabase.py:597 appDatabase.py:1844
+#: appDatabase.py:2178 appTools/ToolIsolation.py:1101
+#: appTools/ToolIsolation.py:2576 appTools/ToolNCC.py:4060
+msgid "Isolation"
+msgstr "Aislamiento"
+
+#: appDatabase.py:275 appDatabase.py:1850 appDatabase.py:2186
+#: appEditors/AppGeoEditor.py:528 appGUI/MainGUI.py:1506
+#: appTools/ToolPaint.py:738 appTools/ToolPaint.py:2619
+msgid "Paint"
+msgstr "Pintar"
+
+#: appDatabase.py:275 appDatabase.py:1856 appDatabase.py:2194
+#: appTools/ToolNCC.py:1046 appTools/ToolNCC.py:3708
+#, fuzzy
+#| msgid "CCW"
+msgid "NCC"
+msgstr "CCW"
+
+#: appDatabase.py:275 appDatabase.py:1862 appTools/ToolCutOut.py:328
+#: appTools/ToolCutOut.py:465
+#, fuzzy
+#| msgid "Cutout PCB"
+msgid "Cutout"
+msgstr "PCB de corte"
+
+#: appDatabase.py:291
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:218
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:418
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:303
+#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:284
+#: appTools/ToolIsolation.py:3425 appTools/ToolNCC.py:4343
+#: appTools/ToolPaint.py:3163
+msgid "Shape"
+msgstr "Forma"
+
+#: appDatabase.py:293
+msgid ""
+"Tool Shape. \n"
+"Can be:\n"
+"C1 ... C4 = circular tool with x flutes\n"
+"B = ball tip milling tool\n"
+"V = v-shape milling tool"
+msgstr ""
+"Forma de herramienta\n"
+"Puede ser:\n"
+"C1 ... C4 = herramienta circular con x flautas\n"
+"B = herramienta de fresado de punta esférica\n"
+"V = herramienta de fresado en forma de V"
+
+#: appDatabase.py:307
+msgid "V-Dia"
+msgstr "V-Dia"
+
+#: appDatabase.py:309
+msgid ""
+"V-Dia.\n"
+"Diameter of the tip for V-Shape Tools."
+msgstr ""
+"V-Dia.\n"
+"Diámetro de la punta para herramientas en forma de V."
+
+#: appDatabase.py:321
+msgid "V-Angle"
+msgstr "V-Ángulo"
+
+#: appDatabase.py:323
+msgid ""
+"V-Agle.\n"
+"Angle at the tip for the V-Shape Tools."
+msgstr ""
+"Ángulo en V.\n"
+"Ángulo en la punta para las herramientas en forma de V."
+
+#: appDatabase.py:340 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:70
+#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:53
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:60
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:70
+msgid "Tool Type"
+msgstr "Tipo de herram"
+
+#: appDatabase.py:342
+msgid ""
+"Tool Type.\n"
+"Can be:\n"
+"Iso = isolation cut\n"
+"Rough = rough cut, low feedrate, multiple passes\n"
+"Finish = finishing cut, high feedrate"
+msgstr ""
+"Tipo de herramienta\n"
+"Puede ser:\n"
+"Iso = corte de aislamiento\n"
+"Áspero = corte rugoso, baja velocidad de avance, múltiples pasadas\n"
+"Acabado = corte de acabado, alto avance"
+
+#: appDatabase.py:356 appGUI/ObjectUI.py:1057
+msgid "Tool Offset"
+msgstr "Offset de Herram"
+
+#: appDatabase.py:358
 msgid ""
 "Tool Offset.\n"
 "Can be of a few types:\n"
@@ -469,7 +477,11 @@ msgstr ""
 "Personalizado = desplazamiento personalizado utilizando el valor de "
 "desplazamiento personalizado"
 
-#: appDatabase.py:204 appDatabase.py:1292
+#: appDatabase.py:373
+msgid "Custom Offset"
+msgstr "Desplazamiento personalizado"
+
+#: appDatabase.py:375
 msgid ""
 "Custom Offset.\n"
 "A value to be used as offset from the current path."
@@ -477,35 +489,22 @@ msgstr ""
 "Desplazamiento personalizado.\n"
 "Un valor que se utilizará como desplazamiento de la ruta actual."
 
-#: appDatabase.py:207 appDatabase.py:1259
-msgid ""
-"Tool Type.\n"
-"Can be:\n"
-"Iso = isolation cut\n"
-"Rough = rough cut, low feedrate, multiple passes\n"
-"Finish = finishing cut, high feedrate"
-msgstr ""
-"Tipo de herramienta\n"
-"Puede ser:\n"
-"Iso = corte de aislamiento\n"
-"Áspero = corte rugoso, baja velocidad de avance, múltiples pasadas\n"
-"Acabado = corte de acabado, alto avance"
+#: appDatabase.py:392 appDatabase.py:917 appEditors/appGCodeEditor.py:703
+#: appGUI/ObjectUI.py:1213 appGUI/ObjectUI.py:2019
+#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:49
+#: appGUI/preferences/tools/ToolsCalculatorsPrefGroupUI.py:78
+#: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:58
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:57
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:115
+#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:98
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:103
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:111
+#: appTools/ToolCalculators.py:240 appTools/ToolCutOut.py:2104
+#: appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
+msgid "Cut Z"
+msgstr "Corte Z"
 
-#: appDatabase.py:213 appDatabase.py:1210
-msgid ""
-"Tool Shape. \n"
-"Can be:\n"
-"C1 ... C4 = circular tool with x flutes\n"
-"B = ball tip milling tool\n"
-"V = v-shape milling tool"
-msgstr ""
-"Forma de herramienta\n"
-"Puede ser:\n"
-"C1 ... C4 = herramienta circular con x flautas\n"
-"B = herramienta de fresado de punta esférica\n"
-"V = herramienta de fresado en forma de V"
-
-#: appDatabase.py:219 appDatabase.py:1311
+#: appDatabase.py:394
 msgid ""
 "Cutting Depth.\n"
 "The depth at which to cut into material."
@@ -513,7 +512,11 @@ msgstr ""
 "Profundidad de corte.\n"
 "La profundidad a la cual cortar en material."
 
-#: appDatabase.py:222 appDatabase.py:1325
+#: appDatabase.py:406 appDatabase.py:954
+msgid "MultiDepth"
+msgstr "Profund. Múlti"
+
+#: appDatabase.py:408
 msgid ""
 "Multi Depth.\n"
 "Selecting this will allow cutting in multiple passes,\n"
@@ -523,7 +526,11 @@ msgstr ""
 "Seleccionar esto permitirá cortar en múltiples pasadas,\n"
 "cada pasada agrega una profundidad de parámetro PPP."
 
-#: appDatabase.py:226 appDatabase.py:1338 appDatabase.py:1889
+#: appDatabase.py:419 appDatabase.py:970
+msgid "DPP"
+msgstr "PPP"
+
+#: appDatabase.py:421 appDatabase.py:972
 msgid ""
 "DPP. Depth per Pass.\n"
 "The value used to cut into material on each pass."
@@ -531,23 +538,18 @@ msgstr ""
 "PPP. Profundidad por pase.\n"
 "El valor utilizado para cortar en material en cada pasada."
 
-#: appDatabase.py:229 appDatabase.py:1226
-msgid ""
-"V-Dia.\n"
-"Diameter of the tip for V-Shape Tools."
-msgstr ""
-"V-Dia.\n"
-"Diámetro de la punta para herramientas en forma de V."
+#: appDatabase.py:433 appDatabase.py:986 appGUI/ObjectUI.py:1260
+#: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:198
+#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:102
+#: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:61
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:98
+#: appObjects/FlatCAMGeometry.py:1812 appTools/ToolCalibration.py:769
+#: appTools/ToolDrilling.py:1294 appTools/ToolDrilling.py:2189
+#: appTools/ToolMilling.py:1291 appTools/ToolMilling.py:1839
+msgid "Travel Z"
+msgstr "Viaje Z"
 
-#: appDatabase.py:232 appDatabase.py:1240
-msgid ""
-"V-Agle.\n"
-"Angle at the tip for the V-Shape Tools."
-msgstr ""
-"Ángulo en V.\n"
-"Ángulo en la punta para las herramientas en forma de V."
-
-#: appDatabase.py:235 appDatabase.py:1352
+#: appDatabase.py:435
 msgid ""
 "Clearance Height.\n"
 "Height at which the milling bit will travel between cuts,\n"
@@ -557,83 +559,11 @@ msgstr ""
 "Altura a la que viajará la broca entre cortes,\n"
 "sobre la superficie del material, evitando todos los accesorios."
 
-#: appDatabase.py:239
-msgid ""
-"FR. Feedrate\n"
-"The speed on XY plane used while cutting into material."
-msgstr ""
-"FR. Avance\n"
-"La velocidad en el plano XY utilizada al cortar material."
+#: appDatabase.py:448
+msgid "ExtraCut"
+msgstr "Corte extra"
 
-#: appDatabase.py:242
-msgid ""
-"FR Z. Feedrate Z\n"
-"The speed on Z plane."
-msgstr ""
-"FR Z. Avance Z\n"
-"La velocidad en el plano Z."
-
-#: appDatabase.py:245 appDatabase.py:1433
-msgid ""
-"FR Rapids. Feedrate Rapids\n"
-"Speed used while moving as fast as possible.\n"
-"This is used only by some devices that can't use\n"
-"the G0 g-code command. Mostly 3D printers."
-msgstr ""
-"FR Rapids. Avance rápido\n"
-"Velocidad utilizada mientras se mueve lo más rápido posible.\n"
-"Esto solo lo usan algunos dispositivos que no pueden usar\n"
-"el comando G0 g-code. Mayormente impresoras 3D."
-
-#: appDatabase.py:250 appDatabase.py:1454
-msgid ""
-"Spindle Speed.\n"
-"If it's left empty it will not be used.\n"
-"The speed of the spindle in RPM."
-msgstr ""
-"Velocidad del motor.\n"
-"Si se deja vacío, no se usará.\n"
-"La velocidad del husillo en RPM."
-
-#: appDatabase.py:254 appDatabase.py:1469 appDatabase.py:1986
-#, fuzzy
-#| msgid ""
-#| "Dwell.\n"
-#| "Check this if a delay is needed to allow\n"
-#| "the spindle motor to reach it's set speed."
-msgid ""
-"Dwell.\n"
-"Check this if a delay is needed to allow\n"
-"the spindle motor to reach its set speed."
-msgstr ""
-"Habitar.\n"
-"Marque esto si se necesita un retraso para permitir\n"
-"el motor del husillo para alcanzar su velocidad establecida."
-
-#: appDatabase.py:258 appDatabase.py:1482 appDatabase.py:1999
-#, fuzzy
-#| msgid ""
-#| "Dwell Time.\n"
-#| "A delay used to allow the motor spindle reach it's set speed."
-msgid ""
-"Dwell Time.\n"
-"A delay used to allow the motor spindle reach its set speed."
-msgstr ""
-"Tiempo de permanencia.\n"
-"Un retraso utilizado para permitir que el eje del motor alcance su velocidad "
-"establecida."
-
-#: appDatabase.py:261
-msgid ""
-"Preprocessor.\n"
-"A selection of files that will alter the generated G-code\n"
-"to fit for a number of use cases."
-msgstr ""
-"Preprocesador\n"
-"Una selección de archivos que alterarán el código G generado\n"
-"para adaptarse a una serie de casos de uso."
-
-#: appDatabase.py:265 appDatabase.py:1367
+#: appDatabase.py:450
 msgid ""
 "Extra Cut.\n"
 "If checked, after a isolation is finished an extra cut\n"
@@ -647,7 +577,11 @@ msgstr ""
 "como que este punto está cubierto por este corte adicional para\n"
 "Garantizar un aislamiento completo."
 
-#: appDatabase.py:271 appDatabase.py:1382
+#: appDatabase.py:463
+msgid "E-Cut Length"
+msgstr "Longitud de Corte extra"
+
+#: appDatabase.py:465
 msgid ""
 "Extra Cut length.\n"
 "If checked, after a isolation is finished an extra cut\n"
@@ -663,307 +597,14 @@ msgstr ""
 "Garantizar un aislamiento completo. Esta es la longitud de\n"
 "El corte extra."
 
-#: appDatabase.py:278
-msgid ""
-"Toolchange.\n"
-"It will create a toolchange event.\n"
-"The kind of toolchange is determined by\n"
-"the preprocessor file."
-msgstr ""
-"Cambio de herramienta.\n"
-"Creará un evento de cambio de herramienta.\n"
-"El tipo de cambio de herramienta está determinado por\n"
-"El archivo del preprocesador."
-
-#: appDatabase.py:283
-msgid ""
-"Toolchange XY.\n"
-"A set of coordinates in the format (x, y).\n"
-"Will determine the cartesian position of the point\n"
-"where the tool change event take place."
-msgstr ""
-"Cambio de herramienta XY.\n"
-"Un conjunto de coordenadas en el formato (x, y).\n"
-"Determinará la posición cartesiana del punto.\n"
-"donde tiene lugar el evento de cambio de herramienta."
-
-#: appDatabase.py:288
-msgid ""
-"Toolchange Z.\n"
-"The position on Z plane where the tool change event take place."
-msgstr ""
-"Cambio de herramientas Z.\n"
-"La posición en el plano Z donde tiene lugar el evento de cambio de "
-"herramienta."
-
-#: appDatabase.py:291
-msgid ""
-"Start Z.\n"
-"If it's left empty it will not be used.\n"
-"A position on Z plane to move immediately after job start."
-msgstr ""
-"Z inicio.\n"
-"Si se deja vacío, no se usará.\n"
-"Una posición en el plano Z para moverse inmediatamente después del inicio "
-"del trabajo."
-
-#: appDatabase.py:295
-msgid ""
-"End Z.\n"
-"A position on Z plane to move immediately after job stop."
-msgstr ""
-"Z final.\n"
-"Una posición en el plano Z para moverse inmediatamente después de la "
-"detención del trabajo."
-
-#: appDatabase.py:307 appDatabase.py:684 appDatabase.py:718 appDatabase.py:2647
-#: appDatabase.py:3017 appDatabase.py:3051 appTools/ToolCutOut.py:294
-#: appTools/ToolDrilling.py:895 appTools/ToolIsolation.py:1067
-#: appTools/ToolNCC.py:1011 appTools/ToolPaint.py:704
-msgid "Could not load Tools DB file."
-msgstr "No se pudo cargar el archivo de herramientas DB."
-
-#: appDatabase.py:315 appDatabase.py:726 appDatabase.py:2655
-#: appDatabase.py:3059 appTools/ToolCutOut.py:305 appTools/ToolDrilling.py:903
-#: appTools/ToolIsolation.py:1078 appTools/ToolNCC.py:1022
-#: appTools/ToolPaint.py:715
-msgid "Failed to parse Tools DB file."
-msgstr "Error al analizar el archivo DB de Herramientas."
-
-#: appDatabase.py:318 appDatabase.py:729 appDatabase.py:2658
-#: appDatabase.py:3062
-msgid "Loaded Tools DB from"
-msgstr "BD de herramientas cargadas de"
-
-#: appDatabase.py:324 appDatabase.py:2562
-msgid "Add to DB"
-msgstr "Añadir a DB"
-
-#: appDatabase.py:326 appDatabase.py:2565
-msgid "Copy from DB"
-msgstr "Copiar de DB"
-
-#: appDatabase.py:328 appDatabase.py:2568
-msgid "Delete from DB"
-msgstr "Eliminar de la DB"
-
-#: appDatabase.py:605 appDatabase.py:2917
-msgid "Tool added to DB."
-msgstr "Herramienta agregada a la base de datos."
-
-#: appDatabase.py:626 appDatabase.py:2950
-msgid "Tool copied from Tools DB."
-msgstr "Herramienta copiada de Herramientas DB."
-
-#: appDatabase.py:644 appDatabase.py:2977
-msgid "Tool removed from Tools DB."
-msgstr "Herramienta eliminada de Herramientas DB."
-
-#: appDatabase.py:655 appDatabase.py:2988
-msgid "Export Tools Database"
-msgstr "Exportar la DB de herramientas"
-
-#: appDatabase.py:658 appDatabase.py:2991
-msgid "Tools_Database"
-msgstr "DB de herramientasram"
-
-#: appDatabase.py:695 appDatabase.py:698 appDatabase.py:750 appDatabase.py:3028
-#: appDatabase.py:3031 appDatabase.py:3126
-msgid "Failed to write Tools DB to file."
-msgstr "Error al escribir Herramientas DB en el archivo."
-
-#: appDatabase.py:701 appDatabase.py:3034
-msgid "Exported Tools DB to"
-msgstr "Exportó la base de datos de herramientas a"
-
-#: appDatabase.py:708 appDatabase.py:3041
-msgid "Import FlatCAM Tools DB"
-msgstr "Importe la base de datos de herramientas FlatCAM"
-
-#: appDatabase.py:740 appDatabase.py:915 appDatabase.py:3073
-#: appDatabase.py:3464 appObjects/FlatCAMGeometry.py:1089
-#: appTools/ToolCutOut.py:484 appTools/ToolCutOut.py:525
-#: appTools/ToolIsolation.py:2583 appTools/ToolIsolation.py:2667
-#: appTools/ToolNCC.py:3715 appTools/ToolNCC.py:3795 appTools/ToolPaint.py:2626
-#: appTools/ToolPaint.py:2715 app_Main.py:5676 app_Main.py:5718
-#: app_Main.py:5749 app_Main.py:5769 app_Main.py:5779
-msgid "Tools Database"
-msgstr "Base de Datos de Herramientas"
-
-#: appDatabase.py:754 appDatabase.py:3130
-msgid "Saved Tools DB."
-msgstr "Guardado el DB de herramientas."
-
-#: appDatabase.py:901 appDatabase.py:3447
-msgid "No Tool/row selected in the Tools Database table"
-msgstr ""
-"No se seleccionó ninguna herramienta / fila en la tabla Base de datos de "
-"herramientas"
-
-#: appDatabase.py:919 appDatabase.py:3468
-msgid "Cancelled adding tool from DB."
-msgstr "Se canceló la herramienta de agregar de la DB."
-
-#: appDatabase.py:995
-#, fuzzy
-#| msgid "NCC Tool Options"
-msgid "Tool Description"
-msgstr "Opc. de herra. NCC"
-
-#: appDatabase.py:1008
-#, fuzzy
-#| msgid "Milling Diameter"
-msgid "Milling Parameters"
-msgstr "Diá. de fresado"
-
-#: appDatabase.py:1021
-msgid "NCC Parameters"
-msgstr "NCC Parameters"
-
-#: appDatabase.py:1034
-msgid "Paint Parameters"
-msgstr "Parámetros de Pintura"
-
-#: appDatabase.py:1047
-msgid "Isolation Parameters"
-msgstr "Parámetros de Aislamiento"
-
-#: appDatabase.py:1060
-#, fuzzy
-#| msgid "Film Parameters"
-msgid "Drilling Parameters"
-msgstr "Parámetros de la película"
-
-#: appDatabase.py:1073
-#, fuzzy
-#| msgid "Slot Parameters"
-msgid "Cutout Parameters"
-msgstr "Parámetros de ranura"
-
-#: appDatabase.py:1124 appEditors/AppGeoEditor.py:3287 appGUI/ObjectUI.py:219
-#: appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:894 appGUI/ObjectUI.py:1876
-#: appGUI/ObjectUI.py:2693 appGUI/ObjectUI.py:2760
-#: appTools/ToolCalibration.py:929 appTools/ToolFiducials.py:681
-msgid "Name"
-msgstr "Nombre"
-
-#: appDatabase.py:1137 appEditors/AppExcEditor.py:2567
-#: appEditors/AppExcEditor.py:3732 appGUI/ObjectUI.py:666
-#: appObjects/FlatCAMExcellon.py:902 appObjects/FlatCAMExcellon.py:1002
-#: appObjects/FlatCAMObj.py:719 appObjects/FlatCAMObj.py:782
-#: appTools/ToolDrilling.py:1762 appTools/ToolDrilling.py:1827
-#: appTools/ToolDrilling.py:2065 appTools/ToolIsolation.py:3022
-#: appTools/ToolMilling.py:1071 appTools/ToolMilling.py:1175
-#: appTools/ToolMilling.py:1360 appTools/ToolMilling.py:1670
-#: appTools/ToolNCC.py:3885 appTools/ToolPaint.py:2813
-#: appTools/ToolPcbWizard.py:404 appTools/ToolProperties.py:417
-#: appTools/ToolProperties.py:480 appTools/ToolSolderPaste.py:1166
-#: tclCommands/TclCommandDrillcncjob.py:195
-msgid "Diameter"
-msgstr "Diámetro"
-
-#: appDatabase.py:1150
-#, fuzzy
-#| msgid "Geo Tolerance"
-msgid "Diameter Tolerance"
-msgstr "Geo Tolerancia"
-
-#: appDatabase.py:1152
-msgid ""
-"Tool tolerance. If there is a tool in the targeted tools table with\n"
-"the value within the limits then this tool from DB will be used."
-msgstr ""
-
-#: appDatabase.py:1158
-#, fuzzy
-#| msgid "in"
-msgid "Min"
-msgstr "in"
-
-#: appDatabase.py:1160
-msgid "Set the tool tolerance minimum."
-msgstr ""
-
-#: appDatabase.py:1172
-msgid "Max"
-msgstr ""
-
-#: appDatabase.py:1174
-msgid "Set the tool tolerance maximum."
-msgstr ""
-
-#: appDatabase.py:1186 appDatabase.py:1504
-#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:46
-#: appTools/ToolMilling.py:1738 appTools/ToolNCC.py:4050
-msgid "Operation"
-msgstr "Operación"
-
-#: appDatabase.py:1188
-msgid "The kind of Application Tool where this tool is to be used."
-msgstr ""
-
-#: appDatabase.py:1192 appDatabase.py:2695 appDatabase.py:2731
-#: appDatabase.py:2794 appDatabase.py:3079 appGUI/MainGUI.py:1299
-msgid "General"
-msgstr "General"
-
-#: appDatabase.py:1192 appDatabase.py:2753 appDatabase.py:3082
-#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:55
-#: appTools/ToolMilling.py:1747
-msgid "Milling"
-msgstr "Fresado"
-
-#: appDatabase.py:1192 appDatabase.py:2757 appDatabase.py:3087
-#: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:54
-#: appTools/ToolMilling.py:1746
-msgid "Drilling"
-msgstr "Perforación"
-
-#: appDatabase.py:1192 appDatabase.py:1514 appDatabase.py:2761
-#: appDatabase.py:3095 appTools/ToolIsolation.py:1101
-#: appTools/ToolIsolation.py:2576 appTools/ToolNCC.py:4060
-msgid "Isolation"
-msgstr "Aislamiento"
-
-#: appDatabase.py:1192 appDatabase.py:2767 appDatabase.py:3103
-#: appEditors/AppGeoEditor.py:528 appGUI/MainGUI.py:1506
-#: appTools/ToolPaint.py:738 appTools/ToolPaint.py:2619
-msgid "Paint"
-msgstr "Pintar"
-
-#: appDatabase.py:1192 appDatabase.py:2773 appDatabase.py:3111
-#: appTools/ToolNCC.py:1046 appTools/ToolNCC.py:3708
-#, fuzzy
-#| msgid "CCW"
-msgid "NCC"
-msgstr "CCW"
-
-#: appDatabase.py:1192 appDatabase.py:2779 appTools/ToolCutOut.py:328
-#: appTools/ToolCutOut.py:465
-#, fuzzy
-#| msgid "Cutout PCB"
-msgid "Cutout"
-msgstr "PCB de corte"
-
-#: appDatabase.py:1208
-#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:218
-#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:418
-#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:303
-#: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:322
-#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:284
-#: appTools/ToolIsolation.py:3425 appTools/ToolNCC.py:4343
-#: appTools/ToolPaint.py:3163
-msgid "Shape"
-msgstr "Forma"
-
-#: appDatabase.py:1403 appGUI/ObjectUI.py:1279
+#: appDatabase.py:486 appGUI/ObjectUI.py:1279
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:186
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:148
 #: appTools/ToolMilling.py:1860 appTools/ToolSolderPaste.py:1325
 msgid "Feedrate X-Y"
 msgstr "Avance X-Y"
 
-#: appDatabase.py:1405
+#: appDatabase.py:488
 msgid ""
 "Feedrate X-Y. Feedrate\n"
 "The speed on XY plane used while cutting into material."
@@ -971,7 +612,7 @@ msgstr ""
 "Avance X-Y. Avance\n"
 "La velocidad en el plano XY utilizada mientras se corta en material."
 
-#: appDatabase.py:1417 appDatabase.py:1929 appGUI/ObjectUI.py:1293
+#: appDatabase.py:500 appDatabase.py:1012 appGUI/ObjectUI.py:1293
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:201
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:171
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:161
@@ -980,7 +621,7 @@ msgstr ""
 msgid "Feedrate Z"
 msgstr "Avance Z"
 
-#: appDatabase.py:1419
+#: appDatabase.py:502
 msgid ""
 "Feedrate Z\n"
 "The speed on Z plane."
@@ -988,7 +629,74 @@ msgstr ""
 "Avance Z\n"
 "La velocidad en el plano Z."
 
-#: appDatabase.py:1506 appTools/ToolNCC.py:4052
+#: appDatabase.py:514
+msgid "FR Rapids"
+msgstr "Avance rápido"
+
+#: appDatabase.py:516
+msgid ""
+"FR Rapids. Feedrate Rapids\n"
+"Speed used while moving as fast as possible.\n"
+"This is used only by some devices that can't use\n"
+"the G0 g-code command. Mostly 3D printers."
+msgstr ""
+"FR Rapids. Avance rápido\n"
+"Velocidad utilizada mientras se mueve lo más rápido posible.\n"
+"Esto solo lo usan algunos dispositivos que no pueden usar\n"
+"el comando G0 g-code. Mayormente impresoras 3D."
+
+#: appDatabase.py:535 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:186
+msgid "Spindle Speed"
+msgstr "Eje de velocidad"
+
+#: appDatabase.py:537
+msgid ""
+"Spindle Speed.\n"
+"If it's left empty it will not be used.\n"
+"The speed of the spindle in RPM."
+msgstr ""
+"Velocidad del motor.\n"
+"Si se deja vacío, no se usará.\n"
+"La velocidad del husillo en RPM."
+
+#: appDatabase.py:550 appDatabase.py:1067 appGUI/ObjectUI.py:1367
+#: appTools/ToolDrilling.py:2264 appTools/ToolMilling.py:1957
+msgid "Dwell"
+msgstr "Habitar"
+
+#: appDatabase.py:552 appDatabase.py:1069
+#, fuzzy
+#| msgid ""
+#| "Dwell.\n"
+#| "Check this if a delay is needed to allow\n"
+#| "the spindle motor to reach it's set speed."
+msgid ""
+"Dwell.\n"
+"Check this if a delay is needed to allow\n"
+"the spindle motor to reach its set speed."
+msgstr ""
+"Habitar.\n"
+"Marque esto si se necesita un retraso para permitir\n"
+"el motor del husillo para alcanzar su velocidad establecida."
+
+#: appDatabase.py:563 appDatabase.py:1080
+msgid "Dwelltime"
+msgstr "Tiempo de permanencia"
+
+#: appDatabase.py:565 appDatabase.py:1082
+#, fuzzy
+#| msgid ""
+#| "Dwell Time.\n"
+#| "A delay used to allow the motor spindle reach it's set speed."
+msgid ""
+"Dwell Time.\n"
+"A delay used to allow the motor spindle reach its set speed."
+msgstr ""
+"Tiempo de permanencia.\n"
+"Un retraso utilizado para permitir que el eje del motor alcance su velocidad "
+"establecida."
+
+#: appDatabase.py:589 appTools/ToolNCC.py:4052
 msgid ""
 "The 'Operation' can be:\n"
 "- Isolation -> will ensure that the non-copper clearing is always complete.\n"
@@ -1000,12 +708,12 @@ msgstr ""
 "Si no tiene éxito, la limpieza sin cobre también fallará.\n"
 "- Borrar -> la limpieza regular sin cobre."
 
-#: appDatabase.py:1513 appEditors/AppGerberEditor.py:2749
+#: appDatabase.py:596 appEditors/AppGerberEditor.py:2749
 #: appGUI/GUIElements.py:3021 appTools/ToolNCC.py:4059
 msgid "Clear"
 msgstr "Limpiar"
 
-#: appDatabase.py:1522 appDatabase.py:1768
+#: appDatabase.py:605 appDatabase.py:851
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:62
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:56
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:182
@@ -1015,8 +723,8 @@ msgstr "Limpiar"
 msgid "Milling Type"
 msgstr "Tipo de fresado"
 
-#: appDatabase.py:1524 appDatabase.py:1532 appDatabase.py:1770
-#: appDatabase.py:1778 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:184
+#: appDatabase.py:607 appDatabase.py:615 appDatabase.py:853 appDatabase.py:861
+#: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:184
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:192
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:139
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:147
@@ -1032,7 +740,7 @@ msgstr ""
 "herramientas\n"
 "- convencional / útil cuando no hay compensación de reacción"
 
-#: appDatabase.py:1529 appDatabase.py:1775
+#: appDatabase.py:612 appDatabase.py:858
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:62
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:189
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:144
@@ -1040,7 +748,7 @@ msgstr ""
 msgid "Climb"
 msgstr "Subida"
 
-#: appDatabase.py:1530 appDatabase.py:1776
+#: appDatabase.py:613 appDatabase.py:859
 #: appGUI/preferences/geometry/GeometryEditorPrefGroupUI.py:63
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:190
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:145
@@ -1048,8 +756,8 @@ msgstr "Subida"
 msgid "Conventional"
 msgstr "Convencional"
 
-#: appDatabase.py:1542 appDatabase.py:1651 appDatabase.py:1753
-#: appDatabase.py:2027 appEditors/AppGeoEditor.py:450 appGUI/ObjectUI.py:1677
+#: appDatabase.py:625 appDatabase.py:734 appDatabase.py:836 appDatabase.py:1110
+#: appEditors/AppGeoEditor.py:450 appGUI/ObjectUI.py:1677
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:250
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:167
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:182
@@ -1059,7 +767,7 @@ msgstr "Convencional"
 msgid "Overlap"
 msgstr "Superposición"
 
-#: appDatabase.py:1544 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:184
+#: appDatabase.py:627 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:184
 #: appTools/ToolNCC.py:4093
 msgid ""
 "How much (percentage) of the tool width to overlap each tool pass.\n"
@@ -1079,7 +787,7 @@ msgstr ""
 "Valores más altos = procesamiento lento y ejecución lenta en CNC\n"
 "debido a demasiados caminos."
 
-#: appDatabase.py:1563 appDatabase.py:2071 appEditors/AppGeoEditor.py:470
+#: appDatabase.py:646 appDatabase.py:1154 appEditors/AppGeoEditor.py:470
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:72
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:229
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:59
@@ -1089,7 +797,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:181
-#: appTools/ToolCopperThieving.py:1204 appTools/ToolCopperThieving.py:1455
+#: appTools/ToolCopperThieving.py:1210 appTools/ToolCopperThieving.py:1461
 #: appTools/ToolCorners.py:411 appTools/ToolCutOut.py:2157
 #: appTools/ToolFiducials.py:786 appTools/ToolInvertGerber.py:234
 #: appTools/ToolInvertGerber.py:242 appTools/ToolNCC.py:4135
@@ -1097,19 +805,18 @@ msgstr ""
 msgid "Margin"
 msgstr "Margen"
 
-#: appDatabase.py:1565
-#: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:74
+#: appDatabase.py:648 appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:74
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:61
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:125
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:68
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:204
-#: appTools/ToolCopperThieving.py:1206 appTools/ToolCorners.py:413
+#: appTools/ToolCopperThieving.py:1212 appTools/ToolCorners.py:413
 #: appTools/ToolFiducials.py:788 appTools/ToolNCC.py:4137
 #: appTools/ToolNCC.py:4240
 msgid "Bounding box margin."
 msgstr "Margen de cuadro delimitador."
 
-#: appDatabase.py:1576 appDatabase.py:1687 appEditors/AppGeoEditor.py:484
+#: appDatabase.py:659 appDatabase.py:770 appEditors/AppGeoEditor.py:484
 #: appGUI/ObjectUI.py:1692 appGUI/ObjectUI.py:2184
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:85
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:105
@@ -1117,11 +824,11 @@ msgstr "Margen de cuadro delimitador."
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:215
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:196
 #: appTools/ToolExtractDrills.py:520 appTools/ToolNCC.py:4112
-#: appTools/ToolPaint.py:2991 appTools/ToolPunchGerber.py:793
+#: appTools/ToolPaint.py:2991 appTools/ToolPunchGerber.py:796
 msgid "Method"
 msgstr "Método"
 
-#: appDatabase.py:1578 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:217
+#: appDatabase.py:661 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:217
 #: appTools/ToolNCC.py:4114
 msgid ""
 "Algorithm for copper clearing:\n"
@@ -1134,7 +841,7 @@ msgstr ""
 "- Basado en semillas: hacia afuera de la semilla.\n"
 "- Basado en líneas: líneas paralelas."
 
-#: appDatabase.py:1586 appDatabase.py:1701 appEditors/AppGeoEditor.py:498
+#: appDatabase.py:669 appDatabase.py:784 appEditors/AppGeoEditor.py:498
 #: appGUI/ObjectUI.py:1702 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215
 #: appTools/ToolNCC.py:1965 appTools/ToolNCC.py:4127 appTools/ToolPaint.py:1456
@@ -1144,7 +851,7 @@ msgstr ""
 msgid "Standard"
 msgstr "Estándar"
 
-#: appDatabase.py:1586 appDatabase.py:1701 appEditors/AppGeoEditor.py:498
+#: appDatabase.py:669 appDatabase.py:784 appEditors/AppGeoEditor.py:498
 #: appEditors/AppGeoEditor.py:568 appEditors/AppGeoEditor.py:5113
 #: appGUI/ObjectUI.py:1702 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215
@@ -1155,7 +862,7 @@ msgstr "Estándar"
 msgid "Seed"
 msgstr "Semilla"
 
-#: appDatabase.py:1586 appDatabase.py:1701 appEditors/AppGeoEditor.py:498
+#: appDatabase.py:669 appDatabase.py:784 appEditors/AppGeoEditor.py:498
 #: appEditors/AppGeoEditor.py:5117 appGUI/ObjectUI.py:1702
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215
@@ -1165,7 +872,7 @@ msgstr "Semilla"
 msgid "Lines"
 msgstr "Líneas"
 
-#: appDatabase.py:1586 appDatabase.py:1701
+#: appDatabase.py:669 appDatabase.py:784
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215
 #: appTools/ToolNCC.py:1998 appTools/ToolNCC.py:4127 appTools/ToolPaint.py:1649
@@ -1173,7 +880,7 @@ msgstr "Líneas"
 msgid "Combo"
 msgstr "Combo"
 
-#: appDatabase.py:1594 appDatabase.py:1712 appEditors/AppGeoEditor.py:505
+#: appDatabase.py:677 appDatabase.py:795 appEditors/AppGeoEditor.py:505
 #: appGUI/ObjectUI.py:2269 appGUI/ObjectUI.py:2292
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:237
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:222
@@ -1182,7 +889,7 @@ msgstr "Combo"
 msgid "Connect"
 msgstr "Conectar"
 
-#: appDatabase.py:1598 appDatabase.py:1715 appEditors/AppGeoEditor.py:507
+#: appDatabase.py:681 appDatabase.py:798 appEditors/AppGeoEditor.py:507
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:239
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:224
 #: appTools/ToolNCC.py:4152 appTools/ToolNCC.py:4253 appTools/ToolPaint.py:3030
@@ -1193,14 +900,14 @@ msgstr ""
 "Dibuja líneas entre el resultado\n"
 "Segmentos para minimizar elevaciones de herramientas."
 
-#: appDatabase.py:1604 appDatabase.py:1719 appEditors/AppGeoEditor.py:515
+#: appDatabase.py:687 appDatabase.py:802 appEditors/AppGeoEditor.py:515
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:246
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:230
 #: appTools/ToolNCC.py:4158 appTools/ToolNCC.py:4259 appTools/ToolPaint.py:3034
 msgid "Contour"
 msgstr "Contorno"
 
-#: appDatabase.py:1608 appDatabase.py:1722 appEditors/AppGeoEditor.py:517
+#: appDatabase.py:691 appDatabase.py:805 appEditors/AppGeoEditor.py:517
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:248
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:232
 #: appTools/ToolNCC.py:4162 appTools/ToolNCC.py:4261 appTools/ToolPaint.py:3037
@@ -1211,7 +918,7 @@ msgstr ""
 "Corta todo el perímetro del polígono.\n"
 "Para recortar los bordes ásperos."
 
-#: appDatabase.py:1614 appDatabase.py:1672 appEditors/AppGeoEditor.py:611
+#: appDatabase.py:697 appDatabase.py:755 appEditors/AppGeoEditor.py:611
 #: appEditors/AppGerberEditor.py:5321 appEditors/appGCodeEditor.py:692
 #: appGUI/ObjectUI.py:143 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:255
@@ -1222,7 +929,7 @@ msgstr ""
 msgid "Offset"
 msgstr "Compensar"
 
-#: appDatabase.py:1618 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:257
+#: appDatabase.py:701 appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:257
 #: appTools/ToolNCC.py:4172 appTools/ToolNCC.py:4269
 msgid ""
 "If used, it will add an offset to the copper features.\n"
@@ -1235,7 +942,7 @@ msgstr ""
 "de las características de cobre.\n"
 "El valor puede estar entre 0 y 10 unidades FlatCAM."
 
-#: appDatabase.py:1653 appEditors/AppGeoEditor.py:452
+#: appDatabase.py:736 appEditors/AppGeoEditor.py:452
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:163
 #: appTools/ToolPaint.py:2957
 msgid ""
@@ -1256,7 +963,7 @@ msgstr ""
 "Valores más altos = procesamiento lento y ejecución lenta en CNC\n"
 "debido a demasiados caminos."
 
-#: appDatabase.py:1674 appEditors/AppGeoEditor.py:472
+#: appDatabase.py:757 appEditors/AppGeoEditor.py:472
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:183
 #: appTools/ToolPaint.py:2978 appTools/ToolPaint.py:3085
 msgid ""
@@ -1268,7 +975,7 @@ msgstr ""
 "los bordes del polígono a\n"
 "ser pintado."
 
-#: appDatabase.py:1689 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:198
+#: appDatabase.py:772 appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:198
 #: appTools/ToolPaint.py:2993
 msgid ""
 "Algorithm for painting:\n"
@@ -1289,7 +996,7 @@ msgstr ""
 "- Combo: en caso de falla, se elegirá un nuevo método de los anteriores\n"
 "en el orden especificado."
 
-#: appDatabase.py:1701 appDatabase.py:1703
+#: appDatabase.py:784 appDatabase.py:786
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215
 #: appTools/ToolPaint.py:154 appTools/ToolPaint.py:159
 #: appTools/ToolPaint.py:1498 appTools/ToolPaint.py:3016
@@ -1297,12 +1004,12 @@ msgstr ""
 msgid "Laser_lines"
 msgstr "Lineas laser"
 
-#: appDatabase.py:1740 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:154
+#: appDatabase.py:823 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:154
 #: appTools/ToolIsolation.py:3176
 msgid "Passes"
 msgstr "Pases"
 
-#: appDatabase.py:1742 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:156
+#: appDatabase.py:825 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:156
 #: appTools/ToolIsolation.py:3178
 msgid ""
 "Width of the isolation gap in\n"
@@ -1311,7 +1018,7 @@ msgstr ""
 "Ancho de la brecha de aislamiento en\n"
 "Número (entero) de anchos de herramienta."
 
-#: appDatabase.py:1755 appGUI/ObjectUI.py:1679
+#: appDatabase.py:838 appGUI/ObjectUI.py:1679
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:169
 #: appTools/ToolIsolation.py:3191
 msgid "How much (percentage) of the tool width to overlap each tool pass."
@@ -1319,13 +1026,13 @@ msgstr ""
 "Cuánto (porcentaje) del ancho de la herramienta para superponer cada pasada "
 "de herramienta."
 
-#: appDatabase.py:1788 appGUI/ObjectUI.py:234
+#: appDatabase.py:871 appGUI/ObjectUI.py:234
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:201
 #: appTools/ToolIsolation.py:3224
 msgid "Follow"
 msgstr "Seguir"
 
-#: appDatabase.py:1790 appDatabase.py:1796 appGUI/ObjectUI.py:235
+#: appDatabase.py:873 appDatabase.py:879 appGUI/ObjectUI.py:235
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:45
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:203
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:209
@@ -1339,12 +1046,12 @@ msgstr ""
 "Esto significa que cortará a través\n"
 "El medio de la traza."
 
-#: appDatabase.py:1805 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:218
+#: appDatabase.py:888 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:218
 #: appTools/ToolIsolation.py:3241
 msgid "Isolation Type"
 msgstr "Tipo de aislamiento"
 
-#: appDatabase.py:1807 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:220
+#: appDatabase.py:890 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:220
 #: appTools/ToolIsolation.py:3243
 msgid ""
 "Choose how the isolation will be executed:\n"
@@ -1365,23 +1072,23 @@ msgstr ""
 "el aislamiento solo se puede hacer cuando hay una abertura\n"
 "dentro del polígono (por ejemplo, el polígono tiene forma de 'rosquilla')."
 
-#: appDatabase.py:1816 appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:72
+#: appDatabase.py:899 appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:229
 #: appTools/ToolIsolation.py:3252
 msgid "Full"
 msgstr "Completo"
 
-#: appDatabase.py:1817 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:230
+#: appDatabase.py:900 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:230
 #: appTools/ToolIsolation.py:3253
 msgid "Ext"
 msgstr "Exterior"
 
-#: appDatabase.py:1818 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:231
+#: appDatabase.py:901 appGUI/preferences/tools/ToolsISOPrefGroupUI.py:231
 #: appTools/ToolIsolation.py:3254
 msgid "Int"
 msgstr "Interior"
 
-#: appDatabase.py:1836 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:59
+#: appDatabase.py:919 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:59
 #: appTools/ToolDrilling.py:2145 appTools/ToolMilling.py:1795
 msgid ""
 "Drill depth (negative)\n"
@@ -1390,12 +1097,12 @@ msgstr ""
 "Profundidad de perforación (negativo)\n"
 "debajo de la superficie de cobre."
 
-#: appDatabase.py:1855 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:283
+#: appDatabase.py:938 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:283
 #: appTools/ToolDrilling.py:2288 appTools/ToolMilling.py:1980
 msgid "Offset Z"
 msgstr "Offset Z"
 
-#: appDatabase.py:1857 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:285
+#: appDatabase.py:940 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:285
 #: appTools/ToolDrilling.py:2290 appTools/ToolMilling.py:1982
 msgid ""
 "Some drill bits (the larger ones) need to drill deeper\n"
@@ -1407,7 +1114,7 @@ msgstr ""
 "la punta.\n"
 "El valor aquí puede compensar el parámetro Z de corte."
 
-#: appDatabase.py:1874 appGUI/ObjectUI.py:1237
+#: appDatabase.py:957 appGUI/ObjectUI.py:1237
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:82
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:80
@@ -1424,7 +1131,7 @@ msgstr ""
 "cortar varias veces hasta que el Corte Z sea\n"
 "alcanzado."
 
-#: appDatabase.py:1896 appGUI/ObjectUI.py:1251
+#: appDatabase.py:979 appGUI/ObjectUI.py:1251
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:92
 #: appTools/ToolCutOut.py:2142 appTools/ToolDrilling.py:2180
@@ -1432,7 +1139,7 @@ msgstr ""
 msgid "Depth of each pass (positive)."
 msgstr "Profundidad de cada pase (positivo)."
 
-#: appDatabase.py:1905 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:100
+#: appDatabase.py:988 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:100
 #: appTools/ToolDrilling.py:2191 appTools/ToolMilling.py:1841
 msgid ""
 "Tool height when travelling\n"
@@ -1441,7 +1148,7 @@ msgstr ""
 "Altura de herramienta al viajar\n"
 "A través del plano XY."
 
-#: appDatabase.py:1931 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:173
+#: appDatabase.py:1014 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:173
 #: appTools/ToolDrilling.py:2212 appTools/ToolMilling.py:1877
 msgid ""
 "Tool speed while drilling\n"
@@ -1454,14 +1161,14 @@ msgstr ""
 "La llamada velocidad de avance 'Plunge'.\n"
 "Esto es para el movimiento lineal G01."
 
-#: appDatabase.py:1946 appGUI/ObjectUI.py:1308
+#: appDatabase.py:1029 appGUI/ObjectUI.py:1308
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:67
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:317
 #: appTools/ToolDrilling.py:2227 appTools/ToolMilling.py:1892
 msgid "Feedrate Rapids"
 msgstr "Rápidos de avance"
 
-#: appDatabase.py:1948 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:319
+#: appDatabase.py:1031 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:319
 #: appTools/ToolDrilling.py:2229 appTools/ToolMilling.py:1894
 msgid ""
 "Tool speed while drilling\n"
@@ -1476,15 +1183,15 @@ msgstr ""
 "Es útil solo para Marlin,\n"
 "Ignorar para cualquier otro caso."
 
-#: appDatabase.py:1969 appGUI/ObjectUI.py:1351
+#: appDatabase.py:1052 appGUI/ObjectUI.py:1351
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:217
-#: appObjects/FlatCAMGeometry.py:1827 appTools/ToolDrilling.py:1310
+#: appObjects/FlatCAMGeometry.py:1828 appTools/ToolDrilling.py:1310
 #: appTools/ToolDrilling.py:2249 appTools/ToolMilling.py:1307
 #: appTools/ToolMilling.py:1942
 msgid "Spindle speed"
 msgstr "Eje de velocidad"
 
-#: appDatabase.py:1971 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:188
+#: appDatabase.py:1054 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:188
 #: appTools/ToolDrilling.py:2251 appTools/ToolMilling.py:1944
 msgid ""
 "Speed of the spindle\n"
@@ -1493,19 +1200,19 @@ msgstr ""
 "Velocidad del husillo\n"
 "en RPM (opcional)"
 
-#: appDatabase.py:2016 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:243
+#: appDatabase.py:1099 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:243
 #: appTools/ToolDrilling.py:2304
 #, fuzzy
 #| msgid "Mill Slots"
 msgid "Drill slots"
 msgstr "Fresar las Ranuras"
 
-#: appDatabase.py:2018 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:245
+#: appDatabase.py:1101 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:245
 #: appTools/ToolDrilling.py:2306
 msgid "If the selected tool has slots then they will be drilled."
 msgstr ""
 
-#: appDatabase.py:2029 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:252
+#: appDatabase.py:1112 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:252
 #: appTools/ToolDrilling.py:2314
 #, fuzzy
 #| msgid "How much (percentage) of the tool width to overlap each tool pass."
@@ -1515,19 +1222,19 @@ msgstr ""
 "Cuánto (porcentaje) del ancho de la herramienta para superponer cada pasada "
 "de herramienta."
 
-#: appDatabase.py:2043 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:264
+#: appDatabase.py:1126 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:264
 #: appTools/ToolDrilling.py:2328
 msgid "Last drill"
 msgstr ""
 
-#: appDatabase.py:2045 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:266
+#: appDatabase.py:1128 appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:266
 #: appTools/ToolDrilling.py:2330
 msgid ""
 "If the slot length is not completely covered by drill holes,\n"
 "add a drill hole on the slot end point."
 msgstr ""
 
-#: appDatabase.py:2073 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
+#: appDatabase.py:1156 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
 #: appTools/ToolCutOut.py:2159
 msgid ""
 "Margin over bounds. A positive value here\n"
@@ -1538,12 +1245,12 @@ msgstr ""
 "hará que el corte de la PCB esté más alejado de\n"
 "el borde real de PCB"
 
-#: appDatabase.py:2085 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:131
+#: appDatabase.py:1168 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:131
 #: appTools/ToolCutOut.py:2167
 msgid "Gap size"
 msgstr "Tamaño de la brecha"
 
-#: appDatabase.py:2087 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:133
+#: appDatabase.py:1170 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:133
 #: appTools/ToolCutOut.py:2169
 msgid ""
 "The size of the bridge gaps in the cutout\n"
@@ -1556,14 +1263,14 @@ msgstr ""
 "el material circundante (el\n"
 "de la cual se corta el PCB)."
 
-#: appDatabase.py:2096 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
+#: appDatabase.py:1179 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
 #: appTools/ToolCutOut.py:2182
 #, fuzzy
 #| msgid "Image type"
 msgid "Gap type"
 msgstr "Tipo de imagen"
 
-#: appDatabase.py:2098 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
+#: appDatabase.py:1181 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
 #: appTools/ToolCutOut.py:2184
 msgid ""
 "The type of gap:\n"
@@ -1573,24 +1280,24 @@ msgid ""
 "- M-Bites -> 'Mouse Bites' - same as 'bridge' but covered with drill holes"
 msgstr ""
 
-#: appDatabase.py:2106 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
+#: appDatabase.py:1189 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
 #: appTools/ToolCutOut.py:2192
 msgid "Bridge"
 msgstr ""
 
-#: appDatabase.py:2107 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:159
+#: appDatabase.py:1190 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:159
 #: appTools/ToolCutOut.py:2193
 msgid "Thin"
 msgstr ""
 
-#: appDatabase.py:2118 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
+#: appDatabase.py:1201 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
 #: appTools/ToolCutOut.py:2203
 #, fuzzy
 #| msgid "MultiDepth"
 msgid "Depth"
 msgstr "Profund. Múlti"
 
-#: appDatabase.py:2120 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
+#: appDatabase.py:1203 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
 #: appTools/ToolCutOut.py:2205
 #, fuzzy
 #| msgid ""
@@ -1603,38 +1310,38 @@ msgstr ""
 "El ancho de las líneas de viaje a ser\n"
 "prestados en la trama."
 
-#: appDatabase.py:2137 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
+#: appDatabase.py:1220 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
 #: appTools/ToolCalculators.py:249 appTools/ToolCutOut.py:2220
 msgid "Tool Diameter"
 msgstr "Diá. de Herram"
 
-#: appDatabase.py:2139 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
+#: appDatabase.py:1222 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
 #: appTools/ToolCutOut.py:2222
 msgid "The drill hole diameter when doing mpuse bites."
 msgstr ""
 
-#: appDatabase.py:2150
+#: appDatabase.py:1233
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:151
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1327 appTools/ToolCopperThieving.py:1367
-#: appTools/ToolCopperThieving.py:1407 appTools/ToolCutOut.py:2232
+#: appTools/ToolCopperThieving.py:1333 appTools/ToolCopperThieving.py:1373
+#: appTools/ToolCopperThieving.py:1413 appTools/ToolCutOut.py:2232
 msgid "Spacing"
 msgstr "Spacing"
 
-#: appDatabase.py:2152 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:200
+#: appDatabase.py:1235 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:200
 #: appTools/ToolCutOut.py:2234
 msgid "The spacing between drill holes when doing mouse bites."
 msgstr ""
 
-#: appDatabase.py:2171 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
+#: appDatabase.py:1254 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
 #: appTools/ToolCutOut.py:2034
 msgid "Convex Shape"
 msgstr "Forma convexa"
 
-#: appDatabase.py:2174 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:235
+#: appDatabase.py:1257 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:235
 #: appTools/ToolCutOut.py:2036 appTools/ToolCutOut.py:2041
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
@@ -1643,12 +1350,12 @@ msgstr ""
 "Crea una forma convexa que rodea toda la PCB.\n"
 "Se usa solo si el tipo de objeto de origen es Gerber."
 
-#: appDatabase.py:2182 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:209
+#: appDatabase.py:1265 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:209
 #: appTools/ToolCutOut.py:2263
 msgid "Gaps"
 msgstr "Brechas"
 
-#: appDatabase.py:2184 appTools/ToolCutOut.py:2265
+#: appDatabase.py:1267 appTools/ToolCutOut.py:2265
 msgid ""
 "Number of gaps used for the Automatic cutout.\n"
 "There can be maximum 8 bridges/gaps.\n"
@@ -1672,19 +1379,60 @@ msgstr ""
 "- 2tb - 2 * arriba + 2 * abajo\n"
 "- 8 - 2 * izquierda + 2 * derecha + 2 * arriba + 2 * abajo"
 
-#: appDatabase.py:2221
+#: appDatabase.py:1304
 msgid "Add Tool in DB"
 msgstr "Agregar herramienta en DB"
 
-#: appDatabase.py:2259
+#: appDatabase.py:1307
+msgid ""
+"Add a new tool in the Tools Database.\n"
+"It will be used in the Geometry UI.\n"
+"You can edit it after it is added."
+msgstr ""
+"Agregue una nueva herramienta en la Base de datos de herramientas.\n"
+"Se utilizará en la interfaz de usuario de geometría.\n"
+"Puede editarlo después de agregarlo."
+
+#: appDatabase.py:1321
+msgid "Delete Tool from DB"
+msgstr "Eliminar herram. de la BD"
+
+#: appDatabase.py:1324
+msgid "Remove a selection of tools in the Tools Database."
+msgstr "Eliminar una selección de herramientas en la DB de herramientas."
+
+#: appDatabase.py:1328
+msgid "Export DB"
+msgstr "Exportar DB"
+
+#: appDatabase.py:1331
+msgid "Save the Tools Database to a custom text file."
+msgstr ""
+"Guarde la base de datos de herramientas en un archivo de texto personalizado."
+
+#: appDatabase.py:1335
+msgid "Import DB"
+msgstr "Importar DB"
+
+#: appDatabase.py:1338
+msgid "Load the Tools Database information's from a custom text file."
+msgstr ""
+"Cargue la información de la DB de herramientas desde un archivo de texto "
+"personalizado."
+
+#: appDatabase.py:1342
 msgid "Save DB"
 msgstr "Salvar DB"
 
-#: appDatabase.py:2262
+#: appDatabase.py:1345
 msgid "Save the Tools Database information's."
 msgstr "Guarde la información de la base de datos de herramientas."
 
-#: appDatabase.py:2268
+#: appDatabase.py:1349
+msgid "Transfer the Tool"
+msgstr "Transfiere la herramienta"
+
+#: appDatabase.py:1351
 msgid ""
 "Insert a new tool in the Tools Table of the\n"
 "object/application tool after selecting a tool\n"
@@ -1694,14 +1442,20 @@ msgstr ""
 "herramienta de objeto / aplicación después de seleccionar una herramienta\n"
 "en la base de datos de herramientas."
 
-#: appDatabase.py:2294 appDatabase.py:2305 appEditors/AppExcEditor.py:4215
+#: appDatabase.py:1364 appGUI/MainGUI.py:1438
+#: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2291
+#: app_Main.py:3386 app_Main.py:4341 app_Main.py:4587 app_Main.py:6895
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: appDatabase.py:1377 appDatabase.py:1388 appEditors/AppExcEditor.py:4215
 #: appEditors/AppExcEditor.py:4226 appEditors/appGCodeEditor.py:775
 #: appEditors/appGCodeEditor.py:786 appGUI/ObjectUI.py:163
 #: appGUI/ObjectUI.py:174 appTool.py:280 appTool.py:291
 #: appTools/ToolAlignObjects.py:516 appTools/ToolAlignObjects.py:527
 #: appTools/ToolCalculators.py:390 appTools/ToolCalculators.py:401
 #: appTools/ToolCalibration.py:1395 appTools/ToolCalibration.py:1406
-#: appTools/ToolCopperThieving.py:1595 appTools/ToolCopperThieving.py:1606
+#: appTools/ToolCopperThieving.py:1601 appTools/ToolCopperThieving.py:1612
 #: appTools/ToolCorners.py:462 appTools/ToolCorners.py:473
 #: appTools/ToolCutOut.py:2437 appTools/ToolCutOut.py:2448
 #: appTools/ToolDblSided.py:956 appTools/ToolDblSided.py:967
@@ -1721,23 +1475,23 @@ msgstr ""
 #: appTools/ToolPaint.py:3267 appTools/ToolPaint.py:3278
 #: appTools/ToolPanelize.py:914 appTools/ToolPanelize.py:925
 #: appTools/ToolPcbWizard.py:488 appTools/ToolPcbWizard.py:499
-#: appTools/ToolPunchGerber.py:1022 appTools/ToolPunchGerber.py:1033
+#: appTools/ToolPunchGerber.py:1025 appTools/ToolPunchGerber.py:1036
 #: appTools/ToolQRCode.py:922 appTools/ToolQRCode.py:933
-#: appTools/ToolRulesCheck.py:1655 appTools/ToolRulesCheck.py:1666
+#: appTools/ToolRulesCheck.py:1657 appTools/ToolRulesCheck.py:1668
 #: appTools/ToolSolderPaste.py:1575 appTools/ToolSolderPaste.py:1586
 #: appTools/ToolSub.py:772 appTools/ToolSub.py:783
 #: appTools/ToolTransform.py:964 appTools/ToolTransform.py:975
 msgid "Edited value is out of range"
 msgstr "El valor editado está fuera de rango"
 
-#: appDatabase.py:2300 appDatabase.py:2307 appEditors/AppExcEditor.py:4221
+#: appDatabase.py:1383 appDatabase.py:1390 appEditors/AppExcEditor.py:4221
 #: appEditors/AppExcEditor.py:4228 appEditors/appGCodeEditor.py:781
 #: appEditors/appGCodeEditor.py:788 appGUI/ObjectUI.py:169
 #: appGUI/ObjectUI.py:176 appTool.py:286 appTool.py:293
 #: appTools/ToolAlignObjects.py:522 appTools/ToolAlignObjects.py:529
 #: appTools/ToolCalculators.py:396 appTools/ToolCalculators.py:403
 #: appTools/ToolCalibration.py:1401 appTools/ToolCalibration.py:1408
-#: appTools/ToolCopperThieving.py:1601 appTools/ToolCopperThieving.py:1608
+#: appTools/ToolCopperThieving.py:1607 appTools/ToolCopperThieving.py:1614
 #: appTools/ToolCorners.py:468 appTools/ToolCorners.py:475
 #: appTools/ToolCutOut.py:2443 appTools/ToolCutOut.py:2450
 #: appTools/ToolDblSided.py:962 appTools/ToolDblSided.py:969
@@ -1757,29 +1511,113 @@ msgstr "El valor editado está fuera de rango"
 #: appTools/ToolPaint.py:3273 appTools/ToolPaint.py:3280
 #: appTools/ToolPanelize.py:920 appTools/ToolPanelize.py:927
 #: appTools/ToolPcbWizard.py:494 appTools/ToolPcbWizard.py:501
-#: appTools/ToolPunchGerber.py:1028 appTools/ToolPunchGerber.py:1035
+#: appTools/ToolPunchGerber.py:1031 appTools/ToolPunchGerber.py:1038
 #: appTools/ToolQRCode.py:928 appTools/ToolQRCode.py:935
-#: appTools/ToolRulesCheck.py:1661 appTools/ToolRulesCheck.py:1668
+#: appTools/ToolRulesCheck.py:1663 appTools/ToolRulesCheck.py:1670
 #: appTools/ToolSolderPaste.py:1581 appTools/ToolSolderPaste.py:1588
 #: appTools/ToolSub.py:778 appTools/ToolSub.py:785
 #: appTools/ToolTransform.py:970 appTools/ToolTransform.py:977
 msgid "Edited value is within limits."
 msgstr "El valor editado está dentro de los límites."
 
-#: appDatabase.py:2573 appTranslation.py:210 app_Main.py:3380 app_Main.py:6889
+#: appDatabase.py:1645
+msgid "Add to DB"
+msgstr "Añadir a DB"
+
+#: appDatabase.py:1648
+msgid "Copy from DB"
+msgstr "Copiar de DB"
+
+#: appDatabase.py:1651
+msgid "Delete from DB"
+msgstr "Eliminar de la DB"
+
+#: appDatabase.py:1656 appTranslation.py:210 app_Main.py:3380 app_Main.py:6889
 msgid "Save changes"
 msgstr "Guardar cambios"
 
-#: appDatabase.py:3290
+#: appDatabase.py:1730 appDatabase.py:2100 appDatabase.py:2134
+#: appTools/ToolCutOut.py:294 appTools/ToolDrilling.py:895
+#: appTools/ToolIsolation.py:1067 appTools/ToolNCC.py:1011
+#: appTools/ToolPaint.py:704
+msgid "Could not load Tools DB file."
+msgstr "No se pudo cargar el archivo de herramientas DB."
+
+#: appDatabase.py:1738 appDatabase.py:2142 appTools/ToolCutOut.py:305
+#: appTools/ToolDrilling.py:903 appTools/ToolIsolation.py:1078
+#: appTools/ToolNCC.py:1022 appTools/ToolPaint.py:715
+msgid "Failed to parse Tools DB file."
+msgstr "Error al analizar el archivo DB de Herramientas."
+
+#: appDatabase.py:1741 appDatabase.py:2145
+msgid "Loaded Tools DB from"
+msgstr "BD de herramientas cargadas de"
+
+#: appDatabase.py:2000
+msgid "Tool added to DB."
+msgstr "Herramienta agregada a la base de datos."
+
+#: appDatabase.py:2033
+msgid "Tool copied from Tools DB."
+msgstr "Herramienta copiada de Herramientas DB."
+
+#: appDatabase.py:2060
+msgid "Tool removed from Tools DB."
+msgstr "Herramienta eliminada de Herramientas DB."
+
+#: appDatabase.py:2071
+msgid "Export Tools Database"
+msgstr "Exportar la DB de herramientas"
+
+#: appDatabase.py:2074
+msgid "Tools_Database"
+msgstr "DB de herramientasram"
+
+#: appDatabase.py:2111 appDatabase.py:2114 appDatabase.py:2209
+msgid "Failed to write Tools DB to file."
+msgstr "Error al escribir Herramientas DB en el archivo."
+
+#: appDatabase.py:2117
+msgid "Exported Tools DB to"
+msgstr "Exportó la base de datos de herramientas a"
+
+#: appDatabase.py:2124
+msgid "Import FlatCAM Tools DB"
+msgstr "Importe la base de datos de herramientas FlatCAM"
+
+#: appDatabase.py:2156 appDatabase.py:2547 appObjects/FlatCAMGeometry.py:1090
+#: appTools/ToolCutOut.py:484 appTools/ToolCutOut.py:525
+#: appTools/ToolIsolation.py:2583 appTools/ToolIsolation.py:2667
+#: appTools/ToolNCC.py:3715 appTools/ToolNCC.py:3795 appTools/ToolPaint.py:2626
+#: appTools/ToolPaint.py:2715 app_Main.py:5676 app_Main.py:5718
+#: app_Main.py:5749 app_Main.py:5769 app_Main.py:5779
+msgid "Tools Database"
+msgstr "Base de Datos de Herramientas"
+
+#: appDatabase.py:2213
+msgid "Saved Tools DB."
+msgstr "Guardado el DB de herramientas."
+
+#: appDatabase.py:2373
 msgid ""
 "To change tool properties select only one tool. Tools currently selected"
 msgstr ""
 
-#: appDatabase.py:3451 appTools/ToolDrilling.py:907
+#: appDatabase.py:2530
+msgid "No Tool/row selected in the Tools Database table"
+msgstr ""
+"No se seleccionó ninguna herramienta / fila en la tabla Base de datos de "
+"herramientas"
+
+#: appDatabase.py:2534 appTools/ToolDrilling.py:907
 #, fuzzy
 #| msgid "Tool Diameter."
 msgid "Tools DB empty."
 msgstr "Diá. de Herram."
+
+#: appDatabase.py:2551
+msgid "Cancelled adding tool from DB."
+msgstr "Se canceló la herramienta de agregar de la DB."
 
 #: appEditors/AppExcEditor.py:51 appEditors/AppExcEditor.py:75
 #: appEditors/AppExcEditor.py:169 appEditors/AppExcEditor.py:386
@@ -1909,9 +1747,9 @@ msgstr "Taladros totales"
 msgid "Total Slots"
 msgstr "Ranuras totales"
 
-#: appEditors/AppExcEditor.py:2003 appObjects/FlatCAMGeometry.py:706
-#: appObjects/FlatCAMGeometry.py:1232 appObjects/FlatCAMGeometry.py:1974
-#: appObjects/FlatCAMGeometry.py:2633 appTools/ToolIsolation.py:1252
+#: appEditors/AppExcEditor.py:2003 appObjects/FlatCAMGeometry.py:707
+#: appObjects/FlatCAMGeometry.py:1233 appObjects/FlatCAMGeometry.py:1975
+#: appObjects/FlatCAMGeometry.py:2634 appTools/ToolIsolation.py:1252
 #: appTools/ToolIsolation.py:1705 appTools/ToolNCC.py:1197
 #: appTools/ToolNCC.py:1334 appTools/ToolPaint.py:889
 #: appTools/ToolPaint.py:1027 appTools/ToolPaint.py:1740
@@ -2032,6 +1870,14 @@ msgstr ""
 "Agregar / Eliminar una herramienta a la lista de herramientas\n"
 "para este objeto Excellon."
 
+#: appEditors/AppExcEditor.py:3765 appGUI/ObjectUI.py:1082
+#: appGUI/ObjectUI.py:1650
+#: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:130
+#: appTools/ToolCutOut.py:2060 appTools/ToolIsolation.py:3091
+#: appTools/ToolNCC.py:3966 appTools/ToolNCC.py:3977 appTools/ToolPaint.py:2882
+msgid "Tool Dia"
+msgstr "Diá. de Herram"
+
 #: appEditors/AppExcEditor.py:3767 appGUI/ObjectUI.py:1084
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:57
 #: appTools/ToolIsolation.py:3093 appTools/ToolNCC.py:3968
@@ -2119,8 +1965,8 @@ msgstr "Lineal"
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:61
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:68
 #: appTools/ToolExtractDrills.py:470 appTools/ToolExtractDrills.py:593
-#: appTools/ToolFiducials.py:834 appTools/ToolPunchGerber.py:743
-#: appTools/ToolPunchGerber.py:883
+#: appTools/ToolFiducials.py:834 appTools/ToolPunchGerber.py:746
+#: appTools/ToolPunchGerber.py:886
 msgid "Circular"
 msgstr "Circular"
 
@@ -2410,8 +2256,8 @@ msgstr "Redondo"
 #: appTools/ToolDrilling.py:2588 appTools/ToolExtractDrills.py:486
 #: appTools/ToolExtractDrills.py:619 appTools/ToolIsolation.py:3430
 #: appTools/ToolMilling.py:2264 appTools/ToolNCC.py:4348
-#: appTools/ToolPaint.py:3168 appTools/ToolPunchGerber.py:759
-#: appTools/ToolPunchGerber.py:909 appTools/ToolQRCode.py:788
+#: appTools/ToolPaint.py:3168 appTools/ToolPunchGerber.py:762
+#: appTools/ToolPunchGerber.py:912 appTools/ToolQRCode.py:788
 msgid "Square"
 msgstr "Cuadrado"
 
@@ -2462,7 +2308,7 @@ msgstr "Font"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:167
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:196
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:43
-#: appTools/ToolCopperThieving.py:1354 appTools/ToolCopperThieving.py:1394
+#: appTools/ToolCopperThieving.py:1360 appTools/ToolCopperThieving.py:1400
 #: appTools/ToolFiducials.py:770
 msgid "Size"
 msgstr "Tamaño"
@@ -2481,13 +2327,14 @@ msgstr "Herramienta de texto"
 
 #: appEditors/AppGeoEditor.py:404 appGUI/MainGUI.py:511 appGUI/MainGUI.py:1245
 #: appGUI/ObjectUI.py:1172 appObjects/FlatCAMExcellon.py:880
-#: appObjects/FlatCAMGeometry.py:950 appTools/ToolDrilling.py:711
+#: appObjects/FlatCAMGeometry.py:951 appTools/ToolDrilling.py:711
 #: appTools/ToolDrilling.py:1033 appTools/ToolDrilling.py:2116
 #: appTools/ToolIsolation.py:697 appTools/ToolIsolation.py:3166
 #: appTools/ToolMilling.py:790 appTools/ToolMilling.py:1046
 #: appTools/ToolMilling.py:1711 appTools/ToolNCC.py:329
 #: appTools/ToolNCC.py:2280 appTools/ToolNCC.py:4040 appTools/ToolPaint.py:304
-#: appTools/ToolPaint.py:2940
+#: appTools/ToolPaint.py:2940 app_Main.py:2047 app_Main.py:2306
+#: app_Main.py:2413
 msgid "Tool"
 msgstr "Herramienta"
 
@@ -2638,7 +2485,7 @@ msgstr "Mínimo"
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
 #: appTools/ToolExtractDrills.py:556 appTools/ToolExtractDrills.py:677
-#: appTools/ToolPunchGerber.py:846 appTools/ToolPunchGerber.py:962
+#: appTools/ToolPunchGerber.py:849 appTools/ToolPunchGerber.py:965
 #: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889
 #: app_Main.py:10137
 msgid "Value"
@@ -3727,9 +3574,10 @@ msgid "Add a new aperture to the aperture list."
 msgstr "Agregar una nueva apertura a la lista de apertura."
 
 #: appEditors/AppGerberEditor.py:2595 appEditors/AppGerberEditor.py:2743
-#: appGUI/MainGUI.py:757 appGUI/MainGUI.py:1093 appGUI/MainGUI.py:1577
-#: appGUI/MainGUI.py:2247 appGUI/MainGUI.py:4683 appGUI/ObjectUI.py:1132
-#: appObjects/FlatCAMGeometry.py:560 appTools/ToolIsolation.py:70
+#: appGUI/MainGUI.py:757 appGUI/MainGUI.py:876 appGUI/MainGUI.py:1093
+#: appGUI/MainGUI.py:1577 appGUI/MainGUI.py:2034 appGUI/MainGUI.py:2247
+#: appGUI/MainGUI.py:4683 appGUI/ObjectUI.py:1132
+#: appObjects/FlatCAMGeometry.py:561 appTools/ToolIsolation.py:70
 #: appTools/ToolIsolation.py:3150 appTools/ToolNCC.py:69
 #: appTools/ToolNCC.py:4024 appTools/ToolPaint.py:143
 #: appTools/ToolPaint.py:2926 appTools/ToolSolderPaste.py:163
@@ -3952,7 +3800,7 @@ msgstr ""
 "Gerber."
 
 #: appEditors/AppGerberEditor.py:4364 appObjects/AppObject.py:164
-#: appObjects/FlatCAMGeometry.py:1916 appParsers/ParseExcellon.py:972
+#: appObjects/FlatCAMGeometry.py:1917 appParsers/ParseExcellon.py:972
 #: appTools/ToolPcbWizard.py:318 app_Main.py:9004 app_Main.py:9064
 #: app_Main.py:9195 app_Main.py:9260 app_Main.py:9816
 msgid "An internal error has occurred. See shell.\n"
@@ -4149,11 +3997,11 @@ msgid "Will run the TCL commands found in the text file, one by one."
 msgstr ""
 "Ejecutará los comandos TCL encontrados en el archivo de texto, uno por uno."
 
-#: appEditors/AppTextEditor.py:224 appEditors/appGCodeEditor.py:602
+#: appEditors/AppTextEditor.py:220 appEditors/appGCodeEditor.py:602
 msgid "Open file"
 msgstr "Abrir documento"
 
-#: appEditors/AppTextEditor.py:255 appEditors/AppTextEditor.py:260
+#: appEditors/AppTextEditor.py:251 appEditors/AppTextEditor.py:256
 #: appObjects/FlatCAMCNCJob.py:1646 appObjects/FlatCAMCNCJob.py:1651
 #: appObjects/FlatCAMCNCJob.py:1836 appObjects/FlatCAMCNCJob.py:1841
 #: appObjects/FlatCAMCNCJob.py:1914 appObjects/FlatCAMCNCJob.py:1919
@@ -4161,17 +4009,17 @@ msgstr "Abrir documento"
 msgid "Export Code ..."
 msgstr "Exportar el código ..."
 
-#: appEditors/AppTextEditor.py:314 appObjects/FlatCAMCNCJob.py:1668
+#: appEditors/AppTextEditor.py:310 appObjects/FlatCAMCNCJob.py:1668
 #: appObjects/FlatCAMCNCJob.py:1858 appObjects/FlatCAMCNCJob.py:2307
 #: appTools/ToolSolderPaste.py:1093
 msgid "No such file or directory"
 msgstr "El fichero o directorio no existe"
 
-#: appEditors/AppTextEditor.py:326 appObjects/FlatCAMCNCJob.py:2321
+#: appEditors/AppTextEditor.py:322 appObjects/FlatCAMCNCJob.py:2321
 msgid "Saved to"
 msgstr "Guardado en"
 
-#: appEditors/AppTextEditor.py:374
+#: appEditors/AppTextEditor.py:370
 #, fuzzy
 #| msgid "Code Editor content copied to clipboard ..."
 msgid "Content copied to clipboard ..."
@@ -4213,7 +4061,7 @@ msgstr "Editor de código"
 #: appEditors/appGCodeEditor.py:692 appEditors/appGCodeEditor.py:703
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009 appGUI/ObjectUI.py:2019
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:138
-#: appTools/ToolCopperThieving.py:1314
+#: appTools/ToolCopperThieving.py:1320
 msgid "Dia"
 msgstr "Dia"
 
@@ -4407,23 +4255,23 @@ msgstr ""
 msgid "Open"
 msgstr "Abierto"
 
-#: appGUI/GUIElements.py:3772
+#: appGUI/GUIElements.py:3772 appGUI/MainGUI.py:123
 msgid "Open Project ..."
 msgstr "Proyecto abierto ...Abierto &Project ..."
 
-#: appGUI/GUIElements.py:3778 appGUI/MainGUI.py:129
+#: appGUI/GUIElements.py:3778
 msgid "Open &Gerber ...\tCtrl+G"
 msgstr "Abierto &Gerber ...\tCtrl+G"
 
-#: appGUI/GUIElements.py:3783 appGUI/MainGUI.py:134
+#: appGUI/GUIElements.py:3783
 msgid "Open &Excellon ...\tCtrl+E"
 msgstr "Abierto &Excellon ...\tCtrl+E"
 
-#: appGUI/GUIElements.py:3788 appGUI/MainGUI.py:139
+#: appGUI/GUIElements.py:3788
 msgid "Open G-&Code ..."
 msgstr "Abierto G-&Code ..."
 
-#: appGUI/GUIElements.py:3798
+#: appGUI/GUIElements.py:3798 appGUI/MainGUI.py:309
 msgid "Exit"
 msgstr "Salida"
 
@@ -4436,16 +4284,18 @@ msgid "File"
 msgstr "Archivo"
 
 #: appGUI/MainGUI.py:84
-msgid "&New Project ...\tCtrl+N"
+#, fuzzy
+#| msgid "&New Project ...\tCtrl+N"
+msgid "New Project ...\tCtrl+N"
 msgstr "&Nuevo proyecto ...\tCtrl+N"
 
 #: appGUI/MainGUI.py:86
 msgid "Will create a new, blank project"
 msgstr "Creará un nuevo proyecto en blanco"
 
-#: appGUI/MainGUI.py:91
-msgid "&New"
-msgstr "&Nuevo"
+#: appGUI/MainGUI.py:91 appGUI/MainGUI.py:1461 appGUI/ObjectUI.py:2342
+msgid "New"
+msgstr "Nueva"
 
 #: appGUI/MainGUI.py:95
 msgid "Geometry\tN"
@@ -4479,9 +4329,23 @@ msgstr "Documento\tD"
 msgid "Will create a new, empty Document Object."
 msgstr "Creará un nuevo objeto de Documento vacío."
 
-#: appGUI/MainGUI.py:123
-msgid "Open &Project ..."
-msgstr "Abierto &Project ..."
+#: appGUI/MainGUI.py:129
+#, fuzzy
+#| msgid "Open &Gerber ...\tCtrl+G"
+msgid "Open Gerber ...\tCtrl+G"
+msgstr "Abierto &Gerber ...\tCtrl+G"
+
+#: appGUI/MainGUI.py:134
+#, fuzzy
+#| msgid "Open &Excellon ...\tCtrl+E"
+msgid "Open Excellon ...\tCtrl+E"
+msgstr "Abierto &Excellon ...\tCtrl+E"
+
+#: appGUI/MainGUI.py:139
+#, fuzzy
+#| msgid "Open G-&Code ..."
+msgid "Open G-Code ..."
+msgstr "Abierto G-&Code ..."
 
 #: appGUI/MainGUI.py:146
 msgid "Open Config ..."
@@ -4500,11 +4364,15 @@ msgid "Save"
 msgstr "Salvar"
 
 #: appGUI/MainGUI.py:160
-msgid "&Save Project ...\tCtrl+S"
+#, fuzzy
+#| msgid "&Save Project ...\tCtrl+S"
+msgid "Save Project ...\tCtrl+S"
 msgstr "Guardar proyecto...\tCtrl+S"
 
 #: appGUI/MainGUI.py:165
-msgid "Save Project &As ...\tCtrl+Shift+S"
+#, fuzzy
+#| msgid "Save Project &As ...\tCtrl+Shift+S"
+msgid "Save Project As ...\tCtrl+Shift+S"
 msgstr "Guardar proyecto como...\tCtrl+Shift+S"
 
 #: appGUI/MainGUI.py:180
@@ -4528,19 +4396,27 @@ msgid "Import"
 msgstr "Importar"
 
 #: appGUI/MainGUI.py:209
-msgid "&SVG as Geometry Object ..."
+#, fuzzy
+#| msgid "&SVG as Geometry Object ..."
+msgid "SVG as Geometry Object ..."
 msgstr "&SVG como objeto de geometría ..."
 
 #: appGUI/MainGUI.py:212
-msgid "&SVG as Gerber Object ..."
+#, fuzzy
+#| msgid "&SVG as Gerber Object ..."
+msgid "SVG as Gerber Object ..."
 msgstr "&SVG como objeto de Gerber ..."
 
 #: appGUI/MainGUI.py:217
-msgid "&DXF as Geometry Object ..."
+#, fuzzy
+#| msgid "&DXF as Geometry Object ..."
+msgid "DXF as Geometry Object ..."
 msgstr "&DXF como objeto de geometría ..."
 
 #: appGUI/MainGUI.py:220
-msgid "&DXF as Gerber Object ..."
+#, fuzzy
+#| msgid "&DXF as Gerber Object ..."
+msgid "DXF as Gerber Object ..."
 msgstr "&DXF como objeto de Gerber ..."
 
 #: appGUI/MainGUI.py:224
@@ -4552,7 +4428,9 @@ msgid "Export"
 msgstr "Exportar"
 
 #: appGUI/MainGUI.py:234
-msgid "Export &SVG ..."
+#, fuzzy
+#| msgid "Export &SVG ..."
+msgid "Export SVG ..."
 msgstr "Exportar &SVG ..."
 
 #: appGUI/MainGUI.py:238
@@ -4560,7 +4438,9 @@ msgid "Export DXF ..."
 msgstr "Exportar DXF ..."
 
 #: appGUI/MainGUI.py:244
-msgid "Export &PNG ..."
+#, fuzzy
+#| msgid "Export &PNG ..."
+msgid "Export PNG ..."
 msgstr "Exportar &PNG ..."
 
 #: appGUI/MainGUI.py:246
@@ -4574,7 +4454,9 @@ msgstr ""
 "Información actualmente en FlatCAM Plot Area."
 
 #: appGUI/MainGUI.py:255
-msgid "Export &Excellon ..."
+#, fuzzy
+#| msgid "Export &Excellon ..."
+msgid "Export Excellon ..."
 msgstr "Exportación y Excellon ..."
 
 #: appGUI/MainGUI.py:257
@@ -4588,7 +4470,9 @@ msgstr ""
 "se configuran en Preferencias -> Exportación de Excellon."
 
 #: appGUI/MainGUI.py:264
-msgid "Export &Gerber ..."
+#, fuzzy
+#| msgid "Export &Gerber ..."
+msgid "Export Gerber ..."
 msgstr "Exportar &Gerber ..."
 
 #: appGUI/MainGUI.py:266
@@ -4620,10 +4504,6 @@ msgstr "Guardar Preferencias"
 #: appGUI/MainGUI.py:301 appGUI/MainGUI.py:4270
 msgid "Print (PDF)"
 msgstr "Imprimir (PDF)"
-
-#: appGUI/MainGUI.py:309
-msgid "E&xit"
-msgstr "Salida"
 
 #: appGUI/MainGUI.py:317 appGUI/MainGUI.py:753 appGUI/MainGUI.py:1579
 msgid "Edit"
@@ -4686,7 +4566,9 @@ msgid "Join Objects"
 msgstr "Alinear objetos"
 
 #: appGUI/MainGUI.py:364
-msgid "&Join Geo/Gerber/Exc -> Geo"
+#, fuzzy
+#| msgid "&Join Geo/Gerber/Exc -> Geo"
+msgid "Join Geo/Gerber/Exc -> Geo"
 msgstr "Unirse Geo/Gerber/Exc -> Geo"
 
 #: appGUI/MainGUI.py:366
@@ -4723,15 +4605,19 @@ msgstr ""
 "Combine una selección de objetos Gerber en un nuevo objeto combo Gerber."
 
 #: appGUI/MainGUI.py:388
-msgid "&Copy\tCtrl+C"
+#, fuzzy
+#| msgid "&Copy\tCtrl+C"
+msgid "Copy\tCtrl+C"
 msgstr "Dupdo\tCtrl+C"
 
-#: appGUI/MainGUI.py:393
-msgid "&Delete\tDEL"
+#: appGUI/MainGUI.py:393 appGUI/MainGUI.py:635 appGUI/MainGUI.py:679
+msgid "Delete\tDEL"
 msgstr "Borrar\tDEL"
 
 #: appGUI/MainGUI.py:398
-msgid "Se&t Origin\tO"
+#, fuzzy
+#| msgid "Se&t Origin\tO"
+msgid "Set Origin\tO"
 msgstr "Establecer origen\tO"
 
 #: appGUI/MainGUI.py:400
@@ -4751,11 +4637,15 @@ msgid "Toggle Units\tQ"
 msgstr "Unidades de palanca\tQ"
 
 #: appGUI/MainGUI.py:412
-msgid "&Select All\tCtrl+A"
+#, fuzzy
+#| msgid "&Select All\tCtrl+A"
+msgid "Select All\tCtrl+A"
 msgstr "Seleccionar todo\tCtrl+A"
 
 #: appGUI/MainGUI.py:417
-msgid "&Preferences\tShift+P"
+#, fuzzy
+#| msgid "&Preferences\tShift+P"
+msgid "Preferences\tShift+P"
 msgstr "Preferencias\tShift+P"
 
 #: appGUI/MainGUI.py:423 appObjects/FlatCAMObj.py:488
@@ -4764,23 +4654,33 @@ msgid "Options"
 msgstr "Opciones"
 
 #: appGUI/MainGUI.py:425
-msgid "&Rotate Selection\tShift+(R)"
+#, fuzzy
+#| msgid "&Rotate Selection\tShift+(R)"
+msgid "Rotate Selection\tShift+(R)"
 msgstr "Rotar selección\tShift+(R)"
 
 #: appGUI/MainGUI.py:430
-msgid "&Skew on X axis\tShift+X"
+#, fuzzy
+#| msgid "&Skew on X axis\tShift+X"
+msgid "Skew on X axis\tShift+X"
 msgstr "Sesgo en el eje X\tShift+X"
 
 #: appGUI/MainGUI.py:432
-msgid "S&kew on Y axis\tShift+Y"
+#, fuzzy
+#| msgid "S&kew on Y axis\tShift+Y"
+msgid "Skew on Y axis\tShift+Y"
 msgstr "Sesgo en el eje Y\tShift+Y"
 
 #: appGUI/MainGUI.py:437
-msgid "Flip on &X axis\tX"
+#, fuzzy
+#| msgid "Flip on &X axis\tX"
+msgid "Flip on X axis\tX"
 msgstr "Voltear en el eje X\tX"
 
 #: appGUI/MainGUI.py:439
-msgid "Flip on &Y axis\tY"
+#, fuzzy
+#| msgid "Flip on &Y axis\tY"
+msgid "Flip on Y axis\tY"
 msgstr "Voltear en el ejeY\tY"
 
 #: appGUI/MainGUI.py:444
@@ -4808,15 +4708,21 @@ msgid "Disable non-selected\tAlt+3"
 msgstr "Deshabilitar no seleccionado\tAlt+3"
 
 #: appGUI/MainGUI.py:463
-msgid "&Zoom Fit\tV"
+#, fuzzy
+#| msgid "&Zoom Fit\tV"
+msgid "Zoom Fit\tV"
 msgstr "Ajuste de zoom\tV"
 
 #: appGUI/MainGUI.py:465
-msgid "&Zoom In\t="
+#, fuzzy
+#| msgid "&Zoom In\t="
+msgid "Zoom In\t="
 msgstr "Acercarse\t="
 
 #: appGUI/MainGUI.py:467
-msgid "&Zoom Out\t-"
+#, fuzzy
+#| msgid "&Zoom Out\t-"
+msgid "Zoom Out\t-"
 msgstr "Disminuir el zoom\t-"
 
 #: appGUI/MainGUI.py:472
@@ -4828,27 +4734,39 @@ msgid "Toggle Code Editor\tShift+E"
 msgstr "Alternar Editor de Código\tShift+E"
 
 #: appGUI/MainGUI.py:479
-msgid "&Toggle FullScreen\tAlt+F10"
+#, fuzzy
+#| msgid "&Toggle FullScreen\tAlt+F10"
+msgid "Toggle FullScreen\tAlt+F10"
 msgstr "Alternar pantalla completa\tAlt+F10"
 
 #: appGUI/MainGUI.py:481
-msgid "&Toggle Plot Area\tCtrl+F10"
+#, fuzzy
+#| msgid "&Toggle Plot Area\tCtrl+F10"
+msgid "Toggle Plot Area\tCtrl+F10"
 msgstr "Alternar área de la parcela\tCtrl+F10"
 
 #: appGUI/MainGUI.py:483
-msgid "&Toggle Project/Sel/Tool\t`"
+#, fuzzy
+#| msgid "&Toggle Project/Sel/Tool\t`"
+msgid "Toggle Project/Sel/Tool\t`"
 msgstr "Palanca Proyecto / Sel / Tool\t`"
 
 #: appGUI/MainGUI.py:487
-msgid "&Toggle Grid Snap\tG"
+#, fuzzy
+#| msgid "&Toggle Grid Snap\tG"
+msgid "Toggle Grid Snap\tG"
 msgstr "Activar cuadrícula\tG"
 
 #: appGUI/MainGUI.py:489
-msgid "&Toggle Grid Lines\tAlt+G"
+#, fuzzy
+#| msgid "&Toggle Grid Lines\tAlt+G"
+msgid "Toggle Grid Lines\tAlt+G"
 msgstr "Alternar Líneas de Cuadrícula\tAlt+G"
 
 #: appGUI/MainGUI.py:491
-msgid "&Toggle Axis\tShift+G"
+#, fuzzy
+#| msgid "&Toggle Axis\tShift+G"
+msgid "Toggle Axis\tShift+G"
 msgstr "Eje de palanca\tShift+G"
 
 #: appGUI/MainGUI.py:493
@@ -4874,7 +4792,9 @@ msgid "Deselect All"
 msgstr "Deseleccionar todo"
 
 #: appGUI/MainGUI.py:514
-msgid "&Command Line\tS"
+#, fuzzy
+#| msgid "&Command Line\tS"
+msgid "Command Line\tS"
 msgstr "Línea de comando\tS"
 
 #: appGUI/MainGUI.py:519
@@ -5015,10 +4935,6 @@ msgstr "Cambiar el tamaño de taladro (s)\tR"
 msgid "Copy\tC"
 msgstr "Dupdo\tC"
 
-#: appGUI/MainGUI.py:635 appGUI/MainGUI.py:679
-msgid "Delete\tDEL"
-msgstr "Borrar\tDEL"
-
 #: appGUI/MainGUI.py:640
 msgid "Move Drill(s)\tM"
 msgstr "Mover taladro(s)\tM"
@@ -5142,7 +5058,7 @@ msgstr "Ver fuente"
 #: appGUI/MainGUI.py:755 appGUI/MainGUI.py:874 appGUI/MainGUI.py:1091
 #: appGUI/MainGUI.py:1575 appGUI/MainGUI.py:2032 appGUI/MainGUI.py:2245
 #: appGUI/MainGUI.py:4680 appGUI/ObjectUI.py:1125
-#: appObjects/FlatCAMGeometry.py:557 appTools/ToolPanelize.py:325
+#: appObjects/FlatCAMGeometry.py:558 appTools/ToolPanelize.py:325
 #: appTools/ToolPanelize.py:351 appTools/ToolPanelize.py:448
 #: appTools/ToolPanelize.py:477 appTools/ToolPanelize.py:538
 msgid "Copy"
@@ -5233,10 +5149,6 @@ msgstr "Editor"
 msgid "Save Object and close the Editor"
 msgstr "Guardar Objeto y cerrar el Editor"
 
-#: appGUI/MainGUI.py:876 appGUI/MainGUI.py:2034
-msgid "&Delete"
-msgstr "Borrar"
-
 #: appGUI/MainGUI.py:879 appGUI/MainGUI.py:2037 appGUI/MainGUI.py:4269
 #: appGUI/MainGUI.py:4477 appTools/ToolDistance.py:100
 #: appTools/ToolDistance.py:544
@@ -5263,12 +5175,14 @@ msgstr "Saltar a la ubicación"
 msgid "Locate in Object"
 msgstr "Localizar en objeto"
 
-#: appGUI/MainGUI.py:896 appGUI/MainGUI.py:2053
-msgid "&Replot"
+#: appGUI/MainGUI.py:896 appGUI/MainGUI.py:1483 appGUI/MainGUI.py:2053
+msgid "Replot"
 msgstr "Replantear"
 
 #: appGUI/MainGUI.py:898 appGUI/MainGUI.py:2055
-msgid "&Clear plot"
+#, fuzzy
+#| msgid "&Clear plot"
+msgid "Clear plot"
 msgstr "Gráfico clara"
 
 #: appGUI/MainGUI.py:900 appGUI/MainGUI.py:2057 appGUI/MainGUI.py:4265
@@ -5284,7 +5198,7 @@ msgstr "Disminuir el zoom"
 msgid "Zoom Fit"
 msgstr "Ajuste de zoom"
 
-#: appGUI/MainGUI.py:912 appGUI/MainGUI.py:1154
+#: appGUI/MainGUI.py:912 appGUI/MainGUI.py:1154 appGUI/MainGUI.py:2067
 msgid "Command Line"
 msgstr "Línea de Comando"
 
@@ -5301,8 +5215,8 @@ msgstr "Herram. de Alinear Objetos"
 msgid "Extract Drills Tool"
 msgstr "Herram. de Extracción de Taladros"
 
-#: appGUI/MainGUI.py:931 appGUI/ObjectUI.py:387 appTools/ToolCutOut.py:156
-#: appTools/ToolCutOut.py:2052
+#: appGUI/MainGUI.py:931 appGUI/MainGUI.py:2086 appGUI/ObjectUI.py:387
+#: appTools/ToolCutOut.py:156 appTools/ToolCutOut.py:2052
 msgid "Cutout Tool"
 msgstr "Herramienta de Corte"
 
@@ -5360,7 +5274,7 @@ msgid "QRCode Tool"
 msgstr "Herramienta QRCode"
 
 #: appGUI/MainGUI.py:964 appGUI/MainGUI.py:2119 appGUI/MainGUI.py:4282
-#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1131
+#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1137
 msgid "Copper Thieving Tool"
 msgstr "Herramienta Thieving Tool"
 
@@ -5623,18 +5537,18 @@ msgstr "Proyecto"
 msgid "Plot Area"
 msgstr "Área de la parcela"
 
-#: appGUI/MainGUI.py:1314 appTools/ToolCopperThieving.py:1163
+#: appGUI/MainGUI.py:1314 appTools/ToolCopperThieving.py:1169
 #: appTools/ToolCorners.py:317 appTools/ToolEtchCompensation.py:291
 #: appTools/ToolExtractDrills.py:453 appTools/ToolFiducials.py:873
 #: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:2986
-#: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:718
-#: appTools/ToolQRCode.py:659 appTools/ToolRulesCheck.py:1163
+#: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:721
+#: appTools/ToolQRCode.py:659 appTools/ToolRulesCheck.py:1165
 #: appTools/ToolSolderPaste.py:1143 appTools/ToolSub.py:643
 msgid "GERBER"
 msgstr "GERBER"
 
 #: appGUI/MainGUI.py:1324 appTools/ToolDrilling.py:2032
-#: appTools/ToolMilling.py:1637 appTools/ToolRulesCheck.py:1301
+#: appTools/ToolMilling.py:1637 appTools/ToolRulesCheck.py:1303
 msgid "EXCELLON"
 msgstr "EXCELLON"
 
@@ -5712,15 +5626,11 @@ msgstr "No guardará los cambios y cerrará la ventana de preferencias."
 msgid "Toggle Visibility"
 msgstr "Alternar visibilidad"
 
-#: appGUI/MainGUI.py:1461 appGUI/ObjectUI.py:2342
-msgid "New"
-msgstr "Nueva"
-
 #: appGUI/MainGUI.py:1463
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1237 appTools/ToolCopperThieving.py:1251
+#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
 #: appTools/ToolCutOut.py:2010 appTools/ToolDblSided.py:526
 #: appTools/ToolDblSided.py:767 appTools/ToolFilm.py:929
 #: appTools/ToolFilm.py:952 appTools/ToolImage.py:136 appTools/ToolImage.py:191
@@ -5740,13 +5650,13 @@ msgstr "Geometría"
 #: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:892 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1237 appTools/ToolCopperThieving.py:1251
+#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
 #: appTools/ToolDblSided.py:527 appTools/ToolDblSided.py:724
 #: appTools/ToolDblSided.py:766 appTools/ToolFilm.py:1207
 #: appTools/ToolIsolation.py:802 appTools/ToolIsolation.py:3391
 #: appTools/ToolNCC.py:805 appTools/ToolNCC.py:4323 appTools/ToolPaint.py:167
 #: appTools/ToolPaint.py:3143 appTools/ToolPanelize.py:147
-#: appTools/ToolPunchGerber.py:803 appTools/ToolPunchGerber.py:818
+#: appTools/ToolPunchGerber.py:806 appTools/ToolPunchGerber.py:821
 #: appTools/ToolTransform.py:126 appTools/ToolTransform.py:586
 msgid "Excellon"
 msgstr "Excellon"
@@ -5758,10 +5668,6 @@ msgstr "Rejillas"
 #: appGUI/MainGUI.py:1481
 msgid "Clear Plot"
 msgstr "Parcela clara"
-
-#: appGUI/MainGUI.py:1483
-msgid "Replot"
-msgstr "Replantear"
 
 #: appGUI/MainGUI.py:1487
 msgid "Geo Editor"
@@ -5866,14 +5772,6 @@ msgstr "Sí"
 #: app_Main.py:2290 app_Main.py:3385 app_Main.py:5810 app_Main.py:6894
 msgid "No"
 msgstr "No"
-
-#: appGUI/MainGUI.py:2067
-msgid "&Command Line"
-msgstr "Línea de comando"
-
-#: appGUI/MainGUI.py:2086
-msgid "&Cutout Tool"
-msgstr "Herramienta de recorte"
 
 #: appGUI/MainGUI.py:2164
 msgid "Select 'Esc'"
@@ -6502,7 +6400,7 @@ msgstr "Opciones de parcela"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:47
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:119
-#: appTools/ToolCopperThieving.py:1284
+#: appTools/ToolCopperThieving.py:1290
 msgid "Solid"
 msgstr "Sólido"
 
@@ -7103,10 +7001,10 @@ msgstr ""
 "Eliminar una selección de herramientas en la tabla de herramientas\n"
 "seleccionando primero una fila en la Tabla de herramientas."
 
-#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMGeometry.py:388
-#: appObjects/FlatCAMGeometry.py:886 appObjects/FlatCAMGeometry.py:891
-#: appObjects/FlatCAMGeometry.py:925 appObjects/FlatCAMGeometry.py:950
-#: appObjects/FlatCAMGeometry.py:954 appTools/ToolDrilling.py:705
+#: appGUI/ObjectUI.py:1172 appObjects/FlatCAMGeometry.py:389
+#: appObjects/FlatCAMGeometry.py:887 appObjects/FlatCAMGeometry.py:892
+#: appObjects/FlatCAMGeometry.py:926 appObjects/FlatCAMGeometry.py:951
+#: appObjects/FlatCAMGeometry.py:955 appTools/ToolDrilling.py:705
 #: appTools/ToolDrilling.py:711 appTools/ToolDrilling.py:754
 #: appTools/ToolDrilling.py:983 appTools/ToolDrilling.py:990
 #: appTools/ToolDrilling.py:1021 appTools/ToolDrilling.py:1033
@@ -7169,7 +7067,7 @@ msgstr ""
 #: appGUI/ObjectUI.py:1216
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:51
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:61
-#: appObjects/FlatCAMGeometry.py:1374 appTools/ToolCutOut.py:2107
+#: appObjects/FlatCAMGeometry.py:1375 appTools/ToolCutOut.py:2107
 msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
@@ -7413,6 +7311,14 @@ msgstr ""
 #| msgid "Coordinates"
 msgid "X,Y coordinates"
 msgstr "Coordenadas"
+
+#: appGUI/ObjectUI.py:1526
+#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:255
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:221
+#: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:237
+#: appTools/ToolDrilling.py:2498 appTools/ToolSolderPaste.py:1407
+msgid "Preprocessor"
+msgstr "Postprocesador"
 
 #: appGUI/ObjectUI.py:1528
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:257
@@ -8381,7 +8287,7 @@ msgstr "CNCJob Adv. Opciones"
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:31
-#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1182
+#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1188
 #: appTools/ToolCorners.py:377 appTools/ToolEtchCompensation.py:356
 #: appTools/ToolFiducials.py:763 appTools/ToolInvertGerber.py:228
 #: appTools/ToolQRCode.py:695
@@ -8574,7 +8480,7 @@ msgstr "Color de Línea de Viaje"
 #: appGUI/preferences/general/GeneralGUIPrefGroupUI.py:195
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:158
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:169
-#: appTools/ToolRulesCheck.py:1288
+#: appTools/ToolRulesCheck.py:1290
 msgid "Outline"
 msgstr "Contorno"
 
@@ -9131,7 +9037,7 @@ msgstr "MetaHeuristic"
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:110
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:171
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:175
-#: appObjects/FlatCAMExcellon.py:154 appObjects/FlatCAMGeometry.py:565
+#: appObjects/FlatCAMExcellon.py:154 appObjects/FlatCAMGeometry.py:566
 #: appObjects/FlatCAMGerber.py:174 appTools/ToolDrilling.py:306
 #: appTools/ToolIsolation.py:246 appTools/ToolMilling.py:294
 msgid "Basic"
@@ -9685,7 +9591,7 @@ msgstr ""
 "La pestaña seleccionada para todo tipo de objetos FlatCAM."
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:105
-#: appObjects/FlatCAMExcellon.py:163 appObjects/FlatCAMGeometry.py:586
+#: appObjects/FlatCAMExcellon.py:163 appObjects/FlatCAMGeometry.py:587
 #: appObjects/FlatCAMGerber.py:182 appTools/ToolDrilling.py:310
 #: appTools/ToolIsolation.py:273 appTools/ToolMilling.py:305
 msgid "Advanced"
@@ -10195,6 +10101,12 @@ msgstr "Cambio de herra X, Y"
 msgid "Toolchange X,Y position."
 msgstr "Cambio de herra X, posición Y."
 
+#: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:56
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:306
+#: appTools/ToolDrilling.py:2415 appTools/ToolMilling.py:2087
+msgid "Start Z"
+msgstr "Comience Z"
+
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:58
 msgid ""
 "Height of the tool just after starting the work.\n"
@@ -10424,6 +10336,13 @@ msgstr ""
 msgid "Tool change"
 msgstr "Cambio de herram"
 
+#: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:132
+#: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:98
+#: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:124
+#: appTools/ToolCalibration.py:806
+msgid "Toolchange Z"
+msgstr "Cambio de herramienta Z"
+
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:233
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:200
 msgid "Enable Dwell"
@@ -10448,8 +10367,8 @@ msgid "\"Follow\""
 msgstr "\"Seguir\""
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:64
-#: appObjects/FlatCAMGerber.py:370 appTools/ToolCopperThieving.py:581
-#: appTools/ToolCopperThieving.py:770 appTools/ToolCopperThieving.py:782
+#: appObjects/FlatCAMGerber.py:370 appTools/ToolCopperThieving.py:579
+#: appTools/ToolCopperThieving.py:776 appTools/ToolCopperThieving.py:788
 #: appTools/ToolIsolation.py:1353 appTools/ToolNCC.py:1793
 #: appTools/ToolNCC.py:1820 appTools/ToolNCC.py:1928 appTools/ToolNCC.py:1941
 #: appTools/ToolNCC.py:2845 appTools/ToolNCC.py:2950 appTools/ToolNCC.py:2965
@@ -10766,7 +10685,7 @@ msgstr "Número de pasos (líneas) utilizados para interpolar círculos."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:57
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:261
-#: appTools/ToolCopperThieving.py:1189 appTools/ToolCopperThieving.py:1524
+#: appTools/ToolCopperThieving.py:1195 appTools/ToolCopperThieving.py:1530
 msgid "Clearance"
 msgstr "Despeje"
 
@@ -10782,7 +10701,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:86
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
-#: appTools/ToolCopperThieving.py:1218 appTools/ToolNCC.py:1351
+#: appTools/ToolCopperThieving.py:1224 appTools/ToolNCC.py:1351
 #: appTools/ToolNCC.py:1667 appTools/ToolNCC.py:1731 appTools/ToolNCC.py:2709
 #: appTools/ToolNCC.py:2718 appTools/ToolNCC.py:4300 appTools/ToolNCC.py:4436
 #: defaults.py:475 tclCommands/TclCommandCopperClear.py:190
@@ -10793,7 +10712,7 @@ msgstr "Sí mismo"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1219 appTools/ToolIsolation.py:819
+#: appTools/ToolCopperThieving.py:1225 appTools/ToolIsolation.py:819
 #: appTools/ToolIsolation.py:1435 appTools/ToolIsolation.py:3378
 #: appTools/ToolNCC.py:1365 appTools/ToolNCC.py:1683 appTools/ToolNCC.py:1738
 #: appTools/ToolNCC.py:4300 appTools/ToolNCC.py:4446 appTools/ToolPaint.py:1061
@@ -10805,7 +10724,7 @@ msgstr "Selección de área"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1220 appTools/ToolDblSided.py:757
+#: appTools/ToolCopperThieving.py:1226 appTools/ToolDblSided.py:757
 #: appTools/ToolIsolation.py:1475 appTools/ToolIsolation.py:3378
 #: appTools/ToolNCC.py:1384 appTools/ToolNCC.py:1689 appTools/ToolNCC.py:1746
 #: appTools/ToolNCC.py:2124 appTools/ToolNCC.py:2358 appTools/ToolNCC.py:2754
@@ -10816,7 +10735,7 @@ msgid "Reference Object"
 msgstr "Objeto de referencia"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:90
-#: appTools/ToolCopperThieving.py:1222
+#: appTools/ToolCopperThieving.py:1228
 msgid "Reference:"
 msgstr "Referencia:"
 
@@ -10840,24 +10759,24 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:188
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:190
-#: appTools/ToolCopperThieving.py:1264 appTools/ToolExtractDrills.py:494
-#: appTools/ToolExtractDrills.py:632 appTools/ToolPunchGerber.py:767
-#: appTools/ToolPunchGerber.py:922
+#: appTools/ToolCopperThieving.py:1270 appTools/ToolExtractDrills.py:494
+#: appTools/ToolExtractDrills.py:632 appTools/ToolPunchGerber.py:770
+#: appTools/ToolPunchGerber.py:925
 msgid "Rectangular"
 msgstr "Rectangular"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:102
-#: appTools/ToolCopperThieving.py:1265
+#: appTools/ToolCopperThieving.py:1271
 msgid "Minimal"
 msgstr "Mínimo"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:104
-#: appTools/ToolCopperThieving.py:1267 appTools/ToolFilm.py:954
+#: appTools/ToolCopperThieving.py:1273 appTools/ToolFilm.py:954
 msgid "Box Type:"
 msgstr "Tipo de cercado:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:106
-#: appTools/ToolCopperThieving.py:1269
+#: appTools/ToolCopperThieving.py:1275
 msgid ""
 "- 'Rectangular' - the bounding box will be of rectangular shape.\n"
 "- 'Minimal' - the bounding box will be the convex hull shape."
@@ -10866,27 +10785,27 @@ msgstr ""
 "- 'Mínimo': el cuadro delimitador tendrá forma de casco convexo."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:120
-#: appTools/ToolCopperThieving.py:1285
+#: appTools/ToolCopperThieving.py:1291
 msgid "Dots Grid"
 msgstr "Cuadrícula de puntos"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:121
-#: appTools/ToolCopperThieving.py:1286
+#: appTools/ToolCopperThieving.py:1292
 msgid "Squares Grid"
 msgstr "Cuadrícula de cuadrados"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:122
-#: appTools/ToolCopperThieving.py:1287
+#: appTools/ToolCopperThieving.py:1293
 msgid "Lines Grid"
 msgstr "Cuadrícula de líneas"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:124
-#: appTools/ToolCopperThieving.py:1289
+#: appTools/ToolCopperThieving.py:1295
 msgid "Fill Type:"
 msgstr "Tipo de relleno:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:126
-#: appTools/ToolCopperThieving.py:1291
+#: appTools/ToolCopperThieving.py:1297
 msgid ""
 "- 'Solid' - copper thieving will be a solid polygon.\n"
 "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
@@ -10901,57 +10820,57 @@ msgstr ""
 "- 'Cuadrícula de líneas': el área vacía se rellenará con un patrón de líneas."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:134
-#: appTools/ToolCopperThieving.py:1310
+#: appTools/ToolCopperThieving.py:1316
 msgid "Dots Grid Parameters"
 msgstr "Parámetros de cuadrícula de puntos"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:140
-#: appTools/ToolCopperThieving.py:1316
+#: appTools/ToolCopperThieving.py:1322
 msgid "Dot diameter in Dots Grid."
 msgstr "Diámetro de punto en cuadrícula de puntos."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:153
-#: appTools/ToolCopperThieving.py:1329
+#: appTools/ToolCopperThieving.py:1335
 msgid "Distance between each two dots in Dots Grid."
 msgstr "Distancia entre cada dos puntos en la cuadrícula de puntos."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:163
-#: appTools/ToolCopperThieving.py:1350
+#: appTools/ToolCopperThieving.py:1356
 msgid "Squares Grid Parameters"
 msgstr "Parámetros de la cuadrícula de cuadrados"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:169
-#: appTools/ToolCopperThieving.py:1356
+#: appTools/ToolCopperThieving.py:1362
 msgid "Square side size in Squares Grid."
 msgstr "Tamaño del lado cuadrado en cuadrícula de cuadrados."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:182
-#: appTools/ToolCopperThieving.py:1369
+#: appTools/ToolCopperThieving.py:1375
 msgid "Distance between each two squares in Squares Grid."
 msgstr "Distancia entre cada dos cuadrados en la cuadrícula de cuadrados."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:192
-#: appTools/ToolCopperThieving.py:1390
+#: appTools/ToolCopperThieving.py:1396
 msgid "Lines Grid Parameters"
 msgstr "Parámetros de cuadrícula de líneas"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1396
+#: appTools/ToolCopperThieving.py:1402
 msgid "Line thickness size in Lines Grid."
 msgstr "Tamaño del grosor de línea en la cuadrícula de líneas."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:211
-#: appTools/ToolCopperThieving.py:1409
+#: appTools/ToolCopperThieving.py:1415
 msgid "Distance between each two lines in Lines Grid."
 msgstr "Distancia entre cada dos líneas en la cuadrícula de líneas."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:221
-#: appTools/ToolCopperThieving.py:1447
+#: appTools/ToolCopperThieving.py:1453
 msgid "Robber Bar Parameters"
 msgstr "Parámetros de la Robber Bar"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:223
-#: appTools/ToolCopperThieving.py:1449
+#: appTools/ToolCopperThieving.py:1455
 msgid ""
 "Parameters used for the robber bar.\n"
 "Robber bar = copper border to help in pattern hole plating."
@@ -10960,34 +10879,34 @@ msgstr ""
 "Robber Bar = borde de cobre para ayudar en el enchapado de agujeros."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:231
-#: appTools/ToolCopperThieving.py:1457
+#: appTools/ToolCopperThieving.py:1463
 msgid "Bounding box margin for robber bar."
 msgstr "Margen límite del recinto para Robber Bar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appTools/ToolCopperThieving.py:1468 appTools/ToolCorners.py:384
+#: appTools/ToolCopperThieving.py:1474 appTools/ToolCorners.py:384
 #: appTools/ToolEtchCompensation.py:370
 msgid "Thickness"
 msgstr "Espesor"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:244
-#: appTools/ToolCopperThieving.py:1470
+#: appTools/ToolCopperThieving.py:1476
 msgid "The robber bar thickness."
 msgstr "El grosor de la Robber Bar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:254
-#: appTools/ToolCopperThieving.py:1501
+#: appTools/ToolCopperThieving.py:1507
 msgid "Pattern Plating Mask"
 msgstr "Máscara de baño de patrones"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:256
-#: appTools/ToolCopperThieving.py:1503
+#: appTools/ToolCopperThieving.py:1509
 msgid "Generate a mask for pattern plating."
 msgstr "Genere una máscara para el enchapado de patrones."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:263
-#: appTools/ToolCopperThieving.py:1526
+#: appTools/ToolCopperThieving.py:1532
 msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
@@ -11004,7 +10923,7 @@ msgstr "Opc. de Herram. de Calibración"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:38
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:37
-#: appTools/ToolCopperThieving.py:1184 appTools/ToolCorners.py:379
+#: appTools/ToolCopperThieving.py:1190 appTools/ToolCorners.py:379
 #: appTools/ToolFiducials.py:765
 msgid "Parameters used for this tool."
 msgstr "Parámetros utilizados para esta herramienta."
@@ -11111,13 +11030,13 @@ msgstr "Opciones de Extracción de Taladros"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:42
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:42
-#: appTools/ToolExtractDrills.py:460 appTools/ToolPunchGerber.py:729
+#: appTools/ToolExtractDrills.py:460 appTools/ToolPunchGerber.py:732
 msgid "Processed Pads Type"
 msgstr "Tipo de almohadillas procesadas"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:44
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:44
-#: appTools/ToolExtractDrills.py:462 appTools/ToolPunchGerber.py:731
+#: appTools/ToolExtractDrills.py:462 appTools/ToolPunchGerber.py:734
 msgid ""
 "The type of pads shape to be processed.\n"
 "If the PCB has many SMD pads with rectangular pads,\n"
@@ -11129,7 +11048,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:54
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:54
-#: appTools/ToolExtractDrills.py:472 appTools/ToolPunchGerber.py:745
+#: appTools/ToolExtractDrills.py:472 appTools/ToolPunchGerber.py:748
 msgid "Process Circular Pads."
 msgstr "Proceso de Almohadillas Circulares."
 
@@ -11138,25 +11057,25 @@ msgstr "Proceso de Almohadillas Circulares."
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:60
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:164
 #: appTools/ToolExtractDrills.py:478 appTools/ToolExtractDrills.py:606
-#: appTools/ToolPunchGerber.py:751 appTools/ToolPunchGerber.py:896
+#: appTools/ToolPunchGerber.py:754 appTools/ToolPunchGerber.py:899
 msgid "Oblong"
 msgstr "Oblongo"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:62
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:62
-#: appTools/ToolExtractDrills.py:480 appTools/ToolPunchGerber.py:753
+#: appTools/ToolExtractDrills.py:480 appTools/ToolPunchGerber.py:756
 msgid "Process Oblong Pads."
 msgstr "Procesar almohadillas oblongas."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:70
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:70
-#: appTools/ToolExtractDrills.py:488 appTools/ToolPunchGerber.py:761
+#: appTools/ToolExtractDrills.py:488 appTools/ToolPunchGerber.py:764
 msgid "Process Square Pads."
 msgstr "Procesar almohadillas cuadradas."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:78
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:78
-#: appTools/ToolExtractDrills.py:496 appTools/ToolPunchGerber.py:769
+#: appTools/ToolExtractDrills.py:496 appTools/ToolPunchGerber.py:772
 msgid "Process Rectangular Pads."
 msgstr "Proceso Almohadillas Rectangulares."
 
@@ -11166,13 +11085,13 @@ msgstr "Proceso Almohadillas Rectangulares."
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:203
 #: appObjects/FlatCAMObj.py:505 appTools/ToolExtractDrills.py:502
 #: appTools/ToolExtractDrills.py:645 appTools/ToolProperties.py:175
-#: appTools/ToolPunchGerber.py:775 appTools/ToolPunchGerber.py:935
+#: appTools/ToolPunchGerber.py:778 appTools/ToolPunchGerber.py:938
 msgid "Others"
 msgstr "Otros"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:86
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:86
-#: appTools/ToolExtractDrills.py:504 appTools/ToolPunchGerber.py:777
+#: appTools/ToolExtractDrills.py:504 appTools/ToolPunchGerber.py:780
 msgid "Process pads not in the categories above."
 msgstr "Procese los pads no en las categorías anteriores."
 
@@ -11181,7 +11100,7 @@ msgstr "Procese los pads no en las categorías anteriores."
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:100
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:125
 #: appTools/ToolExtractDrills.py:531 appTools/ToolExtractDrills.py:548
-#: appTools/ToolPunchGerber.py:804 appTools/ToolPunchGerber.py:838
+#: appTools/ToolPunchGerber.py:807 appTools/ToolPunchGerber.py:841
 msgid "Fixed Diameter"
 msgstr "Diámetro fijo"
 
@@ -11190,13 +11109,13 @@ msgstr "Diámetro fijo"
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:101
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:142
 #: appTools/ToolExtractDrills.py:532 appTools/ToolExtractDrills.py:584
-#: appTools/ToolPunchGerber.py:805 appTools/ToolPunchGerber.py:868
+#: appTools/ToolPunchGerber.py:808 appTools/ToolPunchGerber.py:871
 msgid "Fixed Annular Ring"
 msgstr "Anillo anular fijo"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:101
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:102
-#: appTools/ToolExtractDrills.py:533 appTools/ToolPunchGerber.py:806
+#: appTools/ToolExtractDrills.py:533 appTools/ToolPunchGerber.py:809
 msgid "Proportional"
 msgstr "Proporcional"
 
@@ -11217,13 +11136,13 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:135
-#: appTools/ToolExtractDrills.py:558 appTools/ToolPunchGerber.py:848
+#: appTools/ToolExtractDrills.py:558 appTools/ToolPunchGerber.py:851
 msgid "Fixed hole diameter."
 msgstr "Diámetro fijo del agujero."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:142
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:144
-#: appTools/ToolExtractDrills.py:586 appTools/ToolPunchGerber.py:870
+#: appTools/ToolExtractDrills.py:586 appTools/ToolPunchGerber.py:873
 msgid ""
 "The size of annular ring.\n"
 "The copper sliver between the hole exterior\n"
@@ -11235,37 +11154,37 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:151
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:153
-#: appTools/ToolExtractDrills.py:595 appTools/ToolPunchGerber.py:885
+#: appTools/ToolExtractDrills.py:595 appTools/ToolPunchGerber.py:888
 msgid "The size of annular ring for circular pads."
 msgstr "El tamaño del anillo anular para almohadillas circulares."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:164
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:166
-#: appTools/ToolExtractDrills.py:608 appTools/ToolPunchGerber.py:898
+#: appTools/ToolExtractDrills.py:608 appTools/ToolPunchGerber.py:901
 msgid "The size of annular ring for oblong pads."
 msgstr "El tamaño del anillo anular para almohadillas oblongas."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:177
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:179
-#: appTools/ToolExtractDrills.py:621 appTools/ToolPunchGerber.py:911
+#: appTools/ToolExtractDrills.py:621 appTools/ToolPunchGerber.py:914
 msgid "The size of annular ring for square pads."
 msgstr "El tamaño del anillo anular para almohadillas cuadradas."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:190
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:192
-#: appTools/ToolExtractDrills.py:634 appTools/ToolPunchGerber.py:924
+#: appTools/ToolExtractDrills.py:634 appTools/ToolPunchGerber.py:927
 msgid "The size of annular ring for rectangular pads."
 msgstr "El tamaño del anillo anular para almohadillas rectangulares."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:203
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:205
-#: appTools/ToolExtractDrills.py:647 appTools/ToolPunchGerber.py:937
+#: appTools/ToolExtractDrills.py:647 appTools/ToolPunchGerber.py:940
 msgid "The size of annular ring for other pads."
 msgstr "El tamaño del anillo anular para otras almohadillas."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:213
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:215
-#: appTools/ToolExtractDrills.py:668 appTools/ToolPunchGerber.py:953
+#: appTools/ToolExtractDrills.py:668 appTools/ToolPunchGerber.py:956
 msgid "Proportional Diameter"
 msgstr "Diá. proporcional"
 
@@ -11276,7 +11195,7 @@ msgstr "Factor"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:224
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:226
-#: appTools/ToolExtractDrills.py:679 appTools/ToolPunchGerber.py:964
+#: appTools/ToolExtractDrills.py:679 appTools/ToolPunchGerber.py:967
 msgid ""
 "Proportional Diameter.\n"
 "The hole diameter will be a fraction of the pad size."
@@ -11457,7 +11376,7 @@ msgid "Punch Gerber Options"
 msgstr "Opciones de Perforadora Gerber"
 
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:108
-#: appTools/ToolPunchGerber.py:795
+#: appTools/ToolPunchGerber.py:798
 msgid ""
 "The punch hole source can be:\n"
 "- Excellon Object-> the Excellon object drills center will serve as "
@@ -11655,12 +11574,12 @@ msgstr ""
 "de las normas de fabricación."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:42
-#: appTools/ToolRulesCheck.py:428 appTools/ToolRulesCheck.py:1367
+#: appTools/ToolRulesCheck.py:428 appTools/ToolRulesCheck.py:1369
 msgid "Trace Size"
 msgstr "Tamaño de traza"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:44
-#: appTools/ToolRulesCheck.py:1369
+#: appTools/ToolRulesCheck.py:1371
 msgid "This checks if the minimum size for traces is met."
 msgstr "Esto comprueba si se cumple el tamaño mínimo para las trazas."
 
@@ -11674,27 +11593,27 @@ msgstr "Esto comprueba si se cumple el tamaño mínimo para las trazas."
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:194
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:216
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:236
-#: appTools/ToolRulesCheck.py:1379 appTools/ToolRulesCheck.py:1401
-#: appTools/ToolRulesCheck.py:1424 appTools/ToolRulesCheck.py:1447
-#: appTools/ToolRulesCheck.py:1470 appTools/ToolRulesCheck.py:1493
-#: appTools/ToolRulesCheck.py:1516 appTools/ToolRulesCheck.py:1539
-#: appTools/ToolRulesCheck.py:1564 appTools/ToolRulesCheck.py:1587
+#: appTools/ToolRulesCheck.py:1381 appTools/ToolRulesCheck.py:1403
+#: appTools/ToolRulesCheck.py:1426 appTools/ToolRulesCheck.py:1449
+#: appTools/ToolRulesCheck.py:1472 appTools/ToolRulesCheck.py:1495
+#: appTools/ToolRulesCheck.py:1518 appTools/ToolRulesCheck.py:1541
+#: appTools/ToolRulesCheck.py:1566 appTools/ToolRulesCheck.py:1589
 msgid "Min value"
 msgstr "Valor mínimo"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:56
-#: appTools/ToolRulesCheck.py:1381
+#: appTools/ToolRulesCheck.py:1383
 msgid "Minimum acceptable trace size."
 msgstr "Tamaño de traza mínimo aceptable."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:61
-#: appTools/ToolRulesCheck.py:656 appTools/ToolRulesCheck.py:686
-#: appTools/ToolRulesCheck.py:1388
+#: appTools/ToolRulesCheck.py:657 appTools/ToolRulesCheck.py:687
+#: appTools/ToolRulesCheck.py:1390
 msgid "Copper to Copper clearance"
 msgstr "Distancia de Cobre a Cobre"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:63
-#: appTools/ToolRulesCheck.py:1390
+#: appTools/ToolRulesCheck.py:1392
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
@@ -11709,22 +11628,22 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:156
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:176
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:238
-#: appTools/ToolRulesCheck.py:1403 appTools/ToolRulesCheck.py:1426
-#: appTools/ToolRulesCheck.py:1449 appTools/ToolRulesCheck.py:1472
-#: appTools/ToolRulesCheck.py:1495 appTools/ToolRulesCheck.py:1518
-#: appTools/ToolRulesCheck.py:1566
+#: appTools/ToolRulesCheck.py:1405 appTools/ToolRulesCheck.py:1428
+#: appTools/ToolRulesCheck.py:1451 appTools/ToolRulesCheck.py:1474
+#: appTools/ToolRulesCheck.py:1497 appTools/ToolRulesCheck.py:1520
+#: appTools/ToolRulesCheck.py:1568
 msgid "Minimum acceptable clearance value."
 msgstr "Valor mínimo de distancia aceptable."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:81
-#: appTools/ToolRulesCheck.py:716 appTools/ToolRulesCheck.py:722
-#: appTools/ToolRulesCheck.py:735 appTools/ToolRulesCheck.py:742
-#: appTools/ToolRulesCheck.py:1411
+#: appTools/ToolRulesCheck.py:717 appTools/ToolRulesCheck.py:723
+#: appTools/ToolRulesCheck.py:736 appTools/ToolRulesCheck.py:743
+#: appTools/ToolRulesCheck.py:1413
 msgid "Copper to Outline clearance"
 msgstr "Distancia de Cobre a Contorno"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:83
-#: appTools/ToolRulesCheck.py:1413
+#: appTools/ToolRulesCheck.py:1415
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
@@ -11733,12 +11652,12 @@ msgstr ""
 "huellas y el esquema se cumple."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:101
-#: appTools/ToolRulesCheck.py:1434
+#: appTools/ToolRulesCheck.py:1436
 msgid "Silk to Silk Clearance"
 msgstr "Distancia de Serigrafía a Serigrafía"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:103
-#: appTools/ToolRulesCheck.py:1436
+#: appTools/ToolRulesCheck.py:1438
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and silkscreen features is met."
@@ -11747,13 +11666,13 @@ msgstr ""
 "huellas y huellas de serigrafía se cumplen."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:121
-#: appTools/ToolRulesCheck.py:825 appTools/ToolRulesCheck.py:831
-#: appTools/ToolRulesCheck.py:849 appTools/ToolRulesCheck.py:1457
+#: appTools/ToolRulesCheck.py:826 appTools/ToolRulesCheck.py:832
+#: appTools/ToolRulesCheck.py:850 appTools/ToolRulesCheck.py:1459
 msgid "Silk to Solder Mask Clearance"
 msgstr "Serigrafía para Soldar Máscara Distancia"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:123
-#: appTools/ToolRulesCheck.py:1459
+#: appTools/ToolRulesCheck.py:1461
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and soldermask features is met."
@@ -11762,14 +11681,14 @@ msgstr ""
 "Traces y soldermask traces se cumplen."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:141
-#: appTools/ToolRulesCheck.py:879 appTools/ToolRulesCheck.py:885
-#: appTools/ToolRulesCheck.py:899 appTools/ToolRulesCheck.py:906
-#: appTools/ToolRulesCheck.py:1480
+#: appTools/ToolRulesCheck.py:880 appTools/ToolRulesCheck.py:886
+#: appTools/ToolRulesCheck.py:900 appTools/ToolRulesCheck.py:907
+#: appTools/ToolRulesCheck.py:1482
 msgid "Silk to Outline Clearance"
 msgstr "Serigrafía para Contorno Distancia"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:143
-#: appTools/ToolRulesCheck.py:1482
+#: appTools/ToolRulesCheck.py:1484
 msgid ""
 "This checks if the minimum clearance between silk\n"
 "features and the outline is met."
@@ -11778,13 +11697,13 @@ msgstr ""
 "huellas y el contorno se cumple."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:161
-#: appTools/ToolRulesCheck.py:917 appTools/ToolRulesCheck.py:944
-#: appTools/ToolRulesCheck.py:1503
+#: appTools/ToolRulesCheck.py:918 appTools/ToolRulesCheck.py:945
+#: appTools/ToolRulesCheck.py:1505
 msgid "Minimum Solder Mask Sliver"
 msgstr "Astilla de máscara de soldadura mínima"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:163
-#: appTools/ToolRulesCheck.py:1505
+#: appTools/ToolRulesCheck.py:1507
 msgid ""
 "This checks if the minimum clearance between soldermask\n"
 "features and soldermask features is met."
@@ -11793,14 +11712,14 @@ msgstr ""
 "rastros y rastros de máscara de soldadura se cumplen."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:181
-#: appTools/ToolRulesCheck.py:982 appTools/ToolRulesCheck.py:988
-#: appTools/ToolRulesCheck.py:1004 appTools/ToolRulesCheck.py:1011
-#: appTools/ToolRulesCheck.py:1526
+#: appTools/ToolRulesCheck.py:983 appTools/ToolRulesCheck.py:989
+#: appTools/ToolRulesCheck.py:1005 appTools/ToolRulesCheck.py:1012
+#: appTools/ToolRulesCheck.py:1528
 msgid "Minimum Annular Ring"
 msgstr "Anillo anular mínimo"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:183
-#: appTools/ToolRulesCheck.py:1528
+#: appTools/ToolRulesCheck.py:1530
 msgid ""
 "This checks if the minimum copper ring left by drilling\n"
 "a hole into a pad is met."
@@ -11809,17 +11728,17 @@ msgstr ""
 "Se encuentra un agujero en una almohadilla."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:196
-#: appTools/ToolRulesCheck.py:1541
+#: appTools/ToolRulesCheck.py:1543
 msgid "Minimum acceptable ring value."
 msgstr "Valor mínimo aceptable del anillo."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:203
-#: appTools/ToolRulesCheck.py:372 appTools/ToolRulesCheck.py:1551
+#: appTools/ToolRulesCheck.py:372 appTools/ToolRulesCheck.py:1553
 msgid "Hole to Hole Clearance"
 msgstr "Distancia entre Agujeros"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:205
-#: appTools/ToolRulesCheck.py:1553
+#: appTools/ToolRulesCheck.py:1555
 msgid ""
 "This checks if the minimum clearance between a drill hole\n"
 "and another drill hole is met."
@@ -11828,17 +11747,17 @@ msgstr ""
 "y se encuentra otro taladro."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:218
-#: appTools/ToolRulesCheck.py:1589
+#: appTools/ToolRulesCheck.py:1591
 msgid "Minimum acceptable drill size."
 msgstr "Tamaño mínimo aceptable de perforación."
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:223
-#: appTools/ToolRulesCheck.py:346 appTools/ToolRulesCheck.py:1574
+#: appTools/ToolRulesCheck.py:346 appTools/ToolRulesCheck.py:1576
 msgid "Hole Size"
 msgstr "Tamaño del Agujero"
 
 #: appGUI/preferences/tools/Tools2RulesCheckPrefGroupUI.py:225
-#: appTools/ToolRulesCheck.py:1576
+#: appTools/ToolRulesCheck.py:1578
 msgid ""
 "This checks if the drill holes\n"
 "sizes are above the threshold."
@@ -12710,7 +12629,7 @@ msgstr "Progresivo"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 #: appObjects/AppObject.py:453 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
-#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1038
+#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1044
 #: appTools/ToolCorners.py:263 appTools/ToolFiducials.py:530
 #: appTools/ToolMove.py:229 appTools/ToolQRCode.py:463 app_Main.py:4676
 msgid "Plotting"
@@ -12909,7 +12828,7 @@ msgstr "Número de filas del panel deseado"
 #: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:891 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1237 appTools/ToolCopperThieving.py:1251
+#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
 #: appTools/ToolCutOut.py:2009 appTools/ToolDblSided.py:525
 #: appTools/ToolDblSided.py:765 appTools/ToolFilm.py:928
 #: appTools/ToolFilm.py:951 appTools/ToolImage.py:117 appTools/ToolImage.py:138
@@ -13406,7 +13325,7 @@ msgid "Converting units to "
 msgstr "Convertir unidades a "
 
 #: appObjects/AppObject.py:259 appObjects/FlatCAMGeometry.py:128
-#: appObjects/FlatCAMGeometry.py:519 appObjects/FlatCAMGeometry.py:1053
+#: appObjects/FlatCAMGeometry.py:520 appObjects/FlatCAMGeometry.py:1054
 #: appObjects/FlatCAMGerber.py:542 appObjects/FlatCAMGerber.py:685
 #: appTools/ToolCutOut.py:448 appTools/ToolIsolation.py:1623
 #: appTools/ToolIsolation.py:1785 appTools/ToolIsolation.py:1978 camlib.py:1231
@@ -13659,8 +13578,8 @@ msgstr ""
 "La herramienta de fresado para SLOTS es más grande que el tamaño del "
 "orificio. Cancelado."
 
-#: appObjects/FlatCAMGeometry.py:128 appObjects/FlatCAMGeometry.py:1434
-#: appObjects/FlatCAMGeometry.py:1435 appObjects/FlatCAMGeometry.py:1444
+#: appObjects/FlatCAMGeometry.py:128 appObjects/FlatCAMGeometry.py:1435
+#: appObjects/FlatCAMGeometry.py:1436 appObjects/FlatCAMGeometry.py:1445
 msgid "Iso"
 msgstr "Aisl"
 
@@ -13668,8 +13587,8 @@ msgstr "Aisl"
 msgid "Finish"
 msgstr "Terminar"
 
-#: appObjects/FlatCAMGeometry.py:388 appObjects/FlatCAMGeometry.py:891
-#: appObjects/FlatCAMGeometry.py:954 appTools/ToolDrilling.py:705
+#: appObjects/FlatCAMGeometry.py:389 appObjects/FlatCAMGeometry.py:892
+#: appObjects/FlatCAMGeometry.py:955 appTools/ToolDrilling.py:705
 #: appTools/ToolDrilling.py:990 appTools/ToolDrilling.py:1037
 #: appTools/ToolIsolation.py:531 appTools/ToolIsolation.py:644
 #: appTools/ToolIsolation.py:710 appTools/ToolMilling.py:628
@@ -13680,11 +13599,11 @@ msgstr "Terminar"
 msgid "Multiple Tools"
 msgstr "Herramientas múltiples"
 
-#: appObjects/FlatCAMGeometry.py:554
+#: appObjects/FlatCAMGeometry.py:555
 msgid "Add from Tool DB"
 msgstr "Agregar desde la DB de herramientas"
 
-#: appObjects/FlatCAMGeometry.py:886 appObjects/FlatCAMGeometry.py:925
+#: appObjects/FlatCAMGeometry.py:887 appObjects/FlatCAMGeometry.py:926
 #: appTools/ToolDrilling.py:754 appTools/ToolDrilling.py:983
 #: appTools/ToolDrilling.py:1021 appTools/ToolIsolation.py:639
 #: appTools/ToolIsolation.py:674 appTools/ToolMilling.py:744
@@ -13693,31 +13612,31 @@ msgstr "Agregar desde la DB de herramientas"
 msgid "No Tool Selected"
 msgstr "Ninguna herramienta seleccionada"
 
-#: appObjects/FlatCAMGeometry.py:1072
+#: appObjects/FlatCAMGeometry.py:1073
 msgid "Tool added in Tool Table."
 msgstr "Herramienta añadida en la tabla de herramientas."
 
-#: appObjects/FlatCAMGeometry.py:1181 appObjects/FlatCAMGeometry.py:1190
+#: appObjects/FlatCAMGeometry.py:1182 appObjects/FlatCAMGeometry.py:1191
 msgid "Failed. Select a tool to copy."
 msgstr "Ha fallado. Seleccione una herramienta para copiar."
 
-#: appObjects/FlatCAMGeometry.py:1219
+#: appObjects/FlatCAMGeometry.py:1220
 msgid "Tool was copied in Tool Table."
 msgstr "La herramienta se copió en la tabla de herramientas."
 
-#: appObjects/FlatCAMGeometry.py:1249
+#: appObjects/FlatCAMGeometry.py:1250
 msgid "Tool was edited in Tool Table."
 msgstr "La herramienta fue editada en la tabla de herramientas."
 
-#: appObjects/FlatCAMGeometry.py:1278 appObjects/FlatCAMGeometry.py:1287
+#: appObjects/FlatCAMGeometry.py:1279 appObjects/FlatCAMGeometry.py:1288
 msgid "Failed. Select a tool to delete."
 msgstr "Ha fallado. Seleccione una herramienta para eliminar."
 
-#: appObjects/FlatCAMGeometry.py:1311
+#: appObjects/FlatCAMGeometry.py:1312
 msgid "Tool was deleted in Tool Table."
 msgstr "La herramienta se eliminó en la tabla de herramientas."
 
-#: appObjects/FlatCAMGeometry.py:1348 appObjects/FlatCAMGeometry.py:1357
+#: appObjects/FlatCAMGeometry.py:1349 appObjects/FlatCAMGeometry.py:1358
 msgid ""
 "Disabled because the tool is V-shape.\n"
 "For V-shape tools the depth of cut is\n"
@@ -13735,30 +13654,30 @@ msgstr ""
 "- Herramienta Dia -> columna 'Dia' encontrada en la tabla de herramientas\n"
 "NB: un valor de cero significa que Tool Dia = 'V-tip Dia'"
 
-#: appObjects/FlatCAMGeometry.py:1776 appTools/ToolDrilling.py:1256
+#: appObjects/FlatCAMGeometry.py:1777 appTools/ToolDrilling.py:1256
 #: appTools/ToolMilling.py:1256
 msgid "Focus Z"
 msgstr "Enfoque Z"
 
-#: appObjects/FlatCAMGeometry.py:1795 appTools/ToolDrilling.py:1278
+#: appObjects/FlatCAMGeometry.py:1796 appTools/ToolDrilling.py:1278
 #: appTools/ToolMilling.py:1275
 msgid "Laser Power"
 msgstr "Poder del laser"
 
-#: appObjects/FlatCAMGeometry.py:1848
+#: appObjects/FlatCAMGeometry.py:1849
 msgid "This Geometry can't be processed because it is"
 msgstr "Esta geometría no se puede procesar porque es"
 
-#: appObjects/FlatCAMGeometry.py:1848
+#: appObjects/FlatCAMGeometry.py:1849
 msgid "geometry"
 msgstr "geometría"
 
-#: appObjects/FlatCAMGeometry.py:1879
+#: appObjects/FlatCAMGeometry.py:1880
 msgid "Failed. No tool selected in the tool table ..."
 msgstr ""
 "Ha fallado. Ninguna herramienta seleccionada en la tabla de herramientas ..."
 
-#: appObjects/FlatCAMGeometry.py:1980 appObjects/FlatCAMGeometry.py:2135
+#: appObjects/FlatCAMGeometry.py:1981 appObjects/FlatCAMGeometry.py:2136
 msgid ""
 "Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
@@ -13767,51 +13686,51 @@ msgstr ""
 "pero no se proporciona ningún valor.\n"
 "Agregue una Herramienta de compensación o cambie el Tipo de compensación."
 
-#: appObjects/FlatCAMGeometry.py:2048 appObjects/FlatCAMGeometry.py:2198
+#: appObjects/FlatCAMGeometry.py:2049 appObjects/FlatCAMGeometry.py:2199
 msgid "G-Code parsing in progress..."
 msgstr "Análisis de código G en progreso ..."
 
-#: appObjects/FlatCAMGeometry.py:2050 appObjects/FlatCAMGeometry.py:2200
+#: appObjects/FlatCAMGeometry.py:2051 appObjects/FlatCAMGeometry.py:2201
 msgid "G-Code parsing finished..."
 msgstr "Análisis de código G terminado ..."
 
-#: appObjects/FlatCAMGeometry.py:2058
+#: appObjects/FlatCAMGeometry.py:2059
 msgid "Finished G-Code processing"
 msgstr "Procesamiento de código G terminado"
 
-#: appObjects/FlatCAMGeometry.py:2060 appObjects/FlatCAMGeometry.py:2212
+#: appObjects/FlatCAMGeometry.py:2061 appObjects/FlatCAMGeometry.py:2213
 msgid "G-Code processing failed with error"
 msgstr "El procesamiento del código G falló con error"
 
-#: appObjects/FlatCAMGeometry.py:2104 appTools/ToolSolderPaste.py:866
+#: appObjects/FlatCAMGeometry.py:2105 appTools/ToolSolderPaste.py:866
 msgid "Cancelled. Empty file, it has no geometry"
 msgstr "Cancelado. Archivo vacío, no tiene geometría"
 
-#: appObjects/FlatCAMGeometry.py:2210 appObjects/FlatCAMGeometry.py:2380
+#: appObjects/FlatCAMGeometry.py:2211 appObjects/FlatCAMGeometry.py:2381
 msgid "Finished G-Code processing..."
 msgstr "Procesamiento de código G terminado ..."
 
-#: appObjects/FlatCAMGeometry.py:2229 appObjects/FlatCAMGeometry.py:2233
-#: appObjects/FlatCAMGeometry.py:2385 appTools/ToolDrilling.py:1960
+#: appObjects/FlatCAMGeometry.py:2230 appObjects/FlatCAMGeometry.py:2234
+#: appObjects/FlatCAMGeometry.py:2386 appTools/ToolDrilling.py:1960
 #: appTools/ToolMilling.py:1417
 msgid "Generating CNC Code"
 msgstr "Generando Código CNC"
 
-#: appObjects/FlatCAMGeometry.py:2231 appObjects/FlatCAMGeometry.py:2235
-#: appObjects/FlatCAMGeometry.py:2387
+#: appObjects/FlatCAMGeometry.py:2232 appObjects/FlatCAMGeometry.py:2236
+#: appObjects/FlatCAMGeometry.py:2388
 msgid "CNCjob created"
 msgstr "CNCjob creado"
 
-#: appObjects/FlatCAMGeometry.py:2418 appObjects/FlatCAMGeometry.py:2427
+#: appObjects/FlatCAMGeometry.py:2419 appObjects/FlatCAMGeometry.py:2428
 #: appParsers/ParseGerber.py:1956 appParsers/ParseGerber.py:1966
 msgid "Scale factor has to be a number: integer or float."
 msgstr "El factor de escala debe ser un número: entero o Real."
 
-#: appObjects/FlatCAMGeometry.py:2490
+#: appObjects/FlatCAMGeometry.py:2491
 msgid "Geometry Scale done."
 msgstr "Escala de geometría realizada."
 
-#: appObjects/FlatCAMGeometry.py:2507 appParsers/ParseGerber.py:2082
+#: appObjects/FlatCAMGeometry.py:2508 appParsers/ParseGerber.py:2082
 msgid ""
 "An (x,y) pair of values are needed. Probable you entered only one value in "
 "the Offset field."
@@ -13819,11 +13738,11 @@ msgstr ""
 "Se necesita un par de valores (x, y). Probablemente haya ingresado un solo "
 "valor en el campo Desplazamiento."
 
-#: appObjects/FlatCAMGeometry.py:2563
+#: appObjects/FlatCAMGeometry.py:2564
 msgid "Geometry Offset done."
 msgstr "Desplazamiento de geometría realizado."
 
-#: appObjects/FlatCAMGeometry.py:2592
+#: appObjects/FlatCAMGeometry.py:2593
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y)\n"
@@ -13833,12 +13752,12 @@ msgstr ""
 "formato (x, y)\n"
 "pero ahora solo hay un valor, no dos."
 
-#: appObjects/FlatCAMGeometry.py:2695 appTools/ToolDrilling.py:1376
+#: appObjects/FlatCAMGeometry.py:2696 appTools/ToolDrilling.py:1376
 #: appTools/ToolMilling.py:1488
 msgid "Delete failed. There are no exclusion areas to delete."
 msgstr "Eliminar falló. No hay áreas de exclusión para eliminar."
 
-#: appObjects/FlatCAMGeometry.py:2712 appTools/ToolDrilling.py:1393
+#: appObjects/FlatCAMGeometry.py:2713 appTools/ToolDrilling.py:1393
 #: appTools/ToolMilling.py:1505
 msgid "Delete failed. Nothing is selected."
 msgstr "Eliminar falló. Nada es seleccionado."
@@ -14270,7 +14189,7 @@ msgstr ""
 "Si se utilizan estos puntos, se supone traslación y rotación."
 
 #: appTools/ToolAlignObjects.py:498 appTools/ToolCalculators.py:372
-#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1577
+#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1583
 #: appTools/ToolCorners.py:444 appTools/ToolCutOut.py:2394
 #: appTools/ToolDblSided.py:938 appTools/ToolDrilling.py:2649
 #: appTools/ToolEtchCompensation.py:458 appTools/ToolExtractDrills.py:702
@@ -14278,15 +14197,15 @@ msgstr ""
 #: appTools/ToolInvertGerber.py:286 appTools/ToolIsolation.py:3477
 #: appTools/ToolMilling.py:2324 appTools/ToolNCC.py:4388
 #: appTools/ToolOptimal.py:593 appTools/ToolPaint.py:3194
-#: appTools/ToolPanelize.py:889 appTools/ToolPunchGerber.py:993
-#: appTools/ToolQRCode.py:904 appTools/ToolRulesCheck.py:1618
+#: appTools/ToolPanelize.py:889 appTools/ToolPunchGerber.py:996
+#: appTools/ToolQRCode.py:904 appTools/ToolRulesCheck.py:1620
 #: appTools/ToolSolderPaste.py:1557 appTools/ToolSub.py:754
 #: appTools/ToolTransform.py:920
 msgid "Reset Tool"
 msgstr "Restablecer la Herramienta"
 
 #: appTools/ToolAlignObjects.py:501 appTools/ToolCalculators.py:375
-#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1580
+#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1586
 #: appTools/ToolCorners.py:447 appTools/ToolCutOut.py:2397
 #: appTools/ToolDblSided.py:941 appTools/ToolDrilling.py:2652
 #: appTools/ToolEtchCompensation.py:461 appTools/ToolExtractDrills.py:705
@@ -14294,8 +14213,8 @@ msgstr "Restablecer la Herramienta"
 #: appTools/ToolInvertGerber.py:289 appTools/ToolIsolation.py:3480
 #: appTools/ToolMilling.py:2327 appTools/ToolNCC.py:4391
 #: appTools/ToolOptimal.py:596 appTools/ToolPaint.py:3197
-#: appTools/ToolPanelize.py:892 appTools/ToolPunchGerber.py:996
-#: appTools/ToolQRCode.py:907 appTools/ToolRulesCheck.py:1621
+#: appTools/ToolPanelize.py:892 appTools/ToolPunchGerber.py:999
+#: appTools/ToolQRCode.py:907 appTools/ToolRulesCheck.py:1623
 #: appTools/ToolSolderPaste.py:1560 appTools/ToolSub.py:757
 #: appTools/ToolTransform.py:923
 msgid "Will reset the tool parameters."
@@ -14711,7 +14630,7 @@ msgid "Squares grid fill selected."
 msgstr "Rellenar cuadrícula de cuadrados seleccionados."
 
 #: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:308
-#: appTools/ToolCopperThieving.py:910 appTools/ToolCorners.py:120
+#: appTools/ToolCopperThieving.py:916 appTools/ToolCorners.py:120
 #: appTools/ToolDblSided.py:304 appTools/ToolExtractDrills.py:141
 #: appTools/ToolFiducials.py:187 appTools/ToolFiducials.py:464
 #: appTools/ToolOptimal.py:138 appTools/ToolPunchGerber.py:188
@@ -14719,16 +14638,16 @@ msgstr "Rellenar cuadrícula de cuadrados seleccionados."
 msgid "There is no Gerber object loaded ..."
 msgstr "No hay ningún objeto Gerber cargado ..."
 
-#: appTools/ToolCopperThieving.py:239 appTools/ToolCopperThieving.py:838
+#: appTools/ToolCopperThieving.py:239 appTools/ToolCopperThieving.py:844
 msgid "Append geometry"
 msgstr "Añadir geometría"
 
-#: appTools/ToolCopperThieving.py:283 appTools/ToolCopperThieving.py:871
-#: appTools/ToolCopperThieving.py:1016
+#: appTools/ToolCopperThieving.py:283 appTools/ToolCopperThieving.py:877
+#: appTools/ToolCopperThieving.py:1022
 msgid "Append source file"
 msgstr "Agregar archivo fuente"
 
-#: appTools/ToolCopperThieving.py:291 appTools/ToolCopperThieving.py:879
+#: appTools/ToolCopperThieving.py:291 appTools/ToolCopperThieving.py:885
 msgid "Copper Thieving Tool done."
 msgstr "Herramienta Copper Thieving hecha."
 
@@ -14753,7 +14672,7 @@ msgid "Click the end point of the filling area."
 msgstr "Haga clic en el punto final del área de relleno."
 
 #: appTools/ToolCopperThieving.py:507 appTools/ToolCopperThieving.py:511
-#: appTools/ToolCopperThieving.py:572
+#: appTools/ToolCopperThieving.py:570
 msgid "Thieving"
 msgstr "Ladrón"
 
@@ -14765,15 +14684,15 @@ msgstr "Herramienta de Copper Thieving iniciada. Parámetros de lectura."
 msgid "Copper Thieving Tool. Preparing isolation polygons."
 msgstr "Herramienta Copper Thieving. Preparación de polígonos de aislamiento."
 
-#: appTools/ToolCopperThieving.py:588
+#: appTools/ToolCopperThieving.py:586
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
 msgstr ""
 "Herramienta Copper Thieving. Preparación de áreas para rellenar con cobre."
 
-#: appTools/ToolCopperThieving.py:599 appTools/ToolFilm.py:631
+#: appTools/ToolCopperThieving.py:597 appTools/ToolFilm.py:631
 #: appTools/ToolFilm.py:879 appTools/ToolIsolation.py:916
 #: appTools/ToolNCC.py:853 appTools/ToolOptimal.py:145
-#: appTools/ToolPanelize.py:612 appTools/ToolRulesCheck.py:626
+#: appTools/ToolPanelize.py:612 appTools/ToolRulesCheck.py:627
 msgid "Working..."
 msgstr "Trabajando..."
 
@@ -14800,27 +14719,27 @@ msgstr ""
 msgid "Create geometry"
 msgstr "Crear geometría"
 
-#: appTools/ToolCopperThieving.py:890 appTools/ToolCopperThieving.py:894
+#: appTools/ToolCopperThieving.py:896 appTools/ToolCopperThieving.py:900
 msgid "P-Plating Mask"
 msgstr "Mascarilla P"
 
-#: appTools/ToolCopperThieving.py:916
+#: appTools/ToolCopperThieving.py:922
 msgid "Append PP-M geometry"
 msgstr "Añadir geometría de máscara de recubrimiento P"
 
-#: appTools/ToolCopperThieving.py:1034
+#: appTools/ToolCopperThieving.py:1040
 msgid "Generating Pattern Plating Mask done."
 msgstr "Generando patrón de recubrimiento de máscara hecho."
 
-#: appTools/ToolCopperThieving.py:1106
+#: appTools/ToolCopperThieving.py:1112
 msgid "Copper Thieving Tool exit."
 msgstr "Salida de herramienta de Copper Thieving."
 
-#: appTools/ToolCopperThieving.py:1165 appTools/ToolFiducials.py:875
+#: appTools/ToolCopperThieving.py:1171 appTools/ToolFiducials.py:875
 msgid "Gerber Object to which will be added a copper thieving."
 msgstr "Gerber Objeto al que se agregará un Copper Thieving."
 
-#: appTools/ToolCopperThieving.py:1191
+#: appTools/ToolCopperThieving.py:1197
 msgid ""
 "This set the distance between the copper thieving components\n"
 "(the polygon fill may be split in multiple polygons)\n"
@@ -14830,7 +14749,7 @@ msgstr ""
 "(el relleno de polígono puede dividirse en múltiples polígonos)\n"
 "y las rastros de cobre en el archivo Gerber."
 
-#: appTools/ToolCopperThieving.py:1224
+#: appTools/ToolCopperThieving.py:1230
 msgid ""
 "- 'Itself' - the copper thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
@@ -14845,12 +14764,12 @@ msgstr ""
 "- 'Objeto de referencia': 'Copper Thieving' dentro del área especificada por "
 "otro objeto."
 
-#: appTools/ToolCopperThieving.py:1231 appTools/ToolIsolation.py:3385
+#: appTools/ToolCopperThieving.py:1237 appTools/ToolIsolation.py:3385
 #: appTools/ToolNCC.py:4317 appTools/ToolPaint.py:3137
 msgid "Ref. Type"
 msgstr "Tipo de Ref"
 
-#: appTools/ToolCopperThieving.py:1233
+#: appTools/ToolCopperThieving.py:1239
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
@@ -14859,22 +14778,22 @@ msgstr ""
 "Thieving'.\n"
 "Puede ser Gerber, Excellon o Geometry."
 
-#: appTools/ToolCopperThieving.py:1242 appTools/ToolIsolation.py:3396
+#: appTools/ToolCopperThieving.py:1248 appTools/ToolIsolation.py:3396
 #: appTools/ToolNCC.py:4327 appTools/ToolPaint.py:3147
 msgid "Ref. Object"
 msgstr "Objeto de Ref"
 
-#: appTools/ToolCopperThieving.py:1244 appTools/ToolIsolation.py:3398
+#: appTools/ToolCopperThieving.py:1250 appTools/ToolIsolation.py:3398
 #: appTools/ToolNCC.py:4329 appTools/ToolPaint.py:3149
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
 "El objeto FlatCAM que se utilizará como referencia de compensación sin cobre."
 
-#: appTools/ToolCopperThieving.py:1420
+#: appTools/ToolCopperThieving.py:1426
 msgid "Insert Copper thieving"
 msgstr "Insertar Copper thieving"
 
-#: appTools/ToolCopperThieving.py:1422
+#: appTools/ToolCopperThieving.py:1428
 msgid ""
 "Will add a polygon (may be split in multiple parts)\n"
 "that will surround the actual Gerber traces at a certain distance."
@@ -14882,11 +14801,11 @@ msgstr ""
 "Agregará un polígono (puede dividirse en varias partes)\n"
 "eso rodeará las huellas reales de Gerber a cierta distancia."
 
-#: appTools/ToolCopperThieving.py:1481
+#: appTools/ToolCopperThieving.py:1487
 msgid "Insert Robber Bar"
 msgstr "Insertar Robber Bar"
 
-#: appTools/ToolCopperThieving.py:1483
+#: appTools/ToolCopperThieving.py:1489
 msgid ""
 "Will add a polygon with a defined thickness\n"
 "that will surround the actual Gerber object\n"
@@ -14898,11 +14817,11 @@ msgstr ""
 "a cierta distancia.\n"
 "Se requiere cuando se hace un patrón de agujeros."
 
-#: appTools/ToolCopperThieving.py:1507
+#: appTools/ToolCopperThieving.py:1513
 msgid "Select Soldermask object"
 msgstr "Seleccionar objeto Soldermask"
 
-#: appTools/ToolCopperThieving.py:1509
+#: appTools/ToolCopperThieving.py:1515
 msgid ""
 "Gerber Object with the soldermask.\n"
 "It will be used as a base for\n"
@@ -14912,11 +14831,11 @@ msgstr ""
 "Se utilizará como base para\n"
 "El patrón de la máscara de recubrimiento."
 
-#: appTools/ToolCopperThieving.py:1538
+#: appTools/ToolCopperThieving.py:1544
 msgid "Plated area"
 msgstr "Área chapada"
 
-#: appTools/ToolCopperThieving.py:1540
+#: appTools/ToolCopperThieving.py:1546
 msgid ""
 "The area to be plated by pattern plating.\n"
 "Basically is made from the openings in the plating mask.\n"
@@ -14935,19 +14854,19 @@ msgstr ""
 "un poco más grande que las almohadillas de cobre, y esta área es\n"
 "calculado a partir de las aberturas de la máscara de soldadura."
 
-#: appTools/ToolCopperThieving.py:1551
+#: appTools/ToolCopperThieving.py:1557
 msgid "mm"
 msgstr "mm"
 
-#: appTools/ToolCopperThieving.py:1553
+#: appTools/ToolCopperThieving.py:1559
 msgid "in"
 msgstr "in"
 
-#: appTools/ToolCopperThieving.py:1560
+#: appTools/ToolCopperThieving.py:1566
 msgid "Generate pattern plating mask"
 msgstr "Generar máscara de recubrimiento de patrón"
 
-#: appTools/ToolCopperThieving.py:1562
+#: appTools/ToolCopperThieving.py:1568
 msgid ""
 "Will add to the soldermask gerber geometry\n"
 "the geometries of the copper thieving and/or\n"
@@ -17591,7 +17510,7 @@ msgstr "Restrinja el panel dentro de"
 msgid "Panelize Object"
 msgstr "Panelizar objeto"
 
-#: appTools/ToolPanelize.py:874 appTools/ToolRulesCheck.py:1603
+#: appTools/ToolPanelize.py:874 appTools/ToolRulesCheck.py:1605
 msgid ""
 "Panelize the specified object around the specified box.\n"
 "In other words it creates multiple copies of the source object,\n"
@@ -17810,11 +17729,11 @@ msgstr "Métrico"
 msgid "Punch Tool"
 msgstr "Herram. de Perforación"
 
-#: appTools/ToolPunchGerber.py:275
+#: appTools/ToolPunchGerber.py:278
 msgid "The value of the fixed diameter is 0.0. Aborting."
 msgstr "El valor del diámetro fijo es 0.0. Abortar."
 
-#: appTools/ToolPunchGerber.py:278
+#: appTools/ToolPunchGerber.py:281
 msgid ""
 "Could not generate punched hole Gerber because the punch hole size is bigger "
 "than some of the apertures in the Gerber object."
@@ -17822,7 +17741,7 @@ msgstr ""
 "No se pudo generar el agujero perforado Gerber porque el tamaño del agujero "
 "perforado es mayor que algunas de las aberturas en el objeto Gerber."
 
-#: appTools/ToolPunchGerber.py:341
+#: appTools/ToolPunchGerber.py:344
 msgid ""
 "Could not generate punched hole Gerber because the newly created object "
 "geometry is the same as the one in the source object geometry..."
@@ -17831,26 +17750,26 @@ msgstr ""
 "objeto recién creada es la misma que la de la geometría del objeto de "
 "origen ..."
 
-#: appTools/ToolPunchGerber.py:684 appTools/ToolPunchGerber.py:977
+#: appTools/ToolPunchGerber.py:687 appTools/ToolPunchGerber.py:980
 msgid "Punch Gerber"
 msgstr "Gerber Perforadora"
 
-#: appTools/ToolPunchGerber.py:719
+#: appTools/ToolPunchGerber.py:722
 msgid "Gerber into which to punch holes"
 msgstr "Gerber en el que hacer agujeros"
 
-#: appTools/ToolPunchGerber.py:739
+#: appTools/ToolPunchGerber.py:742
 msgid "ALL"
 msgstr "TODAS"
 
-#: appTools/ToolPunchGerber.py:820
+#: appTools/ToolPunchGerber.py:823
 msgid ""
 "Remove the geometry of Excellon from the Gerber to create the holes in pads."
 msgstr ""
 "Retire la geometría de Excellon del Gerber para crear los agujeros en las "
 "almohadillas."
 
-#: appTools/ToolPunchGerber.py:979
+#: appTools/ToolPunchGerber.py:982
 msgid ""
 "Create a Gerber object from the selected object, within\n"
 "the specified box."
@@ -17932,23 +17851,23 @@ msgstr "Insertar QRCode"
 msgid "Create the QRCode object."
 msgstr "Crea el objeto QRCode."
 
-#: appTools/ToolRulesCheck.py:657 appTools/ToolRulesCheck.py:717
-#: appTools/ToolRulesCheck.py:754 appTools/ToolRulesCheck.py:826
-#: appTools/ToolRulesCheck.py:880 appTools/ToolRulesCheck.py:918
-#: appTools/ToolRulesCheck.py:983
+#: appTools/ToolRulesCheck.py:658 appTools/ToolRulesCheck.py:718
+#: appTools/ToolRulesCheck.py:755 appTools/ToolRulesCheck.py:827
+#: appTools/ToolRulesCheck.py:881 appTools/ToolRulesCheck.py:919
+#: appTools/ToolRulesCheck.py:984
 msgid "Value is not valid."
 msgstr "El valor no es valido."
 
-#: appTools/ToolRulesCheck.py:671
+#: appTools/ToolRulesCheck.py:672
 msgid "TOP -> Copper to Copper clearance"
 msgstr "ARRIBA -> Separación de Cobre a Cobre"
 
-#: appTools/ToolRulesCheck.py:682
+#: appTools/ToolRulesCheck.py:683
 msgid "BOTTOM -> Copper to Copper clearance"
 msgstr "ABAJO -> Separación de Cobre a Cobre"
 
-#: appTools/ToolRulesCheck.py:687 appTools/ToolRulesCheck.py:781
-#: appTools/ToolRulesCheck.py:945
+#: appTools/ToolRulesCheck.py:688 appTools/ToolRulesCheck.py:782
+#: appTools/ToolRulesCheck.py:946
 msgid ""
 "At least one Gerber object has to be selected for this rule but none is "
 "selected."
@@ -17956,14 +17875,14 @@ msgstr ""
 "Se debe seleccionar al menos un objeto Gerber para esta regla, pero no se "
 "selecciona ninguno."
 
-#: appTools/ToolRulesCheck.py:723
+#: appTools/ToolRulesCheck.py:724
 msgid ""
 "One of the copper Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
 "Uno de los objetos de cobre de Gerber o el objeto de contorno de Gerber no "
 "es válido."
 
-#: appTools/ToolRulesCheck.py:736 appTools/ToolRulesCheck.py:900
+#: appTools/ToolRulesCheck.py:737 appTools/ToolRulesCheck.py:901
 msgid ""
 "Outline Gerber object presence is mandatory for this rule but it is not "
 "selected."
@@ -17971,31 +17890,31 @@ msgstr ""
 "La presencia del objeto Contorno Gerber es obligatoria para esta regla, pero "
 "no está seleccionada."
 
-#: appTools/ToolRulesCheck.py:753 appTools/ToolRulesCheck.py:780
+#: appTools/ToolRulesCheck.py:754 appTools/ToolRulesCheck.py:781
 msgid "Silk to Silk clearance"
 msgstr "Distancia de Serigrafía a Serigrafía"
 
-#: appTools/ToolRulesCheck.py:766
+#: appTools/ToolRulesCheck.py:767
 msgid "TOP -> Silk to Silk clearance"
 msgstr "ARRIBA -> Distancia de Serigrafía a Serigrafía"
 
-#: appTools/ToolRulesCheck.py:776
+#: appTools/ToolRulesCheck.py:777
 msgid "BOTTOM -> Silk to Silk clearance"
 msgstr "ABAJO -> Distancia de Serigrafía a Serigrafía"
 
-#: appTools/ToolRulesCheck.py:832
+#: appTools/ToolRulesCheck.py:833
 msgid "One or more of the Gerber objects is not valid."
 msgstr "Uno o más de los objetos de Gerber no son válidos."
 
-#: appTools/ToolRulesCheck.py:840
+#: appTools/ToolRulesCheck.py:841
 msgid "TOP -> Silk to Solder Mask Clearance"
 msgstr "ARRIBA -> Distancia entre la Máscara de Soldadura y la Serigrafía"
 
-#: appTools/ToolRulesCheck.py:846
+#: appTools/ToolRulesCheck.py:847
 msgid "BOTTOM -> Silk to Solder Mask Clearance"
 msgstr "ABAJO -> Distancia entre la Máscara de Soldadura y la Serigrafía"
 
-#: appTools/ToolRulesCheck.py:850
+#: appTools/ToolRulesCheck.py:851
 msgid ""
 "Both Silk and Solder Mask Gerber objects has to be either both Top or both "
 "Bottom."
@@ -18003,126 +17922,126 @@ msgstr ""
 "Tanto los objetos de Serigrafía como los de Máscara de soldadura Gerber "
 "deben ser tanto Superior como Inferior."
 
-#: appTools/ToolRulesCheck.py:886
+#: appTools/ToolRulesCheck.py:887
 msgid ""
 "One of the Silk Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
 "Uno de los objetos de Serigrafía Gerber o el objeto Contorno Gerber no es "
 "válido."
 
-#: appTools/ToolRulesCheck.py:930
+#: appTools/ToolRulesCheck.py:931
 msgid "TOP -> Minimum Solder Mask Sliver"
 msgstr "ARRIBA -> Astilla de máscara de soldadura mínima"
 
-#: appTools/ToolRulesCheck.py:940
+#: appTools/ToolRulesCheck.py:941
 msgid "BOTTOM -> Minimum Solder Mask Sliver"
 msgstr "ABAJO -> Astilla de máscara de soldadura mínima"
 
-#: appTools/ToolRulesCheck.py:989
+#: appTools/ToolRulesCheck.py:990
 msgid "One of the Copper Gerber objects or the Excellon objects is not valid."
 msgstr "Uno de los objetos de Cobre Gerber u objetos de Excellon no es válido."
 
-#: appTools/ToolRulesCheck.py:1005
+#: appTools/ToolRulesCheck.py:1006
 msgid ""
 "Excellon object presence is mandatory for this rule but none is selected."
 msgstr ""
 "La presencia de objetos Excellon es obligatoria para esta regla, pero no se "
 "selecciona ninguna."
 
-#: appTools/ToolRulesCheck.py:1078 appTools/ToolRulesCheck.py:1091
-#: appTools/ToolRulesCheck.py:1102 appTools/ToolRulesCheck.py:1115
+#: appTools/ToolRulesCheck.py:1080 appTools/ToolRulesCheck.py:1093
+#: appTools/ToolRulesCheck.py:1104 appTools/ToolRulesCheck.py:1117
 msgid "STATUS"
 msgstr "ESTADO"
 
-#: appTools/ToolRulesCheck.py:1081 appTools/ToolRulesCheck.py:1105
+#: appTools/ToolRulesCheck.py:1083 appTools/ToolRulesCheck.py:1107
 msgid "FAILED"
 msgstr "HA FALLADO"
 
-#: appTools/ToolRulesCheck.py:1094 appTools/ToolRulesCheck.py:1118
+#: appTools/ToolRulesCheck.py:1096 appTools/ToolRulesCheck.py:1120
 msgid "PASSED"
 msgstr "PASADO"
 
-#: appTools/ToolRulesCheck.py:1095 appTools/ToolRulesCheck.py:1119
+#: appTools/ToolRulesCheck.py:1097 appTools/ToolRulesCheck.py:1121
 msgid "Violations: There are no violations for the current rule."
 msgstr "Infracciones: no hay infracciones para la regla actual."
 
-#: appTools/ToolRulesCheck.py:1137
+#: appTools/ToolRulesCheck.py:1139
 msgid "Check Rules"
 msgstr "Verificar Reglas"
 
-#: appTools/ToolRulesCheck.py:1165
+#: appTools/ToolRulesCheck.py:1167
 msgid "Gerber objects for which to check rules."
 msgstr "Objetos de Gerber para los cuales verificar las reglas."
 
-#: appTools/ToolRulesCheck.py:1180
+#: appTools/ToolRulesCheck.py:1182
 msgid "Top"
 msgstr "Top"
 
-#: appTools/ToolRulesCheck.py:1182
+#: appTools/ToolRulesCheck.py:1184
 msgid "The Top Gerber Copper object for which rules are checked."
 msgstr "El objeto de cobre Top Gerber para el que se verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1198
+#: appTools/ToolRulesCheck.py:1200
 msgid "Bottom"
 msgstr "Inferior"
 
-#: appTools/ToolRulesCheck.py:1200
+#: appTools/ToolRulesCheck.py:1202
 msgid "The Bottom Gerber Copper object for which rules are checked."
 msgstr ""
 "El objeto de cobre de Gerber inferior para el que se verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1216
+#: appTools/ToolRulesCheck.py:1218
 msgid "SM Top"
 msgstr "SM Top"
 
-#: appTools/ToolRulesCheck.py:1218
+#: appTools/ToolRulesCheck.py:1220
 msgid "The Top Gerber Solder Mask object for which rules are checked."
 msgstr ""
 "El objeto Máscara de soldadura de Gerber superior para el que se verifican "
 "las reglas."
 
-#: appTools/ToolRulesCheck.py:1234
+#: appTools/ToolRulesCheck.py:1236
 msgid "SM Bottom"
 msgstr "SM Inferior"
 
-#: appTools/ToolRulesCheck.py:1236
+#: appTools/ToolRulesCheck.py:1238
 msgid "The Bottom Gerber Solder Mask object for which rules are checked."
 msgstr ""
 "El objeto de máscara de soldadura de Gerber inferior para el que se "
 "verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1252
+#: appTools/ToolRulesCheck.py:1254
 msgid "Silk Top"
 msgstr "Top de serigrafía"
 
-#: appTools/ToolRulesCheck.py:1254
+#: appTools/ToolRulesCheck.py:1256
 msgid "The Top Gerber Silkscreen object for which rules are checked."
 msgstr ""
 "El objeto de serigrafía Top Gerber para el que se verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1270
+#: appTools/ToolRulesCheck.py:1272
 msgid "Silk Bottom"
 msgstr "Serigrafía Inferior"
 
-#: appTools/ToolRulesCheck.py:1272
+#: appTools/ToolRulesCheck.py:1274
 msgid "The Bottom Gerber Silkscreen object for which rules are checked."
 msgstr ""
 "El objeto Serigrafía inferior de Gerber para el que se verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1290
+#: appTools/ToolRulesCheck.py:1292
 msgid "The Gerber Outline (Cutout) object for which rules are checked."
 msgstr ""
 "El objeto Esquema de Gerber (Recorte) para el que se verifican las reglas."
 
-#: appTools/ToolRulesCheck.py:1303
+#: appTools/ToolRulesCheck.py:1305
 msgid "Excellon objects for which to check rules."
 msgstr "Excellon objetos para los cuales verificar las reglas."
 
-#: appTools/ToolRulesCheck.py:1315
+#: appTools/ToolRulesCheck.py:1317
 msgid "Excellon 1"
 msgstr "Excellon 1"
 
-#: appTools/ToolRulesCheck.py:1317
+#: appTools/ToolRulesCheck.py:1319
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the plated holes or a general Excellon file content."
@@ -18130,11 +18049,11 @@ msgstr ""
 "Objeto Excellon para el cual verificar las reglas.\n"
 "Contiene los agujeros chapados o un contenido general del archivo Excellon."
 
-#: appTools/ToolRulesCheck.py:1334
+#: appTools/ToolRulesCheck.py:1336
 msgid "Excellon 2"
 msgstr "Excellon 2"
 
-#: appTools/ToolRulesCheck.py:1336
+#: appTools/ToolRulesCheck.py:1338
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the non-plated holes."
@@ -18142,15 +18061,15 @@ msgstr ""
 "Objeto Excellon para el cual verificar las reglas.\n"
 "Sostiene los agujeros no chapados."
 
-#: appTools/ToolRulesCheck.py:1349
+#: appTools/ToolRulesCheck.py:1351
 msgid "All Rules"
 msgstr "Todas las reglas"
 
-#: appTools/ToolRulesCheck.py:1351
+#: appTools/ToolRulesCheck.py:1353
 msgid "This check/uncheck all the rules below."
 msgstr "Esto marca / desmarca todas las reglas a continuación."
 
-#: appTools/ToolRulesCheck.py:1601
+#: appTools/ToolRulesCheck.py:1603
 msgid "Run Rules Check"
 msgstr "Ejecutar Reglas Verificar"
 
@@ -20243,6 +20162,134 @@ msgstr "Origen establecido al compensar todos los objetos cargados con "
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Sin nombre de geometría en args. Proporcione un nombre e intente nuevamente."
+
+#~ msgid "Add Geometry Tool in DB"
+#~ msgstr "Agregar herramienta de geo. en DB"
+
+#~ msgid ""
+#~ "Add a new tool in the Tools Table of the\n"
+#~ "active Geometry object after selecting a tool\n"
+#~ "in the Tools Database."
+#~ msgstr ""
+#~ "Agregue una nueva herramienta en la Tabla de herramientas del\n"
+#~ "objeto de geometría activo después de seleccionar una herramienta\n"
+#~ "en la base de datos de herramientas."
+
+#~ msgid "Tool Shape"
+#~ msgstr "Forma de la herram"
+
+#~ msgid "FR"
+#~ msgstr "FR"
+
+#~ msgid "FR Z"
+#~ msgstr "FR Z"
+
+#~ msgid "Toolchange"
+#~ msgstr "Cambio de herram"
+
+#~ msgid "Toolchange XY"
+#~ msgstr "Cambio de herra X, Y"
+
+#~ msgid "End Z"
+#~ msgstr "Fin Z"
+
+#~ msgid "Tool Index."
+#~ msgstr "Índice de herramientas."
+
+#~ msgid ""
+#~ "FR. Feedrate\n"
+#~ "The speed on XY plane used while cutting into material."
+#~ msgstr ""
+#~ "FR. Avance\n"
+#~ "La velocidad en el plano XY utilizada al cortar material."
+
+#~ msgid ""
+#~ "FR Z. Feedrate Z\n"
+#~ "The speed on Z plane."
+#~ msgstr ""
+#~ "FR Z. Avance Z\n"
+#~ "La velocidad en el plano Z."
+
+#~ msgid ""
+#~ "Preprocessor.\n"
+#~ "A selection of files that will alter the generated G-code\n"
+#~ "to fit for a number of use cases."
+#~ msgstr ""
+#~ "Preprocesador\n"
+#~ "Una selección de archivos que alterarán el código G generado\n"
+#~ "para adaptarse a una serie de casos de uso."
+
+#~ msgid ""
+#~ "Toolchange.\n"
+#~ "It will create a toolchange event.\n"
+#~ "The kind of toolchange is determined by\n"
+#~ "the preprocessor file."
+#~ msgstr ""
+#~ "Cambio de herramienta.\n"
+#~ "Creará un evento de cambio de herramienta.\n"
+#~ "El tipo de cambio de herramienta está determinado por\n"
+#~ "El archivo del preprocesador."
+
+#~ msgid ""
+#~ "Toolchange XY.\n"
+#~ "A set of coordinates in the format (x, y).\n"
+#~ "Will determine the cartesian position of the point\n"
+#~ "where the tool change event take place."
+#~ msgstr ""
+#~ "Cambio de herramienta XY.\n"
+#~ "Un conjunto de coordenadas en el formato (x, y).\n"
+#~ "Determinará la posición cartesiana del punto.\n"
+#~ "donde tiene lugar el evento de cambio de herramienta."
+
+#~ msgid ""
+#~ "Toolchange Z.\n"
+#~ "The position on Z plane where the tool change event take place."
+#~ msgstr ""
+#~ "Cambio de herramientas Z.\n"
+#~ "La posición en el plano Z donde tiene lugar el evento de cambio de "
+#~ "herramienta."
+
+#~ msgid ""
+#~ "Start Z.\n"
+#~ "If it's left empty it will not be used.\n"
+#~ "A position on Z plane to move immediately after job start."
+#~ msgstr ""
+#~ "Z inicio.\n"
+#~ "Si se deja vacío, no se usará.\n"
+#~ "Una posición en el plano Z para moverse inmediatamente después del inicio "
+#~ "del trabajo."
+
+#~ msgid ""
+#~ "End Z.\n"
+#~ "A position on Z plane to move immediately after job stop."
+#~ msgstr ""
+#~ "Z final.\n"
+#~ "Una posición en el plano Z para moverse inmediatamente después de la "
+#~ "detención del trabajo."
+
+#~ msgid "&New"
+#~ msgstr "&Nuevo"
+
+#~ msgid "Open &Project ..."
+#~ msgstr "Abierto &Project ..."
+
+#~ msgid "E&xit"
+#~ msgstr "Salida"
+
+#~ msgid "&Delete\tDEL"
+#~ msgstr "Borrar\tDEL"
+
+#~ msgid "&Delete"
+#~ msgstr "Borrar"
+
+#~ msgid "&Replot"
+#~ msgstr "Replantear"
+
+#~ msgid "&Command Line"
+#~ msgstr "Línea de comando"
+
+#~ msgid "&Cutout Tool"
+#~ msgstr "Herramienta de recorte"
 
 #~ msgid "Connect:"
 #~ msgstr "Conectar:"

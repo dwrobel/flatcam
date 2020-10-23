@@ -173,18 +173,14 @@ class AppTextEditor(QtWidgets.QWidget):
         self.callback = callback
 
     def handlePrint(self):
-        self.app.defaults.report_usage("handlePrint()")
-
         dialog = QtPrintSupport.QPrintDialog()
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+        if dialog.exec() == QtWidgets.QDialog.Accepted:
             self.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
-        self.app.defaults.report_usage("handlePreview()")
-
         dialog = QtPrintSupport.QPrintPreviewDialog()
-        dialog.paintRequested.connect(self.code_editor.print_)
-        dialog.exec_()
+        dialog.paintRequested.connect(self.code_editor.print)
+        dialog.exec()
 
     def handleTextChanged(self):
         # enable = not self.ui.code_editor.document().isEmpty()
