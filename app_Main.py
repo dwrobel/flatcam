@@ -73,7 +73,7 @@ from camlib import to_dict, dict2obj, ET, ParseError, Geometry, CNCjob
 from appGUI.PlotCanvas import *
 from appGUI.PlotCanvasLegacy import *
 from appGUI.MainGUI import *
-from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray
+from appGUI.GUIElements import FCFileSaveDialog, message_dialog, FlatCAMSystemTray, FCInputDialogSlider
 
 # FlatCAM Pre-processors
 from appPreProcessor import load_preprocessors
@@ -10198,11 +10198,14 @@ class App(QtCore.QObject):
             return
 
         if act_name == _("Opacity"):
-            alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
-                self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
+            # alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
+                # self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
+
+            alpha_dialog = FCInputDialogSlider(
+                self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, init_val=191)
+            alpha_level, ok_button = alpha_dialog.get_results()
 
             if ok_button:
-
                 alpha_str = str(hex(alpha_level)[2:]) if alpha_level != 0 else '00'
                 for sel_obj in sel_obj_list:
                     sel_obj.fill_color = sel_obj.fill_color[:-2] + alpha_str

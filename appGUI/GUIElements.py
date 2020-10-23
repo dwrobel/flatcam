@@ -1687,6 +1687,64 @@ class FCInputDialog(QtWidgets.QInputDialog):
         pass
 
 
+class FCInputDialogSlider(QtWidgets.QDialog):
+
+    def __init__(self, parent=None, title=None, text=None, min=None, max=None, step=1, init_val=None):
+        super().__init__(parent)
+
+        self.val = 0.0
+
+        self.init_value = init_val if init_val else 0.0
+
+        self.setWindowTitle(title) if title else self.setWindowTitle('title')
+        self.text = text if text else 'text'
+
+        self.min = min if min else 0
+        self.max = max if max else 255
+        self.step = step if step else 1
+
+        self.lbl = FCLabel(self.text)
+
+        self.wdg = FCSliderWithSpinner(min=self.min, max=self.max, step=self.step)
+        self.wdg.set_value(self.init_value)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.lbl)
+        self.layout.addWidget(self.wdg)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def set_title(self, txt):
+        self.setWindowTitle(txt)
+
+    def set_text(self, txt):
+        self.lbl.set_value(txt)
+
+    def set_min(self, val):
+        self.wdg.spinner.setMinimum(val)
+
+    def set_max(self, val):
+        self.wdg.spinner.setMaximum(val)
+
+    def set_range(self, min, max):
+        self.wdg.spinner.set_range(min, max)
+
+    def set_step(self, val):
+        self.wdg.spinner.set_step(val)
+
+    def get_results(self):
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            return self.wdg.get_value(), True
+        else:
+            return None, False
+
+
 class FCButton(QtWidgets.QPushButton):
     def __init__(self, text=None, checkable=None, click_callback=None, parent=None):
         super(FCButton, self).__init__(text, parent)

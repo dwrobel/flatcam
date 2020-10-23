@@ -7,6 +7,11 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+24.10.2020
+
+- added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
+- replaced the InputDialog in the Opacity pop menu for the objects in the Project Tab with a FCInputDialogSlider
+
 23.10.2020
 
 - updated Copper Thieving Tool to work with the updated program
