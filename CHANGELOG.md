@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - removed Hungarian language since it's looking like is no longer being translated
 - added a default properties tab which will hold a set of information's about the application
 - minor changes in the Properties Tool
+- Excellon UI: fixed a small issue with toggling all rows in Tools Table not toggling off and also the milling section in Utilities was not updated
 
 22.10.2020
 
