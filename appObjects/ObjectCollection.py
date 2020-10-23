@@ -967,7 +967,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
-                self.app.ui.selected_scroll_area.takeWidget()
+                self.app.ui.properties_scroll_area.takeWidget()
             except Exception as e:
                 log.debug("Nothing to remove. %s" % str(e))
 

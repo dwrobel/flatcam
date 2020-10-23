@@ -1978,9 +1978,9 @@ class AppExcEditor(QtCore.QObject):
         self.e_ui.tools_table_exc.clearSelection()
 
         # Remove anything else in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.takeWidget()
+        self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the GUI Properties Tab
-        self.app.ui.selected_scroll_area.setWidget(self.e_ui.exc_edit_widget)
+        self.app.ui.properties_scroll_area.setWidget(self.e_ui.exc_edit_widget)
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 

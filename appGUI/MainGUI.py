@@ -1230,9 +1230,9 @@ class MainGUI(QtWidgets.QMainWindow):
         self.properties_tab_layout = QtWidgets.QVBoxLayout(self.properties_tab)
         self.properties_tab_layout.setContentsMargins(2, 2, 2, 2)
 
-        self.selected_scroll_area = VerticalScrollArea()
-        # self.selected_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.properties_tab_layout.addWidget(self.selected_scroll_area)
+        self.properties_scroll_area = VerticalScrollArea()
+        # self.properties_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.properties_tab_layout.addWidget(self.properties_scroll_area)
         self.notebook.addTab(self.properties_tab, _("Properties"))
 
         # ########################################################################

@@ -253,9 +253,9 @@ class InvertUI:
               "- bevel -> the lines are joined by a third line")
         )
         self.join_radio = RadioSet([
-            {'label': 'Rounded', 'value': 'r'},
-            {'label': 'Square', 'value': 's'},
-            {'label': 'Bevel', 'value': 'b'}
+            {'label': _('Rounded'), 'value': 'r'},
+            {'label': _('Square'), 'value': 's'},
+            {'label': _('Bevel'), 'value': 'b'}
         ], orientation='vertical', stretch=False)
 
         grid0.addWidget(self.join_label, 7, 0, 1, 2)

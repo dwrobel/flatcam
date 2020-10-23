@@ -33,7 +33,6 @@ class FlatCAMDefaults:
 
         "global_coords_show": True,
         "global_delta_coords_show": False,
-        "global_grid_show": True,
         "global_status_show": True,
 
         "global_jump_ref": 'abs',
@@ -51,7 +50,6 @@ class FlatCAMDefaults:
             'in': [0.01, 0.02, 0.025, 0.05, 0.1],
             'mm': [0.1, 0.2, 0.5, 1, 2.54]
         },
-        "global_hud": True,
 
         # Persistence
         "global_last_folder": None,
@@ -126,6 +124,7 @@ class FlatCAMDefaults:
         "global_project_autohide": True,
 
         # General App Settings
+        "global_grid_show": True,
         "global_gridx": 1.0,
         "global_gridy": 1.0,
         "global_snap_max": 0.05,
@@ -133,6 +132,10 @@ class FlatCAMDefaults:
         "global_workspace": False,
         "global_workspaceT": "A4",
         "global_workspace_orientation": 'p',
+        "global_axis": True,
+        "global_hud": True,
+        "global_grid_lines": True,
+        "global_grid_snap": True,
 
         "global_cursor_type": "small",
         "global_cursor_size": 20,

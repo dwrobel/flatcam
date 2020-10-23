@@ -48,24 +48,23 @@ class Properties(AppTool):
         self.properties_frame.setLayout(self.properties_box)
 
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
-        self.properties_box.addWidget(title_label)
+        # title_label = QtWidgets.QLabel("%s" % self.toolName)
+        # title_label.setStyleSheet("""
+        #                 QLabel
+        #                 {
+        #                     font-size: 16px;
+        #                     font-weight: bold;
+        #                 }
+        #                 """)
+        # self.properties_box.addWidget(title_label)
 
         # self.layout.setMargin(0)  # PyQt4
         self.properties_box.setContentsMargins(0, 0, 0, 0)  # PyQt5
-
         self.vlay = QtWidgets.QVBoxLayout()
-
         self.properties_box.addLayout(self.vlay)
 
         self.treeWidget = FCTree(columns=2)
+        self.treeWidget.setStyleSheet("QTreeWidget {border: 0px;}")
 
         self.vlay.addWidget(self.treeWidget)
         self.vlay.setStretch(0, 0)

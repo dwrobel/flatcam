@@ -166,7 +166,7 @@ class App(QtCore.QObject):
     # ###############################################################################################################
     version = "Unstable Version"
     # version = 8.994
-    version_date = "2020/09/30"
+    version_date = "2020/10/30"
     beta = True
 
     engine = '3D'
@@ -804,6 +804,9 @@ class App(QtCore.QObject):
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
+        # when the defaults dictionary values change
+        self.defaults.defaults.set_change_callback(callback=self.on_properties_tab_click)
+
         # ########################################## Standard signals ###############################################
         # ### Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
@@ -964,6 +967,9 @@ class App(QtCore.QObject):
         # Project Context Menu -> Color Setting
         for act in self.ui.menuprojectcolor.actions():
             act.triggered.connect(self.on_set_color_action_triggered)
+
+        # Notebook tab clicking
+        self.ui.notebook.tabBarClicked.connect(self.on_properties_tab_click)
 
         # ###########################################################################################################
         # #################################### GUI PREFERENCES SIGNALS ##############################################
@@ -2349,7 +2355,7 @@ class App(QtCore.QObject):
 
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
-                        self.ui.selected_scroll_area.takeWidget()
+                        self.ui.properties_scroll_area.takeWidget()
 
                     elif edited_obj.kind == 'excellon':
                         obj_type = "Excellon"
@@ -2471,7 +2477,7 @@ class App(QtCore.QObject):
             self.call_source = 'app'
 
             # edited_obj.plot()
-            self.ui.plot_tab_area.setTabText(0, "Plot Area")
+            self.ui.plot_tab_area.setTabText(0, _("Plot Area"))
             self.ui.plot_tab_area.protectTab(0)
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
@@ -6992,7 +6998,7 @@ class App(QtCore.QObject):
                     log.debug("App.on_file_new() --> %s" % str(e))
 
             # # And then add again the Plot Area
-            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
+            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, _("Plot Area"))
             self.ui.plot_tab_area.protectTab(0)
 
         # take the focus of the Notebook on Project Tab.
@@ -9677,6 +9683,10 @@ class App(QtCore.QObject):
 
         self.log.debug("Recent items list has been populated.")
 
+    def on_properties_tab_click(self, index):
+        if self.ui.properties_scroll_area.widget().objectName() == 'default_properties':
+            self.setup_default_properties_tab()
+
     def setup_default_properties_tab(self):
         """
         Default text for the Properties tab when is not taken by the Object UI.
@@ -9686,24 +9696,79 @@ class App(QtCore.QObject):
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
-        sel_title = QtWidgets.QTextEdit()
-        sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # sel_title = QtWidgets.QTextEdit()
+        # sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        # sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        #
+        # f_settings = QSettings("Open Source", "FlatCAM")
+        # if f_settings.contains("notebook_font_size"):
+        #     fsize = f_settings.value('notebook_font_size', type=int)
+        # else:
+        #     fsize = 12
+        #
+        # tsize = fsize + int(fsize / 2)
+        #
+        # selected_text = ''
+        #
+        # sel_title.setText(selected_text)
+        # sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
-        f_settings = QSettings("Open Source", "FlatCAM")
-        if f_settings.contains("notebook_font_size"):
-            fsize = f_settings.value('notebook_font_size', type=int)
-        else:
-            fsize = 12
+        # Tree Widget
+        d_properties_tw = FCTree(columns=2)
+        d_properties_tw.setObjectName("default_properties")
+        d_properties_tw.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        d_properties_tw.setStyleSheet("QTreeWidget {border: 0px;}")
 
-        tsize = fsize + int(fsize / 2)
+        root = d_properties_tw.invisibleRootItem()
+        font = QtGui.QFont()
+        font.setBold(True)
+        p_color = QtGui.QColor("#000000") if self.defaults['global_gray_icons'] is False else QtGui.QColor("#FFFFFF")
 
-        selected_text = ''
+        # main Items categories
+        general_cat = d_properties_tw.addParent(root, _('General'), expanded=True, color=p_color, font=font)
+        d_properties_tw.addChild(parent=general_cat,
+                                 title=['%s:' % _("Name"), '%s' % _("FlatCAM Evo")], column1=True)
+        d_properties_tw.addChild(parent=general_cat,
+                                 title=['%s:' % _("Version"), '%s' % str(self.version)], column1=True)
+        d_properties_tw.addChild(parent=general_cat,
+                                 title=['%s:' % _("Release date"), '%s' % str(self.version_date)], column1=True)
 
-        sel_title.setText(selected_text)
-        sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        grid_cat = d_properties_tw.addParent(root, _('Grid'), expanded=True, color=p_color, font=font)
+        d_properties_tw.addChild(parent=grid_cat,
+                                 title=['%s:' % _("Displayed"), '%s' % str(self.defaults['global_grid_lines'])],
+                                 column1=True)
+        d_properties_tw.addChild(parent=grid_cat,
+                                 title=['%s:' % _("Snap"), '%s' % str(self.defaults['global_grid_snap'])],
+                                 column1=True)
+        d_properties_tw.addChild(parent=grid_cat,
+                                 title=['%s:' % _("X value"), '%s' % str(self.ui.grid_gap_x_entry.get_value())],
+                                 column1=True)
+        d_properties_tw.addChild(parent=grid_cat,
+                                 title=['%s:' % _("Y value"), '%s' % str(self.ui.grid_gap_y_entry.get_value())],
+                                 column1=True)
 
-        self.ui.selected_scroll_area.setWidget(sel_title)
+        canvas_cat = d_properties_tw.addParent(root, _('Canvas'), expanded=True, color=p_color, font=font)
+        d_properties_tw.addChild(parent=canvas_cat,
+                                 title=['%s:' % _("Axis"), '%s' % str(self.defaults['global_axis'])],
+                                 column1=True)
+        d_properties_tw.addChild(parent=canvas_cat,
+                                 title=['%s:' % _("Workspace active"),
+                                        '%s' % str(self.defaults['global_workspace'])],
+                                 column1=True)
+        d_properties_tw.addChild(parent=canvas_cat,
+                                 title=['%s:' % _("Workspace size"),
+                                        '%s' % str(self.defaults['global_workspaceT'])],
+                                 column1=True)
+        d_properties_tw.addChild(parent=canvas_cat,
+                                 title=['%s:' % _("Workspace orientation"),
+                                        '%s' % _("Portrait") if self.defaults[
+                                                                    'global_workspace_orientation'] == 'p' else
+                                        _("Landscape")],
+                                 column1=True)
+        d_properties_tw.addChild(parent=canvas_cat,
+                                 title=['%s:' % _("HUD"), '%s' % str(self.defaults['global_hud'])],
+                                 column1=True)
+        self.ui.properties_scroll_area.setWidget(d_properties_tw)
 
     def setup_obj_classes(self):
         """

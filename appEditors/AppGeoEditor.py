@@ -3528,9 +3528,9 @@ class AppGeoEditor(QtCore.QObject):
         self.decimals = self.app.decimals
 
         # Remove anything else in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.takeWidget()
+        self.app.ui.properties_scroll_area.takeWidget()
         # Put ourselves in the appGUI Properties Tab
-        self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
+        self.app.ui.properties_scroll_area.setWidget(self.geo_edit_widget)
         # Switch notebook to Properties page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.properties_tab)
 
@@ -4025,9 +4025,11 @@ class AppGeoEditor(QtCore.QObject):
 
         # make sure that the cursor shape is enabled/disabled, too
         if self.options['grid_snap'] is True:
+            self.app.defaults['global_grid_snap'] = True
             self.app.inform[str, bool].emit(_("Grid Snap enabled."), False)
             self.app.app_cursor.enabled = True
         else:
+            self.app.defaults['global_grid_snap'] = False
             self.app.app_cursor.enabled = False
             self.app.inform[str, bool].emit(_("Grid Snap disabled."), False)
 

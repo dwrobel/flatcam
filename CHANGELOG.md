@@ -16,6 +16,7 @@ CHANGELOG for FlatCAM beta
 - commented the ToolsDB class since it is not used currently
 - some minor changes in the AppTextEditor.py file
 - removed Hungarian language since it's looking like is no longer being translated
+- added a default properties tab which will hold a set of information's about the application
 
 22.10.2020
 
