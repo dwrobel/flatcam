@@ -267,7 +267,7 @@ class App(QtCore.QObject):
     # graphic residues behind
     cleanup = pyqtSignal()
 
-    def __init__(self, user_defaults=True):
+    def __init__(self, qapp, user_defaults=True):
         """
         Starts the application.
 
@@ -278,6 +278,8 @@ class App(QtCore.QObject):
         super().__init__()
 
         App.log.info("FlatCAM Starting...")
+
+        self.qapp = qapp
 
         # ############################################################################################################
         # ################# Setup the listening thread for another instance launching with args ######################

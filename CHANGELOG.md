@@ -17,11 +17,13 @@ CHANGELOG for FlatCAM beta
 - finished the Romanian translation
 - created two new preprocessors (from 'default' and from 'grbl_11') that will have no toolchange commands regardless of the settings in the software
 - updated the Turkish translation (by Mehmet Kaya)
-- the methods of the APP class that were the handlers for the File menu are now moved to their oen class
+- the methods of the APP class that were the handlers for the File menu are now moved to their own class
 - fixed some of the Tcl Commands that depended on the methods refactored above
 - reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
 - fixed newly introduced issue when doing File -> Print(PDF)
 - fixed newly introduced issues with SysTray and Splash
+- added ability for the app to detect the current DPI used on the screen; applied this information in the Film Tool when exporting PNG files
+- found that Pillow v >= 7.2 breaks Reportlab 3.5.53 (latest version) and creates an error in Film Tool when exporting PNG files. Pillow 7.2 still works.
 
 23.10.2020
 
