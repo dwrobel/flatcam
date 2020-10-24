@@ -21,6 +21,7 @@ CHANGELOG for FlatCAM beta
 - fixed some of the Tcl Commands that depended on the methods refactored above
 - reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
 - fixed newly introduced issue when doing File -> Print(PDF)
+- fixed newly introduced issues with SysTray and Splash
 
 23.10.2020
 

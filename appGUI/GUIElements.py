@@ -3848,10 +3848,10 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
             self.menu_open.addSeparator()
 
-            menu_openproject.triggered.connect(self.app.on_file_openproject)
-            menu_opengerber.triggered.connect(self.app.on_fileopengerber)
-            menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
-            menu_opengcode.triggered.connect(self.app.on_fileopengcode)
+            menu_openproject.triggered.connect(self.app.f_handlers.on_file_openproject)
+            menu_opengerber.triggered.connect(self.app.f_handlers.on_fileopengerber)
+            menu_openexcellon.triggered.connect(self.app.f_handlers.on_fileopenexcellon)
+            menu_opengcode.triggered.connect(self.app.f_handlers.on_fileopengcode)
 
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))

@@ -489,6 +489,7 @@ class App(QtCore.QObject):
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
         else:
+            self.splash = None
             show_splash = 0
 
         # ###########################################################################################################
@@ -743,24 +744,6 @@ class App(QtCore.QObject):
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
-
-        # ###########################################################################################################
-        # ############################################### SYS TRAY ##################################################
-        # ###########################################################################################################
-        if self.defaults["global_systray_icon"]:
-            self.parent_w = QtWidgets.QWidget()
-
-            if self.cmd_line_headless == 1:
-                self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location +
-                                                                   '/flatcam_icon32_green.png'),
-                                                  headless=True,
-                                                  parent=self.parent_w)
-            else:
-                self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location +
-                                                                   '/flatcam_icon32_green.png'),
-                                                  parent=self.parent_w)
 
         # ###########################################################################################################
         # ############################################### Worker SETUP ##############################################
@@ -1314,6 +1297,24 @@ class App(QtCore.QObject):
 
         # this is calculated in the class above (somehow?)
         self.defaults["root_folder_path"] = self.app_home
+
+        # ###########################################################################################################
+        # ############################################### SYS TRAY ##################################################
+        # ###########################################################################################################
+        if self.defaults["global_systray_icon"]:
+            self.parent_w = QtWidgets.QWidget()
+
+            if self.cmd_line_headless == 1:
+                self.trayIcon = FlatCAMSystemTray(app=self,
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
+                                                  headless=True,
+                                                  parent=self.parent_w)
+            else:
+                self.trayIcon = FlatCAMSystemTray(app=self,
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
+                                                  parent=self.parent_w)
 
         # ###########################################################################################################
         # ############################################ SETUP RECENT ITEMS ###########################################
