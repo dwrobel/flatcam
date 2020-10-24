@@ -15,6 +15,7 @@ CHANGELOG for FlatCAM beta
 - UI changes in the AppTextEditor and in CNCJob properties tab and in GCoe Editor
 - some changes in strings; updated all the translation strings to the latest changes
 - finished the Romanian translation
+- created two new preprocessors (from 'default' and from 'grbl_11') that will have no toolchange commands regardless of the settings in the software
 
 23.10.2020
 
