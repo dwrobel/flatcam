@@ -229,9 +229,9 @@ class ToolFiducials(AppTool):
                 self.ui.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y0))
 
             self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-            self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                 filename=None,
-                                                                 local_use=self.grb_object, use_thread=False)
+            self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                            filename=None,
+                                                                            local_use=self.grb_object, use_thread=False)
             self.on_exit()
         else:
             self.app.inform.emit(_("Click to add first Fiducial. Bottom Left..."))
@@ -467,8 +467,10 @@ class ToolFiducials(AppTool):
         self.sm_obj_set.add(self.sm_object.options['name'])
         self.add_fiducials_geo(self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
 
-        self.sm_object.source_file = self.app.export_gerber(obj_name=self.sm_object.options['name'], filename=None,
-                                                            local_use=self.sm_object, use_thread=False)
+        self.sm_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.sm_object.options['name'],
+                                                                       filename=None,
+                                                                       local_use=self.sm_object,
+                                                                       use_thread=False)
         self.on_exit()
 
     def on_mouse_release(self, event):
@@ -508,18 +510,18 @@ class ToolFiducials(AppTool):
                 self.ui.sec_points_coords_entry.set_value(self.click_points[2])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
                 self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-                self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                     filename=None,
-                                                                     local_use=self.grb_object, use_thread=False)
+                self.grb_object.source_file = self.app.f_handlers.export_gerber(
+                    obj_name=self.grb_object.options['name'], filename=None, local_use=self.grb_object,
+                    use_thread=False)
                 self.on_exit()
         else:
             if len(self.click_points) == 2:
                 self.ui.top_right_coords_entry.set_value(self.click_points[1])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
                 self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
-                self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                                     filename=None,
-                                                                     local_use=self.grb_object, use_thread=False)
+                self.grb_object.source_file = self.app.f_handlers.export_gerber(
+                    obj_name=self.grb_object.options['name'], filename=None,
+                    local_use=self.grb_object, use_thread=False)
                 self.on_exit()
 
     def on_mouse_move(self, event):

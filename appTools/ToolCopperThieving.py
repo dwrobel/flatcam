@@ -282,10 +282,9 @@ class ToolCopperThieving(AppTool):
 
         self.app.proc_container.update_view_text(' %s' % _("Append source file"))
         # update the source file with the new geometry:
-        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
-                                                             filename=None,
-                                                             local_use=self.grb_object,
-                                                             use_thread=False)
+        self.grb_object.source_file = self.app.f_handlers.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                        filename=None, local_use=self.grb_object,
+                                                                        use_thread=False)
         self.app.proc_container.update_view_text(' %s' % '')
         self.on_exit()
         self.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
@@ -876,10 +875,9 @@ class ToolCopperThieving(AppTool):
 
             app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            app_obj.grb_object.source_file = app_obj.app.export_gerber(obj_name=app_obj.grb_object.options['name'],
-                                                                       filename=None,
-                                                                       local_use=app_obj.grb_object,
-                                                                       use_thread=False)
+            app_obj.grb_object.source_file = app_obj.f_handlers.export_gerber(
+                obj_name=app_obj.grb_object.options['name'], filename=None, local_use=app_obj.grb_object,
+                use_thread=False)
             app_obj.app.proc_container.update_view_text(' %s' % '')
             app_obj.on_exit()
             app_obj.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
@@ -1021,10 +1019,8 @@ class ToolCopperThieving(AppTool):
 
             app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            grb_obj.source_file = app_obj.export_gerber(obj_name=name,
-                                                        filename=None,
-                                                        local_use=grb_obj,
-                                                        use_thread=False)
+            grb_obj.source_file = app_obj.f_handlers.export_gerber(obj_name=name, filename=None, local_use=grb_obj,
+                                                                   use_thread=False)
             app_obj.proc_container.update_view_text(' %s' % '')
 
         # Object name

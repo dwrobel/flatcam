@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-24 15:55+0300\n"
-"PO-Revision-Date: 2020-10-24 15:55+0300\n"
+"POT-Creation-Date: 2020-10-24 19:48+0300\n"
+"PO-Revision-Date: 2020-10-24 19:48+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -111,24 +111,24 @@ msgstr "Yer İşaretleri"
 #: appObjects/FlatCAMCNCJob.py:1750 appObjects/ObjectCollection.py:126
 #: appTools/ToolFilm.py:238 appTools/ToolFilm.py:384 appTools/ToolImage.py:112
 #: appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
-#: appTools/ToolPcbWizard.py:212 appTools/ToolQRCode.py:526
-#: appTools/ToolQRCode.py:573 app_Main.py:1753 app_Main.py:2581
-#: app_Main.py:2617 app_Main.py:2664 app_Main.py:4410 app_Main.py:7128
-#: app_Main.py:7167 app_Main.py:7211 app_Main.py:7240 app_Main.py:7281
-#: app_Main.py:7306 app_Main.py:7362 app_Main.py:7398 app_Main.py:7443
-#: app_Main.py:7484 app_Main.py:7526 app_Main.py:7568 app_Main.py:7609
-#: app_Main.py:7653 app_Main.py:7713 app_Main.py:7745 app_Main.py:7777
-#: app_Main.py:8000 app_Main.py:8038 app_Main.py:8081 app_Main.py:8158
-#: app_Main.py:8213
+#: appTools/ToolPcbWizard.py:212 appTools/ToolQRCode.py:527
+#: appTools/ToolQRCode.py:574 app_Main.py:1762 app_Main.py:2596
+#: app_Main.py:4333 app_Main.py:8065 app_Main.py:8104 app_Main.py:8148
+#: app_Main.py:8174 app_Main.py:8214 app_Main.py:8239 app_Main.py:8293
+#: app_Main.py:8329 app_Main.py:8373 app_Main.py:8413 app_Main.py:8454
+#: app_Main.py:8495 app_Main.py:8535 app_Main.py:8578 app_Main.py:8637
+#: app_Main.py:8669 app_Main.py:8699 app_Main.py:8874 app_Main.py:8911
+#: app_Main.py:8954 app_Main.py:9026 app_Main.py:9080 app_Main.py:9350
+#: app_Main.py:9385
 msgid "Cancelled."
 msgstr "İptal edildi."
 
 #: Bookmark.py:308 appDatabase.py:2089 appEditors/AppTextEditor.py:312
 #: appObjects/FlatCAMCNCJob.py:1672 appObjects/FlatCAMCNCJob.py:1862
 #: appObjects/FlatCAMCNCJob.py:2311 appTools/ToolFilm.py:582
-#: appTools/ToolFilm.py:830 appTools/ToolSolderPaste.py:1097 app_Main.py:2672
-#: app_Main.py:8457 app_Main.py:8505 app_Main.py:8634 app_Main.py:8771
-#: app_Main.py:8839
+#: appTools/ToolFilm.py:830 appTools/ToolSolderPaste.py:1097 app_Main.py:2604
+#: app_Main.py:9320 app_Main.py:9528 app_Main.py:9663 app_Main.py:9729
+#: app_Main.py:10481
 msgid ""
 "Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -160,7 +160,7 @@ msgstr "Yer işaretleri şuradan alındı"
 msgid "The user requested a graceful exit of the current task."
 msgstr "Kullanıcı geçerli işten çıkış istedi."
 
-#: appCommon/Common.py:292 appTools/ToolCopperThieving.py:328
+#: appCommon/Common.py:292 appTools/ToolCopperThieving.py:327
 #: appTools/ToolIsolation.py:1436 appTools/ToolNCC.py:1366
 msgid "Click the start point of the area."
 msgstr "Başlangıç ​​noktasını tıklayın."
@@ -170,7 +170,7 @@ msgid "Click the end point of the area."
 msgstr "Bitiş noktasını tıklayın."
 
 #: appCommon/Common.py:357 appCommon/Common.py:459
-#: appTools/ToolCopperThieving.py:385 appTools/ToolIsolation.py:2348
+#: appTools/ToolCopperThieving.py:384 appTools/ToolIsolation.py:2348
 #: appTools/ToolIsolation.py:2400 appTools/ToolNCC.py:1431
 #: appTools/ToolNCC.py:1483 appTools/ToolPaint.py:1216
 #: appTools/ToolPaint.py:1267
@@ -256,8 +256,8 @@ msgstr "PCB Kesim Seçenekleri"
 #: appDatabase.py:207 appEditors/AppGeoEditor.py:3287 appGUI/ObjectUI.py:219
 #: appGUI/ObjectUI.py:570 appGUI/ObjectUI.py:894 appGUI/ObjectUI.py:1876
 #: appGUI/ObjectUI.py:2693 appGUI/ObjectUI.py:2760
-#: appTools/ToolCalibration.py:929 appTools/ToolFiducials.py:681
-#: app_Main.py:9730
+#: appTools/ToolCalibration.py:929 appTools/ToolFiducials.py:683
+#: app_Main.py:7306
 msgid "Name"
 msgstr "İsim"
 
@@ -298,6 +298,8 @@ msgid ""
 "Tool tolerance. This tool will be used if the desired tool diameter\n"
 "is within the tolerance specified here."
 msgstr ""
+"Uç toleransı. Bu uç, istenen uç kalınlığı burada \n"
+"belirtilen tolerans dahilindeyse kullanılacaktır."
 
 #: appDatabase.py:241
 msgid "Min"
@@ -327,7 +329,7 @@ msgstr "Bu ucun kullanılacağı işlem alanını seçin."
 
 #: appDatabase.py:275 appDatabase.py:1778 appDatabase.py:1814
 #: appDatabase.py:1877 appDatabase.py:2162 appGUI/MainGUI.py:1299
-#: app_Main.py:9728
+#: app_Main.py:7304
 msgid "General"
 msgstr "Genel"
 
@@ -477,7 +479,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:98
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:103
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:111
-#: appTools/ToolCalculators.py:240 appTools/ToolCutOut.py:2104
+#: appTools/ToolCalculators.py:240 appTools/ToolCutOut.py:2108
 #: appTools/ToolDrilling.py:2143 appTools/ToolMilling.py:1793
 msgid "Cut Z"
 msgstr "Z Derinliği"
@@ -762,9 +764,9 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:115
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:202
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:181
-#: appTools/ToolCopperThieving.py:1210 appTools/ToolCopperThieving.py:1461
-#: appTools/ToolCorners.py:411 appTools/ToolCutOut.py:2157
-#: appTools/ToolFiducials.py:786 appTools/ToolInvertGerber.py:234
+#: appTools/ToolCopperThieving.py:1206 appTools/ToolCopperThieving.py:1457
+#: appTools/ToolCorners.py:412 appTools/ToolCutOut.py:2161
+#: appTools/ToolFiducials.py:788 appTools/ToolInvertGerber.py:234
 #: appTools/ToolInvertGerber.py:242 appTools/ToolNCC.py:4135
 #: appTools/ToolNCC.py:4238
 msgid "Margin"
@@ -775,8 +777,8 @@ msgstr "Pay"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:125
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:68
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:204
-#: appTools/ToolCopperThieving.py:1212 appTools/ToolCorners.py:413
-#: appTools/ToolFiducials.py:788 appTools/ToolNCC.py:4137
+#: appTools/ToolCopperThieving.py:1208 appTools/ToolCorners.py:414
+#: appTools/ToolFiducials.py:790 appTools/ToolNCC.py:4137
 #: appTools/ToolNCC.py:4240
 msgid "Bounding box margin."
 msgstr "Sınırlayıcı kutu boşluğu."
@@ -788,7 +790,7 @@ msgstr "Sınırlayıcı kutu boşluğu."
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:106
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:215
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:196
-#: appTools/ToolExtractDrills.py:520 appTools/ToolNCC.py:4112
+#: appTools/ToolExtractDrills.py:521 appTools/ToolNCC.py:4112
 #: appTools/ToolPaint.py:2991 appTools/ToolPunchGerber.py:796
 msgid "Method"
 msgstr "Yöntem"
@@ -1077,7 +1079,7 @@ msgstr ""
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:72
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:82
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:80
-#: appTools/ToolCutOut.py:2128 appTools/ToolDrilling.py:2167
+#: appTools/ToolCutOut.py:2132 appTools/ToolDrilling.py:2167
 #: appTools/ToolMilling.py:1817
 msgid ""
 "Use multiple passes to limit\n"
@@ -1092,7 +1094,7 @@ msgstr ""
 #: appDatabase.py:979 appGUI/ObjectUI.py:1251
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:94
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:92
-#: appTools/ToolCutOut.py:2142 appTools/ToolDrilling.py:2180
+#: appTools/ToolCutOut.py:2146 appTools/ToolDrilling.py:2180
 #: appTools/ToolMilling.py:1830
 msgid "Depth of each pass (positive)."
 msgstr "Her geçişin derinliği (pozitif)."
@@ -1192,7 +1194,7 @@ msgstr ""
 "yuvanın son noktasına bir matkap deliği ekleyin."
 
 #: appDatabase.py:1156 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:117
-#: appTools/ToolCutOut.py:2159
+#: appTools/ToolCutOut.py:2163
 msgid ""
 "Margin over bounds. A positive value here\n"
 "will make the cutout of the PCB further from\n"
@@ -1204,12 +1206,12 @@ msgstr ""
 "çevresinden tamamen ayrılmasına sebep olacaktır"
 
 #: appDatabase.py:1168 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:131
-#: appTools/ToolCutOut.py:2167
+#: appTools/ToolCutOut.py:2171
 msgid "Gap size"
 msgstr "Geçit Boyutu"
 
 #: appDatabase.py:1170 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:133
-#: appTools/ToolCutOut.py:2169
+#: appTools/ToolCutOut.py:2173
 msgid ""
 "The size of the bridge gaps in the cutout\n"
 "used to keep the board connected to\n"
@@ -1220,12 +1222,12 @@ msgstr ""
 "için kullanılan, kesik içindeki geçitlerin boyutu."
 
 #: appDatabase.py:1179 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:148
-#: appTools/ToolCutOut.py:2182
+#: appTools/ToolCutOut.py:2186
 msgid "Gap type"
 msgstr "Geçit Şekli"
 
 #: appDatabase.py:1181 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:150
-#: appTools/ToolCutOut.py:2184
+#: appTools/ToolCutOut.py:2188
 msgid ""
 "The type of gap:\n"
 "- Bridge -> the cutout will be interrupted by bridges\n"
@@ -1244,22 +1246,22 @@ msgstr ""
 "kaplanmıştır"
 
 #: appDatabase.py:1189 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:158
-#: appTools/ToolCutOut.py:2192
+#: appTools/ToolCutOut.py:2196
 msgid "Bridge"
 msgstr "Geçit"
 
 #: appDatabase.py:1190 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:159
-#: appTools/ToolCutOut.py:2193
+#: appTools/ToolCutOut.py:2197
 msgid "Thin"
 msgstr "İncelik"
 
 #: appDatabase.py:1201 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:169
-#: appTools/ToolCutOut.py:2203
+#: appTools/ToolCutOut.py:2207
 msgid "Depth"
 msgstr "Derinlik"
 
 #: appDatabase.py:1203 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:171
-#: appTools/ToolCutOut.py:2205
+#: appTools/ToolCutOut.py:2209
 msgid ""
 "The depth until the milling is done\n"
 "in order to thin the gaps."
@@ -1269,12 +1271,12 @@ msgstr ""
 
 #: appDatabase.py:1220 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:43
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:186
-#: appTools/ToolCalculators.py:249 appTools/ToolCutOut.py:2220
+#: appTools/ToolCalculators.py:249 appTools/ToolCutOut.py:2224
 msgid "Tool Diameter"
 msgstr "Uç Kalınlığı"
 
 #: appDatabase.py:1222 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:188
-#: appTools/ToolCutOut.py:2222
+#: appTools/ToolCutOut.py:2226
 msgid "The drill hole diameter when doing mouse bites."
 msgstr "Geçitlerde fare ısırığı şekli için delik genişliği."
 
@@ -1283,25 +1285,25 @@ msgstr "Geçitlerde fare ısırığı şekli için delik genişliği."
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:180
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:209
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1333 appTools/ToolCopperThieving.py:1373
-#: appTools/ToolCopperThieving.py:1413 appTools/ToolCutOut.py:2232
+#: appTools/ToolCopperThieving.py:1329 appTools/ToolCopperThieving.py:1369
+#: appTools/ToolCopperThieving.py:1409 appTools/ToolCutOut.py:2236
 msgid "Spacing"
 msgstr "Aralık"
 
 #: appDatabase.py:1235 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:200
-#: appTools/ToolCutOut.py:2234
+#: appTools/ToolCutOut.py:2238
 msgid "The spacing between drill holes when doing mouse bites."
 msgstr ""
 "Geçitlerde fare ısırığı şekli oluştururken matkap\n"
 "delikleri arasındaki boşluk."
 
 #: appDatabase.py:1254 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:233
-#: appTools/ToolCutOut.py:2034
+#: appTools/ToolCutOut.py:2038
 msgid "Convex Shape"
 msgstr "Yuvarlak Köşe"
 
 #: appDatabase.py:1257 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:235
-#: appTools/ToolCutOut.py:2036 appTools/ToolCutOut.py:2041
+#: appTools/ToolCutOut.py:2040 appTools/ToolCutOut.py:2045
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
 "Used only if the source object type is Gerber."
@@ -1311,11 +1313,11 @@ msgstr ""
 "Yalnız, kaynak nesnenin türü Gerber ise kullanılabilir."
 
 #: appDatabase.py:1265 appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:209
-#: appTools/ToolCutOut.py:2263
+#: appTools/ToolCutOut.py:2267
 msgid "Gaps"
 msgstr "Geçit Sayısı"
 
-#: appDatabase.py:1267 appTools/ToolCutOut.py:2265
+#: appDatabase.py:1267 appTools/ToolCutOut.py:2269
 msgid ""
 "Number of gaps used for the Automatic cutout.\n"
 "There can be maximum 8 bridges/gaps.\n"
@@ -1399,8 +1401,8 @@ msgstr ""
 "o sırada aktif olan Araçlar Tablosuna yeni bir uç ekler."
 
 #: appDatabase.py:1364 appGUI/MainGUI.py:1438
-#: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2297
-#: app_Main.py:3392 app_Main.py:4347 app_Main.py:4593 app_Main.py:6901
+#: appGUI/preferences/PreferencesUIManager.py:932 app_Main.py:2306
+#: app_Main.py:3315 app_Main.py:4270 app_Main.py:4516 app_Main.py:8725
 msgid "Cancel"
 msgstr "İptal"
 
@@ -1411,16 +1413,16 @@ msgstr "İptal"
 #: appTools/ToolAlignObjects.py:516 appTools/ToolAlignObjects.py:527
 #: appTools/ToolCalculators.py:390 appTools/ToolCalculators.py:401
 #: appTools/ToolCalibration.py:1395 appTools/ToolCalibration.py:1406
-#: appTools/ToolCopperThieving.py:1601 appTools/ToolCopperThieving.py:1612
-#: appTools/ToolCorners.py:462 appTools/ToolCorners.py:473
-#: appTools/ToolCutOut.py:2437 appTools/ToolCutOut.py:2448
-#: appTools/ToolDblSided.py:956 appTools/ToolDblSided.py:967
+#: appTools/ToolCopperThieving.py:1597 appTools/ToolCopperThieving.py:1608
+#: appTools/ToolCorners.py:463 appTools/ToolCorners.py:474
+#: appTools/ToolCutOut.py:2441 appTools/ToolCutOut.py:2452
+#: appTools/ToolDblSided.py:958 appTools/ToolDblSided.py:969
 #: appTools/ToolDistance.py:659 appTools/ToolDistance.py:670
 #: appTools/ToolDistanceMin.py:324 appTools/ToolDistanceMin.py:335
 #: appTools/ToolDrilling.py:2666 appTools/ToolDrilling.py:2677
 #: appTools/ToolEtchCompensation.py:476 appTools/ToolEtchCompensation.py:487
-#: appTools/ToolExtractDrills.py:732 appTools/ToolExtractDrills.py:743
-#: appTools/ToolFiducials.py:950 appTools/ToolFiducials.py:961
+#: appTools/ToolExtractDrills.py:733 appTools/ToolExtractDrills.py:744
+#: appTools/ToolFiducials.py:952 appTools/ToolFiducials.py:963
 #: appTools/ToolFilm.py:1454 appTools/ToolFilm.py:1465
 #: appTools/ToolImage.py:322 appTools/ToolImage.py:333
 #: appTools/ToolInvertGerber.py:304 appTools/ToolInvertGerber.py:315
@@ -1432,7 +1434,7 @@ msgstr "İptal"
 #: appTools/ToolPanelize.py:914 appTools/ToolPanelize.py:925
 #: appTools/ToolPcbWizard.py:488 appTools/ToolPcbWizard.py:499
 #: appTools/ToolPunchGerber.py:1025 appTools/ToolPunchGerber.py:1036
-#: appTools/ToolQRCode.py:922 appTools/ToolQRCode.py:933
+#: appTools/ToolQRCode.py:923 appTools/ToolQRCode.py:934
 #: appTools/ToolRulesCheck.py:1657 appTools/ToolRulesCheck.py:1668
 #: appTools/ToolSolderPaste.py:1575 appTools/ToolSolderPaste.py:1586
 #: appTools/ToolSub.py:772 appTools/ToolSub.py:783
@@ -1447,16 +1449,16 @@ msgstr "Düzenlenen değer aralık dışında"
 #: appTools/ToolAlignObjects.py:522 appTools/ToolAlignObjects.py:529
 #: appTools/ToolCalculators.py:396 appTools/ToolCalculators.py:403
 #: appTools/ToolCalibration.py:1401 appTools/ToolCalibration.py:1408
-#: appTools/ToolCopperThieving.py:1607 appTools/ToolCopperThieving.py:1614
-#: appTools/ToolCorners.py:468 appTools/ToolCorners.py:475
-#: appTools/ToolCutOut.py:2443 appTools/ToolCutOut.py:2450
-#: appTools/ToolDblSided.py:962 appTools/ToolDblSided.py:969
+#: appTools/ToolCopperThieving.py:1603 appTools/ToolCopperThieving.py:1610
+#: appTools/ToolCorners.py:469 appTools/ToolCorners.py:476
+#: appTools/ToolCutOut.py:2447 appTools/ToolCutOut.py:2454
+#: appTools/ToolDblSided.py:964 appTools/ToolDblSided.py:971
 #: appTools/ToolDistance.py:665 appTools/ToolDistance.py:672
 #: appTools/ToolDistanceMin.py:330 appTools/ToolDistanceMin.py:337
 #: appTools/ToolDrilling.py:2672 appTools/ToolDrilling.py:2679
 #: appTools/ToolEtchCompensation.py:482 appTools/ToolEtchCompensation.py:489
-#: appTools/ToolExtractDrills.py:738 appTools/ToolExtractDrills.py:745
-#: appTools/ToolFiducials.py:956 appTools/ToolFiducials.py:963
+#: appTools/ToolExtractDrills.py:739 appTools/ToolExtractDrills.py:746
+#: appTools/ToolFiducials.py:958 appTools/ToolFiducials.py:965
 #: appTools/ToolFilm.py:1460 appTools/ToolFilm.py:1467
 #: appTools/ToolImage.py:328 appTools/ToolImage.py:335
 #: appTools/ToolInvertGerber.py:310 appTools/ToolInvertGerber.py:317
@@ -1468,7 +1470,7 @@ msgstr "Düzenlenen değer aralık dışında"
 #: appTools/ToolPanelize.py:920 appTools/ToolPanelize.py:927
 #: appTools/ToolPcbWizard.py:494 appTools/ToolPcbWizard.py:501
 #: appTools/ToolPunchGerber.py:1031 appTools/ToolPunchGerber.py:1038
-#: appTools/ToolQRCode.py:928 appTools/ToolQRCode.py:935
+#: appTools/ToolQRCode.py:929 appTools/ToolQRCode.py:936
 #: appTools/ToolRulesCheck.py:1663 appTools/ToolRulesCheck.py:1670
 #: appTools/ToolSolderPaste.py:1581 appTools/ToolSolderPaste.py:1588
 #: appTools/ToolSub.py:778 appTools/ToolSub.py:785
@@ -1488,7 +1490,7 @@ msgstr "Veri Tabanından Kopyala"
 msgid "Delete from DB"
 msgstr "Veri Tanından Sil"
 
-#: appDatabase.py:1656 appTranslation.py:209 app_Main.py:3386 app_Main.py:6895
+#: appDatabase.py:1656 appTranslation.py:209 app_Main.py:3309 app_Main.py:8719
 msgid "Save changes"
 msgstr "Değişiklikleri Kaydet"
 
@@ -1545,8 +1547,8 @@ msgstr "FlatCAM Araçlar Veri Tabanını İçe Aktar"
 #: appTools/ToolCutOut.py:484 appTools/ToolCutOut.py:525
 #: appTools/ToolIsolation.py:2583 appTools/ToolIsolation.py:2667
 #: appTools/ToolNCC.py:3715 appTools/ToolNCC.py:3795 appTools/ToolPaint.py:2626
-#: appTools/ToolPaint.py:2715 app_Main.py:5682 app_Main.py:5724
-#: app_Main.py:5755 app_Main.py:5775 app_Main.py:5785
+#: appTools/ToolPaint.py:2715 app_Main.py:5605 app_Main.py:5647
+#: app_Main.py:5678 app_Main.py:5698 app_Main.py:5708
 msgid "Tools Database"
 msgstr "Araçlar Veri Tabanı"
 
@@ -1755,7 +1757,7 @@ msgstr "İptal edildi. Hiçbir uç/delik seçilmedi"
 #: appEditors/AppGerberEditor.py:4625 appEditors/AppGerberEditor.py:4642
 #: appGUI/MainGUI.py:2859 appGUI/MainGUI.py:2871
 #: appTools/ToolAlignObjects.py:253 appTools/ToolAlignObjects.py:275
-#: app_Main.py:4961 app_Main.py:5115
+#: app_Main.py:4884 app_Main.py:5038
 msgid "Done."
 msgstr "Bitti."
 
@@ -1816,7 +1818,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:3765 appGUI/ObjectUI.py:1082
 #: appGUI/ObjectUI.py:1650
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:130
-#: appTools/ToolCutOut.py:2060 appTools/ToolIsolation.py:3091
+#: appTools/ToolCutOut.py:2064 appTools/ToolIsolation.py:3091
 #: appTools/ToolNCC.py:3966 appTools/ToolNCC.py:3977 appTools/ToolPaint.py:2882
 msgid "Tool Dia"
 msgstr "Uç Kalınlığı"
@@ -1907,8 +1909,8 @@ msgstr "Doğrusal"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:78
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:61
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:68
-#: appTools/ToolExtractDrills.py:470 appTools/ToolExtractDrills.py:593
-#: appTools/ToolFiducials.py:834 appTools/ToolPunchGerber.py:746
+#: appTools/ToolExtractDrills.py:471 appTools/ToolExtractDrills.py:594
+#: appTools/ToolFiducials.py:836 appTools/ToolPunchGerber.py:746
 #: appTools/ToolPunchGerber.py:886
 msgid "Circular"
 msgstr "Dairesel"
@@ -2075,7 +2077,7 @@ msgstr ""
 #: appEditors/AppExcEditor.py:4007
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:162
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:56
-#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:398
+#: appObjects/FlatCAMObj.py:877 appTools/ToolCorners.py:399
 #: appTools/ToolProperties.py:571
 msgid "Length"
 msgstr "Uzunluk"
@@ -2188,12 +2190,12 @@ msgstr "Yuvarlak"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:308
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:327
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:289
-#: appTools/ToolDrilling.py:2588 appTools/ToolExtractDrills.py:486
-#: appTools/ToolExtractDrills.py:619 appTools/ToolInvertGerber.py:257
+#: appTools/ToolDrilling.py:2588 appTools/ToolExtractDrills.py:487
+#: appTools/ToolExtractDrills.py:620 appTools/ToolInvertGerber.py:257
 #: appTools/ToolIsolation.py:3430 appTools/ToolMilling.py:2264
 #: appTools/ToolNCC.py:4348 appTools/ToolPaint.py:3168
 #: appTools/ToolPunchGerber.py:762 appTools/ToolPunchGerber.py:912
-#: appTools/ToolQRCode.py:788
+#: appTools/ToolQRCode.py:789
 msgid "Square"
 msgstr "Kare"
 
@@ -2242,8 +2244,8 @@ msgstr "Yazı Tipi"
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:167
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:196
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:43
-#: appTools/ToolCopperThieving.py:1360 appTools/ToolCopperThieving.py:1400
-#: appTools/ToolFiducials.py:770
+#: appTools/ToolCopperThieving.py:1356 appTools/ToolCopperThieving.py:1396
+#: appTools/ToolFiducials.py:772
 msgid "Size"
 msgstr "Boyut"
 
@@ -2267,8 +2269,8 @@ msgstr "Metin Aracı"
 #: appTools/ToolMilling.py:790 appTools/ToolMilling.py:1046
 #: appTools/ToolMilling.py:1711 appTools/ToolNCC.py:329
 #: appTools/ToolNCC.py:2280 appTools/ToolNCC.py:4040 appTools/ToolPaint.py:304
-#: appTools/ToolPaint.py:2940 app_Main.py:2053 app_Main.py:2312
-#: app_Main.py:2419
+#: appTools/ToolPaint.py:2940 app_Main.py:2062 app_Main.py:2321
+#: app_Main.py:2428
 msgid "Tool"
 msgstr "Araçlar"
 
@@ -2358,7 +2360,7 @@ msgstr "Tampon"
 #: appGUI/GUIElements.py:3015
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44
-#: appTools/ToolDblSided.py:681 appTools/ToolDblSided.py:855
+#: appTools/ToolDblSided.py:683 appTools/ToolDblSided.py:857
 #: appTools/ToolFilm.py:1060 appTools/ToolTransform.py:547
 msgid "Reference"
 msgstr "Referans Noktası"
@@ -2403,7 +2405,7 @@ msgstr "Seçim"
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:85
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:54
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:60
-#: appTools/ToolDblSided.py:692 appTools/ToolTransform.py:557
+#: appTools/ToolDblSided.py:694 appTools/ToolTransform.py:557
 msgid "Point"
 msgstr "Nokta"
 
@@ -2416,10 +2418,9 @@ msgstr "Minimum"
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:131
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:133
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
-#: appTools/ToolExtractDrills.py:556 appTools/ToolExtractDrills.py:677
+#: appTools/ToolExtractDrills.py:557 appTools/ToolExtractDrills.py:678
 #: appTools/ToolPunchGerber.py:849 appTools/ToolPunchGerber.py:965
-#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889
-#: app_Main.py:10205
+#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889 app_Main.py:7781
 msgid "Value"
 msgstr "Değer"
 
@@ -2431,10 +2432,10 @@ msgstr "X,Y biçiminde referans noktası."
 
 #: appEditors/AppGeoEditor.py:668 appEditors/AppGerberEditor.py:2590
 #: appEditors/AppGerberEditor.py:5378 appGUI/ObjectUI.py:2350
-#: appTools/ToolDblSided.py:706 appTools/ToolDblSided.py:892
+#: appTools/ToolDblSided.py:708 appTools/ToolDblSided.py:894
 #: appTools/ToolNCC.py:63 appTools/ToolPaint.py:137
 #: appTools/ToolSolderPaste.py:160 appTools/ToolSolderPaste.py:1203
-#: appTools/ToolTransform.py:572 app_Main.py:6127
+#: appTools/ToolTransform.py:572 app_Main.py:6050
 msgid "Add"
 msgstr "Ekle"
 
@@ -2645,7 +2646,7 @@ msgstr "Hizala"
 #: appGUI/preferences/tools/Tools2InvertPrefGroupUI.py:67
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:142
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:216
-#: appTools/ToolInvertGerber.py:256 appTools/ToolQRCode.py:787
+#: appTools/ToolInvertGerber.py:256 appTools/ToolQRCode.py:788
 #: appTools/ToolTransform.py:854
 msgid "Rounded"
 msgstr "Yuvarlak"
@@ -3135,7 +3136,7 @@ msgstr "Şekil Düzenleyici"
 #: appEditors/AppGeoEditor.py:3287 appEditors/AppGerberEditor.py:2495
 #: appEditors/AppGerberEditor.py:3968 appEditors/appGCodeEditor.py:692
 #: appGUI/ObjectUI.py:316 appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009
-#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:519
+#: appTools/ToolCutOut.py:2017 appTools/ToolDblSided.py:521
 #: appTools/ToolTransform.py:579
 msgid "Type"
 msgstr "Tür"
@@ -3518,7 +3519,7 @@ msgstr "Şekil Tablosuna yeni bir şekil ekler."
 #: appTools/ToolIsolation.py:3150 appTools/ToolNCC.py:69
 #: appTools/ToolNCC.py:4024 appTools/ToolPaint.py:143
 #: appTools/ToolPaint.py:2926 appTools/ToolSolderPaste.py:163
-#: appTools/ToolSolderPaste.py:1209 app_Main.py:6129
+#: appTools/ToolSolderPaste.py:1209 app_Main.py:6052
 msgid "Delete"
 msgstr "Sil"
 
@@ -3733,8 +3734,8 @@ msgstr "Dosyada şekil tanımı yok. Gerber oluşturma işlemi iptal ediliyor."
 
 #: appEditors/AppGerberEditor.py:4364 appObjects/AppObject.py:164
 #: appObjects/FlatCAMGeometry.py:1917 appParsers/ParseExcellon.py:972
-#: appTools/ToolPcbWizard.py:318 app_Main.py:9010 app_Main.py:9070
-#: app_Main.py:9201 app_Main.py:9266 app_Main.py:9881
+#: appTools/ToolPcbWizard.py:318 app_Main.py:7457 app_Main.py:9899
+#: app_Main.py:9959 app_Main.py:10090 app_Main.py:10155
 msgid "An internal error has occurred. See shell.\n"
 msgstr "Dahili bir hata oluştu. Komut satırına bakın.\n"
 
@@ -3750,7 +3751,7 @@ msgstr "Bitti. Gerber düzenlemesi tamamlandı."
 msgid "Cancelled. No aperture is selected"
 msgstr "İptal edildi. Hiçbir şekil seçilmedi"
 
-#: appEditors/AppGerberEditor.py:4555 app_Main.py:6462
+#: appEditors/AppGerberEditor.py:4555 app_Main.py:6385
 msgid "Coordinates copied to clipboard."
 msgstr "Koordinatlar panoya kopyalandı."
 
@@ -3769,8 +3770,8 @@ msgstr ""
 "deneyin."
 
 #: appEditors/AppGerberEditor.py:5166 appTools/ToolCutOut.py:772
-#: appTools/ToolCutOut.py:895 appTools/ToolCutOut.py:1118
-#: appTools/ToolCutOut.py:1264 camlib.py:4899 camlib.py:5663
+#: appTools/ToolCutOut.py:896 appTools/ToolCutOut.py:1119
+#: appTools/ToolCutOut.py:1267 camlib.py:4899 camlib.py:5663
 msgid "Failed."
 msgstr "Başarısız oldu."
 
@@ -3799,7 +3800,7 @@ msgstr "Çokgenler işaretlenmedi. Hiçbiri sınırlara uymuyor."
 msgid "Rotation action was not executed."
 msgstr "Döndürme işlemi gerçekleştirilemedi."
 
-#: appEditors/AppGerberEditor.py:6044 app_Main.py:5885 app_Main.py:5933
+#: appEditors/AppGerberEditor.py:6044 app_Main.py:5808 app_Main.py:5856
 msgid "Flip action was not executed."
 msgstr "Çevirme işlemi gerçekleştirilemedi."
 
@@ -3829,7 +3830,7 @@ msgstr "Y ekseni eğim işlemi iptal edildi"
 
 #: appEditors/AppTextEditor.py:84
 msgid "Find"
-msgstr ""
+msgstr "Bul"
 
 #: appEditors/AppTextEditor.py:86
 msgid "Will search and highlight in yellow the string in the Find box."
@@ -3892,10 +3893,8 @@ msgid "Will save the text in the editor into a file."
 msgstr "Düzenleyicideki metni bir dosyaya kaydeder."
 
 #: appEditors/AppTextEditor.py:149
-#, fuzzy
-#| msgid "Round"
 msgid "Run"
-msgstr "Yuvarlak"
+msgstr "Çalıştır"
 
 #: appEditors/AppTextEditor.py:150
 msgid "Will run the TCL commands found in the text file, one by one."
@@ -3909,7 +3908,7 @@ msgstr "Dosyayı Aç"
 #: appObjects/FlatCAMCNCJob.py:1646 appObjects/FlatCAMCNCJob.py:1651
 #: appObjects/FlatCAMCNCJob.py:1836 appObjects/FlatCAMCNCJob.py:1841
 #: appObjects/FlatCAMCNCJob.py:1914 appObjects/FlatCAMCNCJob.py:1919
-#: appTools/ToolSolderPaste.py:1063 app_Main.py:7044 app_Main.py:7049
+#: appTools/ToolSolderPaste.py:1063 app_Main.py:6839 app_Main.py:6844
 msgid "Export Code ..."
 msgstr "Kodu Dışa Aktar ..."
 
@@ -3923,7 +3922,7 @@ msgstr "Böyle bir dosya ya da dizin yok"
 msgid "Saved to"
 msgstr "Şuraya kaydedildi"
 
-#: appEditors/appGCodeEditor.py:66 app_Main.py:7905
+#: appEditors/appGCodeEditor.py:66 app_Main.py:7000
 msgid "Code Editor"
 msgstr "Kod Düzenleyici"
 
@@ -3951,7 +3950,7 @@ msgstr "G Kod Düzenleyicisi"
 #: appEditors/appGCodeEditor.py:692 appEditors/appGCodeEditor.py:703
 #: appGUI/ObjectUI.py:999 appGUI/ObjectUI.py:2009 appGUI/ObjectUI.py:2019
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:138
-#: appTools/ToolCopperThieving.py:1320
+#: appTools/ToolCopperThieving.py:1316
 msgid "Dia"
 msgstr "Boyut"
 
@@ -4042,8 +4041,8 @@ msgstr ""
 msgid "Save Log"
 msgstr "Kayıt Dosyası"
 
-#: appGUI/GUIElements.py:3085 app_Main.py:2809 app_Main.py:3181
-#: app_Main.py:3354
+#: appGUI/GUIElements.py:3085 app_Main.py:2741 app_Main.py:3113
+#: app_Main.py:3286
 msgid "Close"
 msgstr "Kapat"
 
@@ -4599,7 +4598,7 @@ msgstr "Yardım"
 msgid "Online Help\tF1"
 msgstr "Çevrimiçi Yardım\tF1"
 
-#: appGUI/MainGUI.py:527 app_Main.py:3319 app_Main.py:3328
+#: appGUI/MainGUI.py:527 app_Main.py:3251 app_Main.py:3260
 msgid "Bookmarks Manager"
 msgstr "Yer İşaretleri Yöneticisi"
 
@@ -4627,7 +4626,7 @@ msgstr "YouTube Kanalı\tF4"
 msgid "How To"
 msgstr "Nasıl Yapılır"
 
-#: appGUI/MainGUI.py:551 app_Main.py:2776
+#: appGUI/MainGUI.py:551 app_Main.py:2708
 msgid "About FlatCAM"
 msgstr "FlatCAM Hakkında"
 
@@ -4795,47 +4794,47 @@ msgstr "Çizimi Devre Dışı Bırak"
 msgid "Set Color"
 msgstr "Rengi Ayarla"
 
-#: appGUI/MainGUI.py:709 app_Main.py:10148
+#: appGUI/MainGUI.py:709 app_Main.py:7724
 msgid "Red"
 msgstr "Kırmızı"
 
-#: appGUI/MainGUI.py:712 app_Main.py:10150
+#: appGUI/MainGUI.py:712 app_Main.py:7726
 msgid "Blue"
 msgstr "Mavi"
 
-#: appGUI/MainGUI.py:715 app_Main.py:10153
+#: appGUI/MainGUI.py:715 app_Main.py:7729
 msgid "Yellow"
 msgstr "Sarı"
 
-#: appGUI/MainGUI.py:718 app_Main.py:10155
+#: appGUI/MainGUI.py:718 app_Main.py:7731
 msgid "Green"
 msgstr "Yeşil"
 
-#: appGUI/MainGUI.py:721 app_Main.py:10157
+#: appGUI/MainGUI.py:721 app_Main.py:7733
 msgid "Purple"
 msgstr "Mor"
 
-#: appGUI/MainGUI.py:724 app_Main.py:10159
+#: appGUI/MainGUI.py:724 app_Main.py:7735
 msgid "Brown"
 msgstr "Kahverengi"
 
-#: appGUI/MainGUI.py:727 app_Main.py:10161 app_Main.py:10220
+#: appGUI/MainGUI.py:727 app_Main.py:7737 app_Main.py:7796
 msgid "White"
 msgstr "Beyaz"
 
-#: appGUI/MainGUI.py:730 app_Main.py:10163
+#: appGUI/MainGUI.py:730 app_Main.py:7739
 msgid "Black"
 msgstr "Siyah"
 
-#: appGUI/MainGUI.py:735 app_Main.py:10166
+#: appGUI/MainGUI.py:735 app_Main.py:7742
 msgid "Custom"
 msgstr "Özel"
 
-#: appGUI/MainGUI.py:740 app_Main.py:10200
+#: appGUI/MainGUI.py:740 app_Main.py:7776
 msgid "Opacity"
 msgstr "Opaklık"
 
-#: appGUI/MainGUI.py:743 app_Main.py:10176
+#: appGUI/MainGUI.py:743 app_Main.py:7752
 msgid "Default"
 msgstr "Varsayılan"
 
@@ -4909,13 +4908,13 @@ msgstr "Izgara Araç Çubuğu"
 msgid "Status Toolbar"
 msgstr "Durum Araç Çubuğu"
 
-#: appGUI/MainGUI.py:854 appGUI/MainGUI.py:2011 app_Main.py:7110
-#: app_Main.py:7115
+#: appGUI/MainGUI.py:854 appGUI/MainGUI.py:2011 app_Main.py:8046
+#: app_Main.py:8051
 msgid "Open Gerber"
 msgstr "Gerber'i Aç"
 
-#: appGUI/MainGUI.py:856 appGUI/MainGUI.py:2013 app_Main.py:7150
-#: app_Main.py:7155
+#: appGUI/MainGUI.py:856 appGUI/MainGUI.py:2013 app_Main.py:8086
+#: app_Main.py:8091
 msgid "Open Excellon"
 msgstr "Excellon'u Aç"
 
@@ -5000,7 +4999,7 @@ msgid "Extract Drills Tool"
 msgstr "Delik Çıkarma"
 
 #: appGUI/MainGUI.py:931 appGUI/MainGUI.py:2086 appGUI/ObjectUI.py:387
-#: appTools/ToolCutOut.py:156 appTools/ToolCutOut.py:2052
+#: appTools/ToolCutOut.py:156 appTools/ToolCutOut.py:2056
 msgid "Cutout Tool"
 msgstr "PCB Kesimi"
 
@@ -5051,17 +5050,17 @@ msgid "Calculators Tool"
 msgstr "Hesap Makinesi"
 
 #: appGUI/MainGUI.py:962 appGUI/MainGUI.py:2117 appGUI/MainGUI.py:4285
-#: appTools/ToolQRCode.py:114 appTools/ToolQRCode.py:628
+#: appTools/ToolQRCode.py:114 appTools/ToolQRCode.py:629
 msgid "QRCode Tool"
 msgstr "QR Kod"
 
 #: appGUI/MainGUI.py:964 appGUI/MainGUI.py:2119 appGUI/MainGUI.py:4282
-#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1137
+#: appTools/ToolCopperThieving.py:126 appTools/ToolCopperThieving.py:1133
 msgid "Copper Thieving Tool"
 msgstr "Bakır Dolgu"
 
 #: appGUI/MainGUI.py:967 appGUI/MainGUI.py:2122 appGUI/MainGUI.py:4281
-#: appTools/ToolFiducials.py:114 appTools/ToolFiducials.py:648
+#: appTools/ToolFiducials.py:114 appTools/ToolFiducials.py:650
 msgid "Fiducials Tool"
 msgstr "Referans İşaretleri"
 
@@ -5080,7 +5079,7 @@ msgid "Invert Gerber Tool"
 msgstr "Gerber Polaritesi"
 
 #: appGUI/MainGUI.py:975 appGUI/MainGUI.py:2130 appGUI/MainGUI.py:4284
-#: appTools/ToolCorners.py:297
+#: appTools/ToolCorners.py:298
 msgid "Corner Markers Tool"
 msgstr "Köşe İşaretleyici"
 
@@ -5271,8 +5270,8 @@ msgstr "Çalışma alanındaki eksen görüntüsünü değiştirir"
 #: appGUI/MainGUI.py:1148 appGUI/preferences/PreferencesUIManager.py:899
 #: appGUI/preferences/PreferencesUIManager.py:992
 #: appGUI/preferences/PreferencesUIManager.py:1020
-#: appGUI/preferences/PreferencesUIManager.py:1125 app_Main.py:5585
-#: app_Main.py:5590 app_Main.py:5605
+#: appGUI/preferences/PreferencesUIManager.py:1125 app_Main.py:5508
+#: app_Main.py:5513 app_Main.py:5528
 msgid "Preferences"
 msgstr "Ayarlar"
 
@@ -5308,21 +5307,21 @@ msgstr ""
 msgid "TCL Shell"
 msgstr "Komut Satırı"
 
-#: appGUI/MainGUI.py:1221 appGUI/MainGUI.py:1470 app_Main.py:8149
+#: appGUI/MainGUI.py:1221 appGUI/MainGUI.py:1470 app_Main.py:9017
 msgid "Project"
 msgstr "Proje"
 
 #: appGUI/MainGUI.py:1264 appGUI/MainGUI.py:1272 appGUI/MainGUI.py:3791
-#: appGUI/MainGUI.py:3797 app_Main.py:2480 app_Main.py:7001
+#: appGUI/MainGUI.py:3797 app_Main.py:2489 app_Main.py:8825
 msgid "Plot Area"
 msgstr "Çalışma Alanı"
 
-#: appGUI/MainGUI.py:1314 appTools/ToolCopperThieving.py:1169
-#: appTools/ToolCorners.py:317 appTools/ToolEtchCompensation.py:291
-#: appTools/ToolExtractDrills.py:453 appTools/ToolFiducials.py:873
+#: appGUI/MainGUI.py:1314 appTools/ToolCopperThieving.py:1165
+#: appTools/ToolCorners.py:318 appTools/ToolEtchCompensation.py:291
+#: appTools/ToolExtractDrills.py:454 appTools/ToolFiducials.py:875
 #: appTools/ToolInvertGerber.py:215 appTools/ToolIsolation.py:2986
 #: appTools/ToolOptimal.py:421 appTools/ToolPunchGerber.py:721
-#: appTools/ToolQRCode.py:659 appTools/ToolRulesCheck.py:1165
+#: appTools/ToolQRCode.py:660 appTools/ToolRulesCheck.py:1165
 #: appTools/ToolSolderPaste.py:1143 appTools/ToolSub.py:643
 msgid "GERBER"
 msgstr "GERBER"
@@ -5410,9 +5409,9 @@ msgstr "Görünürlüğü Değiştir"
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:78
 #: appTools/ToolCalibration.py:171 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
-#: appTools/ToolCutOut.py:2010 appTools/ToolDblSided.py:526
-#: appTools/ToolDblSided.py:767 appTools/ToolFilm.py:929
+#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
+#: appTools/ToolCutOut.py:2014 appTools/ToolDblSided.py:528
+#: appTools/ToolDblSided.py:769 appTools/ToolFilm.py:929
 #: appTools/ToolFilm.py:952 appTools/ToolImage.py:136 appTools/ToolImage.py:191
 #: appTools/ToolIsolation.py:802 appTools/ToolIsolation.py:3338
 #: appTools/ToolIsolation.py:3391 appTools/ToolNCC.py:805
@@ -5430,9 +5429,9 @@ msgstr "Şekil"
 #: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:892 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
-#: appTools/ToolDblSided.py:527 appTools/ToolDblSided.py:724
-#: appTools/ToolDblSided.py:766 appTools/ToolFilm.py:1207
+#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
+#: appTools/ToolDblSided.py:529 appTools/ToolDblSided.py:726
+#: appTools/ToolDblSided.py:768 appTools/ToolFilm.py:1207
 #: appTools/ToolIsolation.py:802 appTools/ToolIsolation.py:3391
 #: appTools/ToolNCC.py:805 appTools/ToolNCC.py:4323 appTools/ToolPaint.py:167
 #: appTools/ToolPaint.py:3143 appTools/ToolPanelize.py:147
@@ -5510,7 +5509,7 @@ msgstr "Excellon Düzenleyici"
 msgid "Add Drill"
 msgstr "Delik Ekle"
 
-#: appGUI/MainGUI.py:1581 app_Main.py:2291
+#: appGUI/MainGUI.py:1581 app_Main.py:2300
 msgid "Close Editor"
 msgstr "Düzenleyiciyi Kapat"
 
@@ -5536,8 +5535,8 @@ msgstr "Arayüz sıfırlamak istediğinizden emin misiniz?\n"
 
 #: appGUI/MainGUI.py:1986 appGUI/preferences/PreferencesUIManager.py:931
 #: appGUI/preferences/PreferencesUIManager.py:1177 appTranslation.py:111
-#: appTranslation.py:213 app_Main.py:2295 app_Main.py:3390 app_Main.py:5815
-#: app_Main.py:6899
+#: appTranslation.py:213 app_Main.py:2304 app_Main.py:3313 app_Main.py:5738
+#: app_Main.py:8723
 msgid "Yes"
 msgstr "Evet"
 
@@ -5549,7 +5548,7 @@ msgstr "Evet"
 #: appTools/ToolDrilling.py:2090 appTools/ToolIsolation.py:3066
 #: appTools/ToolMilling.py:1695 appTools/ToolNCC.py:3935
 #: appTools/ToolPaint.py:2851 appTranslation.py:112 appTranslation.py:214
-#: app_Main.py:2296 app_Main.py:3391 app_Main.py:5816 app_Main.py:6900
+#: app_Main.py:2305 app_Main.py:3314 app_Main.py:5739 app_Main.py:8724
 msgid "No"
 msgstr "Hayır"
 
@@ -5638,7 +5637,7 @@ msgstr "Uç ekleme işlemi iptal edildi ..."
 msgid "Distance Tool exit..."
 msgstr "Ölçümden Çık..."
 
-#: appGUI/MainGUI.py:3725 app_Main.py:3378
+#: appGUI/MainGUI.py:3725 app_Main.py:3301
 msgid "Application is saving the project. Please wait ..."
 msgstr "Uygulama, projeyi kaydediyor. Lütfen bekleyin ..."
 
@@ -5682,7 +5681,7 @@ msgstr "Gerber Oluştur"
 msgid "Edit Object (if selected)"
 msgstr "Nesneyi Düzenle (seçiliyse)"
 
-#: appGUI/MainGUI.py:4261 app_Main.py:6115
+#: appGUI/MainGUI.py:4261 app_Main.py:6038
 msgid "Grid On/Off"
 msgstr "Izgara AÇIK/KAPALI"
 
@@ -5753,7 +5752,7 @@ msgstr "Gerber'i Aç"
 msgid "New Project"
 msgstr "Yeni Proje"
 
-#: appGUI/MainGUI.py:4270 app_Main.py:7229 app_Main.py:7232
+#: appGUI/MainGUI.py:4270 app_Main.py:8166 app_Main.py:8169
 msgid "Open Project"
 msgstr "Proje Aç"
 
@@ -6174,7 +6173,7 @@ msgstr "Çizim Seçenekleri"
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:47
 #: appGUI/preferences/gerber/GerberGenPrefGroupUI.py:45
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:119
-#: appTools/ToolCopperThieving.py:1290
+#: appTools/ToolCopperThieving.py:1286
 msgid "Solid"
 msgstr "Dolgulu"
 
@@ -6332,15 +6331,15 @@ msgstr ""
 msgid "Resulting geometry will have rounded corners."
 msgstr "Ortaya çıkan şeklin köşeleri yuvarlatılmış olacaktır."
 
-#: appGUI/ObjectUI.py:467 appGUI/ObjectUI.py:507 appTools/ToolCutOut.py:2287
-#: appTools/ToolCutOut.py:2302 appTools/ToolIsolation.py:3444
+#: appGUI/ObjectUI.py:467 appGUI/ObjectUI.py:507 appTools/ToolCutOut.py:2291
+#: appTools/ToolCutOut.py:2306 appTools/ToolIsolation.py:3444
 #: appTools/ToolNCC.py:4372 appTools/ToolPaint.py:3178
 msgid "Generate Geometry"
 msgstr "Şekil Oluştur"
 
 #: appGUI/ObjectUI.py:478 appGUI/preferences/gerber/GerberOptPrefGroupUI.py:73
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:137
-#: appTools/ToolPanelize.py:698 appTools/ToolQRCode.py:782
+#: appTools/ToolPanelize.py:698 appTools/ToolQRCode.py:783
 msgid "Bounding Box"
 msgstr "Sınırlayıcı Çerçeve"
 
@@ -6487,12 +6486,12 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:80
 #: appTools/ToolMilling.py:1779
 msgid "Milling Diameter"
-msgstr "Freze Çapı"
+msgstr "Freze Uç Kalınlığı"
 
 #: appGUI/ObjectUI.py:792
 #: appGUI/preferences/excellon/ExcellonOptPrefGroupUI.py:101
 msgid "Diameter of the cutting tool."
-msgstr "Kesme ucunun çapı."
+msgstr "Frezeleme ucunun kalınlığı."
 
 #: appGUI/ObjectUI.py:802
 msgid "Mill Drills"
@@ -6669,7 +6668,7 @@ msgstr ""
 msgid "Add from DB"
 msgstr "Veri Tabanından Ekle"
 
-#: appGUI/ObjectUI.py:1096 appTools/ToolCutOut.py:2071
+#: appGUI/ObjectUI.py:1096 appTools/ToolCutOut.py:2075
 #: appTools/ToolIsolation.py:61 appTools/ToolIsolation.py:3122
 #: appTools/ToolNCC.py:3996 appTools/ToolPaint.py:2898
 msgid "Search and Add"
@@ -6683,13 +6682,13 @@ msgstr ""
 "Araçlar Tablosuna yukarıda belirtilen\n"
 "kalınlıkta yeni bir uç ekleyin."
 
-#: appGUI/ObjectUI.py:1103 appTools/ToolCutOut.py:2083
+#: appGUI/ObjectUI.py:1103 appTools/ToolCutOut.py:2087
 #: appTools/ToolIsolation.py:65 appTools/ToolIsolation.py:3133
 #: appTools/ToolNCC.py:4007 appTools/ToolPaint.py:2909
 msgid "Pick from DB"
 msgstr "Veri Tabanından Seç"
 
-#: appGUI/ObjectUI.py:1106 appTools/ToolCutOut.py:2086
+#: appGUI/ObjectUI.py:1106 appTools/ToolCutOut.py:2090
 #: appTools/ToolIsolation.py:3136 appTools/ToolNCC.py:4010
 #: appTools/ToolPaint.py:2912
 msgid ""
@@ -6782,7 +6781,7 @@ msgstr "V ucu için uç kalınlığı. Derece olarak."
 #: appGUI/ObjectUI.py:1216
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:51
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:61
-#: appObjects/FlatCAMGeometry.py:1375 appTools/ToolCutOut.py:2107
+#: appObjects/FlatCAMGeometry.py:1375 appTools/ToolCutOut.py:2111
 msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
@@ -6792,7 +6791,7 @@ msgstr "Bakır yüzeyinin altında kesme derinliği (negatif)."
 #: appGUI/preferences/geometry/GeometryOptPrefGroupUI.py:69
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:79
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:77
-#: appTools/ToolCutOut.py:2125 appTools/ToolDrilling.py:2164
+#: appTools/ToolCutOut.py:2129 appTools/ToolDrilling.py:2164
 #: appTools/ToolMilling.py:1814
 msgid "Multi-Depth"
 msgstr "Çoklu Geçiş"
@@ -7458,12 +7457,12 @@ msgstr ""
 #: appGUI/ObjectUI.py:2177
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:78
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:74
-#: appTools/ToolCutOut.py:2324 appTools/ToolFiducials.py:801
+#: appTools/ToolCutOut.py:2328 appTools/ToolFiducials.py:803
 msgid "Manual"
 msgstr "El İle"
 
 #: appGUI/ObjectUI.py:2178
-#: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:79 app_Main.py:9736
+#: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:79 app_Main.py:7312
 msgid "Grid"
 msgstr "Izgara"
 
@@ -7510,8 +7509,6 @@ msgstr "Satırlar"
 
 #: appGUI/ObjectUI.py:2218
 #: appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:113
-#, fuzzy
-#| msgid "The number of gird rows."
 msgid "The number of grid rows."
 msgstr "Izgara satırlarının sayısı."
 
@@ -7787,7 +7784,7 @@ msgstr "Hizala"
 msgid "Align Left"
 msgstr "Sola Hizala"
 
-#: appGUI/ObjectUI.py:2860 app_Main.py:4999
+#: appGUI/ObjectUI.py:2860 app_Main.py:4922
 msgid "Center"
 msgstr "Ortala"
 
@@ -7880,7 +7877,7 @@ msgid "Preferences default values are restored."
 msgstr "Varsayılan ayarlar geri yüklendi."
 
 #: appGUI/preferences/PreferencesUIManager.py:1068 app_Main.py:2628
-#: app_Main.py:2696
+#: app_Main.py:9396
 msgid "Failed to write defaults to file."
 msgstr "Varsayılan değerler dosyaya yazılamadı."
 
@@ -7929,10 +7926,10 @@ msgstr "CNC İş Gelişmiş Seçenekleri"
 #: appGUI/preferences/tools/ToolsSolderpastePrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsSubPrefGroupUI.py:31
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:31
-#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1188
-#: appTools/ToolCorners.py:377 appTools/ToolEtchCompensation.py:356
-#: appTools/ToolFiducials.py:763 appTools/ToolInvertGerber.py:228
-#: appTools/ToolQRCode.py:695
+#: appTools/ToolCalibration.py:762 appTools/ToolCopperThieving.py:1184
+#: appTools/ToolCorners.py:378 appTools/ToolEtchCompensation.py:356
+#: appTools/ToolFiducials.py:765 appTools/ToolInvertGerber.py:228
+#: appTools/ToolQRCode.py:696
 msgid "Parameters"
 msgstr "Seçenekler"
 
@@ -8047,7 +8044,7 @@ msgid "G-code Decimals"
 msgstr "G-Kod'u Ondalık Sayıları"
 
 #: appGUI/preferences/cncjob/CNCJobGenPrefGroupUI.py:76
-#: appTools/ToolFiducials.py:682
+#: appTools/ToolFiducials.py:684
 msgid "Coordinates"
 msgstr "Koordinatlar"
 
@@ -8613,16 +8610,6 @@ msgid "Algorithm:"
 msgstr "Algoritma:"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:215
-#, fuzzy
-#| msgid ""
-#| "This sets the optimization type for the Excellon drill path.\n"
-#| "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
-#| "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-#| "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
-#| "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
-#| "drill path optimization.\n"
-#| "\n"
-#| "Some options are disabled when FlatCAM works in 32bit mode."
 msgid ""
 "This sets the optimization type for the Excellon drill path.\n"
 "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
@@ -8703,16 +8690,12 @@ msgstr "Birleştirme Aracı"
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:260
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:143
-#, fuzzy
-#| msgid ""
-#| "When checked the joined (merged) object tools\n"
-#| "will be merged also but only if they share some of their attributes."
 msgid ""
 "When checked, the tools will be merged\n"
 "but only if they share some of their attributes."
 msgstr ""
-"İşaretlendiğinde, birleştirilmiş nesne araçları, \n"
-"ancak bazı özelliklerini paylaşıyorlarsa birleştirilecektir."
+"İşaretlendiğinde, araçlar birleştirilir, \n"
+"ancak yalnızca bazı özelliklerini paylaşırlarsa."
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:277
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:160
@@ -8804,7 +8787,7 @@ msgstr "Uygulama Ayarları"
 msgid "Grid Settings"
 msgstr "Izgara Ayarları"
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:53 app_Main.py:9744
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:53 app_Main.py:7320
 msgid "X value"
 msgstr "X Değeri"
 
@@ -8812,7 +8795,7 @@ msgstr "X Değeri"
 msgid "This is the Grid snap value on X axis."
 msgstr "Bu, X ekseni ızgarası ek değeridir."
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:65 app_Main.py:9747
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:65 app_Main.py:7323
 msgid "Y value"
 msgstr "Y Değeri"
 
@@ -8859,14 +8842,14 @@ msgstr ""
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:176
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:168
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:232
-#: appTools/ToolFilm.py:1274 app_Main.py:9764
+#: appTools/ToolFilm.py:1274 app_Main.py:7340
 msgid "Portrait"
 msgstr "Dikey"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:177
 #: appGUI/preferences/general/GeneralAppSettingsGroupUI.py:169
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:233
-#: appTools/ToolFilm.py:1275 app_Main.py:9766
+#: appTools/ToolFilm.py:1275 app_Main.py:7342
 msgid "Landscape"
 msgstr "Yatay"
 
@@ -8884,7 +8867,7 @@ msgstr ""
 "daraltılabilir alanın yazı tipi boyutunu ayarlar."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:214
-#: appTools/ToolDblSided.py:666 appTools/ToolDblSided.py:838 app_Main.py:9752
+#: appTools/ToolDblSided.py:668 appTools/ToolDblSided.py:840 app_Main.py:7328
 msgid "Axis"
 msgstr "Eksen"
 
@@ -8907,7 +8890,7 @@ msgstr ""
 "metin giriş alanlarının (Uzantı, Dizin Listesi, vb.) \n"
 "yazı tipi boyutunu ayarlar."
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:253 app_Main.py:9769
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:253 app_Main.py:7345
 msgid "HUD"
 msgstr "HUD (Koordinat Ekranı)"
 
@@ -9033,18 +9016,13 @@ msgid "Allow Edit"
 msgstr "Düzenlemeye İzin Ver"
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:389
-#, fuzzy
-#| msgid ""
-#| "When cheched, the user can edit the objects in the Project Tab\n"
-#| "by using the left mouse button click on the object name.\n"
-#| "Active after restart."
 msgid ""
 "When checked, the user can edit the object names in the Project Tab\n"
 "by clicking on the object name. Active after restart."
 msgstr ""
-"Aktifleştirildiğinde, kullanıcı, nesne adına fare sol düğmesini \n"
-"kullanarak Proje Sekmesindeki nesneleri düzenleyebilir. Değişiklik, \n"
-"uygulama yeniden başlattıktan sonra aktif olacaktır."
+"Aktifleştirildiğinde, kullanıcı, nesne adına sol tıklayarak\n"
+"Proje Sekmesindeki nesneleri düzenleyebilir.\n"
+"Değişiklik, uygulama yeniden başlattıktan sonra aktif olacaktır."
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:395
 msgid "\"Open\" behavior"
@@ -9296,7 +9274,7 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:181
 msgid "Show Project"
-msgstr "Proje Sekmesini Göster"
+msgstr "Yan Paneli Göster"
 
 #: appGUI/preferences/general/GeneralAppPrefGroupUI.py:183
 msgid ""
@@ -9861,16 +9839,6 @@ msgstr ""
 "İzin verilen değerler: 0.3, 1.0"
 
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:96
-#, fuzzy
-#| msgid ""
-#| "This sets the path optimization algorithm.\n"
-#| "- Rtre -> Rtree algorithm\n"
-#| "- MetaHeuristic -> Google OR-Tools algorithm with\n"
-#| "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
-#| "- Basic -> Using Google OR-Tools Basic algorithm\n"
-#| "- TSA -> Using Travelling Salesman algorithm\n"
-#| "\n"
-#| "Some options are disabled when FlatCAM works in 32bit mode."
 msgid ""
 "This sets the path optimization algorithm.\n"
 "- Rtre -> Rtree algorithm\n"
@@ -9962,8 +9930,8 @@ msgid "\"Follow\""
 msgstr "\"Takip Et\""
 
 #: appGUI/preferences/gerber/GerberAdvOptPrefGroupUI.py:64
-#: appObjects/FlatCAMGerber.py:370 appTools/ToolCopperThieving.py:579
-#: appTools/ToolCopperThieving.py:776 appTools/ToolCopperThieving.py:788
+#: appObjects/FlatCAMGerber.py:370 appTools/ToolCopperThieving.py:578
+#: appTools/ToolCopperThieving.py:775 appTools/ToolCopperThieving.py:787
 #: appTools/ToolIsolation.py:1353 appTools/ToolNCC.py:1793
 #: appTools/ToolNCC.py:1820 appTools/ToolNCC.py:1928 appTools/ToolNCC.py:1941
 #: appTools/ToolNCC.py:2845 appTools/ToolNCC.py:2950 appTools/ToolNCC.py:2965
@@ -9992,7 +9960,7 @@ msgstr ""
 #: appObjects/FlatCAMObj.py:755 appObjects/FlatCAMObj.py:758
 #: appObjects/FlatCAMObj.py:761 appObjects/FlatCAMObj.py:789
 #: appObjects/FlatCAMObj.py:796 appObjects/FlatCAMObj.py:799
-#: appTools/ToolFiducials.py:815 appTools/ToolFilm.py:1102
+#: appTools/ToolFiducials.py:817 appTools/ToolFilm.py:1102
 #: appTools/ToolProperties.py:449 appTools/ToolProperties.py:452
 #: appTools/ToolProperties.py:455 appTools/ToolProperties.py:483
 #: appTools/ToolProperties.py:490 appTools/ToolProperties.py:493
@@ -10272,7 +10240,7 @@ msgstr "Daireleri eklemek için kullanılan adım (satır) sayısı."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:57
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:261
-#: appTools/ToolCopperThieving.py:1195 appTools/ToolCopperThieving.py:1530
+#: appTools/ToolCopperThieving.py:1191 appTools/ToolCopperThieving.py:1526
 msgid "Clearance"
 msgstr "Aralık"
 
@@ -10285,7 +10253,7 @@ msgstr "Bu seçim bakır dolgu ile yollar arasındaki mesafeyi ayarlar."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:86
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
-#: appTools/ToolCopperThieving.py:1224 appTools/ToolNCC.py:1351
+#: appTools/ToolCopperThieving.py:1220 appTools/ToolNCC.py:1351
 #: appTools/ToolNCC.py:1667 appTools/ToolNCC.py:1731 appTools/ToolNCC.py:2709
 #: appTools/ToolNCC.py:2718 appTools/ToolNCC.py:4300 appTools/ToolNCC.py:4436
 #: defaults.py:478 tclCommands/TclCommandCopperClear.py:190
@@ -10296,7 +10264,7 @@ msgstr "Tamamı"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1225 appTools/ToolIsolation.py:819
+#: appTools/ToolCopperThieving.py:1221 appTools/ToolIsolation.py:819
 #: appTools/ToolIsolation.py:1435 appTools/ToolIsolation.py:3378
 #: appTools/ToolNCC.py:1365 appTools/ToolNCC.py:1683 appTools/ToolNCC.py:1738
 #: appTools/ToolNCC.py:4300 appTools/ToolNCC.py:4446 appTools/ToolPaint.py:1061
@@ -10308,7 +10276,7 @@ msgstr "Alan"
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:309
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278
-#: appTools/ToolCopperThieving.py:1226 appTools/ToolDblSided.py:757
+#: appTools/ToolCopperThieving.py:1222 appTools/ToolDblSided.py:759
 #: appTools/ToolIsolation.py:1475 appTools/ToolIsolation.py:3378
 #: appTools/ToolNCC.py:1384 appTools/ToolNCC.py:1689 appTools/ToolNCC.py:1746
 #: appTools/ToolNCC.py:2124 appTools/ToolNCC.py:2358 appTools/ToolNCC.py:2754
@@ -10319,7 +10287,7 @@ msgid "Reference Object"
 msgstr "Nesne"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:90
-#: appTools/ToolCopperThieving.py:1228
+#: appTools/ToolCopperThieving.py:1224
 msgid "Reference:"
 msgstr "Seçim Şekli:"
 
@@ -10341,24 +10309,24 @@ msgstr ""
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:188
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:76
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:190
-#: appTools/ToolCopperThieving.py:1270 appTools/ToolExtractDrills.py:494
-#: appTools/ToolExtractDrills.py:632 appTools/ToolPunchGerber.py:770
+#: appTools/ToolCopperThieving.py:1266 appTools/ToolExtractDrills.py:495
+#: appTools/ToolExtractDrills.py:633 appTools/ToolPunchGerber.py:770
 #: appTools/ToolPunchGerber.py:925
 msgid "Rectangular"
 msgstr "Dikdörtgensel"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:102
-#: appTools/ToolCopperThieving.py:1271
+#: appTools/ToolCopperThieving.py:1267
 msgid "Minimal"
 msgstr "Dairesel"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:104
-#: appTools/ToolCopperThieving.py:1273 appTools/ToolFilm.py:954
+#: appTools/ToolCopperThieving.py:1269 appTools/ToolFilm.py:954
 msgid "Box Type:"
 msgstr "Çerçeve Tipi:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:106
-#: appTools/ToolCopperThieving.py:1275
+#: appTools/ToolCopperThieving.py:1271
 msgid ""
 "- 'Rectangular' - the bounding box will be of rectangular shape.\n"
 "- 'Minimal' - the bounding box will be the convex hull shape."
@@ -10367,27 +10335,27 @@ msgstr ""
 "- 'Dairesel' - Sınırlayıcı kutu dairesel şekilde olacaktır."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:120
-#: appTools/ToolCopperThieving.py:1291
+#: appTools/ToolCopperThieving.py:1287
 msgid "Dots Grid"
 msgstr "Nokta Deseni"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:121
-#: appTools/ToolCopperThieving.py:1292
+#: appTools/ToolCopperThieving.py:1288
 msgid "Squares Grid"
 msgstr "Kare Deseni"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:122
-#: appTools/ToolCopperThieving.py:1293
+#: appTools/ToolCopperThieving.py:1289
 msgid "Lines Grid"
 msgstr "Çizgi Deseni"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:124
-#: appTools/ToolCopperThieving.py:1295
+#: appTools/ToolCopperThieving.py:1291
 msgid "Fill Type:"
 msgstr "Dolgu Tipi:"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:126
-#: appTools/ToolCopperThieving.py:1297
+#: appTools/ToolCopperThieving.py:1293
 msgid ""
 "- 'Solid' - copper thieving will be a solid polygon.\n"
 "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
@@ -10400,57 +10368,57 @@ msgstr ""
 "- 'Çizgi Deseni' - Boş alan çizgi deseni ile doldurulacaktır."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:134
-#: appTools/ToolCopperThieving.py:1316
+#: appTools/ToolCopperThieving.py:1312
 msgid "Dots Grid Parameters"
 msgstr "Nokta Desenli Dolgu Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:140
-#: appTools/ToolCopperThieving.py:1322
+#: appTools/ToolCopperThieving.py:1318
 msgid "Dot diameter in Dots Grid."
 msgstr "Nokta desenli dolguda nokta boyutu."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:153
-#: appTools/ToolCopperThieving.py:1335
+#: appTools/ToolCopperThieving.py:1331
 msgid "Distance between each two dots in Dots Grid."
 msgstr "Nokta desenli dolguda her iki nokta arasındaki mesafe."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:163
-#: appTools/ToolCopperThieving.py:1356
+#: appTools/ToolCopperThieving.py:1352
 msgid "Squares Grid Parameters"
 msgstr "Kare Desenli Dolgu Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:169
-#: appTools/ToolCopperThieving.py:1362
+#: appTools/ToolCopperThieving.py:1358
 msgid "Square side size in Squares Grid."
 msgstr "Kare desenli dolguda kare boyutu."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:182
-#: appTools/ToolCopperThieving.py:1375
+#: appTools/ToolCopperThieving.py:1371
 msgid "Distance between each two squares in Squares Grid."
 msgstr "Kare desenli dolguda her iki kare arasındaki mesafe."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:192
-#: appTools/ToolCopperThieving.py:1396
+#: appTools/ToolCopperThieving.py:1392
 msgid "Lines Grid Parameters"
 msgstr "Çizgi Desenli Dolgu Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:198
-#: appTools/ToolCopperThieving.py:1402
+#: appTools/ToolCopperThieving.py:1398
 msgid "Line thickness size in Lines Grid."
 msgstr "Çizgi desenli ızgarada çizgi kalınlığı boyutu."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:211
-#: appTools/ToolCopperThieving.py:1415
+#: appTools/ToolCopperThieving.py:1411
 msgid "Distance between each two lines in Lines Grid."
 msgstr "Çizgi desenli ızgarada her iki çizgi arasındaki mesafe."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:221
-#: appTools/ToolCopperThieving.py:1453
+#: appTools/ToolCopperThieving.py:1449
 msgid "Robber Bar Parameters"
 msgstr "Soyguncu Çubuğu Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:223
-#: appTools/ToolCopperThieving.py:1455
+#: appTools/ToolCopperThieving.py:1451
 msgid ""
 "Parameters used for the robber bar.\n"
 "Robber bar = copper border to help in pattern hole plating."
@@ -10460,7 +10428,7 @@ msgstr ""
 "için bakır kenarlık (çerçeve)"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:231
-#: appTools/ToolCopperThieving.py:1463
+#: appTools/ToolCopperThieving.py:1459
 msgid "Bounding box margin for robber bar."
 msgstr ""
 "Soyguncu çubuğu çerçevesi ile PCB sınırı arasındaki boşluk.\n"
@@ -10469,13 +10437,13 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:242
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:42
-#: appTools/ToolCopperThieving.py:1474 appTools/ToolCorners.py:384
+#: appTools/ToolCopperThieving.py:1470 appTools/ToolCorners.py:385
 #: appTools/ToolEtchCompensation.py:370
 msgid "Thickness"
 msgstr "Kalınlık"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:244
-#: appTools/ToolCopperThieving.py:1476
+#: appTools/ToolCopperThieving.py:1472
 msgid "The robber bar thickness."
 msgstr ""
 "Soyguncu çubuğunun kalınlığı.\n"
@@ -10483,17 +10451,17 @@ msgstr ""
 "kolaylaştırmak için bakır kenarlık (çerçeve))."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:254
-#: appTools/ToolCopperThieving.py:1507
+#: appTools/ToolCopperThieving.py:1503
 msgid "Pattern Plating Mask"
 msgstr "Desen Kaplama Maskesi"
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:256
-#: appTools/ToolCopperThieving.py:1509
+#: appTools/ToolCopperThieving.py:1505
 msgid "Generate a mask for pattern plating."
 msgstr "Desen kaplama için bir maske oluşturun."
 
 #: appGUI/preferences/tools/Tools2CThievingPrefGroupUI.py:263
-#: appTools/ToolCopperThieving.py:1532
+#: appTools/ToolCopperThieving.py:1528
 msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
@@ -10512,8 +10480,8 @@ msgstr "Kalibrasyon Seçenekleri"
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:38
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:38
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:37
-#: appTools/ToolCopperThieving.py:1190 appTools/ToolCorners.py:379
-#: appTools/ToolFiducials.py:765
+#: appTools/ToolCopperThieving.py:1186 appTools/ToolCorners.py:380
+#: appTools/ToolFiducials.py:767
 msgid "Parameters used for this tool."
 msgstr "Referans işareti için kullanılan seçenekler."
 
@@ -10604,12 +10572,12 @@ msgstr ""
 "- Sağ Alt -> Kullanıcı PCB'yi yatay olarak hizalayacaktır"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:131
-#: appTools/ToolCalibration.py:854 app_Main.py:4996
+#: appTools/ToolCalibration.py:854 app_Main.py:4919
 msgid "Top-Left"
 msgstr "Sol Üst"
 
 #: appGUI/preferences/tools/Tools2CalPrefGroupUI.py:132
-#: appTools/ToolCalibration.py:855 app_Main.py:4997
+#: appTools/ToolCalibration.py:855 app_Main.py:4920
 msgid "Bottom-Right"
 msgstr "Sağ Alt"
 
@@ -10619,13 +10587,13 @@ msgstr "Delik Çıkarma Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:42
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:42
-#: appTools/ToolExtractDrills.py:460 appTools/ToolPunchGerber.py:732
+#: appTools/ToolExtractDrills.py:461 appTools/ToolPunchGerber.py:732
 msgid "Processed Pads Type"
 msgstr "Ped İşleme Tipi"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:44
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:44
-#: appTools/ToolExtractDrills.py:462 appTools/ToolPunchGerber.py:734
+#: appTools/ToolExtractDrills.py:463 appTools/ToolPunchGerber.py:734
 msgid ""
 "The type of pads shape to be processed.\n"
 "If the PCB has many SMD pads with rectangular pads,\n"
@@ -10637,7 +10605,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:54
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:54
-#: appTools/ToolExtractDrills.py:472 appTools/ToolPunchGerber.py:748
+#: appTools/ToolExtractDrills.py:473 appTools/ToolPunchGerber.py:748
 msgid "Process Circular Pads."
 msgstr "Dairesel pedlerin işlenmesi."
 
@@ -10645,26 +10613,26 @@ msgstr "Dairesel pedlerin işlenmesi."
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:162
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:60
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:164
-#: appTools/ToolExtractDrills.py:478 appTools/ToolExtractDrills.py:606
+#: appTools/ToolExtractDrills.py:479 appTools/ToolExtractDrills.py:607
 #: appTools/ToolPunchGerber.py:754 appTools/ToolPunchGerber.py:899
 msgid "Oblong"
 msgstr "Dikdörtgen"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:62
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:62
-#: appTools/ToolExtractDrills.py:480 appTools/ToolPunchGerber.py:756
+#: appTools/ToolExtractDrills.py:481 appTools/ToolPunchGerber.py:756
 msgid "Process Oblong Pads."
 msgstr "Dikdörtgen pedlerin işlenmesi."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:70
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:70
-#: appTools/ToolExtractDrills.py:488 appTools/ToolPunchGerber.py:764
+#: appTools/ToolExtractDrills.py:489 appTools/ToolPunchGerber.py:764
 msgid "Process Square Pads."
 msgstr "Kare pedlerin işlenmesi."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:78
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:78
-#: appTools/ToolExtractDrills.py:496 appTools/ToolPunchGerber.py:772
+#: appTools/ToolExtractDrills.py:497 appTools/ToolPunchGerber.py:772
 msgid "Process Rectangular Pads."
 msgstr "Dikdörtgensel pedlerin işlenmesi."
 
@@ -10672,15 +10640,15 @@ msgstr "Dikdörtgensel pedlerin işlenmesi."
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:201
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:84
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:203
-#: appObjects/FlatCAMObj.py:505 appTools/ToolExtractDrills.py:502
-#: appTools/ToolExtractDrills.py:645 appTools/ToolProperties.py:171
+#: appObjects/FlatCAMObj.py:505 appTools/ToolExtractDrills.py:503
+#: appTools/ToolExtractDrills.py:646 appTools/ToolProperties.py:171
 #: appTools/ToolPunchGerber.py:778 appTools/ToolPunchGerber.py:938
 msgid "Others"
 msgstr "Diğerleri"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:86
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:86
-#: appTools/ToolExtractDrills.py:504 appTools/ToolPunchGerber.py:780
+#: appTools/ToolExtractDrills.py:505 appTools/ToolPunchGerber.py:780
 msgid "Process pads not in the categories above."
 msgstr "Yukarıdaki kategorilerle ilgili olmayan yerler."
 
@@ -10688,7 +10656,7 @@ msgstr "Yukarıdaki kategorilerle ilgili olmayan yerler."
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:123
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:100
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:125
-#: appTools/ToolExtractDrills.py:531 appTools/ToolExtractDrills.py:548
+#: appTools/ToolExtractDrills.py:532 appTools/ToolExtractDrills.py:549
 #: appTools/ToolPunchGerber.py:807 appTools/ToolPunchGerber.py:841
 msgid "Fixed Diameter"
 msgstr "Sabit Boyut"
@@ -10697,19 +10665,19 @@ msgstr "Sabit Boyut"
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:140
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:101
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:142
-#: appTools/ToolExtractDrills.py:532 appTools/ToolExtractDrills.py:584
+#: appTools/ToolExtractDrills.py:533 appTools/ToolExtractDrills.py:585
 #: appTools/ToolPunchGerber.py:808 appTools/ToolPunchGerber.py:871
 msgid "Fixed Annular Ring"
 msgstr "Sabit Halka"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:101
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:102
-#: appTools/ToolExtractDrills.py:533 appTools/ToolPunchGerber.py:809
+#: appTools/ToolExtractDrills.py:534 appTools/ToolPunchGerber.py:809
 msgid "Proportional"
 msgstr "Orantılı"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:107
-#: appTools/ToolExtractDrills.py:522
+#: appTools/ToolExtractDrills.py:523
 msgid ""
 "The method for processing pads. Can be:\n"
 "- Fixed Diameter -> all holes will have a set size\n"
@@ -10723,13 +10691,13 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:133
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:135
-#: appTools/ToolExtractDrills.py:558 appTools/ToolPunchGerber.py:851
+#: appTools/ToolExtractDrills.py:559 appTools/ToolPunchGerber.py:851
 msgid "Fixed hole diameter."
 msgstr "Sabit delik boyutu."
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:142
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:144
-#: appTools/ToolExtractDrills.py:586 appTools/ToolPunchGerber.py:873
+#: appTools/ToolExtractDrills.py:587 appTools/ToolPunchGerber.py:873
 msgid ""
 "The size of annular ring.\n"
 "The copper sliver between the hole exterior\n"
@@ -10740,7 +10708,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:151
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:153
-#: appTools/ToolExtractDrills.py:595 appTools/ToolPunchGerber.py:888
+#: appTools/ToolExtractDrills.py:596 appTools/ToolPunchGerber.py:888
 msgid "The size of annular ring for circular pads."
 msgstr ""
 "Dairesel pedler için delik ile ped sınırı\n"
@@ -10748,7 +10716,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:164
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:166
-#: appTools/ToolExtractDrills.py:608 appTools/ToolPunchGerber.py:901
+#: appTools/ToolExtractDrills.py:609 appTools/ToolPunchGerber.py:901
 msgid "The size of annular ring for oblong pads."
 msgstr ""
 "Dikdörtgen pedler için delik ile ped sınırı \n"
@@ -10756,7 +10724,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:177
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:179
-#: appTools/ToolExtractDrills.py:621 appTools/ToolPunchGerber.py:914
+#: appTools/ToolExtractDrills.py:622 appTools/ToolPunchGerber.py:914
 msgid "The size of annular ring for square pads."
 msgstr ""
 "Kare pedler için delik ile ped sınırı\n"
@@ -10764,7 +10732,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:190
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:192
-#: appTools/ToolExtractDrills.py:634 appTools/ToolPunchGerber.py:927
+#: appTools/ToolExtractDrills.py:635 appTools/ToolPunchGerber.py:927
 msgid "The size of annular ring for rectangular pads."
 msgstr ""
 "Dikdörtgensel pedler için delik ile ped sınırı\n"
@@ -10772,7 +10740,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:203
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:205
-#: appTools/ToolExtractDrills.py:647 appTools/ToolPunchGerber.py:940
+#: appTools/ToolExtractDrills.py:648 appTools/ToolPunchGerber.py:940
 msgid "The size of annular ring for other pads."
 msgstr ""
 "Diğer pedler için delik ile ped sınırı\n"
@@ -10780,7 +10748,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:213
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:215
-#: appTools/ToolExtractDrills.py:668 appTools/ToolPunchGerber.py:956
+#: appTools/ToolExtractDrills.py:669 appTools/ToolPunchGerber.py:956
 msgid "Proportional Diameter"
 msgstr "Oransal Boyut"
 
@@ -10791,7 +10759,7 @@ msgstr "Değer"
 
 #: appGUI/preferences/tools/Tools2EDrillsPrefGroupUI.py:224
 #: appGUI/preferences/tools/Tools2PunchGerberPrefGroupUI.py:226
-#: appTools/ToolExtractDrills.py:679 appTools/ToolPunchGerber.py:967
+#: appTools/ToolExtractDrills.py:680 appTools/ToolPunchGerber.py:967
 msgid ""
 "Proportional Diameter.\n"
 "The hole diameter will be a fraction of the pad size."
@@ -10804,7 +10772,7 @@ msgid "Fiducials Tool Options"
 msgstr "Referans İşaretleri Seçenekleri"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:45
-#: appTools/ToolFiducials.py:772
+#: appTools/ToolFiducials.py:774
 msgid ""
 "This set the fiducial diameter if fiducial type is circular,\n"
 "otherwise is the size of the fiducial.\n"
@@ -10815,12 +10783,12 @@ msgstr ""
 "boyutu lehim maskesinin iki katıdır."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:73
-#: appTools/ToolFiducials.py:800
+#: appTools/ToolFiducials.py:802
 msgid "Auto"
 msgstr "Otomatik"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:76
-#: appTools/ToolFiducials.py:803
+#: appTools/ToolFiducials.py:805
 msgid "Mode:"
 msgstr "Yöntem:"
 
@@ -10835,22 +10803,22 @@ msgstr ""
 "- 'El İle' - Referans işaretlerinin el ile yerleştirilmesi."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:86
-#: appTools/ToolFiducials.py:813
+#: appTools/ToolFiducials.py:815
 msgid "Up"
 msgstr "Üst"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:87
-#: appTools/ToolFiducials.py:814
+#: appTools/ToolFiducials.py:816
 msgid "Down"
 msgstr "Alt"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:90
-#: appTools/ToolFiducials.py:817
+#: appTools/ToolFiducials.py:819
 msgid "Second fiducial"
 msgstr "İkinci Referans İşareti"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:92
-#: appTools/ToolFiducials.py:819
+#: appTools/ToolFiducials.py:821
 msgid ""
 "The position for the second fiducial.\n"
 "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
@@ -10863,22 +10831,22 @@ msgstr ""
 "- 'Yok' - İkinci bir referans işareti yoktur. Sıra: sol-alt, sağ-üst."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:108
-#: appTools/ToolFiducials.py:835
+#: appTools/ToolFiducials.py:837
 msgid "Cross"
 msgstr "Çapraz"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:109
-#: appTools/ToolFiducials.py:836
+#: appTools/ToolFiducials.py:838
 msgid "Chess"
 msgstr "Satranç"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:112
-#: appTools/ToolFiducials.py:838
+#: appTools/ToolFiducials.py:840
 msgid "Fiducial Type"
 msgstr "Referans İşareti Tipi"
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:114
-#: appTools/ToolFiducials.py:840
+#: appTools/ToolFiducials.py:842
 msgid ""
 "The type of fiducial.\n"
 "- 'Circular' - this is the regular fiducial.\n"
@@ -10891,7 +10859,7 @@ msgstr ""
 "- 'Satranç' - Satranç tahtası deseninde noktalar."
 
 #: appGUI/preferences/tools/Tools2FiducialsPrefGroupUI.py:123
-#: appTools/ToolFiducials.py:849
+#: appTools/ToolFiducials.py:851
 msgid "Line thickness"
 msgstr "Çizgi Kalınlığı"
 
@@ -10998,12 +10966,12 @@ msgstr ""
 "aktarılabilen bir QR Kodu oluşturmak için bir araç."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:45
-#: appTools/ToolQRCode.py:702 app_Main.py:9732
+#: appTools/ToolQRCode.py:703 app_Main.py:7308
 msgid "Version"
 msgstr "Versiyon"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:47
-#: appTools/ToolQRCode.py:704
+#: appTools/ToolQRCode.py:705
 msgid ""
 "QRCode version can have values from 1 (21x21 boxes)\n"
 "to 40 (177x177 boxes)."
@@ -11012,13 +10980,13 @@ msgstr ""
 "40 (177x177 kare) arasında değerlere sahip olabilir."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:58
-#: appTools/ToolQRCode.py:715
+#: appTools/ToolQRCode.py:716
 msgid "Error correction"
 msgstr "Hata Düzeltme"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:60
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:71
-#: appTools/ToolQRCode.py:717 appTools/ToolQRCode.py:728
+#: appTools/ToolQRCode.py:718 appTools/ToolQRCode.py:729
 #, python-format
 msgid ""
 "Parameter that controls the error correction used for the QR Code.\n"
@@ -11034,12 +11002,12 @@ msgstr ""
 "H = En fazla %% 30 hataları düzeltilebilir."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:81
-#: appTools/ToolQRCode.py:738
+#: appTools/ToolQRCode.py:739
 msgid "Box Size"
 msgstr "Kare Boyutu"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:83
-#: appTools/ToolQRCode.py:740
+#: appTools/ToolQRCode.py:741
 msgid ""
 "Box size control the overall size of the QRcode\n"
 "by adjusting the size of each box in the code."
@@ -11048,12 +11016,12 @@ msgstr ""
 "QR Kod'un genel boyutunu kontrol eder."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:94
-#: appTools/ToolQRCode.py:751
+#: appTools/ToolQRCode.py:752
 msgid "Border Size"
 msgstr "Kenarlık boyutu"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:96
-#: appTools/ToolQRCode.py:753
+#: appTools/ToolQRCode.py:754
 msgid ""
 "Size of the QRCode border. How many boxes thick is the border.\n"
 "Default value is 4. The width of the clearance around the QRCode."
@@ -11062,27 +11030,27 @@ msgstr ""
 "QR Kodu etrafındaki boşluk genişliği. Varsayılan değer 4'tür."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:107
-#: appTools/ToolQRCode.py:673
+#: appTools/ToolQRCode.py:674
 msgid "QRCode Data"
 msgstr "QR Kod Verileri"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:109
-#: appTools/ToolQRCode.py:675
+#: appTools/ToolQRCode.py:676
 msgid "QRCode Data. Alphanumeric text to be encoded in the QRCode."
 msgstr "QR Kod verileri. QR Kod'a kodlanacak metin."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:113
-#: appTools/ToolQRCode.py:679
+#: appTools/ToolQRCode.py:680
 msgid "Add here the text to be included in the QRCode..."
 msgstr "QR Kod'a eklenecek metni buraya girin ..."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:119
-#: appTools/ToolQRCode.py:764
+#: appTools/ToolQRCode.py:765
 msgid "Polarity"
 msgstr "Polarite"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:121
-#: appTools/ToolQRCode.py:766
+#: appTools/ToolQRCode.py:767
 msgid ""
 "Choose the polarity of the QRCode.\n"
 "It can be drawn in a negative way (squares are clear)\n"
@@ -11093,17 +11061,17 @@ msgstr ""
 "Pozitif seçildiğinde QR Kod'u oluşturan kareler opaktır."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:125
-#: appTools/ToolFilm.py:1144 appTools/ToolQRCode.py:770
+#: appTools/ToolFilm.py:1144 appTools/ToolQRCode.py:771
 msgid "Negative"
 msgstr "Negatif"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:126
-#: appTools/ToolFilm.py:1143 appTools/ToolQRCode.py:771
+#: appTools/ToolFilm.py:1143 appTools/ToolQRCode.py:772
 msgid "Positive"
 msgstr "Pozitif"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:128
-#: appTools/ToolQRCode.py:773
+#: appTools/ToolQRCode.py:774
 msgid ""
 "Choose the type of QRCode to be created.\n"
 "If added on a Silkscreen Gerber file the QRCode may\n"
@@ -11117,7 +11085,7 @@ msgstr ""
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:139
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:145
-#: appTools/ToolQRCode.py:784 appTools/ToolQRCode.py:790
+#: appTools/ToolQRCode.py:785 appTools/ToolQRCode.py:791
 msgid ""
 "The bounding box, meaning the empty space that surrounds\n"
 "the QRCode geometry, can have a rounded or a square shape."
@@ -11126,22 +11094,22 @@ msgstr ""
 "yuvarlak veya kare şekle sahip olabilir."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:152
-#: appTools/ToolQRCode.py:818
+#: appTools/ToolQRCode.py:819
 msgid "Fill Color"
 msgstr "Dolgu Rengi"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:154
-#: appTools/ToolQRCode.py:820
+#: appTools/ToolQRCode.py:821
 msgid "Set the QRCode fill color (squares color)."
 msgstr "QR Kod dolgusunun rengini (karelerin rengi) ayarlar."
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:162
-#: appTools/ToolQRCode.py:842
+#: appTools/ToolQRCode.py:843
 msgid "Back Color"
 msgstr "Arka Plan Rengi"
 
 #: appGUI/preferences/tools/Tools2QRCodePrefGroupUI.py:164
-#: appTools/ToolQRCode.py:844
+#: appTools/ToolQRCode.py:845
 msgid "Set the QRCode background color."
 msgstr "QR Kod'un arka plan rengini ayarlar."
 
@@ -11372,7 +11340,7 @@ msgid "Drill dia"
 msgstr "Delik Genişliği"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:49
-#: appTools/ToolDblSided.py:824 appTools/ToolDblSided.py:829
+#: appTools/ToolDblSided.py:826 appTools/ToolDblSided.py:831
 msgid "Diameter of the drill for the alignment holes."
 msgstr "Hizalama delikleri için delik genişliği."
 
@@ -11382,7 +11350,7 @@ msgstr "Ekseni Hizala"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:58
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:71
-#: appTools/ToolDblSided.py:667 appTools/ToolDblSided.py:840
+#: appTools/ToolDblSided.py:669 appTools/ToolDblSided.py:842
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "Dikey (X) veya yatay (Y) tersleyin."
 
@@ -11391,12 +11359,12 @@ msgid "Mirror Axis:"
 msgstr "Tersleme Ekseni:"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:86
-#: appTools/ToolDblSided.py:693
+#: appTools/ToolDblSided.py:695
 msgid "Box"
 msgstr "Çerçeve"
 
 #: appGUI/preferences/tools/Tools2sidedPrefGroupUI.py:87
-#: appTools/ToolDblSided.py:694
+#: appTools/ToolDblSided.py:696
 msgid "Hole Snap"
 msgstr "Deliğe Tuttur"
 
@@ -11544,12 +11512,12 @@ msgid "Corner Markers Options"
 msgstr "Köşe İşaretleyici Seçenekleri"
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:44
-#: appTools/ToolCorners.py:386
+#: appTools/ToolCorners.py:387
 msgid "The thickness of the line that makes the corner marker."
 msgstr "Köşe işaretleyici çizgisinin kalınlığı."
 
 #: appGUI/preferences/tools/ToolsCornersPrefGroupUI.py:58
-#: appTools/ToolCorners.py:400
+#: appTools/ToolCorners.py:401
 msgid "The length of the line that makes the corner marker."
 msgstr "Köşe işaretleyici çizgisinin uzunluğu."
 
@@ -11565,7 +11533,7 @@ msgid ""
 msgstr "PCB'yi kesmek ve iş parçasından ayırmak."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:45
-#: appTools/ToolCutOut.py:2062
+#: appTools/ToolCutOut.py:2066
 msgid ""
 "Diameter of the tool used to cutout\n"
 "the PCB shape out of the surrounding material."
@@ -11578,7 +11546,7 @@ msgid "Object kind"
 msgstr "Nesne Şekli"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:102
-#: appTools/ToolCutOut.py:1995
+#: appTools/ToolCutOut.py:1999
 msgid ""
 "Choice of what kind the object we want to cutout is.<BR>- <B>Single</B>: "
 "contain a single PCB Gerber outline object.<BR>- <B>Panel</B>: a panel PCB "
@@ -11590,12 +11558,12 @@ msgstr ""
 "dosyasında oluşturulan PCB’nin panelleştirilmesi."
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:109
-#: appTools/ToolCutOut.py:2001
+#: appTools/ToolCutOut.py:2005
 msgid "Single"
 msgstr "Tekli"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:110
-#: appTools/ToolCutOut.py:2002
+#: appTools/ToolCutOut.py:2006
 msgid "Panel"
 msgstr "Panel"
 
@@ -11624,12 +11592,12 @@ msgstr ""
 "- 8-->2*sol + 2*sağ +2*üst + 2*alt"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:240
-#: appTools/ToolCutOut.py:2333
+#: appTools/ToolCutOut.py:2337
 msgid "Big cursor"
 msgstr "Büyük İmleç"
 
 #: appGUI/preferences/tools/ToolsCutoutPrefGroupUI.py:242
-#: appTools/ToolCutOut.py:2335
+#: appTools/ToolCutOut.py:2339
 msgid "Use a big cursor when adding manual gaps."
 msgstr "Geçitleri el ile eklerken büyük bir imleç kullanın."
 
@@ -11891,18 +11859,18 @@ msgstr ""
 "Şekil sınırlama kutusunun dört noktasından biri olabilir."
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:174
-#: appTools/ToolCorners.py:342 appTools/ToolFiducials.py:694
+#: appTools/ToolCorners.py:343 appTools/ToolFiducials.py:696
 #: appTools/ToolFilm.py:1065
 msgid "Bottom Left"
 msgstr "Sol Alt"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:175
-#: appTools/ToolCorners.py:350 appTools/ToolFilm.py:1066
+#: appTools/ToolCorners.py:351 appTools/ToolFilm.py:1066
 msgid "Top Left"
 msgstr "Sol Üst"
 
 #: appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:176
-#: appTools/ToolCorners.py:346 appTools/ToolFilm.py:1067
+#: appTools/ToolCorners.py:347 appTools/ToolFilm.py:1067
 msgid "Bottom Right"
 msgstr "Sağ Alt"
 
@@ -12183,9 +12151,9 @@ msgstr "Sıralı"
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:303
 #: appObjects/AppObject.py:453 appObjects/FlatCAMObj.py:266
 #: appObjects/FlatCAMObj.py:297 appObjects/FlatCAMObj.py:313
-#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1044
-#: appTools/ToolCorners.py:263 appTools/ToolFiducials.py:530
-#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:463 app_Main.py:4682
+#: appObjects/FlatCAMObj.py:393 appTools/ToolCopperThieving.py:1040
+#: appTools/ToolCorners.py:264 appTools/ToolFiducials.py:532
+#: appTools/ToolMove.py:229 appTools/ToolQRCode.py:464 app_Main.py:4605
 msgid "Plotting"
 msgstr "Çiziliyor"
 
@@ -12377,9 +12345,9 @@ msgstr "İstenen panelin satır sayısı"
 #: appTools/ToolCalibration.py:163 appTools/ToolCalibration.py:171
 #: appTools/ToolCalibration.py:891 appTools/ToolCalibration.py:1326
 #: appTools/ToolCalibration.py:1343 appTools/ToolCopperThieving.py:163
-#: appTools/ToolCopperThieving.py:1243 appTools/ToolCopperThieving.py:1257
-#: appTools/ToolCutOut.py:2009 appTools/ToolDblSided.py:525
-#: appTools/ToolDblSided.py:765 appTools/ToolFilm.py:928
+#: appTools/ToolCopperThieving.py:1239 appTools/ToolCopperThieving.py:1253
+#: appTools/ToolCutOut.py:2013 appTools/ToolDblSided.py:527
+#: appTools/ToolDblSided.py:767 appTools/ToolFilm.py:928
 #: appTools/ToolFilm.py:951 appTools/ToolImage.py:117 appTools/ToolImage.py:138
 #: appTools/ToolImage.py:191 appTools/ToolIsolation.py:802
 #: appTools/ToolIsolation.py:3339 appTools/ToolIsolation.py:3391
@@ -12413,12 +12381,6 @@ msgstr ""
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:112
 #: appTools/ToolPanelize.py:823
-#, fuzzy
-#| msgid ""
-#| "Active only for Geometry panel type.\n"
-#| "When checked the application will find\n"
-#| "any two overlapping Line elements in the panel\n"
-#| "and remove the overlapping parts, keeping only one of them."
 msgid ""
 "Active only for Geometry panel type.\n"
 "When checked the application will find\n"
@@ -13007,7 +12969,7 @@ msgid "Export cancelled ..."
 msgstr "Dışarı aktarma iptal edildi ..."
 
 #: appObjects/FlatCAMCNCJob.py:1678 appObjects/FlatCAMCNCJob.py:1965
-#: appObjects/FlatCAMScript.py:134 app_Main.py:7830
+#: appObjects/FlatCAMScript.py:134 app_Main.py:6925
 msgid "Loading..."
 msgstr "Yükleniyor..."
 
@@ -13140,7 +13102,7 @@ msgstr "Araç Veri Tabanından Ekle"
 #: appTools/ToolDrilling.py:1021 appTools/ToolIsolation.py:639
 #: appTools/ToolIsolation.py:674 appTools/ToolMilling.py:744
 #: appTools/ToolMilling.py:779 appTools/ToolNCC.py:271 appTools/ToolNCC.py:306
-#: appTools/ToolPaint.py:247 appTools/ToolPaint.py:282 app_Main.py:2194
+#: appTools/ToolPaint.py:247 appTools/ToolPaint.py:282 app_Main.py:2203
 msgid "No Tool Selected"
 msgstr "Hiçbir Araç Seçilmedi"
 
@@ -13447,7 +13409,7 @@ msgstr "Nesne <b> {old} </b> 'den <b> {new} </b> olarak yeniden adlandırıldı"
 #: appObjects/ObjectCollection.py:933 appObjects/ObjectCollection.py:939
 #: appObjects/ObjectCollection.py:945 appObjects/ObjectCollection.py:951
 #: appObjects/ObjectCollection.py:957 appObjects/ObjectCollection.py:963
-#: app_Main.py:6707 app_Main.py:6713 app_Main.py:6719 app_Main.py:6725
+#: app_Main.py:6630 app_Main.py:6636 app_Main.py:6642 app_Main.py:6648
 msgid "selected"
 msgstr "seçildi"
 
@@ -13614,7 +13576,7 @@ msgid "Click on the START point."
 msgstr "BAŞLANGIÇ noktasına tıklayın."
 
 #: appTools/ToolAlignObjects.py:240 appTools/ToolCalibration.py:276
-#: appTools/ToolDblSided.py:285
+#: appTools/ToolDblSided.py:287
 msgid "Cancelled by user request."
 msgstr "Kullanıcı isteği ile iptal edildi."
 
@@ -13628,7 +13590,7 @@ msgid "Or right click to cancel."
 msgstr "Veya iptal etmek için sağ tıklayın."
 
 #: appTools/ToolAlignObjects.py:260 appTools/ToolAlignObjects.py:267
-#: appTools/ToolFiducials.py:718
+#: appTools/ToolFiducials.py:720
 msgid "Second Point"
 msgstr "İkinci Nokta"
 
@@ -13711,32 +13673,32 @@ msgstr ""
 "Eğer iki nokta seçilirse, iki noktaya göre hizalama yapar."
 
 #: appTools/ToolAlignObjects.py:498 appTools/ToolCalculators.py:372
-#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1583
-#: appTools/ToolCorners.py:444 appTools/ToolCutOut.py:2394
-#: appTools/ToolDblSided.py:938 appTools/ToolDrilling.py:2649
-#: appTools/ToolEtchCompensation.py:458 appTools/ToolExtractDrills.py:702
-#: appTools/ToolFiducials.py:932 appTools/ToolFilm.py:1383
+#: appTools/ToolCalibration.py:1378 appTools/ToolCopperThieving.py:1579
+#: appTools/ToolCorners.py:445 appTools/ToolCutOut.py:2398
+#: appTools/ToolDblSided.py:940 appTools/ToolDrilling.py:2649
+#: appTools/ToolEtchCompensation.py:458 appTools/ToolExtractDrills.py:703
+#: appTools/ToolFiducials.py:934 appTools/ToolFilm.py:1383
 #: appTools/ToolInvertGerber.py:286 appTools/ToolIsolation.py:3477
 #: appTools/ToolMilling.py:2324 appTools/ToolNCC.py:4388
 #: appTools/ToolOptimal.py:593 appTools/ToolPaint.py:3194
 #: appTools/ToolPanelize.py:889 appTools/ToolPunchGerber.py:996
-#: appTools/ToolQRCode.py:904 appTools/ToolRulesCheck.py:1620
+#: appTools/ToolQRCode.py:905 appTools/ToolRulesCheck.py:1620
 #: appTools/ToolSolderPaste.py:1557 appTools/ToolSub.py:754
 #: appTools/ToolTransform.py:920
 msgid "Reset Tool"
 msgstr "Verileri Sıfırla"
 
 #: appTools/ToolAlignObjects.py:501 appTools/ToolCalculators.py:375
-#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1586
-#: appTools/ToolCorners.py:447 appTools/ToolCutOut.py:2397
-#: appTools/ToolDblSided.py:941 appTools/ToolDrilling.py:2652
-#: appTools/ToolEtchCompensation.py:461 appTools/ToolExtractDrills.py:705
-#: appTools/ToolFiducials.py:935 appTools/ToolFilm.py:1386
+#: appTools/ToolCalibration.py:1381 appTools/ToolCopperThieving.py:1582
+#: appTools/ToolCorners.py:448 appTools/ToolCutOut.py:2401
+#: appTools/ToolDblSided.py:943 appTools/ToolDrilling.py:2652
+#: appTools/ToolEtchCompensation.py:461 appTools/ToolExtractDrills.py:706
+#: appTools/ToolFiducials.py:937 appTools/ToolFilm.py:1386
 #: appTools/ToolInvertGerber.py:289 appTools/ToolIsolation.py:3480
 #: appTools/ToolMilling.py:2327 appTools/ToolNCC.py:4391
 #: appTools/ToolOptimal.py:596 appTools/ToolPaint.py:3197
 #: appTools/ToolPanelize.py:892 appTools/ToolPunchGerber.py:999
-#: appTools/ToolQRCode.py:907 appTools/ToolRulesCheck.py:1623
+#: appTools/ToolQRCode.py:908 appTools/ToolRulesCheck.py:1623
 #: appTools/ToolSolderPaste.py:1560 appTools/ToolSub.py:757
 #: appTools/ToolTransform.py:923
 msgid "Will reset the tool parameters."
@@ -14144,30 +14106,30 @@ msgstr "Nokta Desenli dolgu seçildi."
 msgid "Squares grid fill selected."
 msgstr "Kare Desenli dolgu seçildi."
 
-#: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:308
-#: appTools/ToolCopperThieving.py:916 appTools/ToolCorners.py:120
-#: appTools/ToolDblSided.py:304 appTools/ToolExtractDrills.py:141
+#: appTools/ToolCopperThieving.py:226 appTools/ToolCopperThieving.py:307
+#: appTools/ToolCopperThieving.py:914 appTools/ToolCorners.py:120
+#: appTools/ToolDblSided.py:306 appTools/ToolExtractDrills.py:141
 #: appTools/ToolFiducials.py:187 appTools/ToolFiducials.py:464
 #: appTools/ToolOptimal.py:138 appTools/ToolPunchGerber.py:188
 #: appTools/ToolQRCode.py:158
 msgid "There is no Gerber object loaded ..."
 msgstr "Yüklü Gerber nesnesi yok ..."
 
-#: appTools/ToolCopperThieving.py:239 appTools/ToolCopperThieving.py:844
+#: appTools/ToolCopperThieving.py:239 appTools/ToolCopperThieving.py:843
 msgid "Append geometry"
 msgstr "Şekil Ekle"
 
-#: appTools/ToolCopperThieving.py:283 appTools/ToolCopperThieving.py:877
-#: appTools/ToolCopperThieving.py:1022
+#: appTools/ToolCopperThieving.py:283 appTools/ToolCopperThieving.py:876
+#: appTools/ToolCopperThieving.py:1020
 msgid "Append source file"
 msgstr "Kaynak Dosya Ekle"
 
-#: appTools/ToolCopperThieving.py:291 appTools/ToolCopperThieving.py:885
+#: appTools/ToolCopperThieving.py:290 appTools/ToolCopperThieving.py:883
 msgid "Copper Thieving Tool done."
 msgstr "Bakır dolgu işlemi tamamlandı."
 
-#: appTools/ToolCopperThieving.py:318 appTools/ToolCopperThieving.py:351
-#: appTools/ToolCutOut.py:544 appTools/ToolCutOut.py:917
+#: appTools/ToolCopperThieving.py:317 appTools/ToolCopperThieving.py:350
+#: appTools/ToolCutOut.py:544 appTools/ToolCutOut.py:918
 #: appTools/ToolDrilling.py:726 appTools/ToolDrilling.py:1582
 #: appTools/ToolEtchCompensation.py:152 appTools/ToolInvertGerber.py:99
 #: appTools/ToolIsolation.py:908 appTools/ToolIsolation.py:1345
@@ -14182,84 +14144,84 @@ msgstr "Bakır dolgu işlemi tamamlandı."
 msgid "Could not retrieve object"
 msgstr "Nesne alınamadı"
 
-#: appTools/ToolCopperThieving.py:379
+#: appTools/ToolCopperThieving.py:378
 msgid "Click the end point of the filling area."
 msgstr "Dolgu alanının bitiş noktasını tıklayın."
 
-#: appTools/ToolCopperThieving.py:507 appTools/ToolCopperThieving.py:511
-#: appTools/ToolCopperThieving.py:570
+#: appTools/ToolCopperThieving.py:506 appTools/ToolCopperThieving.py:510
+#: appTools/ToolCopperThieving.py:569
 msgid "Thieving"
 msgstr "Dolgu"
 
-#: appTools/ToolCopperThieving.py:518
+#: appTools/ToolCopperThieving.py:517
 msgid "Copper Thieving Tool started. Reading parameters."
 msgstr "Bakır dolgu işlemi başladı. Seçenekler uygulanıyor."
 
-#: appTools/ToolCopperThieving.py:543
+#: appTools/ToolCopperThieving.py:542
 msgid "Copper Thieving Tool. Preparing isolation polygons."
 msgstr "Bakır dolgu. Dolgusuz alanlar hazırlanıyor."
 
-#: appTools/ToolCopperThieving.py:586
+#: appTools/ToolCopperThieving.py:585
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
 msgstr "Bakır dolgu. Bakır ile doldurmak için kullanılan alanlar hazırlanıyor."
 
-#: appTools/ToolCopperThieving.py:597 appTools/ToolFilm.py:631
+#: appTools/ToolCopperThieving.py:596 appTools/ToolFilm.py:631
 #: appTools/ToolFilm.py:879 appTools/ToolIsolation.py:916
 #: appTools/ToolNCC.py:853 appTools/ToolOptimal.py:145
 #: appTools/ToolPanelize.py:612 appTools/ToolRulesCheck.py:627
 msgid "Working..."
 msgstr "Çalışıyor..."
 
-#: appTools/ToolCopperThieving.py:626
+#: appTools/ToolCopperThieving.py:625
 msgid "Geometry not supported for bounding box"
 msgstr "Sınırlayıcı kutu için şekil desteklenmiyor"
 
-#: appTools/ToolCopperThieving.py:632 appTools/ToolNCC.py:1681
+#: appTools/ToolCopperThieving.py:631 appTools/ToolNCC.py:1681
 #: appTools/ToolNCC.py:1736 appTools/ToolNCC.py:2734 appTools/ToolPaint.py:2457
 msgid "No object available."
 msgstr "Kullanılabilir nesne yok."
 
-#: appTools/ToolCopperThieving.py:669 appTools/ToolNCC.py:1706
+#: appTools/ToolCopperThieving.py:668 appTools/ToolNCC.py:1706
 #: appTools/ToolNCC.py:1759 appTools/ToolNCC.py:2776
 msgid "The reference object type is not supported."
 msgstr "Belirtilen nesnenin türü desteklenmiyor."
 
-#: appTools/ToolCopperThieving.py:674
+#: appTools/ToolCopperThieving.py:673
 msgid "Copper Thieving Tool. Appending new geometry and buffering."
 msgstr "Bakır dolgu. Dolgu ekleniyor ve tamponlanıyor."
 
-#: appTools/ToolCopperThieving.py:690
+#: appTools/ToolCopperThieving.py:689
 msgid "Create geometry"
 msgstr "Şekil Oluştur"
 
-#: appTools/ToolCopperThieving.py:896 appTools/ToolCopperThieving.py:900
+#: appTools/ToolCopperThieving.py:894 appTools/ToolCopperThieving.py:898
 msgid "P-Plating Mask"
 msgstr "Desen Kaplama Maskesi"
 
-#: appTools/ToolCopperThieving.py:922
+#: appTools/ToolCopperThieving.py:920
 msgid "Append PP-M geometry"
 msgstr "Desen Kaplama Maskesi Ekle"
 
-#: appTools/ToolCopperThieving.py:1040
+#: appTools/ToolCopperThieving.py:1036
 msgid "Generating Pattern Plating Mask done."
 msgstr "Desen kaplama maskesi oluşturma işlemi tamamlandı."
 
-#: appTools/ToolCopperThieving.py:1112
+#: appTools/ToolCopperThieving.py:1108
 msgid "Copper Thieving Tool exit."
 msgstr "Bakır dolgu aracından çıkış."
 
-#: appTools/ToolCopperThieving.py:1171 appTools/ToolFiducials.py:875
+#: appTools/ToolCopperThieving.py:1167 appTools/ToolFiducials.py:877
 msgid "Gerber Object to which will be added a copper thieving."
 msgstr "Bakır dolgunun ekleneceği Gerber nesnesi."
 
-#: appTools/ToolCopperThieving.py:1197
+#: appTools/ToolCopperThieving.py:1193
 msgid ""
 "This set the distance between the copper thieving components\n"
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr "Bakır dolgu ile yollar arasındaki mesafe."
 
-#: appTools/ToolCopperThieving.py:1230
+#: appTools/ToolCopperThieving.py:1226
 msgid ""
 "- 'Itself' - the copper thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
@@ -14272,12 +14234,12 @@ msgstr ""
 "belirleyebilirsiniz.\n"
 "- 'Nesne' - Belirtilen nesne alanı içinde bakır dolgusu yapar."
 
-#: appTools/ToolCopperThieving.py:1237 appTools/ToolIsolation.py:3385
+#: appTools/ToolCopperThieving.py:1233 appTools/ToolIsolation.py:3385
 #: appTools/ToolNCC.py:4317 appTools/ToolPaint.py:3137
 msgid "Ref. Type"
 msgstr "Seçilen Tür"
 
-#: appTools/ToolCopperThieving.py:1239
+#: appTools/ToolCopperThieving.py:1235
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
@@ -14285,21 +14247,21 @@ msgstr ""
 "Bakır dolgusu için şablon olarak kullanılacak FlatCAM nesnesinin türü.\n"
 "Gerber, Excellon veya Şekil olabilir."
 
-#: appTools/ToolCopperThieving.py:1248 appTools/ToolIsolation.py:3396
+#: appTools/ToolCopperThieving.py:1244 appTools/ToolIsolation.py:3396
 #: appTools/ToolNCC.py:4327 appTools/ToolPaint.py:3147
 msgid "Ref. Object"
 msgstr "Nesne Türü"
 
-#: appTools/ToolCopperThieving.py:1250 appTools/ToolIsolation.py:3398
+#: appTools/ToolCopperThieving.py:1246 appTools/ToolIsolation.py:3398
 #: appTools/ToolNCC.py:4329 appTools/ToolPaint.py:3149
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr "Bakır temizlemeye şablon olarak kullanılacak FlatCAM nesnesi."
 
-#: appTools/ToolCopperThieving.py:1426
+#: appTools/ToolCopperThieving.py:1422
 msgid "Insert Copper thieving"
 msgstr "Bakır Dolgu Ekle"
 
-#: appTools/ToolCopperThieving.py:1428
+#: appTools/ToolCopperThieving.py:1424
 msgid ""
 "Will add a polygon (may be split in multiple parts)\n"
 "that will surround the actual Gerber traces at a certain distance."
@@ -14307,11 +14269,11 @@ msgstr ""
 "Gerçek Gerber yolları dışında kalan alanları \n"
 "kaplayan ve parçalardan oluşmuş dolgular ekler."
 
-#: appTools/ToolCopperThieving.py:1487
+#: appTools/ToolCopperThieving.py:1483
 msgid "Insert Robber Bar"
 msgstr "Soyguncu Çubuğu Ekle"
 
-#: appTools/ToolCopperThieving.py:1489
+#: appTools/ToolCopperThieving.py:1485
 msgid ""
 "Will add a polygon with a defined thickness\n"
 "that will surround the actual Gerber object\n"
@@ -14323,11 +14285,11 @@ msgstr ""
 "(Soyguncu çubuğu: Deliklerin kaplanmasını kolaylaştırmak\n"
 "için bakır kenarlık (çerçeve)."
 
-#: appTools/ToolCopperThieving.py:1513
+#: appTools/ToolCopperThieving.py:1509
 msgid "Select Soldermask object"
 msgstr "Lehim Maskesi Nesnesinin Seçimi"
 
-#: appTools/ToolCopperThieving.py:1515
+#: appTools/ToolCopperThieving.py:1511
 msgid ""
 "Gerber Object with the soldermask.\n"
 "It will be used as a base for\n"
@@ -14337,11 +14299,11 @@ msgstr ""
 "Desen kaplama maskesi için bir \n"
 "taban olarak kullanılacaktır."
 
-#: appTools/ToolCopperThieving.py:1544
+#: appTools/ToolCopperThieving.py:1540
 msgid "Plated area"
 msgstr "Kaplama Alanı"
 
-#: appTools/ToolCopperThieving.py:1546
+#: appTools/ToolCopperThieving.py:1542
 msgid ""
 "The area to be plated by pattern plating.\n"
 "Basically is made from the openings in the plating mask.\n"
@@ -14359,19 +14321,19 @@ msgstr ""
 "biraz daha büyüktür ve bu alan lehim maskesi açıklıklarından\n"
 "hesaplanır."
 
-#: appTools/ToolCopperThieving.py:1557
+#: appTools/ToolCopperThieving.py:1553
 msgid "mm"
 msgstr "mm"
 
-#: appTools/ToolCopperThieving.py:1559
+#: appTools/ToolCopperThieving.py:1555
 msgid "in"
 msgstr "in"
 
-#: appTools/ToolCopperThieving.py:1566
+#: appTools/ToolCopperThieving.py:1562
 msgid "Generate pattern plating mask"
 msgstr "Desen Kaplama Maskesi Oluştur"
 
-#: appTools/ToolCopperThieving.py:1568
+#: appTools/ToolCopperThieving.py:1564
 msgid ""
 "Will add to the soldermask gerber geometry\n"
 "the geometries of the copper thieving and/or\n"
@@ -14386,39 +14348,39 @@ msgstr ""
 msgid "Corners Tool"
 msgstr "Köşe Aracı"
 
-#: appTools/ToolCorners.py:157
+#: appTools/ToolCorners.py:158
 msgid "Please select at least a location"
 msgstr "Lütfen en az bir konum seçin"
 
-#: appTools/ToolCorners.py:292
+#: appTools/ToolCorners.py:293
 msgid "Corners Tool exit."
 msgstr "Köşe işaretleyicisi çıkış."
 
-#: appTools/ToolCorners.py:319
+#: appTools/ToolCorners.py:320
 msgid "The Gerber object to which will be added corner markers."
 msgstr "Köşe işaretleyicileri eklenecek Gerber nesnesi."
 
-#: appTools/ToolCorners.py:335
+#: appTools/ToolCorners.py:336
 msgid "Locations"
 msgstr "Konumlar"
 
-#: appTools/ToolCorners.py:337
+#: appTools/ToolCorners.py:338
 msgid "Locations where to place corner markers."
 msgstr "Köşe işaretleyicilerinin yerleştirileceği yerler."
 
-#: appTools/ToolCorners.py:354 appTools/ToolFiducials.py:706
+#: appTools/ToolCorners.py:355 appTools/ToolFiducials.py:708
 msgid "Top Right"
 msgstr "Sağ Üst"
 
-#: appTools/ToolCorners.py:363
+#: appTools/ToolCorners.py:364
 msgid "Toggle ALL"
 msgstr "TÜMÜNÜ Seç"
 
-#: appTools/ToolCorners.py:429
+#: appTools/ToolCorners.py:430
 msgid "Add Marker"
 msgstr "Köşe İşareti Ekle"
 
-#: appTools/ToolCorners.py:431
+#: appTools/ToolCorners.py:432
 msgid "Will add corner markers to the selected Gerber file."
 msgstr "Seçilen Gerber dosyasına köşe işaretleyicileri ekler."
 
@@ -14427,7 +14389,7 @@ msgstr "Seçilen Gerber dosyasına köşe işaretleyicileri ekler."
 #: appTools/ToolNCC.py:463 appTools/ToolNCC.py:992 appTools/ToolNCC.py:1130
 #: appTools/ToolPaint.py:395 appTools/ToolPaint.py:686
 #: appTools/ToolPaint.py:823 appTools/ToolSolderPaste.py:131
-#: appTools/ToolSolderPaste.py:464 app_Main.py:4496
+#: appTools/ToolSolderPaste.py:464 app_Main.py:4419
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr "Lütfen ondalıklı formatta sıfır olmayan bir uç kalınlığı girin."
 
@@ -14471,18 +14433,18 @@ msgstr ""
 "Kesilecek herhangi bir nesne yok.\n"
 "Lütfen bir nesne seçerek tekrar deneyiniz."
 
-#: appTools/ToolCutOut.py:555 appTools/ToolCutOut.py:926
-#: appTools/ToolCutOut.py:1300 appTools/ToolCutOut.py:1431
+#: appTools/ToolCutOut.py:555 appTools/ToolCutOut.py:927
+#: appTools/ToolCutOut.py:1303 appTools/ToolCutOut.py:1434
 #: tclCommands/TclCommandGeoCutout.py:184
 msgid "Tool Diameter is zero value. Change it to a positive real number."
 msgstr ""
 "Ucun kalınlığı sıfırdır. Uç kalınlığını Pozitif bir tamsayı olarak değiştin."
 
-#: appTools/ToolCutOut.py:568 appTools/ToolCutOut.py:940
+#: appTools/ToolCutOut.py:568 appTools/ToolCutOut.py:941
 msgid "Number of gaps value is missing. Add it and retry."
 msgstr "Geçit sayı değeri eksik. Ekleyin ve tekrar deneyin."
 
-#: appTools/ToolCutOut.py:573 appTools/ToolCutOut.py:944
+#: appTools/ToolCutOut.py:573 appTools/ToolCutOut.py:945
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
 "Fill in a correct value and retry. "
@@ -14491,16 +14453,16 @@ msgstr ""
 " 'Yok', 'Sol Sağ', 'Üst Alt', '2 Sol Sağ', '2 Üst Alt', 4 veya 8. Doğru "
 "sayıyı girin ve tekrar deneyin. "
 
-#: appTools/ToolCutOut.py:891 appTools/ToolCutOut.py:1260
-#: appTools/ToolCutOut.py:1615
+#: appTools/ToolCutOut.py:892 appTools/ToolCutOut.py:1263
+#: appTools/ToolCutOut.py:1619
 msgid "Mouse bites failed."
 msgstr "Fare ısırığı şekli başarısız oldu."
 
-#: appTools/ToolCutOut.py:899
+#: appTools/ToolCutOut.py:900
 msgid "Any form CutOut operation finished."
 msgstr "Serbest şekilli PCB kesme işlemi başarıyla tamamlandı."
 
-#: appTools/ToolCutOut.py:921 appTools/ToolDrilling.py:1586
+#: appTools/ToolCutOut.py:922 appTools/ToolDrilling.py:1586
 #: appTools/ToolEtchCompensation.py:158 appTools/ToolInvertGerber.py:105
 #: appTools/ToolIsolation.py:912 appTools/ToolIsolation.py:1349
 #: appTools/ToolIsolation.py:1376 appTools/ToolMilling.py:1326
@@ -14510,49 +14472,49 @@ msgstr "Serbest şekilli PCB kesme işlemi başarıyla tamamlandı."
 msgid "Object not found"
 msgstr "Nesne bulunamadı"
 
-#: appTools/ToolCutOut.py:1114 appTools/ToolCutOut.py:1187
+#: appTools/ToolCutOut.py:1115 appTools/ToolCutOut.py:1188
 msgid "Rectangular cutout with negative margin is not possible."
 msgstr "Kenar payı negatif, dikdörtgensel kesim mümkün değildir."
 
-#: appTools/ToolCutOut.py:1268
+#: appTools/ToolCutOut.py:1271
 msgid "Rectangular CutOut operation finished."
 msgstr "Dikdörtgensel PCB kesim işlemi tamamlandı."
 
-#: appTools/ToolCutOut.py:1284 appTools/ToolCutOut.py:1316
+#: appTools/ToolCutOut.py:1287 appTools/ToolCutOut.py:1319
 msgid "Could not retrieve Geometry object"
 msgstr "Şekil nesnesi alınamadı"
 
-#: appTools/ToolCutOut.py:1289 appTools/ToolCutOut.py:1344
+#: appTools/ToolCutOut.py:1292 appTools/ToolCutOut.py:1347
 msgid "Geometry object for manual cutout not found"
 msgstr "Geçitleri el ile eklemek için kesim sınırı bulunamadı"
 
-#: appTools/ToolCutOut.py:1292
+#: appTools/ToolCutOut.py:1295
 msgid ""
 "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr "Bir geçit oluşturmak için seçilen şeklin sınırları üzerine tıklayın."
 
-#: appTools/ToolCutOut.py:1380
+#: appTools/ToolCutOut.py:1383
 msgid "No tool in the Geometry object."
 msgstr "Şekil nesnesinde araç yok."
 
-#: appTools/ToolCutOut.py:1401
+#: appTools/ToolCutOut.py:1404
 msgid ""
 "Added manual Bridge Gap. Left click to add another or right click to finish."
 msgstr ""
 "Geçitler el ile eklendi. Başka eklemek için sol tıklayın veya bitirmek için "
 "sağ tıklayın."
 
-#: appTools/ToolCutOut.py:1413
+#: appTools/ToolCutOut.py:1416
 msgid "Could not retrieve Gerber object"
 msgstr "Gerber nesnesi alınamadı"
 
-#: appTools/ToolCutOut.py:1418
+#: appTools/ToolCutOut.py:1421
 msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr "Kesmek için Gerber nesnesi seçilmedi. Birini seçip tekrar deneyin."
 
-#: appTools/ToolCutOut.py:1424
+#: appTools/ToolCutOut.py:1427
 msgid ""
 "The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
@@ -14560,36 +14522,36 @@ msgstr ""
 "Seçilen nesne Gerber türünde olmalıdır. Bir Gerber dosyası seçin ve tekrar "
 "deneyin."
 
-#: appTools/ToolCutOut.py:1459
+#: appTools/ToolCutOut.py:1462
 msgid "Geometry not supported for cutout"
 msgstr "Kesmek için şekil desteklenmiyor"
 
-#: appTools/ToolCutOut.py:1531
+#: appTools/ToolCutOut.py:1534
 msgid "Making manual bridge gap..."
 msgstr "El ile geçit oluşturuluyor..."
 
-#: appTools/ToolCutOut.py:1619
+#: appTools/ToolCutOut.py:1623
 msgid "Finished manual adding of gaps."
 msgstr "Geçitlerin el ile eklenmesi başarı ile tamamlandı."
 
-#: appTools/ToolCutOut.py:1961
+#: appTools/ToolCutOut.py:1965
 msgid "Cutout PCB"
 msgstr "PCB Kesimi"
 
-#: appTools/ToolCutOut.py:1987 appTools/ToolDblSided.py:513
+#: appTools/ToolCutOut.py:1991 appTools/ToolDblSided.py:515
 #: appTools/ToolPanelize.py:652
 msgid "Source Object"
 msgstr "Kaynak Nesne"
 
-#: appTools/ToolCutOut.py:1988
+#: appTools/ToolCutOut.py:1992
 msgid "Object to be cutout"
 msgstr "Kesilecek nesne"
 
-#: appTools/ToolCutOut.py:1993
+#: appTools/ToolCutOut.py:1997
 msgid "Kind"
 msgstr "Şekil"
 
-#: appTools/ToolCutOut.py:2015
+#: appTools/ToolCutOut.py:2019
 msgid ""
 "Specify the type of object to be cutout.\n"
 "It can be of type: Gerber or Geometry.\n"
@@ -14601,7 +14563,7 @@ msgstr ""
 "Burada seçilen, 'Nesne' açılır kutudaki \n"
 "nesne türlerini belirler."
 
-#: appTools/ToolCutOut.py:2074 appTools/ToolIsolation.py:3125
+#: appTools/ToolCutOut.py:2078 appTools/ToolIsolation.py:3125
 #: appTools/ToolNCC.py:3999 appTools/ToolPaint.py:2901
 msgid ""
 "Add a new tool to the Tool Table\n"
@@ -14614,25 +14576,25 @@ msgstr ""
 "Bu, Araçlar Veri Tabanında bir arka plan aramasıyla yapılır.\n"
 "Araçlar Veri Tabanında hiçbir şey bulunmazsa, varsayılan bir araç eklenir."
 
-#: appTools/ToolCutOut.py:2100
+#: appTools/ToolCutOut.py:2104
 msgid "Tool Parameters"
 msgstr "Uç Seçenekleri"
 
-#: appTools/ToolCutOut.py:2249
+#: appTools/ToolCutOut.py:2253
 msgid "Automatic"
 msgstr "Otomatik"
 
-#: appTools/ToolCutOut.py:2249 appTools/ToolCutOut.py:2324
+#: appTools/ToolCutOut.py:2253 appTools/ToolCutOut.py:2328
 msgid "Bridge Gaps"
 msgstr "Geçit Boşlukları"
 
-#: appTools/ToolCutOut.py:2251
+#: appTools/ToolCutOut.py:2255
 msgid "This section handle creation of automatic bridge gaps."
 msgstr ""
 "Bu bölüm geçit boşluklarının otomatik oluşturulmasını ele almaktadır.\n"
 "Geçit: PCB kesildiği zaman çevresinden kopmaması için kullanılan köprülerdir."
 
-#: appTools/ToolCutOut.py:2290
+#: appTools/ToolCutOut.py:2294
 msgid ""
 "Cutout the selected object.\n"
 "The cutout shape can be of any shape.\n"
@@ -14643,7 +14605,7 @@ msgstr ""
 "PCB dikdörtgen olmayan bir şekle sahip\n"
 "olduğunda kullanışlıdır."
 
-#: appTools/ToolCutOut.py:2305
+#: appTools/ToolCutOut.py:2309
 msgid ""
 "Cutout the selected object.\n"
 "The resulting cutout shape is\n"
@@ -14654,7 +14616,7 @@ msgstr ""
 "Ortaya çıkan kesme şekli her zaman bir dikdörtgen \n"
 "şekli ve nesnenin sınırlayıcı kutusu olacaktır."
 
-#: appTools/ToolCutOut.py:2326
+#: appTools/ToolCutOut.py:2330
 msgid ""
 "This section handle creation of manual bridge gaps.\n"
 "This is done by mouse clicking on the perimeter of the\n"
@@ -14665,11 +14627,11 @@ msgstr ""
 "Geçit: PCB kesildiği zaman çevresinden kopmaması için kullanılan "
 "köprülerdir. "
 
-#: appTools/ToolCutOut.py:2342
+#: appTools/ToolCutOut.py:2346
 msgid "Generate Manual Geometry"
 msgstr "Kesim Şeklini El ile Oluştur"
 
-#: appTools/ToolCutOut.py:2345
+#: appTools/ToolCutOut.py:2349
 msgid ""
 "If the object to be cutout is a Gerber\n"
 "first create a Geometry that surrounds it,\n"
@@ -14681,19 +14643,19 @@ msgstr ""
 "Nesnelerin listesini içeren üstteki açılır kutudan kaynak \n"
 "Gerber dosyasını seçin."
 
-#: appTools/ToolCutOut.py:2365
+#: appTools/ToolCutOut.py:2369
 msgid "Manual cutout Geometry"
 msgstr "Geçitleri El ile Ekle"
 
-#: appTools/ToolCutOut.py:2367
+#: appTools/ToolCutOut.py:2371
 msgid "Geometry object used to create the manual cutout."
 msgstr "Geçitlerin el ile yerleştirileceği nesne."
 
-#: appTools/ToolCutOut.py:2374
+#: appTools/ToolCutOut.py:2378
 msgid "Manual Add Bridge Gaps"
 msgstr "Geçitleri El ile Ekle"
 
-#: appTools/ToolCutOut.py:2377
+#: appTools/ToolCutOut.py:2381
 msgid ""
 "Use the left mouse button (LMB) click\n"
 "to create a bridge gap to separate the PCB from\n"
@@ -14736,32 +14698,32 @@ msgstr ""
 "Kullanılacak hizalama deliği Koordinatı yoktur. Onları ekleyin ve tekrar "
 "deneyin."
 
-#: appTools/ToolDblSided.py:213
+#: appTools/ToolDblSided.py:215
 msgid "Excellon object with alignment drills created..."
 msgstr "Excellon nesnesi, hizalama delikleriyle oluşturuldu ..."
 
-#: appTools/ToolDblSided.py:224 appTools/ToolPunchGerber.py:209
+#: appTools/ToolDblSided.py:226 appTools/ToolPunchGerber.py:209
 msgid "There is no Excellon object loaded ..."
 msgstr ""
 "Yüklü Excellon nesnesi yok, Excellon nesnesi ekleyip tekrar deneyiniz ..."
 
-#: appTools/ToolDblSided.py:236
+#: appTools/ToolDblSided.py:238
 msgid "Click on canvas within the desired Excellon drill hole"
 msgstr "İstediğiniz Excellon deliği merkezine tıklayın"
 
-#: appTools/ToolDblSided.py:280
+#: appTools/ToolDblSided.py:282
 msgid "Mirror reference point set."
 msgstr "Tersleme referans noktası ayarla."
 
-#: appTools/ToolDblSided.py:308
+#: appTools/ToolDblSided.py:310
 msgid "Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr "Yalnızca Gerber, Excellon ve Şekil nesneleri terslenebilir."
 
-#: appTools/ToolDblSided.py:320
+#: appTools/ToolDblSided.py:322
 msgid "There is no Box object loaded ..."
 msgstr "Yüklü bir Çerçeve nesnesi yok ..."
 
-#: appTools/ToolDblSided.py:330
+#: appTools/ToolDblSided.py:332
 msgid ""
 "There are no Point coordinates in the Point field. Add coords and try "
 "again ..."
@@ -14769,31 +14731,31 @@ msgstr ""
 "Nokta alanında Nokta koordinatları yoktur. Koordinatları ekleyin ve tekrar "
 "deneyin ..."
 
-#: appTools/ToolDblSided.py:337 camlib.py:2401
+#: appTools/ToolDblSided.py:339 camlib.py:2401
 msgid "Object was mirrored"
 msgstr "Nesne terslendi"
 
-#: appTools/ToolDblSided.py:403 app_Main.py:4635 app_Main.py:4790
+#: appTools/ToolDblSided.py:405 app_Main.py:4558 app_Main.py:4713
 msgid "Failed. No object(s) selected..."
 msgstr "Hata. Hiçbir nesne seçilmedi ..."
 
-#: appTools/ToolDblSided.py:487
+#: appTools/ToolDblSided.py:489
 msgid "2-Sided PCB"
 msgstr "2 Taraflı PCB"
 
-#: appTools/ToolDblSided.py:514
+#: appTools/ToolDblSided.py:516
 msgid "Objects to be mirrored"
 msgstr "Terslenecek nesneler"
 
-#: appTools/ToolDblSided.py:521
+#: appTools/ToolDblSided.py:523
 msgid "Select the type of application object to be processed in this tool."
 msgstr "Bu araçta işlenecek nesnesinin türünü seçin."
 
-#: appTools/ToolDblSided.py:555
+#: appTools/ToolDblSided.py:557
 msgid "Bounds Values"
 msgstr "Sınır Değerleri"
 
-#: appTools/ToolDblSided.py:557
+#: appTools/ToolDblSided.py:559
 msgid ""
 "Select on canvas the object(s)\n"
 "for which to calculate bounds values."
@@ -14801,39 +14763,39 @@ msgstr ""
 "Sınır değerlerinin hesaplanacağı \n"
 "nesneleri çalışma alanı üzerinde seçin."
 
-#: appTools/ToolDblSided.py:567
+#: appTools/ToolDblSided.py:569
 msgid "X min"
 msgstr "X min"
 
-#: appTools/ToolDblSided.py:569 appTools/ToolDblSided.py:583
+#: appTools/ToolDblSided.py:571 appTools/ToolDblSided.py:585
 msgid "Minimum location."
 msgstr "Minimum konum."
 
-#: appTools/ToolDblSided.py:581
+#: appTools/ToolDblSided.py:583
 msgid "Y min"
 msgstr "Y min"
 
-#: appTools/ToolDblSided.py:595
+#: appTools/ToolDblSided.py:597
 msgid "X max"
 msgstr "X maks"
 
-#: appTools/ToolDblSided.py:597 appTools/ToolDblSided.py:611
+#: appTools/ToolDblSided.py:599 appTools/ToolDblSided.py:613
 msgid "Maximum location."
 msgstr "Maksimum konum."
 
-#: appTools/ToolDblSided.py:609
+#: appTools/ToolDblSided.py:611
 msgid "Y max"
 msgstr "Y maks"
 
-#: appTools/ToolDblSided.py:620
+#: appTools/ToolDblSided.py:622
 msgid "Center point coordinates"
 msgstr "Merkez noktası koordinatları"
 
-#: appTools/ToolDblSided.py:622
+#: appTools/ToolDblSided.py:624
 msgid "Centroid"
 msgstr "Merkez"
 
-#: appTools/ToolDblSided.py:624
+#: appTools/ToolDblSided.py:626
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
@@ -14841,38 +14803,28 @@ msgstr ""
 "Dikdörtgenin merkez noktasının konumu, sınırlayıcı\n"
 "bir şekildir. Geometrik Merkez. Biçim (x, y)."
 
-#: appTools/ToolDblSided.py:633
+#: appTools/ToolDblSided.py:635
 msgid "Calculate Bounds Values"
 msgstr "Sınır Değerlerini Hesapla"
 
-#: appTools/ToolDblSided.py:635
+#: appTools/ToolDblSided.py:637
 msgid ""
 "Calculate the enveloping rectangular shape coordinates,\n"
 "for the selection of objects.\n"
 "The envelope shape is parallel with the X, Y axis."
 msgstr ""
-"Nesneleri seçmek için dikdörtgen bir şeklin koordinatlarını\n"
+"Seçilen nesneleri çevreleyen dikdörtgen şeklin koordinatlarını\n"
 "hesaplayın. Dikdörtgen şekli X, Y eksenine paraleldir."
 
-#: appTools/ToolDblSided.py:660
+#: appTools/ToolDblSided.py:662
 msgid "Mirror Operation"
 msgstr "Tersleme İşlemi"
 
-#: appTools/ToolDblSided.py:661
+#: appTools/ToolDblSided.py:663
 msgid "Parameters for the mirror operation"
 msgstr "Tersleme işlemi için kullanılan seçenekler"
 
-#: appTools/ToolDblSided.py:683
-#, fuzzy
-#| msgid ""
-#| "The coordinates used as reference for the mirror operation.\n"
-#| "Can be:\n"
-#| "- Point -> a set of coordinates (x,y) around which the object is "
-#| "mirrored\n"
-#| "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
-#| "bounding box of another object selected below\n"
-#| "- Hole Snap -> a point defined by the center of a drill hone in a "
-#| "Excellon object"
+#: appTools/ToolDblSided.py:685
 msgid ""
 "The coordinates used as reference for the mirror operation.\n"
 "Can be:\n"
@@ -14890,11 +14842,11 @@ msgstr ""
 "Deliğe Tuttur-> Excellon nesnesindeki belirlenen bir deliğin merkezi\n"
 "   tarafından tanımlanan bir nokta"
 
-#: appTools/ToolDblSided.py:703
+#: appTools/ToolDblSided.py:705
 msgid "Point coordinates"
 msgstr "Nokta Koordinatları"
 
-#: appTools/ToolDblSided.py:708
+#: appTools/ToolDblSided.py:710
 msgid ""
 "Add the coordinates in format <b>(x, y)</b> through which the mirroring "
 "axis\n"
@@ -14903,23 +14855,21 @@ msgid ""
 "and left mouse button click on canvas or you can enter the coordinates "
 "manually."
 msgstr ""
-"'TERSLEME EKSENİ'nin içine koordinatları <b>(x, y)</b> biçiminde ekleyin. \n"
-"(x, y) koordinatlarını SHIFT tuşuna basılarak, çalışma alanı üzerine sol "
+"'TERSLEME EKSENİ' alanında seçilen koordinatları <b>(x, y)</b> biçiminde "
+"ekleyin. \n"
+"(x, y) koordinatlarını SHIFT tuşuna basarak, çalışma alanı üzerine sol "
 "tıklayarak\n"
-"yakalayabilir veya koordinatları elle girebilirsiniz."
+"yakalayabilir veya elle girebilirsiniz."
 
-#: appTools/ToolDblSided.py:726
-#, fuzzy
-#| msgid ""
-#| "Object that holds holes that can be picked as reference for mirroing."
+#: appTools/ToolDblSided.py:728
 msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr "Tersleme için referans olarak alınabilecek delikleri tutan nesne."
 
-#: appTools/ToolDblSided.py:741
+#: appTools/ToolDblSided.py:743
 msgid "Pick hole"
 msgstr "Delik Seç"
 
-#: appTools/ToolDblSided.py:743
+#: appTools/ToolDblSided.py:745
 msgid ""
 "Click inside a drill hole that belong to the selected Excellon object,\n"
 "and the hole center coordinates will be copied to the Point field."
@@ -14927,7 +14877,7 @@ msgstr ""
 "Seçili Excellon nesnesine ait bir matkap deliğinin içine tıkladığınızda \n"
 "delik merkezi koordinatları Nokta alanına kopyalanacaktır."
 
-#: appTools/ToolDblSided.py:759
+#: appTools/ToolDblSided.py:761
 msgid ""
 "It can be of type: Gerber or Excellon or Geometry.\n"
 "The coordinates of the center of the bounding box are used\n"
@@ -14937,11 +14887,11 @@ msgstr ""
 "Sınırlayıcı kutunun merkezinin koordinatları \n"
 "tersleme işlemi için referans olarak kullanılır."
 
-#: appTools/ToolDblSided.py:785
+#: appTools/ToolDblSided.py:787
 msgid "Mirror"
 msgstr "Tersle"
 
-#: appTools/ToolDblSided.py:787
+#: appTools/ToolDblSided.py:789
 msgid ""
 "Mirrors (flips) the specified object around \n"
 "the specified axis. Does not create a new \n"
@@ -14951,11 +14901,11 @@ msgstr ""
 "tersler (döndürür). Yeni bir nesne oluşturmaz, \n"
 "onu değiştirir."
 
-#: appTools/ToolDblSided.py:813
+#: appTools/ToolDblSided.py:815
 msgid "PCB Alignment"
 msgstr "PCB Hizalama"
 
-#: appTools/ToolDblSided.py:815 appTools/ToolDblSided.py:923
+#: appTools/ToolDblSided.py:817 appTools/ToolDblSided.py:925
 msgid ""
 "Creates an Excellon Object containing the\n"
 "specified alignment holes and their mirror\n"
@@ -14964,11 +14914,11 @@ msgstr ""
 "Belirtilen hizalama deliklerini ve tersleme \n"
 "görüntülerini içeren bir Excellon Nesnesi oluşturur."
 
-#: appTools/ToolDblSided.py:822
+#: appTools/ToolDblSided.py:824
 msgid "Drill Diameter"
 msgstr "Delik Genişliği"
 
-#: appTools/ToolDblSided.py:857 appTools/ToolDblSided.py:864
+#: appTools/ToolDblSided.py:859 appTools/ToolDblSided.py:866
 msgid ""
 "The reference point used to create the second alignment drill\n"
 "from the first alignment drill, by doing mirror.\n"
@@ -14976,14 +14926,14 @@ msgid ""
 msgstr ""
 "Tersleme yaparak birinci hizalama deliğinden ikinci bir hizalama\n"
 "deliği oluşturmak için kullanılan bir referans noktası.\n"
-"Bu, Yukarıdaki Tersleme Seçenekleri -> Referans Noktası\n"
+"Bu, yukarıdaki Tersleme İşlemi -> Referans Noktası\n"
 "bölümünden değiştirilebilir"
 
-#: appTools/ToolDblSided.py:877
+#: appTools/ToolDblSided.py:879
 msgid "Alignment Drill Coordinates"
 msgstr "Hizalama Deliği Koordinatları"
 
-#: appTools/ToolDblSided.py:879
+#: appTools/ToolDblSided.py:881
 msgid ""
 "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
 "each set of (x, y) coordinates\n"
@@ -14993,18 +14943,20 @@ msgid ""
 "- one drill in mirror position over the axis selected above in the 'Align "
 "Axis'."
 msgstr ""
-"Tersleme ekseninin bir tarafındaki hizalama delikleri (x1, y1), (x2, y2), … "
-"Buraya girilen her (x, y) koordinat kümesi için bir çift delik oluşturulur:\n"
+"Tersleme ekseninin bir tarafındaki hizalama delikleri (x1, y1), (x2, y2), "
+"… \n"
+"Buraya girilen her (x, y) koordinat kümesi için bir çift delik "
+"oluşturulacaktır:\n"
 "\n"
-"- Çalışma alanından koordinatlarla bir delik\n"
-"- Yukarıdaki \"Ekseni Hizala\" bölümünde seçilen eksen üzerinde tersleme "
+"- Çalışma alanından alınan koordinatlarla bir delik\n"
+"- Yukarıdaki \"PCB Hizalama\" bölümünde seçilen eksen üzerinde tersleme "
 "konumunda bir delik."
 
-#: appTools/ToolDblSided.py:887
+#: appTools/ToolDblSided.py:889
 msgid "Drill coordinates"
 msgstr "Delik Koordinatları"
 
-#: appTools/ToolDblSided.py:894
+#: appTools/ToolDblSided.py:896
 msgid ""
 "Add alignment drill holes coordinates in the format: (x1, y1), (x2, "
 "y2), ... \n"
@@ -15018,27 +14970,28 @@ msgid ""
 "field and click Paste.\n"
 "- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
 msgstr ""
-"Tersleme ekseninin bir tarafına (x1, y1), (x2, y2), ... formatında hizalama "
-"delik delikleri ekleyin.\n"
+"Hizalama ekseninin bir tarafına (x1, y1), (x2, y2), ... şeklinde hizalama "
+"matkap delikleri koordinatları ekleyin.\n"
 "\n"
-"Ayarlanan koordinatlar şu şekillerde elde edilebilir:\n"
+"Koordinat noktaları şu şekillerde elde edilebilir:\n"
 "- SHIFT tuşuna basın ve çalışma alanını üzerine sol tıklayın. Ardından "
 "Ekle'yi tıklayın.\n"
 "- SHIFT tuşuna basın ve çalışma alanı üzerine sol tıklayın. Daha sonra "
 "alanda CTRL + V yapın.\n"
 "- SHIFT tuşuna basın ve alışma alanı üzerine sol tıklayın. Ardından sağ "
 "tıklayın ve Yapıştır'a tıklayın.\n"
-"- Koordinatları manuel olarak şu biçimde girerek: (x1, y1), (x2, y2), ..."
+"- Koordinatları el ile şu şekilde girerek: (x1, y1), (x2, y2), … elde "
+"edebilirsiniz."
 
-#: appTools/ToolDblSided.py:909
+#: appTools/ToolDblSided.py:911
 msgid "Delete Last"
 msgstr "Sonuncuyu Sil"
 
-#: appTools/ToolDblSided.py:911
+#: appTools/ToolDblSided.py:913
 msgid "Delete the last coordinates tuple in the list."
-msgstr "Listedeki son koordinat demetini siler."
+msgstr "Listedeki son koordinat grubunu siler."
 
-#: appTools/ToolDblSided.py:921
+#: appTools/ToolDblSided.py:923
 msgid "Create Excellon Object"
 msgstr "Excellon Oluştur"
 
@@ -15434,15 +15387,15 @@ msgstr ""
 msgid "No drills extracted. Try different parameters."
 msgstr "Delikler çıkarılmadı. Farklı seçenekler deneyin."
 
-#: appTools/ToolExtractDrills.py:420 appTools/ToolExtractDrills.py:687
+#: appTools/ToolExtractDrills.py:421 appTools/ToolExtractDrills.py:688
 msgid "Extract Drills"
 msgstr "Delik Çıkartma"
 
-#: appTools/ToolExtractDrills.py:454
+#: appTools/ToolExtractDrills.py:455
 msgid "Gerber from which to extract drill holes"
 msgstr "Delik çıkartmak için Gerber"
 
-#: appTools/ToolExtractDrills.py:689
+#: appTools/ToolExtractDrills.py:690
 msgid "Extract drills from a given Gerber file."
 msgstr "Belirli bir Gerber dosyasındaki delikleri çıkartın."
 
@@ -15450,28 +15403,28 @@ msgstr "Belirli bir Gerber dosyasındaki delikleri çıkartın."
 msgid "Click to add first Fiducial. Bottom Left..."
 msgstr "İlk referans işaretini eklemek için tıklayın. Sol alt ..."
 
-#: appTools/ToolFiducials.py:501
+#: appTools/ToolFiducials.py:503
 msgid "Click to add the last fiducial. Top Right..."
 msgstr "Bir sonraki referans işaretini eklemek için tıklayın. Sağ üstte..."
 
-#: appTools/ToolFiducials.py:506
+#: appTools/ToolFiducials.py:508
 msgid "Click to add the second fiducial. Top Left or Bottom Right..."
 msgstr ""
 "İkinci bir referans işareti eklemek için tıklayın. Sol üst veya sağ alt..."
 
-#: appTools/ToolFiducials.py:509 appTools/ToolFiducials.py:518
+#: appTools/ToolFiducials.py:511 appTools/ToolFiducials.py:520
 msgid "Done. All fiducials have been added."
 msgstr "Bitti. Tüm referans işaretleri başarıyla eklendi."
 
-#: appTools/ToolFiducials.py:595
+#: appTools/ToolFiducials.py:597
 msgid "Fiducials Tool exit."
 msgstr "Referans işareti aracından çık."
 
-#: appTools/ToolFiducials.py:667
+#: appTools/ToolFiducials.py:669
 msgid "Fiducials Coordinates"
 msgstr "Referans İşareti Koordinatları"
 
-#: appTools/ToolFiducials.py:669
+#: appTools/ToolFiducials.py:671
 msgid ""
 "A table with the fiducial points coordinates,\n"
 "in the format (x, y)."
@@ -15479,7 +15432,7 @@ msgstr ""
 "Referans işaretlerinin koordinatlarını \n"
 "(x, y) biçiminde içeren bir tablo."
 
-#: appTools/ToolFiducials.py:805
+#: appTools/ToolFiducials.py:807
 msgid ""
 "- 'Auto' - automatic placement of fiducials in the corners of the bounding "
 "box.\n"
@@ -15489,31 +15442,31 @@ msgstr ""
 "kutunun köşelerine otomatik olarak yerleştirilmesi.\n"
 "- 'El İle' - Referans işaretlerinin elle yerleştirilmesi."
 
-#: appTools/ToolFiducials.py:851
+#: appTools/ToolFiducials.py:853
 msgid "Thickness of the line that makes the fiducial."
 msgstr "Referans işaretini oluşturan çizginin kalınlığı."
 
-#: appTools/ToolFiducials.py:882
+#: appTools/ToolFiducials.py:884
 msgid "Add Fiducial"
 msgstr "Referans İşareti Ekle"
 
-#: appTools/ToolFiducials.py:884
+#: appTools/ToolFiducials.py:886
 msgid "Will add a polygon on the copper layer to serve as fiducial."
 msgstr "Bakır katmanına bir referans işareti görevi görmesi için şekil ekler."
 
-#: appTools/ToolFiducials.py:900
+#: appTools/ToolFiducials.py:902
 msgid "Soldermask Gerber"
 msgstr "Gerber Lehim Maskesi"
 
-#: appTools/ToolFiducials.py:902
+#: appTools/ToolFiducials.py:904
 msgid "The Soldermask Gerber object."
 msgstr "Gerber lehim maskesi nesnesi."
 
-#: appTools/ToolFiducials.py:914
+#: appTools/ToolFiducials.py:916
 msgid "Add Soldermask Opening"
 msgstr "Lehim Maskesi Açıklığı Ekle"
 
-#: appTools/ToolFiducials.py:916
+#: appTools/ToolFiducials.py:918
 msgid ""
 "Will add a polygon on the soldermask layer\n"
 "to serve as fiducial opening.\n"
@@ -15705,7 +15658,7 @@ msgstr "Görüntü"
 msgid "Import IMAGE"
 msgstr "Görüntüyü İçe Aktar"
 
-#: appTools/ToolImage.py:142 app_Main.py:8893 app_Main.py:8943
+#: appTools/ToolImage.py:142 app_Main.py:9782 app_Main.py:9832
 msgid ""
 "Not supported type is picked as parameter. Only Geometry and Gerber are "
 "supported"
@@ -15717,9 +15670,9 @@ msgstr ""
 msgid "Importing Image"
 msgstr "Görüntü içe aktarılıyor"
 
-#: appTools/ToolImage.py:162 appTools/ToolPDF.py:154 app_Main.py:8921
-#: app_Main.py:8976 app_Main.py:9040 app_Main.py:9103 app_Main.py:9169
-#: app_Main.py:9234 app_Main.py:9291
+#: appTools/ToolImage.py:162 appTools/ToolPDF.py:154 app_Main.py:9810
+#: app_Main.py:9865 app_Main.py:9929 app_Main.py:9992 app_Main.py:10058
+#: app_Main.py:10123 app_Main.py:10180
 msgid "Opened"
 msgstr "Dosyanın yüklendiği yer"
 
@@ -15847,7 +15800,7 @@ msgid "New Tool"
 msgstr "Yeni Uç"
 
 #: appTools/ToolIsolation.py:795 appTools/ToolNCC.py:467
-#: appTools/ToolPaint.py:399 appTools/ToolSolderPaste.py:135 app_Main.py:4500
+#: appTools/ToolPaint.py:399 appTools/ToolSolderPaste.py:135 app_Main.py:4423
 msgid "Adding Tool cancelled"
 msgstr "Uç ekleme işlemi iptal edildi"
 
@@ -16004,7 +15957,7 @@ msgid "Click the end point of the paint area."
 msgstr "Çizim alanının bitiş noktasını tıklayın."
 
 #: appTools/ToolIsolation.py:2590 appTools/ToolNCC.py:3722
-#: appTools/ToolPaint.py:2633 app_Main.py:5779 app_Main.py:5789
+#: appTools/ToolPaint.py:2633 app_Main.py:5702 app_Main.py:5712
 msgid "Tool from DB added in Tool Table."
 msgstr "Araçlar Tablosuna Araçlar Veri Tabanından bir uç eklendi."
 
@@ -16526,11 +16479,11 @@ msgstr "PDF'yi açma işlemi iptal edildi"
 msgid "Parsing PDF file ..."
 msgstr "PDF dosyası okunuyor ..."
 
-#: appTools/ToolPDF.py:138 app_Main.py:9134
+#: appTools/ToolPDF.py:138 app_Main.py:10023
 msgid "Failed to open"
 msgstr "Açılamadı"
 
-#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:331 app_Main.py:9083
+#: appTools/ToolPDF.py:203 appTools/ToolPcbWizard.py:331 app_Main.py:9972
 msgid "No geometry found in file"
 msgstr "Dosyada şekli bulunamadı"
 
@@ -16939,7 +16892,7 @@ msgstr "PCB Sihirbazı .INF dosyası yüklendi."
 msgid "Main PcbWizard Excellon file loaded."
 msgstr "Pcb Sihirbazı Excellon dosyası yüklendi."
 
-#: appTools/ToolPcbWizard.py:310 app_Main.py:9063
+#: appTools/ToolPcbWizard.py:310 app_Main.py:9952
 msgid "This is not Excellon file."
 msgstr "Bu Excellon dosyası değil."
 
@@ -17069,9 +17022,9 @@ msgstr ""
 "Birinde genellikle .DRL, diğerinde .INF uzantısı vardır."
 
 #: appTools/ToolProperties.py:112 appTools/ToolTransform.py:142
-#: app_Main.py:4976 app_Main.py:7321 app_Main.py:7421 app_Main.py:7462
-#: app_Main.py:7503 app_Main.py:7545 app_Main.py:7587 app_Main.py:7631
-#: app_Main.py:7675 app_Main.py:8191 app_Main.py:8195
+#: app_Main.py:4899 app_Main.py:8253 app_Main.py:8351 app_Main.py:8391
+#: app_Main.py:8431 app_Main.py:8472 app_Main.py:8513 app_Main.py:8556
+#: app_Main.py:8599 app_Main.py:9058 app_Main.py:9062
 msgid "No object selected."
 msgstr "Hiçbir nesne seçilmedi."
 
@@ -17161,8 +17114,8 @@ msgid ""
 "the specified box."
 msgstr "Belirtilen kutu içinde seçili nesneden bir Gerber nesnesi oluşturun."
 
-#: appTools/ToolQRCode.py:147 appTools/ToolQRCode.py:485
-#: appTools/ToolQRCode.py:534
+#: appTools/ToolQRCode.py:147 appTools/ToolQRCode.py:486
+#: appTools/ToolQRCode.py:535
 msgid "Cancelled. There is no QRCode Data in the text box."
 msgstr "İptal edildi. Metin kutusunda QR Kod verisi yoktur."
 
@@ -17174,32 +17127,32 @@ msgstr "QR Kod şekli oluşturuluyor"
 msgid "Click on the Destination point ..."
 msgstr "QR Kod'un ekleneceği hedef noktasını tıklayın ..."
 
-#: appTools/ToolQRCode.py:321
+#: appTools/ToolQRCode.py:322
 msgid "QRCode Tool done."
 msgstr "QR Kod ekleme başarıyla tamamlandı."
 
-#: appTools/ToolQRCode.py:517 appTools/ToolQRCode.py:521
+#: appTools/ToolQRCode.py:518 appTools/ToolQRCode.py:522
 msgid "Export PNG"
 msgstr "PNG'yi Dışa Aktar"
 
-#: appTools/ToolQRCode.py:564 appTools/ToolQRCode.py:568 app_Main.py:7353
-#: app_Main.py:7357
+#: appTools/ToolQRCode.py:565 appTools/ToolQRCode.py:569 app_Main.py:8284
+#: app_Main.py:8288
 msgid "Export SVG"
 msgstr "SVG'yi dışa aktar"
 
-#: appTools/ToolQRCode.py:661
+#: appTools/ToolQRCode.py:662
 msgid "Gerber Object to which the QRCode will be added."
 msgstr "QR Kod eklenecek Gerber nesnesi."
 
-#: appTools/ToolQRCode.py:697
+#: appTools/ToolQRCode.py:698
 msgid "The parameters used to shape the QRCode."
 msgstr "QR Kod'u oluşturmak için kullanılan seçenekler."
 
-#: appTools/ToolQRCode.py:797
+#: appTools/ToolQRCode.py:798
 msgid "Export QRCode"
 msgstr "QR Kod'u Dışa Aktar"
 
-#: appTools/ToolQRCode.py:799
+#: appTools/ToolQRCode.py:800
 msgid ""
 "Show a set of controls allowing to export the QRCode\n"
 "to a SVG file or an PNG file."
@@ -17207,31 +17160,31 @@ msgstr ""
 "QR Kod'u SVG veya PNG dosyasına\n"
 " aktarmanıza izin veren kontrolleri gösterir."
 
-#: appTools/ToolQRCode.py:838
+#: appTools/ToolQRCode.py:839
 msgid "Transparent back color"
 msgstr "Şeffaf Arka Plan"
 
-#: appTools/ToolQRCode.py:863
+#: appTools/ToolQRCode.py:864
 msgid "Export QRCode SVG"
 msgstr "QR Kod İçeren SVG Dosyasını Dışa Aktar"
 
-#: appTools/ToolQRCode.py:865
+#: appTools/ToolQRCode.py:866
 msgid "Export a SVG file with the QRCode content."
 msgstr "QR Kod içeren bir SVG dosyasını dışa aktarın."
 
-#: appTools/ToolQRCode.py:876
+#: appTools/ToolQRCode.py:877
 msgid "Export QRCode PNG"
 msgstr "QR Kod İçeren PNG Dosyasını Dışa Aktar"
 
-#: appTools/ToolQRCode.py:878
+#: appTools/ToolQRCode.py:879
 msgid "Export a PNG image file with the QRCode content."
 msgstr "QR Kod içeren bir PNG resim dosyasını dışa aktarın."
 
-#: appTools/ToolQRCode.py:889
+#: appTools/ToolQRCode.py:890
 msgid "Insert QRCode"
 msgstr "QR Kod Ekle"
 
-#: appTools/ToolQRCode.py:891
+#: appTools/ToolQRCode.py:892
 msgid "Create the QRCode object."
 msgstr "QR Kod nesnesi oluştur."
 
@@ -17456,7 +17409,7 @@ msgstr "...işleniyor..."
 
 #: appTools/ToolShell.py:293
 msgid "FlatCAM Shell"
-msgstr ""
+msgstr "FlatCAM Shell"
 
 #: appTools/ToolSolderPaste.py:459
 msgid "Please enter a tool diameter to add, in Float format."
@@ -17964,7 +17917,7 @@ msgstr "Mevcut dili değiştirmek istediğinizden emin misiniz"
 msgid "Apply Language ..."
 msgstr "Seçili Dili Uygula ..."
 
-#: appTranslation.py:206 app_Main.py:3383
+#: appTranslation.py:206 app_Main.py:3306
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -17998,42 +17951,42 @@ msgstr ""
 "Çalışma alanı başlatılıyor.\n"
 "Çalışma alanının başlatılması tamamlandı"
 
-#: app_Main.py:1596 app_Main.py:7007
+#: app_Main.py:1292 app_Main.py:8831
 msgid "New Project - Not saved"
 msgstr "Yeni Proje - Kaydedilmedi"
 
-#: app_Main.py:1702
+#: app_Main.py:1711
 msgid ""
 "Found old default preferences files. Please reboot the application to update."
 msgstr ""
 "Eski varsayılan yapılandırma dosyaları bulundu. Lütfen güncellemek için "
 "uygulamayı yeniden başlatın."
 
-#: app_Main.py:1769
+#: app_Main.py:1778
 msgid "Open Config file failed."
 msgstr "Yapılandırma dosyası açılamadı."
 
-#: app_Main.py:1784
+#: app_Main.py:1793
 msgid "Open Script file failed."
 msgstr "Komut dosyası açılamadı."
 
-#: app_Main.py:1810
+#: app_Main.py:1819
 msgid "Open Excellon file failed."
 msgstr "Excellon dosyası açılamadı."
 
-#: app_Main.py:1823
+#: app_Main.py:1832
 msgid "Open GCode file failed."
 msgstr "G-Kod dosyası açılamadı."
 
-#: app_Main.py:1836
+#: app_Main.py:1845
 msgid "Open Gerber file failed."
 msgstr "Gerber dosyası açılamadı."
 
-#: app_Main.py:2174
+#: app_Main.py:2183
 msgid "Select a Geometry, Gerber, Excellon or CNCJob Object to edit."
 msgstr "Düzenlemek için bir Şekil, Gerber veya Excellon nesnesi seçin."
 
-#: app_Main.py:2189
+#: app_Main.py:2198
 msgid ""
 "Simultaneous editing of tools geometry in a MultiGeo Geometry is not "
 "possible.\n"
@@ -18042,100 +17995,84 @@ msgstr ""
 "Çoklu şekillerde, şekli aynı anda düzenlemek mümkün değildir.\n"
 "Bir kerede yalnızca bir şekli düzenleyin."
 
-#: app_Main.py:2267
+#: app_Main.py:2276
 msgid "EDITOR Area"
 msgstr "DÜZENLEYİCİ Alanı"
 
-#: app_Main.py:2269
+#: app_Main.py:2278
 msgid "Editor is activated ..."
 msgstr "Düzenleyici etkinleştirildi ..."
 
-#: app_Main.py:2290
+#: app_Main.py:2299
 msgid "Do you want to save the edited object?"
 msgstr "Düzenlenen nesneyi kaydetmek istiyor musunuz?"
 
-#: app_Main.py:2331
+#: app_Main.py:2340
 msgid "Object empty after edit."
 msgstr "Nesne düzenlendikten sonra boş."
 
-#: app_Main.py:2336 app_Main.py:2354 app_Main.py:2385 app_Main.py:2401
+#: app_Main.py:2345 app_Main.py:2363 app_Main.py:2394 app_Main.py:2410
 msgid "Editor exited. Editor content saved."
 msgstr "Düzenleyiciden çıkıldı. Düzenleyici içeriği kaydedildi."
 
-#: app_Main.py:2405 app_Main.py:2446
+#: app_Main.py:2414 app_Main.py:2455
 msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
 msgstr ""
 "Güncellemek için bir Gerber, Şekil, Excellon veya CNC İş nesnesi seçin."
 
-#: app_Main.py:2408
+#: app_Main.py:2417
 msgid "is updated, returning to App..."
 msgstr "güncellendi, Uygulamaya dönülüyor ..."
 
-#: app_Main.py:2421
+#: app_Main.py:2430
 msgid "Editor exited. Editor content was not saved."
 msgstr "Düzenleyiciden çıkıldı. Düzenleyici içeriği kaydedilmedi."
 
-#: app_Main.py:2469
+#: app_Main.py:2478
 msgid "Select a Gerber, Geometry or Excellon Object to update."
 msgstr "Güncellenecek bir Gerber, Şekil veya Excellon nesnesi seçin."
 
-#: app_Main.py:2573 app_Main.py:2577
-msgid "Import FlatCAM Preferences"
-msgstr "FlatCAM Ayarlarını İçe Aktar"
-
-#: app_Main.py:2588
-msgid "Imported Defaults from"
-msgstr "Varsayılan değerler şuradan alındı"
-
-#: app_Main.py:2608 app_Main.py:2614
-msgid "Export FlatCAM Preferences"
-msgstr "FlatCAM Ayarlarını Dışa Aktar"
-
-#: app_Main.py:2634
-msgid "Exported preferences to"
-msgstr "Ayarlar şuraya aktarıldı"
-
-#: app_Main.py:2654 app_Main.py:2659
+#: app_Main.py:2586 app_Main.py:2591
 msgid "Save to file"
 msgstr "Dosyaya Kaydet"
 
-#: app_Main.py:2683
+#: app_Main.py:2615
 msgid "Could not load the file."
 msgstr "Dosya yüklenemedi."
 
-#: app_Main.py:2699
+#: app_Main.py:2631
 msgid "Exported file to"
 msgstr "Dosya şuraya aktarıldı"
 
-#: app_Main.py:2736
+#: app_Main.py:2668
 msgid "Failed to open recent files file for writing."
 msgstr "Son kullanılan dosya yazmak için açılamadı."
 
-#: app_Main.py:2747
+#: app_Main.py:2679
 msgid "Failed to open recent projects file for writing."
 msgstr "Son proje dosyası yazmak için açılamadı."
 
-#: app_Main.py:2802
+#: app_Main.py:2734
 msgid "2D Computer-Aided Printed Circuit Board Manufacturing"
 msgstr "2D Bilgisayar Destekli PCB (Baskı Devre Kartı) İmalatı"
 
-#: app_Main.py:2803
+#: app_Main.py:2735
 msgid "Development"
 msgstr "Geliştirme"
 
-#: app_Main.py:2804
+#: app_Main.py:2736
 msgid "DOWNLOAD"
 msgstr "İNDİR"
 
-#: app_Main.py:2805
+#: app_Main.py:2737
 msgid "Issue tracker"
 msgstr "Sorun izleyici"
 
-#: app_Main.py:2824
+#: app_Main.py:2756
 msgid "Licensed under the MIT license"
 msgstr "MIT lisansı altında lisanslanmıştır"
 
-#: app_Main.py:2833
+#: app_Main.py:2765
 msgid ""
 "Permission is hereby granted, free of charge, to any person obtaining a "
 "copy\n"
@@ -18183,7 +18120,7 @@ msgstr ""
 "ALACAKLAR İÇİN\n"
 "SORUMLU OLMAYACAKTIR."
 
-#: app_Main.py:2855
+#: app_Main.py:2787
 msgid ""
 "Some of the icons used are from the following sources:<br><div>Icons by <a "
 "href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</"
@@ -18202,106 +18139,106 @@ msgstr ""
 "<a target=\"_blank\" href=\"https://icons8.com\">Icons8</a></div>Simgeleri "
 "<a href=\"http://www.onlinewebfonts.com\">oNline Web Fonts</a>"
 
-#: app_Main.py:2891
+#: app_Main.py:2823
 msgid "Splash"
 msgstr "Karşılama Ekranı"
 
-#: app_Main.py:2897
+#: app_Main.py:2829
 msgid "Programmers"
 msgstr "Geliştiriciler"
 
-#: app_Main.py:2903
+#: app_Main.py:2835
 msgid "Translators"
 msgstr "Çevirmenler"
 
-#: app_Main.py:2909
+#: app_Main.py:2841
 msgid "License"
 msgstr "Lisans"
 
-#: app_Main.py:2915
+#: app_Main.py:2847
 msgid "Attributions"
 msgstr "Açıklamalar"
 
-#: app_Main.py:2938
+#: app_Main.py:2870
 msgid "Programmer"
 msgstr "Geliştirici"
 
-#: app_Main.py:2939
+#: app_Main.py:2871
 msgid "Status"
 msgstr "Durum"
 
-#: app_Main.py:2940 app_Main.py:3020
+#: app_Main.py:2872 app_Main.py:2952
 msgid "E-mail"
 msgstr "E-posta"
 
-#: app_Main.py:2943
+#: app_Main.py:2875
 msgid "Program Author"
 msgstr "Program Yazarı"
 
-#: app_Main.py:2948
+#: app_Main.py:2880
 msgid "BETA Maintainer >= 2019"
 msgstr "BETA Geliştiricisi >= 2019"
 
-#: app_Main.py:3017
+#: app_Main.py:2949
 msgid "Language"
 msgstr "Dil"
 
-#: app_Main.py:3018
+#: app_Main.py:2950
 msgid "Translator"
 msgstr "Çevirmen"
 
-#: app_Main.py:3019
+#: app_Main.py:2951
 msgid "Corrections"
 msgstr "Düzeltmeler"
 
-#: app_Main.py:3104
+#: app_Main.py:3036
 msgid "Important Information's"
 msgstr "Önemli Bilgiler"
 
-#: app_Main.py:3152
+#: app_Main.py:3084
 #, python-format
 msgid "This program is %s and free in a very wide meaning of the word."
 msgstr "Bu program % s ve kelimenin tam anlamıyla ücretsizdir."
 
-#: app_Main.py:3153
+#: app_Main.py:3085
 msgid "Yet it cannot evolve without <b>contributions</b>."
 msgstr "Yine de <b> katkı </b> olmadan gelişemez."
 
-#: app_Main.py:3154
+#: app_Main.py:3086
 msgid "If you want to see this application grow and become better and better"
 msgstr ""
 "Bu uygulamanın büyümesini ve daha iyi ve daha iyi olmasını istiyorsanız"
 
-#: app_Main.py:3155
+#: app_Main.py:3087
 msgid "you can <b>contribute</b> to the development yourself by:"
 msgstr "geliştirmeye <b> katkıda bulunabilirsiniz </b>:"
 
-#: app_Main.py:3156
+#: app_Main.py:3088
 msgid "Pull Requests on the Bitbucket repository, if you are a developer"
 msgstr "Bir geliştiriciyseniz, Bitbucket deposundaki istekleri çekin"
 
-#: app_Main.py:3158
+#: app_Main.py:3090
 msgid "Bug Reports by providing the steps required to reproduce the bug"
 msgstr ""
 "Hata raporlama, hatayı yeniden oluşturmak için gerekli adımları sağlamak için"
 
-#: app_Main.py:3189
+#: app_Main.py:3121
 msgid "Contribute"
 msgstr "Katkıda Bulun"
 
-#: app_Main.py:3212
+#: app_Main.py:3144
 msgid "Links Exchange"
 msgstr "Link Değişimi"
 
-#: app_Main.py:3224 app_Main.py:3243
+#: app_Main.py:3156 app_Main.py:3175
 msgid "Soon ..."
 msgstr "Yakında ..."
 
-#: app_Main.py:3231
+#: app_Main.py:3163
 msgid "How To's"
 msgstr "Nasıl Yapılır"
 
-#: app_Main.py:3343
+#: app_Main.py:3275
 msgid ""
 "This entry will resolve to another website if:\n"
 "\n"
@@ -18323,27 +18260,27 @@ msgstr ""
 "bir bilgi alamıyorsanız, Yardım menüsündeki\n"
 "YouTube kanalı bağlantısını kullanın."
 
-#: app_Main.py:3350
+#: app_Main.py:3282
 msgid "Alternative website"
 msgstr "Alternatif web sitesi"
 
-#: app_Main.py:3701
+#: app_Main.py:3624
 msgid "Selected Excellon file extensions registered with FlatCAM."
 msgstr "FlatCAM'e kayıtlı seçili Excellon dosya uzantıları."
 
-#: app_Main.py:3723
+#: app_Main.py:3646
 msgid "Selected GCode file extensions registered with FlatCAM."
 msgstr "FlatCAM'e kayıtlı seçili G-Kod dosya uzantıları."
 
-#: app_Main.py:3745
+#: app_Main.py:3668
 msgid "Selected Gerber file extensions registered with FlatCAM."
 msgstr "FlatCAM'e kayıtlı seçilmiş Gerber dosya uzantıları."
 
-#: app_Main.py:3933 app_Main.py:3994 app_Main.py:4024
+#: app_Main.py:3856 app_Main.py:3917 app_Main.py:3947
 msgid "At least two objects are required for join. Objects currently selected"
 msgstr "Birleştirme için en az iki nesne gerekir. Şu anda seçili olan nesneler"
 
-#: app_Main.py:3942
+#: app_Main.py:3865
 msgid ""
 "Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -18359,47 +18296,47 @@ msgstr ""
 "sonuç beklendiği gibi olmayabilir.\n"
 "Oluşturulan G Kodunu kontrol edin."
 
-#: app_Main.py:3956 app_Main.py:3966
+#: app_Main.py:3879 app_Main.py:3889
 msgid "Geometry merging finished"
 msgstr "Şekil birleştirme başarıyla tamamlandı"
 
-#: app_Main.py:3989
+#: app_Main.py:3912
 msgid "Failed. Excellon joining works only on Excellon objects."
 msgstr "Hata. Excellon birleştirme yalnızca Excellon nesnelerinde çalışır."
 
-#: app_Main.py:4001
+#: app_Main.py:3924
 msgid "Excellon merging finished"
 msgstr "Excellon birleştirmesi başarıyla tamamlandı"
 
-#: app_Main.py:4019
+#: app_Main.py:3942
 msgid "Failed. Gerber joining works only on Gerber objects."
 msgstr "Hata. Gerber birleşimi sadece Gerber nesneleri üzerinde çalışır."
 
-#: app_Main.py:4029
+#: app_Main.py:3952
 msgid "Gerber merging finished"
 msgstr "Gerber birleşmesi başarıyla tamamlandı"
 
-#: app_Main.py:4049 app_Main.py:4086
+#: app_Main.py:3972 app_Main.py:4009
 msgid "Failed. Select a Geometry Object and try again."
 msgstr "Hata. Bir Şekil nesnesi seçin ve tekrar deneyin."
 
-#: app_Main.py:4053 app_Main.py:4091
+#: app_Main.py:3976 app_Main.py:4014
 msgid "Expected a GeometryObject, got"
 msgstr "Bir FlatCAM Şekil bekleniyordu, alınan"
 
-#: app_Main.py:4068
+#: app_Main.py:3991
 msgid "A Geometry object was converted to MultiGeo type."
 msgstr "Şekil nesnesi Çoklu Şekil türüne dönüştürüldü."
 
-#: app_Main.py:4106
+#: app_Main.py:4029
 msgid "A Geometry object was converted to SingleGeo type."
 msgstr "Şekil nesnesi bir Tekli Şekil türüne dönüştürüldü."
 
-#: app_Main.py:4339
+#: app_Main.py:4262
 msgid "Toggle Units"
 msgstr "Birimleri Değiştir"
 
-#: app_Main.py:4343
+#: app_Main.py:4266
 msgid ""
 "Changing the units of the project\n"
 "will scale all objects.\n"
@@ -18411,24 +18348,24 @@ msgstr ""
 "\n"
 "Devam etmek istiyor musunuz?"
 
-#: app_Main.py:4346 app_Main.py:4509 app_Main.py:4592 app_Main.py:7327
-#: app_Main.py:7343 app_Main.py:7681 app_Main.py:7693
+#: app_Main.py:4269 app_Main.py:4432 app_Main.py:4515 app_Main.py:8259
+#: app_Main.py:8274 app_Main.py:8605 app_Main.py:8617
 msgid "Ok"
 msgstr "Evet"
 
-#: app_Main.py:4396
+#: app_Main.py:4319
 msgid "Converted units to"
 msgstr "Birimler şuna dönüştürüldü"
 
-#: app_Main.py:4436
+#: app_Main.py:4359
 msgid "Workspace enabled."
 msgstr "Çalışma alanı etkin."
 
-#: app_Main.py:4439
+#: app_Main.py:4362
 msgid "Workspace disabled."
 msgstr "Çalışma alanı devre dışı."
 
-#: app_Main.py:4503
+#: app_Main.py:4426
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -18436,95 +18373,95 @@ msgstr ""
 "Uç ekleme yalnızca Gelişmiş işaretlendiğinde çalışır.\n"
 "Düzenle ->Ayarlar -> Genel - Uygulama Seviyesi ->Gelişmiş'i seçin."
 
-#: app_Main.py:4585
+#: app_Main.py:4508
 msgid "Delete objects"
 msgstr "Nesneleri Sil"
 
-#: app_Main.py:4590
+#: app_Main.py:4513
 msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
 msgstr "Seçilen nesneleri kalıcı olarak silmek istediğinizden emin misiniz?"
 
-#: app_Main.py:4633
+#: app_Main.py:4556
 msgid "Object(s) deleted"
 msgstr "Nesneler silindi"
 
-#: app_Main.py:4637
+#: app_Main.py:4560
 msgid "Save the work in Editor and try again ..."
 msgstr "Çalışmayı Düzenleyici'ye kaydedin ve tekrar deneyin ..."
 
-#: app_Main.py:4666
+#: app_Main.py:4589
 msgid "Object deleted"
 msgstr "Nesne silindi"
 
-#: app_Main.py:4693
+#: app_Main.py:4616
 msgid "Click to set the origin ..."
 msgstr "Orjini belirtmek için tıklayın ..."
 
-#: app_Main.py:4715
+#: app_Main.py:4638
 msgid "Setting Origin..."
 msgstr "Orijin noktası ayarlanıyor ..."
 
-#: app_Main.py:4728 app_Main.py:4830
+#: app_Main.py:4651 app_Main.py:4753
 msgid "Origin set"
 msgstr "Orijin Ayarı"
 
-#: app_Main.py:4745
+#: app_Main.py:4668
 msgid "Origin coordinates specified but incomplete."
 msgstr "Orijin koordinatları belirtildi, ancak eksik."
 
-#: app_Main.py:4786
+#: app_Main.py:4709
 msgid "Moving to Origin..."
 msgstr "Orijine taşınıyor ..."
 
-#: app_Main.py:4867
+#: app_Main.py:4790
 msgid "Jump to ..."
 msgstr "Konuma Atla..."
 
-#: app_Main.py:4868
+#: app_Main.py:4791
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Koordinatları X, Y biçiminde girin:"
 
-#: app_Main.py:4878
+#: app_Main.py:4801
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Yanlış koordinat girildi. Koordinatları şu biçimde girin: X, Y"
 
-#: app_Main.py:4995
+#: app_Main.py:4918
 msgid "Bottom-Left"
 msgstr "Sol Alt"
 
-#: app_Main.py:4998
+#: app_Main.py:4921
 msgid "Top-Right"
 msgstr "Sağ Üst"
 
-#: app_Main.py:5019
+#: app_Main.py:4942
 msgid "Locate ..."
 msgstr "Bul ..."
 
-#: app_Main.py:5292 app_Main.py:5367 app_Main.py:5530
+#: app_Main.py:5215 app_Main.py:5290 app_Main.py:5453
 msgid "No object is selected. Select an object and try again."
 msgstr "Hiçbir nesne seçilmedi. Bir nesne seçin ve tekrar deneyin."
 
-#: app_Main.py:5556
+#: app_Main.py:5479
 msgid ""
 "Aborting. The current task will be gracefully closed as soon as possible..."
 msgstr ""
 "Durduruluyor. Mevcut görev mümkün olan en kısa sürede kapatılacaktır ..."
 
-#: app_Main.py:5562
+#: app_Main.py:5485
 msgid "The current task was gracefully closed on user request..."
 msgstr "Geçerli görev kullanıcının isteği üzerine kapatıldı ..."
 
-#: app_Main.py:5752
+#: app_Main.py:5675
 msgid "Tools in Tools Database edited but not saved."
 msgstr "Ayarlar düzenlendi ancak kaydedilmedi."
 
-#: app_Main.py:5791
+#: app_Main.py:5714
 msgid "Adding tool from DB is not allowed for this object."
 msgstr "Bu nesne için Veri Tabanından bir araç eklenmesine izin verilmiyor."
 
-#: app_Main.py:5809
+#: app_Main.py:5732
 msgid ""
 "One or more Tools are edited.\n"
 "Do you want to update the Tools Database?"
@@ -18532,115 +18469,390 @@ msgstr ""
 "Bir veya daha fazla araç değiştirildi. Araç Veri Tabanını güncellemek "
 "istiyor musunuz?"
 
-#: app_Main.py:5811
+#: app_Main.py:5734
 msgid "Save Tools Database"
 msgstr "Araçlar Veri Tabanını Kaydet"
 
-#: app_Main.py:5857
+#: app_Main.py:5780
 msgid "No object selected to Flip on Y axis."
 msgstr "Y ekseninde çevrilecek hiçbir nesne seçilmedi."
 
-#: app_Main.py:5883
+#: app_Main.py:5806
 msgid "Flip on Y axis done."
 msgstr "Y ekseni üzerinde çevirme işlemi tamamlandı."
 
-#: app_Main.py:5905
+#: app_Main.py:5828
 msgid "No object selected to Flip on X axis."
 msgstr "X ekseninde çevirmek için hiçbir nesne seçilmedi."
 
-#: app_Main.py:5931
+#: app_Main.py:5854
 msgid "Flip on X axis done."
 msgstr "X ekseni üzerinde çevirme işlemi tamamlandı."
 
-#: app_Main.py:5953
+#: app_Main.py:5876
 msgid "No object selected to Rotate."
 msgstr "Döndürmek için hiçbir nesne seçilmedi."
 
-#: app_Main.py:5956 app_Main.py:6007 app_Main.py:6044
+#: app_Main.py:5879 app_Main.py:5930 app_Main.py:5967
 msgid "Transform"
 msgstr "Döndür"
 
-#: app_Main.py:5956 app_Main.py:6007 app_Main.py:6044
+#: app_Main.py:5879 app_Main.py:5930 app_Main.py:5967
 msgid "Enter the Angle value:"
 msgstr "Açı Değerini Girin:"
 
-#: app_Main.py:5986
+#: app_Main.py:5909
 msgid "Rotation done."
 msgstr "Döndürme işlemi tamamlandı."
 
-#: app_Main.py:5988
+#: app_Main.py:5911
 msgid "Rotation movement was not executed."
 msgstr "Döndürme işlemi gerçekleştirilemedi."
 
-#: app_Main.py:6005
+#: app_Main.py:5928
 msgid "No object selected to Skew/Shear on X axis."
 msgstr "X ekseni boyunca eğme/kaydırma için hiçbir nesne seçilmedi."
 
-#: app_Main.py:6026
+#: app_Main.py:5949
 msgid "Skew on X axis done."
 msgstr "X ekseninde eğme işlemi tamamlandı."
 
-#: app_Main.py:6042
+#: app_Main.py:5965
 msgid "No object selected to Skew/Shear on Y axis."
 msgstr "Y ekseni boyunca eğme/kaydırma için hiçbir nesne seçilmedi."
 
-#: app_Main.py:6063
+#: app_Main.py:5986
 msgid "Skew on Y axis done."
 msgstr "Y ekseninde eğme işlemi tamamlandı."
 
-#: app_Main.py:6145
+#: app_Main.py:6068
 msgid "New Grid ..."
 msgstr "Yeni Izgara ..."
 
-#: app_Main.py:6146
+#: app_Main.py:6069
 msgid "Enter a Grid Value:"
 msgstr "Izgara Boyutunu Girin:"
 
-#: app_Main.py:6154 app_Main.py:6178
+#: app_Main.py:6077 app_Main.py:6101
 msgid "Please enter a grid value with non-zero value, in Float format."
 msgstr ""
 "Lütfen ondalıklı biçimde sıfır olmayan bir değer içeren bir ızgara değeri "
 "girin."
 
-#: app_Main.py:6159
+#: app_Main.py:6082
 msgid "New Grid added"
 msgstr "Yeni ızgara eklendi"
 
-#: app_Main.py:6161
+#: app_Main.py:6084
 msgid "Grid already exists"
 msgstr "Izgara zaten var"
 
-#: app_Main.py:6163
+#: app_Main.py:6086
 msgid "Adding New Grid cancelled"
 msgstr "Yeni ızgara ekleme işlemi iptal edildi"
 
-#: app_Main.py:6184
+#: app_Main.py:6107
 msgid " Grid Value does not exist"
 msgstr " Izgara değeri mevcut değil"
 
-#: app_Main.py:6186
+#: app_Main.py:6109
 msgid "Grid Value deleted"
 msgstr "Izgara değeri silindi"
 
-#: app_Main.py:6188
+#: app_Main.py:6111
 msgid "Delete Grid value cancelled"
 msgstr "Izgara değerini silme işlemi iptal edildi"
 
-#: app_Main.py:6194
+#: app_Main.py:6117
 msgid "Key Shortcut List"
 msgstr "Klavye Kısayol Listesi"
 
-#: app_Main.py:6231
+#: app_Main.py:6154
 msgid " No object selected to copy it's name"
 msgstr ""
 " Adını kopyalamak için hiçbir nesne seçilmedi HPGL2 açılamadı. Muhtemelen "
 "bir HPGL2 dosyası değil"
 
-#: app_Main.py:6235
+#: app_Main.py:6158
 msgid "Name copied on clipboard ..."
 msgstr "İsim panoya kopyalandı ..."
 
-#: app_Main.py:6892
+#: app_Main.py:6917 app_Main.py:6921
+msgid "Select an Gerber or Excellon file to view it's source file."
+msgstr ""
+"Kaynak kodunu görüntülemek için bir Gerber veya Excellon dosyası seçin."
+
+#: app_Main.py:6924
+msgid "Viewing the source code of the selected object."
+msgstr "Seçilen nesnenin kaynak kodunu görüntüle."
+
+#: app_Main.py:6938
+msgid "Source Editor"
+msgstr "Kaynak kodu düzenleyicisi"
+
+#: app_Main.py:6974 app_Main.py:6981
+msgid "There is no selected object for which to see it's source file code."
+msgstr "Kaynak dosyalarını görebileceğiniz seçili bir nesne yok."
+
+#: app_Main.py:6989
+msgid "Failed to load the source code for the selected object"
+msgstr "Seçilen nesnenin kaynak kodu yüklenemedi"
+
+#: app_Main.py:7022
+msgid "Go to Line ..."
+msgstr "Satıra Git ..."
+
+#: app_Main.py:7023
+msgid "Line:"
+msgstr "Satır:"
+
+#: app_Main.py:7053
+msgid "Redrawing all objects"
+msgstr "Tüm nesneler yeniden çiziliyor"
+
+#: app_Main.py:7141
+msgid "Failed to load recent item list."
+msgstr "Son dosya listesi yüklenemedi."
+
+#: app_Main.py:7148
+msgid "Failed to parse recent item list."
+msgstr "Son dosya listesi okunamadı."
+
+#: app_Main.py:7158
+msgid "Failed to load recent projects item list."
+msgstr "Son projelerin öğe listesi yüklenemedi."
+
+#: app_Main.py:7165
+msgid "Failed to parse recent project item list."
+msgstr "Son proje öğelerinin listesi okunamadı."
+
+#: app_Main.py:7226
+msgid "Clear Recent projects"
+msgstr "Son Projeleri Temizle"
+
+#: app_Main.py:7250
+msgid "Clear Recent files"
+msgstr "Listeyi Temizle"
+
+#: app_Main.py:7306
+msgid "FlatCAM Evo"
+msgstr "FlatCAM Evo"
+
+#: app_Main.py:7310
+msgid "Release date"
+msgstr "Yayın Tarihi"
+
+#: app_Main.py:7314
+msgid "Displayed"
+msgstr "Görüntülendi"
+
+#: app_Main.py:7317
+msgid "Snap"
+msgstr "Maksimum Yapışma"
+
+#: app_Main.py:7326
+msgid "Canvas"
+msgstr "Çalışma Alanı"
+
+#: app_Main.py:7331
+msgid "Workspace active"
+msgstr "Çalışma alanı etkin"
+
+#: app_Main.py:7335
+msgid "Workspace size"
+msgstr "Çalışma alanı boyutu"
+
+#: app_Main.py:7339
+msgid "Workspace orientation"
+msgstr "Çalışma alanı yönlendirmesi"
+
+#: app_Main.py:7402
+msgid "Failed checking for latest version. Could not connect."
+msgstr "Program güncellemesi kontrol edilemedi. İnternet bağlantısı yok."
+
+#: app_Main.py:7409
+msgid "Could not parse information about latest version."
+msgstr "En son sürüm bilgileri okunamıyor."
+
+#: app_Main.py:7419
+msgid "FlatCAM is up to date!"
+msgstr "FlatCAM güncel!"
+
+#: app_Main.py:7424
+msgid "Newer Version Available"
+msgstr "Daha yeni bir sürüm var"
+
+#: app_Main.py:7426
+msgid "There is a newer version of FlatCAM available for download:"
+msgstr "İndirebileceğiniz daha yeni bir FlatCAM sürümü var:"
+
+#: app_Main.py:7430
+msgid "info"
+msgstr "bilgi"
+
+#: app_Main.py:7458
+msgid ""
+"OpenGL canvas initialization failed. HW or HW configuration not supported."
+"Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General "
+"tab.\n"
+"\n"
+msgstr ""
+"OpenGL çalışma alanı başlatılamadı. HW veya HW yapılandırması "
+"desteklenmiyor. Düzenle -> Ayarlar -> Genel sekmesinde Grafik Modu'nu Legacy "
+"(2D) olarak değiştirin.\n"
+
+#: app_Main.py:7536
+msgid "All plots disabled."
+msgstr "Tüm siteler devre dışı."
+
+#: app_Main.py:7543
+msgid "All non selected plots disabled."
+msgstr "Seçili olmayan tüm siteler devre dışı bırakılır."
+
+#: app_Main.py:7550
+msgid "All plots enabled."
+msgstr "Tüm siteler etkin."
+
+#: app_Main.py:7556
+msgid "Selected plots enabled..."
+msgstr "Seçilen siteler etkin ..."
+
+#: app_Main.py:7564
+msgid "Selected plots disabled..."
+msgstr "Seçilen siteler devre dışı ..."
+
+#: app_Main.py:7597
+msgid "Enabling plots ..."
+msgstr "Siteler açılıyor ..."
+
+#: app_Main.py:7646
+msgid "Disabling plots ..."
+msgstr "Sitelerin bağlantısı kesiliyor ..."
+
+#: app_Main.py:7669
+msgid "Working ..."
+msgstr "Çalışıyor ..."
+
+#: app_Main.py:7781
+msgid "Set alpha level ..."
+msgstr "Şeffaflık seviyesini ayarla ..."
+
+#: app_Main.py:8057 app_Main.py:8096 app_Main.py:8140 app_Main.py:8206
+#: app_Main.py:8932 app_Main.py:10193 app_Main.py:10255
+msgid ""
+"Canvas initialization started.\n"
+"Canvas initialization finished in"
+msgstr ""
+"Çalışma alanı başlatılıyor.\n"
+"Çalışma alanını başlatılması tamamlandı"
+
+#: app_Main.py:8060
+msgid "Opening Gerber file."
+msgstr "Gerber dosyası açılıyor."
+
+#: app_Main.py:8099
+msgid "Opening Excellon file."
+msgstr "Excellon dosyası açılıyor."
+
+#: app_Main.py:8129 app_Main.py:8134
+msgid "Open G-Code"
+msgstr "G-Kodunu Aç"
+
+#: app_Main.py:8143
+msgid "Opening G-Code file."
+msgstr "G-Kodu dosyası açılıyor."
+
+#: app_Main.py:8197 app_Main.py:8201
+msgid "Open HPGL2"
+msgstr "HPGL2'yi Açın"
+
+#: app_Main.py:8209
+msgid "Opening HPGL2 file."
+msgstr "HPGL2 dosyası açılıyor."
+
+#: app_Main.py:8232 app_Main.py:8235
+msgid "Open Configuration File"
+msgstr "Yapılandırma Dosyasını Aç"
+
+#: app_Main.py:8254 app_Main.py:8600
+msgid "Please Select a Geometry object to export"
+msgstr "Lütfen dışa aktarılacak bir Şekil nesnesi seçin"
+
+#: app_Main.py:8269
+msgid "Only Geometry, Gerber and CNCJob objects can be used."
+msgstr "Yalnızca Şekil, Gerber ve CNC İş nesneleri kullanılabilir."
+
+#: app_Main.py:8314
+msgid "Data must be a 3D array with last dimension 3 or 4"
+msgstr "Verilerin son boyutu 3 veya 4 olan bir 3D dizi olması gerekir"
+
+#: app_Main.py:8320 app_Main.py:8324
+msgid "Export PNG Image"
+msgstr "PNG Görüntüsünü Dışa Aktar"
+
+#: app_Main.py:8356 app_Main.py:8561
+msgid "Failed. Only Gerber objects can be saved as Gerber files..."
+msgstr ""
+"Hata. Sadece Gerber nesneleri Gerber dosyaları olarak kaydedilebilir ..."
+
+#: app_Main.py:8368
+msgid "Save Gerber source file"
+msgstr "Gerber kaynak dosyasını kaydet"
+
+#: app_Main.py:8396
+msgid "Failed. Only Script objects can be saved as TCL Script files..."
+msgstr ""
+"Hata. Yalnızca komut dosyası nesneleri TCL komut dosyaları olarak "
+"kaydedilebilir ..."
+
+#: app_Main.py:8408
+msgid "Save Script source file"
+msgstr "Komut dosyası kaynak dosyasını kaydet"
+
+#: app_Main.py:8436
+msgid "Failed. Only Document objects can be saved as Document files..."
+msgstr ""
+"Hata. Yalnızca Belge nesneleri Belge dosyaları olarak kaydedilebilir ..."
+
+#: app_Main.py:8448
+msgid "Save Document source file"
+msgstr "Belgenin kaynak dosyasını kaydet"
+
+#: app_Main.py:8477 app_Main.py:8518 app_Main.py:9437
+msgid "Failed. Only Excellon objects can be saved as Excellon files..."
+msgstr ""
+"Hata. Yalnızca Excellon nesneleri Excellon dosyaları olarak "
+"kaydedilebilir ..."
+
+#: app_Main.py:8485 app_Main.py:8490
+msgid "Save Excellon source file"
+msgstr "Excellon kaynak dosyasını kaydet"
+
+#: app_Main.py:8526 app_Main.py:8530
+msgid "Export Excellon"
+msgstr "Excellon'u Dışa Aktar"
+
+#: app_Main.py:8569 app_Main.py:8573
+msgid "Export Gerber"
+msgstr "Gerber'i Dışa Aktar"
+
+#: app_Main.py:8612
+msgid "Only Geometry objects can be used."
+msgstr "Yalnızca Şekil nesneleri kullanılabilir."
+
+#: app_Main.py:8628 app_Main.py:8632
+msgid "Export DXF"
+msgstr "DXF'i Dışa Aktar"
+
+#: app_Main.py:8656 app_Main.py:8660
+msgid "Import SVG"
+msgstr "SVG'i İçe Aktar"
+
+#: app_Main.py:8686 app_Main.py:8690
+msgid "Import DXF"
+msgstr "DXF'i İçe Aktar"
+
+#: app_Main.py:8716
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -18649,305 +18861,171 @@ msgstr ""
 "FlatCAM'de açık dosyalar / nesneler var. Yeni bir proje oluşturmak onları "
 "siler. Projeyi kaydetmek istiyor musunuz?"
 
-#: app_Main.py:6915
+#: app_Main.py:8739
 msgid "New Project created"
 msgstr "Yeni proje oluşturuldu"
 
-#: app_Main.py:7121 app_Main.py:7160 app_Main.py:7204 app_Main.py:7274
-#: app_Main.py:8060 app_Main.py:9304 app_Main.py:9366
-msgid ""
-"Canvas initialization started.\n"
-"Canvas initialization finished in"
-msgstr ""
-"Çalışma alanı başlatılıyor.\n"
-"Çalışma alanını başlatılması tamamlandı"
-
-#: app_Main.py:7123
-msgid "Opening Gerber file."
-msgstr "Gerber dosyası açılıyor."
-
-#: app_Main.py:7162
-msgid "Opening Excellon file."
-msgstr "Excellon dosyası açılıyor."
-
-#: app_Main.py:7193 app_Main.py:7198
-msgid "Open G-Code"
-msgstr "G-Kodunu Aç"
-
-#: app_Main.py:7206
-msgid "Opening G-Code file."
-msgstr "G-Kodu dosyası açılıyor."
-
-#: app_Main.py:7265 app_Main.py:7269
-msgid "Open HPGL2"
-msgstr "HPGL2'yi Açın"
-
-#: app_Main.py:7276
-msgid "Opening HPGL2 file."
-msgstr "HPGL2 dosyası açılıyor."
-
-#: app_Main.py:7299 app_Main.py:7302
-msgid "Open Configuration File"
-msgstr "Yapılandırma Dosyasını Aç"
-
-#: app_Main.py:7322 app_Main.py:7676
-msgid "Please Select a Geometry object to export"
-msgstr "Lütfen dışa aktarılacak bir Şekil nesnesi seçin"
-
-#: app_Main.py:7338
-msgid "Only Geometry, Gerber and CNCJob objects can be used."
-msgstr "Yalnızca Şekil, Gerber ve CNC İş nesneleri kullanılabilir."
-
-#: app_Main.py:7383
-msgid "Data must be a 3D array with last dimension 3 or 4"
-msgstr "Verilerin son boyutu 3 veya 4 olan bir 3D dizi olması gerekir"
-
-#: app_Main.py:7389 app_Main.py:7393
-msgid "Export PNG Image"
-msgstr "PNG Görüntüsünü Dışa Aktar"
-
-#: app_Main.py:7426 app_Main.py:7636
-msgid "Failed. Only Gerber objects can be saved as Gerber files..."
-msgstr ""
-"Hata. Sadece Gerber nesneleri Gerber dosyaları olarak kaydedilebilir ..."
-
-#: app_Main.py:7438
-msgid "Save Gerber source file"
-msgstr "Gerber kaynak dosyasını kaydet"
-
-#: app_Main.py:7467
-msgid "Failed. Only Script objects can be saved as TCL Script files..."
-msgstr ""
-"Hata. Yalnızca komut dosyası nesneleri TCL komut dosyaları olarak "
-"kaydedilebilir ..."
-
-#: app_Main.py:7479
-msgid "Save Script source file"
-msgstr "Komut dosyası kaynak dosyasını kaydet"
-
-#: app_Main.py:7508
-msgid "Failed. Only Document objects can be saved as Document files..."
-msgstr ""
-"Hata. Yalnızca Belge nesneleri Belge dosyaları olarak kaydedilebilir ..."
-
-#: app_Main.py:7520
-msgid "Save Document source file"
-msgstr "Belgenin kaynak dosyasını kaydet"
-
-#: app_Main.py:7550 app_Main.py:7592 app_Main.py:8543
-msgid "Failed. Only Excellon objects can be saved as Excellon files..."
-msgstr ""
-"Hata. Yalnızca Excellon nesneleri Excellon dosyaları olarak "
-"kaydedilebilir ..."
-
-#: app_Main.py:7558 app_Main.py:7563
-msgid "Save Excellon source file"
-msgstr "Excellon kaynak dosyasını kaydet"
-
-#: app_Main.py:7600 app_Main.py:7604
-msgid "Export Excellon"
-msgstr "Excellon'u Dışa Aktar"
-
-#: app_Main.py:7644 app_Main.py:7648
-msgid "Export Gerber"
-msgstr "Gerber'i Dışa Aktar"
-
-#: app_Main.py:7688
-msgid "Only Geometry objects can be used."
-msgstr "Yalnızca Şekil nesneleri kullanılabilir."
-
-#: app_Main.py:7704 app_Main.py:7708
-msgid "Export DXF"
-msgstr "DXF'i Dışa Aktar"
-
-#: app_Main.py:7733 app_Main.py:7736
-msgid "Import SVG"
-msgstr "SVG'i İçe Aktar"
-
-#: app_Main.py:7764 app_Main.py:7768
-msgid "Import DXF"
-msgstr "DXF'i İçe Aktar"
-
-#: app_Main.py:7822 app_Main.py:7826
-msgid "Select an Gerber or Excellon file to view it's source file."
-msgstr ""
-"Kaynak kodunu görüntülemek için bir Gerber veya Excellon dosyası seçin."
-
-#: app_Main.py:7829
-msgid "Viewing the source code of the selected object."
-msgstr "Seçilen nesnenin kaynak kodunu görüntüle."
-
-#: app_Main.py:7843
-msgid "Source Editor"
-msgstr "Kaynak kodu düzenleyicisi"
-
-#: app_Main.py:7879 app_Main.py:7886
-msgid "There is no selected object for which to see it's source file code."
-msgstr "Kaynak dosyalarını görebileceğiniz seçili bir nesne yok."
-
-#: app_Main.py:7894
-msgid "Failed to load the source code for the selected object"
-msgstr "Seçilen nesnenin kaynak kodu yüklenemedi"
-
-#: app_Main.py:7927
-msgid "Go to Line ..."
-msgstr "Satıra Git ..."
-
-#: app_Main.py:7928
-msgid "Line:"
-msgstr "Satır:"
-
-#: app_Main.py:7955
+#: app_Main.py:8841
 msgid "New TCL script file created in Code Editor."
 msgstr "Kod düzenleyicide yeni TLC komut dosyası oluşturuldu."
 
-#: app_Main.py:7994 app_Main.py:7996 app_Main.py:8032 app_Main.py:8034
+#: app_Main.py:8868 app_Main.py:8870 app_Main.py:8905 app_Main.py:8907
 msgid "Open TCL script"
 msgstr "TCL Komut Dosyasını Aç"
 
-#: app_Main.py:8062
+#: app_Main.py:8934
 msgid "Executing ScriptObject file."
 msgstr "FlatCAM komut dosyası çalışıyor."
 
-#: app_Main.py:8070 app_Main.py:8073
+#: app_Main.py:8942 app_Main.py:8946
 msgid "Run TCL script"
 msgstr "TCL komut dosyasını çalıştır"
 
-#: app_Main.py:8096
+#: app_Main.py:8969
 msgid "TCL script file opened in Code Editor and executed."
 msgstr "TCL komut dosyası kod düzenleyicisinde açıldı ve yürütüldü."
 
-#: app_Main.py:8147 app_Main.py:8153
+#: app_Main.py:9015 app_Main.py:9021
 msgid "Save Project As ..."
 msgstr "Projeyi Farklı Kaydet ..."
 
-#: app_Main.py:8188
+#: app_Main.py:9055
 msgid "FlatCAM objects print"
 msgstr "FlatCAM nesnelerini yazdır"
 
-#: app_Main.py:8201 app_Main.py:8208
+#: app_Main.py:9068 app_Main.py:9075
 msgid "Save Object as PDF ..."
 msgstr "Nesneyi PDF Olarak Kaydet ..."
 
-#: app_Main.py:8217
+#: app_Main.py:9084
 msgid "Printing PDF ... Please wait."
 msgstr "PDF Yazdırılıyor ... Lütfen Bekleyiniz."
 
-#: app_Main.py:8396
+#: app_Main.py:9262
 msgid "PDF file saved to"
 msgstr "PDF dosyası şuraya kaydedildi"
 
-#: app_Main.py:8421
+#: app_Main.py:9284
 msgid "Exporting SVG"
 msgstr "SVG'yi dışa aktarılıyor"
 
-#: app_Main.py:8464
+#: app_Main.py:9327
 msgid "SVG file exported to"
 msgstr "SVG dosyası şuraya aktarıldı"
 
-#: app_Main.py:8490
-msgid "Save cancelled because source file is empty. Try to export the file."
-msgstr ""
-"Kaynak dosya boş olduğundan kaydetme işlemi iptal edildi. Gerber dosyasını "
-"dışa aktarmayı deneyin."
+#: app_Main.py:9342 app_Main.py:9346
+msgid "Import FlatCAM Preferences"
+msgstr "FlatCAM Ayarlarını İçe Aktar"
 
-#: app_Main.py:8641
+#: app_Main.py:9357
+msgid "Imported Defaults from"
+msgstr "Varsayılan değerler şuradan alındı"
+
+#: app_Main.py:9376 app_Main.py:9382
+msgid "Export FlatCAM Preferences"
+msgstr "FlatCAM Ayarlarını Dışa Aktar"
+
+#: app_Main.py:9402
+msgid "Exported preferences to"
+msgstr "Ayarlar şuraya aktarıldı"
+
+#: app_Main.py:9535
 msgid "Excellon file exported to"
 msgstr "Excellon dosyası şuraya aktarıldı"
 
-#: app_Main.py:8650
+#: app_Main.py:9544
 msgid "Exporting Excellon"
 msgstr "Excellon dışa aktarılıyor"
 
-#: app_Main.py:8655 app_Main.py:8662
+#: app_Main.py:9549 app_Main.py:9556
 msgid "Could not export Excellon file."
 msgstr "Excellon dosyası dışa aktarılamadı."
 
-#: app_Main.py:8778
+#: app_Main.py:9670
 msgid "Gerber file exported to"
 msgstr "Gerber dosyası şuraya aktarıldı"
 
-#: app_Main.py:8786
+#: app_Main.py:9678
 msgid "Exporting Gerber"
 msgstr "Gerber dosyası dışa aktarılıyor"
 
-#: app_Main.py:8791 app_Main.py:8798
+#: app_Main.py:9683 app_Main.py:9690
 msgid "Could not export file."
 msgstr "Dosya dışa aktarılamadı."
 
-#: app_Main.py:8846
+#: app_Main.py:9736
 msgid "DXF file exported to"
 msgstr "DXF dosyası şuraya aktarıldı"
 
-#: app_Main.py:8855
+#: app_Main.py:9745
 msgid "Exporting DXF"
 msgstr "DXF dosyası dışa aktarılıyor"
 
-#: app_Main.py:8860 app_Main.py:8867
+#: app_Main.py:9750 app_Main.py:9757
 msgid "Could not export DXF file."
 msgstr "DXF dosyası dışa aktarılamadı."
 
-#: app_Main.py:8906
+#: app_Main.py:9795
 msgid "Importing SVG"
 msgstr "SVG dosyası içe aktarılıyor"
 
-#: app_Main.py:8914 app_Main.py:8969
+#: app_Main.py:9803 app_Main.py:9858
 msgid "Import failed."
 msgstr "İçe aktarma başarısız oldu."
 
-#: app_Main.py:8961
+#: app_Main.py:9850
 msgid "Importing DXF"
 msgstr "DXF dosyası içe aktarılıyor"
 
-#: app_Main.py:9002 app_Main.py:9193 app_Main.py:9258
+#: app_Main.py:9891 app_Main.py:10082 app_Main.py:10147
 msgid "Failed to open file"
 msgstr "Dosya açılamadı"
 
-#: app_Main.py:9005 app_Main.py:9196 app_Main.py:9261
+#: app_Main.py:9894 app_Main.py:10085 app_Main.py:10150
 msgid "Failed to parse file"
 msgstr "Dosya okunamadı"
 
-#: app_Main.py:9017
+#: app_Main.py:9906
 msgid "Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "Nesne bir Gerber dosyası değil veya boş. Nesne oluşturma işlemi iptal "
 "ediliyor."
 
-#: app_Main.py:9022
+#: app_Main.py:9911
 msgid "Opening Gerber"
 msgstr "Gerber açılıyor"
 
-#: app_Main.py:9033
+#: app_Main.py:9922
 msgid "Open Gerber failed. Probable not a Gerber file."
 msgstr ""
 "Gerber'i açma işlemi başarısız oldu. Bu bu muhtemelen bir Gerber dosyası "
 "değil."
 
-#: app_Main.py:9066
+#: app_Main.py:9955
 msgid "Cannot open file"
 msgstr "Dosya açılamıyor"
 
-#: app_Main.py:9086
+#: app_Main.py:9975
 msgid "Opening Excellon."
 msgstr "Excellon dosyası açılıyor."
 
-#: app_Main.py:9096
+#: app_Main.py:9985
 msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Excellon dosyası açılamadı. Bu muhtemelen bir Excellon dosyası değil."
 
-#: app_Main.py:9128
+#: app_Main.py:10017
 msgid "Reading GCode file"
 msgstr "G-Kod dosyası okunuyor"
 
-#: app_Main.py:9141
+#: app_Main.py:10030
 msgid "This is not GCODE"
 msgstr "Bu G KOD'u değil"
 
-#: app_Main.py:9146
+#: app_Main.py:10035
 msgid "Opening G-Code."
 msgstr "G-Kodu açılıyor."
 
-#: app_Main.py:9159
+#: app_Main.py:10048
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -18959,214 +19037,89 @@ msgstr ""
 "G-Kod dosyasından FlatCAM CNC İş nesnesi oluşturma denemesi, işlem sırasında "
 "başarısız oldu"
 
-#: app_Main.py:9215
+#: app_Main.py:10104
 msgid "Object is not HPGL2 file or empty. Aborting object creation."
 msgstr ""
 "Nesne bir HPGL2 dosyası değil veya boş. Nesne oluşturma işlemini iptal "
 "ediliyor."
 
-#: app_Main.py:9220
+#: app_Main.py:10109
 msgid "Opening HPGL2"
 msgstr "HPGL2 açılıyor"
 
-#: app_Main.py:9227
+#: app_Main.py:10116
 msgid " Open HPGL2 failed. Probable not a HPGL2 file."
 msgstr " HPGL2 açılamadı. Muhtemelen bir HPGL2 dosyası değil."
 
-#: app_Main.py:9253
+#: app_Main.py:10142
 msgid "TCL script file opened in Code Editor."
 msgstr "TCL komut dosyası kod düzenleyicide açıldı."
 
-#: app_Main.py:9273
+#: app_Main.py:10162
 msgid "Opening TCL Script..."
 msgstr "TCL komut dosyası açılıyor..."
 
-#: app_Main.py:9284
+#: app_Main.py:10173
 msgid "Failed to open TCL Script."
 msgstr "TCL komut dosyası açılamadı."
 
-#: app_Main.py:9306
+#: app_Main.py:10196
 msgid "Opening FlatCAM Config file."
 msgstr "FlatCAM yapılandırma dosyası açılıyor."
 
-#: app_Main.py:9334
+#: app_Main.py:10223
 msgid "Failed to open config file"
 msgstr "Yapılandırma dosyası açılamadı"
 
-#: app_Main.py:9363
+#: app_Main.py:10252
 msgid "Loading Project ... Please Wait ..."
 msgstr "Proje Yükleniyor ... Lütfen Bekleyiniz ..."
 
-#: app_Main.py:9368
+#: app_Main.py:10258
 msgid "Opening FlatCAM Project file."
 msgstr "FlatCAM proje dosyası açılıyor."
 
-#: app_Main.py:9383 app_Main.py:9387 app_Main.py:9404
+#: app_Main.py:10273 app_Main.py:10277 app_Main.py:10295
 msgid "Failed to open project file"
 msgstr "Proje dosyası açılamadı"
 
-#: app_Main.py:9443
+#: app_Main.py:10335
 msgid "Loading Project ... restoring"
 msgstr "Proje yükleniyor ... onarılıyor"
 
-#: app_Main.py:9451
+#: app_Main.py:10339
 msgid "Project loaded from"
 msgstr "Şuradan yüklenen proje"
 
-#: app_Main.py:9477
-msgid "Redrawing all objects"
-msgstr "Tüm nesneler yeniden çiziliyor"
-
-#: app_Main.py:9565
-msgid "Failed to load recent item list."
-msgstr "Son dosya listesi yüklenemedi."
-
-#: app_Main.py:9572
-msgid "Failed to parse recent item list."
-msgstr "Son dosya listesi okunamadı."
-
-#: app_Main.py:9582
-msgid "Failed to load recent projects item list."
-msgstr "Son projelerin öğe listesi yüklenemedi."
-
-#: app_Main.py:9589
-msgid "Failed to parse recent project item list."
-msgstr "Son proje öğelerinin listesi okunamadı."
-
-#: app_Main.py:9650
-msgid "Clear Recent projects"
-msgstr "Son Projeleri Temizle"
-
-#: app_Main.py:9674
-msgid "Clear Recent files"
-msgstr "Listeyi Temizle"
-
-#: app_Main.py:9730
-msgid "FlatCAM Evo"
-msgstr ""
-
-#: app_Main.py:9734
-msgid "Release date"
-msgstr "Yayın Tarihi"
-
-#: app_Main.py:9738
-msgid "Displayed"
-msgstr "Görüntülendi"
-
-#: app_Main.py:9741
-msgid "Snap"
-msgstr "Maksimum Yapışma"
-
-#: app_Main.py:9750
-msgid "Canvas"
-msgstr "Çalışma Alanı"
-
-#: app_Main.py:9755
-msgid "Workspace active"
-msgstr "Çalışma alanı etkin"
-
-#: app_Main.py:9759
-msgid "Workspace size"
-msgstr "Çalışma alanı boyutu"
-
-#: app_Main.py:9763
-msgid "Workspace orientation"
-msgstr "Çalışma alanı yönlendirmesi"
-
-#: app_Main.py:9826
-msgid "Failed checking for latest version. Could not connect."
-msgstr "Program güncellemesi kontrol edilemedi. İnternet bağlantısı yok."
-
-#: app_Main.py:9833
-msgid "Could not parse information about latest version."
-msgstr "En son sürüm bilgileri okunamıyor."
-
-#: app_Main.py:9843
-msgid "FlatCAM is up to date!"
-msgstr "FlatCAM güncel!"
-
-#: app_Main.py:9848
-msgid "Newer Version Available"
-msgstr "Daha yeni bir sürüm var"
-
-#: app_Main.py:9850
-msgid "There is a newer version of FlatCAM available for download:"
-msgstr "İndirebileceğiniz daha yeni bir FlatCAM sürümü var:"
-
-#: app_Main.py:9854
-msgid "info"
-msgstr "bilgi"
-
-#: app_Main.py:9882
-msgid ""
-"OpenGL canvas initialization failed. HW or HW configuration not supported."
-"Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General "
-"tab.\n"
-"\n"
-msgstr ""
-"OpenGL çalışma alanı başlatılamadı. HW veya HW yapılandırması "
-"desteklenmiyor. Düzenle -> Ayarlar -> Genel sekmesinde Grafik Modu'nu Legacy "
-"(2D) olarak değiştirin.\n"
-
-#: app_Main.py:9960
-msgid "All plots disabled."
-msgstr "Tüm siteler devre dışı."
-
-#: app_Main.py:9967
-msgid "All non selected plots disabled."
-msgstr "Seçili olmayan tüm siteler devre dışı bırakılır."
-
-#: app_Main.py:9974
-msgid "All plots enabled."
-msgstr "Tüm siteler etkin."
-
-#: app_Main.py:9980
-msgid "Selected plots enabled..."
-msgstr "Seçilen siteler etkin ..."
-
-#: app_Main.py:9988
-msgid "Selected plots disabled..."
-msgstr "Seçilen siteler devre dışı ..."
-
-#: app_Main.py:10021
-msgid "Enabling plots ..."
-msgstr "Siteler açılıyor ..."
-
-#: app_Main.py:10070
-msgid "Disabling plots ..."
-msgstr "Sitelerin bağlantısı kesiliyor ..."
-
-#: app_Main.py:10093
-msgid "Working ..."
-msgstr "Çalışıyor ..."
-
-#: app_Main.py:10205
-msgid "Set alpha level ..."
-msgstr "Şeffaflık seviyesini ayarla ..."
-
-#: app_Main.py:10271
+#: app_Main.py:10368
 msgid "Saving FlatCAM Project"
 msgstr "FlatCAM Projesi Kaydediliyor"
 
-#: app_Main.py:10294 app_Main.py:10330
+#: app_Main.py:10390 app_Main.py:10426
 msgid "Project saved to"
 msgstr "Proje şuraya kaydedildi"
 
-#: app_Main.py:10301
+#: app_Main.py:10397
 msgid "The object is used by another application."
 msgstr "Nesne başka bir uygulama tarafından kullanılıyor."
 
-#: app_Main.py:10315
+#: app_Main.py:10411
 msgid "Failed to verify project file"
 msgstr "Proje dosyası kontrol edilemedi"
 
-#: app_Main.py:10315 app_Main.py:10323 app_Main.py:10333
+#: app_Main.py:10411 app_Main.py:10419 app_Main.py:10429
 msgid "Retry to save it."
 msgstr "Lütfen kaydetmek için tekrar deneyin."
 
-#: app_Main.py:10323 app_Main.py:10333
+#: app_Main.py:10419 app_Main.py:10429
 msgid "Failed to parse saved project file"
 msgstr "Kaydedilmiş proje dosyası okunamadı"
+
+#: app_Main.py:10466
+msgid "Save cancelled because source file is empty. Try to export the file."
+msgstr ""
+"Kaynak dosya boş olduğundan kaydetme işlemi iptal edildi. Gerber dosyasını "
+"dışa aktarmayı deneyin."
 
 #: assets/linux/flatcam-beta.desktop:3
 msgid "FlatCAM Beta"
@@ -19262,10 +19215,8 @@ msgid "G91 coordinates not implemented"
 msgstr "G91 koordinatları uygulanmadı"
 
 #: camlib.py:3447
-#, fuzzy
-#| msgid "Finished G-Code generation for tool: %s"
 msgid "Finished G-Code generation for tool:"
-msgstr "Uç için G-Kod'u oluşturma işlemi tamamlandı: %s"
+msgstr "Uç için G-Kod'u oluşturma işlemi tamamlandı:"
 
 #: camlib.py:3497
 msgid ""

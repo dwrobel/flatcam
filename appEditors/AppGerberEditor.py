@@ -4366,8 +4366,8 @@ class AppGerberEditor(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 raise
 
-            grb_obj.source_file = self.app.export_gerber(obj_name=out_name, filename=None,
-                                                         local_use=grb_obj, use_thread=False)
+            grb_obj.source_file = self.app.f_handlers.export_gerber(obj_name=out_name, filename=None,
+                                                                    local_use=grb_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Creating Gerber.")):
             try:

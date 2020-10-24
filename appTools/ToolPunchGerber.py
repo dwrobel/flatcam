@@ -267,8 +267,8 @@ class ToolPunchGerber(AppTool):
                 new_obj.apertures = deepcopy(new_apertures)
 
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
-                                                             local_use=new_obj, use_thread=False)
+                new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                        local_use=new_obj, use_thread=False)
 
             self.app.app_obj.new_object('gerber', outname, init_func)
         elif punch_method == 'fixed':
@@ -390,8 +390,8 @@ class ToolPunchGerber(AppTool):
                 new_obj.apertures = deepcopy(new_apertures)
 
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
-                                                             local_use=new_obj, use_thread=False)
+                new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                        local_use=new_obj, use_thread=False)
 
             self.app.app_obj.new_object('gerber', outname, init_func)
         elif punch_method == 'ring':
@@ -532,8 +532,8 @@ class ToolPunchGerber(AppTool):
                 new_obj.apertures = deepcopy(new_apertures)
 
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
-                                                             local_use=new_obj, use_thread=False)
+                new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                        local_use=new_obj, use_thread=False)
 
             self.app.app_obj.new_object('gerber', outname, init_func)
 
@@ -671,8 +671,8 @@ class ToolPunchGerber(AppTool):
                 new_obj.apertures = deepcopy(new_apertures)
 
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
-                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
-                                                             local_use=new_obj, use_thread=False)
+                new_obj.source_file = self.app.f_handlers.export_gerber(obj_name=outname, filename=None,
+                                                                        local_use=new_obj, use_thread=False)
 
             self.app.app_obj.new_object('gerber', outname, init_func)
 

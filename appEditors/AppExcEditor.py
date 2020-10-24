@@ -2868,10 +2868,10 @@ class AppExcEditor(QtCore.QObject):
 
             try:
                 edited_obj = self.app.app_obj.new_object("excellon", outname, obj_init)
-                edited_obj.source_file = self.app.export_excellon(obj_name=edited_obj.options['name'],
-                                                                  local_use=edited_obj,
-                                                                  filename=None,
-                                                                  use_thread=False)
+                edited_obj.source_file = self.app.f_handlers.export_excellon(obj_name=edited_obj.options['name'],
+                                                                             local_use=edited_obj,
+                                                                             filename=None,
+                                                                             use_thread=False)
             except Exception as e:
                 self.deactivate()
                 log.error("Error on Edited object creation: %s" % str(e))

@@ -2321,7 +2321,7 @@ class MainGUI(QtWidgets.QMainWindow):
             # CTRL + SHIFT
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier:
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_file_saveprojectas()
+                    self.app.f_handlers.on_file_saveprojectas()
                     return
             # CTRL
             elif modifiers == QtCore.Qt.ControlModifier:
@@ -2346,7 +2346,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Open Excellon file
                 if key == QtCore.Qt.Key_E:
-                    self.app.on_fileopenexcellon(signal=None)
+                    self.app.f_handlers.on_fileopenexcellon(signal=None)
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key_G:
@@ -2354,7 +2354,7 @@ class MainGUI(QtWidgets.QMainWindow):
                     if 'editor' in widget_name.lower():
                         self.app.goto_text_line()
                     else:
-                        self.app.on_fileopengerber(signal=None)
+                        self.app.f_handlers.on_fileopengerber(signal=None)
 
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:
@@ -2362,15 +2362,15 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Create New Project
                 if key == QtCore.Qt.Key_N:
-                    self.app.on_file_new_click()
+                    self.app.f_handlers.on_file_new_click()
 
                 # Open Project
                 if key == QtCore.Qt.Key_O:
-                    self.app.on_file_openproject(signal=None)
+                    self.app.f_handlers.on_file_openproject(signal=None)
 
                 # Open Project
                 if key == QtCore.Qt.Key_P:
-                    self.app.on_file_save_objects_pdf(use_thread=True)
+                    self.app.f_handlers.on_file_save_objects_pdf(use_thread=True)
 
                 # PDF Import
                 if key == QtCore.Qt.Key_Q:
@@ -2389,7 +2389,7 @@ class MainGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_save_tools_db()
                         return
 
-                    self.app.on_file_saveproject()
+                    self.app.f_handlers.on_file_saveproject()
 
                 # Toggle Plot Area
                 if key == QtCore.Qt.Key_F10 or key == 'F10':
@@ -2435,7 +2435,7 @@ class MainGUI(QtWidgets.QMainWindow):
 
                 # Run a Script
                 if key == QtCore.Qt.Key_S:
-                    self.app.on_filerunscript()
+                    self.app.f_handlers.on_filerunscript()
                     return
 
                 # Toggle Workspace
@@ -3677,31 +3677,31 @@ class MainGUI(QtWidgets.QMainWindow):
                     extension = self.filename.lower().rpartition('.')[-1]
 
                     if extension in self.app.grb_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gerber,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gerber,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.exc_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_excellon,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_excellon,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.gcode_list:
-                        self.app.worker_task.emit({'fcn': self.app.open_gcode,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.open_gcode,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
                     if extension in self.app.svg_list:
                         object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_svg,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_svg,
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.dxf_list:
                         object_type = 'geometry'
-                        self.app.worker_task.emit({'fcn': self.app.import_dxf,
+                        self.app.worker_task.emit({'fcn': self.app.f_handlers.import_dxf,
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.pdf_list:
@@ -3711,10 +3711,10 @@ class MainGUI(QtWidgets.QMainWindow):
 
                     if extension in self.app.prj_list:
                         # self.app.open_project() is not Thread Safe
-                        self.app.open_project(self.filename)
+                        self.app.f_handlers.open_project(self.filename)
 
                     if extension in self.app.conf_list:
-                        self.app.open_config_file(self.filename)
+                        self.app.f_handlers.open_config_file(self.filename)
                     else:
                         event.ignore()
         else:
