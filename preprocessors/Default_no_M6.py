@@ -9,7 +9,7 @@
 from appPreProcessor import *
 
 
-class Default_no_toolchange(PreProc):
+class Default_no_M6(PreProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -73,6 +73,15 @@ class Default_no_toolchange(PreProc):
                 gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["tools_drill_travelz"]) + ')\n'
             gcode += '\n'
 
+        if p['toolchange'] is True:
+            gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
+
+            if coords_xy is not None:
+                gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                               p.decimals, coords_xy[1]) + units + ')\n'
+            else:
+                gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
+
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
         if end_coords_xy is not None:
@@ -111,7 +120,92 @@ class Default_no_toolchange(PreProc):
         return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
-        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
+        z_toolchange = p.z_toolchange
+        toolchangexy = p.xy_toolchange
+        f_plunge = p.f_plunge
+
+        if toolchangexy is not None:
+            x_toolchange = toolchangexy[0]
+            y_toolchange = toolchangexy[1]
+        else:
+            x_toolchange = 0.0
+            y_toolchange = 0.0
+
+        no_drills = 1
+
+        if int(p.tool) == 1 and p.startz is not None:
+            z_toolchange = p.startz
+
+        toolC_formatted = '%.*f' % (p.decimals, p.toolC)
+
+        if str(p['options']['type']) == 'Excellon':
+            for i in p['options']['Tools_in_use']:
+                if i[0] == p.tool:
+                    no_drills = i[2]
+
+            if toolchangexy is not None:
+                gcode = """
+M5
+G00 Z{z_toolchange}
+T{tool}
+G00 X{x_toolchange} Y{y_toolchange}                
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+M0
+G00 Z{z_toolchange}
+        """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+                   y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+                   z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+                   tool=int(p.tool),
+                   t_drills=no_drills,
+                   toolC=toolC_formatted)
+            else:
+                gcode = """
+M5       
+G00 Z{z_toolchange}
+T{tool}
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+M0
+G00 Z{z_toolchange}
+        """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+                   tool=int(p.tool),
+                   t_drills=no_drills,
+                   toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+            return gcode
+
+        else:
+            if toolchangexy is not None:
+                gcode = """
+M5
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}
+T{tool}
+(MSG, Change to Tool Dia = {toolC})
+M0
+G00 Z{z_toolchange}
+        """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+                   y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+                   z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+                   tool=int(p.tool),
+                   toolC=toolC_formatted)
+
+            else:
+                gcode = """
+M5
+G00 Z{z_toolchange}
+T{tool}
+(MSG, Change to Tool Dia = {toolC})
+M0
+G00 Z{z_toolchange}
+        """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+                   tool=int(p.tool),
+                   toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+            return gcode
 
     def up_to_zero_code(self, p):
         return 'G01 Z0'

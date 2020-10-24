@@ -19,6 +19,7 @@ CHANGELOG for FlatCAM beta
 - updated the Turkish translation (by Mehmet Kaya)
 - the methods of the APP class that were the handlers for the File menu are now moved to their oen class
 - fixed some of the Tcl Commands that depended on the methods refactored above
+- reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
 
 23.10.2020
 
