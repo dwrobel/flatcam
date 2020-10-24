@@ -20,6 +20,7 @@ CHANGELOG for FlatCAM beta
 - the methods of the APP class that were the handlers for the File menu are now moved to their oen class
 - fixed some of the Tcl Commands that depended on the methods refactored above
 - reverted the preprocessors with no toolchange commands to the original but removed the M6 toolchange command
+- fixed newly introduced issue when doing File -> Print(PDF)
 
 23.10.2020
 

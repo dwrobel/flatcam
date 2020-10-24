@@ -8019,6 +8019,8 @@ class MenuFileHandlers(QtCore.QObject):
         self.worker_task = self.app.worker_task
         self.defaults = self.app.defaults
 
+        self.pagesize = {}
+
     def on_fileopengerber(self, signal, name=None):
         """
         File menu callback for opening a Gerber.
@@ -9099,8 +9101,7 @@ class MenuFileHandlers(QtCore.QObject):
         color = 'black'
         transparency_level = 1.0
 
-        self.app.pagesize = {}
-        self.app.pagesize.update(
+        self.pagesize.update(
             {
                 'Bounds': None,
                 'A0': (841 * mm, 1189 * mm),
@@ -9158,11 +9159,9 @@ class MenuFileHandlers(QtCore.QObject):
             svg_obj = obj.export_svg(scale_stroke_factor=0.0, scale_factor_x=None, scale_factor_y=None,
                                      skew_factor_x=None, skew_factor_y=None, mirror=None)
 
-            if obj.kind.lower() == 'gerber':
-                # color = self.defaults["gerber_plot_fill"][:-2]
+            if obj.kind.lower() == 'gerber' or obj.kind.lower() == 'excellon':
                 color = obj.fill_color[:-2]
-            elif obj.kind.lower() == 'excellon':
-                color = '#C40000'
+                transparency_level = obj.fill_color[-2:]
             elif obj.kind.lower() == 'geometry':
                 color = self.defaults["global_draw_color"]
 
