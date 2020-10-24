@@ -18,6 +18,7 @@ CHANGELOG for FlatCAM beta
 - created two new preprocessors (from 'default' and from 'grbl_11') that will have no toolchange commands regardless of the settings in the software
 - updated the Turkish translation (by Mehmet Kaya)
 - the methods of the APP class that were the handlers for the File menu are now moved to their oen class
+- fixed some of the Tcl Commands that depended on the methods refactored above
 
 23.10.2020
 

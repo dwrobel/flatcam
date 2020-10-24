@@ -58,4 +58,4 @@ class TclCommandOpenGCode(TclCommandSignaled):
         #     return "The absolute path to the project file contain spaces which is not allowed.\n" \
         #            "Please enclose the path within quotes."
 
-        self.app.open_gcode(filename, **args)
+        self.app.f_handlers.open_gcode(filename, **args)

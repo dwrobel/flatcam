@@ -423,8 +423,6 @@ class App(QtCore.QObject):
         # ############################################################################################################
         self.defaults = FlatCAMDefaults(beta=self.beta, version=self.version)
 
-        self.defaults["root_folder_path"] = self.app_home
-
         current_defaults_path = os.path.join(self.data_path, "current_defaults.FlatConfig")
         if user_defaults:
             self.defaults.load(filename=current_defaults_path, inform=self.inform)
@@ -1313,6 +1311,9 @@ class App(QtCore.QObject):
         # ###########################################################################################################
         # ###########################################################################################################
         self.f_handlers = MenuFileHandlers(app=self)
+
+        # this is calculated in the class above (somehow?)
+        self.defaults["root_folder_path"] = self.app_home
 
         # ###########################################################################################################
         # ############################################ SETUP RECENT ITEMS ###########################################
