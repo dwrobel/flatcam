@@ -685,7 +685,7 @@ class DsidedUI:
               "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
               "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
               "bounding box of another object selected below\n"
-              "- Hole Snap -> a point defined by the center of a drill hone in a Excellon object")
+              "- Hole Snap -> a point defined by the center of a drill hole in a Excellon object")
         )
         self.axis_location = RadioSet(
             [
@@ -723,7 +723,7 @@ class DsidedUI:
 
         self.exc_hole_lbl = QtWidgets.QLabel('%s:' % _("Excellon"))
         self.exc_hole_lbl.setToolTip(
-            _("Object that holds holes that can be picked as reference for mirroing.")
+            _("Object that holds holes that can be picked as reference for mirroring.")
         )
 
         # Excellon Object that holds the holes

@@ -2402,7 +2402,7 @@ class App(QtCore.QObject):
 
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Select a Gerber, Geometry, Excellon or CNCJobObject to update."))
+                                         _("Select a Gerber, Geometry, Excellon or CNCJob Object to update."))
                         return
 
                     self.inform.emit('[selected] %s %s' % (obj_type, _("is updated, returning to App...")))

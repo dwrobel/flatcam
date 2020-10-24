@@ -823,7 +823,7 @@ class PanelizeUI:
             _("Active only for Geometry panel type.\n"
               "When checked the application will find\n"
               "any two overlapping Line elements in the panel\n"
-              "and remove the overlapping parts, keeping only one of them.")
+              "and will remove the overlapping parts, keeping only one of them.")
         )
         form_layout.addRow(self.optimization_cb)
 

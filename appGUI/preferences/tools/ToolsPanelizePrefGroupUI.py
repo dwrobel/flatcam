@@ -112,7 +112,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             _("Active only for Geometry panel type.\n"
               "When checked the application will find\n"
               "any two overlapping Line elements in the panel\n"
-              "and remove the overlapping parts, keeping only one of them.")
+              "and will remove the overlapping parts, keeping only one of them.")
         )
         grid0.addWidget(self.poptimization_cb, 5, 0, 1, 2)
 

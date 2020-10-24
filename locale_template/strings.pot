@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-10-23 23:09+0300\n"
+"POT-Creation-Date: 2020-10-24 15:55+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -102,7 +102,7 @@ msgstr ""
 
 #: Bookmark.py:300 Bookmark.py:342 appDatabase.py:2081 appDatabase.py:2127
 #: appEditors/AppExcEditor.py:1023 appEditors/AppExcEditor.py:1091
-#: appEditors/AppTextEditor.py:259 appGUI/MainGUI.py:2878 appGUI/MainGUI.py:3100
+#: appEditors/AppTextEditor.py:257 appGUI/MainGUI.py:2878 appGUI/MainGUI.py:3100
 #: appGUI/MainGUI.py:3315 appObjects/FlatCAMCNCJob.py:1750
 #: appObjects/ObjectCollection.py:126 appTools/ToolFilm.py:238 appTools/ToolFilm.py:384
 #: appTools/ToolImage.py:112 appTools/ToolMove.py:269 appTools/ToolPcbWizard.py:189
@@ -116,7 +116,7 @@ msgstr ""
 msgid "Cancelled."
 msgstr ""
 
-#: Bookmark.py:308 appDatabase.py:2089 appEditors/AppTextEditor.py:314
+#: Bookmark.py:308 appDatabase.py:2089 appEditors/AppTextEditor.py:312
 #: appObjects/FlatCAMCNCJob.py:1672 appObjects/FlatCAMCNCJob.py:1862
 #: appObjects/FlatCAMCNCJob.py:2311 appTools/ToolFilm.py:582 appTools/ToolFilm.py:830
 #: appTools/ToolSolderPaste.py:1097 app_Main.py:2672 app_Main.py:8457 app_Main.py:8505
@@ -274,8 +274,8 @@ msgstr ""
 
 #: appDatabase.py:235
 msgid ""
-"Tool tolerance. If there is a tool in the targeted tools table with\n"
-"the value within the limits then this tool from DB will be used."
+"Tool tolerance. This tool will be used if the desired tool diameter\n"
+"is within the tolerance specified here."
 msgstr ""
 
 #: appDatabase.py:241
@@ -582,7 +582,7 @@ msgid ""
 "- Clear -> the regular non-copper clearing."
 msgstr ""
 
-#: appDatabase.py:596 appEditors/AppGerberEditor.py:2749 appGUI/GUIElements.py:3021
+#: appDatabase.py:596 appEditors/AppGerberEditor.py:2749 appGUI/GUIElements.py:3079
 #: appTools/ToolNCC.py:4059
 msgid "Clear"
 msgstr ""
@@ -703,7 +703,7 @@ msgid "Standard"
 msgstr ""
 
 #: appDatabase.py:669 appDatabase.py:784 appEditors/AppGeoEditor.py:498
-#: appEditors/AppGeoEditor.py:568 appEditors/AppGeoEditor.py:5115 appGUI/ObjectUI.py:1702
+#: appEditors/AppGeoEditor.py:568 appEditors/AppGeoEditor.py:5123 appGUI/ObjectUI.py:1702
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215 appTools/ToolNCC.py:1976
 #: appTools/ToolNCC.py:4127 appTools/ToolPaint.py:1470 appTools/ToolPaint.py:3016
@@ -713,7 +713,7 @@ msgid "Seed"
 msgstr ""
 
 #: appDatabase.py:669 appDatabase.py:784 appEditors/AppGeoEditor.py:498
-#: appEditors/AppGeoEditor.py:5119 appGUI/ObjectUI.py:1702
+#: appEditors/AppGeoEditor.py:5127 appGUI/ObjectUI.py:1702
 #: appGUI/preferences/tools/ToolsNCCPrefGroupUI.py:230
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:215 appTools/ToolNCC.py:1987
 #: appTools/ToolNCC.py:4127 appTools/ToolPaint.py:160 appTools/ToolPaint.py:1484
@@ -1498,7 +1498,7 @@ msgid "Cancelled. There is no Tool/Drill selected"
 msgstr ""
 
 #: appEditors/AppExcEditor.py:3123 appEditors/AppExcEditor.py:3130
-#: appEditors/AppGeoEditor.py:4235 appEditors/AppGeoEditor.py:4249
+#: appEditors/AppGeoEditor.py:4243 appEditors/AppGeoEditor.py:4257
 #: appEditors/AppGerberEditor.py:1085 appEditors/AppGerberEditor.py:1312
 #: appEditors/AppGerberEditor.py:1497 appEditors/AppGerberEditor.py:1766
 #: appEditors/AppGerberEditor.py:4625 appEditors/AppGerberEditor.py:4642
@@ -1679,7 +1679,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:3908 appEditors/AppExcEditor.py:4030
 #: appEditors/AppExcEditor.py:4123 appEditors/AppGerberEditor.py:2820
-#: appGUI/GUIElements.py:3480 appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
+#: appGUI/GUIElements.py:3538 appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:92
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:187
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:240
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:129
@@ -1689,7 +1689,7 @@ msgstr ""
 
 #: appEditors/AppExcEditor.py:3909 appEditors/AppExcEditor.py:4031
 #: appEditors/AppExcEditor.py:4124 appEditors/AppGerberEditor.py:2821
-#: appGUI/GUIElements.py:3487 appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
+#: appGUI/GUIElements.py:3545 appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:93
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:188
 #: appGUI/preferences/excellon/ExcellonEditorPrefGroupUI.py:241
 #: appGUI/preferences/gerber/GerberEditorPrefGroupUI.py:130
@@ -1989,7 +1989,7 @@ msgstr ""
 
 #: appEditors/AppGeoEditor.py:582 appEditors/AppGeoEditor.py:1071
 #: appEditors/AppGeoEditor.py:2966 appEditors/AppGeoEditor.py:2994
-#: appEditors/AppGeoEditor.py:3022 appEditors/AppGeoEditor.py:4392
+#: appEditors/AppGeoEditor.py:3022 appEditors/AppGeoEditor.py:4400
 #: appEditors/AppGerberEditor.py:5781
 msgid "Cancelled. No shape selected."
 msgstr ""
@@ -2039,7 +2039,7 @@ msgid "Buffer"
 msgstr ""
 
 #: appEditors/AppGeoEditor.py:643 appEditors/AppGerberEditor.py:5353
-#: appGUI/GUIElements.py:2957 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
+#: appGUI/GUIElements.py:3015 appGUI/preferences/tools/ToolsFilmPrefGroupUI.py:169
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:44 appTools/ToolDblSided.py:681
 #: appTools/ToolDblSided.py:855 appTools/ToolFilm.py:1060 appTools/ToolTransform.py:547
 msgid "Reference"
@@ -2092,7 +2092,7 @@ msgstr ""
 #: appGUI/preferences/tools/ToolsTransformPrefGroupUI.py:243
 #: appTools/ToolExtractDrills.py:556 appTools/ToolExtractDrills.py:677
 #: appTools/ToolPunchGerber.py:849 appTools/ToolPunchGerber.py:965
-#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889 app_Main.py:10202
+#: appTools/ToolTransform.py:563 appTools/ToolTransform.py:889 app_Main.py:10205
 msgid "Value"
 msgstr ""
 
@@ -2747,15 +2747,15 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3557
+#: appEditors/AppGeoEditor.py:3565
 msgid "Ring"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3559
+#: appEditors/AppGeoEditor.py:3567
 msgid "Line"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3561 appGUI/MainGUI.py:1496 appGUI/ObjectUI.py:1615
+#: appEditors/AppGeoEditor.py:3569 appGUI/MainGUI.py:1496 appGUI/ObjectUI.py:1615
 #: appGUI/preferences/geometry/GeometryAdvOptPrefGroupUI.py:224
 #: appGUI/preferences/tools/ToolsDrillPrefGroupUI.py:424
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:309
@@ -2766,103 +2766,103 @@ msgstr ""
 msgid "Polygon"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3563
+#: appEditors/AppGeoEditor.py:3571
 msgid "Multi-Line"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3565
+#: appEditors/AppGeoEditor.py:3573
 msgid "Multi-Polygon"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:3572
+#: appEditors/AppGeoEditor.py:3580
 msgid "Geo Elem"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4029
+#: appEditors/AppGeoEditor.py:4037
 msgid "Grid Snap enabled."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4034
+#: appEditors/AppGeoEditor.py:4042
 msgid "Grid Snap disabled."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4399 appGUI/MainGUI.py:3194 appGUI/MainGUI.py:3240
+#: appEditors/AppGeoEditor.py:4407 appGUI/MainGUI.py:3194 appGUI/MainGUI.py:3240
 #: appGUI/MainGUI.py:3258 appGUI/MainGUI.py:3402 appGUI/MainGUI.py:3441
 #: appGUI/MainGUI.py:3453 appGUI/MainGUI.py:3470
 msgid "Click on target point."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4681
+#: appEditors/AppGeoEditor.py:4689
 msgid "Editing MultiGeo Geometry, tool"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4683 appTools/ToolNCC.py:2282
+#: appEditors/AppGeoEditor.py:4691 appTools/ToolNCC.py:2282
 msgid "with diameter"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4786 appEditors/AppGeoEditor.py:4821
+#: appEditors/AppGeoEditor.py:4794 appEditors/AppGeoEditor.py:4829
 msgid "A selection of at least 2 geo items is required to do Intersection."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4907 appEditors/AppGeoEditor.py:5011
+#: appEditors/AppGeoEditor.py:4915 appEditors/AppGeoEditor.py:5019
 msgid ""
 "Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4917 appEditors/AppGeoEditor.py:4970
-#: appEditors/AppGeoEditor.py:5020
+#: appEditors/AppGeoEditor.py:4925 appEditors/AppGeoEditor.py:4978
+#: appEditors/AppGeoEditor.py:5028
 msgid "Nothing selected for buffering."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4922 appEditors/AppGeoEditor.py:4974
-#: appEditors/AppGeoEditor.py:5025
+#: appEditors/AppGeoEditor.py:4930 appEditors/AppGeoEditor.py:4982
+#: appEditors/AppGeoEditor.py:5033
 msgid "Invalid distance for buffering."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4946 appEditors/AppGeoEditor.py:5045
+#: appEditors/AppGeoEditor.py:4954 appEditors/AppGeoEditor.py:5053
 msgid "Failed, the result is empty. Choose a different buffer value."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4957
+#: appEditors/AppGeoEditor.py:4965
 msgid "Full buffer geometry created."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4963
+#: appEditors/AppGeoEditor.py:4971
 msgid "Negative buffer value is not accepted."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:4994
+#: appEditors/AppGeoEditor.py:5002
 msgid "Failed, the result is empty. Choose a smaller buffer value."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5004
+#: appEditors/AppGeoEditor.py:5012
 msgid "Interior buffer geometry created."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5055
+#: appEditors/AppGeoEditor.py:5063
 msgid "Exterior buffer geometry created."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5061
+#: appEditors/AppGeoEditor.py:5069
 #, python-format
 msgid "Could not do Paint. Overlap value has to be less than 100%%."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5068
+#: appEditors/AppGeoEditor.py:5076
 msgid "Nothing selected for painting."
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5074
+#: appEditors/AppGeoEditor.py:5082
 msgid "Invalid value for"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5133
+#: appEditors/AppGeoEditor.py:5141
 msgid ""
 "Could not do Paint. Try a different combination of parameters. Or a different method of "
 "Paint"
 msgstr ""
 
-#: appEditors/AppGeoEditor.py:5144
+#: appEditors/AppGeoEditor.py:5152
 msgid "Paint done."
 msgstr ""
 
@@ -3375,27 +3375,11 @@ msgstr ""
 msgid "Geometry shape skew Y cancelled"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:75
-msgid "Print Preview"
+#: appEditors/AppTextEditor.py:84
+msgid "Find"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:77
-msgid "Open a OS standard Preview Print window."
-msgstr ""
-
-#: appEditors/AppTextEditor.py:80
-msgid "Print Code"
-msgstr ""
-
-#: appEditors/AppTextEditor.py:82
-msgid "Open a OS standard Print window."
-msgstr ""
-
-#: appEditors/AppTextEditor.py:85
-msgid "Find in Code"
-msgstr ""
-
-#: appEditors/AppTextEditor.py:87
+#: appEditors/AppTextEditor.py:86
 msgid "Will search and highlight in yellow the string in the Find box."
 msgstr ""
 
@@ -3403,19 +3387,19 @@ msgstr ""
 msgid "Find box. Enter here the strings to be searched in the text."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:93
+#: appEditors/AppTextEditor.py:95
 msgid "Replace With"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:95
+#: appEditors/AppTextEditor.py:97
 msgid "Will replace the string from the Find box with the one in the Replace box."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:99
+#: appEditors/AppTextEditor.py:102
 msgid "String to replace the one in the Find box throughout the text."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:101 appGUI/GUIElements.py:3508 appGUI/ObjectUI.py:1864
+#: appEditors/AppTextEditor.py:106 appGUI/GUIElements.py:3566 appGUI/ObjectUI.py:1864
 #: appGUI/preferences/cncjob/CNCJobOptPrefGroupUI.py:61
 #: appGUI/preferences/tools/ToolsISOPrefGroupUI.py:295
 #: appGUI/preferences/tools/ToolsPaintPrefGroupUI.py:278 appTools/ToolIsolation.py:808
@@ -3425,53 +3409,45 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:102
+#: appEditors/AppTextEditor.py:107
 msgid ""
 "When checked it will replace all instances in the 'Find' box\n"
 "with the text in the 'Replace' box.."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:105
-msgid "Copy All"
-msgstr ""
-
-#: appEditors/AppTextEditor.py:107
-msgid "Will copy all the text in the Code Editor to the clipboard."
-msgstr ""
-
-#: appEditors/AppTextEditor.py:112
+#: appEditors/AppTextEditor.py:120
 msgid "Save changes internally."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:115
-msgid "Open Code"
+#: appEditors/AppTextEditor.py:127
+msgid "Open a OS standard Preview Print window."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:117
+#: appEditors/AppTextEditor.py:133
+msgid "Open a OS standard Print window."
+msgstr ""
+
+#: appEditors/AppTextEditor.py:139
 msgid "Will open a text file in the editor."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:120
-msgid "Save Code"
-msgstr ""
-
-#: appEditors/AppTextEditor.py:122
+#: appEditors/AppTextEditor.py:145
 msgid "Will save the text in the editor into a file."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:125
-msgid "Run Code"
+#: appEditors/AppTextEditor.py:149
+msgid "Run"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:126
+#: appEditors/AppTextEditor.py:150
 msgid "Will run the TCL commands found in the text file, one by one."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:220 appEditors/appGCodeEditor.py:602
+#: appEditors/AppTextEditor.py:218 appEditors/appGCodeEditor.py:602
 msgid "Open file"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:251 appEditors/AppTextEditor.py:256
+#: appEditors/AppTextEditor.py:249 appEditors/AppTextEditor.py:254
 #: appObjects/FlatCAMCNCJob.py:1646 appObjects/FlatCAMCNCJob.py:1651
 #: appObjects/FlatCAMCNCJob.py:1836 appObjects/FlatCAMCNCJob.py:1841
 #: appObjects/FlatCAMCNCJob.py:1914 appObjects/FlatCAMCNCJob.py:1919
@@ -3479,18 +3455,14 @@ msgstr ""
 msgid "Export Code ..."
 msgstr ""
 
-#: appEditors/AppTextEditor.py:310 appObjects/FlatCAMCNCJob.py:1668
+#: appEditors/AppTextEditor.py:308 appObjects/FlatCAMCNCJob.py:1668
 #: appObjects/FlatCAMCNCJob.py:1858 appObjects/FlatCAMCNCJob.py:2307
 #: appTools/ToolSolderPaste.py:1093
 msgid "No such file or directory"
 msgstr ""
 
-#: appEditors/AppTextEditor.py:322 appObjects/FlatCAMCNCJob.py:2321
+#: appEditors/AppTextEditor.py:320 appObjects/FlatCAMCNCJob.py:2321
 msgid "Saved to"
-msgstr ""
-
-#: appEditors/AppTextEditor.py:370
-msgid "Content copied to clipboard ..."
 msgstr ""
 
 #: appEditors/appGCodeEditor.py:66 app_Main.py:7905
@@ -3567,26 +3539,26 @@ msgstr ""
 msgid "Insert the code above at the cursor location."
 msgstr ""
 
-#: appGUI/GUIElements.py:2959
+#: appGUI/GUIElements.py:3017
 msgid ""
 "The reference can be:\n"
 "- Absolute -> the reference point is point (0,0)\n"
 "- Relative -> the reference point is the mouse position before Jump"
 msgstr ""
 
-#: appGUI/GUIElements.py:2964
+#: appGUI/GUIElements.py:3022
 msgid "Abs"
 msgstr ""
 
-#: appGUI/GUIElements.py:2965
+#: appGUI/GUIElements.py:3023
 msgid "Relative"
 msgstr ""
 
-#: appGUI/GUIElements.py:2975
+#: appGUI/GUIElements.py:3033
 msgid "Location"
 msgstr ""
 
-#: appGUI/GUIElements.py:2977
+#: appGUI/GUIElements.py:3035
 msgid ""
 "The Location value is a tuple (x,y).\n"
 "If the reference is Absolute then the Jump will be at the position (x,y).\n"
@@ -3594,108 +3566,108 @@ msgid ""
 "from the current mouse location point."
 msgstr ""
 
-#: appGUI/GUIElements.py:3017
+#: appGUI/GUIElements.py:3075
 msgid "Save Log"
 msgstr ""
 
-#: appGUI/GUIElements.py:3027 app_Main.py:2809 app_Main.py:3181 app_Main.py:3354
+#: appGUI/GUIElements.py:3085 app_Main.py:2809 app_Main.py:3181 app_Main.py:3354
 msgid "Close"
 msgstr ""
 
-#: appGUI/GUIElements.py:3036 appTools/ToolShell.py:296
+#: appGUI/GUIElements.py:3094 appTools/ToolShell.py:296
 msgid "Type >help< to get started"
 msgstr ""
 
-#: appGUI/GUIElements.py:3403 appGUI/GUIElements.py:3420
+#: appGUI/GUIElements.py:3461 appGUI/GUIElements.py:3478
 msgid "Jog the Y axis."
 msgstr ""
 
-#: appGUI/GUIElements.py:3411
+#: appGUI/GUIElements.py:3469
 msgid "Move to Origin."
 msgstr ""
 
-#: appGUI/GUIElements.py:3428 appGUI/GUIElements.py:3436
+#: appGUI/GUIElements.py:3486 appGUI/GUIElements.py:3494
 msgid "Jog the X axis."
 msgstr ""
 
-#: appGUI/GUIElements.py:3446 appGUI/GUIElements.py:3456
+#: appGUI/GUIElements.py:3504 appGUI/GUIElements.py:3514
 msgid "Jog the Z axis."
 msgstr ""
 
-#: appGUI/GUIElements.py:3482
+#: appGUI/GUIElements.py:3540
 msgid "Zero the CNC X axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3490
+#: appGUI/GUIElements.py:3548
 msgid "Zero the CNC Y axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3495
+#: appGUI/GUIElements.py:3553
 msgid "Z"
 msgstr ""
 
-#: appGUI/GUIElements.py:3498
+#: appGUI/GUIElements.py:3556
 msgid "Zero the CNC Z axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3502
+#: appGUI/GUIElements.py:3560
 msgid "Do Home"
 msgstr ""
 
-#: appGUI/GUIElements.py:3504
+#: appGUI/GUIElements.py:3562
 msgid "Perform a homing cycle on all axis."
 msgstr ""
 
-#: appGUI/GUIElements.py:3512
+#: appGUI/GUIElements.py:3570
 msgid "Zero all CNC axes at current position."
 msgstr ""
 
-#: appGUI/GUIElements.py:3667 appGUI/GUIElements.py:3676
+#: appGUI/GUIElements.py:3725 appGUI/GUIElements.py:3734
 msgid "Idle."
 msgstr ""
 
-#: appGUI/GUIElements.py:3709
+#: appGUI/GUIElements.py:3767
 msgid "Application started ..."
 msgstr ""
 
-#: appGUI/GUIElements.py:3710
+#: appGUI/GUIElements.py:3768
 msgid "Hello!"
 msgstr ""
 
-#: appGUI/GUIElements.py:3757 appGUI/MainGUI.py:190 appGUI/MainGUI.py:918
+#: appGUI/GUIElements.py:3815 appGUI/MainGUI.py:190 appGUI/MainGUI.py:918
 #: appGUI/MainGUI.py:2073
 msgid "Run Script ..."
 msgstr ""
 
-#: appGUI/GUIElements.py:3759 appGUI/MainGUI.py:192
+#: appGUI/GUIElements.py:3817 appGUI/MainGUI.py:192
 msgid ""
 "Will run the opened Tcl Script thus\n"
 "enabling the automation of certain\n"
 "functions of FlatCAM."
 msgstr ""
 
-#: appGUI/GUIElements.py:3768 appGUI/MainGUI.py:118 appTools/ToolPcbWizard.py:390
+#: appGUI/GUIElements.py:3826 appGUI/MainGUI.py:118 appTools/ToolPcbWizard.py:390
 #: appTools/ToolPcbWizard.py:397
 msgid "Open"
 msgstr ""
 
-#: appGUI/GUIElements.py:3772 appGUI/MainGUI.py:123
+#: appGUI/GUIElements.py:3830 appGUI/MainGUI.py:123
 msgid "Open Project ..."
 msgstr ""
 
-#: appGUI/GUIElements.py:3778
+#: appGUI/GUIElements.py:3836
 msgid "Open &Gerber ...\tCtrl+G"
 msgstr ""
 
-#: appGUI/GUIElements.py:3783
+#: appGUI/GUIElements.py:3841
 msgid "Open &Excellon ...\tCtrl+E"
 msgstr ""
 
-#: appGUI/GUIElements.py:3788
+#: appGUI/GUIElements.py:3846
 msgid "Open G-&Code ..."
 msgstr ""
 
-#: appGUI/GUIElements.py:3798 appGUI/MainGUI.py:309
+#: appGUI/GUIElements.py:3856 appGUI/MainGUI.py:309
 msgid "Exit"
 msgstr ""
 
@@ -4355,7 +4327,7 @@ msgstr ""
 msgid "Brown"
 msgstr ""
 
-#: appGUI/MainGUI.py:727 app_Main.py:10161 app_Main.py:10217
+#: appGUI/MainGUI.py:727 app_Main.py:10161 app_Main.py:10220
 msgid "White"
 msgstr ""
 
@@ -6470,12 +6442,9 @@ msgid ""
 "- Line-based: Parallel lines."
 msgstr ""
 
-#: appGUI/ObjectUI.py:1738 appTools/ToolDrilling.py:2629 appTools/ToolMilling.py:2304
+#: appGUI/ObjectUI.py:1738 appGUI/ObjectUI.py:1741 appTools/ToolDrilling.py:2629
+#: appTools/ToolMilling.py:2304
 msgid "Generate CNCJob object"
-msgstr ""
-
-#: appGUI/ObjectUI.py:1741
-msgid "Generate CNCJob object."
 msgstr ""
 
 #: appGUI/ObjectUI.py:1743
@@ -6707,7 +6676,7 @@ msgid "Rows"
 msgstr ""
 
 #: appGUI/ObjectUI.py:2218 appGUI/preferences/cncjob/CNCJobAdvOptPrefGroupUI.py:113
-msgid "The number of gird rows."
+msgid "The number of grid rows."
 msgstr ""
 
 #: appGUI/ObjectUI.py:2223
@@ -7673,7 +7642,7 @@ msgid ""
 "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
 "drill path optimization.\n"
 "\n"
-"Some options are disabled when FlatCAM works in 32bit mode."
+"Some options are disabled when the application works in 32bit mode."
 msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:225
@@ -7732,8 +7701,8 @@ msgstr ""
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:260
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:143
 msgid ""
-"When checked the joined (merged) object tools\n"
-"will be merged also but only if they share some of their attributes."
+"When checked, the tools will be merged\n"
+"but only if they share some of their attributes."
 msgstr ""
 
 #: appGUI/preferences/excellon/ExcellonGenPrefGroupUI.py:277
@@ -8021,16 +7990,15 @@ msgstr ""
 
 #: appGUI/preferences/general/GeneralAPPSetGroupUI.py:389
 msgid ""
-"When cheched, the user can edit the objects in the Project Tab\n"
-"by using the left mouse button click on the object name.\n"
-"Active after restart."
+"When checked, the user can edit the object names in the Project Tab\n"
+"by clicking on the object name. Active after restart."
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:396
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:395
 msgid "\"Open\" behavior"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:398
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:397
 msgid ""
 "When checked the path for the last saved file is used when saving files,\n"
 "and the path for the last opened file is used when opening files.\n"
@@ -8039,21 +8007,21 @@ msgid ""
 "path for saving files or the path for opening files."
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:407
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:406
 msgid "Enable ToolTips"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:409
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:408
 msgid ""
 "Check this box if you want to have toolTips displayed\n"
 "when hovering with mouse over items throughout the App."
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:416
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:415
 msgid "Allow Machinist Unsafe Settings"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:418
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:417
 msgid ""
 "If checked, some of the application settings will be allowed\n"
 "to have values that are usually unsafe to use.\n"
@@ -8062,22 +8030,22 @@ msgid ""
 "<<WARNING>>: Don't change this unless you know what you are doing !!!"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:430
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:429
 msgid "Bookmarks limit"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:432
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:431
 msgid ""
 "The maximum number of bookmarks that may be installed in the menu.\n"
 "The number of bookmarks in the bookmark manager may be greater\n"
 "but the menu will hold only so much."
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:441
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:440
 msgid "Activity Icon"
 msgstr ""
 
-#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:443
+#: appGUI/preferences/general/GeneralAPPSetGroupUI.py:442
 msgid "Select the GIF that show activity when FlatCAM is active."
 msgstr ""
 
@@ -8698,7 +8666,7 @@ msgid ""
 "- Basic -> Using Google OR-Tools Basic algorithm\n"
 "- TSA -> Using Travelling Salesman algorithm\n"
 "\n"
-"Some options are disabled when FlatCAM works in 32bit mode."
+"Some options are disabled when the application works in 32bit mode."
 msgstr ""
 
 #: appGUI/preferences/geometry/GeometryGenPrefGroupUI.py:108
@@ -10737,7 +10705,7 @@ msgid ""
 "Active only for Geometry panel type.\n"
 "When checked the application will find\n"
 "any two overlapping Line elements in the panel\n"
-"and remove the overlapping parts, keeping only one of them."
+"and will remove the overlapping parts, keeping only one of them."
 msgstr ""
 
 #: appGUI/preferences/tools/ToolsPanelizePrefGroupUI.py:120
@@ -12910,7 +12878,7 @@ msgid ""
 "- Point -> a set of coordinates (x,y) around which the object is mirrored\n"
 "- Box -> a set of coordinates (x, y) obtained from the center of the\n"
 "bounding box of another object selected below\n"
-"- Hole Snap -> a point defined by the center of a drill hone in a Excellon object"
+"- Hole Snap -> a point defined by the center of a drill hole in a Excellon object"
 msgstr ""
 
 #: appTools/ToolDblSided.py:703
@@ -12926,7 +12894,7 @@ msgid ""
 msgstr ""
 
 #: appTools/ToolDblSided.py:726
-msgid "Object that holds holes that can be picked as reference for mirroing."
+msgid "Object that holds holes that can be picked as reference for mirroring."
 msgstr ""
 
 #: appTools/ToolDblSided.py:741
@@ -15616,8 +15584,8 @@ msgstr ""
 msgid "Editor exited. Editor content saved."
 msgstr ""
 
-#: app_Main.py:2405
-msgid "Select a Gerber, Geometry, Excellon or CNCJobObject to update."
+#: app_Main.py:2405 app_Main.py:2446
+msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
 msgstr ""
 
 #: app_Main.py:2408
@@ -15626,10 +15594,6 @@ msgstr ""
 
 #: app_Main.py:2421
 msgid "Editor exited. Editor content was not saved."
-msgstr ""
-
-#: app_Main.py:2446
-msgid "Select a Gerber, Geometry, Excellon or CNCJob Object to update."
 msgstr ""
 
 #: app_Main.py:2469
@@ -16602,31 +16566,31 @@ msgstr ""
 msgid "Working ..."
 msgstr ""
 
-#: app_Main.py:10202
+#: app_Main.py:10205
 msgid "Set alpha level ..."
 msgstr ""
 
-#: app_Main.py:10268
+#: app_Main.py:10271
 msgid "Saving FlatCAM Project"
 msgstr ""
 
-#: app_Main.py:10291 app_Main.py:10327
+#: app_Main.py:10294 app_Main.py:10330
 msgid "Project saved to"
 msgstr ""
 
-#: app_Main.py:10298
+#: app_Main.py:10301
 msgid "The object is used by another application."
 msgstr ""
 
-#: app_Main.py:10312
+#: app_Main.py:10315
 msgid "Failed to verify project file"
 msgstr ""
 
-#: app_Main.py:10312 app_Main.py:10320 app_Main.py:10330
+#: app_Main.py:10315 app_Main.py:10323 app_Main.py:10333
 msgid "Retry to save it."
 msgstr ""
 
-#: app_Main.py:10320 app_Main.py:10330
+#: app_Main.py:10323 app_Main.py:10333
 msgid "Failed to parse saved project file"
 msgstr ""
 
@@ -16714,8 +16678,7 @@ msgid "G91 coordinates not implemented"
 msgstr ""
 
 #: camlib.py:3447
-#, python-format
-msgid "Finished G-Code generation for tool: %s"
+msgid "Finished G-Code generation for tool:"
 msgstr ""
 
 #: camlib.py:3497

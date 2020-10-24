@@ -219,7 +219,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
               "drill path optimization.\n"
               "\n"
-              "Some options are disabled when FlatCAM works in 32bit mode.")
+              "Some options are disabled when the application works in 32bit mode.")
         )
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
@@ -257,8 +257,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.fuse_tools_cb = FCCheckBox(_("Fuse Tools"))
         self.fuse_tools_cb.setToolTip(
-            _("When checked the joined (merged) object tools\n"
-              "will be merged also but only if they share some of their attributes.")
+            _("When checked, the tools will be merged\n"
+              "but only if they share some of their attributes.")
         )
         grid2.addWidget(self.fuse_tools_cb, 13, 0, 1, 2)
 

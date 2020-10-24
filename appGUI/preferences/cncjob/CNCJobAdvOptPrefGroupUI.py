@@ -110,7 +110,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.al_rows_label.setToolTip(
-            _("The number of gird rows.")
+            _("The number of grid rows.")
         )
         grid0.addWidget(self.al_rows_label, 12, 0)
         grid0.addWidget(self.al_rows_entry, 12, 1)

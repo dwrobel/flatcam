@@ -1737,8 +1737,8 @@ class GeometryObjectUI(ObjectUI):
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setIcon(QtGui.QIcon(self.app.resource_location + '/cnc16.png'))
-        self.generate_cnc_button.setToolTip('%s\n%s' % (
-            _("Generate CNCJob object."),
+        self.generate_cnc_button.setToolTip('%s.\n%s' % (
+            _("Generate CNCJob object"),
             _(
                 "Add / Select at least one tool in the tool-table.\n"
                 "Click the # header to select all, or Ctrl + LMB\n"
@@ -2215,7 +2215,7 @@ class CNCObjectUI(ObjectUI):
 
         self.al_rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.al_rows_label.setToolTip(
-            _("The number of gird rows.")
+            _("The number of grid rows.")
         )
         grid0.addWidget(self.al_rows_label, 21, 0)
         grid0.addWidget(self.al_rows_entry, 21, 1)

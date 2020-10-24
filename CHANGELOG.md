@@ -12,6 +12,9 @@ CHANGELOG for FlatCAM beta
 - added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
 - replaced the InputDialog in the Opacity pop menu for the objects in the Project Tab with a FCInputDialogSlider
 - minor changes
+- UI changes in the AppTextEditor and in CNCJob properties tab and in GCoe Editor
+- some changes in strings; updated all the translation strings to the latest changes
+- finished the Romanian translation
 
 23.10.2020
 

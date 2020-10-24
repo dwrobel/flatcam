@@ -232,8 +232,8 @@ class ToolsDB2UI:
         # Tool Tolerance
         self.tol_label = FCLabel("<b>%s:</b>" % _("Diameter Tolerance"))
         self.tol_label.setToolTip(
-            _("Tool tolerance. If there is a tool in the targeted tools table with\n"
-              "the value within the limits then this tool from DB will be used.")
+            _("Tool tolerance. This tool will be used if the desired tool diameter\n"
+              "is within the tolerance specified here.")
         )
         self.grid_tool.addWidget(self.tol_label, 2, 0, 1, 2)
 

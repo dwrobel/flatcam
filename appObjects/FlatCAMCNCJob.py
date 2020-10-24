@@ -579,7 +579,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.review_gcode_button.clicked.connect(self.on_edit_code_click)
+        self.ui.review_gcode_button.clicked.connect(self.on_review_code_click)
 
         # Editor Signal
         self.ui.editor_button.clicked.connect(lambda: self.app.object2editor())
@@ -1703,7 +1703,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_viewer_tab.load_text(gco, move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
+            log.debug('FlatCAMCNCJob.on_edit_probing_gcode() -->%s' % str(e))
             return
 
         self.gcode_viewer_tab.t_frame.show()
@@ -1954,7 +1954,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit('[success] %s: %s' % (_("File saved to"), filename))
 
-    def on_edit_code_click(self, *args):
+    def on_review_code_click(self, *args):
         """
         Handler activated by a button clicked when reviewing GCode.
 
@@ -1994,7 +1994,7 @@ class CNCJobObject(FlatCAMObj, CNCjob):
         try:
             self.gcode_editor_tab.load_text(self.app.gcode_edited.getvalue(), move_to_start=True, clear_text=True)
         except Exception as e:
-            log.debug('FlatCAMCNCJob.on_edit_code_click() -->%s' % str(e))
+            log.debug('FlatCAMCNCJob.on_review_code_click() -->%s' % str(e))
             return
 
         self.gcode_editor_tab.t_frame.show()
@@ -2002,8 +2002,8 @@ class CNCJobObject(FlatCAMObj, CNCjob):
 
         self.gcode_editor_tab.buttonSave.hide()
         self.gcode_editor_tab.buttonOpen.hide()
-        self.gcode_editor_tab.buttonPrint.hide()
-        self.gcode_editor_tab.buttonPreview.hide()
+        # self.gcode_editor_tab.buttonPrint.hide()
+        # self.gcode_editor_tab.buttonPreview.hide()
         self.gcode_editor_tab.buttonReplace.hide()
         self.gcode_editor_tab.sel_all_cb.hide()
         self.gcode_editor_tab.entryReplace.hide()

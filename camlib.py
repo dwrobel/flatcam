@@ -3444,7 +3444,7 @@ class CNCjob(Geometry):
             # Move to End position
             t_gcode += self.doformat(p.end_code, x=0, y=0)
 
-        self.app.inform.emit(_("Finished G-Code generation for tool: %s" % str(tool)))
+        self.app.inform.emit('%s %s' % (_("Finished G-Code generation for tool:"), str(tool)))
         return t_gcode, (locx, locy), start_gcode
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", order='fwd', use_ui=False):
