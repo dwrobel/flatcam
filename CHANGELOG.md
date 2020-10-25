@@ -7,6 +7,10 @@ CHANGELOG for FlatCAM beta
 
 =================================================
 
+25.10.2020
+
+- updated the Italian translation (by Massimiliano Golfetto)
+
 24.10.2020
 
 - added a new GUI element, an InputDialog made out of FCSliderWithSpinner named FCInputDialogSlider
